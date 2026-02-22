@@ -1,9 +1,12 @@
 #!/usr/bin/env python3
 """
-Phases 3-4 Consolidated Evidence Runner (v2)
+Phase 9-10 Consolidated Evidence Runner
 
-Generates consolidated evidence for Phases 3-4.
-Updated to use Evidence Contract v2 helper for scope isolation and self-verification.
+Generates consolidated evidence for:
+- Phase 9: Evidence Contract v2 Rollout (Runners)
+- Phase 10: CI Evidence Contract Enforcement (Repo-Wide)
+
+Uses Evidence Contract v2 helper for scope isolation and self-verification.
 """
 
 import sys
@@ -16,21 +19,21 @@ from evidence_contract_v2 import EvidenceContractV2
 
 
 def main():
-    """Generate Phases 3-4 consolidated evidence using Contract v2."""
-    args = EvidenceContractV2.parse_args("Generate Phases 3-4 consolidated evidence")
+    """Generate Phases 9-10 consolidated evidence using Contract v2."""
+    args = EvidenceContractV2.parse_args("Generate Phases 9-10 consolidated evidence")
     
     code_commit = args.code_commit
     evidence_commit = args.evidence_commit
     
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_03_04_consolidated.md"
+    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_09_10_consolidated.md"
 
-    print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
+    print(f"Generating Phases 9-10 consolidated evidence: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")
     if evidence_commit:
         print(f"EVIDENCE_COMMIT: {evidence_commit}")
     
-    # Initialize contract helper with allowed prefixes for Phases 3-4
+    # Initialize contract helper with allowed prefixes for phases 9-10
     allowed_prefixes = {
         "apps_shared/",
         "apps_lic/", 
@@ -55,16 +58,23 @@ def main():
     
     # Start building evidence content
     evidence_lines = []
-    evidence_lines.append("# Phases 3-4: Cross-App Spine Normalization & Contract Lock (Consolidated)")
+    evidence_lines.append("# Phases 9-10: Evidence Contract v2 Rollout + CI Enforcement (Consolidated)")
     evidence_lines.append("")
     evidence_lines.append("## Scope")
-    evidence_lines.append("Phase 3: Cross-App Spine Normalization & Contract Lock")
-    evidence_lines.append("Phase 4: Spine Integrity Guardrail (Structural Enforcement)")
+    evidence_lines.append("Phase 9: Evidence Contract v2 Rollout (Runners)")
+    evidence_lines.append("Phase 10: CI Evidence Contract Enforcement (Repo-Wide)")
     evidence_lines.append("")
     
     # Build evidence sections using contract helper
     inspected = [
+        "tools/evidence/evidence_contract_v2.py",
+        "tools/evidence/phase02_consolidated_evidence_runner.py",
         "tools/evidence/phase03_04_consolidated_evidence_runner.py",
+        "tools/evidence/phase05_06_consolidated_evidence_runner.py",
+        "tools/evidence/phase07_08_consolidated_evidence_runner.py",
+        "tools/evidence/phase_09_10_consolidated_evidence_runner.py",
+        "ops_scripts/ci/check_evidence_contract_v2.py",
+        ".github/workflows/spine-determinism-guard.yml",
     ]
     
     sections = contract.build_evidence_sections(
@@ -79,6 +89,10 @@ def main():
         (
             [sys.executable, "-m", "pytest", "-q"],
             "Full Test Suite",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
+            "Evidence Contract v2 Checker (Repo-Wide)",
         ),
     ]
     

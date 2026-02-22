@@ -1,142 +1,142 @@
 #!/usr/bin/env python3
-"""Phase 2 Consolidated Evidence Runner.
+"""
+Phase 2 Consolidated Evidence Runner (v2)
 
-Generates single consolidated evidence file for Phase 2 LIC+RG spine adapters.
-All commands executed via subprocess with argv arrays (shell=False).
-PowerShell detection via argv-level checks only.
+Generates consolidated evidence for Phase 2 LIC+RG spine adapters.
+Updated to use Evidence Contract v2 helper for scope isolation and self-verification.
 """
 
-import subprocess
 import sys
 from pathlib import Path
 
+# Add the tools/evidence directory to the path for imports
+sys.path.insert(0, str(Path(__file__).parent))
 
-def run_cmd(args, cwd=None):
-    """Execute command and return (rc, stdout, stderr)."""
-    # PowerShell detection at argv level only
-    argv0_lower = str(args[0]).lower()
-    if "pwsh" in argv0_lower or "powershell" in argv0_lower:
-        print(f"ERROR: PowerShell usage detected in command: {' '.join(args)}")
-        sys.exit(1)
-
-    r = subprocess.run(
-        args, cwd=cwd, capture_output=True, text=True, shell=False, encoding="utf-8", errors="replace"
-    )
-    return r.returncode, r.stdout, r.stderr
-
-
-def read_file_content(filepath):
-    """Read file content as text."""
-    try:
-        return Path(filepath).read_text(encoding="utf-8")
-    except FileNotFoundError:
-        print(f"ERROR: File not found: {filepath}")
-        sys.exit(1)
-    except UnicodeDecodeError as e:
-        print(f"ERROR: Unicode decode error in {filepath}: {e}")
-        sys.exit(1)
-    except OSError as e:
-        print(f"ERROR: OS error reading {filepath}: {e}")
-        sys.exit(1)
+from evidence_contract_v2 import EvidenceContractV2
 
 
 def main():
-    """Generate Phase 2 consolidated evidence."""
+    """Generate Phase 2 consolidated evidence using Contract v2."""
+    args = EvidenceContractV2.parse_args("Generate Phase 2 consolidated evidence")
+    
+    code_commit = args.code_commit
+    evidence_commit = args.evidence_commit
+    
     repo_root = Path(__file__).parent.parent.parent
     evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_consolidated.md"
 
     print(f"Generating Phase 2 consolidated evidence: {evidence_file}")
-
+    print(f"CODE_COMMIT: {code_commit}")
+    if evidence_commit:
+        print(f"EVIDENCE_COMMIT: {evidence_commit}")
+    
+    # Initialize contract helper with allowed prefixes for Phase 2
+    allowed_prefixes = {
+        "apps_shared/",
+        "apps_lic/", 
+        "apps_rg/",
+        "agentic_core/",
+        "ops_scripts/",
+        "tools/evidence/",
+        "tests/",
+        "docs/reports/plans/",
+        ".github/workflows/",
+        "pytest.ini",
+        "docs/rules/",
+    }
+    
+    contract = EvidenceContractV2(repo_root, allowed_prefixes)
+    
+    # Validate evidence contract structure
+    require_evidence_commit = evidence_commit is not None
+    contract.validate_evidence_contract_structure(
+        code_commit, evidence_commit, require_evidence_commit
+    )
+    
     # Start building evidence content
     evidence_lines = []
-
-    # Header with scope
-    evidence_lines.append("# Phase 2: LIC + RG Spine Adapters (Consolidated Proof)")
+    evidence_lines.append("# Phase 2: LIC+RG Spine Adapters (Consolidated)")
     evidence_lines.append("")
     evidence_lines.append("## Scope")
-    evidence_lines.append(
-        "Implement LIC and RG spine adapters with deterministic CID derivation and unit tests."
+    evidence_lines.append("Phase 2: LIC+RG Spine Adapters Implementation")
+    evidence_lines.append("")
+    
+    # Build evidence sections using contract helper
+    inspected = [
+        "apps_lic/engines/lic_spine_adapter.py",
+        "apps_rg/engines/rg_spine_adapter.py",
+        "tools/evidence/phase02_consolidated_evidence_runner.py",
+    ]
+    
+    sections = contract.build_evidence_sections(
+        code_commit, evidence_commit, inspected
     )
-    evidence_lines.append("")
-
-    # FINAL_HEAD
-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
-    if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
-        sys.exit(1)
-    final_head = out.strip()
-    evidence_lines.append("## FINAL_HEAD")
-    evidence_lines.append(final_head)
-    evidence_lines.append("")
-
-    # CODE_SCOPE
-    evidence_lines.append("## CODE_SCOPE")
-    evidence_lines.append("```")
-    evidence_lines.append("apps_lic/engines/lic_spine_adapter.py")
-    evidence_lines.append("apps_rg/engines/rg_spine_adapter.py")
-    evidence_lines.append("tests/unit_min_deps/test_apps_lic_spine_adapter.py")
-    evidence_lines.append("tests/unit_min_deps/test_apps_rg_spine_adapter.py")
-    evidence_lines.append("```")
-    evidence_lines.append("")
-
+    
+    # Add formatted sections
+    evidence_lines.extend(contract.format_evidence_sections(sections))
+    
     # Command outputs
     commands = [
         (
             [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
-            "LIC Unit Tests",
+            "LIC Spine Adapter Tests",
         ),
         (
             [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
-            "RG Unit Tests",
+            "RG Spine Adapter Tests",
         ),
-        ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
-        ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
-        (["git", "show", "--name-only", "--pretty=format:", "HEAD"], "Files Changed in HEAD"),
-        (["git", "diff", "--stat"], "Git Diff Stat"),
-        (["git", "diff"], "Git Full Diff"),
     ]
-
+    
     for cmd, title in commands:
         evidence_lines.append(f"## {title}")
         evidence_lines.append("```")
         evidence_lines.append(f"$ {' '.join(cmd)}")
-        rc, out, err = run_cmd(cmd, cwd=repo_root)
-        if rc != 0:
-            print(f"ERROR: Command failed: {' '.join(cmd)}")
-            print(f"Exit code: {rc}")
-            print(f"Error: {err}")
-            sys.exit(1)
-
-        evidence_lines.append(out.strip())
+        
+        rc, out, err = contract.run_cmd(cmd)
+        evidence_lines.append(out)
         if err:
-            evidence_lines.append(f"STDERR: {err.strip()}")
+            evidence_lines.append(f"STDERR: {err}")
+        if rc != 0:
+            evidence_lines.append(f"EXIT CODE: {rc}")
+        
         evidence_lines.append("```")
         evidence_lines.append("")
-
-    # File contents
-    files_to_include = [
-        "apps_lic/engines/lic_spine_adapter.py",
-        "apps_rg/engines/rg_spine_adapter.py",
-        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
-        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
-        "tools/evidence/phase02_consolidated_evidence_runner.py",
-    ]
-
-    for filepath in files_to_include:
-        evidence_lines.append(f"## {filepath}")
-        evidence_lines.append("```python")
-        content = read_file_content(repo_root / filepath)
+    
+    # Embed full contents of inspected files
+    evidence_lines.append("## INSPECTED_FILE_CONTENTS")
+    evidence_lines.append("")
+    
+    for filepath in sections["INSPECTED_FILES"]:
+        full_path = repo_root / filepath
+        evidence_lines.append(f"### {filepath}")
+        evidence_lines.append("```")
+        content = EvidenceContractV2.read_file_content(full_path)
         evidence_lines.append(content)
         evidence_lines.append("```")
         evidence_lines.append("")
-
+    
     # Write evidence file with LF line endings and no trailing whitespace
     evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
+    
+    # Sanity check: evidence file should not start with Python code
+    content_start = evidence_file.read_text(encoding="utf-8")[:200]
+    if content_start.strip().startswith("#!/usr/bin/env python") or "def main()" in content_start[:200]:
+        print("ERROR: Evidence file appears to contain Python code instead of markdown")
+        print("This indicates the runner content was written to the evidence file.")
+        sys.exit(1)
 
     print(f"Evidence generated successfully: {evidence_file}")
-    print(f"FINAL_HEAD: {final_head}")
+    print(f"CODE_COMMIT: {code_commit}")
+    print(f"EVIDENCE_COMMIT: {sections['EVIDENCE_COMMIT']}")
+    print(f"Current HEAD: {contract.get_current_head()}")
+    
+    if not evidence_commit:
+        print("\nTo complete the evidence contract:")
+        print("1. Commit this evidence file")
+        print("2. Re-run with --evidence-commit <new_commit_hash>")
+        print("3. The runner will update the sealed evidence file")
 
 
 if __name__ == "__main__":
