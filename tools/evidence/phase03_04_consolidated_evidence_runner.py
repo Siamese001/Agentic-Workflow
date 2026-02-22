@@ -76,16 +76,30 @@ def main():
     evidence_lines.append("PENDING")
     evidence_lines.append("")
 
-    # CODE_SCOPE
-    evidence_lines.append("## CODE_SCOPE")
+    # FILES_CHANGED: derived from git show on CODE_COMMIT
+    rc, show_out, show_err = run_cmd(
+        ["git", "show", "--name-only", "--pretty=format:", code_commit], cwd=repo_root
+    )
+    changed_files = [f for f in show_out.strip().splitlines() if f.strip()]
+    evidence_lines.append("## FILES_CHANGED (in CODE_COMMIT)")
     evidence_lines.append("```")
-    evidence_lines.append("Phase 3:")
-    evidence_lines.append("  tools/evidence/phase03_04_consolidated_evidence_runner.py")
-    evidence_lines.append("Phase 4:")
-    evidence_lines.append("  apps_lic/engines/__init__.py")
-    evidence_lines.append("  apps_rg/engines/__init__.py")
-    evidence_lines.append("  tests/unit_min_deps/test_apps_lic_spine_adapter.py")
-    evidence_lines.append("  tests/unit_min_deps/test_apps_rg_spine_adapter.py")
+    for f in changed_files:
+        evidence_lines.append(f)
+    evidence_lines.append("```")
+    evidence_lines.append("")
+
+    # INSPECTED_FILES: context files whose contents are embedded for verification
+    inspected = [
+        "tools/evidence/phase03_04_consolidated_evidence_runner.py",
+        "apps_lic/engines/__init__.py",
+        "apps_rg/engines/__init__.py",
+        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
+        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
+    ]
+    evidence_lines.append("## INSPECTED_FILES (context snapshots, not necessarily changed)")
+    evidence_lines.append("```")
+    for f in inspected:
+        evidence_lines.append(f)
     evidence_lines.append("```")
     evidence_lines.append("")
 
@@ -101,10 +115,6 @@ def main():
         ),
         ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
         ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
-        (
-            ["git", "show", "--name-only", "--pretty=format:", code_commit],
-            f"Files Changed in CODE_COMMIT ({code_commit[:8]})",
-        ),
         (["git", "diff", "--stat"], "Git Diff Stat"),
         (["git", "diff"], "Git Full Diff"),
     ]
@@ -126,16 +136,8 @@ def main():
         evidence_lines.append("```")
         evidence_lines.append("")
 
-    # File contents - dynamically determine which files were changed
-    files_to_include = [
-        "tools/evidence/phase03_04_consolidated_evidence_runner.py",
-        "apps_lic/engines/__init__.py",
-        "apps_rg/engines/__init__.py",
-        "tests/unit_min_deps/test_apps_lic_spine_adapter.py",
-        "tests/unit_min_deps/test_apps_rg_spine_adapter.py",
-    ]
-
-    for filepath in files_to_include:
+    # Inspected file contents (context snapshots for verification)
+    for filepath in inspected:
         full_path = repo_root / filepath
         if full_path.exists():
             evidence_lines.append(f"## {filepath}")
