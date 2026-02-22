@@ -3,7 +3,7 @@
 Pure-wiring adapter forcing all LIC entry through the canonical spine (AirlockAssembler → PathRouter → ExecutionOrchestrator) with deterministic CID derived from GovernedPayload manifest hash before any HOP stage runs.
 
 ## Commit Hash
-
+adad6517af0227348f00122ccb192c5f6413eada
 b02297cf464a849bd3c5801ef49e8deeca8abdd7
 
 ## Files Changed
