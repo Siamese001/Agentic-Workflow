@@ -4,8 +4,11 @@
 Phase 3: Single-evidence-per-response contract implementation
 Phase 4: Production-grade spine adapter hardening (CID invariants, import stability, governance)
 
-## FINAL_HEAD
-faa3a915737bfa96a96514f0a47336f3d5db0aef
+## CODE_COMMIT
+8ee4159c242fc9ead544d9c1ef97916ab8f1653d
+
+## EVIDENCE_COMMIT
+PENDING
 
 ## CODE_SCOPE
 ```
@@ -40,7 +43,7 @@ tests/unit_min_deps/test_apps_lic_spine_adapter.py::test_adapter_state_success_o
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-[32m============================== [32m[1m7 passed[0m[32m in 0.04s[0m[32m ==============================[0m
+[32m============================== [32m[1m7 passed[0m[32m in 0.05s[0m[32m ==============================[0m
 ```
 
 ## RG Unit Tests
@@ -443,7 +446,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:15:18 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 14:23:16 [[32m    INFO[0m] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 [32mPASSED[0m[32m                                                                   [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps [32mPASSED[0m[32m [ 31%][0m
@@ -573,7 +576,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:15:40 [[31m[1m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 14:23:37 [[31m[1m   ERROR[0m] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 [32mPASSED[0m[32m                                                                   [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash [32mPASSED[0m[32m [ 42%][0m
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises [32mPASSED[0m[32m [ 42%][0m
@@ -660,7 +663,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash [32mPASSED[0m[32m [ 49%][0m
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record
 [1m-------------------------------- live log call --------------------------------[0m
-2026-02-22 14:15:40 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 14:23:37 [[33m WARNING[0m] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 [32mPASSED[0m[32m                                                                   [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket [32mPASSED[0m[32m [ 50%][0m
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls [32mPASSED[0m[32m [ 50%][0m
@@ -1257,17 +1260,17 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.07s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.06s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-3.03s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-2.86s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-2.44s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-1.99s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.59s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_repository_surface
-1.58s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
-1.58s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
-1.57s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 65.60s (0:01:05)[0m[33m =================[0m
+3.10s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+3.08s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.05s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+2.72s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.48s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.00s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.54s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_no_nondeterministic_fields
+1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_repository_surface
+1.53s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_summary_counts_consistent
+1.52s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
+[33m================= [32m1145 passed[0m, [33m[1m4 warnings[0m[33m in 66.24s (0:01:06)[0m[33m =================[0m
 ```
 
 ## Spine Bypass Check
@@ -1276,23 +1279,338 @@ $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe ops_scripts/
 [OK] Spine bypass + randomness guard: 0 new violations (1185 files scanned, 286 baselined)
 ```
 
-## Files Changed in HEAD
+## Files Changed in CODE_COMMIT (8ee4159c)
 ```
-$ git show --name-only --pretty=format: HEAD
-docs/reports/plans/phase_02_consolidated.md
-tools/evidence/phase02_consolidated_evidence_runner.py
+$ git show --name-only --pretty=format: 8ee4159c242fc9ead544d9c1ef97916ab8f1653d
+docs/reports/plans/phase_03_04_consolidated.md
 ```
 
 ## Git Diff Stat
 ```
 $ git diff --stat
-(no output)
+docs/technical/agentic_process_mapping.md          | 169 ++++++++++++---------
+ .../phase03_04_consolidated_evidence_runner.py     |  34 +++--
+ 2 files changed, 114 insertions(+), 89 deletions(-)
 ```
 
 ## Git Full Diff
 ```
 $ git diff
-(no output)
+diff --git a/docs/technical/agentic_process_mapping.md b/docs/technical/agentic_process_mapping.md
+index 67c797cdd..85898fde1 100644
+--- a/docs/technical/agentic_process_mapping.md
++++ b/docs/technical/agentic_process_mapping.md
+@@ -16,22 +16,23 @@
+                               |   • Message Architecture & Compliance                    |          |   • Content Quality & Strategy                           |          |   • InfrastructureUpgradesOrchestrator                   |
+                               |   • Outreach Learning & Validation                       |          |   • Fact Check & Strategic Planning                      |          |                                                          |
+                               |                                                          |          |                                                          |          | enforcement/ (11 strategies)                             |
+-                              | engines/ (4 engines)                                     |          | engines/ (47 engines)                                    |          |   • AdaptiveretrievalgateStrategy                        |
++                              | engines/ (5 engines)                                     |          | engines/ (48 engines)                                    |          |   • AdaptiveretrievalgateStrategy                        |
+                               |   • control_plane.py (orchestration)                     |          |   • achievement_prioritizer_engine                       |          |   • CircuitbreakerStrategy                               |
+                               |   • hop_stage_registry.py (workflow)                     |          |   • ats_compatibility_engine                             |          |   • DecomposedqueryagentStrategy                         |
+                               |   • message_body_composer.py                             |          |   • content_quality_engine                               |          |                                                          |
+-                              |                                                          |          |   • resume_orchestrator_engine                           |          | config/ (6 configs)                                      |
+-                              | config/ (9 configs)                                      |          |   • skill_ordering_engine                                |          |   • environment_config.py                                |
+-                              |   • agent_specs.json (HOP pipeline specs)                |          |   • template_optimizer_engine                            |          |   • integration_config.py                                |
+-                              |   • loader_config.py                                     |          |                                                          |          |                                                          |
+-                              |                                                          |          | config/ (5 configs)                                      |          | data/ (2 knowledge bases)                                |
+-                              | tools/ (48 tools)                                        |          |   • agent_spec_config.py (Pydantic schemas)              |          |   • master_resume.json (Amit's experience)               |
+-                              | types/ (20 domain models)                                |          |   • reasoning_toggles_config.py                          |          |   • sender_knowledge_base.json                           |
+-                              | validators/ (6 validators)                               |          |                                                          |          |                                                          |
+-                              | enforcement/ (1 strategy)                                |          | tools/ (33 tools)                                        |          | types/ (3 shared types)                                  |
+-                              |   • ExecutiveStrategyAgent                               |          | types/ (16 domain models)                                |          | validators/ (2 validators)                               |
+-                              +----------------------------------------------------------+          | validators/ (5 validators)                               |          +----------------------------------------------------------+
+-                                                       |                                            +----------------------------------------------------------+                                       |
++                              |   • lic_spine_adapter.py                                 |          |   • resume_orchestrator_engine                           |          | config/ (6 configs)                                      |
++                              |                                                          |          |   • skill_ordering_engine                                |          |   • environment_config.py                                |
++                              | config/ (9 configs)                                      |          |   • template_optimizer_engine                            |          |   • integration_config.py                                |
++                              |   • agent_specs.json (HOP pipeline specs)                |          |   • rg_spine_adapter.py                                  |          |                                                          |
++                              |   • loader_config.py                                     |          |                                                          |          | data/ (2 knowledge bases)                                |
++                              |                                                          |          | config/ (5 configs)                                      |          |   • master_resume.json (Amit's experience)               |
++                              | tools/ (48 tools)                                        |          |   • agent_spec_config.py (Pydantic schemas)              |          |   • sender_knowledge_base.json                           |
++                              | types/ (20 domain models)                                |          |   • reasoning_toggles_config.py                          |          |                                                          |
++                              | validators/ (6 validators)                               |          |                                                          |          | types/ (3 shared types)                                  |
++                              | enforcement/ (1 strategy)                                |          | tools/ (33 tools)                                        |          | validators/ (2 validators)                               |
++                              |   • ExecutiveStrategyAgent                               |          | types/ (16 domain models)                                |          | utils/ (1 module)                                        |
++                              +----------------------------------------------------------+          | validators/ (5 validators)                               |          |   • determinism_util.py (canon+hash)                     |
++                                                       |                                            +----------------------------------------------------------+          +----------------------------------------------------------+
+                                                        | (Campaign Workflow Requests)                                            | (Resume Generation Requests)                                        | (Shared Services & Knowledge)
+                                                        v                                                                         v                                                                     v
+
+@@ -45,22 +46,26 @@
+           |  NoSQL / Documents |          +------------------------------------------------------+  +-----------------------------------------------------+  +---------------------------------------------------------------------------+                                  ||
+           | [C0] & [CACHE_LOCK]|          | L1: COGNITIVE STUDIO [PHASE 1-4 / PTC COMPILER]      |  | L6: OBSERVABILITY & ANOMALY DETECTION               |  | L4: STATE, MEMORY & PERSISTENCE [♦ I::IMemoryStore ♦]                     | <==(Pulls Updated Weights & Checkpoints)==||
+           +--------------------+          |------------------------------------------------------|  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
+-                   |                      | - Generates [U0: USER PROMPT] (ZERO auth)            |  | - P1: INGESTION: Execution Latency, Error Rates     |  | - P1: COGNITIVE REGISTRY: Active Models, Prompts, Templates, Calibration  |                                  ||
+-                   | (Semantic Search)    | - Reads L4 active model version                      |  | - P2: ANOMALY ENGINE: anomaly_score, Detect Drift   |  | - P2: CAPABILITY REGISTRY: Tool Availability, API Credentials, Policies   |                                  ||
+-                   +--------------------->| - Retrieval from RAG index (READ only)               |  | - P3: BROADCAST: Emit anomaly, drift, injection     |  | - P3: WORKFLOW MEMORY: Active Job States, Pending Steps, Dependency DAG   |                                  ||
+-                                          | - Augments prompt with [C0] Context                  |  | - P4: ARCHIVER: Store Raw Metrics, System Snapshots |  | - P4: TELEMETRY LEDGER: Routing Decisions, Execution Logs, Error Reports  |                                  ||
+-                                          | - Cannot approve / Cannot execute                    |  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
+-                                          | - P1: PRIMING: Hydrate via Knowledge Graph, Sem-Mem  |  | - [TLM] CROSS-LAYER TELEMETRY                       |  | [ RULES ] - L4 never authorizes. L4 never executes.                       |                                  ||
+-                                          | - P2: ORCHESTRATION: Coordinator, Tool Agents Draft  |  | - [SGNL] ANOMALY SIGNAL GENERATOR                   |  |           - Future executions use updated versions via L0.                |                                  ||
+-                                          | - P3: PTC CALIBRATION: Simulate CoT, Calc Complexity |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)                   |  |           - All ML improvements written as versioned updates.             |                                  ||
+-                                          | - P4: SYNTHESIS: Emit intent, tools, raw_reasoning   |  | =>[BROADCAST] BREAK RECURSIVE CYCLES                |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)                   |                                  ||
+-                                          | - [LOG] LOG ORIGINAL USER INTENT                     |  |   (Triggers Stall & Forces Path D)                  |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)               |                                  ||
+-                                          | ML Integration:                                      |  | ML Integration:                                     |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY                |                                  ||
+-                                          | • Model calibration                                  |  | • Improves anomaly classifiers                      |  |           - [TOOL] TOOL INVENTORY (Python/Bash enabled)                   |                                  ||
+-                                          | • Drift detection                                    |  | • Refines signal grouping                           |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT [♦ I::IMemoryStore ♦]           |                                  ||
+-                                          +------------------------------------------------------+  +-----------------------------------------------------+  |           - Embedding Model Reference                                     |                                  ||
+-                                                    || (WRITE: [U0] & Script Proposals)                       || (WRITE: Structured Telemetry)               | [ LOGS ]  - Drift Metrics, Escalations, Meta-Learning                     |                                  ||
+-                                                    =========================================================================================================+---------------------------------------------------------------------------+                                  ||
++                   |                      | [1. WORKING MEMORY] - Reads L4 model/RAG index       |  | - P1: INGESTION: Execution Latency, Error Rates     |  | - P1: COGNITIVE REGISTRY: Active Models, Prompts, Templates, Calibration  |                                  ||
++                   | (Semantic Search)    | - Hydrate Task Schema, Conv History, Env Snapshot    |  | - P2: ANOMALY ENGINE: anomaly_score, Detect Drift   |  | - P2: CAPABILITY REGISTRY: Tool Availability, API Credentials, Policies   |                                  ||
++                   +--------------------->| - Augments prompt with [C0] Context (ZERO auth)      |  | - P3: BROADCAST: Emit anomaly, drift, injection     |  | - P3: WORKFLOW MEMORY: Active Job States, Pending Steps, Dependency DAG   |                                  ||
++                                          | [2. THOUGHT GENERATION & PLANNING]                   |  | - P4: ARCHIVER: Store Raw Metrics, System Snapshots |  | - P4: TELEMETRY LEDGER: Routing Decisions, Execution Logs, Error Reports  |                                  ||
++                                          | - P1: PRIMING: Hydrate via Knowledge Graph, Sem-Mem  |  | - [METRICS] Validates quantitative execution claims |  |---------------------------------------------------------------------------|                                  ||
++                                          | - P2: ORCHESTRATION: Coordinator, Tool Agents Draft  |  |             (e.g. comparing TokenControl baseline)  |  | [ RULES ] - L4 never authorizes. L4 never executes.                       |                                  ||
++                                          | - Multi-Step Graph Construction DAG                  |  |-----------------------------------------------------|  |           - Future executions use updated versions via L0.                |                                  ||
++                                          | - Emits Plan_Provenance Artifact (trace_id)          |  | - [TLM] CROSS-LAYER TELEMETRY                       |  |           - All ML improvements written as versioned updates.             |                                  ||
++                                          | - P3: PTC CALIBRATION: Simulate CoT, Calc Complexity |  | - [SGNL] ANOMALY SIGNAL GENERATOR                   |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)                   |                                  ||
++                                          | - P4: SYNTHESIS: Emit intent, tools, raw_reasoning   |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)                   |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)               |                                  ||
++                                          | [3. COGNITIVE SAFETY CHECK (PRE-COMPUTE)]            |  | =>[BROADCAST] BREAK RECURSIVE CYCLES                |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY                |                                  ||
++                                          | - Dynamic Guardrails (Tokens, Bag-of-words)          |  |   (Triggers Stall & Forces Path D)                  |  |           - [TOOL] TOOL INVENTORY (Python/Bash enabled)                   |                                  ||
++                                          | - Emits TokenControl Artifact (prompt_hash, ceilings)|  | ML Integration:                                     |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT [♦ I::IMemoryStore ♦]           |                                  ||
++                                          | - [LOG] LOG ORIGINAL USER INTENT                     |  | • Improves anomaly classifiers                      |  |           - [SUPERVISOR]: Knowledge Supervisor (Dense Retrain/Growth Loop)|                                  ||
++                                          | ML Integration:                                      |  | • Refines signal grouping                           |  |           - [HYBRID RAG]: RetrievalQuery -> Rerank -> CitationBundle      |                                  ||
++                                          | • Model calibration                                  |  |                                                     |  | [ LOGS ]  - Drift Metrics, Escalations, Meta-Learning                     |                                  ||
++                                          | • Drift detection                                    |  |                                                     |  |           - [MEMORY]: Case-Associative Schema & Semantic Hooks            |                                  ||
++                                          +------------------------------------------------------+  +-----------------------------------------------------+  |           - [EPISODIC]: Links Episodic Signals to Policy Outcomes         |                                  ||
++                                                    || (WRITE: [U0] & Script Proposals)                       || (WRITE: Structured Telemetry)               +---------------------------------------------------------------------------+                                  ||
++                                                    =========================================================================================================+                                                                                                              ||
+                                                                                  (READ: Model Config, RAG Config, Detection Config Parameters)                                                                                                                              ||
+                                                                                                                                                                                                                                                                             ||
+ ==========================================================================================================================================================================================================================================================================||==
+@@ -77,14 +82,17 @@
+                                                                | - Cannot evaluate rules / Cannot execute                                  |          |---------------------------------------------------------------------|                                               ||
+                                                                | - P1: INGEST: Assign Trace_ID, Policy Hash, Correlate L1 vs L6            |          | 1. [PULL] DATA FOR TRAINING (From L4 Black Box Audit)               |                                               ||
+                                                                | - P2: ELECTION: Deterministic Ruleset, Learned ML, Guardian Override      |          | 2. ANALYZE: [RCA] ROOT CAUSE ANALYSIS                               |                                               ||
+-                                                               | - P3: ARBITRATION: Check Tool Inventory, Budget Forecast, Rate Limits     |          | 3. OPTIMIZE & COMMIT: Writes versions to L4 Anchor                  |====(Writes Optimized Rules & Checkpoints)====>||
+-                                                               | - P4: DISPATCH: Stamp Route Mode, Encrypt/Seal Signed Execution Plan      |          +---------------------------------------------------------------------+                                               ||
++                                                               |   * IF (Risk_Score < 0.2) AND (Op == READ) -> Path A (Fast Lane)          |          | 3. OPTIMIZE & COMMIT: Writes versions to L4 Anchor                  |====(Writes Optimized Rules & Checkpoints)====>||
++                                                               |   * IF (Ambiguity > Threshold) -> Consult Learned Router Model (L4)       |          +---------------------------------------------------------------------+                                               ||
++                                                               |   * IF (L6 Signal == CRITICAL) -> Force Path D (Human Review)             |                                                                                                                                ||
++                                                               | - P3: ARBITRATION: Check Tool Inventory, Budget Forecast, Rate Limits     |                                                                                                                                ||
++                                                               | - P4: DISPATCH: Stamp Route Mode, Encrypt/Seal Signed Execution Plan      |                                                                                                                                ||
+                                                                | ML Integration:                                                           |                                                                                                                                ||
+                                                                | [1. Pattern Analysis ]=======(Match Intent Logs)==========================|===============================================================================================================================>||
+                                                                | [2. Threshold Tuning ]=======(Assess Risk Limits)=========================|===============================================================================================================================>||
+                                                                | [3. Path Optimization]=======(Optimize Routing)===========================|===============================================================================================================================>||
+                                                                +---------------------------------------------------------------------------+                                                                                                                                ||
+-                                                                                                   v (Dispatches Signed Execution Plan)                                                                                                                                     ||
++                                                                                                   v Dispatches InstructionPacket [trace_id, policy_hash, risk_score, route_mode, token_budget, allowed_tools[], HMAC-SHA256]                                               ||
+                                                                +---------------------------------------------------------------------------+                                                                                                                                ||
+                                                                | ASSEMBLY STAGE (SANDBOX AIRLOCK & DETERMINISTIC COMPOSITION)              |                                                                                                                                ||
+                                                                |---------------------------------------------------------------------------|                                                                                                                                ||
+@@ -111,36 +119,36 @@
+               +-----------------------------------+         +-----------------------------------+      |      +-----------------------------------+       +-----------------------------------+                                                                         ||
+               | Final Response                    |         | L3 – ORCHESTRATION [♦ I::IOrch ♦] |      |      | L3 – ORCHESTRATION [♦ I::IOrch ♦] |       | L3 – ORCHESTRATION [♦ I::IOrch ♦] |                                                                         ||
+               |-----------------------------------|         |-----------------------------------|      |      |-----------------------------------|       |-----------------------------------|                                                                         ||
+-              | - No system mutation              |         | - [HNDS] SEQUENTIAL HANDSHAKE     |      |      | - [HNDS] SEQUENTIAL HANDSHAKE     |       | - Prepares review artifact        |                                                                         ||
+-              | - Logged outcome                  |         | - [SYNC] WORK INSTRUCT SYNTH      |      |      | - [SYNC] WORK INSTRUCT SYNTH      |       +-----------------------------------+                                                                         ||
+-              |                                   |         | - [ESC] ESCALATE TO L5 GUARD      |      |      | - [ESC] ESCALATE TO L5 GUARD      |                         |                                                                                             ||
+-              | ML consumes outcome               |         | - [GATE] Block hallucination      |      |      | - P1: EVALUATE Result vs DAG      |                         v                                                                                             ||
+-              |                                   |         | - [SEED] Force strict heal        |      |      | - P2: SEQUENCE Branches & Parallel|       ML Integration:                                                                                                 ||
+-              |                                   |         | - P1: EVALUATE Result vs DAG      |      |      | - P3: COORDINATE Cross-Agent Sync |       [1. Efficiency Tuner]             |======(Evaluate Pipeline Bottlenecks)=======================================>||
+-              |                                   |         | - P2: SEQUENCE Branches & Parallel|      |      | - P4: ROUTE Complete, Escalate, L2|       [2. Planning Optimization]        |======(Tune Orchestration Efficiency)=======================================>||
+-              +-----------------------------------+         | - P3: COORDINATE Cross-Agent Sync |      |      +-----------------------------------+                                                                                                                     ||
+-                              |                             | - P4: ROUTE Complete, Escalate, L2|      |                           |                                                                                                                                    ||
+-                              |                             +-----------------------------------+      |                [IF] LOGIC VIOLATION DETECTED?                                                                                                                  ||
++              | - No system mutation              |         | - [DAG] OWNS WORKFLOW & STEP RETRY|      |      | - [DAG] OWNS WORKFLOW & STEP RETRY|       | - Prepares review artifact        |                                                                         ||
++              | - Logged outcome                  |         | - [RULE] DOES NOT EXECUTE OR HEAL |      |      | - [RULE] DOES NOT EXECUTE OR HEAL |       | - [RULE] DOES NOT EXECUTE OR HEAL |                                                                         ||
++              |                                   |         | - [HNDS] SEQUENTIAL HANDSHAKE     |      |      | - [HNDS] SEQUENTIAL HANDSHAKE     |       +-----------------------------------+                                                                         ||
++              | ML consumes outcome               |         | - P1: EVALUATE Result vs DAG      |      |      | - P1: EVALUATE Result vs DAG      |                         |                                                                                             ||
++              |                                   |         | - P2: SEQUENCE Branches & Parallel|      |      | - P2: SEQUENCE Branches & Parallel|                         v                                                                                             ||
++              |                                   |         | - P3: COORDINATE Cross-Agent Sync |      |      | - P3: COORDINATE Cross-Agent Sync |       ML Integration:                                                                                                 ||
++              |                                   |         | - P4: ROUTE Complete, Escalate, L2|      |      | - P4: ROUTE Complete, Escalate, L2|       [1. Efficiency Tuner]             |======(Evaluate Pipeline Bottlenecks)=======================================>||
++              +-----------------------------------+         +-----------------------------------+      |      +-----------------------------------+       [2. Planning Optimization]        |======(Tune Orchestration Efficiency)=======================================>||
++                              |                                            |                           |                           |                                                                                                                                    ||
++                              |                                            |                           |                [IF] LOGIC VIOLATION DETECTED?                                                                                                                  ||
+                               |                                            |                           |                <=======(Yes: [!] ESCALATE)=========+                                                                                                           ||
+                               |                                            v (Passes to Safety Guard)  |                           |                        |                                                                                                           ||
+                               |                             +-----------------------------------+      |                           |                        |                           +-----------------------------------+                                           ||
+-                              |                             | L5: SAFETY [♦ I::IValidator ♦]    | <====+===========================+                        |                           | HUMAN REVIEW                      |                                           ||
++                              |                             | L5: SAFETY [♦ I::IValidator ♦]    | <====+===========================+                        |                           | HUMAN REVIEW GATE                 |                                           ||
+                               |                             |-----------------------------------|    (No)                                                   |                           |-----------------------------------|                                           ||
+-                              |                             | - [RISK] RISK TIER CLASSIFY       |      |                                                    |                           | - Manual approve/reject           |                                           ||
+-                              |                             | - [STMP] COMPLIANCE HASH/STAMP    |      |                                                    |                           |                                   |                                           ||
+-                              |                             | - [STOP] HARD STOP REJECTION      |      |                                                    |                           | ML Integration:                   |                                           ||
+-                              |                             | - [BLOCK] BLOCK HOSTILE INPUT     |      |                                                    |                           | [1. Reviewer Calibration]         |======(Evaluate Human Reviewer Bias)==========>||
+-                              |                             | - P1: VALIDATE Proposal vs Policy |      |                                                    |                           +-----------------------------------+                                           ||
+-                              |                             | - P2: ENFORCE Approve, Remediate  |      v                                                    +---------------------------+                |                                                              ||
+-                              |                             | - P3: REMEDIATE Safety Retry/Fix  |======(Track False Positive & Negatives)================================================================|=============================================================>||
+-                              |                             | - P4: CERTIFY Audit Logs & Hashes |======(Analyze Safety Block Accuracy)===================================================================|=============================================================>||
+-                              |                             | ML: Policy Optimization           |======(Tune Safety Rule Strictness)=====================================================================|=============================================================>||
+-                              |                             |                                   |======(Adapt Risk Threshold Configs)====================================================================|=============================================================>||
+-                              |                             +-----------------------------------+                                                                                                        | (If Approved)                                                ||
+-                              |                                            |                                                                                                                             |                                                              ||
+-                              |                 [RE-ROUTE TO L1] <==(Fail)-+-(Pass)==> [AUTH] STAMP WORK CONTRACT (Sandbox Permission Granted)                                                           |                                                              ||
+-                              |                   (If Rejected)            |           (Applies to Paths B & C)                                                                                      |                                                              ||
+-                              |                                            v (Grants Sandbox Execution Permission)                                                                                       v (Routes Human Decision)                                      ||
++                              |                             | - [RISK] RISK TIER CLASSIFY       |      |                                                    |                           | - Evidence Pack: Policy Eval, Risk|                                           ||
++                              |                             | - [STMP] VERIFY L0 HMAC SIGNATURE |      |                                                    |                           |   Score, Logs, State Snapshots    |                                           ||
++                              |                             | - [STOP] HARD STOP REJECTION      |      |                                                    |                           | - Action: Approve / Modify / Reject                                           ||
++                              |                             | - [BLOCK] BLOCK HOSTILE INPUT     |      |                                                    |                           | - Output: HumanDecisionArtifact   |                                           ||
++                              |                             | - P1: VALIDATE Proposal vs Policy |      |                                                    |                           |   (trace_id, policy_hash, diff,   |                                           ||
++                              |                             | - P2: ENFORCE Approve, Remediate  |      |                                                    |                           |    reviewer_signature)            |                                           ||
++                              |                             | - P3: REMEDIATE Safety Retry/Fix  |      |                                                    |                           | - [LOOP] Bidirectional Policy Sync|                                           ||
++                              |                             | - P4: CERTIFY Audit Logs & Hashes |      |                                                    |                           |   -> Inject to L0 Guardian        |                                           ||
++                              |                             | ML: Policy Optimization           |      v                                                    |                           |   -> Revise/Retool via L2 Healer  |                                           ||
++                              |                             |                                   |======(Track False Positive & Negatives)===================+---------------------------+ ML Integration:                   |                                           ||
++                              |                             +-----------------------------------+======(Analyze Safety Block Accuracy)=================================================== [1. Reviewer Calibration]         |======(Evaluate Human Reviewer Bias)==========>||
++                              |                                            |                     ======(Tune Safety Rule Strictness)=====================================================|=============================================================>||              ||
++                              |                 [RE-ROUTE TO L1] <==(Fail)-+-(Pass)==> [AUTH] STA======(Adapt Risk Threshold Configs)====================================================|=============================================================>||              ||
++                              |                   (If Rejected)            |           (Applies to Paths B & C)                                                                          | (If Approved)                                                ||              ||
++                              |                                            v (Grants Sandbox Execution Permission)                                                                       v (Routes Human Decision)                                      ||              ||
+                               |                             +=======================================================================================================================================================================================================+   ||
+                               |                             | \\\ L2 – UNIFIED EXECUTION CORE (PTC SANDBOX: ACTION & IMPLEMENTATION FACTORY FLOOR)                                                                                                              /// |   ||
+                               |                             |=======================================================================================================================================================================================================|   ||
+@@ -151,25 +159,29 @@
+                               |                             |  |    -> [FREEZ] FREEZE CLEAN SYSTEM STATE                         |  [2. Resource Predictor] =======(Optimize Sandbox Compute Cost)=================================================================>||
+                               |                             |  |    -> [CLAIM] CLAIM EXCLUSIVE WRITE ACCESS                      |  [3. RL Rollback Refiner]=======(Self-Correct Healer Logic)=====================================================================>||
+                               |                             |  |    -> [GUARD] PRESERVE EXISTING CODE INTEGRITY                  |                                                                                                                                  |   ||
+-                              |                             |  |         v                                                       |  [ INFERENCE & TOKEN COMPRESSION ]                                                                                               |   ||
+-                              |                             |  |   [P2: PTC EXECUTION] [♦ I::IMemoryStore ♦]                     |  - N tools called in 1 inference pass                                                                                            |   ||
+-                              |                             |  |    -> Invoke Tool, Capture Output, Invoke Chained Tools         |  - Context window isolated from raw data                                                                                         |   ||
+-                              |                             |  |    -> [TOOL 1..N] await query_database(sql_N)                   |  - Token Cost: ~37% LOWER                                                                                                        |   ||
+-                              |                             |  |    -> [FILTER] AGGREGATE RAW DATA IN SANDBOX                    |                                                                                                                                  |   ||
+-                              |                             |  |    -> [WRITE] COMMIT VERIFIED STATE CHANGE                      |  [ DATA MUTATION ]               [ EXTERNAL RAG ]                                                                                |   ||
+-                              |                             |  |    -> [CEIL] TERMINATE STUCK COMPUTE CYCLES                     |  - Sandbox Snapshot Revert       +--------------+                                                                                |   ||
+-                              |                             |  |         v                                                       |  - Embedding generation          | Vector Store |                                                                                |   ||
+-                              |                             |  |   [Evaluation     ]--+                                          |  - Vector store write ---------> +--------------+                                                                                |   ||
+-                              |                             |  |         | (Fail)     |                                          |  - [TRTH] ANCHOR KNOWLEDGE DRIFT | [ASYNC_SYNC] |                                                                                |   ||
+-                              |                             |  |         v            |                                          |    OVER TIME                     +--------------+                                                                                |   ||
++                              |                             |  |         v Enters via SandboxEnvelope [trace_id, tool_id, sanitized_args, stdout_byte_limit, compute_ms_limit]                                                                                      |   ||
++                              |                             |  |   [P2: PTC EXECUTION] [♦ I::IMemoryStore ♦]                     |  [ INFERENCE & TOKEN COMPRESSION ]                                                                                               |   ||
++                              |                             |  |    -> Invoke Tool, Capture Output, Invoke Chained Tools         |  - N tools called in 1 inference pass                                                                                            |   ||
++                              |                             |  |    -> [TOOL 1..N] await query_database(sql_N)                   |  - Context window isolated from raw data                                                                                         |   ||
++                              |                             |  |    -> [FILTER] AGGREGATE RAW DATA IN SANDBOX                    |  - Token Cost: ~37% LOWER (vs. legacy baseline in L6)                                                                            |   ||
++                              |                             |  |    -> [UWG] UNIVERSAL WRITE GATEWAY (Deny-By-Default)           |                                                                                                                                  |   ||
++                              |                             |  |       * Mediates FS, DB, Ledger, and External Vector Writes     |  [ DATA MUTATION ]               [ EXTERNAL RAG ]                                                                                |   ||
++                              |                             |  |       * Enforces [trace_id, target, diff, ts] standard          |  - Sandbox Snapshot Revert       +--------------+                                                                                |   ||
++                              |                             |  |    -> [CEIL] TERMINATE STUCK COMPUTE CYCLES                     |  - Embedding generation          | Vector Store |                                                                                |   ||
++                              |                             |  |         v                                                       |  - UWG Vector store write -----> +--------------+                                                                                |   ||
++                              |                             |  |   [Evaluation     ]--+                                          |  - [TRTH] ANCHOR KNOWLEDGE DRIFT | [ASYNC_SYNC] |                                                                                |   ||
++                              |                             |  |         | (Fail)     |                                          |    OVER TIME                     +--------------+                                                                                |   ||
++                              |                             |  |         v            |                                          |                                                                                                                                  |   ||
+                               |                             |  +-- [P3: PTC HEALER ]  |                                          |                                                                                                                                  |   ||
+                               |                             |  |   [♦ I::IHealer ♦]   |                                          |                                                                                                                                  |   ||
+-                              |                             |  |    -> Detect Failures, Apply Retry Policies, Escalate           |                                                                                                                                  |   ||
+-                              |                             |  |    -> [ROOT] CAPTURE ROOT CAUSE                                 |                                                                                                                                  |   ||
++                              |                             |  |    -> SOLE AUTHORITY FOR TOOL RETRIES & COMPUTE RECOVERY        |                                                                                                                                  |   ||
++                              |                             |  |    -> Validator Agent: PreCommitSnapshot, ProposedAction    |                                                                                                                                  |   ||
++                              |                             |  |    -> Healer Agent: SnapRollback, HealingSignal             |                                                                                                                                  |   ||
++                              |                             |  |    -> [ROOT] CAPTURE ROOT CAUSE                             |                                                                                                                                  |   ||
+                               |                             |  |    -> [RESET] REVERT CLEAN STATE                                |                                                                                                                                  |   ||
+                               |                             |  |    -> [PARSE] STACK TRACE / MACHINE FAILURE                     |                                                                                                                                  |   ||
+                               |                             |  |    -> [PATCH] RECOMPILE SCRIPT                                  |                                                                                                                                  |   ||
+-                              |                             |  |    -> [CURE] FIX AND RETRY OR ESCALATE TO L5                    |                                                                                                                                  |   ||
++                              |                             |  |    -> [CURE] FIX AND RETRY OR ESCALATE TO L3                    |                                                                                                                                  |   ||
+                               |                             |  |         v                                                       |                                                                                                                                  |   ||
+                               |                             |  |   [P4: SYNTHESIZER] (Pass)<--+                                  |                                                                                                                                  |   ||
+                               |                             |  |    -> Aggregate Outputs, Validate Schema, Final Artifact        |                                                                                                                                  |   ||
+@@ -180,15 +192,22 @@
+               +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
+               | FINAL DECISION / OUTCOME LOGGING                                                                                                                                                                                                                   |    ||
+               |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|    ||
+-              | - Outcome and state diffs are logged and versioned                                                                                                                                                                                                 |    ||
++              | - Outcome and state diffs are logged and versioned via ExecutionTrace [trace_id, plan_hash, actor, diff, ts, replay_key]                                                                                                                           |    ||
+               | - [L1 UPDATE] FINAL ANSWER GENERATED USING ONLY STDOUT SUMMARY (Maintains PTC Context Isolation)                                                                                                                                                   |    ||
+-              | - [SYNC] UPDATE SHARED TEAM MEMORY & ACTIVITY LEDGER (Non-blocking state update occurs only after L2.2 confirms)                                                                                                                                   |    ||
++              | - [SYNC] UPDATE SHARED TEAM MEMORY & ACTIVITY LEDGER (Mediated by Universal Write Gateway)                                                                                                                                                         |    ||
+               | - [RECON] VERIFY DATA MATCHES REALITY (Detect ghost mutations across state layers)                                                                                                                                                                 |    ||
+               | - Metrics captured: Execution Latency, Outcome Accuracy, Compute Cost, Human Correction Rate                                                                                                                                                       |    ||
+               +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
+                                                                                        |                                                                                                                                                                                ||
+                                                                                        +===(Commits Final State to Activity Ledger)====================================================================================================================================>||
+
++==============================================================================================================================================================================================================================================================================
++  CORE DATA CONTRACTS & CRYPTOGRAPHIC PRIMITIVES (ENFORCEABLE BOUNDARIES)
++==============================================================================================================================================================================================================================================================================
++| [1] InstructionPacket (L0 -> L2/L3/L5)  : [trace_id, policy_hash, route_mode, token_budget, allowed_tools[], signature(HMAC-SHA256)]                                                                                                                                       |
++| [2] SandboxEnvelope (L2 Entry)          : [trace_id, tool_id, sanitized_args, stdout_byte_limit, compute_ms_limit] (Filtered strictly by allowed_tools[])                                                                                                                  |
++| [3] ExecutionTrace (L6/L4 Audit)        : [trace_id, plan_hash, actor, target_resource, state_diff, timestamp, replay_key(Hash of trace+plan+transcript)] -> Append-only.                                                                                                  |
++| [4] HumanDecisionArtifact (Path D)      : [trace_id, policy_hash, reviewer_id, action:[APPROVE|MODIFY_DIFF|REJECT], reviewer_signature]                                                                                                                                    |
+ ==============================================================================================================================================================================================================================================================================
+   CRITICAL DISSEMINATION GUARANTEES
+ ==============================================================================================================================================================================================================================================================================
+@@ -207,4 +226,4 @@
+ | 13. REMOVE ALL PROMPT HIJACK ATTEMPTS: Neutralizes "ignore instructions" attacks.                                                                                                                                                                                          |
+ | 14. SHARE MEMORY ACROSS ALL AGENTS: Prevents agents from colliding/stalling.                                                                                                                                                                                               |
+ | 15. DOUBLE-CHECK DATA MATCHES THE WORLD: Detects "ghost" or hidden mutations.                                                                                                                                                                                              |
+-==============================================================================================================================================================================================================================================================================
++==============================================================================================================================================================================================================================================================================
+\ No newline at end of file
+diff --git a/tools/evidence/phase03_04_consolidated_evidence_runner.py b/tools/evidence/phase03_04_consolidated_evidence_runner.py
+index 225254f84..8023da5f8 100644
+--- a/tools/evidence/phase03_04_consolidated_evidence_runner.py
++++ b/tools/evidence/phase03_04_consolidated_evidence_runner.py
+@@ -42,10 +42,17 @@ def read_file_content(filepath):
+ def main():
+     """Generate Phases 3-4 consolidated evidence."""
+     repo_root = Path(__file__).parent.parent.parent
+-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_03_04_consolidated.md"
++    evidence_file = repo_root / 'docs' / 'reports' / 'plans' / 'phase_03_04_consolidated.md'
+
+     print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
+
++    # Get CODE_COMMIT (current HEAD before evidence commit)
++    rc, out, err = run_cmd(['git', 'rev-parse', 'HEAD'], cwd=repo_root)
++    if rc != 0:
++        print(f"ERROR: git rev-parse failed: {err}")
++        sys.exit(1)
++    code_commit = out.strip()
++
+     # Start building evidence content
+     evidence_lines = []
+
+@@ -54,19 +61,17 @@ def main():
+     evidence_lines.append("")
+     evidence_lines.append("## Scope")
+     evidence_lines.append("Phase 3: Single-evidence-per-response contract implementation")
+-    evidence_lines.append(
+-        "Phase 4: Production-grade spine adapter hardening (CID invariants, import stability, governance)"
+-    )
++    evidence_lines.append("Phase 4: Production-grade spine adapter hardening (CID invariants, import stability, governance)")
+     evidence_lines.append("")
+
+-    # FINAL_HEAD
+-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
+-    if rc != 0:
+-        print(f"ERROR: git rev-parse failed: {err}")
+-        sys.exit(1)
+-    final_head = out.strip()
+-    evidence_lines.append("## FINAL_HEAD")
+-    evidence_lines.append(final_head)
++    # CODE_COMMIT (the commit containing actual code changes)
++    evidence_lines.append("## CODE_COMMIT")
++    evidence_lines.append(code_commit)
++    evidence_lines.append("")
++
++    # EVIDENCE_COMMIT (placeholder, will be filled after commit)
++    evidence_lines.append("## EVIDENCE_COMMIT")
++    evidence_lines.append("PENDING")
+     evidence_lines.append("")
+
+     # CODE_SCOPE
+@@ -94,7 +99,7 @@ def main():
+         ),
+         ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
+         ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
+-        (["git", "show", "--name-only", "--pretty=format:", "HEAD"], "Files Changed in HEAD"),
++        (["git", "show", "--name-only", "--pretty=format:", code_commit], f"Files Changed in CODE_COMMIT ({code_commit[:8]})"),
+         (["git", "diff", "--stat"], "Git Diff Stat"),
+         (["git", "diff"], "Git Full Diff"),
+     ]
+@@ -141,7 +146,8 @@ def main():
+     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
+
+     print(f"Evidence generated successfully: {evidence_file}")
+-    print(f"FINAL_HEAD: {final_head}")
++    print(f"CODE_COMMIT: {code_commit}")
++    print(f"EVIDENCE_COMMIT: PENDING (will be filled after commit)")
+
+
+ if __name__ == "__main__":
 ```
 
 ## tools/evidence/phase03_04_consolidated_evidence_runner.py
@@ -1313,13 +1631,12 @@ def run_cmd(args, cwd=None):
     """Execute command and return (rc, stdout, stderr)."""
     # PowerShell detection at argv level only
     argv0_lower = str(args[0]).lower()
-    if 'pwsh' in argv0_lower or 'powershell' in argv0_lower:
+    if "pwsh" in argv0_lower or "powershell" in argv0_lower:
         print(f"ERROR: PowerShell usage detected in command: {' '.join(args)}")
         sys.exit(1)
 
     r = subprocess.run(
-        args, cwd=cwd, capture_output=True, text=True, shell=False,
-        encoding='utf-8', errors='replace'
+        args, cwd=cwd, capture_output=True, text=True, shell=False, encoding="utf-8", errors="replace"
     )
     return r.returncode, r.stdout, r.stderr
 
@@ -1327,7 +1644,7 @@ def run_cmd(args, cwd=None):
 def read_file_content(filepath):
     """Read file content as text."""
     try:
-        return Path(filepath).read_text(encoding='utf-8')
+        return Path(filepath).read_text(encoding="utf-8")
     except FileNotFoundError:
         print(f"ERROR: File not found: {filepath}")
         sys.exit(1)
@@ -1346,6 +1663,13 @@ def main():
 
     print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
 
+    # Get CODE_COMMIT (current HEAD before evidence commit)
+    rc, out, err = run_cmd(['git', 'rev-parse', 'HEAD'], cwd=repo_root)
+    if rc != 0:
+        print(f"ERROR: git rev-parse failed: {err}")
+        sys.exit(1)
+    code_commit = out.strip()
+
     # Start building evidence content
     evidence_lines = []
 
@@ -1357,14 +1681,14 @@ def main():
     evidence_lines.append("Phase 4: Production-grade spine adapter hardening (CID invariants, import stability, governance)")
     evidence_lines.append("")
 
-    # FINAL_HEAD
-    rc, out, err = run_cmd(['git', 'rev-parse', 'HEAD'], cwd=repo_root)
-    if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
-        sys.exit(1)
-    final_head = out.strip()
-    evidence_lines.append("## FINAL_HEAD")
-    evidence_lines.append(final_head)
+    # CODE_COMMIT (the commit containing actual code changes)
+    evidence_lines.append("## CODE_COMMIT")
+    evidence_lines.append(code_commit)
+    evidence_lines.append("")
+
+    # EVIDENCE_COMMIT (placeholder, will be filled after commit)
+    evidence_lines.append("## EVIDENCE_COMMIT")
+    evidence_lines.append("PENDING")
     evidence_lines.append("")
 
     # CODE_SCOPE
@@ -1382,13 +1706,19 @@ def main():
 
     # Command outputs
     commands = [
-        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_lic_spine_adapter.py'], "LIC Unit Tests"),
-        ([sys.executable, '-m', 'pytest', '-q', 'tests/unit_min_deps/test_apps_rg_spine_adapter.py'], "RG Unit Tests"),
-        ([sys.executable, '-m', 'pytest', '-q'], "Full Test Suite"),
-        ([sys.executable, 'ops_scripts/ci/check_spine_bypass.py'], "Spine Bypass Check"),
-        (['git', 'show', '--name-only', '--pretty=format:', 'HEAD'], "Files Changed in HEAD"),
-        (['git', 'diff', '--stat'], "Git Diff Stat"),
-        (['git', 'diff'], "Git Full Diff"),
+        (
+            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_lic_spine_adapter.py"],
+            "LIC Unit Tests",
+        ),
+        (
+            [sys.executable, "-m", "pytest", "-q", "tests/unit_min_deps/test_apps_rg_spine_adapter.py"],
+            "RG Unit Tests",
+        ),
+        ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
+        ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
+        (["git", "show", "--name-only", "--pretty=format:", code_commit], f"Files Changed in CODE_COMMIT ({code_commit[:8]})"),
+        (["git", "diff", "--stat"], "Git Diff Stat"),
+        (["git", "diff"], "Git Full Diff"),
     ]
 
     for cmd, title in commands:
@@ -1428,15 +1758,16 @@ def main():
             evidence_lines.append("")
 
     # Write evidence file with LF line endings and no trailing whitespace
-    evidence_content = '\n'.join(line.rstrip() for line in evidence_lines)
+    evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
-    evidence_file.write_text(evidence_content, encoding='utf-8', newline='\n')
+    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 
     print(f"Evidence generated successfully: {evidence_file}")
-    print(f"FINAL_HEAD: {final_head}")
+    print(f"CODE_COMMIT: {code_commit}")
+    print(f"EVIDENCE_COMMIT: PENDING (will be filled after commit)")
 
 
-if __name__ == '__main__':
+if __name__ == "__main__":
     main()
 ```
 

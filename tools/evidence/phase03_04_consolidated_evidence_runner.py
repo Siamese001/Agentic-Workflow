@@ -46,6 +46,13 @@ def main():
 
     print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
 
+    # Get CODE_COMMIT (current HEAD before evidence commit)
+    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
+    if rc != 0:
+        print(f"ERROR: git rev-parse failed: {err}")
+        sys.exit(1)
+    code_commit = out.strip()
+
     # Start building evidence content
     evidence_lines = []
 
@@ -59,14 +66,14 @@ def main():
     )
     evidence_lines.append("")
 
-    # FINAL_HEAD
-    rc, out, err = run_cmd(["git", "rev-parse", "HEAD"], cwd=repo_root)
-    if rc != 0:
-        print(f"ERROR: git rev-parse failed: {err}")
-        sys.exit(1)
-    final_head = out.strip()
-    evidence_lines.append("## FINAL_HEAD")
-    evidence_lines.append(final_head)
+    # CODE_COMMIT (the commit containing actual code changes)
+    evidence_lines.append("## CODE_COMMIT")
+    evidence_lines.append(code_commit)
+    evidence_lines.append("")
+
+    # EVIDENCE_COMMIT (placeholder, will be filled after commit)
+    evidence_lines.append("## EVIDENCE_COMMIT")
+    evidence_lines.append("PENDING")
     evidence_lines.append("")
 
     # CODE_SCOPE
@@ -94,7 +101,10 @@ def main():
         ),
         ([sys.executable, "-m", "pytest", "-q"], "Full Test Suite"),
         ([sys.executable, "ops_scripts/ci/check_spine_bypass.py"], "Spine Bypass Check"),
-        (["git", "show", "--name-only", "--pretty=format:", "HEAD"], "Files Changed in HEAD"),
+        (
+            ["git", "show", "--name-only", "--pretty=format:", code_commit],
+            f"Files Changed in CODE_COMMIT ({code_commit[:8]})",
+        ),
         (["git", "diff", "--stat"], "Git Diff Stat"),
         (["git", "diff"], "Git Full Diff"),
     ]
@@ -141,7 +151,8 @@ def main():
     evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
 
     print(f"Evidence generated successfully: {evidence_file}")
-    print(f"FINAL_HEAD: {final_head}")
+    print(f"CODE_COMMIT: {code_commit}")
+    print("EVIDENCE_COMMIT: PENDING (will be filled after commit)")
 
 
 if __name__ == "__main__":
