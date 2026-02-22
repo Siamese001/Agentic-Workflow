@@ -205,12 +205,12 @@ def main():
     violations = checker.check()
     
     if violations:
-        print(f"\n🚨 Evidence contract violations found: {len(violations)}")
+        print(f"\nERROR: Evidence contract violations found: {len(violations)}")
         for violation in violations:
-            print(f"  ❌ {violation}")
+            print(f"  - {violation}")
         return 1
     else:
-        print(f"\n✅ All evidence files comply with contract v2")
+        print(f"\nOK: All evidence files comply with contract v2")
         return 0
 
 
