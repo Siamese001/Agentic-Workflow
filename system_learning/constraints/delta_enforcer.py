@@ -14,16 +14,15 @@ from __future__ import annotations
 from system_learning.constraints.config_surfaces import (
     ALLOWED_SURFACES,
     FORBIDDEN_SURFACES,
-    FloatConstraint,
-    IntConstraint,
     L0_ROUTING_CONSTRAINTS,
     L0_ROUTING_INT_CONSTRAINTS,
     L1_MODEL_POINTER_CONSTRAINTS,
     L5_POLICY_INT_CONSTRAINTS,
-    PointerConstraint,
     RAG_CONSTRAINTS,
+    FloatConstraint,
+    IntConstraint,
+    PointerConstraint,
 )
-
 
 # =============================================================================
 # Exceptions
@@ -86,14 +85,10 @@ def _get_constraint(
         If surface is not in ALLOWED_SURFACES.
     """
     if surface_name in FORBIDDEN_SURFACES:
-        raise ForbiddenSurface(
-            f"FORBIDDEN_SURFACE: {surface_name!r} is immutable and cannot be optimized"
-        )
+        raise ForbiddenSurface(f"FORBIDDEN_SURFACE: {surface_name!r} is immutable and cannot be optimized")
 
     if surface_name not in ALLOWED_SURFACES:
-        raise UnknownSurface(
-            f"UNKNOWN_SURFACE: {surface_name!r} is not in allowlist"
-        )
+        raise UnknownSurface(f"UNKNOWN_SURFACE: {surface_name!r} is not in allowlist")
 
     # Lookup constraint
     if surface_name in L0_ROUTING_CONSTRAINTS:
@@ -108,9 +103,7 @@ def _get_constraint(
         return L5_POLICY_INT_CONSTRAINTS[surface_name]
 
     # Should never reach here if ALLOWED_SURFACES is correct
-    raise UnknownSurface(
-        f"CONSTRAINT_LOOKUP_FAILED: {surface_name!r} in allowlist but no constraint found"
-    )
+    raise UnknownSurface(f"CONSTRAINT_LOOKUP_FAILED: {surface_name!r} in allowlist but no constraint found")
 
 
 # =============================================================================
@@ -229,6 +222,4 @@ def validate_surface_change(
 
     else:
         # Should never reach here
-        raise ConstraintViolation(
-            f"UNKNOWN_CONSTRAINT_TYPE: {type(constraint).__name__}"
-        )
+        raise ConstraintViolation(f"UNKNOWN_CONSTRAINT_TYPE: {type(constraint).__name__}")

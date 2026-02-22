@@ -1,5 +1,12 @@
 from __future__ import annotations
 
+
+def _get_unified_cst_healer():
+    from agentic_core.L5_safety.validators.unified_cst_healer import HealingConfig, UnifiedCSTHealer
+
+    return HealingConfig, UnifiedCSTHealer
+
+
 """
 ASTValidatorAgent - Consolidated AST validator replacing 5 micro-agents.
 
@@ -367,10 +374,7 @@ if TYPE_CHECKING:
                 - artifacts: List of modified files
                 - errors: List of error messages
         """
-        from agentic_core.L5_safety.validators.unified_cst_healer import (
-            HealingConfig,
-            UnifiedCSTHealer,
-        )
+        HealingConfig, UnifiedCSTHealer = _get_unified_cst_healer()
 
         file_path = violation.get("file") or violation.get("file_path")
         violation_type = violation.get("type", "unknown")

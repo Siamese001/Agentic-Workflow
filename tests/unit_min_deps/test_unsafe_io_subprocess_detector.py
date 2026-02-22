@@ -67,7 +67,7 @@ def run_something():
         patterns = [f.pattern_type for f in findings]
         assert "subprocess_run" in patterns
         assert "subprocess_call" in patterns
-        assert "subprocess_popen" in patterns
+        assert "subprocess_Popen" in patterns
 
     def test_detector_ignores_safe_operations(self):
         """Test that detector ignores read-only operations and safe paths."""

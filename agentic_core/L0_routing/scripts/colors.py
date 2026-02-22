@@ -17,6 +17,19 @@ import traceback
 from datetime import datetime
 from pathlib import Path
 
+
+def _get_orchestrator_class():
+    from agentic_core.L3_orchestration.Orchestrator import Orchestrator
+
+    return Orchestrator
+
+
+def _get_checkpoint_manager():
+    from agentic_core.L4_state.reasoning.CheckpointManagerAgent import get_checkpoint_manager
+
+    return get_checkpoint_manager
+
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
@@ -592,7 +605,8 @@ def main():
     if args.preflight_only or args.hygiene or args.full_hygiene:
         from agentic_core.config.core.hygiene_registry_config import CORE_HYGIENE_AGENTS, MANDATORY_PREFLIGHT
         from agentic_core.L0_routing.seams.safety_validators_seam import load_healing_strategy
-        from agentic_core.L3_orchestration.Orchestrator import Orchestrator
+
+        Orchestrator = _get_orchestrator_class()
 
         HealingStrategy = load_healing_strategy().HealingStrategy
 
@@ -671,12 +685,9 @@ def main():
             from agentic_core.L0_routing.seams.safety_validators_seam import (
                 load_healing_strategy as _load_hs2,
             )
-            from agentic_core.L3_orchestration.Orchestrator import (
-                Orchestrator,
-            )
-            from agentic_core.L4_state.reasoning.CheckpointManagerAgent import (
-                get_checkpoint_manager,
-            )
+
+            Orchestrator = _get_orchestrator_class()
+            get_checkpoint_manager = _get_checkpoint_manager()
 
             HealingStrategy = _load_hs2().HealingStrategy
 

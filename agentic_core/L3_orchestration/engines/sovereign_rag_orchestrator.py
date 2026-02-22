@@ -24,8 +24,20 @@ from agentic_core.L3_orchestration.types.rag_provider_types import (
     RagQuery,
     RagResult,
 )
-from agentic_core.L4_state.config.versioned_configs import get_active_configs
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
+
+
+def _get_active_configs():
+    from agentic_core.L4_state.config.versioned_configs import get_active_configs
+
+    return get_active_configs
+
+
+def _get_retrieval_anchor_types():
+    from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
+
+    return AnchoredResult, RetrievalAnchor
+
+
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth

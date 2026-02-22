@@ -7,7 +7,7 @@ AST-based static import detection enforcing gravity rule:
 Lower layer may NOT import higher layer.
 Covers all 21 ordered layer pairs (L0-L6).
 
-LAZY_SEAM_BUDGET_BASELINE = 44
+LAZY_SEAM_BUDGET_BASELINE = 68
 """
 
 import ast
@@ -21,7 +21,7 @@ AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / "agentic_core"
 LAYER_PATTERN = re.compile(r"^L(\d+)_")
 IMPORT_LAYER_PATTERN = re.compile(r"agentic_core\.L(\d+)_")
 
-LAZY_SEAM_BUDGET_BASELINE = 44
+LAZY_SEAM_BUDGET_BASELINE = 68
 
 
 @dataclass

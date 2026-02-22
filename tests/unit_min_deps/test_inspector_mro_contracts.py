@@ -19,14 +19,6 @@ INSPECTOR_SPECS = [
         "agentic_core.L3_orchestration.reasoning.DagRuntimeInspectorAgent",
         "DagRuntimeInspectorAgent",
     ),
-    (
-        "archives.deprecated.TokenBudgetInspectorAgent",
-        "TokenBudgetInspectorAgent",
-    ),
-    (
-        "archives.deprecated.SignatureVerifierAgent",
-        "SignatureVerifierAgent",
-    ),
 ]
 
 

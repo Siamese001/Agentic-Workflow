@@ -41,6 +41,7 @@ _SEAM_ALLOWLIST = frozenset(
         "agentic_core/L0_routing/seams/safety_validators_seam.py",
         "agentic_core/L0_routing/seams/vigilance_seam.py",
         "agentic_core/L0_routing/seams/learning_seam.py",
+        "agentic_core/L0_routing/seams/elevator_shaft_seam.py",
     ]
 )
 

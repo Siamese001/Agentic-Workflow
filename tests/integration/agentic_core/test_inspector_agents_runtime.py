@@ -71,58 +71,6 @@ class TestDagRuntimeInspectorAgent:
         assert isinstance(result.metrics, dict)
 
 
-class TestTokenBudgetInspectorAgent:
-    """Validate TokenBudgetInspectorAgent imports and runs diagnostics."""
-
-    def test_importable(self) -> None:
-        from archives.deprecated.TokenBudgetInspectorAgent import (
-            TokenBudgetInspectorAgent,
-        )
-
-        assert TokenBudgetInspectorAgent is not None
-
-    def test_run_inspection_returns_inspection_result(self) -> None:
-        from archives.deprecated.TokenBudgetInspectorAgent import (
-            TokenBudgetInspectorAgent,
-        )
-
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
-
-        agent = TokenBudgetInspectorAgent()
-        result = agent.run_inspection("test_target")
-
-        assert isinstance(result, InspectionResult)
-        assert isinstance(result.healthy, bool)
-        assert isinstance(result.issues, list)
-        assert isinstance(result.metrics, dict)
-
-
-class TestSignatureVerifierAgent:
-    """Validate SignatureVerifierAgent imports and runs diagnostics."""
-
-    def test_importable(self) -> None:
-        from archives.deprecated.SignatureVerifierAgent import (
-            SignatureVerifierAgent,
-        )
-
-        assert SignatureVerifierAgent is not None
-
-    def test_run_inspection_returns_inspection_result(self) -> None:
-        from archives.deprecated.SignatureVerifierAgent import (
-            SignatureVerifierAgent,
-        )
-
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
-
-        agent = SignatureVerifierAgent()
-        result = agent.run_inspection("test_target")
-
-        assert isinstance(result, InspectionResult)
-        assert isinstance(result.healthy, bool)
-        assert isinstance(result.issues, list)
-        assert isinstance(result.metrics, dict)
-
-
 # ---------------------------------------------------------------------------
 # Test: Decorator canonical imports work at runtime
 # ---------------------------------------------------------------------------

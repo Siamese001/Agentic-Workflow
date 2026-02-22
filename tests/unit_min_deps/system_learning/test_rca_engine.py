@@ -51,9 +51,7 @@ class TestRCAEngine:
         )
 
         # Build a dict for easier assertion
-        findings_dict = {
-            (f.category, f.signature): f.count for f in report.findings
-        }
+        findings_dict = {(f.category, f.signature): f.count for f in report.findings}
 
         # SYNTAX: 3 occurrences
         assert findings_dict.get(("SYNTAX", "SyntaxError")) == 3

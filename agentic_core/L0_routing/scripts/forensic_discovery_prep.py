@@ -38,8 +38,14 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
+
+
+def _get_safe_subprocess_check_output():
+    from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
+
+    return safe_subprocess_check_output
+
 
 # ==============================================================================
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
@@ -293,7 +299,7 @@ def forensic_inspect(name: str, layer: str, file_path: Path) -> ForensicAgentRec
 
 def get_git_commit(root: Path) -> str:
     try:
-        out = safe_subprocess_check_output(
+        out = _get_safe_subprocess_check_output()(
             ["git", "-C", str(root), "rev-parse", "HEAD"],
             allow_protected_root_mutation=True,
         )

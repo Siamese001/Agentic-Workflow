@@ -337,8 +337,8 @@ class TestRCANegativeTests:
         assert "meta_learning_storage_util" in DOMAIN_CONTENT_SIGNALS, (
             "Missing signal for meta_learning_storage_util"
         )
-        assert DOMAIN_CONTENT_SIGNALS["meta_learning_engine_util"] == "L7_meta_learning/utils"
-        assert DOMAIN_CONTENT_SIGNALS["meta_learning_storage_util"] == "L7_meta_learning/utils"
+        assert DOMAIN_CONTENT_SIGNALS["meta_learning_engine_util"] == "system_learning/utils"
+        assert DOMAIN_CONTENT_SIGNALS["meta_learning_storage_util"] == "system_learning/utils"
 
     def test_state_util_location_ssot(self) -> None:
         """state_util should be classified to L4_state/utils."""

@@ -16,7 +16,6 @@ import re
 
 from system_learning.types.rca_types import RCAFinding, create_rca_report
 
-
 # =============================================================================
 # Exceptions
 # =============================================================================
@@ -130,9 +129,7 @@ def analyze_failures(
     """
     # Validate window
     if window_start_utc >= window_end_utc:
-        raise RCAAnalysisError(
-            f"Invalid window: start={window_start_utc} >= end={window_end_utc}"
-        )
+        raise RCAAnalysisError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
 
     # Decode audit slice (fail-closed)
     try:

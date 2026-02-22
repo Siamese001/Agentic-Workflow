@@ -14,7 +14,6 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass
 
-
 # =============================================================================
 # Telemetry Types
 # =============================================================================
@@ -88,9 +87,7 @@ def canonical_bytes(slice_obj: TelemetrySlice) -> bytes:
         Canonical byte representation.
     """
     # Sort events by (ts_utc, kind, payload_hash) for determinism
-    sorted_events = sorted(
-        slice_obj.events, key=lambda e: (e.ts_utc, e.kind, e.payload_hash)
-    )
+    sorted_events = sorted(slice_obj.events, key=lambda e: (e.ts_utc, e.kind, e.payload_hash))
 
     # Build canonical representation
     parts = [

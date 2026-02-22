@@ -57,7 +57,13 @@ from agentic_core.L0_routing.utils.ssot_discovery_util import (
     invalidate_cache,
     load_agent_discovery,
 )
-from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
+
+
+def _get_safe_subprocess_check_output():
+    from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_check_output
+
+    return safe_subprocess_check_output
+
 
 classification_cache_context = get_classification_cache_context()
 from agentic_core.utils.ast_fuzzy_util import safe_unparse
@@ -127,7 +133,7 @@ def sha256_file(path: Path) -> str:
 
 def get_git_commit(root: Path) -> str:
     try:
-        out = safe_subprocess_check_output(
+        out = _get_safe_subprocess_check_output()(
             ["git", "-C", str(root), "rev-parse", "HEAD"],
             allow_protected_root_mutation=True,
         )

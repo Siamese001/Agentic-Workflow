@@ -15,8 +15,17 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.L4_state.config.versioned_configs import RoutingConfig, get_active_configs
-from agentic_core.L4_state.types.detection_signal_store import get_prior_detection_signal
+
+def _get_routing_config_and_active():
+    from agentic_core.L4_state.config.versioned_configs import RoutingConfig, get_active_configs
+
+    return RoutingConfig, get_active_configs
+
+
+def _get_prior_detection_signal():
+    from agentic_core.L4_state.types.detection_signal_store import get_prior_detection_signal
+
+    return get_prior_detection_signal
 
 
 class RoutingMode:
@@ -37,7 +46,7 @@ class TimeshiftRoutingDecision:
 
 def evaluate_timeshift_routing(
     execution_start_tick: int,
-    routing_config: RoutingConfig | None = None,
+    routing_config: object | None = None,
 ) -> TimeshiftRoutingDecision:
     """
     Evaluate routing mode using ONLY prior committed signals.
@@ -54,11 +63,12 @@ def evaluate_timeshift_routing(
     during this execution cycle cannot affect this decision.
     """
     if routing_config is None:
+        _, get_active_configs = _get_routing_config_and_active()
         routing_config = get_active_configs().routing
 
     threshold = routing_config.anomaly_routing_threshold
 
-    prior = get_prior_detection_signal(execution_start_tick)
+    prior = _get_prior_detection_signal()(execution_start_tick)
 
     if prior is not None and prior.anomaly_score >= threshold:
         mode = RoutingMode.COMPLIANCE

@@ -12,7 +12,6 @@ import pytest
 
 from system_learning.constraints.delta_enforcer import (
     BoundsViolation,
-    ConstraintViolation,
     DeltaViolation,
     ForbiddenSurface,
     PointerViolation,
@@ -165,9 +164,7 @@ class TestL1ModelPointers:
             validate_surface_change("cognition_model", "gpt-4o", "unknown-model")
 
     def test_embedding_model_valid_pointer(self):
-        validate_surface_change(
-            "embedding_model", "text-embedding-3-small", "text-embedding-3-large"
-        )
+        validate_surface_change("embedding_model", "text-embedding-3-small", "text-embedding-3-large")
 
     def test_embedding_model_allowlist_enforced(self):
         with pytest.raises(PointerViolation):

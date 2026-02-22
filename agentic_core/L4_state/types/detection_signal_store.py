@@ -12,14 +12,18 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+
+def _get_detection_signal_class():
+    from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+
+    return DetectionSignal
 
 
 @dataclass
 class _StoredEntry:
     """Internal record: signal + the commit_tick at which it was stored."""
 
-    signal: DetectionSignal
+    signal: object
     commit_tick: int
 
 
@@ -55,7 +59,7 @@ class DetectionSignalStore:
         self._entries.append(_StoredEntry(signal=signal, commit_tick=commit_tick))
         return signal.signal_hash
 
-    def fetch_latest(self, before_tick: int) -> DetectionSignal | None:
+    def fetch_latest(self, before_tick: int) -> object | None:
         """
         Return the most recent signal with commit_tick STRICTLY < before_tick.
 
@@ -63,7 +67,7 @@ class DetectionSignalStore:
         This is the no-same-cycle guarantee: a signal stored at before_tick
         is NOT returned.
         """
-        result: DetectionSignal | None = None
+        result: object | None = None
         for entry in self._entries:
             if entry.commit_tick < before_tick:
                 result = entry.signal
@@ -82,12 +86,12 @@ def get_signal_store() -> DetectionSignalStore:
     return _SIGNAL_STORE
 
 
-def store_detection_signal(signal: DetectionSignal, commit_tick: int) -> str:
+def store_detection_signal(signal: object, commit_tick: int) -> str:
     """Store a signal in the L4 SSOT store. Returns signal_hash."""
     return get_signal_store().store(signal, commit_tick)
 
 
-def fetch_latest_detection_signal(before_tick: int) -> DetectionSignal | None:
+def fetch_latest_detection_signal(before_tick: int) -> object | None:
     """
     Fetch the most recent signal committed before before_tick.
 
@@ -96,7 +100,7 @@ def fetch_latest_detection_signal(before_tick: int) -> DetectionSignal | None:
     return get_signal_store().fetch_latest(before_tick)
 
 
-def get_prior_detection_signal(execution_start_tick: int) -> DetectionSignal | None:
+def get_prior_detection_signal(execution_start_tick: int) -> object | None:
     """
     Guaranteed prior-only accessor for routing decisions.
 

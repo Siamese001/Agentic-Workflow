@@ -22,6 +22,19 @@ from typing import Any, Callable
 MUTATION_COUNTER = 0
 CURRENT_PHASE = "UNKNOWN"
 
+
+def _get_manifest_hash_validator():
+    from agentic_core.L2_execution.enforcement.manifest_hash_validator import validate_manifest_hashes
+
+    return validate_manifest_hashes
+
+
+def _get_guardian_decision():
+    from agentic_core.L5_safety.reasoning.guardian_decision import GuardianViolationError, L5Guardian
+
+    return GuardianViolationError, L5Guardian
+
+
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
 from agentic_core.L0_routing.types.determinism_contracts import (
     create_boundary_snapshot,
@@ -185,11 +198,7 @@ class V15ExecutionGateway:
         # all four must be present and match the L4 SSOT active configs.
         _HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
         if any(hasattr(manifest, f) and getattr(manifest, f) is not None for f in _HASH_FIELDS):
-            from agentic_core.L2_execution.enforcement.manifest_hash_validator import (
-                validate_manifest_hashes,
-            )
-
-            validate_manifest_hashes(manifest)
+            _get_manifest_hash_validator()(manifest)
 
         # Dedupe check
         signal_hash = dedupe_sha256(manifest.correlation_id + manifest.node_id)
@@ -207,7 +216,7 @@ class V15ExecutionGateway:
         CURRENT_PHASE = "L2.1"
 
         # L5 Guardian integration - active blocking before L2.2
-        from agentic_core.L5_safety.reasoning.guardian_decision import GuardianViolationError, L5Guardian
+        GuardianViolationError, L5Guardian = _get_guardian_decision()
 
         guardian = L5Guardian(policy_version="1.0")
         decision = guardian.validate(manifest, None, "1.0")

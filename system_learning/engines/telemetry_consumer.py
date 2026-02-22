@@ -19,7 +19,6 @@ from system_learning.types.telemetry_types import (
     create_telemetry_slice,
 )
 
-
 # =============================================================================
 # Exceptions
 # =============================================================================
@@ -37,9 +36,7 @@ class TelemetryConsumerError(RuntimeError):
 class TelemetryStore(Protocol):
     """Protocol for read-only telemetry store access."""
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
         """Read telemetry events within window.
 
         Parameters
@@ -96,9 +93,7 @@ def consume_telemetry(
     """
     # Validate window
     if window_start_utc >= window_end_utc:
-        raise TelemetryConsumerError(
-            f"Invalid window: start={window_start_utc} >= end={window_end_utc}"
-        )
+        raise TelemetryConsumerError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
 
     # Read events from store
     raw_events = store.read_events(window_start_utc, window_end_utc)

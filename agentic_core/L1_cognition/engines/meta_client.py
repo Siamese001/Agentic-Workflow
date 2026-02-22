@@ -18,6 +18,25 @@ Guardrails:
 
 from __future__ import annotations
 
+
+def _get_redis_sovereign_agent():
+    from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
+
+    return RedisSovereignAgent
+
+
+def _get_pinecone_sovereign_agent():
+    from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
+
+    return PineconeSovereignAgent
+
+
+def _get_embedding_sovereign_agent():
+    from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import EmbeddingSovereignAgent
+
+    return EmbeddingSovereignAgent
+
+
 import hashlib
 import json
 import logging
@@ -122,11 +141,7 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
-                RedisSovereignAgent,
-            )
-
-            redis_agent = RedisSovereignAgent(Path.cwd())
+            redis_agent = _get_redis_sovereign_agent()(Path.cwd())
             self._redis_client = redis_agent.get_client()
             Logger.info("[MetaLearningClient] Redis connection established")
         except Exception as e:
@@ -138,11 +153,7 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L4_state.reasoning.PineconeSovereignAgent import (
-                PineconeSovereignAgent,
-            )
-
-            pinecone_agent = PineconeSovereignAgent(Path.cwd())
+            pinecone_agent = _get_pinecone_sovereign_agent()(Path.cwd())
             if pinecone_agent.status == "ONLINE":
                 self._pinecone_client = pinecone_agent.pc
                 self._pinecone_index = pinecone_agent.index
@@ -426,11 +437,7 @@ class MetaLearningClient:
         try:
             from pathlib import Path
 
-            from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
-                EmbeddingSovereignAgent,
-            )
-
-            embedding_agent = EmbeddingSovereignAgent(Path.cwd())
+            embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             v_type = violation.get("type", "")
             v_msg = violation.get("message", "")
             v_path = violation.get("path", "")

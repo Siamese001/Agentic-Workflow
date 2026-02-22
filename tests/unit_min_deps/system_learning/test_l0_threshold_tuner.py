@@ -2,7 +2,6 @@
 
 import pytest
 
-from system_learning.constraints.delta_enforcer import BoundsViolation, DeltaViolation
 from system_learning.engines.l0_threshold_tuner import (
     L0ThresholdChangePackage,
     propose_l0_threshold_changes,
@@ -62,8 +61,8 @@ class TestL0ThresholdTuner:
 
     def test_over_delta_rejected(self):
         """Proposal exceeding max delta raises."""
-        cooldown = CooldownPolicy(min_seconds_between_updates=3600)
-        sample = SampleSizePolicy(min_observations=1000)
+        CooldownPolicy(min_seconds_between_updates=3600)
+        SampleSizePolicy(min_observations=1000)
 
         # Current implementation uses fixed delta of 0.03, which is within max (0.05)
         # To test over-delta, we'd need to modify the heuristic or use a different surface

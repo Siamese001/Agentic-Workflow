@@ -38,9 +38,7 @@ class FakeTelemetryStore:
         self.events = events
         self.read_calls = []
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
         self.read_calls.append((window_start_utc, window_end_utc))
         filtered = [
             (ts, kind, payload)
@@ -76,6 +74,7 @@ class FakeBaselineMetricsProvider:
 
     def __init__(self):
         from system_learning.validators.shadow_evaluator import ShadowMetrics
+
         self.production = ShadowMetrics(
             p95_latency_ms=100.0,
             error_rate=0.01,

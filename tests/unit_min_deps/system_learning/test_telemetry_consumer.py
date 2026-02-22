@@ -21,9 +21,7 @@ class FakeTelemetryStore:
     def __init__(self, events: list[tuple[int, str, bytes]]):
         self._events = events
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
         """Read events within window."""
         # Filter events within window
         filtered = [

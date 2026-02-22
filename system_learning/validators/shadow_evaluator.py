@@ -13,7 +13,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-
 # =============================================================================
 # Exceptions
 # =============================================================================
@@ -118,9 +117,7 @@ def evaluate_shadow(
     # P95 latency regression check
     if production.p95_latency_ms > 0:
         latency_regression_pct = (
-            (shadow.p95_latency_ms - production.p95_latency_ms)
-            / production.p95_latency_ms
-            * 100.0
+            (shadow.p95_latency_ms - production.p95_latency_ms) / production.p95_latency_ms * 100.0
         )
         if latency_regression_pct > thresholds.max_p95_latency_regression_pct:
             violations.append(
@@ -146,9 +143,7 @@ def evaluate_shadow(
 
     # CPU regression check
     if production.cpu_pct > 0:
-        cpu_regression_pct = (
-            (shadow.cpu_pct - production.cpu_pct) / production.cpu_pct * 100.0
-        )
+        cpu_regression_pct = (shadow.cpu_pct - production.cpu_pct) / production.cpu_pct * 100.0
         if cpu_regression_pct > thresholds.max_cpu_regression_pct:
             violations.append(
                 f"CPU_REGRESSION: {cpu_regression_pct:.2f}% "
@@ -157,9 +152,7 @@ def evaluate_shadow(
 
     # Memory regression check
     if production.mem_mb > 0:
-        mem_regression_pct = (
-            (shadow.mem_mb - production.mem_mb) / production.mem_mb * 100.0
-        )
+        mem_regression_pct = (shadow.mem_mb - production.mem_mb) / production.mem_mb * 100.0
         if mem_regression_pct > thresholds.max_mem_regression_pct:
             violations.append(
                 f"MEM_REGRESSION: {mem_regression_pct:.2f}% "

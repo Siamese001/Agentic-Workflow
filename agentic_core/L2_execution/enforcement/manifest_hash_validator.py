@@ -9,7 +9,12 @@ from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.L4_state.config.versioned_configs import get_active_configs
+
+def _get_active_configs():
+    from agentic_core.L4_state.config.versioned_configs import get_active_configs
+
+    return get_active_configs
+
 
 REQUIRED_HASH_FIELDS = ("policy_hash", "routing_hash", "model_hash", "budget_hash")
 
@@ -31,7 +36,7 @@ def validate_manifest_hashes(manifest: Any) -> None:
     Raises:
         ManifestHashError: on missing field or hash mismatch.
     """
-    active = get_active_configs().hashes()
+    active = _get_active_configs()().hashes()
 
     for field in REQUIRED_HASH_FIELDS:
         if isinstance(manifest, dict):

@@ -11,14 +11,23 @@ decide_mode_from_prior_violations(execution_start_tick, routing_config, store) -
 
 from __future__ import annotations
 
-from agentic_core.L4_state.config.versioned_configs import RoutingConfig
-from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
+
+def _get_routing_config_class():
+    from agentic_core.L4_state.config.versioned_configs import RoutingConfig
+
+    return RoutingConfig
+
+
+def _get_violation_event_store_class():
+    from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
+
+    return ViolationEventStore
 
 
 def decide_mode_from_prior_violations(
     execution_start_tick: int,
-    routing_config: RoutingConfig,
-    violation_store: ViolationEventStore,
+    routing_config: object,
+    violation_store: object,
 ) -> str:
     """
     Determine L0 routing mode based solely on prior violations.

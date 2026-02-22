@@ -21,7 +21,6 @@ from system_learning.validators.dampening import CooldownPolicy, SampleSizePolic
 from system_learning.validators.oscillation_detector import OscillationPolicy
 from system_learning.validators.shadow_evaluator import ShadowThresholds
 
-
 # =============================================================================
 # Exceptions
 # =============================================================================
@@ -88,9 +87,7 @@ class PipelineConfig:
 class AuditStore(Protocol):
     """Protocol for read-only audit store access."""
 
-    def read_audit_slice(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> bytes:
+    def read_audit_slice(self, window_start_utc: int, window_end_utc: int) -> bytes:
         """Read audit slice within window."""
         ...
 
@@ -98,9 +95,7 @@ class AuditStore(Protocol):
 class TelemetryStore(Protocol):
     """Protocol for read-only telemetry store access."""
 
-    def read_events(
-        self, window_start_utc: int, window_end_utc: int
-    ) -> tuple[tuple[int, str, bytes], ...]:
+    def read_events(self, window_start_utc: int, window_end_utc: int) -> tuple[tuple[int, str, bytes], ...]:
         """Read telemetry events within window."""
         ...
 
@@ -148,7 +143,16 @@ class ApprovalGate(Protocol):
 class L0Proposer(Protocol):
     """Protocol for L0 threshold proposer."""
 
-    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+    def propose(
+        self,
+        snapshot: MetaLearningSnapshot,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
+    ) -> Any:
         """Propose L0 threshold changes."""
         ...
 
@@ -156,7 +160,16 @@ class L0Proposer(Protocol):
 class RAGProposer(Protocol):
     """Protocol for RAG parameter proposer."""
 
-    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+    def propose(
+        self,
+        snapshot: MetaLearningSnapshot,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
+    ) -> Any:
         """Propose RAG parameter changes."""
         ...
 
@@ -164,7 +177,16 @@ class RAGProposer(Protocol):
 class L1Proposer(Protocol):
     """Protocol for L1 model proposer."""
 
-    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+    def propose(
+        self,
+        snapshot: MetaLearningSnapshot,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
+    ) -> Any:
         """Propose L1 model changes."""
         ...
 
@@ -172,7 +194,16 @@ class L1Proposer(Protocol):
 class L5Proposer(Protocol):
     """Protocol for L5 policy proposer."""
 
-    def propose(self, snapshot: MetaLearningSnapshot, metrics: Any, config: Any, now_utc: int, history: Any, cooldown: Any, sample: Any) -> Any:
+    def propose(
+        self,
+        snapshot: MetaLearningSnapshot,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
+    ) -> Any:
         """Propose L5 policy changes."""
         ...
 
@@ -289,9 +320,7 @@ def run_pipeline(
     """
     # Validate window
     if window_start_utc >= window_end_utc:
-        raise PipelineError(
-            f"Invalid window: start={window_start_utc} >= end={window_end_utc}"
-        )
+        raise PipelineError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
 
     # Step 1: Pull audit slice (read-only)
     audit_slice = deps.audit_store.read_audit_slice(window_start_utc, window_end_utc)
@@ -299,9 +328,7 @@ def run_pipeline(
     # Step 2: Consume telemetry slice (read-only)
     from system_learning.engines.telemetry_consumer import consume_telemetry
 
-    telemetry_slice = consume_telemetry(
-        deps.telemetry_store, window_start_utc, window_end_utc
-    )
+    consume_telemetry(deps.telemetry_store, window_start_utc, window_end_utc)
 
     # Step 3: Pull current configs
     current_configs = deps.config_provider.get_current_configs()
@@ -310,10 +337,10 @@ def run_pipeline(
     # For now, create a minimal snapshot with required fields
     # In production, this would pull from L4 state
     from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-    
+
     # Create a minimal semantic clock for testing
     semantic_clock = SemanticClockSnapshot(tick=0, vector_clock=())
-    
+
     snapshot = create_snapshot(
         engine_version=cfg.engine_version,
         config_surface_version=cfg.config_surface_version,
@@ -372,13 +399,13 @@ def run_pipeline(
             proposals.append(pkg)
 
     # Step 7: Validate each proposal
-    from system_learning.validators.replay_validator import replay_validate
-    from system_learning.validators.shadow_evaluator import evaluate_shadow
     from system_learning.validators.dampening import (
         assert_cooldown_ok,
         assert_min_sample_size,
     )
     from system_learning.validators.oscillation_detector import compute_freeze_decision
+    from system_learning.validators.replay_validator import replay_validate
+    from system_learning.validators.shadow_evaluator import evaluate_shadow
 
     validated_proposals = []
     for pkg in proposals:
@@ -441,13 +468,9 @@ def run_pipeline(
     if not cfg.proposal_only:
         # Require version_store and approval_gate
         if deps.version_store is None:
-            raise PipelineError(
-                "version_store required when proposal_only=False"
-            )
+            raise PipelineError("version_store required when proposal_only=False")
         if deps.approval_gate is None:
-            raise PipelineError(
-                "approval_gate required when proposal_only=False"
-            )
+            raise PipelineError("approval_gate required when proposal_only=False")
 
         committed_versions = []
         for pkg in validated_proposals:

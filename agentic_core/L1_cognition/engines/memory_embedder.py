@@ -16,6 +16,13 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
+
+def _get_embedding_sovereign_agent():
+    from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import EmbeddingSovereignAgent
+
+    return EmbeddingSovereignAgent
+
+
 from agentic_core.L1_cognition.types.memory_types import (
     EMBEDDING_DIMENSION,
     MAX_TEXT_LENGTH,
@@ -85,11 +92,7 @@ class HealingMemoryEmbedder:
         try:
             from pathlib import Path
 
-            from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
-                EmbeddingSovereignAgent,
-            )
-
-            self._embedding_agent = EmbeddingSovereignAgent(Path.cwd())
+            self._embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
         except Exception as e:
             Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")

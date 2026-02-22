@@ -14,13 +14,18 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
 
+
+def _get_subatomic_testing_mixin():
+    from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import SubatomicTestingMixin
+
+    return SubatomicTestingMixin
+
+
 try:
-    from agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin import (
-        SubatomicTestingMixin,
-    )
+    SubatomicTestingMixin = _get_subatomic_testing_mixin()
 except ImportError:
 
-    class SubatomicTestingMixin:
+    class SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
 
 

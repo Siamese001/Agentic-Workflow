@@ -37,10 +37,49 @@ from typing import Any, Optional
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
-# Safe subprocess wrapper for mutation protection
-from agentic_core.L2_execution.tools.safe_subprocess import (
-    safe_subprocess_run,
-)
+
+def _get_safe_subprocess_run():
+    from agentic_core.L2_execution.tools.safe_subprocess import safe_subprocess_run
+
+    return safe_subprocess_run
+
+
+def _get_write_gateway():
+    from agentic_core.L2_execution.tools import write_gateway
+
+    return write_gateway
+
+
+def _get_location_validator_agent():
+    from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+
+    return LocationValidatorAgent
+
+
+def _get_l5_agent_roster():
+    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
+    from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
+    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
+    from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
+    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import ObservabilityProbeExecutor
+
+    return (
+        ArchitectureGovernorAgent,
+        CognitiveDispositionAgent,
+        FileClassificationAgent,
+        FilesystemSSOTReconcilerAgent,
+        GravityLeakRepairAgent,
+        HierarchyAgent,
+        LocationAgent,
+        RootHygieneAgent,
+        SystemArchitectAgent,
+        ObservabilityProbeExecutor,
+    )
 
 
 def _preflight_import_check() -> None:
@@ -191,7 +230,7 @@ def run_fence_self_check() -> None:
 
     # Check 3: write_gateway entrypoints accept allow_override AND call enforce_protected_root
     try:
-        from agentic_core.L2_execution.tools import write_gateway
+        write_gateway = _get_write_gateway()
 
         # Check write_text and write_bytes (primary entrypoints)
         for func_name in ["write_text", "write_bytes"]:
@@ -292,7 +331,7 @@ def _maybe_force_utf8_console() -> None:
     """Unconditional stdout/stderr UTF-8 coercion.  Called at runtime, NOT import time."""
     if sys.platform.startswith("win"):
         try:
-            safe_subprocess_run(
+            _get_safe_subprocess_run()(
                 ["chcp", "65001"],
                 stdout=DEVNULL,
                 stderr=DEVNULL,
@@ -1624,11 +1663,7 @@ def execute_phase1_discovery_impl(
     location_scan_result = {}
     if territory_path.exists():
         # Let LocationAgent do comprehensive file discovery
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
-            LocationValidatorAgent,
-        )
-
-        _lva = LocationValidatorAgent(project_root=REPO_ROOT)
+        _lva = _get_location_validator_agent()(project_root=REPO_ROOT)
         location_scan_result = _lva.run(target_territory=territory) or {}
         violations = location_scan_result.get("violations", [])
     else:
@@ -2996,32 +3031,18 @@ Examples:
         sys.exit(1)
 
     # 3b. Build local agents roster (classes, not instances)
-    from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import (
+    (
         ArchitectureGovernorAgent,
-    )
-    from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import (
         CognitiveDispositionAgent,
-    )
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
         FileClassificationAgent,
-    )
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
         FilesystemSSOTReconcilerAgent,
-    )
-    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
         GravityLeakRepairAgent,
-    )
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-    from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
+        HierarchyAgent,
+        LocationAgent,
         RootHygieneAgent,
-    )
-    from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
         SystemArchitectAgent,
-    )
-    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
         ObservabilityProbeExecutor,
-    )
+    ) = _get_l5_agent_roster()
 
     agents = {
         "reconciler": FilesystemSSOTReconcilerAgent,

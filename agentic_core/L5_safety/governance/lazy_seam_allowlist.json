@@ -12,6 +12,66 @@
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
     },
     {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+      "function_name": "_get_guardian_decision",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.guardian_decision"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+      "function_name": "_get_manifest_hash_validator",
+      "imported_modules": [
+        "agentic_core.L2_execution.enforcement.manifest_hash_validator"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
+      "function_name": "_get_routing_config_class",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
+      "function_name": "_get_violation_event_store_class",
+      "imported_modules": [
+        "agentic_core.L4_state.enforcement.violation_event_store"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
+      "function_name": "_get_prior_detection_signal",
+      "imported_modules": [
+        "agentic_core.L4_state.types.detection_signal_store"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
+      "function_name": "_get_routing_config_and_active",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
       "file_path": "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
       "function_name": "_get_CapabilityTokenArtifact",
       "imported_modules": [
@@ -23,43 +83,193 @@
     },
     {
       "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
-      "function_name": "_get_Orchestrator",
-      "imported_modules": [
-        "agentic_core.L3_orchestration.Orchestrator"
-      ],
-      "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
-      "function_name": "_get_get_checkpoint_manager",
+      "function_name": "_get_checkpoint_manager",
       "imported_modules": [
         "agentic_core.L4_state.reasoning.CheckpointManagerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
+      "function_name": "_get_orchestrator_class",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.Orchestrator"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L0_routing\\scripts\\coverage.py",
-      "function_name": "_get_ConvergenceEngine",
+      "function_name": "_get_convergence_engine",
       "imported_modules": [
         "agentic_core.L3_orchestration.reasoning.mission_controller_convergence"
       ],
       "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.CognitiveDispositionAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.FileClassificationAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.GravityLeakRepairAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.HierarchyAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.LocationAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.RootHygieneAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.SystemArchitectAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_l5_agent_roster",
+      "imported_modules": [
+        "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_location_validator_agent",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.LocationValidatorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_safe_subprocess_run",
+      "imported_modules": [
+        "agentic_core.L2_execution.tools.safe_subprocess"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_write_gateway",
+      "imported_modules": [
+        "agentic_core.L2_execution.tools"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L0_routing\\scripts\\execution_context.py",
-      "function_name": "_get_SubatomicTestingMixin",
+      "function_name": "_get_subatomic_testing_mixin",
       "imported_modules": [
         "agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin"
       ],
       "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\forensic_discovery_prep.py",
+      "function_name": "_get_safe_subprocess_check_output",
+      "imported_modules": [
+        "agentic_core.L2_execution.tools.safe_subprocess"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\full_agent_discovery.py",
+      "function_name": "_get_safe_subprocess_check_output",
+      "imported_modules": [
+        "agentic_core.L2_execution.tools.safe_subprocess"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L0_routing\\scripts\\hardened_orchestrator_wrapper_util.py",
@@ -83,43 +293,43 @@
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\memory_embedder.py",
-      "function_name": "_get_embedding_agent",
+      "function_name": "_get_embedding_sovereign_agent",
       "imported_modules": [
         "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_embedding",
+      "function_name": "_get_embedding_sovereign_agent",
       "imported_modules": [
         "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_pinecone_connection",
+      "function_name": "_get_pinecone_sovereign_agent",
       "imported_modules": [
         "agentic_core.L4_state.reasoning.PineconeSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.PineconeSovereignAgent",
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_redis_connection",
+      "function_name": "_get_redis_sovereign_agent",
       "imported_modules": [
         "agentic_core.L4_state.reasoning.RedisSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.RedisSovereignAgent",
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent.py",
@@ -140,6 +350,16 @@
       "imported_symbols": [],
       "justification": "Plugin registry or dynamic dispatch boundary",
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\enforcement\\manifest_hash_validator.py",
+      "function_name": "_get_active_configs",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -165,11 +385,21 @@
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
       "function_name": "_get_UnifiedAgent_mapping",
       "imported_modules": [
+        "agentic_core.L5_safety.reasoning.StructureValidatorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_UnifiedAgent_mapping",
+      "imported_modules": [
         "agentic_core.L3_orchestration.reasoning.StateManagementAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -178,8 +408,8 @@
         "agentic_core.L4_state.reasoning.CheckpointManagerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -188,18 +418,8 @@
         "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_UnifiedAgent_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.StructureValidatorAgent"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -208,8 +428,8 @@
         "agentic_core.L5_safety.reasoning.StructureValidatorAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -218,8 +438,8 @@
         "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -228,8 +448,8 @@
         "agentic_core.L5_safety.reasoning.ResourceManagerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -238,8 +458,8 @@
         "agentic_core.L5_safety.reasoning.SecurityManagerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -248,48 +468,8 @@
         "agentic_core.L5_safety.reasoning.StructureEnforcerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeDetectorAgent"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.CodeHealerAgent"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.SafetyDetectorAgent"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.SafetyExecutorAgent"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -298,8 +478,48 @@
         "agentic_core.L5_safety.reasoning.StructureHealerAgent_types"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.CodeDetectorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.CodeHealerAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.SafetyDetectorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.SafetyExecutorAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L2_execution\\scripts\\remediation_dispatcher.py",
@@ -318,8 +538,8 @@
         "agentic_core.L5_safety.validators.GovernanceAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\enforcement\\mission_runner_enforcer.py",
@@ -328,8 +548,8 @@
         "agentic_core.L5_safety.validators.GovernanceAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\AgentFactory.py",
@@ -382,6 +602,26 @@
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
     },
     {
+      "file_path": "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py",
+      "function_name": "_get_active_configs",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py",
+      "function_name": "_get_retrieval_anchor_types",
+      "imported_modules": [
+        "agentic_core.L4_state.types.retrieval_anchor"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
       "file_path": "agentic_core\\L3_orchestration\\reasoning\\CoverageAgent.py",
       "function_name": "_get_layer_entry",
       "imported_modules": [
@@ -400,6 +640,16 @@
       "imported_symbols": [],
       "justification": "Plugin registry or dynamic dispatch boundary",
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+    },
+    {
+      "file_path": "agentic_core\\L4_state\\types\\detection_signal_store.py",
+      "function_name": "_get_detection_signal_class",
+      "imported_modules": [
+        "agentic_core.L6_observability.types.detection_signal"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
       "file_path": "agentic_core\\L5_safety\\reasoning\\AutonomyGuardianAgent.py",
@@ -432,5 +682,5 @@
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
     }
   ],
-  "total_seams": 44
+  "total_seams": 68
 }

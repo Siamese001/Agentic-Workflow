@@ -17,6 +17,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+
+def _get_convergence_engine():
+    from agentic_core.L3_orchestration.reasoning.mission_controller_convergence import ConvergenceEngine
+
+    return ConvergenceEngine
+
+
 from agentic_core.L0_routing.config import L0_MAINTENANCE_DIR
 
 # Add project root to path
@@ -82,9 +89,7 @@ class CoverageHealer:
 
 async def run_autonomous_remediation():
     """Execute Phase 6 autonomous remediation loop."""
-    from agentic_core.L3_orchestration.reasoning.mission_controller_convergence import (
-        ConvergenceEngine,
-    )
+    ConvergenceEngine = _get_convergence_engine()
 
     print("🚀 Phase 6: Autonomous Remediation Loop")
     print("=" * 60)

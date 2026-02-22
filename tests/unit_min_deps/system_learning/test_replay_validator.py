@@ -21,9 +21,7 @@ class TestReplayValidator:
             return str(sorted(output.items())).encode("utf-8")
 
         snapshot = {"input": 5}
-        hash_result = replay_validate(
-            snapshot, deterministic_engine, canonicalize_fn=canonicalize
-        )
+        hash_result = replay_validate(snapshot, deterministic_engine, canonicalize_fn=canonicalize)
 
         # Should return a valid SHA-256 hex digest
         assert isinstance(hash_result, str)

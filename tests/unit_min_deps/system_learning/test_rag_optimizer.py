@@ -2,7 +2,6 @@
 
 import pytest
 
-from system_learning.constraints.delta_enforcer import BoundsViolation
 from system_learning.engines.rag_optimizer import (
     RAGChangePackage,
     propose_rag_param_changes,
