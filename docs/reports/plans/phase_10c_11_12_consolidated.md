@@ -6,23 +6,19 @@ Phase 11: apps_* Refactor Contract Alignment (minimal, enforcement-first)
 Phase 12: CI Ordering + Hard-Fail Wiring (repo-wide, deterministic)
 
 ## CODE_COMMIT
-e280d0b126f8a5277d53b98e8bc10c13860f4d4a
+d77f6650c850768f50ad0151e69a33c8e87d3899
 
 ## EVIDENCE_COMMIT
-cf6f065c5000bf4e09f86a01729d0ea03cefca31
+PENDING
 
 ## FILES_CHANGED_CODE
 ```
-ops_scripts/ci/check_tooling_apps_boundary.py
-ops_scripts/ci/run_contract_gates.py
-tests/unit_min_deps/test_contract_gates.py
-tests/unit_min_deps/test_tooling_apps_boundary.py
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py
 ```
 
 ## FILES_CHANGED_EVIDENCE
 ```
-docs/reports/plans/phase_10c_11_12_consolidated.md
+PENDING (will be filled after commit)
 ```
 
 ## INSPECTED_FILES
@@ -353,7 +349,7 @@ tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_scope_containmen
 tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_scope_containment_allowed PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_build_evidence_sections PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_format_evidence_sections PASSED [ 25%]
-tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure FAILED [ 25%]
+tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure_requires_evidence_commit PASSED [ 26%]
 tests/unit_min_deps/test_inspector_mro_contracts.py::TestSubatomicTestingMixinInMRO::test_subatomic_in_mro[DagRuntimeInspectorAgent] PASSED [ 26%]
 tests/unit_min_deps/test_inspector_mro_contracts.py::TestSubatomicNotDirectBase::test_subatomic_not_direct_base[DagRuntimeInspectorAgent] PASSED [ 26%]
@@ -443,7 +439,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:56:16 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 18:06:38 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 PASSED                                                                   [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED [ 33%]
@@ -573,7 +569,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:56:37 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 18:06:59 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [ 44%]
@@ -660,7 +656,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:56:37 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 18:06:59 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 51%]
@@ -1235,13 +1231,6 @@ tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_empty_in
 tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_partial_not_complete PASSED [ 99%]
 tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_duplicate_write_idempotent PASSED [100%]
 
-================================== FAILURES ===================================
-__________________ test_validate_evidence_contract_structure __________________
-tests\unit_min_deps\test_evidence_contract_v2.py:216: in test_validate_evidence_contract_structure
-    mock_loop.assert_called_once_with("a" * 40)
-C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:960: in assert_called_once_with
-    raise AssertionError(msg)
-E   AssertionError: Expected 'validate_hash_loop_prevention' to be called once. Called 0 times.
 ============================== warnings summary ===============================
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
@@ -1256,28 +1245,25 @@ tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract:
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 8
-Passed: 1176
-Failed: 1
+Passed: 1177
+Failed: 0
 Errors: 0
 
-\u274c GUARDIAN STATUS: FAIL
-Architectural violations detected. Review failed tests.
+\u2705 GUARDIAN STATUS: PASS
+All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.06s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.99s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-2.99s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-2.47s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.23s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-1.96s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.60s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
-1.56s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-1.55s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_summary_counts_consistent
-1.53s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_base_class_name_extraction
-=========================== short test summary info ===========================
-FAILED tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure
-============ 1 failed, 1176 passed, 4 warnings in 63.52s (0:01:03) ============
-EXIT CODE: 1
+3.13s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.12s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+2.45s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.21s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+1.98s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.58s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
+1.58s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
+1.56s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
+1.56s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
+================= 1177 passed, 4 warnings in 62.90s (0:01:02) =================
 ```
 
 ## Evidence Contract v2 Checker
@@ -1622,7 +1608,7 @@ tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_scope_containmen
 tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_scope_containment_allowed PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_build_evidence_sections PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_format_evidence_sections PASSED [ 25%]
-tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure FAILED [ 25%]
+tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure PASSED [ 25%]
 tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure_requires_evidence_commit PASSED [ 26%]
 tests/unit_min_deps/test_inspector_mro_contracts.py::TestSubatomicTestingMixinInMRO::test_subatomic_in_mro[DagRuntimeInspectorAgent] PASSED [ 26%]
 tests/unit_min_deps/test_inspector_mro_contracts.py::TestSubatomicNotDirectBase::test_subatomic_not_direct_base[DagRuntimeInspectorAgent] PASSED [ 26%]
@@ -1712,7 +1698,7 @@ tests/unit_min_deps/test_unsafe_io_subprocess_detector.py::TestUnsafeIOSubproces
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_importable PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDagRuntimeInspectorAgent::test_diagnose_returns_inspection_result 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:57:20 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
+2026-02-22 18:07:41 [    INFO] agentic_core.L5_safety.reasoning.InspectorExecutor: [InspectorExecutor] Inspector
 PASSED                                                                   [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_standard_heal_importable_with_full_deps PASSED [ 33%]
 tests/integration/agentic_core/test_inspector_agents_runtime.py::TestDecoratorRuntimeImports::test_timeout_importable_with_full_deps PASSED [ 33%]
@@ -1842,7 +1828,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:57:40 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-22 18:08:02 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [ 44%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [ 44%]
@@ -1929,7 +1915,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-22 17:57:40 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-22 18:08:02 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 51%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 51%]
@@ -2504,13 +2490,6 @@ tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_empty_in
 tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_partial_not_complete PASSED [ 99%]
 tests/governance/test_write_set_enforcer.py::TestWriteSetTracking::test_duplicate_write_idempotent PASSED [100%]
 
-================================== FAILURES ===================================
-__________________ test_validate_evidence_contract_structure __________________
-tests\unit_min_deps\test_evidence_contract_v2.py:216: in test_validate_evidence_contract_structure
-    mock_loop.assert_called_once_with("a" * 40)
-C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\unittest\mock.py:960: in assert_called_once_with
-    raise AssertionError(msg)
-E   AssertionError: Expected 'validate_hash_loop_prevention' to be called once. Called 0 times.
 ============================== warnings summary ===============================
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
 tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract::test_assert_activation_allowed_in_dunder_all
@@ -2525,29 +2504,26 @@ tests/governance/test_healing_reentry.py::TestActivationGateModuleLevelContract:
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 8
-Passed: 1176
-Failed: 1
+Passed: 1177
+Failed: 0
 Errors: 0
 
-\u274c GUARDIAN STATUS: FAIL
-Architectural violations detected. Review failed tests.
+\u2705 GUARDIAN STATUS: PASS
+All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
+3.08s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
 3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.02s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.50s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.25s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-1.97s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.55s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_no_nondeterministic_fields
-1.55s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
+3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+2.49s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.29s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.00s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.57s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_no_nondeterministic_fields
+1.56s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
 1.54s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
-1.53s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_summary_schema
-=========================== short test summary info ===========================
-FAILED tests/unit_min_deps/test_evidence_contract_v2.py::test_validate_evidence_contract_structure
-============ 1 failed, 1176 passed, 4 warnings in 62.06s (0:01:02) ============
+1.54s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
+================= 1177 passed, 4 warnings in 62.47s (0:01:02) =================
 
-EXIT CODE: 1
 
 [Evidence Contract v2 Checker]
 $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans
@@ -2568,933 +2544,5 @@ $ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe ops_scripts/
 OK: All tooling modules respect apps_* boundary
 
 
-ERROR: 1 contract gate(s) failed:
-  - Full Test Suite
-EXIT CODE: 1
-```
-
-## INSPECTED_FILE_CONTENTS
-
-### ops_scripts/ci/check_evidence_contract_v2.py
-```
-#!/usr/bin/env python3
-"""
-Evidence Contract v2 Checker
-
-Scans consolidated evidence files and verifies contract compliance:
-- Required headings exist and appear exactly once
-- CODE_COMMIT and EVIDENCE_COMMIT are 40-hex
-- No duplicated/contradictory commit fields
-- No embedded Python source blocks that look like runner code
-- Deterministic, pure read-only, exits nonzero on violations
-"""
-
-import argparse
-import re
-import sys
-from pathlib import Path
-from typing import List, Set
-
-
-class EvidenceContractChecker:
-    """Checker for Evidence Contract v2 compliance."""
-
-    # Required headings that must appear exactly once
-    REQUIRED_HEADINGS: Set[str] = {
-        "CODE_COMMIT",
-        "EVIDENCE_COMMIT", 
-        "FILES_CHANGED_CODE",
-        "FILES_CHANGED_EVIDENCE",
-        "INSPECTED_FILES",
-    }
-    
-    # Patterns that suggest embedded Python code
-    PYTHON_CODE_PATTERNS = [
-        r'#!/usr/bin/env python',
-        r'def main\(',
-        r'import sys',
-        r'from pathlib import Path',
-        r'if __name__ == "__main__"',
-        r'argparse\.ArgumentParser',
-        r'subprocess\.run',
-    ]
-
-    def __init__(self, paths: List[Path]):
-        """Initialize checker with paths to scan.
-        
-        Args:
-            paths: List of directories to scan for evidence files
-        """
-        self.paths = paths
-        self.violations = []
-
-    def find_evidence_files(self) -> List[Path]:
-        """Find all phase_*_consolidated*.md files in paths."""
-        evidence_files = []
-        
-        for path in self.paths:
-            if not path.exists():
-                self.violations.append(f"Path does not exist: {path}")
-                continue
-            
-            if path.is_file() and path.name.startswith("phase_") and "consolidated" in path.name and path.suffix == ".md":
-                evidence_files.append(path)
-            elif path.is_dir():
-                # Search for matching files
-                pattern = "phase_*_consolidated*.md"
-                files = list(path.glob(pattern))
-                evidence_files.extend(files)
-        
-        return sorted(evidence_files)
-
-    def validate_commit_hash(self, commit_hash: str, field_name: str, filepath: Path) -> None:
-        """Validate that commit hash is 40-character hex."""
-        if len(commit_hash) != 40:
-            self.violations.append(
-                f"{filepath}: {field_name} must be 40 characters (got {len(commit_hash)}): {commit_hash}"
-            )
-        elif not all(c in "0123456789abcdefABCDEF" for c in commit_hash):
-            self.violations.append(
-                f"{filepath}: {field_name} must be hex: {commit_hash}"
-            )
-        elif field_name != "EVIDENCE_COMMIT" or commit_hash != "PENDING":
-            # Additional check: verify commit exists (skip for PENDING)
-            try:
-                import subprocess
-                result = subprocess.run(
-                    ["git", "cat-file", "-e", commit_hash],
-                    capture_output=True,
-                    text=True,
-                    cwd=filepath.parent.parent.parent
-                )
-                if result.returncode != 0:
-                    self.violations.append(
-                        f"{filepath}: {field_name} does not exist in repository: {commit_hash}"
-                    )
-            except Exception:
-                # If git check fails, just warn but don't fail
-                pass
-
-    def check_file(self, filepath: Path) -> None:
-        """Check a single evidence file for compliance."""
-        try:
-            content = filepath.read_text(encoding="utf-8")
-        except Exception as e:
-            self.violations.append(f"{filepath}: Could not read file: {e}")
-            return
-
-        # Check for required headings
-        found_headings = set()
-        for heading in self.REQUIRED_HEADINGS:
-            pattern = rf"^## {heading}$"
-            matches = re.findall(pattern, content, re.MULTILINE)
-            if len(matches) == 0:
-                self.violations.append(f"{filepath}: Missing required heading: ## {heading}")
-            elif len(matches) > 1:
-                self.violations.append(f"{filepath}: Duplicate heading: ## {heading} (found {len(matches)} times)")
-            else:
-                found_headings.add(heading)
-
-        # Check for unexpected headings
-        all_headings = re.findall(r"^## (.+)$", content, re.MULTILINE)
-        for heading in all_headings:
-            if heading in self.REQUIRED_HEADINGS and heading not in found_headings:
-                # This shouldn't happen if our counting is right, but let's be safe
-                self.violations.append(f"{filepath}: Found heading but not counted: ## {heading}")
-
-        # Extract and validate commit hashes
-        lines = content.split('\n')
-        for i, line in enumerate(lines):
-            line = line.strip()
-            
-            if line.startswith("## CODE_COMMIT"):
-                # Next line should be the commit hash
-                if i + 1 < len(lines):
-                    commit_hash = lines[i + 1].strip()
-                    if commit_hash and commit_hash != "CODE_COMMIT":  # Skip if it's just the heading again
-                        self.validate_commit_hash(commit_hash, "CODE_COMMIT", filepath)
-            
-            elif line.startswith("## EVIDENCE_COMMIT"):
-                # Next line should be the commit hash
-                if i + 1 < len(lines):
-                    commit_hash = lines[i + 1].strip()
-                    if commit_hash and commit_hash != "EVIDENCE_COMMIT":
-                        if commit_hash != "PENDING":
-                            self.validate_commit_hash(commit_hash, "EVIDENCE_COMMIT", filepath)
-
-        # Check for embedded Python code (basic heuristic)
-        content_lower = content.lower()
-        for pattern in self.PYTHON_CODE_PATTERNS:
-            if re.search(pattern, content, re.IGNORECASE):
-                # Check if it's in a code block (which is expected for file contents)
-                # We're looking for Python code outside of proper markdown code blocks
-                lines = content.split('\n')
-                in_code_block = False
-                code_block_start = None
-                
-                for j, check_line in enumerate(lines):
-                    if check_line.strip() == '```':
-                        if not in_code_block:
-                            in_code_block = True
-                            code_block_start = j
-                        else:
-                            in_code_block = False
-                            code_block_start = None
-                    
-                    # If we find Python-like patterns outside code blocks, that's suspicious
-                    if not in_code_block and re.search(pattern, check_line, re.IGNORECASE):
-                        # Skip if it's clearly just a comment about Python code
-                        if not check_line.strip().startswith('#') and 'python' not in check_line.lower():
-                            self.violations.append(
-                                f"{filepath}: Suspicious Python code pattern detected outside code block at line {j + 1}: {pattern}"
-                            )
-                            break  # One violation per pattern is enough
-
-        # Check for proper markdown structure
-        if not content.startswith('#'):
-            self.violations.append(f"{filepath}: Should start with markdown heading (#)")
-
-    def check(self) -> List[str]:
-        """Check all evidence files and return violations."""
-        evidence_files = self.find_evidence_files()
-        
-        if not evidence_files:
-            self.violations.append("No evidence files found matching pattern phase_*_consolidated*.md")
-            return self.violations
-        
-        print(f"Checking {len(evidence_files)} evidence file(s)...")
-        
-        for filepath in evidence_files:
-            print(f"Checking: {filepath.relative_to(filepath.parent.parent.parent)}")
-            self.check_file(filepath)
-        
-        return self.violations
-
-
-def main():
-    """Main entry point."""
-    parser = argparse.ArgumentParser(description="Check Evidence Contract v2 compliance")
-    parser.add_argument("--paths", nargs="+", required=True, help="Paths to scan for evidence files")
-    args = parser.parse_args()
-    
-    # Convert to Path objects
-    paths = [Path(p) for p in args.paths]
-    
-    checker = EvidenceContractChecker(paths)
-    violations = checker.check()
-    
-    if violations:
-        print(f"\nERROR: Evidence contract violations found: {len(violations)}")
-        for violation in violations:
-            print(f"  - {violation}")
-        return 1
-    else:
-        print(f"\nOK: All evidence files comply with contract v2")
-        return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
-
-### ops_scripts/ci/check_tooling_apps_boundary.py
-```
-#!/usr/bin/env python3
-"""
-Tooling Apps Boundary Guard
-
-Ensures tooling modules (evidence runners, CI scripts) do not import apps_* runtime modules.
-Tooling must remain pure - apps_* can only be referenced as strings/paths in INSPECTED_FILES.
-
-Deterministic, pure read-only, exits nonzero on violations.
-"""
-
-import ast
-import sys
-from pathlib import Path
-from typing import List, Set
-
-
-class ToolingAppsBoundaryChecker:
-    """Checker for tooling/apps_* boundary violations."""
-    
-    # Tooling directories that must not import apps_*
-    TOOLING_DIRS = [
-        "tools/evidence",
-        "ops_scripts/ci",
-        "ops_scripts/hooks",
-    ]
-    
-    # Forbidden import prefixes
-    FORBIDDEN_IMPORTS = ["apps_lic", "apps_rg", "apps_shared"]
-    
-    def __init__(self, repo_root: Path):
-        """Initialize checker.
-        
-        Args:
-            repo_root: Repository root path
-        """
-        self.repo_root = repo_root
-        self.violations = []
-    
-    def check_file(self, filepath: Path) -> None:
-        """Check a single Python file for apps_* imports.
-        
-        Args:
-            filepath: Path to Python file to check
-        """
-        try:
-            content = filepath.read_text(encoding="utf-8")
-            tree = ast.parse(content, filename=str(filepath))
-        except SyntaxError as e:
-            self.violations.append(f"{filepath}: Syntax error at line {e.lineno}")
-            return
-        except Exception as e:
-            self.violations.append(f"{filepath}: Could not parse: {e}")
-            return
-        
-        # Check all import statements
-        for node in ast.walk(tree):
-            if isinstance(node, ast.Import):
-                for alias in node.names:
-                    if any(alias.name.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS):
-                        self.violations.append(
-                            f"{filepath}:{node.lineno}: Forbidden import: import {alias.name}"
-                        )
-            elif isinstance(node, ast.ImportFrom):
-                if node.module and any(node.module.startswith(prefix) for prefix in self.FORBIDDEN_IMPORTS):
-                    self.violations.append(
-                        f"{filepath}:{node.lineno}: Forbidden import: from {node.module} import ..."
-                    )
-    
-    def check(self) -> List[str]:
-        """Check all tooling files for boundary violations.
-        
-        Returns:
-            List of violation messages
-        """
-        for tooling_dir in self.TOOLING_DIRS:
-            tooling_path = self.repo_root / tooling_dir
-            if not tooling_path.exists():
-                continue
-            
-            # Find all Python files in tooling directory
-            for py_file in tooling_path.rglob("*.py"):
-                if py_file.name.startswith("_"):
-                    continue  # Skip private/test files
-                self.check_file(py_file)
-        
-        return self.violations
-
-
-def main():
-    """Main entry point."""
-    repo_root = Path(__file__).parent.parent.parent
-    
-    checker = ToolingAppsBoundaryChecker(repo_root)
-    violations = checker.check()
-    
-    if violations:
-        print(f"\nERROR: Tooling/apps_* boundary violations found: {len(violations)}")
-        for violation in violations:
-            print(f"  - {violation}")
-        return 1
-    else:
-        print(f"\nOK: All tooling modules respect apps_* boundary")
-        return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
-
-### ops_scripts/ci/run_contract_gates.py
-```
-#!/usr/bin/env python3
-"""
-Contract Gates Runner
-
-Single entrypoint for running all contract validation gates in CI.
-Executes pytest and evidence contract checker with deterministic ordering.
-
-All commands executed via subprocess argv arrays (shell=False).
-Fails if argv0 contains pwsh/powershell.
-"""
-
-import subprocess
-import sys
-from pathlib import Path
-
-
-def run_cmd(args, cwd=None):
-    """Execute command and return (rc, stdout, stderr).
-    
-    Args:
-        args: Command arguments as list
-        cwd: Working directory (optional)
-        
-    Returns:
-        Tuple of (return_code, stdout, stderr)
-        
-    Raises:
-        ValueError: If argv0 contains pwsh/powershell
-    """
-    # PowerShell detection at argv level only
-    argv0_lower = str(args[0]).lower()
-    if "pwsh" in argv0_lower or "powershell" in argv0_lower:
-        raise ValueError(f"PowerShell usage detected in command: {' '.join(args)}")
-    
-    result = subprocess.run(
-        args, cwd=cwd, capture_output=True, text=True, shell=False,
-        encoding="utf-8", errors="replace"
-    )
-    return result.returncode, result.stdout, result.stderr
-
-
-def main():
-    """Run all contract gates in deterministic order."""
-    repo_root = Path(__file__).parent.parent.parent
-    
-    gates = [
-        (
-            [sys.executable, "-m", "pytest", "-q", "--color=no"],
-            "Full Test Suite",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
-            "Evidence Contract v2 Checker",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_tooling_apps_boundary.py"],
-            "Tooling/Apps Boundary Guard",
-        ),
-    ]
-    
-    print("Running contract gates in deterministic order...\n")
-    
-    failed_gates = []
-    
-    for cmd, title in gates:
-        print(f"[{title}]")
-        print(f"$ {' '.join(cmd)}")
-        
-        try:
-            rc, out, err = run_cmd(cmd, cwd=repo_root)
-            
-            # Print output
-            if out:
-                print(out)
-            if err:
-                print(f"STDERR: {err}", file=sys.stderr)
-            
-            if rc != 0:
-                print(f"EXIT CODE: {rc}")
-                failed_gates.append(title)
-            
-            print()  # Blank line between gates
-            
-        except ValueError as e:
-            print(f"ERROR: {e}")
-            failed_gates.append(title)
-            print()
-    
-    # Summary
-    if failed_gates:
-        print(f"ERROR: {len(failed_gates)} contract gate(s) failed:")
-        for gate in failed_gates:
-            print(f"  - {gate}")
-        return 1
-    else:
-        print("OK: All contract gates passed")
-        return 0
-
-
-if __name__ == "__main__":
-    sys.exit(main())
-```
-
-### tests/unit_min_deps/test_tooling_apps_boundary.py
-```
-"""Tests for tooling/apps_* boundary guard."""
-
-import sys
-import tempfile
-from pathlib import Path
-from unittest.mock import patch
-
-import pytest
-
-# Add ops_scripts/ci to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "ops_scripts" / "ci"))
-
-from check_tooling_apps_boundary import ToolingAppsBoundaryChecker
-
-
-@pytest.mark.unit_min_deps
-def test_clean_tooling_imports_allowed():
-    """Tooling modules with no apps_* imports should pass."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a clean tooling file
-        clean_file = tooling_dir / "clean_runner.py"
-        clean_file.write_text("""
-import sys
-from pathlib import Path
-
-def main():
-    print("Clean tooling")
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 0
-
-
-@pytest.mark.unit_min_deps
-def test_apps_lic_import_forbidden():
-    """Importing apps_lic should trigger violation."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with forbidden import
-        bad_file = tooling_dir / "bad_runner.py"
-        bad_file.write_text("""
-import apps_lic.engines.lic_spine_adapter
-
-def main():
-    pass
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 1
-        assert "apps_lic" in violations[0]
-        assert "Forbidden import" in violations[0]
-
-
-@pytest.mark.unit_min_deps
-def test_apps_rg_from_import_forbidden():
-    """from apps_rg import should trigger violation."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "ops_scripts" / "ci"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with forbidden from import
-        bad_file = tooling_dir / "bad_checker.py"
-        bad_file.write_text("""
-from apps_rg.engines import rg_spine_adapter
-
-def check():
-    pass
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 1
-        assert "apps_rg" in violations[0]
-        assert "Forbidden import" in violations[0]
-
-
-@pytest.mark.unit_min_deps
-def test_apps_shared_import_forbidden():
-    """Importing apps_shared should trigger violation."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with forbidden import
-        bad_file = tooling_dir / "bad_util.py"
-        bad_file.write_text("""
-from apps_shared.utils import determinism_util
-
-def helper():
-    pass
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 1
-        assert "apps_shared" in violations[0]
-
-
-@pytest.mark.unit_min_deps
-def test_string_references_allowed():
-    """String references to apps_* (e.g., in INSPECTED_FILES) should be allowed."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with string references (allowed)
-        ok_file = tooling_dir / "ok_runner.py"
-        ok_file.write_text("""
-inspected = [
-    "apps_lic/engines/lic_spine_adapter.py",
-    "apps_rg/engines/rg_spine_adapter.py",
-    "apps_shared/spine/base_spine_adapter.py",
-]
-
-def main():
-    for path in inspected:
-        print(path)
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 0
-
-
-@pytest.mark.unit_min_deps
-def test_multiple_violations_reported():
-    """Multiple violations in same file should all be reported."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with multiple violations
-        bad_file = tooling_dir / "multi_bad.py"
-        bad_file.write_text("""
-import apps_lic.engines
-from apps_rg.engines import something
-import apps_shared.utils
-
-def main():
-    pass
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 3
-
-
-@pytest.mark.unit_min_deps
-def test_syntax_error_reported():
-    """Files with syntax errors should be reported."""
-    with tempfile.TemporaryDirectory() as tmpdir:
-        repo_root = Path(tmpdir)
-        tooling_dir = repo_root / "tools" / "evidence"
-        tooling_dir.mkdir(parents=True)
-        
-        # Create a file with syntax error
-        bad_file = tooling_dir / "syntax_error.py"
-        bad_file.write_text("""
-def main(
-    # Missing closing paren
-""", encoding="utf-8")
-        
-        checker = ToolingAppsBoundaryChecker(repo_root)
-        violations = checker.check()
-        
-        assert len(violations) == 1
-        assert "Syntax error" in violations[0]
-```
-
-### tests/unit_min_deps/test_contract_gates.py
-```
-"""Tests for contract gates runner."""
-
-import sys
-from pathlib import Path
-from unittest.mock import MagicMock, patch
-
-import pytest
-
-# Add ops_scripts/ci to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent / "ops_scripts" / "ci"))
-
-from run_contract_gates import run_cmd
-
-
-@pytest.mark.unit_min_deps
-def test_run_cmd_detects_powershell():
-    """run_cmd rejects PowerShell commands."""
-    with pytest.raises(ValueError, match="PowerShell usage detected"):
-        run_cmd(["powershell", "-Command", "echo test"])
-    
-    with pytest.raises(ValueError, match="PowerShell usage detected"):
-        run_cmd(["pwsh", "-Command", "echo test"])
-    
-    with pytest.raises(ValueError, match="PowerShell usage detected"):
-        run_cmd(["PowerShell.exe", "-Command", "echo test"])
-
-
-@pytest.mark.unit_min_deps
-def test_run_cmd_accepts_python():
-    """run_cmd accepts Python commands."""
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
-        
-        # Should not raise
-        rc, out, err = run_cmd(["python", "--version"])
-        assert rc == 0
-
-
-@pytest.mark.unit_min_deps
-def test_run_cmd_uses_argv_arrays():
-    """run_cmd uses subprocess with argv arrays and shell=False."""
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(returncode=0, stdout="output", stderr="")
-        
-        run_cmd(["python", "-m", "pytest", "-q"])
-        
-        # Verify subprocess.run was called with correct parameters
-        mock_run.assert_called_once()
-        call_args = mock_run.call_args
-        
-        # Check that args is a list (argv array)
-        assert isinstance(call_args[0][0], list)
-        assert call_args[0][0] == ["python", "-m", "pytest", "-q"]
-        
-        # Check that shell=False
-        assert call_args[1]["shell"] is False
-
-
-@pytest.mark.unit_min_deps
-def test_run_cmd_returns_output():
-    """run_cmd returns return code, stdout, and stderr."""
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(
-            returncode=42,
-            stdout="test output",
-            stderr="test error"
-        )
-        
-        rc, out, err = run_cmd(["python", "--version"])
-        
-        assert rc == 42
-        assert out == "test output"
-        assert err == "test error"
-
-
-@pytest.mark.unit_min_deps
-def test_run_cmd_encoding_safe():
-    """run_cmd uses UTF-8 encoding with error replacement."""
-    with patch('subprocess.run') as mock_run:
-        mock_run.return_value = MagicMock(returncode=0, stdout="", stderr="")
-        
-        run_cmd(["python", "--version"])
-        
-        call_args = mock_run.call_args
-        assert call_args[1]["encoding"] == "utf-8"
-        assert call_args[1]["errors"] == "replace"
-```
-
-### tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py
-```
-#!/usr/bin/env python3
-"""
-Phase 10C-11-12 Consolidated Evidence Runner
-
-Generates consolidated evidence for:
-- Phase 10C: Phase 09-10 Evidence Canonicalization
-- Phase 11: apps_* Refactor Contract Alignment
-- Phase 12: CI Ordering + Hard-Fail Wiring
-
-Uses Evidence Contract v2 helper for scope isolation and self-verification.
-"""
-
-import sys
-from pathlib import Path
-
-# Add the tools/evidence directory to the path for imports
-sys.path.insert(0, str(Path(__file__).parent))
-
-from evidence_contract_v2 import EvidenceContractV2
-
-
-def main():
-    """Generate Phases 10C-11-12 consolidated evidence using Contract v2."""
-    args = EvidenceContractV2.parse_args("Generate Phases 10C-11-12 consolidated evidence")
-    
-    code_commit = args.code_commit
-    evidence_commit = args.evidence_commit
-    
-    repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_10c_11_12_consolidated.md"
-
-    print(f"Generating Phases 10C-11-12 consolidated evidence: {evidence_file}")
-    print(f"CODE_COMMIT: {code_commit}")
-    if evidence_commit:
-        print(f"EVIDENCE_COMMIT: {evidence_commit}")
-    
-    # Initialize contract helper with allowed prefixes for phases 10C-11-12
-    allowed_prefixes = {
-        "apps_shared/",
-        "apps_lic/", 
-        "apps_rg/",
-        "agentic_core/",
-        "ops_scripts/",
-        "tools/evidence/",
-        "tests/",
-        "docs/reports/plans/",
-        ".github/workflows/",
-        "pytest.ini",
-        "docs/rules/",
-    }
-    
-    contract = EvidenceContractV2(repo_root, allowed_prefixes)
-    
-    # Validate evidence contract structure
-    require_evidence_commit = evidence_commit is not None
-    contract.validate_evidence_contract_structure(
-        code_commit, evidence_commit, require_evidence_commit
-    )
-    
-    # Start building evidence content
-    evidence_lines = []
-    evidence_lines.append("# Phases 10C-11-12: Evidence Canonicalization + Apps Boundary + CI Hardening (Consolidated)")
-    evidence_lines.append("")
-    evidence_lines.append("## Scope")
-    evidence_lines.append("Phase 10C: Phase 09-10 Evidence Canonicalization (single-source-of-truth)")
-    evidence_lines.append("Phase 11: apps_* Refactor Contract Alignment (minimal, enforcement-first)")
-    evidence_lines.append("Phase 12: CI Ordering + Hard-Fail Wiring (repo-wide, deterministic)")
-    evidence_lines.append("")
-    
-    # Build evidence sections using contract helper
-    inspected = [
-        "ops_scripts/ci/check_evidence_contract_v2.py",
-        "ops_scripts/ci/check_tooling_apps_boundary.py",
-        "ops_scripts/ci/run_contract_gates.py",
-        "tests/unit_min_deps/test_tooling_apps_boundary.py",
-        "tests/unit_min_deps/test_contract_gates.py",
-        "tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py",
-        ".github/workflows/spine-determinism-guard.yml",
-    ]
-    
-    sections = contract.build_evidence_sections(
-        code_commit, evidence_commit, inspected
-    )
-    
-    # Add formatted sections
-    evidence_lines.extend(contract.format_evidence_sections(sections))
-    
-    # Command outputs
-    commands = [
-        (
-            [sys.executable, "-m", "pytest", "-q", "--color=no"],
-            "Full Test Suite",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
-            "Evidence Contract v2 Checker",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/check_tooling_apps_boundary.py"],
-            "Tooling/Apps Boundary Guard",
-        ),
-        (
-            [sys.executable, "ops_scripts/ci/run_contract_gates.py"],
-            "Contract Gates Runner",
-        ),
-    ]
-    
-    for cmd, title in commands:
-        evidence_lines.append(f"## {title}")
-        evidence_lines.append("```")
-        evidence_lines.append(f"$ {' '.join(cmd)}")
-        
-        rc, out, err = contract.run_cmd(cmd)
-        evidence_lines.append(out)
-        if err:
-            evidence_lines.append(f"STDERR: {err}")
-        if rc != 0:
-            evidence_lines.append(f"EXIT CODE: {rc}")
-        
-        evidence_lines.append("```")
-        evidence_lines.append("")
-    
-    # Embed full contents of inspected files
-    evidence_lines.append("## INSPECTED_FILE_CONTENTS")
-    evidence_lines.append("")
-    
-    for filepath in sections["INSPECTED_FILES"]:
-        full_path = repo_root / filepath
-        evidence_lines.append(f"### {filepath}")
-        evidence_lines.append("```")
-        content = EvidenceContractV2.read_file_content(full_path)
-        evidence_lines.append(content)
-        evidence_lines.append("```")
-        evidence_lines.append("")
-    
-    # Write evidence file with LF line endings and no trailing whitespace
-    evidence_content = "\n".join(line.rstrip() for line in evidence_lines)
-    evidence_file.parent.mkdir(parents=True, exist_ok=True)
-    evidence_file.write_text(evidence_content, encoding="utf-8", newline="\n")
-    
-    # Sanity check: evidence file should not start with Python code
-    content_start = evidence_file.read_text(encoding="utf-8")[:200]
-    if content_start.strip().startswith("#!/usr/bin/env python") or "def main()" in content_start[:200]:
-        print("ERROR: Evidence file appears to contain Python code instead of markdown")
-        print("This indicates the runner content was written to the evidence file.")
-        sys.exit(1)
-
-    print(f"Evidence generated successfully: {evidence_file}")
-    print(f"CODE_COMMIT: {code_commit}")
-    print(f"EVIDENCE_COMMIT: {sections['EVIDENCE_COMMIT']}")
-    print(f"Current HEAD: {contract.get_current_head()}")
-    
-    if not evidence_commit:
-        print("\nTo complete the evidence contract:")
-        print("1. Commit this evidence file")
-        print("2. Re-run with --evidence-commit <new_commit_hash>")
-        print("3. The runner will update the sealed evidence file")
-
-
-if __name__ == "__main__":
-    main()
-```
-
-### .github/workflows/spine-determinism-guard.yml
-```
-name: Spine Determinism Guard
-
-on:
-  push:
-  pull_request:
-
-jobs:
-  spine-bypass-check:
-    runs-on: ubuntu-latest
-    steps:
-      - name: Checkout
-        uses: actions/checkout@v4
-
-      - name: Set up Python
-        uses: actions/setup-python@v5
-        with:
-          python-version: "3.12"
-
-      - name: Install dependencies
-        run: |
-          python -m pip install --upgrade pip
-          if [ -f requirements.txt ]; then pip install -r requirements.txt; fi
-
-      - name: Run AST spine bypass + randomness guard
-        run: python ops_scripts/ci/check_spine_bypass.py
-
-      - name: Run spine adapter contract guard
-        run: python ops_scripts/ci/check_spine_adapter_contract.py
-
-      - name: Run full test suite
-        run: python -m pytest -q
-
-      - name: Run evidence contract tests
-        run: python -m pytest -q tests/unit_min_deps/test_evidence_contract_v2.py
-
-      - name: Run evidence contract checker
-        run: python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans
+OK: All contract gates passed
 ```
