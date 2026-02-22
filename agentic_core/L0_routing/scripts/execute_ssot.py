@@ -1294,6 +1294,8 @@ class RuntimeStateManager:
         }
         # [HARDENED] Register exit handler to prevent 'zombie' running states
         atexit.register(self._emergency_cleanup)
+        # [G-12-1] Latch: once L0 mutation prohibition fires, disable all future save() attempts
+        self._persistence_disabled: bool = False
 
     def start_mission(self, mission_type: str, agents_order: list[str]):
         self.state["status"] = "running"
@@ -1352,7 +1354,13 @@ class RuntimeStateManager:
         """
         [HARDENED] Atomic Write Pattern with Permission Lockdown.
         Writes to temp file, sets 600 permissions, then renames.
+        Once L0 mutation prohibition fires, latches _persistence_disabled=True
+        and becomes a no-op for the remainder of the run.
         """
+        # [G-12-1] Latch: skip all future attempts after first prohibition
+        if self._persistence_disabled:
+            return
+
         try:
             from agentic_core.L0_routing.scripts.runtime_state_digest import (
                 DIGEST_SCHEMA_VERSION,
@@ -1383,16 +1391,35 @@ class RuntimeStateManager:
             # Atomic replacement
             os.replace(temp_name, state_path)
 
+        except PermissionError as e:
+            err_str = str(e)
+            if "MUTATION_PROHIBITED" in err_str:
+                # [G-12-1] First and only log — latch disabled for remainder of run
+                self._persistence_disabled = True
+                logger.critical(
+                    "[RuntimeStateManager] L0 mutation prohibition active — "
+                    "runtime state persistence DISABLED for this run (fail-closed). "
+                    f"Reason: {err_str}"
+                )
+                # Cleanup temp if created
+                try:
+                    # guardian: allow-path-string
+                    if "temp_name" in locals() and os.path.exists(temp_name):
+                        os.remove(temp_name)
+                # guardian: allow-silent-swallow
+                except Exception:
+                    pass
+            else:
+                logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
         # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
             try:
                 # guardian: allow-path-string
                 if "temp_name" in locals() and os.path.exists(temp_name):
-                    assert_no_persistent_write("L0", "os.mutate")  # G-12-1: mutation prohibition guard
                     os.remove(temp_name)
             # guardian: allow-silent-swallow
-            except:
+            except Exception:
                 pass
 
     def _emergency_cleanup(self):

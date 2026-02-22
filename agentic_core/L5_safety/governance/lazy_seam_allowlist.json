@@ -2,116 +2,6 @@
   "description": "Lazy Seam Allowlist - Phase 4 Option A (Phase 3B universe)",
   "seams": [
     {
-      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
-      "function_name": "_get_enforce_healer_pipe_order",
-      "imported_modules": [
-        "agentic_core.L2_execution.enforcement.healer_pipe_order"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
-      "function_name": "_get_guardian_decision",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.guardian_decision"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
-      "function_name": "_get_manifest_hash_validator",
-      "imported_modules": [
-        "agentic_core.L2_execution.enforcement.manifest_hash_validator"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
-      "function_name": "_get_routing_config_class",
-      "imported_modules": [
-        "agentic_core.L4_state.config.versioned_configs"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
-      "function_name": "_get_violation_event_store_class",
-      "imported_modules": [
-        "agentic_core.L4_state.enforcement.violation_event_store"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
-      "function_name": "_get_prior_detection_signal",
-      "imported_modules": [
-        "agentic_core.L4_state.types.detection_signal_store"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
-      "function_name": "_get_routing_config_and_active",
-      "imported_modules": [
-        "agentic_core.L4_state.config.versioned_configs"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
-      "function_name": "_get_CapabilityTokenArtifact",
-      "imported_modules": [
-        "agentic_core.L2_execution.types.capability_token_types"
-      ],
-      "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
-      "function_name": "_get_checkpoint_manager",
-      "imported_modules": [
-        "agentic_core.L4_state.reasoning.CheckpointManagerAgent"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D2_ENTRYPOINT_SCRIPT",
-      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
-      "function_name": "_get_orchestrator_class",
-      "imported_modules": [
-        "agentic_core.L3_orchestration.Orchestrator"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D2_ENTRYPOINT_SCRIPT",
-      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L0_routing\\scripts\\coverage.py",
-      "function_name": "_get_convergence_engine",
-      "imported_modules": [
-        "agentic_core.L3_orchestration.reasoning.mission_controller_convergence"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D2_ENTRYPOINT_SCRIPT",
-      "justification": "Entrypoint script lazy-loading optional higher-layer dependency"
-    },
-    {
       "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
       "function_name": "_get_l5_agent_roster",
       "imported_modules": [
@@ -278,8 +168,8 @@
         "agentic_core.L1_cognition.P2_domain.context"
       ],
       "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Script/orchestration entrypoint with lazy loading"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\cognitive_engine.py",
@@ -288,8 +178,8 @@
         "agentic_core.L3_orchestration.engines.action_router"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L1_cognition\\engines\\memory_embedder.py",
@@ -338,8 +228,8 @@
         "agentic_core.L5_safety.validators.unified_cst_healer"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L2_execution\\config\\unified_workflow_config.py",
@@ -348,8 +238,8 @@
         "agentic_core.L5_safety.enforcement.activation_gate"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L2_execution\\enforcement\\manifest_hash_validator.py",
@@ -368,8 +258,8 @@
         "agentic_core.L4_state.reasoning.PineconeSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.PineconeSovereignAgent",
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP"
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.PineconeSovereignAgent"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -378,18 +268,8 @@
         "agentic_core.L4_state.reasoning.RedisSovereignAgent"
       ],
       "imported_symbols": [],
-      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.RedisSovereignAgent",
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_UnifiedAgent_mapping",
-      "imported_modules": [
-        "agentic_core.L5_safety.reasoning.StructureValidatorAgent"
-      ],
-      "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
+      "justification": "Optional external dependency: agentic_core.L4_state.reasoning.RedisSovereignAgent"
     },
     {
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
@@ -416,6 +296,16 @@
       "function_name": "_get_UnifiedAgent_mapping",
       "imported_modules": [
         "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_UnifiedAgent_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.StructureValidatorAgent"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -475,16 +365,6 @@
       "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
       "function_name": "_get_phase4_detector_healer_router_executor_mapping",
       "imported_modules": [
-        "agentic_core.L5_safety.reasoning.StructureHealerAgent_types"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
-      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
-      "imported_modules": [
         "agentic_core.L5_safety.reasoning.CodeDetectorAgent"
       ],
       "imported_symbols": [],
@@ -522,14 +402,24 @@
       "justification": "Lazy seam loader for optional higher-layer dependency"
     },
     {
+      "file_path": "agentic_core\\L2_execution\\reasoning\\SubAtomicRegistryAgent.py",
+      "function_name": "_get_phase4_detector_healer_router_executor_mapping",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.StructureHealerAgent_types"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
+      "justification": "Lazy seam loader for optional higher-layer dependency"
+    },
+    {
       "file_path": "agentic_core\\L2_execution\\scripts\\remediation_dispatcher.py",
       "function_name": "_get_approval_types",
       "imported_modules": [
         "agentic_core.L3_orchestration.types.approval_contract"
       ],
       "imported_symbols": [],
-      "justification": "Script/orchestration entrypoint with lazy loading",
-      "reason_code": "D2_ENTRYPOINT_SCRIPT"
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "Script/orchestration entrypoint with lazy loading"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\enforcement\\mission_runner.py",
@@ -558,8 +448,8 @@
         "agentic_core.L5_safety.reasoning.CodeEnforcerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
@@ -568,8 +458,8 @@
         "agentic_core.L4_state.checkpoint_manager"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\autonomous_execution_engine.py",
@@ -578,8 +468,8 @@
         "agentic_core.L5_safety.reasoning.ResourceManagerAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\orchestrator_engine.py",
@@ -588,8 +478,8 @@
         "agentic_core.L5_safety.validators.credential_types"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\sovereign_mcp_router.py",
@@ -598,8 +488,8 @@
         "agentic_core.L4_state.P1_core.ValidationContext"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py",
@@ -628,8 +518,8 @@
         "agentic_core.L6_observability.reasoning.layer_decorator"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L3_orchestration\\reasoning\\NervousSystemAgent.py",
@@ -638,8 +528,8 @@
         "agentic_core.L6_observability.reasoning.CoverageAgent"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L4_state\\types\\detection_signal_store.py",
@@ -658,8 +548,8 @@
         "agentic_core.L6_observability.dashboards.data_generator"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L5_safety\\reasoning\\L5SafetyExerciserAgent.py",
@@ -668,8 +558,8 @@
         "agentic_core.L6_observability.reasoning.layer_decorator"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
       "file_path": "agentic_core\\L5_safety\\runners\\agent_roster_runner.py",
@@ -678,9 +568,9 @@
         "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor"
       ],
       "imported_symbols": [],
-      "justification": "Plugin registry or dynamic dispatch boundary",
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH"
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "Plugin registry or dynamic dispatch boundary"
     }
   ],
-  "total_seams": 68
+  "total_seams": 57
 }

@@ -46,6 +46,18 @@ from agentic_core.L5_safety.validators.context_validator import get_context_mana
 Logger = logging.getLogger(__name__)
 
 
+class GravityRepairProhibitedError(RuntimeError):
+    """Raised when mutation prohibition blocks a gravity fix after one retry."""
+
+    def __init__(self, file_path: Path, layer: str, op: str) -> None:
+        self.file_path = file_path
+        self.layer = layer
+        self.op = op
+        super().__init__(
+            f"GRAVITY_REPAIR_PROHIBITED: file={file_path} layer={layer} op={op} — downgraded to PLAN-ONLY"
+        )
+
+
 @dataclass
 class GravityFix:
     """Represents a gravity violation fix."""
@@ -80,6 +92,8 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         self.logger = Logger
         # [L4 CONTEXT MANAGER] Centralized state management
         self.context = get_context_manager(self.project_root)
+        # Circuit-breaker: tracks (file_path, op) -> attempt_count
+        self._prohibition_hits: dict[tuple[str, str], int] = {}
 
     def analyze_violation(
         self,
@@ -223,9 +237,58 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         return fixes
 
+    def _check_prohibition_circuit_breaker(self, file_path: Path, op: str) -> None:
+        """Increment hit counter; raise GravityRepairProhibitedError on second hit."""
+        key = (str(file_path), op)
+        self._prohibition_hits[key] = self._prohibition_hits.get(key, 0) + 1
+        if self._prohibition_hits[key] >= 2:
+            raise GravityRepairProhibitedError(file_path, "L0", op)
+
+    def _emit_plan_only(self, fix: GravityFix) -> dict[str, Any]:
+        """Emit a PLAN-ONLY artifact without attempting any write."""
+        self.logger.warning(
+            "[PLAN-ONLY] GRAVITY_REPAIR_PROHIBITED — requires privileged mutation context: "
+            f"file={fix.file_path} fix_type={fix.fix_type} "
+            f"old_import={fix.old_import!r} new_import={fix.new_import!r}"
+        )
+        return {
+            "status": "plan_only",
+            "fix_type": fix.fix_type,
+            "file": str(fix.file_path),
+            "old_import": fix.old_import,
+            "new_import": fix.new_import,
+            "requires": "privileged_mutation_context",
+        }
+
+    def _apply_import_replacement_ast(self, file_path: Path, old_import: str, new_import: str) -> bool:
+        """Replace exactly the matching import line(s) using line-level comparison.
+
+        Returns True if any replacement was made, False otherwise.
+        Raises ValueError if old_import is empty or a single character (catastrophic replace guard).
+        """
+        stripped = old_import.strip()
+        if len(stripped) <= 1:
+            raise ValueError(
+                f"Refusing content.replace: old_import is too short ({stripped!r}), "
+                "would cause catastrophic file corruption."
+            )
+        lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
+        new_lines = []
+        changed = False
+        for line in lines:
+            if line.rstrip("\n\r") == stripped or line.strip() == stripped:
+                new_lines.append(new_import + "\n")
+                changed = True
+            else:
+                new_lines.append(line)
+        if changed:
+            _wg.write_text(file_path, "".join(new_lines), encoding="utf-8")
+        return changed
+
     def apply_fix(self, fix: GravityFix, dry_run: bool = True) -> dict[str, Any]:
         """
         Apply a gravity fix to a file using Atomic Write Safety.
+        Includes circuit breaker for mutation prohibition and catastrophic-replace guard.
         """
         try:
             if dry_run:
@@ -235,20 +298,56 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
 
-            # Read original
-            content = fix.file_path.read_text(encoding="utf-8")
+            # [CIRCUIT BREAKER] Check prohibition before attempting write
+            try:
+                from agentic_core.L4_state.utils.layer_gravity_util import extract_layer_from_path
 
-            # Apply logic
-            new_content = content.replace(fix.old_import, fix.new_import)
+                file_layer = extract_layer_from_path(fix.file_path) or "unknown"
+                if file_layer == "L0":
+                    self._check_prohibition_circuit_breaker(fix.file_path, "shutil.mutate")
+                    return self._emit_plan_only(fix)
+            except GravityRepairProhibitedError:
+                return self._emit_plan_only(fix)
+            except ImportError:
+                pass
 
-            if new_content == content:
-                return {"status": "no_change", "fix_type": fix.fix_type}
-
-            # [ATOMIC WRITE HARDENING]
+            # [ATOMIC WRITE HARDENING] Use line-level AST-safe replacement
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
             try:
+                content = fix.file_path.read_text(encoding="utf-8")
+
+                # Guard: refuse single-char or empty old_import (catastrophic replace)
+                stripped_old = fix.old_import.strip()
+                if len(stripped_old) <= 1:
+                    # guardian: allow-path-fragility
+                    if os.path.exists(temp_path):
+                        _wg.remove_file(temp_path)
+                    self.logger.warning(
+                        f"[PLAN-ONLY] old_import too short ({stripped_old!r}), "
+                        "refusing replace to prevent corruption."
+                    )
+                    return self._emit_plan_only(fix)
+
+                # Line-level replacement only
+                lines = content.splitlines(keepends=True)
+                new_lines = []
+                changed = False
+                for line in lines:
+                    if line.rstrip("\n\r") == stripped_old or line.strip() == stripped_old:
+                        new_lines.append(fix.new_import + "\n")
+                        changed = True
+                    else:
+                        new_lines.append(line)
+
+                if not changed:
+                    _wg.remove_file(temp_path)
+                    return {"status": "no_change", "fix_type": fix.fix_type}
+
+                new_content = "".join(new_lines)
+
                 with os.fdopen(temp_fd, "w", encoding="utf-8") as tf:
                     tf.write(new_content)
+                temp_fd = None  # fdopen took ownership
 
                 # Create backup
                 backup_dir = self.project_root / "archives" / "healing_backups" / "gravity"
@@ -261,6 +360,25 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 self.logger.info(f"[FIXED] {fix.file_path.name} (Backup: {backup_path.name})")
                 return {"status": "fixed", "fix_type": fix.fix_type}
 
+            except PermissionError as perm_err:
+                # Mutation prohibition raised — circuit breaker
+                err_str = str(perm_err)
+                if "MUTATION_PROHIBITED" in err_str:
+                    op = "shutil.mutate"
+                    self._check_prohibition_circuit_breaker(fix.file_path, op)
+                    if temp_fd is not None and not isinstance(temp_fd, int):
+                        pass
+                    # guardian: allow-path-string
+                    # guardian: allow-path-fragility
+                    if os.path.exists(temp_path):
+                        try:
+                            _wg.remove_file(temp_path)
+                        # guardian: allow-silent-swallower
+                        except Exception:
+                            pass
+                    return self._emit_plan_only(fix)
+                raise
+
             except Exception as write_err:
                 # Cleanup temp on failure
                 # guardian: allow-path-string
@@ -268,6 +386,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     _wg.remove_file(temp_path)
                 raise write_err
 
+        except GravityRepairProhibitedError as prohibited:
+            self.logger.warning(str(prohibited))
+            return self._emit_plan_only(fix)
         except Exception as e:
             self.logger.error(f"Error applying fix to {fix.file_path}: {e}")
             return {"status": "error", "error": str(e)}
@@ -363,8 +484,13 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             # Apply fix if execute=True
             if execute and not dry_run:
                 result = self.apply_fix(fix, dry_run=False)
-                if result.get("status") == "fixed":
+                status = result.get("status")
+                if status == "fixed":
                     fixes_applied += 1
+                elif status == "plan_only":
+                    self.logger.info(
+                        f"[PLAN-ONLY] {fix.file_path.name}: mutation prohibited, proposal recorded"
+                    )
             else:
                 # Just report
                 self.apply_fix(fix, dry_run=True)
