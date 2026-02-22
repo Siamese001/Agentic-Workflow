@@ -104,7 +104,7 @@ Output: [OK] Spine bypass + randomness guard: 0 new violations (1185 files scann
 - Confirm enriched intent_input contains CID fields
 
 ## Final Commit Hash
-[Will be populated after commit]
+ec94d3e8af85e3f577cb7c70828786d091531986
 
 ## Compliance
 - ✅ No PowerShell usage
