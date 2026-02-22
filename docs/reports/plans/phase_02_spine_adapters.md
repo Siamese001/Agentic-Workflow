@@ -7,7 +7,7 @@ Implement LIC and RG spine adapters with deterministic CID derivation and unit t
 aa1d4f1413d5c0f1b1ac769a6f764c7ecb8e5d87
 
 ## EVIDENCE_COMMIT
-PENDING
+f4be873bbec970de78e180b2f889bd7244bbd11f
 
 ## Files Changed
 ```
