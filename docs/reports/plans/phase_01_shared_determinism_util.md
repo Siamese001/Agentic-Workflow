@@ -10,7 +10,7 @@ and deterministic hashing bound to `canonical_bytes()` from the L0 spine.
 
 ## Commit Hash
 
-ac4bab73aa3cf143d5bb661663613391a340f0db
+ecd54545287d2b12de3919349179f50219d34d91
 
 ## Files Changed
 
