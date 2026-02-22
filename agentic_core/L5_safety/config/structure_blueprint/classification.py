@@ -540,8 +540,8 @@ DOMAIN_CONTENT_SIGNALS: Final[Mapping[str, str]] = {
     "dashboard": "L6_observability/dashboards",
     "playwright": "L6_observability/dashboards",
     # Location SSOT signals for misclassified utility files
-    "meta_learning_engine_util": "L7_meta_learning/utils",
-    "meta_learning_storage_util": "L7_meta_learning/utils",
+    "meta_learning_engine_util": "system_learning/utils",
+    "meta_learning_storage_util": "system_learning/utils",
     "state_util": "L4_state/utils",
 }
 

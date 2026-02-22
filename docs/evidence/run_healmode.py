@@ -1,7 +1,8 @@
 """Wave 3: True heal-mode run — no --validate, no --dry-run."""
-import sys
-import os
+
 import json
+import os
+import sys
 import traceback
 
 sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", ".."))
@@ -28,7 +29,7 @@ except SystemExit as e:
     code = e.code if e.code is not None else 0
     if code != 0:
         ec = f"EXIT_{code}"
-except Exception as e:
+except Exception:
     ec = "FAIL"
     exec_err = traceback.format_exc()
 

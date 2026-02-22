@@ -27,6 +27,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
 )
 
 
+@pytest.mark.governance
 class TestProtectedRootEnforcement:
     """Test suite for protected root enforcement."""
 
@@ -89,6 +90,7 @@ class TestProtectedRootEnforcement:
                 pytest.fail("enforce_protected_root raised SourceMutationBlocked despite allow_override=True")
 
 
+@pytest.mark.governance
 class TestStartupFenceSelfTest:
     """Test suite for startup fence self-test."""
 
@@ -151,6 +153,7 @@ class TestStartupFenceSelfTest:
             assert fence_active, "Fence should be detected as active when enforce_protected_root raises"
 
 
+@pytest.mark.governance
 class TestImportPreflight:
     """Test suite for import/symbol preflight."""
 
@@ -182,6 +185,7 @@ class TestImportPreflight:
             pytest.fail(f"_preflight_import_check raised RuntimeError: {exc}")
 
 
+@pytest.mark.governance
 class TestProtectedRootPolicy:
     """Test suite for protected root policy."""
 

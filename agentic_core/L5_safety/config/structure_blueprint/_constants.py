@@ -577,16 +577,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     ]:
         agentic_core_subfolders[layer] = _build_layer_definition(layer)
 
-    # L7 — Meta-learning (schema-locked proposals, no runtime execution)
-    agentic_core_subfolders["L7_meta_learning"] = {
-        "purpose": "Meta-learning proposal schemas and offline evaluation tooling (no runtime execution).",
-        "volatile": True,
-        "no_cross_layer_imports": True,
-        "allowed_extensions": [".py"],
-        "subfolders": {
-            "types": {"purpose": "Artifact contracts and schema-locked types"},
-        },
-    }
+    # L7_meta_learning migrated to system_learning/ - removed phantom layer definition
 
     # Add non-layer subfolders
     agentic_core_subfolders.update(

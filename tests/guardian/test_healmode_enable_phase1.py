@@ -30,8 +30,7 @@ pytestmark = pytest.mark.guardian
 def _clean_env():
     """Restore env vars after each test."""
     saved = {
-        k: os.environ.get(k)
-        for k in ("AGENTIC_SKIP_LONGPATH_PREFLIGHT", "AGENTIC_ALLOW_MUTATION_FOR_TESTS")
+        k: os.environ.get(k) for k in ("AGENTIC_SKIP_LONGPATH_PREFLIGHT", "AGENTIC_ALLOW_MUTATION_FOR_TESTS")
     }
     yield
     for k, v in saved.items():
@@ -51,6 +50,7 @@ class TestLongPathPreflight:
 
     def _make_validator(self, project_root: Path, dry_run: bool = False):
         from agentic_core.L0_routing.scripts.execute_ssot import PreFlightValidator
+
         return PreFlightValidator(project_root, dry_run=dry_run)
 
     def test_no_offenders_allows_heal_mode(self, tmp_path):
@@ -60,15 +60,15 @@ class TestLongPathPreflight:
 
         # Simulate LongPathsEnabled = 0 on Windows via mock
         mock_key = MagicMock()
-        with patch("platform.system", return_value="Windows"), \
-             patch("winreg.OpenKey", return_value=mock_key), \
-             patch("winreg.QueryValueEx", return_value=(0, None)):
+        with (
+            patch("platform.system", return_value="Windows"),
+            patch("winreg.OpenKey", return_value=mock_key),
+            patch("winreg.QueryValueEx", return_value=(0, None)),
+        ):
             ok, errors = validator.run_checks()
 
         longpath_errors = [e for e in errors if "LongPathsEnabled" in e]
-        assert longpath_errors == [], (
-            f"Expected no long-path errors with short paths, got: {longpath_errors}"
-        )
+        assert longpath_errors == [], f"Expected no long-path errors with short paths, got: {longpath_errors}"
 
     def test_offenders_block_heal_mode(self, tmp_path):
         """When paths exceed threshold, error is appended."""
@@ -78,10 +78,12 @@ class TestLongPathPreflight:
         long_path = tmp_path / ("x" * 241)
         mock_key = MagicMock()
 
-        with patch("platform.system", return_value="Windows"), \
-             patch("winreg.OpenKey", return_value=mock_key), \
-             patch("winreg.QueryValueEx", return_value=(0, None)), \
-             patch.object(Path, "rglob", return_value=[long_path]):
+        with (
+            patch("platform.system", return_value="Windows"),
+            patch("winreg.OpenKey", return_value=mock_key),
+            patch("winreg.QueryValueEx", return_value=(0, None)),
+            patch.object(Path, "rglob", return_value=[long_path]),
+        ):
             ok, errors = validator.run_checks()
 
         longpath_errors = [e for e in errors if "LongPathsEnabled" in e]
@@ -94,24 +96,26 @@ class TestLongPathPreflight:
         validator = self._make_validator(tmp_path, dry_run=False)
 
         mock_key = MagicMock()
-        with patch("platform.system", return_value="Windows"), \
-             patch("winreg.OpenKey", return_value=mock_key), \
-             patch("winreg.QueryValueEx", return_value=(0, None)):
+        with (
+            patch("platform.system", return_value="Windows"),
+            patch("winreg.OpenKey", return_value=mock_key),
+            patch("winreg.QueryValueEx", return_value=(0, None)),
+        ):
             ok, errors = validator.run_checks()
 
         longpath_errors = [e for e in errors if "LongPathsEnabled" in e]
-        assert longpath_errors == [], (
-            f"Expected override to suppress long-path error, got: {longpath_errors}"
-        )
+        assert longpath_errors == [], f"Expected override to suppress long-path error, got: {longpath_errors}"
 
     def test_dry_run_still_warns_not_errors(self, tmp_path):
         """dry_run=True logs warning, does not append error."""
         validator = self._make_validator(tmp_path, dry_run=True)
 
         mock_key = MagicMock()
-        with patch("platform.system", return_value="Windows"), \
-             patch("winreg.OpenKey", return_value=mock_key), \
-             patch("winreg.QueryValueEx", return_value=(0, None)):
+        with (
+            patch("platform.system", return_value="Windows"),
+            patch("winreg.OpenKey", return_value=mock_key),
+            patch("winreg.QueryValueEx", return_value=(0, None)),
+        ):
             ok, errors = validator.run_checks()
 
         longpath_errors = [e for e in errors if "LongPathsEnabled" in e]

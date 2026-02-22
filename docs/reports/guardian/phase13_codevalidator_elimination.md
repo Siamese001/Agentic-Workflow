@@ -154,4 +154,3 @@ TOP 15 UPWARD TARGETS:
   13. [  2] agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent
   14. [  2] agentic_core.L4_state.reasoning.RedisSovereignAgent
   15. [  2] agentic_core.L4_state.reasoning.PineconeSovereignAgent
-

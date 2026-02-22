@@ -20,6 +20,7 @@ pytestmark = pytest.mark.unit_min_deps
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_file(tmp_path: Path, name: str, code: str) -> Path:
     p = tmp_path / name
     p.write_text(textwrap.dedent(code), encoding="utf-8")
@@ -32,7 +33,9 @@ def _new_fca(tmp_path: Path):
     )
 
     return FileClassificationAgent(
-        project_root=tmp_path, dry_run=True, validate_only=True,
+        project_root=tmp_path,
+        dry_run=True,
+        validate_only=True,
     )
 
 
@@ -40,27 +43,26 @@ def _new_fca(tmp_path: Path):
 # Test 1: Determinism — same file classified 10 times => identical result
 # ---------------------------------------------------------------------------
 
+
 class TestClassificationDeterminism:
     def test_repeated_classification_is_stable(self, tmp_path):
-        code = '''\
+        code = """\
         from engines import handler_engine
         class RequestRouter:
             def route_to(self, target):
                 return target.handle()
-        '''
+        """
         p = _make_file(tmp_path, "request_router.py", code)
         fca = _new_fca(tmp_path)
 
         results = [fca.classify_file(p) for _ in range(10)]
-        assert len(set(results)) == 1, (
-            f"Non-deterministic: got {set(results)}"
-        )
+        assert len(set(results)) == 1, f"Non-deterministic: got {set(results)}"
         assert results[0] == "ENGINE"
 
     def test_orchestrator_determinism(self, tmp_path):
         o_dir = tmp_path / "agentic_core" / "L3_orchestration" / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
-        code = '''\
+        code = """\
         from agentic_core.L3_orchestration.reasoning import AgentA
         from agentic_core.L5_safety.enforcement import GuardB
         class WorkflowOrchestrator:
@@ -70,7 +72,7 @@ class TestClassificationDeterminism:
             def stage_1(self): pass
             def stage_2(self): pass
             def dispatch_to_agents(self): pass
-        '''
+        """
         p = o_dir / "workflow_orchestrator.py"
         p.write_text(textwrap.dedent(code), encoding="utf-8")
         fca = _new_fca(tmp_path)
@@ -84,12 +86,13 @@ class TestClassificationDeterminism:
 # Test 2: Stats dict key stability
 # ---------------------------------------------------------------------------
 
+
 class TestStatsDictKeyStability:
     def test_violations_keys_present(self, tmp_path):
-        code = '''\
+        code = """\
         class Dummy:
             pass
-        '''
+        """
         p = _make_file(tmp_path, "dummy_class.py", code)
         fca = _new_fca(tmp_path)
         fca.classify_file(p)
@@ -116,10 +119,10 @@ class TestStatsDictKeyStability:
         assert "structure" in rif
 
     def test_stats_territory_moves_exists(self, tmp_path):
-        code = '''\
+        code = """\
         class Dummy:
             pass
-        '''
+        """
         p = _make_file(tmp_path, "dummy2.py", code)
         fca = _new_fca(tmp_path)
         fca.classify_file(p)
@@ -130,21 +133,22 @@ class TestStatsDictKeyStability:
 # Test 3: Order independence
 # ---------------------------------------------------------------------------
 
+
 class TestClassificationOrderIndependence:
     def test_order_does_not_affect_results(self, tmp_path):
-        router_code = '''\
+        router_code = """\
         from engines import handler_engine
         class MyRouter:
             def route_to(self, t): return t
-        '''
-        enforcer_code = '''\
+        """
+        enforcer_code = """\
         class AccessEnforcer:
             GATE_POLICY = True
             def enforce(self, ctx):
                 if not ctx.ok:
                     raise PermissionError("no")
-        '''
-        orchestrator_code = '''\
+        """
+        orchestrator_code = """\
         from agentic_core.L3_orchestration.reasoning import AgentA
         from agentic_core.L5_safety.enforcement import GuardB
         class WorkflowOrchestrator:
@@ -154,7 +158,7 @@ class TestClassificationOrderIndependence:
             def stage_1(self): pass
             def stage_2(self): pass
             def dispatch_to_agents(self): pass
-        '''
+        """
 
         r = _make_file(tmp_path, "my_router.py", router_code)
         e = _make_file(tmp_path, "access_enforcer.py", enforcer_code)

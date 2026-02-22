@@ -81,6 +81,7 @@ Examples:
     # [FENCE SELF-CHECK MODE] No legacy flag required
     if pre_args.fence_self_check:
         from agentic_core.L0_routing.scripts.execute_ssot import run_fence_self_check
+
         run_fence_self_check()
         return 0
 

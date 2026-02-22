@@ -16,13 +16,25 @@ import re
 import sys
 from pathlib import Path
 
-
 # Transient / non-source directories excluded from all scans.
 _EXCLUDE_DIRS = {
-    "__pycache__", ".git", ".venv", "venv",
-    ".pytest_cache", ".pytest_tmp", ".mypy_cache", ".ruff_cache",
-    ".coverage", "dist", "build", ".tox", ".nox",
-    "node_modules", "archives", ".backup", "_quarantine",
+    "__pycache__",
+    ".git",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    ".pytest_tmp",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".coverage",
+    "dist",
+    "build",
+    ".tox",
+    ".nox",
+    "node_modules",
+    "archives",
+    ".backup",
+    "_quarantine",
     "tests",
 }
 

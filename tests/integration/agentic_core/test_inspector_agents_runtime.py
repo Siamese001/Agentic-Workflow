@@ -82,10 +82,11 @@ class TestTokenBudgetInspectorAgent:
         assert TokenBudgetInspectorAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
         from archives.deprecated.TokenBudgetInspectorAgent import (
             TokenBudgetInspectorAgent,
         )
+
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = TokenBudgetInspectorAgent()
         result = agent.run_inspection("test_target")
@@ -107,10 +108,11 @@ class TestSignatureVerifierAgent:
         assert SignatureVerifierAgent is not None
 
     def test_run_inspection_returns_inspection_result(self) -> None:
-        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
         from archives.deprecated.SignatureVerifierAgent import (
             SignatureVerifierAgent,
         )
+
+        from agentic_core.mixins.inspection_capability_mixin import InspectionResult
 
         agent = SignatureVerifierAgent()
         result = agent.run_inspection("test_target")

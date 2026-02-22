@@ -24,8 +24,8 @@ import sys
 from pathlib import Path
 
 import pytest
-
 from tests._helpers.robust_fs import robust_subprocess_run
+
 from tests.ssot_equivalence._sandbox_repo import (
     create_sandbox,
     destroy_sandbox,

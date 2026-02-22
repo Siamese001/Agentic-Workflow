@@ -21,10 +21,11 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from tests._helpers.robust_fs import robust_subprocess_run
+
 from agentic_core.L3_orchestration.scripts.guardian_heal_orchestrator import (
     run_pipeline,
 )
-from tests._helpers.robust_fs import robust_subprocess_run
 
 pytestmark = pytest.mark.ssot_equivalence
 
@@ -87,9 +88,7 @@ class TestRunPipelineAPI:
             write_artifacts_dir=str(tmp_path / "artifacts"),
         )
         for hr in result["heal_result"]["results"]:
-            assert hr["status"] == "SKIPPED", (
-                f"{hr['check_id']} status={hr['status']}"
-            )
+            assert hr["status"] == "SKIPPED", f"{hr['check_id']} status={hr['status']}"
 
     def test_timestamp_injected(self) -> None:
         result = run_pipeline(mode="scan", timestamp=FIXED_UTC)

@@ -8,6 +8,7 @@ concise run log to docs/evidence/healmode_run_output.txt.
 Usage:
     python docs/evidence/run_legacy_main_domains_capture.py
 """
+
 from __future__ import annotations
 
 import json
