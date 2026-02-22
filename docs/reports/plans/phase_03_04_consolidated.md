@@ -8,7 +8,7 @@ Phase 4: Production-grade spine adapter hardening (CID invariants, import stabil
 e4af2fa829e9ba267af68519a0b631147ba61632
 
 ## EVIDENCE_COMMIT
-PENDING
+519ec8ee6bd719c271259b7e216e294370aca79c
 
 ## FILES_CHANGED (in CODE_COMMIT)
 ```
@@ -26,7 +26,8 @@ tests/unit_min_deps/test_apps_rg_spine_adapter.py
 
 ## FILES_CHANGED (in EVIDENCE_COMMIT)
 ```
-PENDING (will be filled after commit)
+docs/reports/plans/phase_03_04_consolidated.md
+tools/evidence/phase03_04_consolidated_evidence_runner.py
 ```
 
 ## LIC Unit Tests
