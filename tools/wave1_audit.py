@@ -57,8 +57,7 @@ def scan_mutation_primitives(evidence_file: Path):
         for pattern_name, pattern_regex in patterns:
             f.write(f"\n### Pattern: {pattern_name}\n\n")
 
-            # Use findstr on Windows (grep equivalent)
-            result = subprocess.run(
+            result = subprocess.run(  # guardian: allow-path-string
                 ["findstr", "/S", "/N", "/R", "/C:" + pattern_regex.replace("\\", "\\\\"), "*.py"],
                 capture_output=True,
                 text=True,
