@@ -1,17 +1,22 @@
 """
-Remediation Dispatcher — Minimal L2 PhaseSpec interpreter (skeleton).
+Remediation Dispatcher — L2 execution engine for SSOT healing.
 
-Loads an aggregate guardian result, interprets the LEGACY_MIRROR_PLAN,
-and produces a CombinedHealResult artifact with all checks SKIPPED
-(no healers registered yet).
+Loads a guardian aggregate result, routes check_ids to registered healers
+via phase prefix mapping (LEGACY_MIRROR_PLAN ordering), and produces a
+CombinedHealResult artifact.
 
-Side-effect free: only writes the HealResult JSON to the output directory.
+Enforces mutation guard (requires .ssot_sandbox sentinel or --allow-repo-mutation)
+and L3 approval gating for apply mode.
+
+Dry-run mode (default): healers report planned actions, no mutations.
+Apply mode (--apply): healers execute mutations if approved and sandbox-gated.
 
 CLI:
     python -m agentic_core.L2_execution.scripts.remediation_dispatcher \\
         --guardian-result combined_guardian_result.json \\
         --write-artifacts output_dir \\
-        --created-utc 2026-01-01T00:00:00Z
+        --created-utc 2026-01-01T00:00:00Z \\
+        [--apply] [--repo-root PATH] [--approval-bundle PATH]
 """
 
 from __future__ import annotations
@@ -64,7 +69,7 @@ EXPECTED_PHASE_NAMES: tuple[str, ...] = (
 
 # Explicit mapping: phase_name -> tuple of check_id prefixes.
 # A guardian check_id is "mapped" to a phase if it startswith any prefix.
-# Empty tuple = no guardians mapped yet (structure-only phase).
+# Empty tuple = phase has no prefix-routed checks (intentional for healing/certification).
 PHASE_CHECK_ID_PREFIXES: dict[str, tuple[str, ...]] = {
     "pre_audit": ("guardian_drift_detection",),
     "discovery": ("guardian_location_alignment",),
@@ -491,9 +496,9 @@ def run_dispatcher(
                     ),
                 )
 
-        # --- Rerun guardians hook (no-op: no phase has rerun_guardians) ---
+        # --- Rerun guardians hook (planned feature, not yet implemented) ---
         if phase.rerun_guardians:
-            pass  # Future: re-run specified guardians after healing
+            pass  # Planned: re-run specified guardians after healing to verify fixes
 
     # 7. Add unmapped check_ids (coverage preservation)
     for cid in sorted(unmapped_ids):
@@ -536,7 +541,7 @@ def run_dispatcher(
 
 
 def main() -> int:
-    parser = argparse.ArgumentParser(description="L2 Remediation Dispatcher (skeleton)")
+    parser = argparse.ArgumentParser(description="L2 Remediation Dispatcher")
     parser.add_argument(
         "--guardian-result",
         required=True,
