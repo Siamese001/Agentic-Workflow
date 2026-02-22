@@ -4,7 +4,7 @@
 Implement LIC and RG spine adapters with deterministic CID derivation and unit tests.
 
 ## Final Commit Hash
-dbbd74e33bf5189706ca17cf192e656c816a275c
+932c57357c353026216a1761b439adb14edbb654
 
 ## Files Changed
 ```
