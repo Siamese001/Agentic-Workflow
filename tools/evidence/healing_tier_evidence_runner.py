@@ -4,15 +4,15 @@ Commit+amend flow captures Git Proof Completeness Gate AFTER
 evidence-only HEAD exists, eliminating the chicken-and-egg problem.
 
 Sequence:
-  1. Preflight: assert clean porcelain
+  1. Preflight: assert clean porcelain (empty stdout)
   2. CODE_COMMIT = git rev-parse HEAD (current code commit)
-  3. Run pytest
+  3. Run pytest (verbatim)
   4. Write initial evidence (CODE_COMMIT + SEALED_FROM only)
-  5. git add + commit (with pre-commit retry)  -> evidence-only HEAD
+  5. git add + commit via commit_with_retry -> evidence-only HEAD
   6. Capture 6 git commands verbatim AFTER evidence-only HEAD exists
   7. Run assertions (hard-fail on any mismatch)
   8. Rewrite evidence with git proof + assertions
-  9. git add + commit --amend --no-edit (with pre-commit retry)
+  9. git add + amend via commit_with_retry
   10. Re-verify post-amend invariants
 """
 
@@ -44,8 +44,11 @@ def _clean(text: str) -> str:
     return text.encode("ascii", errors="replace").decode("ascii")
 
 
-def run(argv: list[str]) -> tuple[int, str]:
-    """Run command, return (exit_code, combined_output)."""
+# ---------------------------------------------------------------------------
+# run_cmd: always returns a 3-tuple (rc, stdout, stderr)
+# ---------------------------------------------------------------------------
+def run_cmd(argv: list[str]) -> tuple[int, str, str]:
+    """Run command via subprocess. Returns (rc, stdout, stderr) -- always 3-tuple."""
     r = subprocess.run(
         argv,
         cwd=str(REPO_ROOT),
@@ -54,24 +57,91 @@ def run(argv: list[str]) -> tuple[int, str]:
         errors="replace",
         shell=False,
     )
-    return r.returncode, _clean((r.stdout or "") + (r.stderr or ""))
+    return r.returncode, _clean(r.stdout or ""), _clean(r.stderr or "")
 
 
-def stdout(argv: list[str]) -> str:
+def run_cmd_combined(argv: list[str]) -> tuple[int, str]:
+    """Run command, return (rc, combined stdout+stderr)."""
+    rc, out, err = run_cmd(argv)
+    return rc, (out + err).strip()
+
+
+def stdout_or_fail(argv: list[str]) -> str:
     """Run command, return stripped stdout. Hard-fail on non-zero exit."""
-    r = subprocess.run(
-        argv,
-        cwd=str(REPO_ROOT),
-        capture_output=True,
-        encoding="utf-8",
-        errors="replace",
-        shell=False,
-    )
-    if r.returncode != 0:
-        print(f"FAIL: {' '.join(argv)} exited {r.returncode}", file=sys.stderr)
-        print(_clean(r.stderr or ""), file=sys.stderr)
+    rc, out, err = run_cmd(argv)
+    if rc != 0:
+        print(f"FAIL: {' '.join(argv)} exited {rc}", file=sys.stderr)
+        print(err, file=sys.stderr)
         sys.exit(1)
-    return _clean((r.stdout or "").strip())
+    return out.strip()
+
+
+# ---------------------------------------------------------------------------
+# commit_with_retry: hook-resilient commit capability
+# ---------------------------------------------------------------------------
+def commit_with_retry(argv_commit: list[str]) -> None:
+    """Attempt a git commit. On failure, parse porcelain, re-add, retry once.
+
+    Contract:
+      1. Attempt commit via run_cmd(argv_commit)
+      2. If rc==0: return (success)
+      3. If rc!=0:
+         a. Print verbatim failed stdout/stderr
+         b. Run and print verbatim: git status --porcelain
+         c. Parse porcelain lines; collect paths where status is not "??"
+         d. Sort paths; print re-add list
+         e. Run: git add -- <sorted_paths>
+         f. Retry: run_cmd(argv_commit) again (exact same argv)
+         g. Print verbatim retry stdout/stderr
+         h. Hard-fail if rc still != 0
+    """
+    # Attempt 1
+    rc, out, err = run_cmd(argv_commit)
+    if rc == 0:
+        return
+
+    # Attempt 1 failed -- print verbatim failed output
+    print(f"INFO: commit attempt 1 failed (rc={rc})")
+    print(f"--- failed stdout ---\n{out}")
+    print(f"--- failed stderr ---\n{err}")
+
+    # Capture porcelain
+    rc_p, porcelain_out, porcelain_err = run_cmd(["git", "status", "--porcelain"])
+    print(f"$ git status --porcelain\n{porcelain_out}")
+    if porcelain_err:
+        print(f"(porcelain stderr: {porcelain_err})")
+
+    # Parse porcelain lines -> collect paths to re-add
+    paths_to_readd: list[str] = []
+    for line in porcelain_out.splitlines():
+        if not line or len(line) < 4:
+            continue
+        status_code = line[:2].strip()
+        file_path = line[3:]
+        # Re-add anything that is not untracked ("??")
+        if status_code != "??":
+            paths_to_readd.append(file_path)
+
+    paths_to_readd.sort()
+    print(f"Re-add paths (sorted): {paths_to_readd}")
+
+    if paths_to_readd:
+        rc_add, add_out, add_err = run_cmd(["git", "add", "--"] + paths_to_readd)
+        if rc_add != 0:
+            print(f"FAIL: git add exited {rc_add}\n{add_err}", file=sys.stderr)
+            sys.exit(1)
+
+    # Attempt 2 (exact same argv)
+    rc2, out2, err2 = run_cmd(argv_commit)
+    print(f"--- retry stdout ---\n{out2}")
+    print(f"--- retry stderr ---\n{err2}")
+
+    if rc2 != 0:
+        print(
+            f"FAIL: commit retry also failed (rc={rc2})\n{out2}\n{err2}",
+            file=sys.stderr,
+        )
+        sys.exit(1)
 
 
 def validate_40hex(label: str, value: str) -> str:
@@ -82,41 +152,6 @@ def validate_40hex(label: str, value: str) -> str:
         return line
     print(f"FAIL: {label} is not valid 40-hex: '{value}'", file=sys.stderr)
     sys.exit(1)
-
-
-def git_add_commit(message: str) -> None:
-    """Stage evidence file and commit. Retries once for pre-commit hook fixes."""
-    for attempt in range(2):
-        rc_add, _ = run(["git", "add", EVIDENCE_REL])
-        if rc_add != 0:
-            print(f"FAIL: git add exited {rc_add}", file=sys.stderr)
-            sys.exit(1)
-        rc_commit, out = run(["git", "commit", "-m", message])
-        if rc_commit == 0:
-            return
-        # Pre-commit hooks may fix line endings on first attempt; retry
-        if attempt == 0:
-            print("INFO: Pre-commit hooks modified files, retrying commit...")
-            continue
-        print(f"FAIL: git commit exited {rc_commit}\n{out}", file=sys.stderr)
-        sys.exit(1)
-
-
-def git_add_amend() -> None:
-    """Stage evidence file and amend. Retries once for pre-commit hook fixes."""
-    for attempt in range(2):
-        rc_add, _ = run(["git", "add", EVIDENCE_REL])
-        if rc_add != 0:
-            print(f"FAIL: git add exited {rc_add}", file=sys.stderr)
-            sys.exit(1)
-        rc_amend, out = run(["git", "commit", "--amend", "--no-edit"])
-        if rc_amend == 0:
-            return
-        if attempt == 0:
-            print("INFO: Pre-commit hooks modified files, retrying amend...")
-            continue
-        print(f"FAIL: git commit --amend exited {rc_amend}\n{out}", file=sys.stderr)
-        sys.exit(1)
 
 
 def hard_assert(condition: bool, ok_msg: str, fail_msg: str) -> str:
@@ -134,7 +169,8 @@ def main() -> None:
 
     # ── Step 1: Preflight ─────────────────────────────────────────────
     print("=== Step 1: Preflight ===")
-    porcelain_pre = stdout(["git", "status", "--porcelain"])
+    rc_pre, porcelain_pre, _ = run_cmd(["git", "status", "--porcelain"])
+    porcelain_pre = porcelain_pre.strip()
     hard_assert(
         len(porcelain_pre) == 0,
         "OK: Preflight git status --porcelain is empty",
@@ -143,7 +179,7 @@ def main() -> None:
 
     # ── Step 2: CODE_COMMIT = current HEAD ────────────────────────────
     print("\n=== Step 2: CODE_COMMIT ===")
-    code_commit = stdout(["git", "rev-parse", "HEAD"])
+    code_commit = stdout_or_fail(["git", "rev-parse", "HEAD"])
     sealed_from = code_commit
     validate_40hex("CODE_COMMIT", code_commit)
     validate_40hex("SEALED_FROM", sealed_from)
@@ -163,8 +199,7 @@ def main() -> None:
     ]
     test_cmd_str = " ".join(test_argv)
     print(f"$ {test_cmd_str}")
-    test_rc, test_out = run(test_argv)
-    test_out = test_out.strip()
+    test_rc, test_out = run_cmd_combined(test_argv)
     print(test_out)
     if test_rc != 0:
         print(f"FAIL: pytest exited {test_rc}", file=sys.stderr)
@@ -215,7 +250,11 @@ def main() -> None:
 
     # ── Step 5: Create evidence-only commit ───────────────────────────
     print("\n=== Step 5: Create evidence-only commit ===")
-    git_add_commit("docs: healing tier router evidence (sealed)")
+    rc_add, _, add_err = run_cmd(["git", "add", EVIDENCE_REL])
+    if rc_add != 0:
+        print(f"FAIL: git add exited {rc_add}\n{add_err}", file=sys.stderr)
+        sys.exit(1)
+    commit_with_retry(["git", "commit", "-m", "docs: healing tier router evidence (sealed)"])
     print("OK: Evidence-only commit created")
 
     # ── Step 6: Capture 6 git commands AFTER evidence-only HEAD ───────
@@ -233,7 +272,7 @@ def main() -> None:
         ),
         ("git status --porcelain", ["git", "status", "--porcelain"]),
     ]:
-        out = stdout(argv)
+        out = stdout_or_fail(argv)
         git_cmds.append((label, out))
         print(f"$ {label}")
         print(out if out else "")
@@ -313,7 +352,7 @@ def main() -> None:
     evidence_lines.append("")
 
     # FILES_CHANGED_CODE
-    code_files = stdout(["git", "show", "--name-only", "--pretty=format:", code_commit])
+    code_files = stdout_or_fail(["git", "show", "--name-only", "--pretty=format:", code_commit])
     evidence_lines.extend(
         [
             "## FILES_CHANGED_CODE",
@@ -348,15 +387,20 @@ def main() -> None:
 
     # ── Step 9: Amend the commit ──────────────────────────────────────
     print("\n=== Step 9: Amend evidence commit ===")
-    git_add_amend()
+    rc_add, _, add_err = run_cmd(["git", "add", EVIDENCE_REL])
+    if rc_add != 0:
+        print(f"FAIL: git add exited {rc_add}\n{add_err}", file=sys.stderr)
+        sys.exit(1)
+    commit_with_retry(["git", "commit", "--amend", "--no-edit"])
     print("OK: Evidence commit amended")
 
     # ── Step 10: Re-verify post-amend ─────────────────────────────────
     print("\n=== Step 10: Post-amend re-verification ===")
-    post_head = stdout(["git", "rev-parse", "HEAD"])
-    post_head1 = stdout(["git", "rev-parse", "HEAD~1"])
-    post_show = stdout(["git", "show", "--name-only", "--pretty=format:", "HEAD"])
-    post_porcelain = stdout(["git", "status", "--porcelain"])
+    post_head = stdout_or_fail(["git", "rev-parse", "HEAD"])
+    post_head1 = stdout_or_fail(["git", "rev-parse", "HEAD~1"])
+    post_show = stdout_or_fail(["git", "show", "--name-only", "--pretty=format:", "HEAD"])
+    rc_post_p, post_porcelain, _ = run_cmd(["git", "status", "--porcelain"])
+    post_porcelain = post_porcelain.strip()
 
     hard_assert(
         post_show.strip() == EVIDENCE_REL,
