@@ -9,7 +9,7 @@ FAIL violations trigger Gemini fallback. Phase 1-4 behavior preserved.
 cda00fa3e29fdd4a933b495187ab9f8da8a381ff
 
 ## EVIDENCE_COMMIT
-PENDING
+97c90afd356eb5513562470873ce60192f343611
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/types/vllm_gateway_adapter.py
@@ -19,6 +19,10 @@ agentic_core/L2_execution/types/vllm_invariant_verifier.py
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py
 tests/unit_min_deps/test_vllm_invariant_contract.py
 tests/unit_min_deps/test_vllm_invariant_verifier.py
+
+## FILES_CHANGED_EVIDENCE
+docs/reports/evidence/qwen_migration_phase_5_formal_invariant_verifier.md
+tools/evidence/qwen_migration_phase5_evidence_runner.py
 
 ## INSPECTED_FILES
 agentic_core/L2_execution/types/vllm_invariant_contract.py
@@ -148,9 +152,7 @@ tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_reset_s
 ```
 
 ## Git Status
-```
-?? tools/evidence/qwen_migration_phase5_evidence_runner.py
-```
+(clean)
 
 ## Runner Self-Check Proof
 Balanced PowerShell guard policy:
