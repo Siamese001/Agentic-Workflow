@@ -52,7 +52,12 @@
             "**/ops_scripts/**/*.py",
             "**/*.py",
             "**/*.md"
-        ]
+        ],
+        "windsurf.codeIndex.excludeGitHistory": true,
+        "windsurf.semanticSearch.excludeGitCommits": true,
+        "files.exclude": {
+            "**/.git": true
+        }
     },
     "extensions": {
         "recommendations": [
