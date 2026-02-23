@@ -13,6 +13,8 @@ import re
 from dataclasses import replace
 from typing import Any
 
+import pytest
+
 from agentic_core.L2_execution.types.vllm_gateway_adapter import VLLMGatewayAdapter
 from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry
 from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
@@ -89,6 +91,7 @@ def validate_64hex(value: str, name: str) -> None:
     assert re.match(r'^[0-9a-f]{64}$', value), f"{name} must be 64-hex: {value}"
 
 
+@pytest.mark.unit_min_deps
 def test_replay_tamper_round_trip():
     """Test deterministic tamper round-trip with production verifier."""
     # Create original artifact
@@ -122,6 +125,7 @@ def test_replay_tamper_round_trip():
     print(f"Tampering detected: {not tampered_validation['valid']}")
 
 
+@pytest.mark.unit_min_deps
 def test_replay_tamper_determinism_re_run():
     """Test that tamper round-trip is deterministic across multiple runs."""
     # First run
@@ -162,6 +166,7 @@ def test_replay_tamper_determinism_re_run():
     print(f"Determinism check: tampered_computed_hash_1 == tampered_computed_hash_2 = {tampered_computed_hash_1 == tampered_computed_hash_2}")
 
 
+@pytest.mark.unit_min_deps
 def test_negative_control_tamper_detection_disabled():
     """Negative control: prove enforcement fails when tamper detection is disabled."""
     # Create original artifact
