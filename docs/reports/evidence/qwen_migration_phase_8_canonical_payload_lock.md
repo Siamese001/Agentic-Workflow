@@ -7,7 +7,7 @@ Phase 8 strengthens replay validation by proving the exact canonical payload use
 4f43970cfa02237f216404a2164bb2ec1a2fd0b5
 
 ## EVIDENCE_COMMIT
-PENDING
+7a34615aadb4a24d82915ac31690e0479075e611
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/types/vllm_replay_validator.py
