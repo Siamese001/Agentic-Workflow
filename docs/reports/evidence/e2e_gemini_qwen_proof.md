@@ -10,7 +10,7 @@ Model transport replaced with deterministic stub (minimum seam).
 8be325454
 
 ## EVIDENCE_COMMIT
-af17d3fdf
+PENDING
 
 ## FILES_CHANGED_CODE
 ops_scripts/hooks/import_dep_baseline.txt
@@ -18,9 +18,6 @@ ops_scripts/hooks/landmine_baseline.txt
 tests/integration_e2e/__init__.py
 tests/integration_e2e/test_gemini_qwen_e2e.py
 tools/evidence/e2e_gemini_qwen_runner.py
-
-## FILES_CHANGED_EVIDENCE
-docs/reports/evidence/e2e_gemini_qwen_proof.md
 
 ## INSPECTED_FILES
 tests/integration_e2e/__init__.py
@@ -82,7 +79,7 @@ tests/integration_e2e/test_gemini_qwen_e2e.py::TestSeamProductionSafety::test_re
 0.08s setup    tests/integration_e2e/test_gemini_qwen_e2e.py::TestGeminiE2EPath::test_engine_name_exact
 
 (9 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 27 passed in 0.16s ==============================
+============================= 27 passed in 0.15s ==============================
 ```
 
 ## Gemini Execution
