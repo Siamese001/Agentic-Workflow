@@ -29,6 +29,9 @@ from agentic_core.L2_execution.types.vllm_serving_profile_types import (
     PROFILE_LOCAL_STRONG_14B,
     VLLMServingProfile,
 )
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    VLLMInfrastructureFingerprint,
+)
 from agentic_core.L2_execution.types.vllm_token_budget_types import (
     GEMINI_25_PRO_MODEL_ID,
     VLLMFailureType,
@@ -226,13 +229,13 @@ class VLLMCircuitBreakerRegistry:
 
 @dataclass(frozen=True)
 class VLLMGatewayTelemetry:
-    """Single telemetry event per gateway invocation.
+    """Immutable telemetry payload for a single gateway call.
 
-    Immutable. Stable key ordering guaranteed by field declaration order.
-    No nondeterministic timestamps inside the structured payload.
+    All fields are deterministic; no timestamps. Stable key ordering via as_dict().
+    PHASE 4: Extended with infrastructure fingerprint fields for replay sealing.
     """
 
-    # Provider selection
+    # Routing decision
     provider_selected: str
     model_tier: str
 
@@ -255,6 +258,16 @@ class VLLMGatewayTelemetry:
     # Failure taxonomy
     failure_type: str | None
 
+    # PHASE 4: Infrastructure fingerprint fields (deterministic)
+    model_name: str
+    model_revision_sha: str
+    vllm_version: str
+    transformers_version: str
+    torch_version: str
+    cuda_version: str
+    driver_version: str
+    fingerprint_hash: str
+
     def as_dict(self) -> dict[str, Any]:
         """Return stable-ordered dict representation."""
         return {
@@ -271,6 +284,15 @@ class VLLMGatewayTelemetry:
             "breaker_state": self.breaker_state,
             "breaker_failure_count": self.breaker_failure_count,
             "failure_type": self.failure_type,
+            # PHASE 4: Infrastructure fingerprint fields
+            "model_name": self.model_name,
+            "model_revision_sha": self.model_revision_sha,
+            "vllm_version": self.vllm_version,
+            "transformers_version": self.transformers_version,
+            "torch_version": self.torch_version,
+            "cuda_version": self.cuda_version,
+            "driver_version": self.driver_version,
+            "fingerprint_hash": self.fingerprint_hash,
         }
 
 
@@ -300,6 +322,7 @@ def evaluate_gateway_call(
     queue_controller: VLLMQueueController,
     breaker_registry: VLLMCircuitBreakerRegistry,
     oldest_wait_seconds: float = 0.0,
+    fingerprint: VLLMInfrastructureFingerprint | None = None,
 ) -> VLLMGatewayCallResult:
     """Evaluate a full gateway call path deterministically.
 
@@ -355,6 +378,9 @@ def evaluate_gateway_call(
         failure_type = None
         local_request = shape_local_request(prompt, task_class, profile)
 
+    # PHASE 4: Use provided fingerprint or deterministic test instance
+    fp = fingerprint if fingerprint is not None else VLLMInfrastructureFingerprint.deterministic_test_instance()
+
     telemetry = VLLMGatewayTelemetry(
         provider_selected=provider_selected,
         model_tier=model_tier,
@@ -369,6 +395,15 @@ def evaluate_gateway_call(
         breaker_state=breaker.state.value,
         breaker_failure_count=breaker.consecutive_failures,
         failure_type=failure_type,
+        # PHASE 4: Infrastructure fingerprint fields
+        model_name=fp.model_name,
+        model_revision_sha=fp.model_revision_sha,
+        vllm_version=fp.vllm_version,
+        transformers_version=fp.transformers_version,
+        torch_version=fp.torch_version,
+        cuda_version=fp.cuda_version,
+        driver_version=fp.driver_version,
+        fingerprint_hash=fp.fingerprint_hash(),
     )
 
     return VLLMGatewayCallResult(

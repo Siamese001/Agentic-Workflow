@@ -26,6 +26,9 @@ from agentic_core.L2_execution.types.vllm_gateway_integration import (
     VLLMQueueController,
     evaluate_gateway_call,
 )
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    VLLMInfrastructureFingerprint,
+)
 
 # Singleton-style shared state (one queue + one breaker registry per process).
 # Replaced in tests via VLLMGatewayAdapter(queue=..., registry=...).
@@ -75,6 +78,7 @@ class VLLMGatewayAdapter:
         task_class: str,
         severity: str,
         oldest_wait_seconds: float = 0.0,
+        fingerprint: VLLMInfrastructureFingerprint | None = None,
     ) -> VLLMGatewayCallResult:
         """Evaluate the call path and return a routing decision.
 
@@ -83,6 +87,7 @@ class VLLMGatewayAdapter:
             task_class: Task class string from TaskClass enum.
             severity: Severity level ("low", "medium", "high").
             oldest_wait_seconds: Age of oldest queued request in seconds.
+            fingerprint: Optional infrastructure fingerprint for Phase 4 replay sealing.
 
         Returns:
             VLLMGatewayCallResult with routing decision + telemetry.
@@ -96,6 +101,7 @@ class VLLMGatewayAdapter:
             queue_controller=q,
             breaker_registry=r,
             oldest_wait_seconds=oldest_wait_seconds,
+            fingerprint=fingerprint,
         )
 
     def record_local_failure(self, severity: str) -> None:
