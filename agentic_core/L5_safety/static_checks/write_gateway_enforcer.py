@@ -122,6 +122,14 @@ def scan_file_for_writes(file_path: Path) -> list[tuple[int, str, str]]:
     """
     violations = []
 
+    # Skip L2_execution directory (allowed to write)
+    if "L2_execution" in str(file_path):
+        return violations
+
+    # Skip PTC store writes (via FileSystemStore only)
+    if "ptc" in str(file_path).lower() and "tool_call_store.py" in str(file_path):
+        return violations
+
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()

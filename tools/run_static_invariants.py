@@ -51,6 +51,15 @@ write_gateway_module = importlib.util.module_from_spec(spec)
 spec.loader.exec_module(write_gateway_module)
 scan_repository_for_writes = write_gateway_module.scan_repository_for_writes
 
+# Import ptc_invariants
+spec = importlib.util.spec_from_file_location(
+    "ptc_invariants",
+    Path(__file__).parent.parent / "agentic_core" / "L5_safety" / "static_checks" / "ptc_invariants.py",
+)
+ptc_module = importlib.util.module_from_spec(spec)
+spec.loader.exec_module(ptc_module)
+scan_repository_for_ptc_invariants = ptc_module.scan_repository_for_ptc_invariants
+
 
 def print_violations(title: str, violations: list) -> int:
     """Print violations and return count."""
@@ -89,6 +98,12 @@ def main():
     print("3. Scanning for non-deterministic serialization...")
     det_violations = scan_repository_for_determinism(repo_root)
     total_violations += print_violations("Determinism Serialization", det_violations)
+    print()
+
+    # 4. PTC invariants scanner
+    print("4. Scanning for PTC invariants...")
+    ptc_violations = scan_repository_for_ptc_invariants(repo_root)
+    total_violations += print_violations("PTC Invariants", ptc_violations)
     print()
 
     # Summary
