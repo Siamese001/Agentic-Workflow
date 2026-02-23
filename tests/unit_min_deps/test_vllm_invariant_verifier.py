@@ -240,3 +240,138 @@ def test_violations_are_deterministic():
         assert v1.severity == v2.severity
         assert v1.message == v2.message
         assert v1.violation_hash() == v2.violation_hash()
+
+
+def test_inv_replay_hash_missing_when_enabled():
+    """Test INV_REPLAY_HASH_PRESENT_WHEN_ENABLED violation."""
+    local_request = MinimalLocalRequest(
+        max_tokens=100,
+        temperature=0.0,
+        seed=42,
+    )
+
+    telemetry_dict = {
+        "fingerprint_hash": "abc123",
+        # replay_hash missing
+    }
+
+    violations = verify_gateway_invariants(
+        provider_selected="Qwen2.5-7B-Instruct",
+        local_request=local_request,
+        telemetry_dict=telemetry_dict,
+        fingerprint=None,
+        replay_hash_enabled=True,  # Enable enforcement
+    )
+
+    assert len(violations) == 1
+    assert violations[0].invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+    assert violations[0].severity == InvariantSeverity.FAIL.value
+    assert "replay_hash" in violations[0].message.lower()
+
+
+def test_inv_replay_hash_present_when_enabled_no_violation():
+    """Test that replay_hash presence produces no violation when enabled."""
+    local_request = MinimalLocalRequest(
+        max_tokens=100,
+        temperature=0.0,
+        seed=42,
+    )
+
+    telemetry_dict = {
+        "fingerprint_hash": "abc123",
+        "replay_hash": "def456",  # Present
+    }
+
+    violations = verify_gateway_invariants(
+        provider_selected="Qwen2.5-7B-Instruct",
+        local_request=local_request,
+        telemetry_dict=telemetry_dict,
+        fingerprint=None,
+        replay_hash_enabled=True,
+    )
+
+    # Should have no INV_REPLAY_HASH_PRESENT_WHEN_ENABLED violation
+    replay_violations = [
+        v for v in violations
+        if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+    ]
+    assert replay_violations == []
+
+
+def test_inv_replay_hash_disabled_no_violation():
+    """Test that replay_hash absence produces no violation when disabled."""
+    local_request = MinimalLocalRequest(
+        max_tokens=100,
+        temperature=0.0,
+        seed=42,
+    )
+
+    telemetry_dict = {
+        "fingerprint_hash": "abc123",
+        # replay_hash missing but enforcement disabled
+    }
+
+    violations = verify_gateway_invariants(
+        provider_selected="Qwen2.5-7B-Instruct",
+        local_request=local_request,
+        telemetry_dict=telemetry_dict,
+        fingerprint=None,
+        replay_hash_enabled=False,  # Disabled
+    )
+
+    # Should have no INV_REPLAY_HASH_PRESENT_WHEN_ENABLED violation
+    replay_violations = [
+        v for v in violations
+        if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+    ]
+    assert replay_violations == []
+
+
+def test_inv_gpu_import_policy_violation():
+    """Test INV_NO_GPU_IMPORTS_IN_L0_L6 violation."""
+    local_request = MinimalLocalRequest(
+        max_tokens=100,
+        temperature=0.0,
+        seed=42,
+    )
+
+    telemetry_dict = {"fingerprint_hash": "abc123"}
+
+    violations = verify_gateway_invariants(
+        provider_selected="Qwen2.5-7B-Instruct",
+        local_request=local_request,
+        telemetry_dict=telemetry_dict,
+        fingerprint=None,
+        gpu_import_policy_ok=False,  # Policy violation
+    )
+
+    assert len(violations) == 1
+    assert violations[0].invariant_id == InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value
+    assert violations[0].severity == InvariantSeverity.FAIL.value
+    assert "gpu import policy" in violations[0].message.lower()
+
+
+def test_inv_gpu_import_policy_ok_no_violation():
+    """Test that gpu_import_policy_ok=True produces no violation."""
+    local_request = MinimalLocalRequest(
+        max_tokens=100,
+        temperature=0.0,
+        seed=42,
+    )
+
+    telemetry_dict = {"fingerprint_hash": "abc123"}
+
+    violations = verify_gateway_invariants(
+        provider_selected="Qwen2.5-7B-Instruct",
+        local_request=local_request,
+        telemetry_dict=telemetry_dict,
+        fingerprint=None,
+        gpu_import_policy_ok=True,  # Policy OK
+    )
+
+    # Should have no INV_NO_GPU_IMPORTS_IN_L0_L6 violation
+    gpu_violations = [
+        v for v in violations
+        if v.invariant_id == InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value
+    ]
+    assert gpu_violations == []

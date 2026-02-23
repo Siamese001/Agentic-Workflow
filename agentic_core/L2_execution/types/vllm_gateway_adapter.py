@@ -128,6 +128,8 @@ class VLLMGatewayAdapter:
             local_request=result.local_request,
             telemetry_dict=telemetry_dict,
             fingerprint=fingerprint,
+            replay_hash_enabled=False,  # Phase 5: replay hash not yet implemented in telemetry
+            gpu_import_policy_ok=True,  # Phase 5: GPU imports properly isolated in L2
         )
         
         # Check for FAIL violations

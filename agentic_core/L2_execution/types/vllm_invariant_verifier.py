@@ -18,6 +18,8 @@ def verify_gateway_invariants(
     local_request: Any | None,
     telemetry_dict: dict[str, Any],
     fingerprint: Any | None,
+    replay_hash_enabled: bool = False,
+    gpu_import_policy_ok: bool = True,
 ) -> list[InvariantViolation]:
     """
     Verify architectural invariants at the gateway execution boundary.
@@ -27,6 +29,8 @@ def verify_gateway_invariants(
         local_request: Shaped local request (None if routed to Gemini).
         telemetry_dict: Telemetry dictionary with stable key ordering.
         fingerprint: Infrastructure fingerprint (None if not provided).
+        replay_hash_enabled: If True, enforce replay_hash presence in telemetry (FAIL if missing).
+        gpu_import_policy_ok: If False, report GPU import policy violation (FAIL).
 
     Returns:
         List of InvariantViolation objects, sorted by invariant_id then severity.
@@ -103,6 +107,30 @@ def verify_gateway_invariants(
                     context={"provider": provider_selected},
                 )
             )
+
+    # INV_REPLAY_HASH_PRESENT_WHEN_ENABLED
+    if replay_hash_enabled:
+        replay_hash = telemetry_dict.get("replay_hash")
+        if not replay_hash:
+            violations.append(
+                InvariantViolation(
+                    invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
+                    severity=InvariantSeverity.FAIL.value,
+                    message="Replay hash enforcement enabled but replay_hash missing from telemetry",
+                    context={"provider": provider_selected, "replay_hash_enabled": True},
+                )
+            )
+
+    # INV_NO_GPU_IMPORTS_IN_L0_L6
+    if not gpu_import_policy_ok:
+        violations.append(
+            InvariantViolation(
+                invariant_id=InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value,
+                severity=InvariantSeverity.FAIL.value,
+                message="GPU import policy violation detected in L0-L6 layers",
+                context={"gpu_import_policy_ok": False},
+            )
+        )
 
     # Sort violations by invariant_id then severity for deterministic ordering
     violations.sort(key=lambda v: (v.invariant_id, v.severity))
