@@ -75,6 +75,8 @@ def canonical_local_request_hash(request: VLLMLocalRequest) -> str:
 def canonical_response_hash(result: VLLMGatewayCallResult) -> str:
     """
     Compute SHA256 hash of structured response artifact / telemetry decision record.
+    
+    PHASE 6: Includes invariant violations in canonical form for replay integrity.
 
     Args:
         result: VLLMGatewayCallResult instance.
@@ -90,6 +92,13 @@ def canonical_response_hash(result: VLLMGatewayCallResult) -> str:
     
     # Use telemetry as the canonical response artifact
     telemetry_dict = result.telemetry.as_dict()
+    
+    # PHASE 6: Include invariant violations in canonical form
+    # Violations are already sorted by (invariant_id, severity) in verifier
+    if result.invariant_violations:
+        violations_canonical = [v.as_dict() for v in result.invariant_violations]
+        telemetry_dict["invariant_violations"] = violations_canonical
+    
     return sha256_hex(canonical_json(telemetry_dict))
 
 
