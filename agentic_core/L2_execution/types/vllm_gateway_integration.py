@@ -300,6 +300,8 @@ class VLLMGatewayCallResult:
     """Result of a gateway call-path evaluation.
 
     Contains routing decision, shaped request (if local), and telemetry.
+    
+    PHASE 5: Includes invariant_violations list for runtime enforcement.
     """
 
     route_to_gemini: bool
@@ -307,6 +309,12 @@ class VLLMGatewayCallResult:
     telemetry: VLLMGatewayTelemetry
     preflight: VLLMPreflightResult
     backpressure: BackpressureDecision
+    invariant_violations: list[Any] = None  # Phase 5: List of InvariantViolation objects
+    
+    def __post_init__(self):
+        """Initialize invariant_violations to empty list if None."""
+        if self.invariant_violations is None:
+            object.__setattr__(self, 'invariant_violations', [])
 
 
 def evaluate_gateway_call(

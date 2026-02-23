@@ -81,6 +81,9 @@ class VLLMGatewayAdapter:
     ) -> VLLMGatewayCallResult:
         """Evaluate the call path and return a routing decision.
 
+        PHASE 5: Includes invariant verification at execution boundary.
+        FAIL violations trigger Gemini fallback with violations in telemetry.
+
         Args:
             prompt: Input prompt string.
             task_class: Task class string from TaskClass enum.
@@ -89,7 +92,7 @@ class VLLMGatewayAdapter:
             fingerprint: Optional infrastructure fingerprint for Phase 4 replay sealing.
 
         Returns:
-            VLLMGatewayCallResult with routing decision + telemetry.
+            VLLMGatewayCallResult with routing decision + telemetry + violations (if any).
         """
         # Function-scoped imports to avoid lazy seam violations
         from agentic_core.L2_execution.types.vllm_gateway_integration import (
@@ -101,10 +104,14 @@ class VLLMGatewayAdapter:
         from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
             VLLMInfrastructureFingerprint,
         )
+        from agentic_core.L2_execution.types.vllm_invariant_verifier import (
+            verify_gateway_invariants,
+        )
         
         q = self.queue if self.queue is not None else _get_default_queue()
         r = self.registry if self.registry is not None else _get_default_registry()
-        return evaluate_gateway_call(
+        
+        result = evaluate_gateway_call(
             prompt=prompt,
             task_class=task_class,
             severity=severity,
@@ -113,6 +120,42 @@ class VLLMGatewayAdapter:
             oldest_wait_seconds=oldest_wait_seconds,
             fingerprint=fingerprint,
         )
+        
+        # PHASE 5: Verify invariants at execution boundary
+        telemetry_dict = result.telemetry.as_dict()
+        violations = verify_gateway_invariants(
+            provider_selected=telemetry_dict["provider_selected"],
+            local_request=result.local_request,
+            telemetry_dict=telemetry_dict,
+            fingerprint=fingerprint,
+        )
+        
+        # Check for FAIL violations
+        fail_violations = [v for v in violations if v.severity == "FAIL"]
+        
+        if fail_violations:
+            # FAIL violations trigger Gemini fallback
+            # Attach violations to result for telemetry
+            result = VLLMGatewayCallResult(
+                route_to_gemini=True,
+                local_request=None,
+                telemetry=result.telemetry,  # Keep original telemetry
+                preflight=result.preflight,
+                backpressure=result.backpressure,
+                invariant_violations=violations,
+            )
+        elif violations:
+            # Non-FAIL violations (INFO/WARN) - attach but don't reroute
+            result = VLLMGatewayCallResult(
+                route_to_gemini=result.route_to_gemini,
+                local_request=result.local_request,
+                telemetry=result.telemetry,
+                preflight=result.preflight,
+                backpressure=result.backpressure,
+                invariant_violations=violations,
+            )
+        
+        return result
 
     def record_local_failure(self, severity: str) -> None:
         """Record a local vLLM failure for circuit breaker tracking."""
