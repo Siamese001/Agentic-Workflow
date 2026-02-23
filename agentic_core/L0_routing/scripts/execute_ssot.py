@@ -2735,32 +2735,31 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
             registry = get_global_registry()
             invoker = ToolInvoker()
 
-            # Use repo_rg to search for execute_ssot entrypoint usage
-            call = ToolCall(
-                call_id=generate_call_id("repo_rg", {"pattern": "execute_ssot_entrypoint", "root": "."}),
-                tool_id="repo_rg",
-                args={"pattern": "execute_ssot_entrypoint", "root": "."},
+            # Use expr_eval to evaluate an expression
+            expr_call = ToolCall(
+                call_id=generate_call_id("expr_eval", {"expr": "2 + 3 * 4"}),
+                tool_id="expr_eval",
+                args={"expr": "2 + 3 * 4"},
+                policy={"timeout": 5},
             )
 
-            # Invoke tool
-            result = invoker.invoke(call, registry)
+            expr_result = invoker.invoke(expr_call, registry)
+            record_tool_call(expr_call, expr_result, registry.get_spec("expr_eval"))
 
-            # Record the call
-            spec, _ = registry.get("repo_rg")
-            record_tool_call(call, result, spec)
-
-            # Create PTC plan block
+            # Prepare PTC plan data
             ptc_plan_data = {
                 "tool_calls": [
                     {
-                        "tool_id": call.tool_id,
-                        "call_id": call.call_id,
-                        "args": call.args,
-                        "exit_code": result.exit_code,
-                        "stdout_lines": result.stdout.count("\n") + 1 if result.stdout else 0,
+                        "tool_id": expr_call.tool_id,
+                        "call_id": expr_call.call_id,
+                        "args": expr_call.args,
+                        "exit_code": expr_result.exit_code,
+                        "stdout": expr_result.stdout,
+                        "stderr": expr_result.stderr,
+                        "truncated": expr_result.truncated,
                     }
                 ],
-                "summary": f"PTC executed {len(call.args)} tool calls for plan context",
+                "summary": "PTC executed 1 tool calls for plan context",
             }
 
             # Print deterministic JSON block

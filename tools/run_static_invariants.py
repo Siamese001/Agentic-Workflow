@@ -64,10 +64,10 @@ scan_repository_for_ptc_invariants = ptc_module.scan_repository_for_ptc_invarian
 def print_violations(title: str, violations: list) -> int:
     """Print violations and return count."""
     if not violations:
-        print(f"✓ {title}: No violations found")
+        print(f"OK: {title}: No violations found")
         return 0
 
-    print(f"✗ {title}: {len(violations)} violations found:")
+    print(f"FAIL: {title}: {len(violations)} violations found:")
     for file_path, lineno, rule_id, snippet in violations:
         print(f"  {file_path}:{lineno} - {rule_id} - {snippet}")
 

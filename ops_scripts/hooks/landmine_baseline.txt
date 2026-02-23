@@ -2,7 +2,7 @@ agentic_core/L0_routing/enforcement/execution_gateway.py:311:silent_swallower:Si
 agentic_core/L0_routing/enforcement/execution_gateway.py:337:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2714:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:2771:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:2770:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/utils/subprocess_runner.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:152:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
@@ -112,11 +112,10 @@ agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:236:magic_con
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:38:magic_configuration:Magic configuration: Hardcoded line_threshold=600
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L3_orchestration/engines/sovereign_mcp_marketplace.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/ptc/builtin_tools.py:220:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/ptc/tool_call_store.py:111:magic_configuration:Magic configuration: Hardcoded limit=1000 in function call
-agentic_core/L3_orchestration/ptc/tool_call_store.py:138:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/ptc/tool_call_store.py:181:magic_configuration:Magic configuration: Hardcoded limit=100
-agentic_core/L3_orchestration/ptc/tool_call_store.py:76:magic_configuration:Magic configuration: Hardcoded limit=100
+agentic_core/L3_orchestration/ptc/builtin_tools.py:173:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/ptc/tool_call_store.py:114:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/ptc/tool_call_store.py:155:magic_configuration:Magic configuration: Hardcoded limit=100
+agentic_core/L3_orchestration/ptc/tool_call_store.py:58:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L3_orchestration/ptc/tool_invoker.py:85:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded line_limit=800
 agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded max_rounds=3
@@ -1463,7 +1462,7 @@ tools/evidence/phase07_08_consolidated_evidence_runner.py:16:global_mutation:Glo
 tools/evidence/phase_09_10_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/run_phase11_ptc_evidence.py:107:magic_configuration:Magic configuration: Hardcoded limit=100 in function call
-tools/run_phase11_ptc_evidence.py:113:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/run_phase11_ptc_evidence.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/run_phase3_integration.py:24:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
 tools/run_replay_execute_ssot_plan.py:41:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
 tools/run_replay_execute_ssot_plan.py:56:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call

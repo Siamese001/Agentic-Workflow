@@ -51,16 +51,16 @@ class ToolInvoker:
         # Get tool specification and handler
         spec, handler = registry.get(call.tool_id)
 
-        # Validate arguments against specification
-        self._validate_args(call.args, spec.args)
-
-        # Enforce safety constraints based on side effect class
-        if spec.side_effect_class == "SUBPROCESS":
-            # PowerShell ban for subprocess tools
-            self._enforce_powershell_ban(call.args)
-
-        # Invoke tool handler
+        # Invoke tool handler with validation
         try:
+            # Validate arguments against specification
+            self._validate_args(call.args, spec.args)
+
+            # Enforce safety constraints based on side effect class
+            if spec.side_effect_class == "SUBPROCESS":
+                # PowerShell ban for subprocess tools
+                self._enforce_powershell_ban(call.args)
+
             result = handler(call.args)
 
             # If handler returns raw subprocess result, process it

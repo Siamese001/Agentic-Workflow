@@ -1,7 +1,7 @@
 """
 Programmatic Tool Calling (PTC) - Tool Call Store
 
-Append-only storage for tool call records using FileSystemStore.
+Append-only storage for tool call records using in-memory store.
 Ensures deterministic storage and retrieval of tool call artifacts.
 """
 
@@ -11,7 +11,6 @@ import json
 from datetime import datetime
 from typing import Any
 
-from ..replay.deterministic_replay import FileSystemStore
 from .tool_contract import (
     ToolCall,
     ToolCallResult,
@@ -25,13 +24,9 @@ from .tool_contract import (
 class ToolCallStore:
     """Append-only storage for tool call records."""
 
-    def __init__(self, store: FileSystemStore):
-        """Initialize with FileSystemStore instance.
-
-        Args:
-            store: FileSystemStore for persistent storage
-        """
-        self.store = store
+    def __init__(self):
+        """Initialize with in-memory store."""
+        self._store: list[dict[str, Any]] = []
 
     def record_call(
         self,
@@ -48,7 +43,7 @@ class ToolCallStore:
             spec: Tool specification
             policy: Policy used for the call
         """
-        # Prepare payload
+        # Create payload
         payload = {
             "call": json.loads(tool_call_to_json(call)),
             "result": json.loads(tool_call_result_to_json(result)),
@@ -57,21 +52,8 @@ class ToolCallStore:
             "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
         }
 
-        # Prepare metadata (allowlist only)
-        metadata = {
-            "code_commit": self._get_code_commit(),
-            "ptc_version": "1.0.0",
-            "tool_id": call.tool_id,
-            "call_id": call.call_id,
-        }
-
-        # Store using FileSystemStore
-        self.store.put(
-            kind="tool_call",
-            logical_id=call.tool_id,
-            payload=payload,
-            metadata=metadata,
-        )
+        # Store in memory
+        self._store.append(payload)
 
     def list_calls(self, tool_id: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
         """List stored tool calls.
@@ -83,19 +65,17 @@ class ToolCallStore:
         Returns:
             List of tool call records
         """
-        # List from FileSystemStore
-        refs = self.store.list(kind="tool_call", logical_id=tool_id or "", limit=limit)
-
-        # Retrieve payloads
-        records = []
-        for ref in refs:
-            record = self.store.get(ref["kind"], ref["logical_id"], ref["version"])
-            records.append(record.payload)
+        # Filter by tool_id if specified
+        if tool_id:
+            filtered = [r for r in self._store if r["call"]["tool_id"] == tool_id]
+        else:
+            filtered = self._store.copy()
 
         # Sort deterministically by timestamp and call_id
-        records.sort(key=lambda r: (r["timestamp"], r["call"]["call_id"]))
+        filtered.sort(key=lambda r: (r["timestamp"], r["call"]["call_id"]))
 
-        return records
+        # Apply limit
+        return filtered[:limit]
 
     def get_call(self, tool_id: str, call_id: str) -> dict[str, Any] | None:
         """Get a specific tool call record.
@@ -107,14 +87,10 @@ class ToolCallStore:
         Returns:
             Tool call record or None if not found
         """
-        # List calls for the tool
-        refs = self.store.list(kind="tool_call", logical_id=tool_id, limit=1000)
-
         # Find matching call
-        for ref in refs:
-            record = self.store.get(ref["kind"], ref["logical_id"], ref["version"])
-            if record.payload["call"]["call_id"] == call_id:
-                return record.payload
+        for record in self._store:
+            if record["call"]["tool_id"] == tool_id and record["call"]["call_id"] == call_id:
+                return record
 
         return None
 
@@ -154,9 +130,7 @@ def get_tool_call_store() -> ToolCallStore:
     """
     global _GLOBAL_STORE
     if _GLOBAL_STORE is None:
-        # Initialize FileSystemStore
-        store = FileSystemStore()
-        _GLOBAL_STORE = ToolCallStore(store)
+        _GLOBAL_STORE = ToolCallStore()
     return _GLOBAL_STORE
 
 

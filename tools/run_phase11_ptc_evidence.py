@@ -100,15 +100,17 @@ def main():
     evidence_lines.append("")
 
     try:
-        # Try to list tool call artifacts from FileSystemStore
-        from agentic_core.L3_orchestration.replay.deterministic_replay import FileSystemStore
+        # List tool call artifacts from PTC store
+        from agentic_core.L3_orchestration.ptc.tool_call_store import get_tool_call_store
 
-        store = FileSystemStore()
-        refs = store.list(kind="tool_call", logical_id="", limit=100)
+        store = get_tool_call_store()
+        calls = store.list_calls(limit=100)
 
-        evidence_lines.append(f"Found {len(refs)} tool call artifacts:")
-        for ref in refs:
-            evidence_lines.append(f"  - {ref['kind']}/{ref['logical_id']} v{ref['version']}")
+        evidence_lines.append(f"Found {len(calls)} tool call artifacts:")
+        for call in calls:
+            tool_id = call["call"]["tool_id"]
+            call_id = call["call"]["call_id"]
+            evidence_lines.append(f"  - {tool_id}/{call_id}")
 
     except Exception as e:  # guardian: allow-silent-swallower
         evidence_lines.append(f"Error listing artifacts: {e}")

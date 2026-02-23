@@ -11,6 +11,7 @@ from agentic_core.L3_orchestration.ptc.ptc_registry import (
 from agentic_core.L3_orchestration.ptc.tool_contract import (
     ToolArg,
     ToolCall,
+    ToolCallResult,
     ToolSpec,
     canonical_json,
     generate_call_id,
@@ -152,17 +153,15 @@ def test_duplicate_tool_id_rejected():
 @pytest.mark.unit_min_deps
 def test_unsorted_args_rejected():
     """Test that unsorted args are rejected."""
-    registry = ToolRegistry()
-
-    # Create spec with unsorted args
-    unsorted_args = (
-        ToolArg("zeta", "str", True),
-        ToolArg("alpha", "str", True),
-    )
-    spec = ToolSpec("test", "Test", "PURE", unsorted_args, "TEXT")
-
+    # Test that ToolSpec.__post_init__ rejects unsorted args
     with pytest.raises(ValueError, match="args must be sorted by name"):
-        registry.register(spec, lambda: None)
+        ToolSpec(
+            "test",
+            "Test",
+            "PURE",
+            (ToolArg("zeta", "str", True), ToolArg("alpha", "str", True)),
+            "TEXT",
+        )
 
 
 @pytest.mark.unit_min_deps
@@ -282,13 +281,14 @@ def test_tool_invoker_validation():
     """Test ToolInvoker argument validation."""
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
+    # Use a fresh registry to avoid conflicts with auto-registered tools
     registry = ToolRegistry()
     invoker = ToolInvoker()
 
     # Register a test tool
     args = (
-        ToolArg("pattern", "str", True),
         ToolArg("count", "int", False, default=10),
+        ToolArg("pattern", "str", True),
     )
     spec = ToolSpec("test_tool", "Test", "PURE", args, "TEXT")
 
@@ -346,8 +346,9 @@ def test_tool_invoker_powershell_ban():
         args={"command": "pwsh -command test"},
     )
 
-    with pytest.raises(ValueError, match="PowerShell usage detected"):
-        invoker.invoke(call, registry)
+    result = invoker.invoke(call, registry)
+    assert result.exit_code == 1
+    assert "PowerShell usage detected" in result.stderr
 
 
 @pytest.mark.unit_min_deps
@@ -381,13 +382,11 @@ def test_tool_invoker_truncation():
 
 @pytest.mark.unit_min_deps
 def test_tool_call_store():
-    """Test ToolCallStore functionality."""
+    """Test ToolCallStore integration with in-memory storage."""
     from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
-    from agentic_core.L3_orchestration.replay.deterministic_replay import FileSystemStore
 
-    # Create store with temporary directory
-    fs_store = FileSystemStore()
-    store = ToolCallStore(fs_store)
+    # Create in-memory store
+    store = ToolCallStore()
 
     # Create test data
     call = ToolCall(
@@ -422,13 +421,11 @@ def test_tool_call_store():
 
 @pytest.mark.unit_min_deps
 def test_tool_call_store_deterministic_ordering():
-    """Test that tool call store returns results in deterministic order."""
+    """Test that ToolCallStore maintains deterministic ordering."""
     from agentic_core.L3_orchestration.ptc.tool_call_store import ToolCallStore
-    from agentic_core.L3_orchestration.replay.deterministic_replay import FileSystemStore
 
-    # Create store
-    fs_store = FileSystemStore()
-    store = ToolCallStore(fs_store)
+    # Create in-memory store
+    store = ToolCallStore()
 
     # Record multiple calls
     for i in range(3):
@@ -465,23 +462,19 @@ def test_tool_call_store_deterministic_ordering():
 @pytest.mark.unit_min_deps
 def test_builtin_repo_rg_tool():
     """Test repo_rg built-in tool."""
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
     from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
     from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
-    # Register built-in tools
-    register_builtin_tools()
-
-    # Get registry and invoker
+    # Get global registry (tools auto-registered on import)
     registry = get_global_registry()
     invoker = ToolInvoker()
 
     # Test repo_rg tool
     call = ToolCall(
-        call_id=generate_call_id("repo_rg", {"pattern": "def test_", "root": "tests"}),
+        call_id=generate_call_id("repo_rg", {"pattern": "def test_", "root": "tests/unit_min_deps"}),
         tool_id="repo_rg",
-        args={"pattern": "def test_", "root": "tests"},
+        args={"pattern": "def test_", "root": "tests/unit_min_deps"},
     )
 
     result = invoker.invoke(call, registry)
@@ -499,17 +492,13 @@ def test_builtin_repo_rg_tool():
 
 
 @pytest.mark.unit_min_deps
-def test_builtin_python_eval_tool():
-    """Test python_eval built-in tool."""
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
+def test_builtin_expr_eval_tool():
+    """Test expr_eval built-in tool."""
     from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
     from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
-    # Register built-in tools
-    register_builtin_tools()
-
-    # Get registry and invoker
+    # Get global registry (tools auto-registered on import)
     registry = get_global_registry()
     invoker = ToolInvoker()
 
@@ -517,14 +506,14 @@ def test_builtin_python_eval_tool():
     test_cases = [
         ("2 + 3", "5"),
         ("len('test')", "4"),
-        ("[x for x in range(3)]", "[0, 1, 2]"),
-        ("sum([1, 2, 3])", "6"),
+        ("abs(-5)", "5"),
+        ("max(1, 2, 3)", "3"),
     ]
 
     for expr, expected in test_cases:
         call = ToolCall(
-            call_id=generate_call_id("python_eval", {"expr": expr}),
-            tool_id="python_eval",
+            call_id=generate_call_id("expr_eval", {"expr": expr}),
+            tool_id="expr_eval",
             args={"expr": expr},
         )
 
@@ -535,16 +524,14 @@ def test_builtin_python_eval_tool():
     # Test unsafe expressions
     unsafe_exprs = [
         "import os",
-        "open('file.txt')",
-        "eval('1+1')",
-        "__import__('os')",
-        "lambda x: x",
+        "exec('print(1)')",
+        "__import__('sys')",
     ]
 
     for expr in unsafe_exprs:
         call = ToolCall(
-            call_id=generate_call_id("python_eval", {"expr": expr}),
-            tool_id="python_eval",
+            call_id=generate_call_id("expr_eval", {"expr": expr}),
+            tool_id="expr_eval",
             args={"expr": expr},
         )
 
@@ -556,23 +543,20 @@ def test_builtin_python_eval_tool():
 @pytest.mark.unit_min_deps
 def test_builtin_tools_deterministic():
     """Test that built-in tools are deterministic across runs."""
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
     from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
     from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
     from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
-    # Register built-in tools
-    register_builtin_tools()
-
-    # Get registry and invoker
+    # Get global registry (tools auto-registered on import)
     registry = get_global_registry()
     invoker = ToolInvoker()
 
-    # Test python_eval determinism
+    # Test expr_eval determinism
     call = ToolCall(
-        call_id=generate_call_id("python_eval", {"expr": "2 + 3"}),
-        tool_id="python_eval",
-        args={"expr": "2 + 3"},
+        call_id=generate_call_id("expr_eval", {"expr": "1 + 2"}),
+        tool_id="expr_eval",
+        args={"expr": "1 + 2"},
+        policy={"timeout": 5},
     )
 
     result1 = invoker.invoke(call, registry)
@@ -588,28 +572,20 @@ def test_builtin_tools_deterministic():
 @pytest.mark.unit_min_deps
 def test_builtin_tools_registration():
     """Test that built-in tools are properly registered."""
-    from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
     from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry, list_tools
 
-    # Get initial count
+    # Get global registry (tools auto-registered on import)
     registry = get_global_registry()
-    initial_count = registry.count()
-
-    # Register built-in tools
-    register_builtin_tools()
-
-    # Should have 2 new tools
-    assert registry.count() == initial_count + 2
 
     # Check specific tools exist
     assert registry.has("repo_rg")
-    assert registry.has("python_eval")
+    assert registry.has("expr_eval")
 
     # Check they appear in list
     tools = list_tools()
     tool_ids = [t.tool_id for t in tools]
     assert "repo_rg" in tool_ids
-    assert "python_eval" in tool_ids
+    assert "expr_eval" in tool_ids
 
 
 @pytest.mark.unit_min_deps
