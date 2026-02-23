@@ -23,13 +23,17 @@ from dataclasses import dataclass, field
 
 # Singleton-style shared state (one queue + one breaker registry per process).
 # Replaced in tests via VLLMGatewayAdapter(queue=..., registry=...).
-_DEFAULT_QUEUE: VLLMQueueController | None = None
-_DEFAULT_REGISTRY: VLLMCircuitBreakerRegistry | None = None
+_DEFAULT_QUEUE: "VLLMQueueController" | None = None
+_DEFAULT_REGISTRY: "VLLMCircuitBreakerRegistry" | None = None
 
 
 def _get_default_queue() -> VLLMQueueController:
     global _DEFAULT_QUEUE
     if _DEFAULT_QUEUE is None:
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_gateway_integration import (
+            VLLMQueueController,
+        )
         _DEFAULT_QUEUE = VLLMQueueController()
     return _DEFAULT_QUEUE
 
@@ -37,6 +41,10 @@ def _get_default_queue() -> VLLMQueueController:
 def _get_default_registry() -> VLLMCircuitBreakerRegistry:
     global _DEFAULT_REGISTRY
     if _DEFAULT_REGISTRY is None:
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_gateway_integration import (
+            VLLMCircuitBreakerRegistry,
+        )
         _DEFAULT_REGISTRY = VLLMCircuitBreakerRegistry()
     return _DEFAULT_REGISTRY
 
