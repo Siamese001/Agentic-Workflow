@@ -9,7 +9,7 @@ Cross-phase integrity between Phase 4 (Replay) and Phase 5 (Invariants).
 e124b0f32194396d5e577dec5c1833120c99b414
 
 ## EVIDENCE_COMMIT
-PENDING
+173fec4fea79a6c28532937c5265ddb3814f2c1a
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/types/vllm_gateway_adapter.py
