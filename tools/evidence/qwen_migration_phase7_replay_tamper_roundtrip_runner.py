@@ -80,17 +80,20 @@ def execute_tamper_roundtrip_proofs():
     # FAIL SCENARIO: Reject tampered artifact
     print("FAIL SCENARIO:")
     tampered_artifact = create_tampered_artifact(original_artifact)
-    tampered_hash = tampered_artifact.replay_hash
-    validate_64hex(tampered_hash, "replay_hash (tampered)")
-    
-    assert tampered_hash != original_hash, "FAIL: Tampered hash must differ"
+    tampered_stored_hash = tampered_artifact.replay_hash
+    validate_64hex(tampered_stored_hash, "replay_hash (tampered_stored)")
     
     tampered_validation = validator.validate_and_report(tampered_artifact)
+    tampered_computed_hash = tampered_validation["computed_replay_hash"]
+    validate_64hex(tampered_computed_hash, "replay_hash (tampered_computed)")
     
     assert tampered_validation["valid"] is False, "FAIL: Tampered artifact must be rejected"
+    assert tampered_computed_hash != original_hash, "FAIL: Computed hash must differ from original"
+    
     print(f"  valid={tampered_validation['valid']}")
-    print(f"  replay_hash={tampered_hash}")
-    print(f"  differs_from_original={tampered_hash != original_hash}")
+    print(f"  stored_replay_hash={tampered_stored_hash}")
+    print(f"  computed_replay_hash={tampered_computed_hash}")
+    print(f"  differs_from_original={tampered_computed_hash != original_hash}")
     print("OK: FAIL scenario asserted")
     print()
     
