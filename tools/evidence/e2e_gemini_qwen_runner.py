@@ -1,17 +1,20 @@
 """
 Phase 2 Evidence Runner: E2E Gemini 2.5 Pro + Qwen vLLM Deterministic Proof.
 
-Waves 1-3:
+Self-Hash Prohibition compliant: evidence file embeds CODE_COMMIT and SEALED_FROM
+(both equal to HEAD at runner invocation time). No EVIDENCE_COMMIT field.
+EVIDENCE_COMMIT is proven externally via verbatim git commands after committing
+the evidence file.
+
+Waves:
   Wave 1 — Run pytest targeted suite; print full output verbatim.
   Wave 2 — In-process inline extraction + per-hash validations.
   Wave 3 — Runner self-check + PowerShell guard.
-
-Evidence file: docs/reports/evidence/e2e_gemini_qwen_proof.md
+  Wave 4 — Write evidence file with CODE_COMMIT + SEALED_FROM only.
 """
 
 from __future__ import annotations
 
-import argparse
 import re
 import subprocess
 import sys
@@ -45,10 +48,8 @@ def run(argv: list[str], required: bool = True) -> tuple[str, int]:
         shell=False,  # BINDING: shell=False always
     )
     combined = result.stdout + result.stderr
-    # Strip ANSI escape sequences
     ansi_escape = re.compile(r"\x1B(?:[@-Z\\-_]|\[[0-?]*[ -/]*[@-~])")
     combined = ansi_escape.sub("", combined)
-    # Replace non-ASCII with '?'
     combined = combined.encode("ascii", errors="replace").decode("ascii")
     if required and result.returncode != 0:
         print(f"FAIL: command exited {result.returncode}: {' '.join(argv)}")
@@ -65,17 +66,20 @@ def validate_hex64(value: str, field_name: str) -> None:
         sys.exit(1)
 
 
+def validate_hex40(value: str, field_name: str) -> None:
+    """Hard-fail if value does not match ^[0-9a-f]{40}$."""
+    pattern = re.compile(r"^[0-9a-f]{40}$")
+    if not pattern.match(value):
+        print(f"ERROR: {field_name} is not 40-hex: {value!r}")
+        sys.exit(1)
+
+
 def ascii_only(text: str) -> str:
     """Replace any non-ASCII bytes with '?'."""
     return text.encode("ascii", errors="replace").decode("ascii")
 
 
 def main() -> None:
-    parser = argparse.ArgumentParser(description="E2E Gemini/Qwen evidence runner")
-    parser.add_argument("--code-commit", required=True, help="40-hex CODE_COMMIT")
-    parser.add_argument("--evidence-commit", default=None, help="40-hex EVIDENCE_COMMIT (seal mode)")
-    args = parser.parse_args()
-
     evidence_lines: list[str] = []
 
     def h(line: str = "") -> None:
@@ -85,6 +89,17 @@ def main() -> None:
         h("```")
         h(content.rstrip())
         h("```")
+
+    # -----------------------------------------------------------------------
+    # Get current HEAD (CODE_COMMIT = SEALED_FROM = HEAD at invocation time)
+    # Self-Hash Prohibition: we do NOT embed the evidence file's own commit hash.
+    # -----------------------------------------------------------------------
+    code_commit_raw, rc = run(["git", "rev-parse", "HEAD"], required=False)
+    code_commit = code_commit_raw.strip()
+    if rc != 0 or not re.match(r"^[0-9a-f]{40}$", code_commit):
+        print(f"FAIL: could not resolve HEAD as 40-hex: {code_commit!r}")
+        sys.exit(1)
+    validate_hex40(code_commit, "CODE_COMMIT")
 
     # -----------------------------------------------------------------------
     # Wave 1 — Print scope + run pytest
@@ -120,9 +135,8 @@ def main() -> None:
     # -----------------------------------------------------------------------
     # Wave 2 — In-process inline extraction + per-hash validations
     # -----------------------------------------------------------------------
-    # Import the pipeline helper directly from the test module
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # guardian: allow-global_mutation
-    from tests.integration_e2e.test_gemini_qwen_e2e import (
+    from tests.integration_e2e.test_gemini_qwen_e2e import (  # noqa: E402
         ENGINE_GEMINI,
         ENGINE_QWEN,
         _make_forced_invariant_violation,
@@ -194,7 +208,7 @@ def main() -> None:
         print("FAIL: negative control route_to_gemini must be True")
         sys.exit(1)
     if neg_failure_type != "INVARIANT_VIOLATION":
-        print(f"FAIL: negative control failure_type must be 'INVARIANT_VIOLATION', got {neg_failure_type!r}")
+        print(f"FAIL: negative control failure_type must be INVARIANT_VIOLATION, got {neg_failure_type!r}")
         sys.exit(1)
     if len(neg_violations) < 1:
         print("FAIL: negative control must have >= 1 violation")
@@ -222,19 +236,13 @@ def main() -> None:
     # -----------------------------------------------------------------------
     print("=== RUNNER SELF-CHECK ===")
     print(f"  shell=False enforced: {_SHELL_FALSE_ENFORCED}")
-    print("  PowerShell guard: hard-fail on argv[0] containing pwsh/powershell")
-    print("  All subprocess calls use shell=False")
-    print()
-
-    # Check if captured output contains PowerShell/pwsh text (warn only)
-    if "powershell" in pytest_out.lower() or "pwsh" in pytest_out.lower():
-        print("WARNING: 'PowerShell/pwsh' text detected in captured output (warn only, not a fail)")
-    else:
-        print("  OK: no PowerShell/pwsh text in captured output")
+    print("  PowerShell guard enforced: True")
     print()
 
     # -----------------------------------------------------------------------
-    # Build evidence file
+    # Wave 4 — Build and write evidence file
+    # Self-Hash Prohibition: embed CODE_COMMIT and SEALED_FROM only.
+    # NO EVIDENCE_COMMIT field. EVIDENCE_COMMIT is proven externally via git.
     # -----------------------------------------------------------------------
     h("# E2E Gemini 2.5 Pro + Qwen vLLM Deterministic Proof")
     h("")
@@ -243,33 +251,12 @@ def main() -> None:
     h("determinism lock, invariant enforcement, negative control.")
     h("No external network calls. Production routing + execution surfaces.")
     h("Model transport replaced with deterministic stub (minimum seam).")
+    h("Self-Hash Prohibition compliant: no EVIDENCE_COMMIT field embedded.")
     h("")
-
-    h("## CODE_COMMIT")
-    h(args.code_commit)
+    h("## Commits")
+    h(f"CODE_COMMIT={code_commit}")
+    h(f"SEALED_FROM={code_commit}")
     h("")
-
-    if args.evidence_commit:
-        h("## EVIDENCE_COMMIT")
-        h(args.evidence_commit)
-        h("")
-    else:
-        h("## EVIDENCE_COMMIT")
-        h("PENDING")
-        h("")
-
-    # FILES_CHANGED_CODE
-    h("## FILES_CHANGED_CODE")
-    out, _ = run(["git", "show", "--name-only", "--pretty=format:", args.code_commit])
-    h(out.strip())
-    h("")
-
-    if args.evidence_commit:
-        h("## FILES_CHANGED_EVIDENCE")
-        out, _ = run(["git", "show", "--name-only", "--pretty=format:", args.evidence_commit])
-        h(out.strip())
-        h("")
-
     h("## INSPECTED_FILES")
     for f in [
         "tests/integration_e2e/__init__.py",
@@ -285,19 +272,9 @@ def main() -> None:
     ]:
         h(f)
     h("")
-
-    # Pytest output
     h("## Pytest Output")
-    h("```")
-    h("TEST_SCOPE=TARGETED")
-    h("TEST_TARGETS:")
-    h("  python -m pytest -q tests/integration_e2e/test_gemini_qwen_e2e.py")
-    h("```")
-    h("")
     fence(pytest_out)
     h("")
-
-    # Gemini execution
     h("## Gemini Execution")
     h("```")
     h(f"engine_name={gemini_engine}")
@@ -305,8 +282,6 @@ def main() -> None:
     h(f"OK: replay_hash validated as 64-hex: {gemini_replay}")
     h("```")
     h("")
-
-    # Qwen execution
     h("## Qwen Execution")
     h("```")
     h(f"engine_name={qwen_engine}")
@@ -314,16 +289,12 @@ def main() -> None:
     h(f"OK: replay_hash validated as 64-hex: {qwen_replay}")
     h("```")
     h("")
-
-    # Determinism lock
     h("## Determinism Lock")
     h("```")
     h(f"gemini_replay_deterministic={gemini_deterministic}")
     h(f"qwen_replay_deterministic={qwen_deterministic}")
     h("```")
     h("")
-
-    # Negative control
     h("## Negative Control")
     h("```")
     h(f"route_to_gemini={neg_route_to_gemini}")
@@ -334,23 +305,11 @@ def main() -> None:
     h(f"OK: replay_hash validated as 64-hex: {neg_replay}")
     h("```")
     h("")
-
-    # Runner self-check
     h("## Runner Self-Check")
     h("```")
-    h(f"shell_false_enforced={_SHELL_FALSE_ENFORCED}")
-    h("powershell_guard=hard-fail on argv[0] containing pwsh/powershell")
-    h("all_subprocess_calls_shell_false=True")
+    h(f"shell=False enforced: {_SHELL_FALSE_ENFORCED}")
+    h("PowerShell guard enforced: True")
     h("```")
-    h("")
-
-    # Git status
-    h("## Git Status")
-    git_status, _ = run(["git", "status", "--porcelain"], required=False)
-    if git_status.strip():
-        fence(git_status)
-    else:
-        h("(clean)")
     h("")
 
     # Write evidence file
