@@ -37,6 +37,11 @@ class ExecutionContext:
 
     Usage:
         from apps_shared.utils.common_patterns import ExecutionContext
+
+    Replay-mode fields (Phase 0.5 — SSOT Mixin Integration):
+        replay_mode: bool — True if execution is a deterministic replay.
+        active_policy_hash: str | None — L4 policy hash anchoring all state.
+        safety_status: str — L5 safety gate status (PENDING|CLEARED|FAILED).
     """
 
     mission_id: str = ""
@@ -45,6 +50,9 @@ class ExecutionContext:
     metadata: dict[str, Any] = field(default_factory=dict)
     trace_id: str | None = None
     parent_span_id: str | None = None
+    replay_mode: bool = False
+    active_policy_hash: str | None = None
+    safety_status: str = "PENDING"
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -55,6 +63,9 @@ class ExecutionContext:
             "metadata": self.metadata,
             "trace_id": self.trace_id,
             "parent_span_id": self.parent_span_id,
+            "replay_mode": self.replay_mode,
+            "active_policy_hash": self.active_policy_hash,
+            "safety_status": self.safety_status,
         }
 
 

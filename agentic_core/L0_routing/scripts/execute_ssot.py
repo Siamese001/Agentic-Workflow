@@ -50,6 +50,12 @@ def _get_write_gateway():
     return write_gateway
 
 
+def _get_execution_context_class():
+    from agentic_core.L0_routing.scripts.execution_context import ExecutionContext
+
+    return ExecutionContext
+
+
 def _get_location_validator_agent():
     from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
@@ -636,10 +642,16 @@ class ASTCodeQualityValidator:
 class AutonomousDecisionEngine:
     """Makes autonomous healing decisions based on confidence scores."""
 
-    def __init__(self, enable_llm: bool = False, state_mgr: Optional["RuntimeStateManager"] = None):
+    def __init__(
+        self,
+        enable_llm: bool = False,
+        state_mgr: Optional["RuntimeStateManager"] = None,
+        execution_context: Optional["ExecutionContext"] = None,
+    ):
         self.enable_llm = enable_llm
         self.decisions_made = []
         self.state_mgr = state_mgr
+        self._execution_context = execution_context
         # [SAFETY] Cycle Detection State
         self._healing_count: int = 0
         self._healing_enabled: bool = True
@@ -812,8 +824,9 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
         enable_llm: bool = False,
         state_mgr: Optional["RuntimeStateManager"] = None,
         enable_cda: bool = False,
+        execution_context: Optional["ExecutionContext"] = None,
     ):
-        super().__init__(enable_llm=enable_llm, state_mgr=state_mgr)
+        super().__init__(enable_llm=enable_llm, state_mgr=state_mgr, execution_context=execution_context)
         self.enable_cda = enable_cda
         # Initialize decisions_made if not already present from parent
         if not hasattr(self, "decisions_made"):
@@ -877,8 +890,9 @@ class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
         enable_llm: bool = False,
         state_mgr: Optional["RuntimeStateManager"] = None,
         enable_cda: bool = False,
+        execution_context: Optional["ExecutionContext"] = None,
     ):
-        super().__init__(enable_llm, state_mgr, enable_cda)
+        super().__init__(enable_llm, state_mgr, enable_cda, execution_context=execution_context)
         self._sovereignty_token: str | None = None
         self._operation_stack: list[str] = []
         # guardian: allow-magic-config
@@ -1268,8 +1282,9 @@ logger = logging.getLogger("UnifiedSovereign")
 class RuntimeStateManager:
     """Manages live state for dashboard observability."""
 
-    def __init__(self, project_root: Path):
+    def __init__(self, project_root: Path, execution_context: Optional["ExecutionContext"] = None):
         self.project_root = project_root.resolve()  # [ULTRA-HARDENED] Force real absolute path resolution
+        self._execution_context = execution_context
         self.state = {
             "status": "idle",
             "start_time": None,
@@ -1291,6 +1306,8 @@ class RuntimeStateManager:
             # [SILENT AGGREGATION] Track decisions for final report
             "decisions_made": [],
             "compliance_report": {},
+            # [SSOT MIXIN] Audit chain for cryptographic AuditTrailMixin
+            "audit_chain": [],
         }
         # [HARDENED] Register exit handler to prevent 'zombie' running states
         atexit.register(self._emergency_cleanup)
@@ -3119,7 +3136,23 @@ Examples:
         return
 
     # 3. Initialize Sovereign State & Agents
-    state_mgr = RuntimeStateManager(project_root)
+    # [SSOT MIXIN] Build ExecutionContext with L4-derived policy hash
+    ExecutionContext = _get_execution_context_class()
+    try:
+        from agentic_core.L4_state.config.versioned_configs import get_active_configs
+
+        _l4_policy_hash = get_active_configs().policy.config_hash
+    except ImportError:
+        _l4_policy_hash = "fallback-no-l4"
+    _exec_ctx = ExecutionContext(
+        mission_id=args.territory or "default",
+        trace_id=f"mission-{int(time.time())}",
+        replay_mode=False,
+        active_policy_hash=_l4_policy_hash,
+        safety_status="CLEARED",
+    )
+
+    state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
 
     # [SIMPLIFIED] Parse arguments — validate⇒dry_run already centralized above.
     dry_run = args.dry_run
@@ -3136,6 +3169,7 @@ Examples:
         enable_llm=enable_llm,
         state_mgr=state_mgr,
         enable_cda=enable_cda,
+        execution_context=_exec_ctx,
     )
 
     logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
