@@ -211,6 +211,38 @@ class SovereignLLMGateway:
         # §P1 — Pre-call injection scan (uses instance detector)
         self._injection_detector.scan(prompt)
 
+        # §Phase3 — vLLM gateway controller seam (local import: no heavy deps at module level)
+        _p3_route_to_gemini = False
+        _p3_telemetry_dict: dict | None = None
+        try:
+            from agentic_core.L2_execution.types.vllm_gateway_adapter import (
+                VLLMGatewayAdapter,
+            )
+            from agentic_core.L2_execution.types.vllm_token_budget_types import (
+                TaskClass,
+            )
+
+            _p3_severity = kwargs.pop("vllm_severity", "low")
+            _p3_task_class = kwargs.pop("vllm_task_class", TaskClass.PATCH_SUGGESTION.value)
+            _p3_adapter = VLLMGatewayAdapter()
+            _p3_decision = _p3_adapter.evaluate(
+                prompt=prompt,
+                task_class=_p3_task_class,
+                severity=_p3_severity,
+            )
+            _p3_telemetry_dict = _p3_decision.telemetry.as_dict()
+            _p3_route_to_gemini = _p3_decision.route_to_gemini
+            if _p3_decision.local_request is not None:
+                max_tokens = _p3_decision.local_request.max_tokens
+                temperature = _p3_decision.local_request.temperature
+            Logger.debug("[Phase3] vllm_gateway_adapter decision: %s", _p3_telemetry_dict)
+        except Exception as _p3_exc:  # guardian: allow-silent-swallow
+            Logger.warning("[Phase3] vllm_gateway_adapter seam failed (non-fatal): %s", _p3_exc)
+
+        if _p3_route_to_gemini:
+            provider = "google"
+            fallback_providers = []
+
         fallback_providers = fallback_providers or ["anthropic", "google"]
         providers_to_try = [provider] + [p for p in fallback_providers if p != provider]
 
