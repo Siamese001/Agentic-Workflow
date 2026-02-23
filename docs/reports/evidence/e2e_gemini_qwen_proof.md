@@ -8,8 +8,8 @@ Model transport replaced with deterministic stub (minimum seam).
 Self-Hash Prohibition compliant: no EVIDENCE_COMMIT field embedded.
 
 ## Commits
-CODE_COMMIT=b8b9264dd4775848cbd2d38613ab69e03cf6f38c
-SEALED_FROM=b8b9264dd4775848cbd2d38613ab69e03cf6f38c
+CODE_COMMIT=0383ecc5e2d487d741120bed96e2ba6c9ae6ad77
+SEALED_FROM=0383ecc5e2d487d741120bed96e2ba6c9ae6ad77
 
 ## INSPECTED_FILES
 tests/integration_e2e/__init__.py
