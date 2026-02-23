@@ -10,7 +10,7 @@ Model transport replaced with deterministic stub (minimum seam).
 8be325454
 
 ## EVIDENCE_COMMIT
-PENDING
+af17d3fdf
 
 ## FILES_CHANGED_CODE
 ops_scripts/hooks/import_dep_baseline.txt
@@ -18,6 +18,9 @@ ops_scripts/hooks/landmine_baseline.txt
 tests/integration_e2e/__init__.py
 tests/integration_e2e/test_gemini_qwen_e2e.py
 tools/evidence/e2e_gemini_qwen_runner.py
+
+## FILES_CHANGED_EVIDENCE
+docs/reports/evidence/e2e_gemini_qwen_proof.md
 
 ## INSPECTED_FILES
 tests/integration_e2e/__init__.py
