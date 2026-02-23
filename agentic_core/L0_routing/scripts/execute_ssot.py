@@ -2720,15 +2720,19 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
     if ptc_plan:
         print("=== PROGRAMMATIC TOOL CALLING ===")
 
+        # Initialize violations list if not already defined
+        if "violations" not in locals():
+            violations = []
+
         try:
             # Import PTC modules
             from agentic_core.L3_orchestration.ptc.builtin_tools import register_builtin_tools
             from agentic_core.L3_orchestration.ptc.ptc_registry import get_global_registry
             from agentic_core.L3_orchestration.ptc.tool_call_store import record_tool_call
-            from agentic_core.L3_orchestration.ptc.tool_contract import generate_call_id
+            from agentic_core.L3_orchestration.ptc.tool_contract import ToolCall, generate_call_id
             from agentic_core.L3_orchestration.ptc.tool_invoker import ToolInvoker
 
-            # Register built-in tools
+            # Register built-in tools (idempotent)
             register_builtin_tools()
 
             # Get registry and invoker
@@ -2744,7 +2748,8 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
             )
 
             expr_result = invoker.invoke(expr_call, registry)
-            record_tool_call(expr_call, expr_result, registry.get_spec("expr_eval"))
+            spec, _ = registry.get("expr_eval")
+            record_tool_call(expr_call, expr_result, spec)
 
             # Prepare PTC plan data
             ptc_plan_data = {
@@ -2768,6 +2773,11 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
             print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
 
         except Exception as e:  # guardian: allow-silent-swallower
+            # Create error plan data but don't fail plan mode
+            ptc_plan_data = {"tool_calls": [], "summary": f"PTC setup failed: {str(e)}", "error": str(e)}
+            import json
+
+            print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
             violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))
 
         print()

@@ -109,12 +109,10 @@ def main():
     # Summary
     print("=== Summary ===")
     if total_violations == 0:
-        print("✓ All static invariants passed")
-        print("✓ Repository is compliant with formal verification requirements")
-        return 0
+        print("No violations found")
     else:
-        print(f"✗ {total_violations} total violations found")
-        print("✗ Please fix violations before proceeding")
+        print(f"FAIL: {total_violations} total violations found")
+        print("FAIL: Please fix violations before proceeding")
         return 1
 
 

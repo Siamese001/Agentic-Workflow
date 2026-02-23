@@ -12,7 +12,6 @@ import re
 from pathlib import Path
 from typing import Any
 
-from .ptc_registry import register_tool
 from .tool_contract import ToolArg, ToolSpec
 
 
@@ -158,7 +157,7 @@ def expr_eval_handler(args: dict[str, Any]) -> str:
 
     for pattern in unsafe_patterns:
         if re.search(pattern, expr):
-            return "Error: Expression contains unsafe operations"
+            raise ValueError("Expression contains unsafe operations")
 
     try:
         # Parse to ensure it's a valid expression
@@ -169,9 +168,9 @@ def expr_eval_handler(args: dict[str, Any]) -> str:
         return str(result)
 
     except SyntaxError as e:
-        return f"Error: Invalid syntax: {e}"
+        raise ValueError(f"Invalid syntax: {e}")
     except Exception as e:  # guardian: allow-silent-swallower
-        return "Error: " + str(e)
+        raise ValueError(str(e))
 
 
 def _evaluate_expression(expr: str) -> Any:
@@ -301,8 +300,11 @@ def _evaluate_expression(expr: str) -> Any:
 
 
 # Register built-in tools
-def register_builtin_tools() -> None:
-    """Register all built-in tools in the global registry."""
+def register_builtin_tools():
+    """Register all built-in PTC tools. Idempotent."""
+    from .ptc_registry import get_global_registry, register_tool
+
+    registry = get_global_registry()
 
     # repo_rg tool
     repo_rg_spec = ToolSpec(
@@ -316,7 +318,16 @@ def register_builtin_tools() -> None:
         output_kind="JSON",
         version=1,
     )
-    register_tool(repo_rg_spec, repo_rg_handler)
+
+    # Check if already registered with identical spec
+    if registry.has("repo_rg"):
+        existing_spec, _ = registry.get("repo_rg")
+        if existing_spec.version == repo_rg_spec.version and existing_spec.args == repo_rg_spec.args:
+            pass  # Already registered, skip
+        else:
+            raise ValueError("Tool 'repo_rg' already registered with different spec")
+    else:
+        register_tool(repo_rg_spec, repo_rg_handler)
 
     # expr_eval tool
     expr_eval_spec = ToolSpec(
@@ -327,7 +338,16 @@ def register_builtin_tools() -> None:
         output_kind="TEXT",
         version=1,
     )
-    register_tool(expr_eval_spec, expr_eval_handler)
+
+    # Check if already registered with identical spec
+    if registry.has("expr_eval"):
+        existing_spec, _ = registry.get("expr_eval")
+        if existing_spec.version == expr_eval_spec.version and existing_spec.args == expr_eval_spec.args:
+            pass  # Already registered, skip
+        else:
+            raise ValueError("Tool 'expr_eval' already registered with different spec")
+    else:
+        register_tool(expr_eval_spec, expr_eval_handler)
 
 
 # Auto-register when module is imported
