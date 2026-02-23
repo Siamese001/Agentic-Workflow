@@ -187,6 +187,31 @@ class VLLMReplayArtifact:
         )
         object.__setattr__(self, "replay_hash", sha256_hex(combined))
 
+    def canonical_payload_hash(self) -> str:
+        """
+        Get the canonical payload hash derived from the exact bytes used for replay_hash computation.
+        
+        This reflects the combined canonical payload (prompt_hash + local_request_hash + 
+        fingerprint_hash + response_hash) before the final SHA-256.
+        
+        Returns:
+            64-character lowercase hex SHA256 digest of the canonical payload.
+        """
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+            canonical_json,
+            sha256_hex,
+        )
+        
+        # Recreate the exact combined payload used for replay_hash
+        combined = (
+            self.prompt_hash +
+            self.local_request_hash +
+            self.fingerprint_hash +
+            self.response_hash
+        )
+        return sha256_hex(combined)
+
     def verify(self) -> bool:
         """
         Verify that stored hashes match recomputed hashes.
