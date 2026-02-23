@@ -7,7 +7,7 @@ Phase 3 of Qwen vLLM migration: wire Phase 1 (token budgeting + tiered routing) 
 dc345dcc95f1d2b001d0fda9473263e9b2395600
 
 ## EVIDENCE_COMMIT
-PENDING
+621a81be80e044d8fda8a8d7b7699f2278e6e71c
 
 ## FILES_CHANGED_CODE
 ```
@@ -15,6 +15,12 @@ agentic_core/L2_execution/types/vllm_gateway_integration.py
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py
+```
+
+## FILES_CHANGED_EVIDENCE
+```
+docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
+tools/evidence/qwen_migration_phase3_evidence_runner.py
 ```
 
 ## INSPECTED_FILES
@@ -95,7 +101,7 @@ tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::tes
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 20 passed in 0.06s ==============================
+============================= 20 passed in 0.05s ==============================
 ```
 
 ## Telemetry End-to-End Tests (WAVE 3)
@@ -142,7 +148,7 @@ tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_te
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 30 passed in 0.06s ==============================
+============================= 30 passed in 0.05s ==============================
 ```
 
 ## Token Budget Fallback Proof
@@ -204,6 +210,6 @@ OK: runner self-check passed
 
 ## Git Status
 ```
-?? tools/evidence/qwen_migration_phase3_evidence_runner.py
+
 ```
 
