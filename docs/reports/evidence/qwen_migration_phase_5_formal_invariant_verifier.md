@@ -9,11 +9,14 @@ FAIL violations trigger Gemini fallback. Phase 1-4 behavior preserved.
 a4ef70c1b1ff9e4d2a0f2250ec47dcd2721251c4
 
 ## EVIDENCE_COMMIT
-PENDING
+8b560d1bc5a88f946bcefc219530a2905eaee2ab
 
 ## FILES_CHANGED_CODE
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py
 tools/evidence/qwen_migration_phase5_evidence_runner.py
+
+## FILES_CHANGED_EVIDENCE
+docs/reports/evidence/qwen_migration_phase_5_formal_invariant_verifier.md
 
 ## INSPECTED_FILES
 agentic_core/L2_execution/types/vllm_invariant_contract.py
@@ -99,7 +102,7 @@ tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_a
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 5 passed in 0.05s ==============================
+============================== 5 passed in 0.06s ==============================
 ```
 
 ## Phase 1-4 Regression Tests
@@ -490,7 +493,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:36:44 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-23 13:38:07 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [  9%]
@@ -577,7 +580,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:36:44 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-23 13:38:07 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 21%]
@@ -1341,11 +1344,11 @@ E       Missing: []
 E   assert {('agentic_co...rite_text()')} == frozenset()
 E     
 E     Extra items in the left set:
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')
 E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.rename()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', '__init__', 'Call:.mkdir()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')
 E     ('agentic_core/L4_state/storage/filesystem_store.py', '_get_next_version', 'Call:.mkdir()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')...
+E     ('agentic_core/L4_state/storage/filesystem_store.py', '__init__', 'Call:.mkdir()')
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')...
 E     
 E     ...Full output truncated (30 lines hidden), use '-vv' to show
 _________ TestLazySeamAllowlist.test_allowlist_matches_scanner_total __________
@@ -1445,16 +1448,16 @@ Errors: 0
 Architectural violations detected. Review failed tests.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.05s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-2.56s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.39s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-2.05s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.56s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_negative_remove_allowlist_entry_causes_violation
-1.54s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
-1.54s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
-1.53s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_repository_surface
+3.13s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+3.10s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+3.07s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+2.51s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.31s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.02s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.55s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
+1.55s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
+1.55s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_summary_schema
+1.54s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
 =========================== short test summary info ===========================
 FAILED tests/governance/test_cross_layer_import_freeze.py::TestCrossLayerImportFreeze::test_no_new_violations
 FAILED tests/governance/test_intent_emission_no_mutation.py::TestAllowlistEnforcement::test_total_hits_equals_zero
@@ -1466,7 +1469,7 @@ FAILED tests/governance/test_upward_import_enforcement.py::TestNegativeRegressio
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_module_level_upward_imports_still_zero
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamViolation::test_zero_lazy_seam_violations_in_codebase
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamBudget::test_lazy_seam_budget_not_exceeded
-============ 10 failed, 716 passed, 4 warnings in 60.87s (0:01:00) ============
+================= 10 failed, 716 passed, 4 warnings in 57.81s =================
 ```
 
 ## Scope Isolation Proof
