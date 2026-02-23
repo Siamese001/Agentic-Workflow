@@ -4,31 +4,27 @@
 Phase 3 of Qwen vLLM migration: wire Phase 1 (token budgeting + tiered routing) and Phase 2 (serving profiles + backpressure/circuit breaker) into a deterministic call-path controller with telemetry emission. No new model tiers. No 32B. L2 purity preserved.
 
 ## CODE_COMMIT
-dc345dcc95f1d2b001d0fda9473263e9b2395600
+0ac6055179f393d05c7b0a4cdaede5edcd21c368
 
 ## EVIDENCE_COMMIT
-621a81be80e044d8fda8a8d7b7699f2278e6e71c
+PENDING
 
 ## FILES_CHANGED_CODE
 ```
-agentic_core/L2_execution/types/vllm_gateway_integration.py
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py
-tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py
-tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py
-```
-
-## FILES_CHANGED_EVIDENCE
-```
-docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
-tools/evidence/qwen_migration_phase3_evidence_runner.py
+agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
+agentic_core/L2_execution/types/vllm_gateway_adapter.py
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py
 ```
 
 ## INSPECTED_FILES
 ```
 agentic_core/L2_execution/types/vllm_gateway_integration.py
+agentic_core/L2_execution/types/vllm_gateway_adapter.py
+agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py
 ```
 
 ## Profile Selection + Request Shaping Tests (WAVE 1)
@@ -151,6 +147,43 @@ tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_te
 ============================= 30 passed in 0.05s ==============================
 ```
 
+## Gateway Adapter Seam Tests (WAVE 1 Phase 3.1)
+```
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+collected 14 items
+
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_seam_proof_marker_present PASSED [  7%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_emit_seam_proof_returns_marker PASSED [ 14%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_no_gemini PASSED [ 21%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_explicit_max_tokens PASSED [ 28%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_profile_max_model_len PASSED [ 35%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_telemetry_failure_type_none PASSED [ 42%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_routes_gemini PASSED [ 50%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_failure_type PASSED [ 57%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_provider_gemini PASSED [ 64%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_queue_full_routes_gemini PASSED [ 71%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_breaker_open_routes_gemini PASSED [ 78%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_record_local_failure_increments_breaker PASSED [ 85%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_record_local_success_resets_breaker PASSED [ 92%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_reset_singletons_clears_state PASSED [100%]
+
+============================ slowest 10 durations =============================
+
+(10 durations < 0.005s hidden.  Use -vv to show these durations.)
+============================= 14 passed in 0.05s ==============================
+```
+
+## Seam Proof: SovereignLLMGateway Uses VLLMGatewayAdapter
+```
+OK: SovereignLLMGateway uses VLLMGatewayAdapter -> evaluate_gateway_call
+OK: seam proof verified
+```
+
 ## Token Budget Fallback Proof
 ```
 route_to_gemini=True
@@ -192,10 +225,11 @@ provider_selected=Qwen/Qwen2.5-7B-Instruct
 model_tier=fast
 token_budget_ok=True
 failure_type=None
-queue_full=False
-breaker_state=CLOSED
-telemetry_keys=['provider_selected', 'model_tier', 'prompt_tokens_estimated', 'max_output_tokens_requested', 'max_model_len_configured', 'token_budget_ok', 'budget_margin_tokens', 'queue_depth', 'queue_full', 'queue_wait_seconds', 'breaker_state', 'breaker_failure_count', 'failure_type']
-OK: local success telemetry confirmed
+local_request.max_tokens=600
+local_request.max_model_len=8192
+local_request.temperature=0.0
+local_request.profile_name=LOCAL_FAST_7B
+OK: local success telemetry confirmed (explicit max_tokens + profile max_model_len)
 ```
 
 ## Runner Self-Check Proof
@@ -210,6 +244,6 @@ OK: runner self-check passed
 
 ## Git Status
 ```
-
+(clean)
 ```
 
