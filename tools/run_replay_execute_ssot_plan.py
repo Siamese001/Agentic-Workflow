@@ -117,6 +117,73 @@ def main():
         print(f"   ERROR during replay: {e}")
         return 1
 
+    # Store artifacts in persistent storage
+    print("\n3. Storing artifacts...")
+    try:
+        # Import storage modules
+        storage_spec = importlib.util.spec_from_file_location(
+            "persistent_store",
+            Path(__file__).parent.parent / "agentic_core" / "L4_state" / "storage" / "persistent_store.py",
+        )
+        persistent_store = importlib.util.module_from_spec(storage_spec)
+        storage_spec.loader.exec_module(persistent_store)
+
+        filesystem_spec = importlib.util.spec_from_file_location(
+            "filesystem_store",
+            Path(__file__).parent.parent / "agentic_core" / "L4_state" / "storage" / "filesystem_store.py",
+        )
+        filesystem_store = importlib.util.module_from_spec(filesystem_spec)
+        filesystem_spec.loader.exec_module(filesystem_store)
+
+        # Initialize store
+        store = filesystem_store.FileSystemStore(Path.cwd())
+
+        # Store replay record artifact
+        import json
+
+        record_dict = json.loads(record_to_json(record))
+        record_artifact = persistent_store.create_artifact(
+            kind="replay_record",
+            logical_id="execute_ssot_plan",
+            payload=record_dict,
+            metadata={
+                "code_commit": "unknown",  # Will be set by evidence runner
+                "tool_version": "1.0",
+                "record_version": str(record.version),
+            },
+        )
+        record_ref = store.put(record_artifact)
+        print(f"   Stored replay record: {record_ref.path} (v{record_ref.version})")
+
+        # Store replay summary artifact
+        summary_payload = {
+            "is_deterministic": comparison.is_match,
+            "mismatch_count": len(comparison.mismatches),
+            "command_count": len(record.commands),
+            "record_hashes": record.hashes,
+        }
+        if not comparison.is_match:
+            summary_payload["first_mismatches"] = comparison.mismatches[:3]
+            if comparison.first_diff_summary:
+                summary_payload["first_diff_summary"] = comparison.first_diff_summary
+
+        summary_artifact = persistent_store.create_artifact(
+            kind="replay_summary",
+            logical_id="execute_ssot_plan",
+            payload=summary_payload,
+            metadata={
+                "tool_version": "1.0",
+                "verdict": "deterministic" if comparison.is_match else "non_deterministic",
+            },
+        )
+        summary_ref = store.put(summary_artifact)
+        print(f"   Stored replay summary: {summary_ref.path} (v{summary_ref.version})")
+
+    # guardian: allow-silent-swallower
+    except Exception as e:
+        print(f"   ERROR during artifact storage: {e}")
+        return 1
+
     print("\n=== Replay Complete ===")
     return 0
 
