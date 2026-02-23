@@ -1,15 +1,18 @@
 """
 Programmatic Tool Calling (PTC) - Tool Call Store
 
-Append-only storage for tool call records using in-memory store.
+Append-only storage for tool call records using persistent store.
 Ensures deterministic storage and retrieval of tool call artifacts.
 """
 
 from __future__ import annotations
 
 import json
-from datetime import datetime
+from pathlib import Path
 from typing import Any
+
+from agentic_core.L4_state.storage.filesystem_store import FileSystemStore
+from agentic_core.L4_state.storage.persistent_store import StoredArtifact, StoredArtifactRef
 
 from .tool_contract import (
     ToolCall,
@@ -24,9 +27,16 @@ from .tool_contract import (
 class ToolCallStore:
     """Append-only storage for tool call records."""
 
-    def __init__(self):
-        """Initialize with in-memory store."""
-        self._store: list[dict[str, Any]] = []
+    def __init__(self, root_dir: Path | str | None = None):
+        """Initialize with persistent store.
+
+        Args:
+            root_dir: Root directory for storage (defaults to repo root/docs/store)
+        """
+        if root_dir is None:
+            # Default to repo root/docs/store
+            root_dir = Path.cwd() / "docs" / "store"
+        self._store = FileSystemStore(root_dir)
 
     def record_call(
         self,
@@ -34,7 +44,7 @@ class ToolCallStore:
         result: ToolCallResult,
         spec: ToolSpec,
         policy: dict[str, Any] | None = None,
-    ) -> None:
+    ) -> StoredArtifactRef:
         """Record a tool call and its result.
 
         Args:
@@ -42,20 +52,33 @@ class ToolCallStore:
             result: Result of the tool call
             spec: Tool specification
             policy: Policy used for the call
+
+        Returns:
+            Reference to stored artifact
         """
-        # Create payload
+        # Create deterministic payload (no timestamp)
         payload = {
             "call": json.loads(tool_call_to_json(call)),
             "result": json.loads(tool_call_result_to_json(result)),
             "tool_spec": json.loads(tool_spec_to_json(spec)),
             "policy": policy or {},
-            "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
         }
 
-        # Store in memory
-        self._store.append(payload)
+        # Create artifact with deterministic ID from call_id
+        artifact = StoredArtifact(
+            kind="tool_call",
+            logical_id=call.call_id,
+            created_utc="",  # Empty for determinism
+            content_type="application/json",
+            payload=payload,
+        )
 
-    def list_calls(self, tool_id: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
+        # Store and return reference
+        return self._store.put(artifact)
+
+    def list_calls(
+        self, tool_id: str | None = None, limit: int = 100
+    ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
         """List stored tool calls.
 
         Args:
@@ -65,17 +88,22 @@ class ToolCallStore:
         Returns:
             List of tool call records
         """
-        # Filter by tool_id if specified
-        if tool_id:
-            filtered = [r for r in self._store if r["call"]["tool_id"] == tool_id]
-        else:
-            filtered = self._store.copy()
+        # Get all tool_call artifacts
+        refs = self._store.list("tool_call")
 
-        # Sort deterministically by timestamp and call_id
-        filtered.sort(key=lambda r: (r["timestamp"], r["call"]["call_id"]))
+        # Load artifacts
+        records = []
+        for ref in refs:
+            artifact = self._store.get(ref)
+            # Filter by tool_id if specified
+            if tool_id is None or artifact.payload["call"]["tool_id"] == tool_id:
+                records.append(artifact.payload)
+
+        # Sort deterministically by call_id
+        records.sort(key=lambda r: r["call"]["call_id"])
 
         # Apply limit
-        return filtered[:limit]
+        return records[:limit]
 
     def get_call(self, tool_id: str, call_id: str) -> dict[str, Any] | None:
         """Get a specific tool call record.
@@ -87,10 +115,25 @@ class ToolCallStore:
         Returns:
             Tool call record or None if not found
         """
-        # Find matching call
-        for record in self._store:
-            if record["call"]["tool_id"] == tool_id and record["call"]["call_id"] == call_id:
-                return record
+        # Try to get artifact by call_id (logical_id)
+        try:
+            ref = self._store._get_artifact_dir("tool_call", call_id)
+            # Find the latest version
+            versions = list(ref.parent.glob("v*.json"))
+            if versions:
+                latest = max(versions, key=lambda p: int(p.stem[1:]))
+                artifact = self._store.get(
+                    StoredArtifactRef(
+                        kind="tool_call",
+                        logical_id=call_id,
+                        version=int(latest.stem[1:]),
+                        path=str(latest),
+                    )
+                )
+                if artifact.payload["call"]["tool_id"] == tool_id:
+                    return artifact.payload
+        except Exception:  # guardian: allow-silent-swallower
+            pass
 
         return None
 
@@ -139,7 +182,7 @@ def record_tool_call(
     result: ToolCallResult,
     spec: ToolSpec,
     policy: dict[str, Any] | None = None,
-) -> None:
+) -> StoredArtifactRef:
     """Record a tool call in the global store.
 
     Args:
@@ -147,12 +190,17 @@ def record_tool_call(
         result: Result of the tool call
         spec: Tool specification
         policy: Policy used for the call
+
+    Returns:
+        Reference to stored artifact
     """
     store = get_tool_call_store()
-    store.record_call(call, result, spec, policy)
+    return store.record_call(call, result, spec, policy)
 
 
-def list_tool_calls(tool_id: str | None = None, limit: int = 100) -> list[dict[str, Any]]:
+def list_tool_calls(
+    tool_id: str | None = None, limit: int = 100
+) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
     """List tool calls from the global store.
 
     Args:

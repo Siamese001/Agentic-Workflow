@@ -36,7 +36,7 @@ class FileSystemStore:
         """Get directory for a specific artifact type and ID."""
         kind_clean = _sanitize_id(kind)
         id_clean = _sanitize_id(logical_id)
-        return self.root_dir / "docs" / "store" / kind_clean / id_clean
+        return self.root_dir / kind_clean / id_clean
 
     def _get_next_version(self, artifact_dir: Path) -> int:
         """Get next version number for artifact directory."""
@@ -180,7 +180,7 @@ class FileSystemStore:
             List of artifact references, deterministically sorted and limited
         """
         refs = []
-        store_base = self.root_dir / "docs" / "store"
+        store_base = self.root_dir
 
         if not store_base.exists():
             return []

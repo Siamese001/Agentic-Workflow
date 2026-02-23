@@ -1,0 +1,47 @@
+{
+  "content_type": "application/json",
+  "created_utc": "",
+  "hashes": {},
+  "kind": "tool_call",
+  "logical_id": "55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9",
+  "metadata": {},
+  "payload": {
+    "call": {
+      "args": {
+        "expr": "2 + 3 * 4"
+      },
+      "call_id": "55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9",
+      "policy": {
+        "timeout": 5
+      },
+      "tool_id": "expr_eval"
+    },
+    "policy": {},
+    "result": {
+      "exit_code": 0,
+      "hashes": {
+        "stdout": "8527a891e224136950ff32ca212b45bc93f69fbb801c3b1ebedac52775f99e61",
+        "truncated": "60a33e6cf5151f2d52eddae9685cfa270426aa89d8dbc7dfb854606f1d1a40fe"
+      },
+      "stderr": "",
+      "stdout": "14",
+      "truncated": false
+    },
+    "tool_spec": {
+      "args": [
+        {
+          "default": null,
+          "kind": "str",
+          "name": "expr",
+          "required": true
+        }
+      ],
+      "description": "Evaluate safe arithmetic expressions",
+      "output_kind": "TEXT",
+      "side_effect_class": "PURE",
+      "tool_id": "expr_eval",
+      "version": 1
+    }
+  },
+  "version": 17
+}

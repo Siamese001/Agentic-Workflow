@@ -2749,7 +2749,7 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
 
             expr_result = invoker.invoke(expr_call, registry)
             spec, _ = registry.get("expr_eval")
-            record_tool_call(expr_call, expr_result, spec)
+            artifact_ref = record_tool_call(expr_call, expr_result, spec)
 
             # Prepare PTC plan data
             ptc_plan_data = {
@@ -2764,6 +2764,12 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
                         "truncated": expr_result.truncated,
                     }
                 ],
+                "artifact_ref": {
+                    "kind": artifact_ref.kind,
+                    "logical_id": artifact_ref.logical_id,
+                    "version": artifact_ref.version,
+                    "path": artifact_ref.path,
+                },
                 "summary": "PTC executed 1 tool calls for plan context",
             }
 

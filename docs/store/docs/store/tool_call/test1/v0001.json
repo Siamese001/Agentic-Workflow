@@ -1,0 +1,35 @@
+{
+  "content_type": "application/json",
+  "created_utc": "",
+  "hashes": {},
+  "kind": "tool_call",
+  "logical_id": "test1",
+  "metadata": {},
+  "payload": {
+    "call": {
+      "args": {
+        "index": 1
+      },
+      "call_id": "test1",
+      "policy": {},
+      "tool_id": "test_tool"
+    },
+    "policy": {},
+    "result": {
+      "exit_code": 0,
+      "hashes": {},
+      "stderr": "",
+      "stdout": "result1",
+      "truncated": false
+    },
+    "tool_spec": {
+      "args": [],
+      "description": "Test",
+      "output_kind": "TEXT",
+      "side_effect_class": "PURE",
+      "tool_id": "test_tool",
+      "version": 1
+    }
+  },
+  "version": 1
+}
