@@ -248,36 +248,57 @@ def main():
     # Proof: FAIL violation triggers Gemini fallback
     h("## Proof: FAIL Violation Triggers Gemini Fallback")
     fallback_proof_code = """
+from unittest.mock import patch
 from agentic_core.L2_execution.types.vllm_gateway_adapter import VLLMGatewayAdapter, reset_singletons
 from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry
 from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_invariant_contract import InvariantId, InvariantSeverity, InvariantViolation
 
 reset_singletons()
 adapter = VLLMGatewayAdapter(queue=VLLMQueueController(), registry=VLLMCircuitBreakerRegistry())
 fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
 
-# Trigger FAIL violation by enabling replay_hash enforcement (not yet implemented)
-# This is a hypothetical test - in current implementation, no violations occur with valid inputs
-result = adapter.evaluate(
-    prompt='hello',
-    task_class='patch_suggestion',
-    severity='low',
-    oldest_wait_seconds=0.0,
-    fingerprint=fp,
+# Create a mock FAIL violation to demonstrate enforcement behavior
+mock_violation = InvariantViolation(
+    invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
+    severity=InvariantSeverity.FAIL.value,
+    message='Replay hash enforcement enabled but replay_hash missing from telemetry',
+    context={'provider': 'Qwen2.5-7B-Instruct', 'replay_hash_enabled': True},
 )
 
+# Patch verifier to return FAIL violation
+with patch('agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants') as mock_verify:
+    mock_verify.return_value = [mock_violation]
+    
+    result = adapter.evaluate(
+        prompt='hello',
+        task_class='patch_suggestion',
+        severity='low',
+        oldest_wait_seconds=0.0,
+        fingerprint=fp,
+    )
+
+# CRITICAL ASSERTIONS: FAIL violation triggers Gemini fallback
 print(f'route_to_gemini={result.route_to_gemini}')
+assert result.route_to_gemini == True, 'FAIL violation MUST trigger Gemini fallback'
+
 print(f'local_request_present={result.local_request is not None}')
+assert result.local_request is None, 'Local request MUST be None when routing to Gemini'
+
 print(f'violations_count={len(result.invariant_violations)}')
+assert len(result.invariant_violations) == 1, 'Violations MUST be attached to result'
+
 print(f'violations_field_exists={hasattr(result, "invariant_violations")}')
 
-# Verify violations are serializable
+# Verify violations are serializable with canonical hashes
 for i, v in enumerate(result.invariant_violations):
     print(f'violation_{i}_id={v.invariant_id}')
     print(f'violation_{i}_severity={v.severity}')
     print(f'violation_{i}_hash={v.violation_hash()}')
+    assert v.severity == 'FAIL', 'Violation severity MUST be FAIL'
+    assert len(v.violation_hash()) == 64, 'Violation hash MUST be 64-hex'
 
-print('OK: FAIL violation handling verified')
+print('OK: FAIL violation triggers Gemini fallback with violations attached')
 """
     out, rc = run([sys.executable, "-c", fallback_proof_code])
     fence(out)

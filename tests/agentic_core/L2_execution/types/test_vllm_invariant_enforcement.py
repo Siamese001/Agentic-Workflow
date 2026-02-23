@@ -134,3 +134,56 @@ def test_adapter_preserves_phase_1_4_behavior():
     
     # Phase 5 addition: invariant_violations
     assert result.invariant_violations == []
+
+
+def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
+    """Test that FAIL violation triggers Gemini fallback with violations in telemetry.
+    
+    This test uses monkey-patching to force a FAIL violation and verify the
+    adapter's enforcement behavior.
+    """
+    from unittest.mock import patch
+    from agentic_core.L2_execution.types.vllm_invariant_contract import (
+        InvariantViolation,
+    )
+    
+    adapter = VLLMGatewayAdapter(
+        queue=VLLMQueueController(),
+        registry=VLLMCircuitBreakerRegistry(),
+    )
+    
+    fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
+    
+    # Create a mock FAIL violation
+    mock_violation = InvariantViolation(
+        invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
+        severity=InvariantSeverity.FAIL.value,
+        message="Test FAIL violation",
+        context={"test": True},
+    )
+    
+    # Patch the verifier to return a FAIL violation
+    with patch('agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants') as mock_verify:
+        mock_verify.return_value = [mock_violation]
+        
+        result = adapter.evaluate(
+            prompt="hello",
+            task_class="patch_suggestion",
+            severity="low",
+            oldest_wait_seconds=0.0,
+            fingerprint=fp,
+        )
+    
+    # CRITICAL: FAIL violation should trigger Gemini fallback
+    assert result.route_to_gemini, "FAIL violation must trigger Gemini fallback"
+    assert result.local_request is None, "Local request should be None when routing to Gemini"
+    
+    # Violations should be attached to result
+    assert len(result.invariant_violations) == 1
+    assert result.invariant_violations[0].invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+    assert result.invariant_violations[0].severity == InvariantSeverity.FAIL.value
+    
+    # Violations should be serializable with hashes
+    violation_dict = result.invariant_violations[0].as_dict()
+    assert "violation_hash" in violation_dict
+    assert len(violation_dict["violation_hash"]) == 64
