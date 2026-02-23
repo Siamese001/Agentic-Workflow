@@ -729,6 +729,9 @@ agentic_core/mixins/runtime_safety_mixin.py:114:magic_configuration:Magic config
 agentic_core/mixins/safety_mixin.py:162:magic_configuration:Magic configuration: Hardcoded failure_threshold=3
 agentic_core/mixins/self_diagnosis_mixin.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/mixins/semantic_cache_mixin.py:40:magic_configuration:Magic configuration: Hardcoded threshold=0.85
+agentic_core/mixins/ssot_meta_learning_mixin.py:54:magic_configuration:Magic configuration: Hardcoded limit=10
+agentic_core/mixins/ssot_rate_limit_mixin.py:47:magic_configuration:Magic configuration: Hardcoded limit=100
+agentic_core/mixins/ssot_rate_limit_mixin.py:95:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/mixins/tracing_mixin.py:141:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/core/sovereign_prompt_renderer.py:246:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/prompt_governance/scripts/audit_registry_linkages.py:19:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
