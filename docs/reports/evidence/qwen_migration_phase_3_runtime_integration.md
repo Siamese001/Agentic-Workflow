@@ -7,13 +7,18 @@ Phase 3 of Qwen vLLM migration: wire Phase 1 (token budgeting + tiered routing) 
 0ac6055179f393d05c7b0a4cdaede5edcd21c368
 
 ## EVIDENCE_COMMIT
-PENDING
+f299108a9214d00478f10539006175595139fe21
 
 ## FILES_CHANGED_CODE
 ```
 agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
 agentic_core/L2_execution/types/vllm_gateway_adapter.py
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py
+```
+
+## FILES_CHANGED_EVIDENCE
+```
+docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
 ```
 
 ## INSPECTED_FILES
@@ -144,7 +149,7 @@ tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_te
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 30 passed in 0.06s ==============================
+============================= 30 passed in 0.05s ==============================
 ```
 
 ## Gateway Adapter Seam Tests (WAVE 1 Phase 3.1)
