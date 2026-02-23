@@ -9,12 +9,16 @@ FAIL violations trigger Gemini fallback. Phase 1-4 behavior preserved.
 e7a1c22a7b1476c9078455bd20d3d8c0134ffa35
 
 ## EVIDENCE_COMMIT
-PENDING
+7c5150a96fa69a6d2dbfb136a99dd55d8c630f27
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/types/vllm_gateway_adapter.py
 agentic_core/L2_execution/types/vllm_invariant_verifier.py
 tests/unit_min_deps/test_vllm_invariant_verifier.py
+tools/evidence/qwen_migration_phase5_evidence_runner.py
+
+## FILES_CHANGED_EVIDENCE
+docs/reports/evidence/qwen_migration_phase_5_formal_invariant_verifier.md
 tools/evidence/qwen_migration_phase5_evidence_runner.py
 
 ## INSPECTED_FILES
@@ -403,7 +407,7 @@ E     + fingerprint_hash
 =========================== short test summary info ===========================
 FAILED tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_undefined_task_class_raises
 FAILED tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_telemetry_as_dict_key_order_stable
-======================== 2 failed, 220 passed in 0.27s ========================
+======================== 2 failed, 220 passed in 0.28s ========================
 ```
 
 NOTE: Pre-existing test failures in test_vllm_profile_selection.py and test_vllm_telemetry_end_to_end.py
@@ -490,7 +494,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:29:17 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-23 13:30:38 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [  9%]
@@ -577,7 +581,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:29:17 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-23 13:30:38 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 21%]
@@ -1343,9 +1347,9 @@ E
 E     Extra items in the left set:
 E     ('agentic_core/L4_state/storage/filesystem_store.py', '_get_next_version', 'Call:.mkdir()')
 E     ('agentic_core/L4_state/storage/filesystem_store.py', '__init__', 'Call:.mkdir()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')
 E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.rename()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')...
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')...
 E     
 E     ...Full output truncated (30 lines hidden), use '-vv' to show
 _________ TestLazySeamAllowlist.test_allowlist_matches_scanner_total __________
@@ -1445,16 +1449,16 @@ Errors: 0
 Architectural violations detected. Review failed tests.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.08s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-3.08s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-2.55s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.32s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+3.10s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+3.05s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+3.04s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+2.54s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.34s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
 2.02s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.56s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
-1.56s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_base_class_name_extraction
-1.55s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
 1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
+1.54s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
+1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_summary_counts_consistent
+1.54s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
 =========================== short test summary info ===========================
 FAILED tests/governance/test_cross_layer_import_freeze.py::TestCrossLayerImportFreeze::test_no_new_violations
 FAILED tests/governance/test_intent_emission_no_mutation.py::TestAllowlistEnforcement::test_total_hits_equals_zero
@@ -1466,7 +1470,7 @@ FAILED tests/governance/test_upward_import_enforcement.py::TestNegativeRegressio
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_module_level_upward_imports_still_zero
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamViolation::test_zero_lazy_seam_violations_in_codebase
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamBudget::test_lazy_seam_budget_not_exceeded
-================= 10 failed, 716 passed, 4 warnings in 57.84s =================
+================= 10 failed, 716 passed, 4 warnings in 57.65s =================
 ```
 
 ## Scope Isolation Proof
@@ -1495,9 +1499,7 @@ OK: FAIL violation handling verified
 ```
 
 ## Git Status
-```
- M tools/evidence/qwen_migration_phase5_evidence_runner.py
-```
+(clean)
 
 ## Runner Self-Check Proof
 Balanced PowerShell guard policy:
