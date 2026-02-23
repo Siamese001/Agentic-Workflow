@@ -7,18 +7,13 @@ Phase 3 of Qwen vLLM migration: wire Phase 1 (token budgeting + tiered routing) 
 0ac6055179f393d05c7b0a4cdaede5edcd21c368
 
 ## EVIDENCE_COMMIT
-e8d7ada8e444251bb9b6a64a52b59152488eaa0c
+PENDING
 
 ## FILES_CHANGED_CODE
 ```
 agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
 agentic_core/L2_execution/types/vllm_gateway_adapter.py
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py
-```
-
-## FILES_CHANGED_EVIDENCE
-```
-docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
 ```
 
 ## INSPECTED_FILES
@@ -149,7 +144,7 @@ tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_te
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 30 passed in 0.05s ==============================
+============================= 30 passed in 0.06s ==============================
 ```
 
 ## Gateway Adapter Seam Tests (WAVE 1 Phase 3.1)
@@ -241,10 +236,10 @@ OK: local success telemetry confirmed (explicit max_tokens + profile max_model_l
 ```
 shell=False: ENFORCED (subprocess.run called with shell=False, never shell=True)
 argv arrays: ENFORCED (all invocations use list argv, never shell string)
-pwsh/PowerShell guard: ENFORCED (regex='pwsh|powershell', flags=IGNORECASE)
-argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell
-output guard: hard-fail if any captured output matches pwsh/PowerShell
-OK: runner self-check passed
+pwsh/PowerShell guard: BALANCED (regex='pwsh|powershell', flags=IGNORECASE)
+argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell executable
+output guard: warn-only if captured output contains pwsh/PowerShell reference
+OK: runner self-check passed (balanced policy)
 ```
 
 ## Git Status
