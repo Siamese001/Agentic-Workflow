@@ -7,10 +7,10 @@ No external network calls. Production routing + execution surfaces.
 Model transport replaced with deterministic stub (minimum seam).
 
 ## CODE_COMMIT
-8be325454
+b4575f7e4c2b921d10991410bc1e7278aab34ca0
 
-## EVIDENCE_COMMIT
-c15f45a9af02bb484239541df2f54430639c56d0
+## SEALED_FROM
+b4575f7e4c2b921d10991410bc1e7278aab34ca0
 
 ## FILES_CHANGED_CODE
 ops_scripts/hooks/import_dep_baseline.txt
@@ -76,10 +76,10 @@ tests/integration_e2e/test_gemini_qwen_e2e.py::TestSeamProductionSafety::test_se
 tests/integration_e2e/test_gemini_qwen_e2e.py::TestSeamProductionSafety::test_real_verifier_called_on_production_path PASSED [100%]
 
 ============================ slowest 10 durations =============================
-0.08s setup    tests/integration_e2e/test_gemini_qwen_e2e.py::TestGeminiE2EPath::test_engine_name_exact
+0.09s setup    tests/integration_e2e/test_gemini_qwen_e2e.py::TestGeminiE2EPath::test_engine_name_exact
 
 (9 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 27 passed in 0.15s ==============================
+============================= 27 passed in 0.18s ==============================
 ```
 
 ## Gemini Execution
@@ -120,4 +120,16 @@ all_subprocess_calls_shell_false=True
 ```
 
 ## Git Status
-(clean)
+```
+ M docs/reports/evidence/e2e_gemini_qwen_proof.md
+?? commit_evidence.py
+?? docs/analysis/
+?? docs/reports/plans/confidence_logic_rationalization_report.md
+?? docs/technical/agent_confidence_tiering_recommendations.csv
+?? docs/technical/agent_confidence_tiering_recommendations.md
+?? final_seal.py
+?? ops_scripts/ci/confidence_rationalization_analysis.py
+?? print_proof.py
+?? seal_evidence.py
+?? verify_evidence.py
+```
