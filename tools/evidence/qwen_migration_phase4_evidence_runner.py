@@ -202,20 +202,33 @@ def main() -> None:
     # Extract violation files from governance output
     import re
     violation_files = set()
-    # Look for file paths in violation messages
-    for line in out.split('\n'):
-        if 'Lazy seam not found in allowlist:' in line:
-            match = re.search(r"agentic_core[^']+", line)
-            if match:
-                violation_files.add(match.group().replace('\\', '/'))
+    
+    # Parse lazy seam violations from test output
+    # Look for patterns like: 'file_path': 'agentic_core\\L0_routing\\...'
+    for match in re.finditer(r"'file_path':\s*'([^']+)'", out):
+        file_path = match.group(1).replace('\\\\', '/').replace('\\', '/')
+        violation_files.add(file_path)
+    
+    # Also parse LAZY_SEAM_VIOLATION patterns
+    # LAZY_SEAM_VIOLATION: L0->L2 in mutation_prohibition.py:233
+    for match in re.finditer(r'LAZY_SEAM_VIOLATION:.*?in\s+(\S+\.py):', out):
+        filename = match.group(1)
+        # Find full path by searching for this filename in the output
+        for path_match in re.finditer(rf"agentic_core[^'\"\\s]*{re.escape(filename)}", out):
+            full_path = path_match.group().replace('\\\\', '/').replace('\\', '/')
+            violation_files.add(full_path)
     
     h("GOVERNANCE_VIOLATION_FILES:")
-    for f in sorted(violation_files):
-        h(f"  {f}")
+    if violation_files:
+        for f in sorted(violation_files):
+            h(f"  {f}")
+    else:
+        h("  (none detected in output)")
     h("")
     
     # Check intersection
-    intersection = set(phase_files) & violation_files
+    phase_files_normalized = {f.replace('\\', '/') for f in phase_files}
+    intersection = phase_files_normalized & violation_files
     if intersection:
         h("INTERSECTION (NON-EMPTY - VIOLATION):")
         for f in sorted(intersection):
