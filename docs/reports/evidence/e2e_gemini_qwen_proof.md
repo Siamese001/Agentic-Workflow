@@ -5,19 +5,11 @@ End-to-end deterministic proof: Gemini 2.5 Pro path, Qwen vLLM path,
 determinism lock, invariant enforcement, negative control.
 No external network calls. Production routing + execution surfaces.
 Model transport replaced with deterministic stub (minimum seam).
+Self-Hash Prohibition compliant: no EVIDENCE_COMMIT field embedded.
 
-## CODE_COMMIT
-b4575f7e4c2b921d10991410bc1e7278aab34ca0
-
-## SEALED_FROM
-b4575f7e4c2b921d10991410bc1e7278aab34ca0
-
-## FILES_CHANGED_CODE
-ops_scripts/hooks/import_dep_baseline.txt
-ops_scripts/hooks/landmine_baseline.txt
-tests/integration_e2e/__init__.py
-tests/integration_e2e/test_gemini_qwen_e2e.py
-tools/evidence/e2e_gemini_qwen_runner.py
+## Commits
+CODE_COMMIT=b8b9264dd4775848cbd2d38613ab69e03cf6f38c
+SEALED_FROM=b8b9264dd4775848cbd2d38613ab69e03cf6f38c
 
 ## INSPECTED_FILES
 tests/integration_e2e/__init__.py
@@ -32,12 +24,6 @@ agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py
 agentic_core/L2_execution/types/llm_replay_types.py
 
 ## Pytest Output
-```
-TEST_SCOPE=TARGETED
-TEST_TARGETS:
-  python -m pytest -q tests/integration_e2e/test_gemini_qwen_e2e.py
-```
-
 ```
 ============================= test session starts =============================
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
@@ -76,10 +62,10 @@ tests/integration_e2e/test_gemini_qwen_e2e.py::TestSeamProductionSafety::test_se
 tests/integration_e2e/test_gemini_qwen_e2e.py::TestSeamProductionSafety::test_real_verifier_called_on_production_path PASSED [100%]
 
 ============================ slowest 10 durations =============================
-0.09s setup    tests/integration_e2e/test_gemini_qwen_e2e.py::TestGeminiE2EPath::test_engine_name_exact
+0.08s setup    tests/integration_e2e/test_gemini_qwen_e2e.py::TestGeminiE2EPath::test_engine_name_exact
 
 (9 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 27 passed in 0.18s ==============================
+============================= 27 passed in 0.15s ==============================
 ```
 
 ## Gemini Execution
@@ -114,22 +100,6 @@ OK: replay_hash validated as 64-hex: 459ad6aeebdbd91e5675549fe827d109e82d07ddf72
 
 ## Runner Self-Check
 ```
-shell_false_enforced=True
-powershell_guard=hard-fail on argv[0] containing pwsh/powershell
-all_subprocess_calls_shell_false=True
-```
-
-## Git Status
-```
- M docs/reports/evidence/e2e_gemini_qwen_proof.md
-?? commit_evidence.py
-?? docs/analysis/
-?? docs/reports/plans/confidence_logic_rationalization_report.md
-?? docs/technical/agent_confidence_tiering_recommendations.csv
-?? docs/technical/agent_confidence_tiering_recommendations.md
-?? final_seal.py
-?? ops_scripts/ci/confidence_rationalization_analysis.py
-?? print_proof.py
-?? seal_evidence.py
-?? verify_evidence.py
+shell=False enforced: True
+PowerShell guard enforced: True
 ```
