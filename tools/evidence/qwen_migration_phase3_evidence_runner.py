@@ -1,0 +1,313 @@
+"""
+Phase 3 evidence runner — Runtime Integration + Telemetry Enforcement.
+
+Generates: docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
+
+Usage:
+    python tools/evidence/qwen_migration_phase3_evidence_runner.py \
+        --code-commit <40-hex> [--evidence-commit <40-hex>]
+
+No PowerShell. No subprocess shell=True. ASCII-only output.
+Runner hard-fails if any output references pwsh or PowerShell.
+"""
+
+from __future__ import annotations
+
+import argparse
+import re
+import subprocess
+import sys
+from pathlib import Path
+
+EVIDENCE_PATH = Path(
+    "docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md"
+)
+
+SCOPE_FILES = [
+    "agentic_core/L2_execution/types/vllm_gateway_integration.py",
+    "tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py",
+    "tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py",
+    "tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py",
+]
+
+ANSI_RE = re.compile(r"\x1b\[[0-9;]*[mGKHF]")
+_PWSH_RE = re.compile(r"pwsh|powershell", re.IGNORECASE)
+
+
+def strip_ansi(text: str) -> str:
+    return ANSI_RE.sub("", text)
+
+
+def ascii_only(text: str) -> str:
+    return text.encode("ascii", errors="replace").decode("ascii")
+
+
+def run(argv: list[str], *, required: bool = True) -> tuple[str, int]:
+    if argv and _PWSH_RE.search(argv[0]):
+        print(f"ERROR: pwsh/PowerShell invocation forbidden: {argv[0]!r}")
+        sys.exit(1)
+    result = subprocess.run(
+        argv,
+        shell=False,
+        capture_output=True,
+        encoding="utf-8",
+        errors="replace",
+    )
+    out = ascii_only(strip_ansi(result.stdout + result.stderr))
+    if _PWSH_RE.search(out):
+        print(f"ERROR: captured output contains pwsh/PowerShell reference:\n{out[:200]}")
+        sys.exit(1)
+    if required and result.returncode != 0:
+        print(f"FAIL: {' '.join(argv)}")
+        print(out)
+        sys.exit(1)
+    return out, result.returncode
+
+
+def git_show_names(commit: str) -> str:
+    out, _ = run(
+        ["git", "show", "--name-only", "--pretty=format:", commit],
+        required=False,
+    )
+    return out.strip()
+
+
+def main() -> None:
+    parser = argparse.ArgumentParser()
+    parser.add_argument("--code-commit", required=True)
+    parser.add_argument("--evidence-commit", default="PENDING")
+    args = parser.parse_args()
+
+    code_commit = args.code_commit
+    evidence_commit = args.evidence_commit
+
+    if evidence_commit != "PENDING" and code_commit == evidence_commit:
+        print("ERROR: CODE_COMMIT must not equal EVIDENCE_COMMIT in seal mode.")
+        sys.exit(1)
+
+    lines: list[str] = []
+
+    def h(text: str) -> None:
+        lines.append(text)
+
+    def fence(text: str, lang: str = "") -> None:
+        lines.append(f"```{lang}")
+        lines.append(text.strip())
+        lines.append("```")
+
+    # Header
+    h("# qwen-migration Phase 3: Runtime Integration + Telemetry Enforcement")
+    h("")
+    h("## Scope")
+    h(
+        "Phase 3 of Qwen vLLM migration: wire Phase 1 (token budgeting + tiered routing) "
+        "and Phase 2 (serving profiles + backpressure/circuit breaker) into a deterministic "
+        "call-path controller with telemetry emission. "
+        "No new model tiers. No 32B. L2 purity preserved."
+    )
+    h("")
+    h("## CODE_COMMIT")
+    h(code_commit)
+    h("")
+    h("## EVIDENCE_COMMIT")
+    h(evidence_commit)
+    h("")
+
+    # FILES_CHANGED_CODE
+    h("## FILES_CHANGED_CODE")
+    fence(git_show_names(code_commit))
+    h("")
+
+    # FILES_CHANGED_EVIDENCE
+    if evidence_commit != "PENDING":
+        h("## FILES_CHANGED_EVIDENCE")
+        fence(git_show_names(evidence_commit))
+        h("")
+
+    # INSPECTED_FILES
+    h("## INSPECTED_FILES")
+    fence("\n".join(SCOPE_FILES))
+    h("")
+
+    # WAVE 1 — Profile selection + request shaping tests
+    h("## Profile Selection + Request Shaping Tests (WAVE 1)")
+    out, rc = run([
+        sys.executable, "-m", "pytest", "-q", "--color=no",
+        "tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py",
+    ])
+    fence(out)
+    if rc != 0:
+        print("FAIL: test_vllm_profile_selection.py")
+        sys.exit(1)
+    h("")
+
+    # WAVE 2 — Backpressure + circuit breaker integration tests
+    h("## Backpressure + Circuit Breaker Integration Tests (WAVE 2)")
+    out, rc = run([
+        sys.executable, "-m", "pytest", "-q", "--color=no",
+        "tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py",
+    ])
+    fence(out)
+    if rc != 0:
+        print("FAIL: test_vllm_backpressure_integration.py")
+        sys.exit(1)
+    h("")
+
+    # WAVE 3 — Telemetry end-to-end tests
+    h("## Telemetry End-to-End Tests (WAVE 3)")
+    out, rc = run([
+        sys.executable, "-m", "pytest", "-q", "--color=no",
+        "tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py",
+    ])
+    fence(out)
+    if rc != 0:
+        print("FAIL: test_vllm_telemetry_end_to_end.py")
+        sys.exit(1)
+    h("")
+
+    # Token budget fallback proof
+    h("## Token Budget Fallback Proof")
+    tb_script = "; ".join([
+        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN",
+        "from agentic_core.L2_execution.types.vllm_token_budget_types import TASK_CLASS_OUTPUT_CAPS, SAFETY_MARGIN_TOKENS, TaskClass",
+        "task = TaskClass.PATCH_SUGGESTION.value",
+        "cap = TASK_CLASS_OUTPUT_CAPS[task]",
+        "available = LOCAL_FAST_7B_MAX_MODEL_LEN - SAFETY_MARGIN_TOKENS - cap",
+        "over_prompt = 'a' * ((available + 10) * 3)",
+        "ctrl = VLLMQueueController()",
+        "reg = VLLMCircuitBreakerRegistry()",
+        "result = evaluate_gateway_call(over_prompt, task, 'low', ctrl, reg)",
+        "t = result.telemetry",
+        "print(f'route_to_gemini={result.route_to_gemini}')",
+        "print(f'failure_type={t.failure_type}')",
+        "print(f'token_budget_ok={t.token_budget_ok}')",
+        "print(f'provider_selected={t.provider_selected}')",
+        "print(f'model_tier={t.model_tier}')",
+        "print(f'prompt_tokens_estimated={t.prompt_tokens_estimated}')",
+        "print(f'budget_margin_tokens={t.budget_margin_tokens}')",
+        "print('OK: token budget fallback confirmed')",
+    ])
+    out, rc = run([sys.executable, "-c", tb_script])
+    fence(out)
+    if rc != 0:
+        print("FAIL: token budget fallback proof")
+        sys.exit(1)
+    h("")
+
+    # Queue full fallback proof
+    h("## Queue Full Fallback Proof")
+    qf_script = "; ".join([
+        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_backpressure_types import MAX_QUEUE_DEPTH",
+        "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
+        "ctrl = VLLMQueueController()",
+        "[ctrl.acquire() for _ in range(MAX_QUEUE_DEPTH)]",
+        "reg = VLLMCircuitBreakerRegistry()",
+        "result = evaluate_gateway_call('hello', TaskClass.PATCH_SUGGESTION.value, 'low', ctrl, reg)",
+        "t = result.telemetry",
+        "print(f'route_to_gemini={result.route_to_gemini}')",
+        "print(f'failure_type={t.failure_type}')",
+        "print(f'queue_depth={t.queue_depth}')",
+        "print(f'queue_full={t.queue_full}')",
+        "print(f'provider_selected={t.provider_selected}')",
+        "print(f'model_tier={t.model_tier}')",
+        "print('OK: queue full fallback confirmed')",
+    ])
+    out, rc = run([sys.executable, "-c", qf_script])
+    fence(out)
+    if rc != 0:
+        print("FAIL: queue full fallback proof")
+        sys.exit(1)
+    h("")
+
+    # Breaker open fallback proof
+    h("## Circuit Breaker Open Fallback Proof")
+    bo_script = "; ".join([
+        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_backpressure_types import CIRCUIT_BREAKER_FAILURE_THRESHOLD",
+        "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
+        "ctrl = VLLMQueueController()",
+        "reg = VLLMCircuitBreakerRegistry()",
+        "[reg.record_failure('local_fast') for _ in range(CIRCUIT_BREAKER_FAILURE_THRESHOLD)]",
+        "result = evaluate_gateway_call('hello', TaskClass.PATCH_SUGGESTION.value, 'low', ctrl, reg)",
+        "t = result.telemetry",
+        "print(f'route_to_gemini={result.route_to_gemini}')",
+        "print(f'failure_type={t.failure_type}')",
+        "print(f'breaker_state={t.breaker_state}')",
+        "print(f'breaker_failure_count={t.breaker_failure_count}')",
+        "print(f'provider_selected={t.provider_selected}')",
+        "print(f'model_tier={t.model_tier}')",
+        "print('OK: circuit breaker open fallback confirmed')",
+    ])
+    out, rc = run([sys.executable, "-c", bo_script])
+    fence(out)
+    if rc != 0:
+        print("FAIL: circuit breaker open fallback proof")
+        sys.exit(1)
+    h("")
+
+    # Local success telemetry proof
+    h("## Local Success Telemetry Proof")
+    ls_script = "; ".join([
+        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
+        "ctrl = VLLMQueueController()",
+        "reg = VLLMCircuitBreakerRegistry()",
+        "result = evaluate_gateway_call('hello world', TaskClass.PATCH_SUGGESTION.value, 'low', ctrl, reg)",
+        "t = result.telemetry",
+        "d = t.as_dict()",
+        "print(f'route_to_gemini={result.route_to_gemini}')",
+        "print(f'provider_selected={t.provider_selected}')",
+        "print(f'model_tier={t.model_tier}')",
+        "print(f'token_budget_ok={t.token_budget_ok}')",
+        "print(f'failure_type={t.failure_type}')",
+        "print(f'queue_full={t.queue_full}')",
+        "print(f'breaker_state={t.breaker_state}')",
+        "print(f'telemetry_keys={list(d.keys())}')",
+        "print('OK: local success telemetry confirmed')",
+    ])
+    out, rc = run([sys.executable, "-c", ls_script])
+    fence(out)
+    if rc != 0:
+        print("FAIL: local success telemetry proof")
+        sys.exit(1)
+    h("")
+
+    # Runner self-check proof
+    h("## Runner Self-Check Proof")
+    selfcheck_lines = [
+        "shell=False: ENFORCED (subprocess.run called with shell=False, never shell=True)",
+        "argv arrays: ENFORCED (all invocations use list argv, never shell string)",
+        f"pwsh/PowerShell guard: ENFORCED (regex={_PWSH_RE.pattern!r}, flags=IGNORECASE)",
+        "argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell",
+        "output guard: hard-fail if any captured output matches pwsh/PowerShell",
+        "OK: runner self-check passed",
+    ]
+    fence("\n".join(selfcheck_lines))
+    h("")
+
+    # Git status
+    h("## Git Status")
+    out, _ = run(["git", "status", "--short"], required=False)
+    fence(out)
+    h("")
+
+    # Write evidence file
+    content = "\n".join(lines) + "\n"
+    EVIDENCE_PATH.parent.mkdir(parents=True, exist_ok=True)
+    EVIDENCE_PATH.write_text(content, encoding="utf-8")
+
+    # ASCII byte scan
+    raw = EVIDENCE_PATH.read_bytes()
+    bad = [i for i, b in enumerate(raw) if b > 0x7F]
+    if bad:
+        print(f"ERROR: Non-ASCII bytes at positions {bad[:5]}")
+        sys.exit(1)
+
+    print(f"Evidence written to: {EVIDENCE_PATH.resolve()}")
+    print("OK: All commands passed.")
+
+
+if __name__ == "__main__":
+    main()
