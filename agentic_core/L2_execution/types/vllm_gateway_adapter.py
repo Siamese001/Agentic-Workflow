@@ -137,11 +137,38 @@ class VLLMGatewayAdapter:
         
         if fail_violations:
             # FAIL violations trigger Gemini fallback
+            # Create new telemetry with failure_type set
+            from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMGatewayTelemetry
+            
+            telemetry_with_failure = VLLMGatewayTelemetry(
+                provider_selected=result.telemetry.provider_selected,
+                model_tier=result.telemetry.model_tier,
+                prompt_tokens_estimated=result.telemetry.prompt_tokens_estimated,
+                max_output_tokens_requested=result.telemetry.max_output_tokens_requested,
+                max_model_len_configured=result.telemetry.max_model_len_configured,
+                token_budget_ok=result.telemetry.token_budget_ok,
+                budget_margin_tokens=result.telemetry.budget_margin_tokens,
+                queue_depth=result.telemetry.queue_depth,
+                queue_full=result.telemetry.queue_full,
+                queue_wait_seconds=result.telemetry.queue_wait_seconds,
+                breaker_state=result.telemetry.breaker_state,
+                breaker_failure_count=result.telemetry.breaker_failure_count,
+                failure_type="INVARIANT_VIOLATION",  # Set failure_type for FAIL violations
+                model_name=result.telemetry.model_name,
+                model_revision_sha=result.telemetry.model_revision_sha,
+                vllm_version=result.telemetry.vllm_version,
+                transformers_version=result.telemetry.transformers_version,
+                torch_version=result.telemetry.torch_version,
+                cuda_version=result.telemetry.cuda_version,
+                driver_version=result.telemetry.driver_version,
+                fingerprint_hash=result.telemetry.fingerprint_hash,
+            )
+            
             # Attach violations to result for telemetry
             result = VLLMGatewayCallResult(
                 route_to_gemini=True,
                 local_request=None,
-                telemetry=result.telemetry,  # Keep original telemetry
+                telemetry=telemetry_with_failure,  # Use telemetry with failure_type
                 preflight=result.preflight,
                 backpressure=result.backpressure,
                 invariant_violations=violations,

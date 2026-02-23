@@ -69,21 +69,25 @@ def main():
     # Find tests referencing vllm_replay_validator
     import os
     test_targets = []
+    seen_targets = set()
     
-    # Always include our new test
+    # Always include our new test (exactly once)
     test_targets.append(["python", "-m", "pytest", "-q", "tests/unit_min_deps/test_vllm_replay_with_violations.py"])
+    seen_targets.add("tests/unit_min_deps/test_vllm_replay_with_violations.py")
     
     # Find existing tests that reference vllm_replay_validator or canonical_response_hash
     for root, dirs, files in os.walk("tests"):
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
+                normalized_path = file_path.replace("\\", "/")
                 try:
                     with open(file_path, 'r', encoding='utf-8') as f:
                         content = f.read()
                         if "vllm_replay_validator" in content or "canonical_response_hash" in content:
-                            if file_path != "tests/unit_min_deps/test_vllm_replay_with_violations.py":
-                                test_targets.append(["python", "-m", "pytest", "-q", file_path])
+                            if normalized_path not in seen_targets:
+                                test_targets.append(["python", "-m", "pytest", "-q", normalized_path])
+                                seen_targets.add(normalized_path)
                 except:
                     pass
     
@@ -138,7 +142,7 @@ def main():
     print("- [x] All pytest targets executed and passed")
     print("- [x] PASS scenario: route_to_gemini=False, violations_count=0, 64-hex hash")
     print("- [x] PASS scenario: determinism re-run identical")
-    print("- [x] FAIL scenario: route_to_gemini=True, failure_type=None (invariant violations handled separately)")
+    print("- [x] FAIL scenario: route_to_gemini=True, failure_type=INVARIANT_VIOLATION (exact)")
     print("- [x] FAIL scenario: violations_count>=1, invariant_id present, severity=FAIL")
     print("- [x] FAIL scenario: 64-hex violation_hash and replay_hash validated")
     print("- [x] FAIL scenario: determinism re-run identical")
@@ -279,7 +283,7 @@ def execute_proofs():
     # Verify FAIL properties
     assert result_fail1.route_to_gemini == True, "FAIL: route_to_gemini must be True"
     assert len(result_fail1.invariant_violations) >= 1, "FAIL: violations_count must be >= 1"
-    assert result_fail1.telemetry.failure_type is None, "FAIL: failure_type must be None (invariant violations handled separately)"
+    assert result_fail1.telemetry.failure_type == "INVARIANT_VIOLATION", "FAIL: failure_type must be INVARIANT_VIOLATION (exact)"
     assert result_fail1.invariant_violations[0].invariant_id == fail_violation.invariant_id, "FAIL: invariant_id must match"
     assert result_fail1.invariant_violations[0].severity == "FAIL", "FAIL: severity must be FAIL"
     

@@ -178,6 +178,9 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
     assert result.route_to_gemini, "FAIL violation must trigger Gemini fallback"
     assert result.local_request is None, "Local request should be None when routing to Gemini"
     
+    # CRITICAL: FAIL violation must set failure_type=INVARIANT_VIOLATION
+    assert result.telemetry.failure_type == "INVARIANT_VIOLATION", "FAIL violation must set failure_type=INVARIANT_VIOLATION"
+    
     # Violations should be attached to result
     assert len(result.invariant_violations) == 1
     assert result.invariant_violations[0].invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
