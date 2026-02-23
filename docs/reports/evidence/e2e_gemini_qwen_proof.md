@@ -10,7 +10,7 @@ Model transport replaced with deterministic stub (minimum seam).
 8be325454
 
 ## EVIDENCE_COMMIT
-ef8c83817
+ded5ab63b
 
 ## FILES_CHANGED_CODE
 ops_scripts/hooks/import_dep_baseline.txt
