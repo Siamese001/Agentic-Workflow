@@ -1446,4 +1446,5 @@ tools/evidence/phase05_06_consolidated_evidence_runner.py:16:global_mutation:Glo
 tools/evidence/phase07_08_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_09_10_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/run_phase3_integration.py:22:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
 tools/vllm_boundary_client.py:24:magic_configuration:Magic configuration: Hardcoded _default_timeout_seconds=30

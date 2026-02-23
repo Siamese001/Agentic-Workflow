@@ -69,6 +69,12 @@ Examples:
         help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
     )
     parser.add_argument(
+        "--allow-protected-root-mutation",
+        action="store_true",
+        default=False,
+        help="Allow writes to protected root directories (audited override).",
+    )
+    parser.add_argument(
         "-v",
         "--verbose",
         action="count",
@@ -116,7 +122,11 @@ Examples:
     _maybe_force_utf8_console()
 
     try:
-        _legacy_main(remaining, repo_root=REPO_ROOT)
+        _legacy_main(
+            remaining,
+            repo_root=REPO_ROOT,
+            allow_protected_root_mutation=pre_args.allow_protected_root_mutation,
+        )
     except SystemExit as exc:
         return int(exc.code) if exc.code is not None else 0
     return 0
