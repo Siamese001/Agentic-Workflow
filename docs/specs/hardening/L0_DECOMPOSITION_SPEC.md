@@ -50,9 +50,73 @@ ML Routing: Advisory-only, cannot directly select final path
 
 ### Responsibilities
 - HMAC verification of incoming requests
-- Trace ID binding and validation
+- Trace ID binding and validation (UUIDv7 monotonic format)
 - Policy hash stamping for audit trail
 - Request integrity validation
+
+### Trace ID Monotonicity (UUIDv7)
+
+**Format:** UUIDv7 (RFC 9562) - Time-ordered UUID with millisecond precision
+
+**Structure:**
+```
+UUIDv7: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
+        |------| |--| ||
+        timestamp  ver rand
+        (48 bits)  (4) (remaining random)
+```
+
+**Monotonicity Guarantee:**
+- First 48 bits = Unix timestamp in milliseconds (monotonically increasing)
+- Version bits = 0111 (UUIDv7 identifier)
+- Remaining bits = random (collision prevention)
+
+**Comparison:**
+```python
+def compare_trace_ids(trace_a: str, trace_b: str) -> int:
+    """
+    Compare two UUIDv7 trace IDs.
+    Returns: -1 if a < b, 0 if a == b, 1 if a > b
+    """
+    import uuid
+
+    uuid_a = uuid.UUID(trace_a)
+    uuid_b = uuid.UUID(trace_b)
+
+    # Extract timestamp from first 48 bits
+    ts_a = (uuid_a.int >> 80) & 0xFFFFFFFFFFFF
+    ts_b = (uuid_b.int >> 80) & 0xFFFFFFFFFFFF
+
+    if ts_a < ts_b:
+        return -1
+    elif ts_a > ts_b:
+        return 1
+    else:
+        # Same timestamp - compare full UUID for collision detection
+        return -1 if uuid_a.int < uuid_b.int else (1 if uuid_a.int > uuid_b.int else 0)
+```
+
+**Collision Detection:**
+- Collision = Same timestamp AND same random bits (full UUID match)
+- Gap = Timestamp difference > expected inter-request interval (>1000ms typical)
+
+**Validation:**
+```python
+def validate_trace_id_monotonic(new_trace_id: str, last_trace_id: str) -> Tuple[bool, str]:
+    """
+    Validate trace_id is monotonically increasing.
+
+    Returns: (valid, error_message)
+    """
+    if compare_trace_ids(new_trace_id, last_trace_id) <= 0:
+        return False, f"Non-monotonic trace_id: {new_trace_id} <= {last_trace_id}"
+
+    # Check for collision (exact match)
+    if new_trace_id == last_trace_id:
+        return False, f"Trace ID collision detected: {new_trace_id}"
+
+    return True, ""
+```
 
 ### Interface
 ```python

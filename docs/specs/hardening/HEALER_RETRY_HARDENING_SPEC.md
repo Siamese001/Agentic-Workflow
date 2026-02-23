@@ -82,18 +82,25 @@ class HealerRetryManager:
                         healer_func: Callable,
                         attempt: int, strictness: float,
                         timeout: int) -> HealingResult:
-        """Execute single healing attempt with strictness"""
+        """
+        Execute single healing attempt with strictness.
 
-        import signal
+        IMPLEMENTATION:
+        - For hard timeout enforcement, run healer_func in separate process/subprocess
+        - Use monotonic timing for intra-process measurement
+        - Implementation detail deferred to runtime (no SIGALRM)
+        """
 
-        # Set timeout
-        def timeout_handler(signum, frame):
-            raise TimeoutError(f"Healing attempt {attempt} timed out after {timeout}s")
+        import time
 
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(timeout)
+        start = time.monotonic()
 
         try:
+            # NOTE: For hard timeout enforcement, healer_func should be executed
+            # in a separate process/subprocess with timeout parameter.
+            # Example: subprocess.run(args, timeout=timeout, shell=False)
+            # This specification defines the requirement; implementation is deferred.
+
             # Execute healing with strictness
             result = healer_func(violation, strictness=strictness)
 
@@ -116,8 +123,6 @@ class HealerRetryManager:
                 error=str(e),
                 exception=True
             )
-        finally:
-            signal.alarm(0)  # Cancel timeout
 
     def _should_retry(self, attempt: int, result: HealingResult) -> bool:
         """Determine if should retry based on result"""

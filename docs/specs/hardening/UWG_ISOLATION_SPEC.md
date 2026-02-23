@@ -219,9 +219,26 @@ class PolicyHashValidator:
 
 ## Monotonic Trace ID Chaining
 
+### Trace ID Format: UUIDv7
+
+**Format:** UUIDv7 (RFC 9562) - Time-ordered UUID with millisecond precision
+
+**Structure:**
+```
+UUIDv7: xxxxxxxx-xxxx-7xxx-xxxx-xxxxxxxxxxxx
+        |------| |--| ||
+        timestamp  ver rand
+        (48 bits)  (4) (remaining random)
+```
+
+**Monotonicity Guarantee:**
+- First 48 bits = Unix timestamp in milliseconds (monotonically increasing)
+- Version bits = 0111 (UUIDv7 identifier)
+- Remaining bits = random (collision prevention)
+
 ```python
 class TraceIDChainValidator:
-    """Validate trace ID monotonic chaining"""
+    """Validate trace ID monotonic chaining using UUIDv7"""
 
     def __init__(self):
         self.last_trace_id = None
@@ -229,12 +246,12 @@ class TraceIDChainValidator:
 
     def validate_trace_id(self, trace_id: str) -> Tuple[bool, str]:
         """
-        Validate trace ID is monotonically increasing.
+        Validate trace ID is monotonically increasing using UUIDv7 comparison.
 
         REQUIREMENTS:
-        - Trace IDs must be monotonic
-        - No gaps allowed
-        - No duplicates allowed
+        - Trace IDs must be UUIDv7 format
+        - Trace IDs must be monotonic (timestamp-based comparison)
+        - No duplicates allowed (collision detection)
         - Chain must be continuous
         """
 
@@ -244,8 +261,8 @@ class TraceIDChainValidator:
             self.trace_chain.append(trace_id)
             return True, "OK"
 
-        # Check monotonic increase
-        if trace_id <= self.last_trace_id:
+        # Check monotonic increase using UUIDv7 comparison
+        if self._compare_trace_ids(trace_id, self.last_trace_id) <= 0:
             return False, f"Non-monotonic trace ID: {trace_id} <= {self.last_trace_id}"
 
         # Update chain
@@ -253,6 +270,28 @@ class TraceIDChainValidator:
         self.trace_chain.append(trace_id)
 
         return True, "OK"
+
+    def _compare_trace_ids(self, trace_a: str, trace_b: str) -> int:
+        """
+        Compare two UUIDv7 trace IDs.
+        Returns: -1 if a < b, 0 if a == b, 1 if a > b
+        """
+        import uuid
+
+        uuid_a = uuid.UUID(trace_a)
+        uuid_b = uuid.UUID(trace_b)
+
+        # Extract timestamp from first 48 bits
+        ts_a = (uuid_a.int >> 80) & 0xFFFFFFFFFFFF
+        ts_b = (uuid_b.int >> 80) & 0xFFFFFFFFFFFF
+
+        if ts_a < ts_b:
+            return -1
+        elif ts_a > ts_b:
+            return 1
+        else:
+            # Same timestamp - compare full UUID for collision detection
+            return -1 if uuid_a.int < uuid_b.int else (1 if uuid_a.int > uuid_b.int else 0)
 
     def detect_replay_attack(self, trace_id: str) -> bool:
         """Detect potential replay attack"""
@@ -274,21 +313,43 @@ class TraceIDChainValidator:
         }
 
     def _detect_gaps(self) -> List[Tuple[str, str]]:
-        """Detect gaps in trace chain"""
+        """
+        Detect gaps in trace chain using UUIDv7 timestamp analysis.
+
+        Gap Definition:
+        - Timestamp difference > 1000ms (expected inter-request interval)
+        - Indicates missing trace IDs in sequence
+        """
+        import uuid
 
         gaps = []
+        EXPECTED_INTERVAL_MS = 1000  # Maximum expected time between requests
 
         for i in range(1, len(self.trace_chain)):
             prev_id = self.trace_chain[i-1]
             curr_id = self.trace_chain[i]
 
-            # Check for expected increment
-            # (Implementation depends on trace ID format)
+            # Extract timestamps from UUIDv7
+            prev_uuid = uuid.UUID(prev_id)
+            curr_uuid = uuid.UUID(curr_id)
+
+            prev_ts = (prev_uuid.int >> 80) & 0xFFFFFFFFFFFF
+            curr_ts = (curr_uuid.int >> 80) & 0xFFFFFFFFFFFF
+
+            # Check for gap (timestamp difference exceeds expected interval)
+            if curr_ts - prev_ts > EXPECTED_INTERVAL_MS:
+                gaps.append((prev_id, curr_id))
 
         return gaps
 
     def _detect_duplicates(self) -> List[str]:
-        """Detect duplicate trace IDs"""
+        """
+        Detect duplicate trace IDs (collisions).
+
+        Collision Definition:
+        - Exact UUID match (same timestamp AND same random bits)
+        - Indicates replay attack or UUID generation failure
+        """
 
         seen = set()
         duplicates = []

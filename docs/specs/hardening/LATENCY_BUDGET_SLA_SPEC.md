@@ -89,7 +89,7 @@ class L0LatencyEnforcer:
     def enforce_l0b_sla(self, operation: Callable) -> Any:
         """
         Enforce L0b routing SLA (100ms).
-        
+
         IMPLEMENTATION:
         - Use monotonic timing for measurement
         """
@@ -402,15 +402,19 @@ class L6LatencyEnforcer:
         - Timeout > 1s → Continue with degraded observability
         - Log degradation event
         - Execution not blocked
+
+        IMPLEMENTATION:
+        - Use monotonic timing for measurement
+        - Cooperative cancellation for intra-process timeout
         """
 
         import time
 
-        start = time.time()
+        start = time.monotonic()
 
         try:
             result = operation()
-            elapsed_ms = (time.time() - start) * 1000
+            elapsed_ms = (time.monotonic() - start) * 1000
 
             if elapsed_ms > self.budget.observability_ms:
                 self._log_degradation(elapsed_ms)
@@ -457,15 +461,19 @@ class UWGLatencyEnforcer:
         - Timeout > 200ms → Reject mutation
         - No escalation
         - Log timeout
+
+        IMPLEMENTATION:
+        - Use monotonic timing for measurement
+        - Cooperative cancellation for intra-process timeout
         """
 
         import time
 
-        start = time.time()
+        start = time.monotonic()
 
         try:
             result = operation()
-            elapsed_ms = (time.time() - start) * 1000
+            elapsed_ms = (time.monotonic() - start) * 1000
 
             if elapsed_ms > self.budget.mutation_gate_ms:
                 self._reject_mutation(elapsed_ms)
