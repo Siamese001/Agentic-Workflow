@@ -2661,14 +2661,58 @@ def get_execution_plan() -> list[dict]:
     return EXECUTION_PLAN
 
 
-def print_execution_plan() -> None:
-    """Print stable, sorted execution plan to stdout."""
+def print_execution_plan(arbitrate_plan: bool = False) -> None:
+    """Print stable, sorted execution plan to stdout.
+
+    Args:
+        arbitrate_plan: If True, include multi-agent arbitration results
+    """
     for phase in EXECUTION_PLAN:
         print(f"PHASE {phase['phase']}: {phase['name']}")
         for agent in phase["agents"]:
             kwargs_str = f" ({agent['kwargs']})" if agent.get("kwargs") else ""
             print(f"  - {agent['key']}.{agent['method']}{kwargs_str}")
             print(f"    # {agent['description']}")
+        print()
+
+    # Include arbitration results if requested
+    if arbitrate_plan:
+        print("=== MULTI-AGENT ARBITRATION ===")
+
+        # Build task for arbitration
+        task = {
+            "task_id": "execute_ssot_plan",
+            "task_kind": "planning",
+        }
+
+        try:
+            # Import arbitration modules
+            from agentic_core.L3_orchestration.arbitration.arbitration_contract import ArbitrationInput
+            from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
+            from agentic_core.L3_orchestration.arbitration.run_advisors import run_all_advisors
+
+            # Run advisors
+            proposals = run_all_advisors(task)
+
+            # Arbitrate
+            input_data = ArbitrationInput(
+                task_id=task["task_id"],
+                task_kind=task["task_kind"],
+                proposals=proposals,
+            )
+
+            arbitrator = Arbitrator()
+            decision = arbitrator.arbitrate(input_data)
+
+            print(f"Selected Advisor: {decision.selected_advisor_id}")
+            print(f"Selected Decision: {decision.selected_decision}")
+            print(f"Score Breakdown: {decision.score_breakdown}")
+            print(f"Merged Rationale: {decision.merged_rationale}")
+            print(f"Merged Risks: {decision.merged_risks}")
+
+        except Exception as e:  # guardian: allow-silent-swallower
+            print(f"Arbitration failed: {e}")
+
         print()
 
 

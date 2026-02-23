@@ -57,6 +57,11 @@ Examples:
         help="Print the deterministic execution plan and exit. Requires --legacy.",
     )
     parser.add_argument(
+        "--arbitrate-plan",
+        action="store_true",
+        help="Run multi-agent arbitration on plan decisions (plan mode only).",
+    )
+    parser.add_argument(
         "--fence-self-check",
         action="store_true",
         help="Run deterministic fence self-check (validates policy + wiring; no mutations).",
@@ -105,7 +110,7 @@ Examples:
             print_execution_plan,
         )
 
-        print_execution_plan()
+        print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan)
         return 0
 
     # Delegate to the legacy module
