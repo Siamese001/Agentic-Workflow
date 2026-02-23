@@ -1,0 +1,35 @@
+# Windsurf semantic index exclusions
+# Prevents garbage results in @ symbol search
+
+# Git internals - CRITICAL: prevents commit messages appearing in @ search
+.git/
+
+# Archives and backups
+archives/
+*.bak
+
+# Documentation and reports (too many files with code names in content)
+docs/
+
+# Artifacts and generated files
+artifacts/
+
+# Test files
+tests/
+
+# Python cache
+__pycache__/
+*.pyc
+.pytest_cache/
+.nox/
+
+# Data files
+*.json
+*.yaml
+*.yml
+*.txt
+*.csv
+*.log
+
+# Temporary files
+temp_collect.txt
