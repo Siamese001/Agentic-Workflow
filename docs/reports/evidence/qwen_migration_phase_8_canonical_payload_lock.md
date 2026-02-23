@@ -4,10 +4,10 @@
 Phase 8 strengthens replay validation by proving the exact canonical payload used for hashing is identical across re-runs, and that any canonical payload drift is detected deterministically.
 
 ## CODE_COMMIT
-4f43970cfa02237f216404a2164bb2ec1a2fd0b5
+19f7d2ff5998a2fa7c84b6459498cfd9d22ff7f9
 
 ## EVIDENCE_COMMIT
-7a34615aadb4a24d82915ac31690e0479075e611
+PENDING
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/types/vllm_replay_validator.py
@@ -88,15 +88,21 @@ EXIT CODE: 0
 === PASS/FAIL/NEGATIVE CONTROL PROOFS ===
 PASS SCENARIO:
   replay_hash=aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
+OK: replay_hash validated as 64-hex: aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
   canonical_payload_hash=aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
+OK: canonical_payload_hash validated as 64-hex: aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
   payload_digest_deterministic=True
 OK: PASS scenario asserted
 
 FAIL SCENARIO:
   original_replay_hash=aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
+OK: original_replay_hash validated as 64-hex: aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
   mutated_replay_hash=c841b09df2388a3c460a4154efb0217b3a1bbee1cf140496f1ac75fd1f9d884e
+OK: mutated_replay_hash validated as 64-hex: c841b09df2388a3c460a4154efb0217b3a1bbee1cf140496f1ac75fd1f9d884e
   original_canonical_payload_hash=aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
+OK: original_canonical_payload_hash validated as 64-hex: aa290aef7a6d4efca357525f949e1806be3b3c43945ea199869a367d096836df
   mutated_canonical_payload_hash=c841b09df2388a3c460a4154efb0217b3a1bbee1cf140496f1ac75fd1f9d884e
+OK: mutated_canonical_payload_hash validated as 64-hex: c841b09df2388a3c460a4154efb0217b3a1bbee1cf140496f1ac75fd1f9d884e
   drift_detected=True
 OK: FAIL scenario asserted
 
@@ -113,6 +119,7 @@ NEGATIVE CONTROL:
   production_validator_valid=True
   OK: Enforcement check correctly fails when canonical payload validation disabled
 OK: NEGATIVE CONTROL asserted
+OK: All 6 required hash fields validated: ['canonical_payload_hash', 'mutated_canonical_payload_hash', 'mutated_replay_hash', 'original_canonical_payload_hash', 'original_replay_hash', 'replay_hash']
 
 git status --porcelain (final):
 
@@ -125,7 +132,7 @@ git status --porcelain (final):
 - [x] FAIL scenario: drift detected in both hashes
 - [x] DETERMINISM: re-run lock proven with identical outputs
 - [x] NEGATIVE CONTROL: enforcement fails when canonical payload disabled
-- [x] All 64-hex values regex-validated
+- [x] Per-hash 64-hex validation lines printed for all fields
 - [x] Final git status clean
 
 OK: All governance proofs asserted and passed
