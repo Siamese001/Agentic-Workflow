@@ -134,3 +134,7 @@ docs/technical/Archive/
 
 # Root README (auto-generated / user-local)
 /README.md
+docs/reports/assessments/rca_gravity_leak_corruption_phase4.md
+docs/reports/evidence/windsurf_*
+docs/reports/plans/RCA_windsurf_*
+docs/reports/plans/execute_ssot_capability_ranking.md
