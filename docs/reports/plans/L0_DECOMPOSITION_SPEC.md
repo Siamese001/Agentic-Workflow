@@ -1,4 +1,11 @@
-# L0 Authority Decomposition Specification
+# L0 Routing Decomposition Specification
+
+## SCOPE
+Governs: **L0 Layer** (L0a Cryptographic Ingress Gate, L0b Deterministic Router, L0c Dispatch Sealer)
+
+Defines decomposition of L0 routing authority into three sublayers with explicit boundaries.
+
+---
 
 L0 routing layer decomposed into three isolated components with explicit authority boundaries.
 

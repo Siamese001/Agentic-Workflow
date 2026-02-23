@@ -1,5 +1,12 @@
 # Latency Budget SLA Specification
 
+## SCOPE
+Governs: **All Layers** (L0, L1, L2, L5, L6, UWG - Latency Enforcement, Timeout Behavior)
+
+Defines per-layer SLA latency budgets with explicit abort/escalate behavior.
+
+---
+
 Per-layer SLA caps with explicit abort/escalate behavior.
 
 ---
@@ -36,15 +43,21 @@ class L0LatencyEnforcer:
         self.budget = budget
 
     def enforce_l0a_sla(self, operation: Callable) -> Any:
-        """Enforce L0a ingress SLA (50ms)"""
+        """
+        Enforce L0a ingress SLA (50ms).
+
+        IMPLEMENTATION:
+        - Use monotonic timing for measurement
+        - For hard timeout, run in separate process/subprocess with timeout parameter
+        """
 
         import time
 
-        start = time.time()
+        start = time.monotonic()
 
         try:
             result = operation()
-            elapsed_ms = (time.time() - start) * 1000
+            elapsed_ms = (time.monotonic() - start) * 1000
 
             if elapsed_ms > self.budget.l0a_ingress_ms:
                 self._handle_l0a_violation(elapsed_ms)
@@ -74,13 +87,18 @@ class L0LatencyEnforcer:
         self._log_security_event(reason)
 
     def enforce_l0b_sla(self, operation: Callable) -> Any:
-        """Enforce L0b routing SLA (100ms)"""
+        """
+        Enforce L0b routing SLA (100ms).
+        
+        IMPLEMENTATION:
+        - Use monotonic timing for measurement
+        """
 
         import time
 
-        start = time.time()
+        start = time.monotonic()
         result = operation()
-        elapsed_ms = (time.time() - start) * 1000
+        elapsed_ms = (time.monotonic() - start) * 1000
 
         if elapsed_ms > self.budget.l0b_routing_ms:
             # Force Path A (safest deterministic path)
@@ -164,23 +182,25 @@ class L5LatencyEnforcer:
         - Timeout > 500ms → Hard reject execution
         - No soft pass-through allowed
         - Escalate to Path D
+
+        IMPLEMENTATION:
+        - For hard timeout enforcement, run operation in separate process/subprocess
+        - Use monotonic timing for intra-process measurement
+        - Implementation detail deferred to runtime (no SIGALRM)
         """
 
-        import signal
-
-        def timeout_handler(signum, frame):
-            raise TimeoutError("L5 safety validation timeout")
-
-        # Set timeout
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(1)  # 1 second hard limit
-
         import time
-        start = time.time()
+
+        start = time.monotonic()
 
         try:
+            # NOTE: For hard timeout enforcement, operation should be executed
+            # in a separate process/subprocess with timeout parameter.
+            # Example: subprocess.run(args, timeout=0.5, shell=False)
+            # This specification defines the requirement; implementation is deferred.
+
             result = operation()
-            elapsed_ms = (time.time() - start) * 1000
+            elapsed_ms = (time.monotonic() - start) * 1000
 
             if elapsed_ms > self.budget.safety_validation_ms:
                 self._hard_reject(elapsed_ms)
@@ -190,9 +210,6 @@ class L5LatencyEnforcer:
         except TimeoutError:
             self._hard_reject_and_escalate("L5 timeout")
             raise
-
-        finally:
-            signal.alarm(0)
 
     def _hard_reject(self, elapsed_ms: float):
         """Hard reject execution on SLA violation"""
@@ -238,23 +255,25 @@ class L2LatencyEnforcer:
         - Timeout > 30s → Kill process
         - Release resources
         - Log timeout event
+
+        IMPLEMENTATION:
+        - For hard timeout enforcement, run operation in separate process/subprocess
+        - Use monotonic timing for intra-process measurement
+        - Implementation detail deferred to runtime (no SIGALRM)
         """
 
-        import signal
         import time
 
-        def timeout_handler(signum, frame):
-            raise TimeoutError("L2 execution lease expired")
-
-        # Set timeout
-        signal.signal(signal.SIGALRM, timeout_handler)
-        signal.alarm(self.budget.execution_lease_ms // 1000)
-
-        start = time.time()
+        start = time.monotonic()
 
         try:
+            # NOTE: For hard timeout enforcement, operation should be executed
+            # in a separate process/subprocess with timeout parameter.
+            # Example: subprocess.run(args, timeout=30, shell=False)
+            # This specification defines the requirement; implementation is deferred.
+
             result = operation()
-            elapsed_ms = (time.time() - start) * 1000
+            elapsed_ms = (time.monotonic() - start) * 1000
 
             if elapsed_ms > self.budget.execution_lease_ms:
                 self._kill_process(elapsed_ms)
@@ -264,9 +283,6 @@ class L2LatencyEnforcer:
         except TimeoutError:
             self._kill_process_and_cleanup("L2 execution timeout")
             raise
-
-        finally:
-            signal.alarm(0)
 
     def _kill_process(self, elapsed_ms: float):
         """Kill process on execution timeout"""

@@ -1,5 +1,12 @@
 # L6 Drift Safeguards Specification
 
+## SCOPE
+Governs: **L6 Observability Layer** (Anomaly Detection, Drift Safeguards, Threshold Mutation Control)
+
+Defines L6 drift safeguards with anomaly confidence delta caps and distribution shift detection.
+
+---
+
 Anomaly confidence delta caps, distribution shift detection, and threshold mutation rate limits.
 
 ---

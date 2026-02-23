@@ -1,5 +1,12 @@
 # Replay Determinism Rules
 
+## SCOPE
+Governs: **L2 Execution Layer** (Deterministic Execution, Replay Validation)
+
+Defines L2 determinism canonicalization rules for guaranteed replay integrity.
+
+---
+
 L2 determinism canonicalization for guaranteed replay integrity.
 
 ---

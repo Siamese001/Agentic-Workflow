@@ -1,5 +1,12 @@
 # UWG Isolation Enforcement Specification
 
+## SCOPE
+Governs: **UWG (Universal Write Gateway)** (Independent Daemon, Mutation Control, Trace Validation)
+
+Defines UWG isolation as independent host-level daemon with strict mutation controls.
+
+---
+
 Universal Write Gateway isolation as independent host-level daemon with strict mutation controls.
 
 ---

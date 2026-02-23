@@ -1,5 +1,12 @@
 # Authority Hierarchy Invariants
 
+## SCOPE
+Governs: **All Layers** (L0, L1, L2, L4, L5, L6, UWG, Meta-Learning - Authority Boundaries)
+
+Defines formal authority hierarchy encoded as invariant rules for all layers.
+
+---
+
 Formal authority hierarchy encoded as invariant rules.
 
 ---

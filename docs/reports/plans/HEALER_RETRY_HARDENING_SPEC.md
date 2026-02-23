@@ -1,5 +1,12 @@
 # Healer Retry Hardening Specification
 
+## SCOPE
+Governs: **L2 Execution Layer** (Healer Retry Logic, Semantic Diff Scoring, Scope Lock)
+
+Defines healer retry hardening with strictness escalation and scope enforcement.
+
+---
+
 Retry strictness escalation, semantic diff distance scoring, and scope lock enforcement.
 
 ---

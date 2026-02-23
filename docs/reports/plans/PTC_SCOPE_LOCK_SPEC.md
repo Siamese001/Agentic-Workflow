@@ -1,5 +1,12 @@
 # PTC Scope Lock Specification
 
+## SCOPE
+Governs: **L2 Execution Layer** (Prompt-Tool Contract, Tool Invocation Control)
+
+Defines static tool contract enforcement with no dynamic registration or side-channel invocations.
+
+---
+
 Static tool contract enforcement with no dynamic registration or side-channel invocations.
 
 ---

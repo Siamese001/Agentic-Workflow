@@ -1,5 +1,12 @@
 # Layer Degradation Contract
 
+## SCOPE
+Governs: **All Layers** (L0, L1, L2, L4, L5, L6, UWG, Meta-Learning Bus, FAISS, Redis, vLLM, Circuit Breaker, Tracing)
+
+Defines fail-closed degradation behavior for all subsystems in execute_ssot unified architecture.
+
+---
+
 Fail-closed semantics for all subsystem failures in execute_ssot unified architecture.
 
 ---
@@ -8,12 +15,12 @@ Fail-closed semantics for all subsystem failures in execute_ssot unified archite
 
 | Failure Condition | Behavior | Rationale |
 |-------------------|----------|-----------|
-| L6 anomaly signal unavailable | Force deterministic routing only (disable ML routing) | Cannot trust ML decisions without anomaly detection |
-| L6 metrics collection timeout | Continue with deterministic path, log degradation | Observability loss acceptable, execution must proceed |
-| L6 trace emission failure | Abort current operation, escalate to L5 | Audit trail mandatory for compliance |
-| L6 dashboard unavailable | Continue execution, buffer metrics locally | Display layer failure does not block execution |
+| L6 anomaly signal unavailable | Continue execution, log degradation, signal L0 to disable ML routing | L6 observes only - cannot block execution, signals L0 for routing decision |
+| L6 metrics collection timeout | Continue execution, buffer metrics locally, log degradation | Observability loss acceptable, execution must proceed |
+| L6 trace emission failure | Continue execution, buffer traces locally, log degradation | L6 failure never blocks execution - buffer for async retry |
+| L6 dashboard unavailable | Continue execution, buffer metrics locally, log degradation | Display layer failure does not block execution |
 
-**Invariant:** ML routing requires active L6 anomaly detection. No ML routing without L6.
+**Invariant:** L6 never aborts or escalates. L6 failures → continue degraded + log/buffer. L0 makes routing decisions based on L6 signals.
 
 ---
 

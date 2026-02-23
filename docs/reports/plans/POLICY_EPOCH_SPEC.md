@@ -1,5 +1,12 @@
 # Policy Epoch Specification
 
+## SCOPE
+Governs: **Meta-Learning Bus** (Policy Epoch Management, Threshold Configuration, Shadow Evaluation)
+
+Defines meta-learning constraints with staged threshold updates and human approval gates.
+
+---
+
 Meta-learning bus constraints with staged threshold configuration and shadow evaluation.
 
 ---

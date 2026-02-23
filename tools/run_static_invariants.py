@@ -110,9 +110,10 @@ def print_violations(
     baseline = baseline_by_category.get(category_prefix, set())
 
     if not baseline:
-        # Unseeded category - skip enforcement with warning
-        print(f"WARN: {title}: UNSEEDED_BASELINE (skipped enforcement, {len(violations)} findings)")
-        return 0
+        # Unseeded category - FAIL to require explicit baseline governance
+        print(f"FAIL: {title}: UNSEEDED_BASELINE - {len(violations)} violations require baseline")
+        print(f"  Action: Add baseline entries for {category_prefix}_* violations or fix them")
+        return len(violations)
 
     # Identify new violations
     new_violations = []
