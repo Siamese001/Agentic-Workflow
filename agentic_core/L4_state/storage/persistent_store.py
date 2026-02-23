@@ -33,6 +33,16 @@ class StoredArtifact:
 
 
 @dataclass(frozen=True)
+class StoreMetrics:
+    """Deterministic performance metrics for storage operations."""
+
+    bytes_written: int = 0
+    bytes_read: int = 0
+    artifacts_written: int = 0
+    artifacts_read: int = 0
+
+
+@dataclass(frozen=True)
 class StoredArtifactRef:
     """Immutable reference to a stored artifact."""
 
@@ -40,6 +50,7 @@ class StoredArtifactRef:
     logical_id: str
     version: int
     path: str
+    size_bytes: int = 0
 
 
 # =============================================================================

@@ -124,8 +124,8 @@ agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:82:type_erasu
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:322:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:405:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:787:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L3_orchestration/replay/deterministic_replay.py:240:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-agentic_core/L3_orchestration/replay/deterministic_replay.py:240:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+agentic_core/L3_orchestration/replay/deterministic_replay.py:327:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+agentic_core/L3_orchestration/replay/deterministic_replay.py:327:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 agentic_core/L3_orchestration/types/context_pruning_types.py:344:magic_configuration:Magic configuration: Hardcoded base_limit=50
 agentic_core/L3_orchestration/types/context_pruning_types.py:345:magic_configuration:Magic configuration: Hardcoded max_limit=200
 agentic_core/L3_orchestration/types/context_pruning_types.py:346:magic_configuration:Magic configuration: Hardcoded min_limit=10

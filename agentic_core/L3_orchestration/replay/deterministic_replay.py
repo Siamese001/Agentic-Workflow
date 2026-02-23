@@ -24,6 +24,16 @@ from datetime import datetime
 
 
 @dataclass(frozen=True)
+class ReplayMetrics:
+    """Deterministic performance metrics for replay operations."""
+
+    per_command_bytes_out: list[int] = field(default_factory=list)
+    per_command_bytes_err: list[int] = field(default_factory=list)
+    total_bytes_out: int = 0
+    total_bytes_err: int = 0
+
+
+@dataclass(frozen=True)
 class ReplayCommand:
     """Immutable command definition for replay."""
 
@@ -31,6 +41,8 @@ class ReplayCommand:
     cwd: str
     env_allowlist: dict[str, str]
     timeout_s: int = 300
+    max_stdout_bytes: int = 1024 * 1024  # 1MB
+    max_stderr_bytes: int = 1024 * 1024  # 1MB
 
 
 @dataclass(frozen=True)
@@ -51,6 +63,7 @@ class ReplayRecord:
     commands: list[ReplayCommand] = field(default_factory=list)
     results: list[ReplayResult] = field(default_factory=list)
     hashes: dict[str, str] = field(default_factory=dict)
+    metrics: ReplayMetrics | None = None
 
 
 @dataclass(frozen=True)
@@ -101,6 +114,42 @@ def _filter_env_vars() -> dict[str, str]:
     return filtered
 
 
+def _truncate_if_needed(text: str, max_bytes: int) -> tuple[str, bool]:
+    """Truncate text if it exceeds max_bytes deterministically.
+
+    Args:
+        text: Text to potentially truncate
+        max_bytes: Maximum allowed bytes
+
+    Returns:
+        Tuple of (truncated_text, was_truncated)
+    """
+    text_bytes = text.encode("utf-8")
+    if len(text_bytes) <= max_bytes:
+        return text, False
+
+    # Truncate to max_bytes - suffix length
+    suffix = f"...<TRUNCATED {len(text_bytes) - max_bytes} BYTES>"
+    suffix_bytes = suffix.encode("utf-8")
+    allowed_text_bytes = max_bytes - len(suffix_bytes)
+
+    if allowed_text_bytes <= 0:
+        # Only return suffix if max_bytes is too small
+        return suffix, True
+
+    # Find truncation point that doesn't split UTF-8 sequences
+    truncated_bytes = text_bytes[:allowed_text_bytes]
+    try:
+        truncated_text = truncated_bytes.decode("utf-8")
+    except UnicodeDecodeError:
+        # Fallback: decode with errors='replace' and clean up
+        truncated_text = truncated_bytes.decode("utf-8", errors="replace")
+        # Remove any partial characters at the end
+        truncated_text = truncated_text.rstrip("\ufffd")
+
+    return truncated_text + suffix, True
+
+
 def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
     """Execute commands and record results deterministically.
 
@@ -115,6 +164,8 @@ def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
     """
     results = []
     hashes = {}
+    per_command_bytes_out = []
+    per_command_bytes_err = []
 
     for command in commands:
         # Guard against PowerShell usage
@@ -136,22 +187,39 @@ def run_and_record(commands: list[ReplayCommand]) -> ReplayRecord:
             timeout=command.timeout_s,
         )
 
+        # Apply truncation if needed
+        truncated_stdout, stdout_truncated = _truncate_if_needed(result.stdout, command.max_stdout_bytes)
+        truncated_stderr, stderr_truncated = _truncate_if_needed(result.stderr, command.max_stderr_bytes)
+
         replay_result = ReplayResult(
             exit_code=result.returncode,
-            stdout=result.stdout,
-            stderr=result.stderr,
+            stdout=truncated_stdout,
+            stderr=truncated_stderr,
         )
 
         results.append(replay_result)
+
+        # Collect deterministic metrics (post-truncation)
+        per_command_bytes_out.append(len(replay_result.stdout.encode("utf-8")))
+        per_command_bytes_err.append(len(replay_result.stderr.encode("utf-8")))
 
         # Compute hash for integrity
         cmd_hash = _hash_command_result(command, replay_result)
         hashes[f"cmd_{len(results)}"] = cmd_hash
 
+    # Create metrics object
+    metrics = ReplayMetrics(
+        per_command_bytes_out=per_command_bytes_out,
+        per_command_bytes_err=per_command_bytes_err,
+        total_bytes_out=sum(per_command_bytes_out),
+        total_bytes_err=sum(per_command_bytes_err),
+    )
+
     return ReplayRecord(
         commands=commands,
         results=results,
         hashes=hashes,
+        metrics=metrics,
     )
 
 
@@ -161,32 +229,39 @@ def record_to_json(record: ReplayRecord) -> str:
     Returns:
         JSON string with sorted keys and stable formatting
     """
-    return json.dumps(
-        {
-            "version": record.version,
-            "created_utc": record.created_utc,
-            "commands": [
-                {
-                    "argv": cmd.argv,
-                    "cwd": cmd.cwd,
-                    "env_allowlist": cmd.env_allowlist,
-                    "timeout_s": cmd.timeout_s,
-                }
-                for cmd in record.commands
-            ],
-            "results": [
-                {
-                    "exit_code": res.exit_code,
-                    "stdout": res.stdout,
-                    "stderr": res.stderr,
-                }
-                for res in record.results
-            ],
-            "hashes": record.hashes,
-        },
-        sort_keys=True,
-        indent=2,
-    )
+    data = {
+        "version": record.version,
+        "created_utc": record.created_utc,
+        "commands": [
+            {
+                "argv": cmd.argv,
+                "cwd": cmd.cwd,
+                "env_allowlist": cmd.env_allowlist,
+                "timeout_s": cmd.timeout_s,
+            }
+            for cmd in record.commands
+        ],
+        "results": [
+            {
+                "exit_code": res.exit_code,
+                "stdout": res.stdout,
+                "stderr": res.stderr,
+            }
+            for res in record.results
+        ],
+        "hashes": record.hashes,
+    }
+
+    # Add metrics if present
+    if record.metrics is not None:
+        data["metrics"] = {
+            "per_command_bytes_out": record.metrics.per_command_bytes_out,
+            "per_command_bytes_err": record.metrics.per_command_bytes_err,
+            "total_bytes_out": record.metrics.total_bytes_out,
+            "total_bytes_err": record.metrics.total_bytes_err,
+        }
+
+    return json.dumps(data, sort_keys=True, indent=2)
 
 
 def record_from_json(json_str: str) -> ReplayRecord:
@@ -212,12 +287,24 @@ def record_from_json(json_str: str) -> ReplayRecord:
         for res in data["results"]
     ]
 
+    # Parse metrics if present
+    metrics = None
+    if "metrics" in data:
+        metrics_data = data["metrics"]
+        metrics = ReplayMetrics(
+            per_command_bytes_out=metrics_data["per_command_bytes_out"],
+            per_command_bytes_err=metrics_data["per_command_bytes_err"],
+            total_bytes_out=metrics_data["total_bytes_out"],
+            total_bytes_err=metrics_data["total_bytes_err"],
+        )
+
     return ReplayRecord(
         version=data["version"],
         created_utc=data["created_utc"],
         commands=commands,
         results=results,
         hashes=data["hashes"],
+        metrics=metrics,
     )
 
 

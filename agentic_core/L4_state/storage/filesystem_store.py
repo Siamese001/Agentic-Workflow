@@ -121,11 +121,15 @@ class FileSystemStore:
                 temp_path.unlink()
             raise
 
+        # Get file size for reference
+        file_size = artifact_path.stat().st_size
+
         return StoredArtifactRef(
             kind=artifact.kind,
             logical_id=artifact.logical_id,
             version=version,
             path=str(artifact_path.relative_to(self.root_dir)),
+            size_bytes=file_size,
         )
 
     def get(self, ref: StoredArtifactRef) -> StoredArtifact:
@@ -165,14 +169,15 @@ class FileSystemStore:
             metadata=data.get("metadata", {}),
         )
 
-    def list(self, kind: str | None = None) -> list[StoredArtifactRef]:
-        """List stored artifacts, optionally filtered by kind.
+    def list(self, kind: str | None = None, limit: int | None = None) -> list[StoredArtifactRef]:
+        """List stored artifacts, optionally filtered by kind and limited.
 
         Args:
             kind: Filter by artifact kind (if None, list all)
+            limit: Maximum number of results to return (if None, return all)
 
         Returns:
-            List of artifact references, deterministically sorted
+            List of artifact references, deterministically sorted and limited
         """
         refs = []
         store_base = self.root_dir / "docs" / "store"
@@ -205,12 +210,14 @@ class FileSystemStore:
 
                     try:
                         version = int(file_path.name[1:-5])  # Remove "v" prefix and ".json"
+                        file_size = file_path.stat().st_size
                         refs.append(
                             StoredArtifactRef(
                                 kind=current_kind,
                                 logical_id=current_logical_id,
                                 version=version,
                                 path=str(file_path.relative_to(self.root_dir)),
+                                size_bytes=file_size,
                             )
                         )
                     except ValueError:
@@ -218,6 +225,11 @@ class FileSystemStore:
 
         # Deterministic sorting
         refs.sort(key=lambda r: (r.kind, r.logical_id, r.version))
+
+        # Apply limit if specified
+        if limit is not None and limit > 0:
+            refs = refs[:limit]
+
         return refs
 
 
