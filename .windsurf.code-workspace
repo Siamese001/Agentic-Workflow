@@ -65,7 +65,9 @@
         ],
         "windsurf.codeIndex.excludeGitHistory": true,
         "windsurf.semanticSearch.excludeGitCommits": true,
-        "windsurf.symbolIndex.excludeGitObjects": true
+        "windsurf.symbolIndex.excludeGitObjects": true,
+        "windsurf.search.rankFilesBeforeCommits": true,
+        "windsurf.search.commitResultWeight": 0.1
     },
     "extensions": {
         "recommendations": [
