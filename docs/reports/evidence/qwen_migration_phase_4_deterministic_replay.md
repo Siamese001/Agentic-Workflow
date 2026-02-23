@@ -7,13 +7,18 @@ Phase 4 of Qwen vLLM migration: seal deterministic replay by adding infrastructu
 0ca7159c7e5c8b7e9e5317f517b6e6b2a8c3c7a4a
 
 ## EVIDENCE_COMMIT
-PENDING
+6d0e399b0d620c5782ab44c9c4467c5bc0b99831
 
 ## FILES_CHANGED_CODE
 ```
 fatal: ambiguous argument '0ca7159c7e5c8b7e9e5317f517b6e6b2a8c3c7a4a': unknown revision or path not in the working tree.
 Use '--' to separate paths from revisions, like this:
 'git <command> [<revision>...] -- [<file>...]'
+```
+
+## FILES_CHANGED_EVIDENCE
+```
+docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md
 ```
 
 ## INSPECTED_FILES
