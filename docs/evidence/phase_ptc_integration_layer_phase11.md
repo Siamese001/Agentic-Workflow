@@ -1,7 +1,7 @@
 # Phase 11 Programmatic Tool Calling Evidence
 
 ## CODE_COMMIT
-e6a79f8c473dd8add0daae67a5eed1016e6c9308
+a6d6283e635b8784ab6664f280717ab1490c839b
 
 ## PYTHON_VERSION
 Python 3.12.10
@@ -358,18 +358,8 @@ OK: Determinism Serialization: No violations found
 OK: PTC Invariants: No violations found
 
 === Summary ===
-
-STDERR:
-Traceback (most recent call last):
-  File "C:\Git\Agentic-Workflow\tools\run_static_invariants.py", line 122, in <module>
-    sys.exit(main())
-             ^^^^^^
-  File "C:\Git\Agentic-Workflow\tools\run_static_invariants.py", line 116, in main
-    print(f"\u2717 {total_violations} total violations found")
-  File "C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\encodings\cp1252.py", line 19, in encode
-    return codecs.charmap_encode(input,self.errors,encoding_table)[0]
-           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-UnicodeEncodeError: 'charmap' codec can't encode character '\u2717' in position 0: character maps to <undefined>
+FAIL: 254 total violations found
+FAIL: Please fix violations before proceeding
 
 
 ## PTC_TEST_RUN_1
@@ -401,12 +391,12 @@ tests/unit_min_deps/test_ptc.py::test_tool_invoker_powershell_ban [32mPASSED[0
 tests/unit_min_deps/test_ptc.py::test_tool_invoker_truncation [32mPASSED[0m[32m     [ 48%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store [32mPASSED[0m[32m             [ 51%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering [32mPASSED[0m[33m [ 55%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [32mPASSED[0m[33m        [ 58%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [31mFAILED[0m[31m        [ 58%][0m
 tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [31mFAILED[0m[31m      [ 62%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [32mPASSED[0m[31m [ 65%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [32mPASSED[0m[31m  [ 68%][0m
-tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [31mFAILED[0m[31m [ 72%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [31mFAILED[0m[31m      [ 75%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [31mFAILED[0m[31m [ 65%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [31mFAILED[0m[31m  [ 68%][0m
+tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[31m [ 72%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[31m      [ 75%][0m
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[31m      [ 79%][0m
 tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [31mFAILED[0m[31m         [ 82%][0m
 tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[31m [ 86%][0m
@@ -416,26 +406,47 @@ tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_futur
 tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[31m [100%][0m
 
 ================================== FAILURES ===================================
+[31m[1m__________________________ test_builtin_repo_rg_tool __________________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:481: in test_builtin_repo_rg_tool
+    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'repo_rg' not found[0m
 [31m[1m_________________________ test_builtin_expr_eval_tool _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:541: in test_builtin_expr_eval_tool
-    [0m[94massert[39;49;00m result.exit_code == [94m1[39;49;00m[90m[39;49;00m
-[1m[31mE   AssertionError: assert 0 == 1[0m
-[1m[31mE    +  where 0 = ToolCallResult(exit_code=0, stdout='Error: Expression contains unsafe operations', stderr='', truncated=False, hashes={'stdout': '3b609444e829d5c2e10f058be35130a2973dfb6527f9c4de4fb03efa70413589', 'truncated': '60a33e6cf5151f2d52eddae9685cfa270426aa89d8dbc7dfb854606f1d1a40fe'}).exit_code[0m
-[31m[1m______________________ test_execute_ssot_ptc_integration ______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:632: in test_execute_ssot_ptc_integration
-    [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--legacy', '--plan', '--ptc-plan'], returncode=1, stdout='PHASE 1: Discovery\n  - reconciler.detect_root_drift\n    # filesystem SSOT drift detection\n  - location.run\n    # location validation (confidence gated heal)\n  - file_classification.run (validate_only=True, dry_run=True)\n    # file classification early detection\n\nPHASE 2: Reconciliation\n  - reconciler.heal\n    # drift reconciliation (confidence gated)\n\nPHASE 2.5: Structural Alignment & Sovereignty\n  - hierarchy.heal_hierarchy\n    # hierarchy alignment (confidence gated)\n  - file_classification.heal_repository\n    # sovereignty purge (confidence gated, not dry_run, not validate)\n\nPHASE 3: Architectural Validation\n  - arch_governor.comprehensive_territory_audit\n    # territory audit\n  - system_architect.validate_core_architecture\n    # architecture validation\n\nPHASE 4: Healing\n  - arch_governor.generate_healing_plan\n    # healing plan generation\n  - arch_governor.execute_healing_plan\n    # healing plan execution\n\nPHASE 4.5: Additiona...ration\\ptc\\ptc_registry.py", line 127, in register_tool\n    _GLOBAL_REGISTRY.register(spec, handler)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\ptc_registry.py", line 36, in register\n    raise ValueError(f"Tool \'{spec.tool_id}\' already registered")\nValueError: Tool \'repo_rg\' already registered\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 146, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 118, in main\n    print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan, ptc_plan=pre_args.ptc_plan)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py", line 2771, in print_execution_plan\n    violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))\n    ^^^^^^^^^^\nNameError: name \'violations\' is not defined\n').returncode[0m
-[31m[1m_________________________ test_ptc_plan_output_stable _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:672: in test_ptc_plan_output_stable
-    [0m[94massert[39;49;00m result1.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--legacy', '--plan', '--ptc-plan'], returncode=1, stdout='PHASE 1: Discovery\n  - reconciler.detect_root_drift\n    # filesystem SSOT drift detection\n  - location.run\n    # location validation (confidence gated heal)\n  - file_classification.run (validate_only=True, dry_run=True)\n    # file classification early detection\n\nPHASE 2: Reconciliation\n  - reconciler.heal\n    # drift reconciliation (confidence gated)\n\nPHASE 2.5: Structural Alignment & Sovereignty\n  - hierarchy.heal_hierarchy\n    # hierarchy alignment (confidence gated)\n  - file_classification.heal_repository\n    # sovereignty purge (confidence gated, not dry_run, not validate)\n\nPHASE 3: Architectural Validation\n  - arch_governor.comprehensive_territory_audit\n    # territory audit\n  - system_architect.validate_core_architecture\n    # architecture validation\n\nPHASE 4: Healing\n  - arch_governor.generate_healing_plan\n    # healing plan generation\n  - arch_governor.execute_healing_plan\n    # healing plan execution\n\nPHASE 4.5: Additiona...ration\\ptc\\ptc_registry.py", line 127, in register_tool\n    _GLOBAL_REGISTRY.register(spec, handler)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\ptc_registry.py", line 36, in register\n    raise ValueError(f"Tool \'{spec.tool_id}\' already registered")\nValueError: Tool \'repo_rg\' already registered\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 146, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 118, in main\n    print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan, ptc_plan=pre_args.ptc_plan)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py", line 2771, in print_execution_plan\n    violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))\n    ^^^^^^^^^^\nNameError: name \'violations\' is not defined\n').returncode[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:522: in test_builtin_expr_eval_tool
+    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
+[31m[1m______________________ test_builtin_tools_deterministic _______________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:564: in test_builtin_tools_deterministic
+    [0mresult1 = invoker.invoke(call, registry)[90m[39;49;00m
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
+[31m[1m_______________________ test_builtin_tools_registration _______________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:584: in test_builtin_tools_registration
+    [0m[94massert[39;49;00m registry.has([33m"[39;49;00m[33mrepo_rg[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   AssertionError: assert False[0m
+[1m[31mE    +  where False = has('repo_rg')[0m
+[1m[31mE    +    where has = <agentic_core.L3_orchestration.ptc.ptc_registry.ToolRegistry object at 0x0000024E5D133CE0>.has[0m
 [31m[1m__________________________ test_static_includes_ptc ___________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:740: in test_static_includes_ptc
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:738: in test_static_includes_ptc
     [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
 [1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...- DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\n', stderr='Traceback (most recent call last):\n  File "C:\\Git\\Agentic-Workflow\\tools\\run_static_invariants.py", line 122, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\tools\\run_static_invariants.py", line 116, in main\n    print(f"\\u2717 {total_violations} total violations found")\n  File "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\encodings\\cp1252.py", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: \'charmap\' codec can\'t encode character \'\\u2717\' in position 0: character maps to <undefined>\n').returncode[0m
+[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...ernance\\core\\prompt_assembler.py:631 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\core\\prompt_assembler.py:631 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\nFAIL: 254 total violations found\nFAIL: Please fix violations before proceeding\n', stderr='').returncode[0m
 [33m============================== warnings summary ===============================[0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
@@ -444,36 +455,7 @@ tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
   C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\tool_call_store.py:52: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
     "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
 
-tests/unit_min_deps/test_ptc.py: 19 warnings
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:196: DeprecationWarning: ast.Num is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    if isinstance(node, ast.Num):  # Python < 3.8
-
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:200: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    elif isinstance(node, ast.Str):  # Python < 3.8
-
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:202: DeprecationWarning: ast.NameConstant is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    elif isinstance(node, ast.NameConstant):
-
-tests/unit_min_deps/test_ptc.py: 10 warnings
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:197: DeprecationWarning: Attribute n is deprecated and will be removed in Python 3.14; use value instead
-    return node.n
-
+tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
   C:\Git\Agentic-Workflow\agentic_core\L5_safety\static_checks\ptc_invariants.py:64: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
@@ -482,29 +464,29 @@ tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 1
-Passed: 25
-Failed: 4
+Passed: 24
+Failed: 5
 Errors: 0
 
 \u274c GUARDIAN STATUS: FAIL
 Architectural violations detected. Review failed tests.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-39.21s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
-0.20s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
-0.17s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
+47.60s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+0.20s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.08s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
-0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
-(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
 [36m[1m=========================== short test summary info ===========================[0m
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - AssertionError: assert 0 == 1
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_execute_ssot_ptc_integration[0m - assert 1 == 0
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_ptc_plan_output_stable[0m - assert 1 == 0
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_repo_rg_tool[0m - ValueError: Tool 'repo_rg' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - ValueError: Tool 'expr_eval' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_deterministic[0m - ValueError: Tool 'expr_eval' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_registration[0m - AssertionError: assert False
 [31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_static_includes_ptc[0m - assert 1 == 0
-[31m========= [31m[1m4 failed[0m, [32m25 passed[0m, [33m447 deselected[0m, [33m51 warnings[0m[31m in 40.10s[0m[31m ==========[0m
+[31m========== [31m[1m5 failed[0m, [32m24 passed[0m, [33m447 deselected[0m, [33m7 warnings[0m[31m in 48.82s[0m[31m ==========[0m
 
 
 ## PTC_TEST_RUN_2
@@ -536,12 +518,12 @@ tests/unit_min_deps/test_ptc.py::test_tool_invoker_powershell_ban [32mPASSED[0
 tests/unit_min_deps/test_ptc.py::test_tool_invoker_truncation [32mPASSED[0m[32m     [ 48%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store [32mPASSED[0m[32m             [ 51%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering [32mPASSED[0m[33m [ 55%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [32mPASSED[0m[33m        [ 58%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [31mFAILED[0m[31m        [ 58%][0m
 tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [31mFAILED[0m[31m      [ 62%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [32mPASSED[0m[31m [ 65%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [32mPASSED[0m[31m  [ 68%][0m
-tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [31mFAILED[0m[31m [ 72%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [31mFAILED[0m[31m      [ 75%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [31mFAILED[0m[31m [ 65%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [31mFAILED[0m[31m  [ 68%][0m
+tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[31m [ 72%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[31m      [ 75%][0m
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[31m      [ 79%][0m
 tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [31mFAILED[0m[31m         [ 82%][0m
 tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[31m [ 86%][0m
@@ -551,26 +533,47 @@ tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_futur
 tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[31m [100%][0m
 
 ================================== FAILURES ===================================
+[31m[1m__________________________ test_builtin_repo_rg_tool __________________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:481: in test_builtin_repo_rg_tool
+    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'repo_rg' not found[0m
 [31m[1m_________________________ test_builtin_expr_eval_tool _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:541: in test_builtin_expr_eval_tool
-    [0m[94massert[39;49;00m result.exit_code == [94m1[39;49;00m[90m[39;49;00m
-[1m[31mE   AssertionError: assert 0 == 1[0m
-[1m[31mE    +  where 0 = ToolCallResult(exit_code=0, stdout='Error: Expression contains unsafe operations', stderr='', truncated=False, hashes={'stdout': '3b609444e829d5c2e10f058be35130a2973dfb6527f9c4de4fb03efa70413589', 'truncated': '60a33e6cf5151f2d52eddae9685cfa270426aa89d8dbc7dfb854606f1d1a40fe'}).exit_code[0m
-[31m[1m______________________ test_execute_ssot_ptc_integration ______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:632: in test_execute_ssot_ptc_integration
-    [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--legacy', '--plan', '--ptc-plan'], returncode=1, stdout='PHASE 1: Discovery\n  - reconciler.detect_root_drift\n    # filesystem SSOT drift detection\n  - location.run\n    # location validation (confidence gated heal)\n  - file_classification.run (validate_only=True, dry_run=True)\n    # file classification early detection\n\nPHASE 2: Reconciliation\n  - reconciler.heal\n    # drift reconciliation (confidence gated)\n\nPHASE 2.5: Structural Alignment & Sovereignty\n  - hierarchy.heal_hierarchy\n    # hierarchy alignment (confidence gated)\n  - file_classification.heal_repository\n    # sovereignty purge (confidence gated, not dry_run, not validate)\n\nPHASE 3: Architectural Validation\n  - arch_governor.comprehensive_territory_audit\n    # territory audit\n  - system_architect.validate_core_architecture\n    # architecture validation\n\nPHASE 4: Healing\n  - arch_governor.generate_healing_plan\n    # healing plan generation\n  - arch_governor.execute_healing_plan\n    # healing plan execution\n\nPHASE 4.5: Additiona...ration\\ptc\\ptc_registry.py", line 127, in register_tool\n    _GLOBAL_REGISTRY.register(spec, handler)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\ptc_registry.py", line 36, in register\n    raise ValueError(f"Tool \'{spec.tool_id}\' already registered")\nValueError: Tool \'repo_rg\' already registered\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 146, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 118, in main\n    print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan, ptc_plan=pre_args.ptc_plan)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py", line 2771, in print_execution_plan\n    violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))\n    ^^^^^^^^^^\nNameError: name \'violations\' is not defined\n').returncode[0m
-[31m[1m_________________________ test_ptc_plan_output_stable _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:672: in test_ptc_plan_output_stable
-    [0m[94massert[39;49;00m result1.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', '-m', 'agentic_core.L0_routing.scripts.execute_ssot_entrypoint', '--legacy', '--plan', '--ptc-plan'], returncode=1, stdout='PHASE 1: Discovery\n  - reconciler.detect_root_drift\n    # filesystem SSOT drift detection\n  - location.run\n    # location validation (confidence gated heal)\n  - file_classification.run (validate_only=True, dry_run=True)\n    # file classification early detection\n\nPHASE 2: Reconciliation\n  - reconciler.heal\n    # drift reconciliation (confidence gated)\n\nPHASE 2.5: Structural Alignment & Sovereignty\n  - hierarchy.heal_hierarchy\n    # hierarchy alignment (confidence gated)\n  - file_classification.heal_repository\n    # sovereignty purge (confidence gated, not dry_run, not validate)\n\nPHASE 3: Architectural Validation\n  - arch_governor.comprehensive_territory_audit\n    # territory audit\n  - system_architect.validate_core_architecture\n    # architecture validation\n\nPHASE 4: Healing\n  - arch_governor.generate_healing_plan\n    # healing plan generation\n  - arch_governor.execute_healing_plan\n    # healing plan execution\n\nPHASE 4.5: Additiona...ration\\ptc\\ptc_registry.py", line 127, in register_tool\n    _GLOBAL_REGISTRY.register(spec, handler)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\ptc_registry.py", line 36, in register\n    raise ValueError(f"Tool \'{spec.tool_id}\' already registered")\nValueError: Tool \'repo_rg\' already registered\n\nDuring handling of the above exception, another exception occurred:\n\nTraceback (most recent call last):\n  File "<frozen runpy>", line 198, in _run_module_as_main\n  File "<frozen runpy>", line 88, in _run_code\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 146, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py", line 118, in main\n    print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan, ptc_plan=pre_args.ptc_plan)\n  File "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py", line 2771, in print_execution_plan\n    violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))\n    ^^^^^^^^^^\nNameError: name \'violations\' is not defined\n').returncode[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:522: in test_builtin_expr_eval_tool
+    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
+             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
+[31m[1m______________________ test_builtin_tools_deterministic _______________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:564: in test_builtin_tools_deterministic
+    [0mresult1 = invoker.invoke(call, registry)[90m[39;49;00m
+              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
+    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
+                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
+[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
+    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
+[31m[1m_______________________ test_builtin_tools_registration _______________________[0m
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:584: in test_builtin_tools_registration
+    [0m[94massert[39;49;00m registry.has([33m"[39;49;00m[33mrepo_rg[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
+[1m[31mE   AssertionError: assert False[0m
+[1m[31mE    +  where False = has('repo_rg')[0m
+[1m[31mE    +    where has = <agentic_core.L3_orchestration.ptc.ptc_registry.ToolRegistry object at 0x000001A553C62CC0>.has[0m
 [31m[1m__________________________ test_static_includes_ptc ___________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:740: in test_static_includes_ptc
+[1m[31mtests\unit_min_deps\test_ptc.py[0m:738: in test_static_includes_ptc
     [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
 [1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...- DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\n', stderr='Traceback (most recent call last):\n  File "C:\\Git\\Agentic-Workflow\\tools\\run_static_invariants.py", line 122, in <module>\n    sys.exit(main())\n             ^^^^^^\n  File "C:\\Git\\Agentic-Workflow\\tools\\run_static_invariants.py", line 116, in main\n    print(f"\\u2717 {total_violations} total violations found")\n  File "C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\Lib\\encodings\\cp1252.py", line 19, in encode\n    return codecs.charmap_encode(input,self.errors,encoding_table)[0]\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\nUnicodeEncodeError: \'charmap\' codec can\'t encode character \'\\u2717\' in position 0: character maps to <undefined>\n').returncode[0m
+[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...ernance\\core\\prompt_assembler.py:631 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\core\\prompt_assembler.py:631 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\nFAIL: 254 total violations found\nFAIL: Please fix violations before proceeding\n', stderr='').returncode[0m
 [33m============================== warnings summary ===============================[0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
@@ -579,36 +582,7 @@ tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
   C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\tool_call_store.py:52: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
     "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
 
-tests/unit_min_deps/test_ptc.py: 19 warnings
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:196: DeprecationWarning: ast.Num is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    if isinstance(node, ast.Num):  # Python < 3.8
-
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:200: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    elif isinstance(node, ast.Str):  # Python < 3.8
-
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:202: DeprecationWarning: ast.NameConstant is deprecated and will be removed in Python 3.14; use ast.Constant instead
-    elif isinstance(node, ast.NameConstant):
-
-tests/unit_min_deps/test_ptc.py: 10 warnings
-  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:197: DeprecationWarning: Attribute n is deprecated and will be removed in Python 3.14; use value instead
-    return node.n
-
+tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
   C:\Git\Agentic-Workflow\agentic_core\L5_safety\static_checks\ptc_invariants.py:64: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
@@ -617,35 +591,35 @@ tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 1
-Passed: 25
-Failed: 4
+Passed: 24
+Failed: 5
 Errors: 0
 
 \u274c GUARDIAN STATUS: FAIL
 Architectural violations detected. Review failed tests.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-40.05s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
-0.20s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+46.75s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.17s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
-0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
-(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+(4 durations < 0.005s hidden.  Use -vv to show these durations.)
 [36m[1m=========================== short test summary info ===========================[0m
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - AssertionError: assert 0 == 1
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_execute_ssot_ptc_integration[0m - assert 1 == 0
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_ptc_plan_output_stable[0m - assert 1 == 0
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_repo_rg_tool[0m - ValueError: Tool 'repo_rg' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - ValueError: Tool 'expr_eval' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_deterministic[0m - ValueError: Tool 'expr_eval' not found
+[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_registration[0m - AssertionError: assert False
 [31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_static_includes_ptc[0m - assert 1 == 0
-[31m========= [31m[1m4 failed[0m, [32m25 passed[0m, [33m447 deselected[0m, [33m51 warnings[0m[31m in 40.94s[0m[31m ==========[0m
+[31m========== [31m[1m5 failed[0m, [32m24 passed[0m, [33m447 deselected[0m, [33m7 warnings[0m[31m in 47.66s[0m[31m ==========[0m
 
 
 ## EXECUTE_SSOT_PTC_PLAN
 
 ### python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --plan --ptc-plan
-EXIT CODE: 1
+EXIT CODE: 0
 STDOUT:
 PHASE 1: Discovery
   - reconciler.detect_root_drift
@@ -688,33 +662,8 @@ PHASE 5: Certification
     # final aggregation and certification
 
 === PROGRAMMATIC TOOL CALLING ===
+{"summary":"PTC executed 1 tool calls for plan context","tool_calls":[{"args":{"expr":"2 + 3 * 4"},"call_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","exit_code":0,"stderr":"","stdout":"14","tool_id":"expr_eval","truncated":false}]}
 
-STDERR:
-Traceback (most recent call last):
-  File "C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py", line 2732, in print_execution_plan
-    register_builtin_tools()
-  File "C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py", line 295, in register_builtin_tools
-    register_tool(repo_rg_spec, repo_rg_handler)
-  File "C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\ptc_registry.py", line 127, in register_tool
-    _GLOBAL_REGISTRY.register(spec, handler)
-  File "C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\ptc_registry.py", line 36, in register
-    raise ValueError(f"Tool '{spec.tool_id}' already registered")
-ValueError: Tool 'repo_rg' already registered
-
-During handling of the above exception, another exception occurred:
-
-Traceback (most recent call last):
-  File "<frozen runpy>", line 198, in _run_module_as_main
-  File "<frozen runpy>", line 88, in _run_code
-  File "C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot_entrypoint.py", line 146, in <module>
-    raise SystemExit(main())
-                     ^^^^^^
-  File "C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot_entrypoint.py", line 118, in main
-    print_execution_plan(arbitrate_plan=pre_args.arbitrate_plan, ptc_plan=pre_args.ptc_plan)
-  File "C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py", line 2771, in print_execution_plan
-    violations.append((0, "PTC_SCAN_ERROR", f"Scan error: {e}"))
-    ^^^^^^^^^^
-NameError: name 'violations' is not defined
 
 
 ## STORED_TOOL_CALL_ARTIFACTS
@@ -726,23 +675,9 @@ Found 0 tool call artifacts:
 ### git diff --name-only
 EXIT CODE: 0
 STDOUT:
-agentic_core/L0_routing/scripts/execute_ssot.py
-agentic_core/L3_orchestration/ptc/builtin_tools.py
-agentic_core/L3_orchestration/ptc/tool_call_store.py
-agentic_core/L3_orchestration/ptc/tool_invoker.py
-tests/unit_min_deps/test_ptc.py
-tools/run_phase11_ptc_evidence.py
-tools/run_static_invariants.py
-
+(empty)
 
 ### git status --porcelain
 EXIT CODE: 0
 STDOUT:
- M agentic_core/L0_routing/scripts/execute_ssot.py
- M agentic_core/L3_orchestration/ptc/builtin_tools.py
- M agentic_core/L3_orchestration/ptc/tool_call_store.py
- M agentic_core/L3_orchestration/ptc/tool_invoker.py
- M tests/unit_min_deps/test_ptc.py
- M tools/run_phase11_ptc_evidence.py
- M tools/run_static_invariants.py
-?? agentic_core/L3_orchestration/ptc/ptc_registry.py
+(empty)
