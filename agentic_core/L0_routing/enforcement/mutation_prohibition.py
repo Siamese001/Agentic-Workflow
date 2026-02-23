@@ -226,6 +226,18 @@ def assert_no_persistent_write(
 
     msg = "|".join(msg_parts)
     logger.error("MUTATION_PROHIBITION DENY: %s", msg)
+
+    # Record prohibition hit for loop detection (RCA Phase 5)
+    if path is not None:
+        try:
+            from agentic_core.L2_execution.tools.write_gateway import (
+                record_prohibition_hit,
+            )
+
+            record_prohibition_hit(layer, op, path)
+        except ImportError:
+            pass  # Gateway not available; skip signal
+
     raise PermissionError(msg)
 
 

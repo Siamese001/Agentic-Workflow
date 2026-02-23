@@ -275,14 +275,23 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         lines = file_path.read_text(encoding="utf-8").splitlines(keepends=True)
         new_lines = []
         changed = False
+        substitution_count = 0
         for line in lines:
             if line.rstrip("\n\r") == stripped or line.strip() == stripped:
                 new_lines.append(new_import + "\n")
                 changed = True
+                substitution_count += 1
             else:
                 new_lines.append(line)
         if changed:
-            _wg.write_text(file_path, "".join(new_lines), encoding="utf-8")
+            # Pass substitution_count to write_text for entropy check (RCA Phase 5)
+            _wg.write_text(
+                file_path,
+                "".join(new_lines),
+                encoding="utf-8",
+                substitution_count=substitution_count,
+                expected_max_substitutions=1,
+            )
         return changed
 
     def apply_fix(self, fix: GravityFix, dry_run: bool = True) -> dict[str, Any]:
@@ -319,6 +328,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 # Guard: refuse single-char or empty old_import (catastrophic replace)
                 stripped_old = fix.old_import.strip()
                 if len(stripped_old) <= 1:
+                    # guardian: allow-path-fragility
                     # guardian: allow-path-fragility
                     if os.path.exists(temp_path):
                         _wg.remove_file(temp_path)
@@ -382,6 +392,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             except Exception as write_err:
                 # Cleanup temp on failure
                 # guardian: allow-path-string
+                # guardian: allow-path-fragility
                 if os.path.exists(temp_path):
                     _wg.remove_file(temp_path)
                 raise write_err

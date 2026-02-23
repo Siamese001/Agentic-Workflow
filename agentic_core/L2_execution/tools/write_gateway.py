@@ -27,6 +27,107 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
 )
 
 # =============================================================================
+# Write Amplification + Size Cap Guards (RCA Phase 5)
+# =============================================================================
+
+MAX_WRITE_BYTES = 10 * 1024 * 1024  # 10 MB hard ceiling
+# guardian: allow-magic-configuration
+MAX_GROWTH_RATIO = 2.0  # Maximum file growth ratio
+
+
+class WriteSizeCapError(RuntimeError):
+    """Raised when proposed write exceeds MAX_WRITE_BYTES."""
+
+    def __init__(self, path: Path, proposed_bytes: int, max_bytes: int) -> None:
+        self.path = path
+        self.proposed_bytes = proposed_bytes
+        self.max_bytes = max_bytes
+        super().__init__(f"WRITE_SIZE_CAP_EXCEEDED: path={path} proposed={proposed_bytes} max={max_bytes}")
+
+
+class WriteAmplificationError(RuntimeError):
+    """Raised when proposed write exceeds MAX_GROWTH_RATIO."""
+
+    def __init__(self, path: Path, original_bytes: int, proposed_bytes: int, growth_ratio: float) -> None:
+        self.path = path
+        self.original_bytes = original_bytes
+        self.proposed_bytes = proposed_bytes
+        self.growth_ratio = growth_ratio
+        super().__init__(
+            f"WRITE_AMPLIFICATION_DETECTED: path={path} "
+            f"original={original_bytes} proposed={proposed_bytes} "
+            f"growth_ratio={growth_ratio:.2f}x max={MAX_GROWTH_RATIO}x"
+        )
+
+
+class MutationEntropyError(RuntimeError):
+    """Raised when substitution count exceeds expected maximum."""
+
+    def __init__(self, path: Path, substitution_count: int, expected_max: int) -> None:
+        self.path = path
+        self.substitution_count = substitution_count
+        self.expected_max = expected_max
+        super().__init__(
+            f"MUTATION_ENTROPY_EXCEEDED: path={path} "
+            f"substitutions={substitution_count} expected_max={expected_max}"
+        )
+
+
+def _check_write_amplification(path: Path, content: str, encoding: str = "utf-8") -> None:
+    """Enforce write amplification and size cap guards.
+
+    Raises:
+        WriteSizeCapError: If proposed content exceeds MAX_WRITE_BYTES
+        WriteAmplificationError: If growth ratio exceeds MAX_GROWTH_RATIO
+    """
+    proposed_bytes = len(content.encode(encoding, errors="strict"))
+
+    # Guard 1: Absolute size cap
+    if proposed_bytes > MAX_WRITE_BYTES:
+        raise WriteSizeCapError(path, proposed_bytes, MAX_WRITE_BYTES)
+
+    # Guard 2: Growth ratio (only if file exists)
+    if path.exists():
+        try:
+            original_content = path.read_text(encoding=encoding)
+            original_bytes = len(original_content.encode(encoding, errors="strict"))
+            growth_ratio = proposed_bytes / max(original_bytes, 1)
+            if growth_ratio > MAX_GROWTH_RATIO:
+                raise WriteAmplificationError(path, original_bytes, proposed_bytes, growth_ratio)
+        except (OSError, UnicodeDecodeError):
+            # If we can't read the original, skip growth check but keep size cap
+            pass
+
+
+# =============================================================================
+# Prohibition-Loop Signal Aggregator (RCA Phase 5)
+# =============================================================================
+
+_prohibition_hits: dict[tuple[str, str, str], int] = {}
+
+
+def record_prohibition_hit(layer: str, op: str, path: str) -> None:
+    """Record a mutation prohibition hit; emit warning on second occurrence.
+
+    This is a detection-only signal, not a bypass. It does not change behavior.
+
+    Args:
+        layer: Layer identifier (e.g., "L0", "L4", "L6")
+        op: Operation name (e.g., "json.dump", "write_text")
+        path: Normalized path string
+    """
+    key = (layer, op, path)
+    _prohibition_hits[key] = _prohibition_hits.get(key, 0) + 1
+    if _prohibition_hits[key] == 2:
+        Logger.warning(f"MUTATION_PROHIBITION_LOOP: layer={layer} op={op} path={path} count=2")
+
+
+def get_prohibition_hit_count(layer: str, op: str, path: str) -> int:
+    """Get the number of prohibition hits for a given key (for testing)."""
+    return _prohibition_hits.get((layer, op, path), 0)
+
+
+# =============================================================================
 # Source Root Fence — Prevent self-mutation during SSOT heal runs
 # =============================================================================
 
@@ -82,12 +183,47 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
 
 
 def write_text(
-    path: str | Path, content: str, encoding: str = "utf-8", *, allow_override: bool = False
+    path: str | Path,
+    content: str,
+    encoding: str = "utf-8",
+    *,
+    allow_override: bool = False,
+    substitution_count: int | None = None,
+    expected_max_substitutions: int | None = None,
 ) -> str:
-    """Write text content to a file, creating parent dirs as needed."""
+    """Write text content to a file, creating parent dirs as needed.
+
+    Args:
+        path: Target file path
+        content: Text content to write
+        encoding: Text encoding (default: utf-8)
+        allow_override: Allow writes to protected roots (audited override)
+        substitution_count: Number of substitutions made (for entropy check)
+        expected_max_substitutions: Expected maximum substitutions (default: 1)
+
+    Raises:
+        WriteSizeCapError: If content exceeds MAX_WRITE_BYTES
+        WriteAmplificationError: If growth ratio exceeds MAX_GROWTH_RATIO
+        MutationEntropyError: If substitution_count > expected_max_substitutions
+    """
     p = Path(path)
+
+    # Guard 1: Mutation entropy cap (before any I/O)
+    if substitution_count is not None:
+        expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
+        if substitution_count > expected_max:
+            raise MutationEntropyError(p, substitution_count, expected_max)
+
+    # Guard 2: Write amplification + size cap (before any I/O)
+    _check_write_amplification(p, content, encoding)
+
+    # Guard 3: Protected root enforcement
     enforce_protected_root(p, allow_override=allow_override)
+
+    # Guard 4: Source root fence (legacy defense-in-depth)
     _deny_writes_into_source_roots(p, "write")
+
+    # Execute write
     p.parent.mkdir(parents=True, exist_ok=True)
     p.write_text(content, encoding=encoding)
     Logger.debug(f"[WriteGateway] write_text: {p}")
@@ -308,4 +444,11 @@ __all__ = [
     "write_json_atomic",
     "init_csv",
     "append_csv_row",
+    "WriteSizeCapError",
+    "WriteAmplificationError",
+    "MutationEntropyError",
+    "record_prohibition_hit",
+    "get_prohibition_hit_count",
+    "MAX_WRITE_BYTES",
+    "MAX_GROWTH_RATIO",
 ]

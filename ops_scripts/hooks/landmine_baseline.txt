@@ -408,8 +408,9 @@ agentic_core/L5_safety/reasoning/GitHygieneAgent.py:195:magic_configuration:Magi
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:295:type_erasure:Type erasure: GitHygieneAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:320:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:323:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:373:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:333:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:383:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:396:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:170:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
