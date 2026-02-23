@@ -37,6 +37,7 @@
             "C:\\Git\\Agentic-Workflow"
         ],
         "files.watcherExclude": {
+            "**/.git/**": true,
             "**/.git/objects/**": true,
             "**/.git/subtree-cache/**": true,
             "**/node_modules/**": true,
@@ -44,7 +45,12 @@
             "**/__pycache__/**": true
         },
         "search.exclude": {
-            "**/.git/**": true
+            "**/.git/**": true,
+            ".git/**": true
+        },
+        "files.exclude": {
+            "**/.git": true,
+            ".git": true
         },
         "windsurf.codeIndex.priorityPatterns": [
             "**/agentic_core/**/*.py",
@@ -53,11 +59,13 @@
             "**/*.py",
             "**/*.md"
         ],
+        "windsurf.codeIndex.excludePatterns": [
+            ".git/**",
+            "**/.git/**"
+        ],
         "windsurf.codeIndex.excludeGitHistory": true,
         "windsurf.semanticSearch.excludeGitCommits": true,
-        "files.exclude": {
-            "**/.git": true
-        }
+        "windsurf.symbolIndex.excludeGitObjects": true
     },
     "extensions": {
         "recommendations": [
