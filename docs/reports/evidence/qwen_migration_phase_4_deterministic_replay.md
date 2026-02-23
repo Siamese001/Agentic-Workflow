@@ -7,7 +7,7 @@ Phase 4 of Qwen vLLM migration: seal deterministic replay by adding infrastructu
 d298ffc6f0a5131ec3747c505a8403ffe863e0a6
 
 ## EVIDENCE_COMMIT
-PENDING
+173e3f77521c7da1fdbb3dd4b0f9c11b0a51ad20
 
 ## FILES_CHANGED_CODE
 ```
@@ -17,6 +17,12 @@ agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py
 agentic_core/L2_execution/types/vllm_replay_validator.py
 tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
 tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py
+```
+
+## FILES_CHANGED_EVIDENCE
+```
+docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md
+tools/evidence/qwen_migration_phase4_evidence_runner.py
 ```
 
 ## INSPECTED_FILES
@@ -49,7 +55,7 @@ tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::t
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 6 passed in 0.05s ==============================
+============================== 6 passed in 0.04s ==============================
 ```
 
 ## Replay Validator Tests (WAVE 3)
@@ -127,9 +133,7 @@ OK: replay_hash changes on fingerprint change confirmed
 
 ## Git Status
 ```
-?? docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md
 ?? test_evidence.md
-?? tools/evidence/qwen_migration_phase4_evidence_runner.py
 ```
 
 ## Runner Self-Check Proof
