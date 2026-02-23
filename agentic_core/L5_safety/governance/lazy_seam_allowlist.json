@@ -2,6 +2,116 @@
   "description": "Lazy Seam Allowlist - Phase 4 Option A (Phase 3B universe)",
   "seams": [
     {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+      "function_name": "_get_enforce_healer_pipe_order",
+      "imported_modules": [
+        "agentic_core.L2_execution.enforcement.healer_pipe_order"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+      "function_name": "_get_guardian_decision",
+      "imported_modules": [
+        "agentic_core.L5_safety.reasoning.guardian_decision"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\execution_gateway.py",
+      "function_name": "_get_manifest_hash_validator",
+      "imported_modules": [
+        "agentic_core.L2_execution.enforcement.manifest_hash_validator"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
+      "function_name": "_get_routing_config_class",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\escalation_router.py",
+      "function_name": "_get_violation_event_store_class",
+      "imported_modules": [
+        "agentic_core.L4_state.enforcement.violation_event_store"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
+      "function_name": "_get_prior_detection_signal",
+      "imported_modules": [
+        "agentic_core.L4_state.types.detection_signal_store"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
+      "function_name": "_get_routing_config_and_active",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\meta_control\\meta_apply.py",
+      "function_name": "_get_CapabilityTokenArtifact",
+      "imported_modules": [
+        "agentic_core.L2_execution.types.capability_token_types"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
+      "function_name": "_get_checkpoint_manager",
+      "imported_modules": [
+        "agentic_core.L4_state.reasoning.CheckpointManagerAgent"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\colors.py",
+      "function_name": "_get_orchestrator_class",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.Orchestrator"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\coverage.py",
+      "function_name": "_get_convergence_engine",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.reasoning.mission_controller_convergence"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 function-scoped lazy import to avoid circular dependency at module level"
+    },
+    {
       "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
       "function_name": "_get_l5_agent_roster",
       "imported_modules": [
@@ -572,5 +682,5 @@
       "justification": "Plugin registry or dynamic dispatch boundary"
     }
   ],
-  "total_seams": 57
+  "total_seams": 68
 }
