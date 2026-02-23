@@ -4,7 +4,7 @@ Test topology hard lock — enforces pytest collection boundaries.
 Enforced invariants:
     1. pytest.ini has [pytest] header (not [tool:pytest]).
     2. testpaths includes ONLY tests/unit_min_deps, tests/integration/agentic_core,
-       tests/enforcement, and tests/governance.
+       tests/agentic_core, tests/enforcement, and tests/governance.
     3. norecursedirs includes apps_rg, apps_lic, apps_shared, ops_scripts.
     4. There is NO root-level conftest.py.
 """
@@ -24,6 +24,7 @@ PYTEST_INI = ROOT / "pytest.ini"
 REQUIRED_TESTPATHS = {
     "tests/unit_min_deps",
     "tests/integration/agentic_core",
+    "tests/agentic_core",
     "tests/enforcement",
     "tests/governance",
 }
