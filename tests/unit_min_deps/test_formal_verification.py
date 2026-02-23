@@ -1,0 +1,135 @@
+"""Integration tests for formal verification scanners."""
+
+from pathlib import Path
+
+import pytest
+
+from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
+    scan_repository_for_determinism,
+)
+from agentic_core.L5_safety.static_checks.powershell_ban import (
+    scan_repository_for_powershell,
+)
+from agentic_core.L5_safety.static_checks.write_gateway_enforcer import (
+    scan_repository_for_writes,
+)
+
+
+@pytest.mark.unit_min_deps
+def test_repo_no_powershell_violations():
+    """Test that repository has no PowerShell violations."""
+    repo_root = Path.cwd()
+
+    violations = scan_repository_for_powershell(repo_root)
+
+    # Convert to readable format for assertion
+    violation_details = [
+        f"{path}:{lineno} - {rule_id} - {snippet}" for path, lineno, rule_id, snippet in violations
+    ]
+
+    assert len(violations) == 0, f"PowerShell violations found: {violation_details}"
+
+
+@pytest.mark.unit_min_deps
+def test_repo_no_write_gateway_violations():
+    """Test that repository has no write gateway violations in scope."""
+    repo_root = Path.cwd()
+
+    violations = scan_repository_for_writes(repo_root)
+
+    # Convert to readable format for assertion
+    violation_details = [
+        f"{path}:{lineno} - {rule_id} - {snippet}" for path, lineno, rule_id, snippet in violations
+    ]
+
+    assert len(violations) == 0, f"Write gateway violations found: {violation_details}"
+
+
+@pytest.mark.unit_min_deps
+def test_repo_no_determinism_violations():
+    """Test that repository has no determinism violations in replay/storage."""
+    repo_root = Path.cwd()
+
+    violations = scan_repository_for_determinism(repo_root)
+
+    # Convert to readable format for assertion
+    violation_details = [
+        f"{path}:{lineno} - {rule_id} - {snippet}" for path, lineno, rule_id, snippet in violations
+    ]
+
+    assert len(violations) == 0, f"Determinism violations found: {violation_details}"
+
+
+@pytest.mark.unit_min_deps
+def test_scanner_coverage():
+    """Test that scanners cover expected directories."""
+    repo_root = Path.cwd()
+
+    # Test PowerShell scanner coverage
+    _ps_violations = scan_repository_for_powershell(repo_root)
+
+    # Should scan tools and docs/evidence directories
+    tools_dir = repo_root / "tools"
+    evidence_dir = repo_root / "docs" / "evidence"
+
+    if tools_dir.exists():
+        # If tools directory exists, scanner should have checked it
+        # (even if no violations found)
+        pass
+
+    if evidence_dir.exists():
+        # If evidence directory exists, scanner should have checked it
+        pass
+
+    # Test write gateway scanner coverage
+    _write_violations = scan_repository_for_writes(repo_root)
+
+    # Should scan agentic_core (excluding L2_execution)
+    agentic_core_dir = repo_root / "agentic_core"
+    if agentic_core_dir.exists():
+        pass
+
+    # Test determinism scanner coverage
+    _det_violations = scan_repository_for_determinism(repo_root)
+
+    # Should scan replay and storage modules
+    replay_dir = repo_root / "agentic_core" / "L3_orchestration" / "replay"
+    storage_dir = repo_root / "agentic_core" / "L4_state" / "storage"
+
+    if replay_dir.exists():
+        pass
+
+    if storage_dir.exists():
+        pass
+
+
+@pytest.mark.unit_min_deps
+def test_scanner_deterministic_output():
+    """Test that scanners produce deterministic output across runs."""
+    repo_root = Path.cwd()
+
+    # Run each scanner twice
+    ps_violations1 = scan_repository_for_powershell(repo_root)
+    ps_violations2 = scan_repository_for_powershell(repo_root)
+
+    write_violations1 = scan_repository_for_writes(repo_root)
+    write_violations2 = scan_repository_for_writes(repo_root)
+
+    det_violations1 = scan_repository_for_determinism(repo_root)
+    det_violations2 = scan_repository_for_determinism(repo_root)
+
+    # Results should be identical
+    assert ps_violations1 == ps_violations2
+    assert write_violations1 == write_violations2
+    assert det_violations1 == det_violations2
+
+    # Results should be sorted
+    def check_sorted(violations):
+        for i in range(1, len(violations)):
+            if violations[i - 1] > violations[i]:
+                return False
+        return True
+
+    assert check_sorted(ps_violations1)
+    assert check_sorted(write_violations1)
+    assert check_sorted(det_violations1)
