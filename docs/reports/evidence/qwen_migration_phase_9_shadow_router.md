@@ -7,7 +7,7 @@ Phase 9 implements a shadow router classifier that observes L0 routing decisions
 fc5c1e3d14a7a52bca1a84e513b91ec1e32cd667
 
 ## EVIDENCE_COMMIT
-b7c3bd4fc6ec2fbcafa094df2e747bfa036625a0
+9cfe4f189cee3312de65bd875f6f70f4ba9f5d5d
 
 ## FILES_CHANGED_CODE
 agentic_core/L0_routing/types/shadow_routing_types.py
