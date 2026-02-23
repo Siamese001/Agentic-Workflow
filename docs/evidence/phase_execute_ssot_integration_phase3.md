@@ -6,7 +6,7 @@ Validate that Phase 1+2 fixes (GravityLeakRepairAgent circuit breaker + RuntimeS
 
 ## CODE_COMMIT
 
-a4c387ff40f1109771415296a8c88016c12774af
+a06039822f30e1982f752b21e8bd542cad816e89
 
 ## EVIDENCE_COMMIT
 
@@ -15,7 +15,7 @@ PENDING
 ## Environment
 
 - Python: `Python 3.12.10`
-- git HEAD: `a4c387ff40f1109771415296a8c88016c12774af`
+- git HEAD: `a06039822f30e1982f752b21e8bd542cad816e89`
 - LongPaths: `LongPathsEnabled registry value = 0`
 - **BYPASS RECORDED: AGENTIC_BYPASS_LONGPATHS_CHECK=1 set because Windows LongPathsEnabled registry value is 0 (not active). This bypass is documented in execute_ssot.py and is the OS-correct workaround for this environment.**
 
