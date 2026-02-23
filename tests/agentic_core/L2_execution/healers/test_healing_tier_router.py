@@ -14,6 +14,8 @@ from pathlib import Path
 
 import pytest
 
+pytestmark = pytest.mark.unit_min_deps
+
 from agentic_core.L2_execution.healers.healing_tier_config import (
     HealingTierConfig,
     load_default_healing_tier_config,
