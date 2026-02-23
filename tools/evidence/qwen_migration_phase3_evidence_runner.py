@@ -25,9 +25,12 @@ EVIDENCE_PATH = Path(
 
 SCOPE_FILES = [
     "agentic_core/L2_execution/types/vllm_gateway_integration.py",
+    "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
+    "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
     "tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py",
     "tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py",
     "tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py",
+    "tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py",
 ]
 
 ANSI_RE = re.compile(r"\x1b\[[0-9;]*[mGKHF]")
@@ -165,6 +168,34 @@ def main() -> None:
         sys.exit(1)
     h("")
 
+    # WAVE 1 (3.1) — Gateway adapter seam tests
+    h("## Gateway Adapter Seam Tests (WAVE 1 Phase 3.1)")
+    out, rc = run([
+        sys.executable, "-m", "pytest", "-q", "--color=no",
+        "tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py",
+    ])
+    fence(out)
+    if rc != 0:
+        print("FAIL: test_vllm_gateway_adapter.py")
+        sys.exit(1)
+    h("")
+
+    # Seam proof
+    h("## Seam Proof: SovereignLLMGateway Uses VLLMGatewayAdapter")
+    seam_script = "; ".join([
+        "from agentic_core.L2_execution.types.vllm_gateway_adapter import emit_seam_proof, SEAM_PROOF_MARKER",
+        "print(emit_seam_proof())",
+        "assert 'SovereignLLMGateway' in SEAM_PROOF_MARKER",
+        "assert 'evaluate_gateway_call' in SEAM_PROOF_MARKER",
+        "print('OK: seam proof verified')",
+    ])
+    out, rc = run([sys.executable, "-c", seam_script])
+    fence(out)
+    if rc != 0:
+        print("FAIL: seam proof")
+        sys.exit(1)
+    h("")
+
     # Token budget fallback proof
     h("## Token Budget Fallback Proof")
     tb_script = "; ".join([
@@ -247,7 +278,7 @@ def main() -> None:
         sys.exit(1)
     h("")
 
-    # Local success telemetry proof
+    # Local success telemetry proof (shows local_request.max_tokens + max_model_len)
     h("## Local Success Telemetry Proof")
     ls_script = "; ".join([
         "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
@@ -256,16 +287,19 @@ def main() -> None:
         "reg = VLLMCircuitBreakerRegistry()",
         "result = evaluate_gateway_call('hello world', TaskClass.PATCH_SUGGESTION.value, 'low', ctrl, reg)",
         "t = result.telemetry",
-        "d = t.as_dict()",
+        "lr = result.local_request",
         "print(f'route_to_gemini={result.route_to_gemini}')",
         "print(f'provider_selected={t.provider_selected}')",
         "print(f'model_tier={t.model_tier}')",
         "print(f'token_budget_ok={t.token_budget_ok}')",
         "print(f'failure_type={t.failure_type}')",
-        "print(f'queue_full={t.queue_full}')",
-        "print(f'breaker_state={t.breaker_state}')",
-        "print(f'telemetry_keys={list(d.keys())}')",
-        "print('OK: local success telemetry confirmed')",
+        "print(f'local_request.max_tokens={lr.max_tokens}')",
+        "print(f'local_request.max_model_len={lr.max_model_len}')",
+        "print(f'local_request.temperature={lr.temperature}')",
+        "print(f'local_request.profile_name={lr.profile_name}')",
+        "assert lr.max_tokens is not None and lr.max_tokens > 0, 'max_tokens must be explicit'",
+        "assert lr.max_model_len > 0, 'max_model_len must come from profile'",
+        "print('OK: local success telemetry confirmed (explicit max_tokens + profile max_model_len)')",
     ])
     out, rc = run([sys.executable, "-c", ls_script])
     fence(out)
@@ -287,10 +321,13 @@ def main() -> None:
     fence("\n".join(selfcheck_lines))
     h("")
 
-    # Git status
+    # Git status (porcelain=v1 with explicit clean marker)
     h("## Git Status")
-    out, _ = run(["git", "status", "--short"], required=False)
-    fence(out)
+    out, _ = run(["git", "status", "--porcelain=v1"], required=False)
+    if out.strip():
+        fence(out)
+    else:
+        fence("(clean)")
     h("")
 
     # Write evidence file
