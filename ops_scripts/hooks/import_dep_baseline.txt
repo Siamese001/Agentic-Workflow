@@ -255,10 +255,10 @@ C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\spiffe_validator.py
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\spiffe_validator.py: Line 25: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\hybrid_retriever_config.py: Line 18: Module 'rank_bm25' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\hybrid_retriever_config.py: Line 198: Module 'agentic_core.L0_routing.scripts.sovereign_ingestion_mission' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 334: 'injection_scan_util' not found in module 'agentic_core.prompt_governance.security'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 366: 'injection_scan_util' not found in module 'agentic_core.prompt_governance.security'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\dashboard_e2_e_pipeline.py: Line 22: Module 'agentic_core.utils.security' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\dashboard_e2_e_pipeline_enforcer.py: Line 22: Module 'agentic_core.utils.security' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manager.py: Line 16: Module 'agentic_core.L2_execution.types.firecracker_manager_types' not found
@@ -2578,16 +2578,28 @@ C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_nested_lcd_preventio
 C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_nested_lcd_prevention.py: Line 12: 'validate_no_nested_lcd' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
 C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_scripts_purity_rules.py: Line 16: 'CORE_SUBFOLDER_MAP' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\test_evidence_contract_v2.py: Line 11: Module 'evidence_contract_v2' not found
-C:\Git\Agentic-Workflow\tests\unit_min_deps\test_ptc.py: Line 386: 'FileSystemStore' not found in module 'agentic_core.L3_orchestration.replay.deterministic_replay'
-C:\Git\Agentic-Workflow\tests\unit_min_deps\test_ptc.py: Line 427: 'FileSystemStore' not found in module 'agentic_core.L3_orchestration.replay.deterministic_replay'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 145: 'ast_fuzzy' not found in module 'agentic_core.utils'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 161: Module 'agentic_core.utils.ast_fuzzy' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase02_consolidated_evidence_runner.py: Line 15: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase03_04_consolidated_evidence_runner.py: Line 15: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase05_06_consolidated_evidence_runner.py: Line 18: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase07_08_consolidated_evidence_runner.py: Line 18: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase_09_10_consolidated_evidence_runner.py: Line 18: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase_10c_11_12_consolidated_evidence_runner.py: Line 22: Module 'evidence_contract_v2' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase7_replay_tamper_roundtrip_runner.py: Line 55: Module 'test_vllm_replay_tamper_roundtrip' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase7_replay_tamper_roundtrip_runner.py: Line 55: Module 'test_vllm_replay_tamper_roundtrip' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase7_replay_tamper_roundtrip_runner.py: Line 55: Module 'test_vllm_replay_tamper_roundtrip' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase8_canonical_payload_lock_runner.py: Line 67: Module 'test_vllm_canonical_payload_lock' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase8_canonical_payload_lock_runner.py: Line 67: Module 'test_vllm_canonical_payload_lock' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase8_canonical_payload_lock_runner.py: Line 67: Module 'test_vllm_canonical_payload_lock' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase9_shadow_router_runner.py: Line 87: Module 'test_shadow_router_classifier' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase9_shadow_router_runner.py: Line 87: Module 'test_shadow_router_classifier' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase9_shadow_router_runner.py: Line 87: Module 'test_shadow_router_classifier' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase9_shadow_router_runner.py: Line 87: Module 'test_shadow_router_classifier' not found
+C:\Git\Agentic-Workflow\tools\evidence\qwen_migration_phase9_shadow_router_runner.py: Line 87: Module 'test_shadow_router_classifier' not found
 C:\Git\Agentic-Workflow\tools\rag_reranker_shim.py: Line 27: Module 'torch' not found
 C:\Git\Agentic-Workflow\tools\rag_reranker_shim.py: Line 32: Module 'FlagEmbedding' not found
-C:\Git\Agentic-Workflow\tools\run_phase11_ptc_evidence.py: Line 104: 'FileSystemStore' not found in module 'agentic_core.L3_orchestration.replay.deterministic_replay'
