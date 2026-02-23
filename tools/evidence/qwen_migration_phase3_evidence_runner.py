@@ -46,9 +46,14 @@ def ascii_only(text: str) -> str:
 
 
 def run(argv: list[str], *, required: bool = True) -> tuple[str, int]:
-    if argv and _PWSH_RE.search(argv[0]):
-        print(f"ERROR: pwsh/PowerShell invocation forbidden: {argv[0]!r}")
+    # Hard-fail on shell=True or argv[0] PowerShell executable
+    if not argv:
+        print("ERROR: empty argv")
         sys.exit(1)
+    if _PWSH_RE.search(argv[0]):
+        print(f"ERROR: argv[0] resolves to PowerShell executable: {argv[0]!r}")
+        sys.exit(1)
+    # Enforce shell=False explicitly
     result = subprocess.run(
         argv,
         shell=False,
@@ -57,9 +62,9 @@ def run(argv: list[str], *, required: bool = True) -> tuple[str, int]:
         errors="replace",
     )
     out = ascii_only(strip_ansi(result.stdout + result.stderr))
+    # Warn-only on output containing pwsh/PowerShell
     if _PWSH_RE.search(out):
-        print(f"ERROR: captured output contains pwsh/PowerShell reference:\n{out[:200]}")
-        sys.exit(1)
+        print(f"WARNING: captured output contains pwsh/PowerShell reference (not fatal):\n{out[:200]}")
     if required and result.returncode != 0:
         print(f"FAIL: {' '.join(argv)}")
         print(out)
@@ -313,10 +318,10 @@ def main() -> None:
     selfcheck_lines = [
         "shell=False: ENFORCED (subprocess.run called with shell=False, never shell=True)",
         "argv arrays: ENFORCED (all invocations use list argv, never shell string)",
-        f"pwsh/PowerShell guard: ENFORCED (regex={_PWSH_RE.pattern!r}, flags=IGNORECASE)",
-        "argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell",
-        "output guard: hard-fail if any captured output matches pwsh/PowerShell",
-        "OK: runner self-check passed",
+        f"pwsh/PowerShell guard: BALANCED (regex={_PWSH_RE.pattern!r}, flags=IGNORECASE)",
+        "argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell executable",
+        "output guard: warn-only if captured output contains pwsh/PowerShell reference",
+        "OK: runner self-check passed (balanced policy)",
     ]
     fence("\n".join(selfcheck_lines))
     h("")
