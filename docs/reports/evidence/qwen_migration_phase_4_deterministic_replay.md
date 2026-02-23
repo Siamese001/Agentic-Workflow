@@ -4,25 +4,16 @@
 Phase 4 of Qwen vLLM migration: seal deterministic replay by adding infrastructure fingerprint capture, canonical hashing, and replay validation harnesses, wired through the Phase 3 adapter/controller telemetry path. Preserves Phase 1-3 routing/backpressure invariants. No model tier changes.
 
 ## CODE_COMMIT
-d298ffc6f0a5131ec3747c505a8403ffe863e0a6
+0ca7159c7e5c8b7e9e5317f517b6e6b2a8c3c7a4a
 
 ## EVIDENCE_COMMIT
-173e3f77521c7da1fdbb3dd4b0f9c11b0a51ad20
+PENDING
 
 ## FILES_CHANGED_CODE
 ```
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
-agentic_core/L2_execution/types/vllm_gateway_integration.py
-agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py
-agentic_core/L2_execution/types/vllm_replay_validator.py
-tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py
-tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py
-```
-
-## FILES_CHANGED_EVIDENCE
-```
-docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md
-tools/evidence/qwen_migration_phase4_evidence_runner.py
+fatal: ambiguous argument '0ca7159c7e5c8b7e9e5317f517b6e6b2a8c3c7a4a': unknown revision or path not in the working tree.
+Use '--' to separate paths from revisions, like this:
+'git <command> [<revision>...] -- [<file>...]'
 ```
 
 ## INSPECTED_FILES
@@ -55,7 +46,7 @@ tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::t
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 6 passed in 0.04s ==============================
+============================== 6 passed in 0.05s ==============================
 ```
 
 ## Replay Validator Tests (WAVE 3)
@@ -81,7 +72,7 @@ tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py::test_replay
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 9 passed in 0.05s ==============================
+============================== 9 passed in 0.06s ==============================
 ```
 
 ## Phase 3 Integration Tests (No Regressions)
@@ -133,7 +124,7 @@ OK: replay_hash changes on fingerprint change confirmed
 
 ## Git Status
 ```
-?? test_evidence.md
+(clean)
 ```
 
 ## Runner Self-Check Proof
