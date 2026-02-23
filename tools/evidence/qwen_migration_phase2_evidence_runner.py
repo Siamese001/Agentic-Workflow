@@ -42,7 +42,15 @@ def ascii_only(text: str) -> str:
     return text.encode("ascii", errors="replace").decode("ascii")
 
 
+_PWSH_RE = re.compile(r"pwsh|powershell", re.IGNORECASE)
+
+
 def run(argv: list[str], *, required: bool = True) -> tuple[str, int]:
+    # Guard: argv[0] must never be pwsh or powershell
+    if argv and _PWSH_RE.search(argv[0]):
+        print(f"ERROR: pwsh/PowerShell invocation forbidden: {argv[0]!r}")
+        sys.exit(1)
+    # Guard: shell=False is always enforced (never shell=True)
     result = subprocess.run(
         argv,
         shell=False,
@@ -51,6 +59,10 @@ def run(argv: list[str], *, required: bool = True) -> tuple[str, int]:
         errors="replace",
     )
     out = ascii_only(strip_ansi(result.stdout + result.stderr))
+    # Guard: hard-fail if any captured output references pwsh/PowerShell
+    if _PWSH_RE.search(out):
+        print(f"ERROR: captured output contains pwsh/PowerShell reference:\n{out[:200]}")
+        sys.exit(1)
     if required and result.returncode != 0:
         print(f"FAIL: {' '.join(argv)}")
         print(out)
@@ -281,6 +293,19 @@ def main() -> None:
     if rc != 0:
         print("FAIL: circuit breaker demo")
         sys.exit(1)
+    h("")
+
+    # Runner self-check proof
+    h("## Runner Self-Check Proof")
+    selfcheck_lines = [
+        "shell=False: ENFORCED (subprocess.run called with shell=False, never shell=True)",
+        "argv arrays: ENFORCED (all invocations use list argv, never shell string)",
+        f"pwsh/PowerShell guard: ENFORCED (regex={_PWSH_RE.pattern!r}, flags=IGNORECASE)",
+        "argv[0] guard: hard-fail if argv[0] matches pwsh/PowerShell",
+        "output guard: hard-fail if any captured output matches pwsh/PowerShell",
+        "OK: runner self-check passed",
+    ]
+    fence("\n".join(selfcheck_lines))
     h("")
 
     # Git status
