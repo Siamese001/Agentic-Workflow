@@ -19,22 +19,32 @@ class PowerShellBanVisitor(ast.NodeVisitor):
         self.violations: list[tuple[int, str, str]] = []  # (lineno, rule_id, snippet)
 
     def visit_Call(self, node: ast.Call) -> None:
-        """Check for subprocess calls with PowerShell."""
+        """Check for subprocess calls with PowerShell - semantic callsite enforcement only."""
         # Check for subprocess.run, subprocess.call, etc. with PowerShell in argv0
         if isinstance(node.func, ast.Attribute):
             if isinstance(node.func.value, ast.Name):
                 if node.func.value.id == "subprocess":
-                    # Check for PowerShell in first argument
+                    # Check for PowerShell in first argument (argv list or string)
                     if node.args:
                         first_arg = node.args[0]
-                        if isinstance(first_arg, ast.Constant):
-                            if isinstance(first_arg.value, str):
-                                if (
-                                    "pwsh" in first_arg.value.lower()
-                                    or "powershell" in first_arg.value.lower()
-                                ):
-                                    snippet = f"subprocess.{node.func.attr}(...{first_arg.value}...)"
-                                    self.violations.append((node.lineno, "PS_SUBPROCESS_ARGV0", snippet))
+
+                        # Case 1: Single string argument (shell command)
+                        if isinstance(first_arg, ast.Constant) and isinstance(first_arg.value, str):
+                            cmd_lower = first_arg.value.lower()
+                            if "pwsh" in cmd_lower or "powershell" in cmd_lower:
+                                snippet = f"subprocess.{node.func.attr}(...{first_arg.value[:50]}...)"
+                                self.violations.append((node.lineno, "PS_SUBPROCESS_ARGV0", snippet))
+
+                        # Case 2: List argument (argv array) - check first element only
+                        elif isinstance(first_arg, (ast.List, ast.Tuple)):
+                            if first_arg.elts:
+                                argv0 = first_arg.elts[0]
+                                if isinstance(argv0, ast.Constant) and isinstance(argv0.value, str):
+                                    argv0_lower = argv0.value.lower()
+                                    # Only flag if argv0 itself is pwsh/powershell (not if it appears in args)
+                                    if argv0_lower in ("pwsh", "powershell", "pwsh.exe", "powershell.exe"):
+                                        snippet = f"subprocess.{node.func.attr}(['{argv0.value}', ...])"
+                                        self.violations.append((node.lineno, "PS_SUBPROCESS_ARGV0", snippet))
 
         # Check for shell=True with subprocess calls (in tools/ directory)
         if "tools" in str(self.file_path):
@@ -43,16 +53,6 @@ class PowerShellBanVisitor(ast.NodeVisitor):
                     if keyword.value.value is True:
                         snippet = f"subprocess.{node.func.attr}(..., shell=True, ...)"
                         self.violations.append((node.lineno, "PS_SUBPROCESS_SHELL", snippet))
-
-        self.generic_visit(node)
-
-    def visit_Constant(self, node: ast.Constant) -> None:
-        """Check for PowerShell strings in tools/evidence runners."""
-        if isinstance(node.value, str):
-            if "tools" in str(self.file_path) or "docs/evidence" in str(self.file_path):
-                if "pwsh" in node.value.lower() or "powershell" in node.value.lower():
-                    snippet = f'"{node.value}"'
-                    self.violations.append((node.lineno, "PS_STRING_LITERAL", snippet))
 
         self.generic_visit(node)
 

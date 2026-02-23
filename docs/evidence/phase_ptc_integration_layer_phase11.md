@@ -1,7 +1,7 @@
 # Phase 11 Programmatic Tool Calling Evidence
 
 ## CODE_COMMIT
-8a7e7bd38b8667ec5bb73bad31c6be0093468faf
+2c584b451e5a04ea4cacd58965cd2dd4307eb71f
 
 ## PYTHON_VERSION
 Python 3.12.10
@@ -13,7 +13,7 @@ EXIT CODE: 1
 STDOUT:
 === Static Invariants Checker ===
 
-Loaded baseline with 1461 existing violations
+Loaded baseline with 1462 existing violations
 
 1. Scanning for PowerShell usage...
 FAIL: PowerShell Ban: 63 total violations found (63 new)
@@ -457,16 +457,16 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-40.20s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+38.64s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
 0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 0.18s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
-0.09s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
+0.12s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
-0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
+0.02s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
 (3 durations < 0.005s hidden.  Use -vv to show these durations.)
-[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 40.97s[0m[33m ===============[0m
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 39.70s[0m[33m ===============[0m
 
 
 ## PTC_TEST_RUN_2
@@ -559,17 +559,16 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-38.56s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+39.18s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
 0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
-0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
+0.18s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.09s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
 0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
-0.01s call     tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
 
-(2 durations < 0.005s hidden.  Use -vv to show these durations.)
-[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 39.35s[0m[33m ===============[0m
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 39.95s[0m[33m ===============[0m
 
 
 ## EXECUTE_SSOT_PTC_PLAN
@@ -618,13 +617,20 @@ PHASE 5: Certification
     # final aggregation and certification
 
 === PROGRAMMATIC TOOL CALLING ===
-{"artifact_ref":{"kind":"tool_call","logical_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","path":"tool_call\\55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9\\v0001.json","version":1},"summary":"PTC executed 1 tool calls for plan context","tool_calls":[{"args":{"expr":"2 + 3 * 4"},"call_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","exit_code":0,"stderr":"","stdout":"14","tool_id":"expr_eval","truncated":false}]}
+{"artifact_ref":{"kind":"tool_call","logical_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","path":"tool_call\\55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9\\v0008.json","version":8},"summary":"PTC executed 1 tool calls for plan context","tool_calls":[{"args":{"expr":"2 + 3 * 4"},"call_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","exit_code":0,"stderr":"","stdout":"14","tool_id":"expr_eval","truncated":false}]}
 
 
 
 ## STORED_TOOL_CALL_ARTIFACTS
 
-Found 1 tool call artifacts:
+Found 8 tool call artifacts:
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
+  - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
   - expr_eval/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9
 
 ## SCOPE_VERIFICATION
@@ -632,20 +638,17 @@ Found 1 tool call artifacts:
 ### git diff --name-only
 EXIT CODE: 0
 STDOUT:
-agentic_core/L0_routing/scripts/execute_ssot.py
-agentic_core/L3_orchestration/ptc/tool_call_store.py
-agentic_core/L4_state/storage/filesystem_store.py
-tests/unit_min_deps/test_ptc.py
-tools/run_static_invariants.py
-
+(empty)
 
 ### git status --porcelain
 EXIT CODE: 0
 STDOUT:
- M agentic_core/L0_routing/scripts/execute_ssot.py
- M agentic_core/L3_orchestration/ptc/tool_call_store.py
- M agentic_core/L4_state/storage/filesystem_store.py
- M tests/unit_min_deps/test_ptc.py
- M tools/run_static_invariants.py
-?? docs/reports/plans/DEGRADATION_MATRIX.md
-?? docs/store/
+?? docs/reports/plans/POLICY_EPOCH_SPEC.md
+?? docs/reports/plans/REPLAY_DETERMINISM_RULES.md
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0002.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0003.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0004.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0005.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0006.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0007.json
+?? docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0008.json
