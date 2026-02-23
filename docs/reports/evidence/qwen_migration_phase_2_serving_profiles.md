@@ -7,7 +7,7 @@ Phase 2 of Qwen vLLM migration: authoritative serving profiles for 32GB GPU, KV-
 9145d07ba71a421330fa38723ed0dceab3417fd9
 
 ## EVIDENCE_COMMIT
-PENDING
+9eef8e801073be2dec4279b042d9effe56d3103f
 
 ## FILES_CHANGED_CODE
 ```
@@ -22,6 +22,11 @@ tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py
 tests/unit_min_deps/test_testpaths_contract.py
 tools/evidence/qwen_migration_phase2_evidence_runner.py
+```
+
+## FILES_CHANGED_EVIDENCE
+```
+docs/reports/evidence/qwen_migration_phase_2_serving_profiles.md
 ```
 
 ## INSPECTED_FILES
@@ -107,7 +112,7 @@ tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.p
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 14 passed in 0.05s ==============================
+============================= 14 passed in 0.04s ==============================
 ```
 
 ## Queue Overflow Fallback Tests (WAVE 3)
@@ -191,7 +196,7 @@ tests/agentic_core/L2_execution/types/test_circuit_breaker_respects_backpressure
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 14 passed in 0.04s ==============================
+============================= 14 passed in 0.05s ==============================
 ```
 
 ## Stress Test Demo
