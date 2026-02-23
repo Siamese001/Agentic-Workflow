@@ -6,63 +6,13 @@
 - Deterministic tool-call storage outside repo by default
 
 ## CODE_COMMIT
-6ddfc1e4f1a0f4383673fffdab54ecb42d82cec4
+21ebdd746e546b4d0a512ba6ded574c8f0e5bfdc
 
 ## EVIDENCE_COMMIT
 PENDING
 
 ## FILES_CHANGED_CODE
-docs/reports/plans/AUTHORITY_HIERARCHY_INVARIANTS.md
-docs/reports/plans/DEGRADATION_MATRIX.md
-docs/reports/plans/HEALER_RETRY_HARDENING_SPEC.md
-docs/reports/plans/L0_DECOMPOSITION_SPEC.md
-docs/reports/plans/L6_DRIFT_SAFEGUARDS_SPEC.md
-docs/reports/plans/LATENCY_BUDGET_SLA_SPEC.md
-docs/reports/plans/POLICY_EPOCH_SPEC.md
-docs/reports/plans/PTC_SCOPE_LOCK_SPEC.md
-docs/reports/plans/REPLAY_DETERMINISM_RULES.md
-docs/reports/plans/UWG_ISOLATION_SPEC.md
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0001.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0002.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0003.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0004.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0005.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0006.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0007.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0008.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0009.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0010.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0011.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0012.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0013.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0014.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0015.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0016.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0017.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0018.json
-docs/store/docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0019.json
-docs/store/docs/store/tool_call/test0/v0001.json
-docs/store/docs/store/tool_call/test1/v0001.json
-docs/store/docs/store/tool_call/test123/v0001.json
-docs/store/docs/store/tool_call/test2/v0001.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0001.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0002.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0003.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0004.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0005.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0006.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0007.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0008.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0009.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0010.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0011.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0012.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0013.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0014.json
-docs/store/tool_call/55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9/v0015.json
-ops_scripts/hooks/landmine_baseline.txt
-tools/run_static_invariants.py
-tools/seed_direct_writes_baseline.py
+.gitignore
 
 ## Static Invariants Check
 $ python tools/run_static_invariants.py
@@ -174,16 +124,16 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-39.25s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
-0.23s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+44.91s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 0.18s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
-0.09s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
+0.12s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
-0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
+0.02s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
 (3 durations < 0.005s hidden.  Use -vv to show these durations.)
-[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 40.05s[0m[33m ===============[0m
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 46.00s[0m[33m ===============[0m
 
 
 ## PTC Tests (Run 2 - Determinism Check)
@@ -273,16 +223,16 @@ Errors: 0
 All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-39.50s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
-0.22s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+39.41s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 0.18s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.09s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
-0.08s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
+0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
 0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
 (3 durations < 0.005s hidden.  Use -vv to show these durations.)
-[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 40.29s[0m[33m ===============[0m
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m47 warnings[0m[33m in 40.19s[0m[33m ===============[0m
 
 
 ## Execute SSOT Plan Mode
@@ -328,18 +278,10 @@ PHASE 5: Certification
     # final aggregation and certification
 
 === PROGRAMMATIC TOOL CALLING ===
-{"artifact_ref":{"kind":"tool_call","logical_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","path":"tool_call\\55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9\\v0007.json","version":7},"summary":"PTC executed 1 tool calls for plan context","tool_calls":[{"args":{"expr":"2 + 3 * 4"},"call_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","exit_code":0,"stderr":"","stdout":"14","tool_id":"expr_eval","truncated":false}]}
+{"artifact_ref":{"kind":"tool_call","logical_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","path":"tool_call\\55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9\\v0014.json","version":14},"summary":"PTC executed 1 tool calls for plan context","tool_calls":[{"args":{"expr":"2 + 3 * 4"},"call_id":"55a25da241434a526dc174bd6d100c7111d6c352823047510b9aad82b270cbc9","exit_code":0,"stderr":"","stdout":"14","tool_id":"expr_eval","truncated":false}]}
 
 
 
 ## Git Status Check
 $ git status --porcelain
- D docs/reports/plans/DEGRADATION_MATRIX.md
- M docs/reports/plans/HEALER_RETRY_HARDENING_SPEC.md
- D docs/reports/plans/L0_DECOMPOSITION_SPEC.md
- M docs/reports/plans/LATENCY_BUDGET_SLA_SPEC.md
- D docs/reports/plans/POLICY_EPOCH_SPEC.md
- M docs/reports/plans/UWG_ISOLATION_SPEC.md
-?? docs/specs/hardening/
-?? docs/store/
-
+ M "docs/technical/Drill-Down 1 - L1 [U0] Transformation & RAG Pipeline.md"
