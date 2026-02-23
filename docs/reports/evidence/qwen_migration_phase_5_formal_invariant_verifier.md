@@ -6,19 +6,13 @@ All violations are deterministically serializable with canonical JSON and SHA256
 FAIL violations trigger Gemini fallback. Phase 1-4 behavior preserved.
 
 ## CODE_COMMIT
-e7a1c22a7b1476c9078455bd20d3d8c0134ffa35
+a4ef70c1b1ff9e4d2a0f2250ec47dcd2721251c4
 
 ## EVIDENCE_COMMIT
-7c5150a96fa69a6d2dbfb136a99dd55d8c630f27
+PENDING
 
 ## FILES_CHANGED_CODE
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
-agentic_core/L2_execution/types/vllm_invariant_verifier.py
-tests/unit_min_deps/test_vllm_invariant_verifier.py
-tools/evidence/qwen_migration_phase5_evidence_runner.py
-
-## FILES_CHANGED_EVIDENCE
-docs/reports/evidence/qwen_migration_phase_5_formal_invariant_verifier.md
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py
 tools/evidence/qwen_migration_phase5_evidence_runner.py
 
 ## INSPECTED_FILES
@@ -94,17 +88,18 @@ rootdir: C:\Git\Agentic-Workflow
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collected 4 items
+collected 5 items
 
-tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_local_success_with_zero_violations PASSED [ 25%]
-tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_with_fingerprint_produces_no_violations PASSED [ 50%]
-tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_result_has_invariant_violations_field PASSED [ 75%]
-tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_preserves_phase_1_4_behavior PASSED [100%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_local_success_with_zero_violations PASSED [ 20%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_with_fingerprint_produces_no_violations PASSED [ 40%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_result_has_invariant_violations_field PASSED [ 60%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_preserves_phase_1_4_behavior PASSED [ 80%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_fail_violation_triggers_gemini_with_violations_attached PASSED [100%]
 
 ============================ slowest 10 durations =============================
 
 (10 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================== 4 passed in 0.05s ==============================
+============================== 5 passed in 0.05s ==============================
 ```
 
 ## Phase 1-4 Regression Tests
@@ -161,7 +156,7 @@ rootdir: C:\Git\Agentic-Workflow
 configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
 plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
-collected 648 items
+collected 649 items
 
 tests/agentic_core/L2_execution/types/test_circuit_breaker_respects_backpressure.py::test_breaker_starts_closed PASSED [  0%]
 tests/agentic_core/L2_execution/types/test_circuit_breaker_respects_backpressure.py::test_breaker_opens_after_threshold_failures PASSED [  0%]
@@ -182,7 +177,7 @@ tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.p
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_no_unexpected_fallback PASSED [  7%]
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_no_absolute_exceeded PASSED [  8%]
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_max_concurrency_within_budget PASSED [  8%]
-tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_healing_json_artifact_passes PASSED [  9%]
+tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_healing_json_artifact_passes PASSED [  8%]
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_7b_deterministic_repeated_run PASSED [  9%]
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_14b_worst_case_prompt_passes_preflight PASSED [  9%]
 tests/agentic_core/L2_execution/types/test_kv_cache_headroom_under_concurrency.py::test_14b_no_truncation_at_ceiling PASSED [ 10%]
@@ -202,7 +197,7 @@ tests/agentic_core/L2_execution/types/test_queue_overflow_fallback.py::test_queu
 tests/agentic_core/L2_execution/types/test_queue_overflow_fallback.py::test_max_queue_depth_constant PASSED [ 16%]
 tests/agentic_core/L2_execution/types/test_queue_overflow_fallback.py::test_full_queue_repeated_is_deterministic PASSED [ 17%]
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_escalates_to_gemini PASSED [ 17%]
-tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_failure_type_is_queue_overflow PASSED [ 18%]
+tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_failure_type_is_queue_overflow PASSED [ 17%]
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_model_id_is_gemini PASSED [ 18%]
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_reason_is_queue_timeout PASSED [ 18%]
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_within_timeout_does_not_escalate PASSED [ 19%]
@@ -211,7 +206,7 @@ tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timeo
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_timed_out_queue_repeated_is_deterministic PASSED [ 20%]
 tests/agentic_core/L2_execution/types/test_queue_timeout_fallback.py::test_queue_is_full_takes_priority_over_timeout PASSED [ 21%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_fast_7b_model_id PASSED [ 21%]
-tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_strong_14b_model_id PASSED [ 22%]
+tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_strong_14b_model_id PASSED [ 21%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_fast_7b_max_model_len PASSED [ 22%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_strong_14b_max_model_len PASSED [ 22%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_local_fast_7b_max_num_seqs PASSED [ 23%]
@@ -222,7 +217,7 @@ tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_14
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_14b_max_model_len_within_ceiling PASSED [ 25%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_profile_local_fast_7b_is_valid PASSED [ 26%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_profile_local_strong_14b_is_valid PASSED [ 26%]
-tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_registry_contains_both_tiers PASSED [ 27%]
+tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_registry_contains_both_tiers PASSED [ 26%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_get_profile_local_fast PASSED [ 27%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_get_profile_local_strong PASSED [ 27%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_get_profile_unknown_raises PASSED [ 28%]
@@ -231,7 +226,7 @@ tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_in
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_invalid_gpu_utilization_zero_raises PASSED [ 29%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_14b_exceeds_ceiling_raises PASSED [ 30%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_co_change_both_increase_raises PASSED [ 30%]
-tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_co_change_only_model_len_increase_ok PASSED [ 31%]
+tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_co_change_only_model_len_increase_ok PASSED [ 30%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_co_change_only_num_seqs_increase_ok PASSED [ 31%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_co_change_both_decrease_ok PASSED [ 31%]
 tests/agentic_core/L2_execution/types/test_serving_profile_constants.py::test_no_32b_in_registry PASSED [ 32%]
@@ -240,9 +235,9 @@ tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_l
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_local_fast_routes_correctly_medium_severity PASSED [ 33%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_local_strong_routes_correctly_high_severity PASSED [ 34%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_token_budget_exceeded PASSED [ 34%]
-tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_circuit_breaker_open PASSED [ 35%]
+tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_circuit_breaker_open PASSED [ 34%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_queue_overflow PASSED [ 35%]
-tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_gpu_health_failed PASSED [ 36%]
+tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_gpu_health_failed PASSED [ 35%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_schema_validation_failed PASSED [ 36%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_gemini_backstop_low_confidence PASSED [ 36%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_failure_escalation_invariants_priority PASSED [ 37%]
@@ -251,7 +246,7 @@ tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_n
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_no_quantized_tier_in_routing_module_ast PASSED [ 38%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_no_gpu_imports_in_routing_module_ast PASSED [ 39%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_tiered_routing_decision_frozen PASSED [ 39%]
-tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_routing_deterministic_across_runs PASSED [ 40%]
+tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_routing_deterministic_across_runs PASSED [ 39%]
 tests/agentic_core/L2_execution/types/test_tiered_routing_without_32b.py::test_local_tier_only_when_budget_ok PASSED [ 40%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_passes_small_prompt PASSED [ 40%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_fails_oversized_prompt PASSED [ 41%]
@@ -260,73 +255,74 @@ tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::t
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_deterministic_across_runs PASSED [ 42%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_prompt_tokens_matches_estimator PASSED [ 43%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_output_tokens_matches_cap PASSED [ 43%]
-tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_budget_margin_correct PASSED [ 44%]
+tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_budget_margin_correct PASSED [ 43%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_undefined_task_class_routes_gemini PASSED [ 44%]
-tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_result_frozen PASSED [ 45%]
+tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_result_frozen PASSED [ 44%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_contradictory_state_rejected PASSED [ 45%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_failed_without_failure_type_rejected PASSED [ 45%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_preflight_max_model_len_preserved PASSED [ 46%]
 tests/agentic_core/L2_execution/types/test_token_budget_preflight_fallback.py::test_safety_margin_applied PASSED [ 46%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_constants_are_hardcoded PASSED [ 47%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_task_class_caps_within_absolute PASSED [ 47%]
-tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_healing_json_artifact_cap PASSED [ 48%]
+tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_healing_json_artifact_cap PASSED [ 47%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_patch_suggestion_cap PASSED [ 48%]
-tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_multi_file_summary_cap PASSED [ 49%]
+tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_multi_file_summary_cap PASSED [ 48%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_undefined_task_class_returns_none PASSED [ 49%]
-tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_enforce_output_cap_raises_for_undefined PASSED [ 50%]
+tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_enforce_output_cap_raises_for_undefined PASSED [ 49%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_enforce_output_cap_clamps_to_task_cap PASSED [ 50%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_enforce_output_cap_exact_cap PASSED [ 50%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_no_local_request_exceeds_absolute PASSED [ 51%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_token_estimation_deterministic PASSED [ 51%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_token_estimation_empty_string PASSED [ 52%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_token_estimation_minimum_one PASSED [ 52%]
-tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_token_estimation_proportional PASSED [ 53%]
+tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_token_estimation_proportional PASSED [ 52%]
 tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_no_32b_model_in_constants PASSED [ 53%]
-tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_no_quantized_tier_in_constants PASSED [ 54%]
+tests/agentic_core/L2_execution/types/test_token_cap_enforced.py::test_no_quantized_tier_in_constants PASSED [ 53%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_starts_empty PASSED [ 54%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_acquire_increments PASSED [ 54%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_release_decrements PASSED [ 55%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_full_acquire_fails PASSED [ 55%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_snapshot_is_immutable PASSED [ 56%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_controller_full_snapshot PASSED [ 56%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_creates_breaker_on_first_access PASSED [ 57%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_creates_breaker_on_first_access PASSED [ 56%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_per_tier_isolation PASSED [ 57%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_record_success_resets PASSED [ 58%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_record_success_resets PASSED [ 57%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_registry_reset_all PASSED [ 58%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_open_breaker_supersedes_empty_queue PASSED [ 59%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_open_breaker_supersedes_empty_queue PASSED [ 58%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_open_breaker_supersedes_full_queue PASSED [ 59%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_full_queue_routes_to_gemini PASSED [ 59%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_queue_timeout_routes_to_gemini PASSED [ 60%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_empty_queue_closed_breaker_local_path PASSED [ 60%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_open_no_local_attempt PASSED [ 61%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_open_no_local_attempt PASSED [ 60%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_closed_after_reset_allows_local PASSED [ 61%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_closed_to_open_transition PASSED [ 62%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_closed_to_open_transition PASSED [ 61%]
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_open_to_closed_via_success PASSED [ 62%]
-tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_does_not_open_below_threshold PASSED [ 63%]
+tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py::test_breaker_does_not_open_below_threshold PASSED [ 62%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_seam_proof_marker_present PASSED [ 63%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_emit_seam_proof_returns_marker PASSED [ 63%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_no_gemini PASSED [ 64%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_explicit_max_tokens PASSED [ 64%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_profile_max_model_len PASSED [ 65%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_local_success_telemetry_failure_type_none PASSED [ 65%]
-tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_routes_gemini PASSED [ 66%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_routes_gemini PASSED [ 65%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_failure_type PASSED [ 66%]
-tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_provider_gemini PASSED [ 67%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_token_budget_exceed_provider_gemini PASSED [ 66%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_queue_full_routes_gemini PASSED [ 67%]
-tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_breaker_open_routes_gemini PASSED [ 68%]
+tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_breaker_open_routes_gemini PASSED [ 67%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_record_local_failure_increments_breaker PASSED [ 68%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_adapter_record_local_success_resets_breaker PASSED [ 68%]
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py::test_reset_singletons_clears_state PASSED [ 69%]
 tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_canonical_serialization_stable PASSED [ 69%]
-tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_hash_changes_on_field_change PASSED [ 70%]
+tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_hash_changes_on_field_change PASSED [ 69%]
 tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_deterministic_test_instance PASSED [ 70%]
-tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_canonical_json_stable_keys PASSED [ 71%]
+tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_canonical_json_stable_keys PASSED [ 70%]
 tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_sha256_hex_consistent PASSED [ 71%]
-tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_as_dict_roundtrip PASSED [ 72%]
+tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py::test_fingerprint_as_dict_roundtrip PASSED [ 71%]
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_local_success_with_zero_violations PASSED [ 72%]
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_with_fingerprint_produces_no_violations PASSED [ 72%]
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_result_has_invariant_violations_field PASSED [ 73%]
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_preserves_phase_1_4_behavior PASSED [ 73%]
+tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py::test_adapter_fail_violation_triggers_gemini_with_violations_attached PASSED [ 73%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_low_severity_selects_fast_7b PASSED [ 74%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_medium_severity_selects_fast_7b PASSED [ 74%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_high_severity_selects_strong_14b PASSED [ 75%]
@@ -335,7 +331,7 @@ tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_high_
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_profile_max_model_len_low PASSED [ 76%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_profile_max_model_len_high PASSED [ 77%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_has_explicit_max_tokens PASSED [ 77%]
-tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_max_tokens_matches_task_cap PASSED [ 77%]
+tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_max_tokens_matches_task_cap PASSED [ 78%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_temperature_is_zero PASSED [ 78%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_top_p_is_one PASSED [ 78%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_seed_is_fixed PASSED [ 79%]
@@ -344,7 +340,7 @@ tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shape
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_profile_name_recorded PASSED [ 80%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_undefined_task_class_raises FAILED [ 81%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_healing_json_artifact PASSED [ 81%]
-tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_is_deterministic PASSED [ 81%]
+tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_is_deterministic PASSED [ 82%]
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_model_matches_profile PASSED [ 82%]
 tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py::test_replay_hash_deterministic_two_runs PASSED [ 82%]
 tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py::test_replay_hash_changes_on_fingerprint_change PASSED [ 83%]
@@ -364,7 +360,7 @@ tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_lo
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_local_success_queue_depth_zero PASSED [ 89%]
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_local_success_breaker_state_closed PASSED [ 90%]
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_local_success_max_model_len_matches_profile PASSED [ 90%]
-tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_local_success_14b_max_model_len PASSED [ 90%]
+tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_local_success_14b_max_model_len PASSED [ 91%]
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_token_budget_exceed_telemetry_fields_present PASSED [ 91%]
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_token_budget_exceed_provider_is_gemini PASSED [ 91%]
 tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_token_budget_exceed_model_tier_is_remote PASSED [ 92%]
@@ -407,7 +403,7 @@ E     + fingerprint_hash
 =========================== short test summary info ===========================
 FAILED tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py::test_shaped_request_undefined_task_class_raises
 FAILED tests/agentic_core/L2_execution/types/test_vllm_telemetry_end_to_end.py::test_telemetry_as_dict_key_order_stable
-======================== 2 failed, 220 passed in 0.28s ========================
+======================== 2 failed, 221 passed in 0.28s ========================
 ```
 
 NOTE: Pre-existing test failures in test_vllm_profile_selection.py and test_vllm_telemetry_end_to_end.py
@@ -494,7 +490,7 @@ tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_empty_lo
 tests/governance/test_hash_chain_audit_log.py::TestChainIntegrity::test_each_entry_hash_is_sha256 PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestChainBreakDetection::test_tampered_hash_detected 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:30:38 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
+2026-02-23 13:36:44 [   ERROR] agentic_core.L2_execution.audit.hash_chain_audit_log: [audit] hash mismatch at entry 1
 PASSED                                                                   [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_seal_returns_root_hash PASSED [  9%]
 tests/governance/test_hash_chain_audit_log.py::TestSeal::test_append_after_seal_raises PASSED [  9%]
@@ -581,7 +577,7 @@ tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_poli
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_policy_decision_record_deterministic_hash PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestPolicyDecisionRecord::test_standard_heal_emits_policy_record 
 -------------------------------- live log call --------------------------------
-2026-02-23 13:30:38 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
+2026-02-23 13:36:44 [ WARNING] agentic_core.utils.decorators_util: [standard_heal] MockAgent: Non-canonical key '_policy_from_kwargs' detected. Consider using canonical keys for better schema compliance.
 PASSED                                                                   [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_network_tripwire_blocks_socket PASSED [ 21%]
 tests/governance/test_heal_policy_wiring.py::TestNetworkTripwire::test_heal_paths_make_no_network_calls PASSED [ 21%]
@@ -1345,11 +1341,11 @@ E       Missing: []
 E   assert {('agentic_co...rite_text()')} == frozenset()
 E     
 E     Extra items in the left set:
-E     ('agentic_core/L4_state/storage/filesystem_store.py', '_get_next_version', 'Call:.mkdir()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', '__init__', 'Call:.mkdir()')
 E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.rename()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')
-E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')...
+E     ('agentic_core/L4_state/storage/filesystem_store.py', '__init__', 'Call:.mkdir()')
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.write_text()')
+E     ('agentic_core/L4_state/storage/filesystem_store.py', '_get_next_version', 'Call:.mkdir()')
+E     ('agentic_core/L4_state/storage/filesystem_store.py', 'put', 'Call:.unlink()')...
 E     
 E     ...Full output truncated (30 lines hidden), use '-vv' to show
 _________ TestLazySeamAllowlist.test_allowlist_matches_scanner_total __________
@@ -1449,16 +1445,16 @@ Errors: 0
 Architectural violations detected. Review failed tests.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-3.10s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
-3.05s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
-3.04s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
-2.54s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
-2.34s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
-2.02s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
-1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_surface
-1.54s call     tests/governance/test_agent_heal_audit.py::TestEnumerationIntegrity::test_agent_naming_detection
-1.54s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_summary_counts_consistent
-1.54s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_generation
+3.05s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_byte_identical_json_runs
+3.04s call     tests/governance/test_agent_heal_audit.py::TestMarkdownGeneration::test_markdown_determinism
+3.04s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_audit_determinism
+2.56s call     tests/governance/test_seam_dynamic_enforcement.py::TestSeamDynamicEnforcement::test_scan_produces_deterministic_results
+2.39s call     tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_lazy_upward_import_metric_is_deterministic
+2.05s call     tests/governance/test_upward_import_enforcement.py::TestUpwardImportEnforcement::test_scan_produces_deterministic_results
+1.56s call     tests/governance/test_lazy_seam_allowlist.py::TestLazySeamAllowlist::test_negative_remove_allowlist_entry_causes_violation
+1.54s call     tests/governance/test_agent_heal_audit.py::TestStructureContract::test_top_level_schema
+1.54s call     tests/governance/test_agent_heal_audit.py::TestDeterminism::test_deterministic_ordering
+1.53s call     tests/governance/test_heal_surface_enforcement.py::TestHealSurfaceEnforcement::test_all_agents_have_heal_repository_surface
 =========================== short test summary info ===========================
 FAILED tests/governance/test_cross_layer_import_freeze.py::TestCrossLayerImportFreeze::test_no_new_violations
 FAILED tests/governance/test_intent_emission_no_mutation.py::TestAllowlistEnforcement::test_total_hits_equals_zero
@@ -1470,7 +1466,7 @@ FAILED tests/governance/test_upward_import_enforcement.py::TestNegativeRegressio
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamMetric::test_module_level_upward_imports_still_zero
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamViolation::test_zero_lazy_seam_violations_in_codebase
 FAILED tests/governance/test_upward_import_enforcement.py::TestLazySeamBudget::test_lazy_seam_budget_not_exceeded
-================= 10 failed, 716 passed, 4 warnings in 57.65s =================
+============ 10 failed, 716 passed, 4 warnings in 60.87s (0:01:00) ============
 ```
 
 ## Scope Isolation Proof
@@ -1491,11 +1487,14 @@ OK: intersection is empty
 
 ## Proof: FAIL Violation Triggers Gemini Fallback
 ```
-route_to_gemini=False
-local_request_present=True
-violations_count=0
+route_to_gemini=True
+local_request_present=False
+violations_count=1
 violations_field_exists=True
-OK: FAIL violation handling verified
+violation_0_id=INV_REPLAY_HASH_PRESENT_WHEN_ENABLED
+violation_0_severity=FAIL
+violation_0_hash=04c9ec6eb405b611b506e5947267660186eaaab6581c90c009e5c30a87dc2a6a
+OK: FAIL violation triggers Gemini fallback with violations attached
 ```
 
 ## Git Status
