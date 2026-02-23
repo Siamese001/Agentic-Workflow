@@ -36,6 +36,16 @@
         "cascade.trustedWorkspaces": [
             "C:\\Git\\Agentic-Workflow"
         ],
+        "files.exclude": {
+            "**/.git": true,
+            "**/docs": true,
+            "**/archives": true,
+            "**/artifacts": true,
+            "**/__pycache__": true,
+            "**/.pytest_cache": true,
+            "**/.nox": true,
+            "**/*.bak": true
+        },
         "files.watcherExclude": {
             "**/.git/objects/**": true,
             "**/.git/subtree-cache/**": true,
