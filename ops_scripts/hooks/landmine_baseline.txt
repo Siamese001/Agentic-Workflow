@@ -70,6 +70,7 @@ agentic_core/L2_execution/engines/secure_tools_impl.py:138:magic_configuration:M
 agentic_core/L2_execution/engines/secure_tools_impl.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/tool_registry.py:120:magic_configuration:Magic configuration: Hardcoded max_tools=5
 agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic configuration: Hardcoded min_relevance=0.6
+agentic_core/L2_execution/healers/healing_tier_router.py:56:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:240:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L2_execution/tools/file_io_impl.py:120:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L2_execution/tools/file_io_impl.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1455,7 +1456,7 @@ system_learning/pipelines/approval_gates.py:162:magic_configuration:Magic config
 system_learning/pipelines/approval_gates.py:163:magic_configuration:Magic configuration: Hardcoded max_delta_low=0.05
 system_learning/pipelines/approval_gates.py:164:magic_configuration:Magic configuration: Hardcoded max_delta_medium=0.1
 system_learning/pipelines/approval_gates.py:96:magic_configuration:Magic configuration: Hardcoded high_impact_threshold=3
-tools/evidence/e2e_gemini_qwen_runner.py:124:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/e2e_gemini_qwen_runner.py:138:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/evidence_contract_v2.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/harden_plan_evidence_runner.py:20:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/harden_plan_evidence_runner.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
