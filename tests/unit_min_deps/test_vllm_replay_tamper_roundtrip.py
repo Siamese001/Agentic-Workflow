@@ -65,50 +65,23 @@ def create_test_artifact_with_violations() -> VLLMReplayArtifact:
 
 
 def create_tampered_artifact(original: VLLMReplayArtifact) -> VLLMReplayArtifact:
-    """Create a deterministically tampered copy by modifying violation_hash."""
-    # Deep copy the result to avoid mutating original
-    if original.result.invariant_violations:
-        # Create new violations with tampered hash
-        tampered_violations = []
-        for violation in original.result.invariant_violations:
-            # Create a new violation with tampered hash (change one character)
-            tampered_hash = violation.violation_hash[:-1] + ('1' if violation.violation_hash[-1] != '1' else '0')
-            tampered_violation = InvariantViolation(
-                invariant_id=violation.invariant_id,
-                severity=violation.severity,
-                message=violation.message,
-                context=violation.context,
-            )
-            # Manually set the tampered hash by accessing the private field
-            object.__setattr__(tampered_violation, '_violation_hash', tampered_hash)
-            tampered_violations.append(tampered_violation)
-        
-        # Create new result with tampered violations
-        from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMGatewayCallResult
-        tampered_result = VLLMGatewayCallResult(
-            route_to_gemini=original.result.route_to_gemini,
-            local_request=original.result.local_request,
-            telemetry=original.result.telemetry,
-            preflight=original.result.preflight,
-            backpressure=original.result.backpressure,
-            invariant_violations=tampered_violations,
-        )
-        
-        # Create tampered artifact
-        return VLLMReplayArtifact(
-            prompt=original.prompt,
-            local_request=original.local_request,
-            fingerprint=original.fingerprint,
-            result=tampered_result,
-        )
-    else:
-        # If no violations, tamper the prompt
-        return VLLMReplayArtifact(
-            prompt=original.prompt + "_tampered",
-            local_request=original.local_request,
-            fingerprint=original.fingerprint,
-            result=original.result,
-        )
+    """Create a deterministically tampered copy with mismatched stored hash."""
+    # Create artifact with tampered prompt
+    tampered_prompt = original.prompt + "_tampered"
+    tampered_artifact = VLLMReplayArtifact(
+        prompt=tampered_prompt,
+        local_request=original.local_request,
+        fingerprint=original.fingerprint,
+        result=original.result,
+    )
+    
+    # Get the new correct hash for tampered artifact
+    correct_hash = tampered_artifact.replay_hash
+    
+    # Override the stored hash with the original hash to create a mismatch
+    object.__setattr__(tampered_artifact, 'replay_hash', original.replay_hash)
+    
+    return tampered_artifact
 
 
 def validate_64hex(value: str, name: str) -> None:
@@ -132,20 +105,21 @@ def test_replay_tamper_round_trip():
     
     # Create tampered artifact
     tampered_artifact = create_tampered_artifact(original_artifact)
-    tampered_hash = tampered_artifact.replay_hash
-    validate_64hex(tampered_hash, "tampered_replay_hash")
+    tampered_stored_hash = tampered_artifact.replay_hash
+    validate_64hex(tampered_stored_hash, "tampered_stored_replay_hash")
     
     # Validate tampered artifact with production verifier
     tampered_validation = validator.validate_and_report(tampered_artifact)
     
     assert tampered_validation["valid"] is False, "Tampered artifact should be rejected"
-    assert tampered_hash != original_hash, "Tampered hash must differ from original"
-    assert tampered_validation["stored_replay_hash"] == tampered_hash, "Stored tampered hash should match"
-    assert tampered_validation["computed_replay_hash"] == original_hash, "Computed hash should match original"
+    assert tampered_stored_hash == original_hash, "Tampered stored hash should match original (by design)"
+    assert tampered_validation["stored_replay_hash"] == tampered_stored_hash, "Stored hash should match"
+    assert tampered_validation["computed_replay_hash"] != original_hash, "Computed hash must differ from original"
     
     print(f"Original replay_hash: {original_hash}")
-    print(f"Tampered replay_hash: {tampered_hash}")
-    print(f"Hashes differ: {original_hash != tampered_hash}")
+    print(f"Tampered stored replay_hash: {tampered_stored_hash}")
+    print(f"Tampered computed replay_hash: {tampered_validation['computed_replay_hash']}")
+    print(f"Tampering detected: {not tampered_validation['valid']}")
 
 
 def test_replay_tamper_determinism_re_run():
@@ -164,22 +138,28 @@ def test_replay_tamper_determinism_re_run():
     
     # Second run
     original_hash_2 = None
-    tampered_hash_2 = None
+    tampered_computed_hash_2 = None
     
     original_artifact_2 = create_test_artifact_with_violations()
     original_hash_2 = original_artifact_2.replay_hash
     validate_64hex(original_hash_2, "original_replay_hash_run2")
     
     tampered_artifact_2 = create_tampered_artifact(original_artifact_2)
-    tampered_hash_2 = tampered_artifact_2.replay_hash
-    validate_64hex(tampered_hash_2, "tampered_replay_hash_run2")
+    validator = VLLMReplayValidator()
+    tampered_validation_2 = validator.validate_and_report(tampered_artifact_2)
+    tampered_computed_hash_2 = tampered_validation_2["computed_replay_hash"]
+    validate_64hex(tampered_computed_hash_2, "tampered_computed_replay_hash_run2")
+    
+    # Get first run computed hash for comparison
+    tampered_validation_1 = validator.validate_and_report(tampered_artifact_1)
+    tampered_computed_hash_1 = tampered_validation_1["computed_replay_hash"]
     
     # Assert determinism
     assert original_hash_1 == original_hash_2, "Original hash must be deterministic"
-    assert tampered_hash_1 == tampered_hash_2, "Tampered hash must be deterministic"
+    assert tampered_computed_hash_1 == tampered_computed_hash_2, "Tampered computed hash must be deterministic"
     
     print(f"Determinism check: original_hash_1 == original_hash_2 = {original_hash_1 == original_hash_2}")
-    print(f"Determinism check: tampered_hash_1 == tampered_hash_2 = {tampered_hash_1 == tampered_hash_2}")
+    print(f"Determinism check: tampered_computed_hash_1 == tampered_computed_hash_2 = {tampered_computed_hash_1 == tampered_computed_hash_2}")
 
 
 def test_negative_control_tamper_detection_disabled():
