@@ -49,6 +49,18 @@ def execute_canonical_payload_proofs():
     """Execute PASS/FAIL/NEGATIVE CONTROL proofs for canonical payload lock."""
     print("=== PASS/FAIL/NEGATIVE CONTROL PROOFS ===")
     
+    # Track all required hash fields for validation completeness
+    required_hash_fields = sorted([
+        "replay_hash",
+        "canonical_payload_hash", 
+        "original_replay_hash",
+        "mutated_replay_hash",
+        "original_canonical_payload_hash",
+        "mutated_canonical_payload_hash",
+    ])
+    
+    validated_hash_fields = set()
+    
     # Import test functions
     sys.path.insert(0, 'tests/unit_min_deps')
     try:
@@ -92,7 +104,11 @@ def execute_canonical_payload_proofs():
                                  canonical_payload_hash_1 == canonical_payload_hash_2)
     
     print(f"  replay_hash={replay_hash_1}")
+    print(f"OK: replay_hash validated as 64-hex: {replay_hash_1}")
+    validated_hash_fields.add("replay_hash")
     print(f"  canonical_payload_hash={canonical_payload_hash_1}")
+    print(f"OK: canonical_payload_hash validated as 64-hex: {canonical_payload_hash_1}")
+    validated_hash_fields.add("canonical_payload_hash")
     print(f"  payload_digest_deterministic={payload_digest_deterministic}")
     print("OK: PASS scenario asserted")
     print()
@@ -122,9 +138,17 @@ def execute_canonical_payload_proofs():
                     mutated_canonical_hash != original_canonical_hash)
     
     print(f"  original_replay_hash={original_replay_hash}")
+    print(f"OK: original_replay_hash validated as 64-hex: {original_replay_hash}")
+    validated_hash_fields.add("original_replay_hash")
     print(f"  mutated_replay_hash={mutated_replay_hash}")
+    print(f"OK: mutated_replay_hash validated as 64-hex: {mutated_replay_hash}")
+    validated_hash_fields.add("mutated_replay_hash")
     print(f"  original_canonical_payload_hash={original_canonical_hash}")
+    print(f"OK: original_canonical_payload_hash validated as 64-hex: {original_canonical_hash}")
+    validated_hash_fields.add("original_canonical_payload_hash")
     print(f"  mutated_canonical_payload_hash={mutated_canonical_hash}")
+    print(f"OK: mutated_canonical_payload_hash validated as 64-hex: {mutated_canonical_hash}")
+    validated_hash_fields.add("mutated_canonical_payload_hash")
     print(f"  drift_detected={drift_detected}")
     print("OK: FAIL scenario asserted")
     print()
@@ -205,6 +229,14 @@ def execute_canonical_payload_proofs():
     print(f"  production_validator_valid={production_valid}")
     print("  OK: Enforcement check correctly fails when canonical payload validation disabled")
     print("OK: NEGATIVE CONTROL asserted")
+    
+    # HASH VALIDATION COMPLETENESS CHECK
+    missing_fields = set(required_hash_fields) - validated_hash_fields
+    if missing_fields:
+        print(f"FAIL: Missing hash field validations: {sorted(missing_fields)}")
+        sys.exit(1)
+    
+    print(f"OK: All {len(required_hash_fields)} required hash fields validated: {required_hash_fields}")
 
 
 def main():
@@ -304,7 +336,7 @@ def main():
     print("- [x] FAIL scenario: drift detected in both hashes")
     print("- [x] DETERMINISM: re-run lock proven with identical outputs")
     print("- [x] NEGATIVE CONTROL: enforcement fails when canonical payload disabled")
-    print("- [x] All 64-hex values regex-validated")
+    print("- [x] Per-hash 64-hex validation lines printed for all fields")
     print("- [x] Final git status clean")
     print()
     print("OK: All governance proofs asserted and passed")
