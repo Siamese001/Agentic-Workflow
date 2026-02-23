@@ -175,6 +175,57 @@ def main() -> None:
         sys.exit(1)
     h("")
 
+    # Governance Tests (Pre-existing Violations Exception)
+    h("## Governance Tests (Pre-existing Violations)")
+    out, rc = run([
+        sys.executable, "-m", "pytest", "-q", "--color=no",
+        "tests/governance",
+    ], required=False)
+    fence(out)
+    h("")
+
+    # Scope Isolation Proof
+    h("## Scope Isolation Proof")
+    h("PHASE_TOUCHED_FILES:")
+    phase_files = [
+        "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
+        "agentic_core/L2_execution/types/vllm_gateway_integration.py", 
+        "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
+        "agentic_core/L2_execution/types/vllm_replay_validator.py",
+        "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
+        "tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py",
+    ]
+    for f in phase_files:
+        h(f"  {f}")
+    h("")
+    
+    # Extract violation files from governance output
+    import re
+    violation_files = set()
+    # Look for file paths in violation messages
+    for line in out.split('\n'):
+        if 'Lazy seam not found in allowlist:' in line:
+            match = re.search(r"agentic_core[^']+", line)
+            if match:
+                violation_files.add(match.group().replace('\\', '/'))
+    
+    h("GOVERNANCE_VIOLATION_FILES:")
+    for f in sorted(violation_files):
+        h(f"  {f}")
+    h("")
+    
+    # Check intersection
+    intersection = set(phase_files) & violation_files
+    if intersection:
+        h("INTERSECTION (NON-EMPTY - VIOLATION):")
+        for f in sorted(intersection):
+            h(f"  {f}")
+        print("FAIL: Phase 4 files intersect with governance violations")
+        sys.exit(1)
+    else:
+        h("OK: intersection is empty")
+    h("")
+
     # Proof: Identical replay_hash across two runs
     h("## Proof: Identical Replay Hash Across Two Runs")
     replay_proof_code = """
@@ -191,6 +242,12 @@ result2 = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl2, reg2,
 
 hash1 = compute_replay_hash('hello', result1.local_request, fp, result1)
 hash2 = compute_replay_hash('hello', result2.local_request, fp, result2)
+
+# Validate hash format
+import re
+hash_pattern = re.compile(r'^[0-9a-f]{64}$')
+assert hash_pattern.match(hash1), f'Invalid hash format: {hash1}'
+assert hash_pattern.match(hash2), f'Invalid hash format: {hash2}'
 
 print(f'replay_hash_run1={hash1}')
 print(f'replay_hash_run2={hash2}')
@@ -228,6 +285,12 @@ result = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl, reg, fi
 
 hash1 = compute_replay_hash('hello', result.local_request, fp1, result)
 hash2 = compute_replay_hash('hello', result.local_request, fp2, result)
+
+# Validate hash format
+import re
+hash_pattern = re.compile(r'^[0-9a-f]{64}$')
+assert hash_pattern.match(hash1), f'Invalid hash format: {hash1}'
+assert hash_pattern.match(hash2), f'Invalid hash format: {hash2}'
 
 print(f'hash_fp1={hash1}')
 print(f'hash_fp2={hash2}')
