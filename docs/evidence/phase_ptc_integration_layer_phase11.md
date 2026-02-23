@@ -1,7 +1,7 @@
 # Phase 11 Programmatic Tool Calling Evidence
 
 ## CODE_COMMIT
-a6d6283e635b8784ab6664f280717ab1490c839b
+3df6c6d826779943808dd9e21f493cef74bb8811
 
 ## PYTHON_VERSION
 Python 3.12.10
@@ -365,7 +365,7 @@ FAIL: Please fix violations before proceeding
 ## PTC_TEST_RUN_1
 
 ### pytest -q tests/unit_min_deps/ -k "ptc"
-EXIT CODE: 1
+EXIT CODE: 0
 STDOUT:
 [1m============================= test session starts =============================[0m
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
@@ -391,62 +391,20 @@ tests/unit_min_deps/test_ptc.py::test_tool_invoker_powershell_ban [32mPASSED[0
 tests/unit_min_deps/test_ptc.py::test_tool_invoker_truncation [32mPASSED[0m[32m     [ 48%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store [32mPASSED[0m[32m             [ 51%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering [32mPASSED[0m[33m [ 55%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [31mFAILED[0m[31m        [ 58%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [31mFAILED[0m[31m      [ 62%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [31mFAILED[0m[31m [ 65%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [31mFAILED[0m[31m  [ 68%][0m
-tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[31m [ 72%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[31m      [ 75%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[31m      [ 79%][0m
-tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [31mFAILED[0m[31m         [ 82%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[31m [ 86%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_is_canonical_write_layer [32mPASSED[0m[31m [ 89%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_functions_accept_allow_override [32mPASSED[0m[31m [ 93%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_future_tool_contract_enforcement_ready [32mPASSED[0m[31m [ 96%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[31m [100%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [32mPASSED[0m[33m        [ 58%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [32mPASSED[0m[33m      [ 62%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [32mPASSED[0m[33m [ 65%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [32mPASSED[0m[33m  [ 68%][0m
+tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[33m [ 72%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[33m      [ 75%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[33m      [ 79%][0m
+tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [32mPASSED[0m[33m         [ 82%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[33m [ 86%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_is_canonical_write_layer [32mPASSED[0m[33m [ 89%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_functions_accept_allow_override [32mPASSED[0m[33m [ 93%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_future_tool_contract_enforcement_ready [32mPASSED[0m[33m [ 96%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[33m [100%][0m
 
-================================== FAILURES ===================================
-[31m[1m__________________________ test_builtin_repo_rg_tool __________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:481: in test_builtin_repo_rg_tool
-    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'repo_rg' not found[0m
-[31m[1m_________________________ test_builtin_expr_eval_tool _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:522: in test_builtin_expr_eval_tool
-    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
-[31m[1m______________________ test_builtin_tools_deterministic _______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:564: in test_builtin_tools_deterministic
-    [0mresult1 = invoker.invoke(call, registry)[90m[39;49;00m
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
-[31m[1m_______________________ test_builtin_tools_registration _______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:584: in test_builtin_tools_registration
-    [0m[94massert[39;49;00m registry.has([33m"[39;49;00m[33mrepo_rg[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   AssertionError: assert False[0m
-[1m[31mE    +  where False = has('repo_rg')[0m
-[1m[31mE    +    where has = <agentic_core.L3_orchestration.ptc.ptc_registry.ToolRegistry object at 0x0000024E5D133CE0>.has[0m
-[31m[1m__________________________ test_static_includes_ptc ___________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:738: in test_static_includes_ptc
-    [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...ernance\\core\\prompt_assembler.py:631 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\core\\prompt_assembler.py:631 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\nFAIL: 254 total violations found\nFAIL: Please fix violations before proceeding\n', stderr='').returncode[0m
 [33m============================== warnings summary ===============================[0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
@@ -455,7 +413,36 @@ tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
   C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\tool_call_store.py:52: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
     "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
 
-tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+tests/unit_min_deps/test_ptc.py: 19 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:219: DeprecationWarning: ast.Num is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    if isinstance(node, ast.Num):  # Python < 3.8
+
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:223: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    elif isinstance(node, ast.Str):  # Python < 3.8
+
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:225: DeprecationWarning: ast.NameConstant is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    elif isinstance(node, ast.NameConstant):
+
+tests/unit_min_deps/test_ptc.py: 10 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:220: DeprecationWarning: Attribute n is deprecated and will be removed in Python 3.14; use value instead
+    return node.n
+
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
   C:\Git\Agentic-Workflow\agentic_core\L5_safety\static_checks\ptc_invariants.py:64: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
@@ -464,35 +451,30 @@ tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 1
-Passed: 24
-Failed: 5
+Passed: 29
+Failed: 0
 Errors: 0
 
-\u274c GUARDIAN STATUS: FAIL
-Architectural violations detected. Review failed tests.
+\u2705 GUARDIAN STATUS: PASS
+All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-47.60s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+38.97s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
 0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 0.20s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
 0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
-0.08s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
+0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
+0.02s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
-(4 durations < 0.005s hidden.  Use -vv to show these durations.)
-[36m[1m=========================== short test summary info ===========================[0m
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_repo_rg_tool[0m - ValueError: Tool 'repo_rg' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - ValueError: Tool 'expr_eval' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_deterministic[0m - ValueError: Tool 'expr_eval' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_registration[0m - AssertionError: assert False
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_static_includes_ptc[0m - assert 1 == 0
-[31m========== [31m[1m5 failed[0m, [32m24 passed[0m, [33m447 deselected[0m, [33m7 warnings[0m[31m in 48.82s[0m[31m ==========[0m
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m51 warnings[0m[33m in 40.11s[0m[33m ===============[0m
 
 
 ## PTC_TEST_RUN_2
 
 ### pytest -q tests/unit_min_deps/ -k "ptc"
-EXIT CODE: 1
+EXIT CODE: 0
 STDOUT:
 [1m============================= test session starts =============================[0m
 platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
@@ -518,62 +500,20 @@ tests/unit_min_deps/test_ptc.py::test_tool_invoker_powershell_ban [32mPASSED[0
 tests/unit_min_deps/test_ptc.py::test_tool_invoker_truncation [32mPASSED[0m[32m     [ 48%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store [32mPASSED[0m[32m             [ 51%][0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering [32mPASSED[0m[33m [ 55%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [31mFAILED[0m[31m        [ 58%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [31mFAILED[0m[31m      [ 62%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [31mFAILED[0m[31m [ 65%][0m
-tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [31mFAILED[0m[31m  [ 68%][0m
-tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[31m [ 72%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[31m      [ 75%][0m
-tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[31m      [ 79%][0m
-tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [31mFAILED[0m[31m         [ 82%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[31m [ 86%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_is_canonical_write_layer [32mPASSED[0m[31m [ 89%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_functions_accept_allow_override [32mPASSED[0m[31m [ 93%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_future_tool_contract_enforcement_ready [32mPASSED[0m[31m [ 96%][0m
-tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[31m [100%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool [32mPASSED[0m[33m        [ 58%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool [32mPASSED[0m[33m      [ 62%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic [32mPASSED[0m[33m [ 65%][0m
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_registration [32mPASSED[0m[33m  [ 68%][0m
+tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration [32mPASSED[0m[33m [ 72%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable [32mPASSED[0m[33m      [ 75%][0m
+tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner [32mPASSED[0m[33m      [ 79%][0m
+tests/unit_min_deps/test_ptc.py::test_static_includes_ptc [32mPASSED[0m[33m         [ 82%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway [32mPASSED[0m[33m [ 86%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_is_canonical_write_layer [32mPASSED[0m[33m [ 89%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_write_gateway_functions_accept_allow_override [32mPASSED[0m[33m [ 93%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_future_tool_contract_enforcement_ready [32mPASSED[0m[33m [ 96%][0m
+tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives [32mPASSED[0m[33m [100%][0m
 
-================================== FAILURES ===================================
-[31m[1m__________________________ test_builtin_repo_rg_tool __________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:481: in test_builtin_repo_rg_tool
-    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'repo_rg' not found[0m
-[31m[1m_________________________ test_builtin_expr_eval_tool _________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:522: in test_builtin_expr_eval_tool
-    [0mresult = invoker.invoke(call, registry)[90m[39;49;00m
-             ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
-[31m[1m______________________ test_builtin_tools_deterministic _______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:564: in test_builtin_tools_deterministic
-    [0mresult1 = invoker.invoke(call, registry)[90m[39;49;00m
-              ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\tool_invoker.py[0m:52: in invoke
-    [0mspec, handler = registry.get(call.tool_id)[90m[39;49;00m
-                    ^^^^^^^^^^^^^^^^^^^^^^^^^^[90m[39;49;00m
-[1m[31magentic_core\L3_orchestration\ptc\ptc_registry.py[0m:69: in get
-    [0m[94mraise[39;49;00m [96mValueError[39;49;00m([33mf[39;49;00m[33m"[39;49;00m[33mTool [39;49;00m[33m'[39;49;00m[33m{[39;49;00mtool_id[33m}[39;49;00m[33m'[39;49;00m[33m not found[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   ValueError: Tool 'expr_eval' not found[0m
-[31m[1m_______________________ test_builtin_tools_registration _______________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:584: in test_builtin_tools_registration
-    [0m[94massert[39;49;00m registry.has([33m"[39;49;00m[33mrepo_rg[39;49;00m[33m"[39;49;00m)[90m[39;49;00m
-[1m[31mE   AssertionError: assert False[0m
-[1m[31mE    +  where False = has('repo_rg')[0m
-[1m[31mE    +    where has = <agentic_core.L3_orchestration.ptc.ptc_registry.ToolRegistry object at 0x000001A553C62CC0>.has[0m
-[31m[1m__________________________ test_static_includes_ptc ___________________________[0m
-[1m[31mtests\unit_min_deps\test_ptc.py[0m:738: in test_static_includes_ptc
-    [0m[94massert[39;49;00m result.returncode == [94m0[39;49;00m[90m[39;49;00m
-[1m[31mE   assert 1 == 0[0m
-[1m[31mE    +  where 1 = CompletedProcess(args=['C:\\Users\\amita\\AppData\\Local\\Programs\\Python\\Python312\\python.exe', 'tools/run_static_invariants.py'], returncode=1, stdout='=== Static Invariants Checker ===\n\n1. Scanning for PowerShell usage...\nFAIL: PowerShell Ban: 63 violations found:\n  tools\\capture_evidence.py:2 - PS_STRING_LITERAL - "\nEvidence capture utility for execute_ssot mutation fence implementation.\n\nRuns commands via subprocess with argv arrays (no shell), captures stdout/stderr/exit code,\nand aborts if output contains PowerShell indicators.\n"\n  tools\\capture_evidence.py:15 - PS_STRING_LITERAL - "\n    Execute command and append results to evidence file.\n\n    Args:\n        argv: Command arguments as list\n        evidence_file: Path to evidence markdown file\n\n    Returns:\n        Exit code from command\n\n    Raises:\n        RuntimeError: If PowerShell detected in output\n    "\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "powershell"\n  tools\\capture_evidence.py:38 - PS_STRING_LITERAL - "pwsh"\n  tools\\capture_evidence.py:40 - PS_STRING_LITERAL - "ABORT: PowerShell detected in command output.\nCommand: "\n  tools\\evidence\\evidence_contract_v2.py:1 - ...ernance\\core\\prompt_assembler.py:631 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\core\\prompt_assembler.py:631 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\harden_templates.py:124 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\prompt_governance\\scripts\\synchronize_registry_hashes.py:30 - DIRECT_WITH_WRITE - with open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_OPEN_WRITE - open(..., mode="w")\n  agentic_core\\runtime\\config\\prompt_injection_loader_config.py:196 - DIRECT_WITH_WRITE - with open(..., mode="w")\n\n3. Scanning for non-deterministic serialization...\nOK: Determinism Serialization: No violations found\n\n4. Scanning for PTC invariants...\nOK: PTC Invariants: No violations found\n\n=== Summary ===\nFAIL: 254 total violations found\nFAIL: Please fix violations before proceeding\n', stderr='').returncode[0m
 [33m============================== warnings summary ===============================[0m
 tests/unit_min_deps/test_ptc.py::test_tool_call_store
 tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
@@ -582,7 +522,36 @@ tests/unit_min_deps/test_ptc.py::test_tool_call_store_deterministic_ordering
   C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\tool_call_store.py:52: DeprecationWarning: datetime.datetime.utcnow() is deprecated and scheduled for removal in a future version. Use timezone-aware objects to represent datetimes in UTC: datetime.datetime.now(datetime.UTC).
     "timestamp": datetime.utcnow().isoformat() + "Z",  # UTC timestamp
 
-tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
+tests/unit_min_deps/test_ptc.py: 19 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:219: DeprecationWarning: ast.Num is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    if isinstance(node, ast.Num):  # Python < 3.8
+
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:223: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    elif isinstance(node, ast.Str):  # Python < 3.8
+
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_expr_eval_tool
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+tests/unit_min_deps/test_ptc.py::test_builtin_tools_deterministic
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:225: DeprecationWarning: ast.NameConstant is deprecated and will be removed in Python 3.14; use ast.Constant instead
+    elif isinstance(node, ast.NameConstant):
+
+tests/unit_min_deps/test_ptc.py: 10 warnings
+  C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\ptc\builtin_tools.py:220: DeprecationWarning: Attribute n is deprecated and will be removed in Python 3.14; use value instead
+    return node.n
+
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
   C:\Git\Agentic-Workflow\agentic_core\L5_safety\static_checks\ptc_invariants.py:64: DeprecationWarning: ast.Str is deprecated and will be removed in Python 3.14; use ast.Constant instead
@@ -591,29 +560,24 @@ tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
 =========================== GUARDIAN LAYER SUMMARY ============================
 Guardian tests run: 1
-Passed: 24
-Failed: 5
+Passed: 29
+Failed: 0
 Errors: 0
 
-\u274c GUARDIAN STATUS: FAIL
-Architectural violations detected. Review failed tests.
+\u2705 GUARDIAN STATUS: PASS
+All architectural integrity checks passed.
 ======================================  =======================================
 ============================ slowest 10 durations =============================
-46.75s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
+39.11s call     tests/unit_min_deps/test_ptc.py::test_static_includes_ptc
 0.21s call     tests/unit_min_deps/test_ptc.py::test_ptc_invariants_scanner
-0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.17s call     tests/unit_min_deps/test_ptc.py::test_execute_ssot_ptc_integration
+0.17s call     tests/unit_min_deps/test_ptc.py::test_ptc_plan_output_stable
 0.07s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_tool_registry_exists_and_must_route_via_write_gateway
+0.01s call     tests/unit_min_deps/test_ptc.py::test_builtin_repo_rg_tool
 0.01s call     tests/unit_min_deps/test_ptc_write_contract.py::TestPTCWriteContract::test_l2_execution_tools_do_not_expose_raw_write_primitives
 
-(4 durations < 0.005s hidden.  Use -vv to show these durations.)
-[36m[1m=========================== short test summary info ===========================[0m
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_repo_rg_tool[0m - ValueError: Tool 'repo_rg' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_expr_eval_tool[0m - ValueError: Tool 'expr_eval' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_deterministic[0m - ValueError: Tool 'expr_eval' not found
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_builtin_tools_registration[0m - AssertionError: assert False
-[31mFAILED[0m tests/unit_min_deps/test_ptc.py::[1mtest_static_includes_ptc[0m - assert 1 == 0
-[31m========== [31m[1m5 failed[0m, [32m24 passed[0m, [33m447 deselected[0m, [33m7 warnings[0m[31m in 47.66s[0m[31m ==========[0m
+(3 durations < 0.005s hidden.  Use -vv to show these durations.)
+[33m============== [32m29 passed[0m, [33m[1m447 deselected[0m, [33m[1m51 warnings[0m[33m in 39.94s[0m[33m ===============[0m
 
 
 ## EXECUTE_SSOT_PTC_PLAN
