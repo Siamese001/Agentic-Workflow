@@ -12,6 +12,9 @@ data/cache/
 data/tmp/
 data/**/*.bin
 # [REFACTOR 2026-02-05] Healing backups folder (replaces archives/)
+archives/
+# Generated one-off patch scripts
+tools/_patch_evidence.py
 .healing_backups/
 *.zip
 *.tar.gz

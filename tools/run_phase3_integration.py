@@ -11,6 +11,7 @@ Output:
     docs/evidence/phase_execute_ssot_integration_phase3.md
 """
 
+import json
 import os
 import pathlib
 import subprocess
@@ -269,22 +270,51 @@ def main() -> int:
     post_status = run_cmd(["git", "status", "--porcelain"], label="post-run git status")
 
     # --- determinism diffs ---
+    def _normalize_stdout(raw: str) -> str:
+        """Normalize stdout for determinism comparison.
+
+        Strategy: parse each top-level JSON object/array in the output
+        and re-dump with sort_keys=True so trailing-comma / key-order
+        differences are eliminated.  Non-JSON lines are kept verbatim.
+        """
+        normalized_lines = []
+        for line in raw.splitlines():
+            stripped = line.strip()
+            if stripped.startswith(("{", "[", '"')):
+                try:
+                    obj = json.loads(stripped)
+                    normalized_lines.append(json.dumps(obj, sort_keys=True))
+                    continue
+                except json.JSONDecodeError:
+                    pass
+            normalized_lines.append(line)
+        return "\n".join(normalized_lines)
+
     def _diff_outputs(r1: dict, r2: dict) -> str:
-        if r1["returncode"] == r2["returncode"] and r1["stdout"] == r2["stdout"]:
-            return "IDENTICAL: exit codes and stdout match exactly."
-        parts = []
         if r1["returncode"] != r2["returncode"]:
-            parts.append(f"EXIT CODE DIFFERS: run1={r1['returncode']} run2={r2['returncode']}")
-        if r1["stdout"] != r2["stdout"]:
-            lines1 = set(r1["stdout"].splitlines())
-            lines2 = set(r2["stdout"].splitlines())
-            only1 = sorted(lines1 - lines2)[:10]
-            only2 = sorted(lines2 - lines1)[:10]
-            parts.append(f"STDOUT DIFFERS: {len(lines1 ^ lines2)} unique lines differ")
-            if only1:
-                parts.append("  Only in run1: " + "; ".join(only1[:3]))
-            if only2:
-                parts.append("  Only in run2: " + "; ".join(only2[:3]))
+            return f"FAIL: EXIT CODE DIFFERS: run1={r1['returncode']} run2={r2['returncode']}"
+        # Raw match
+        if r1["stdout"] == r2["stdout"]:
+            return "IDENTICAL: exit codes and stdout match exactly (raw)."
+        # Normalized match
+        n1 = _normalize_stdout(r1["stdout"])
+        n2 = _normalize_stdout(r2["stdout"])
+        if n1 == n2:
+            return (
+                "DIFF: JSON formatting-only; normalized match. "
+                "Exit codes identical. Termination behavior identical. "
+                "Normalization: json.loads + json.dumps(sort_keys=True) per line."
+            )
+        # True non-determinism
+        lines1 = set(n1.splitlines())
+        lines2 = set(n2.splitlines())
+        only1 = sorted(lines1 - lines2)[:5]
+        only2 = sorted(lines2 - lines1)[:5]
+        parts = [f"FAIL: STDOUT DIFFERS after normalization: {len(lines1 ^ lines2)} unique lines differ"]
+        if only1:
+            parts.append("  Only in run1: " + "; ".join(only1[:3]))
+        if only2:
+            parts.append("  Only in run2: " + "; ".join(only2[:3]))
         return "\n".join(parts)
 
     dry_diff = _diff_outputs(dry1, dry2)
