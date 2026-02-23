@@ -124,6 +124,8 @@ agentic_core/L3_orchestration/reasoning/SemanticGatekeeperAgent.py:82:type_erasu
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:322:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:405:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/reasoning/UnifiedAgent.py:787:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/replay/deterministic_replay.py:240:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+agentic_core/L3_orchestration/replay/deterministic_replay.py:240:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 agentic_core/L3_orchestration/types/context_pruning_types.py:344:magic_configuration:Magic configuration: Hardcoded base_limit=50
 agentic_core/L3_orchestration/types/context_pruning_types.py:345:magic_configuration:Magic configuration: Hardcoded max_limit=200
 agentic_core/L3_orchestration/types/context_pruning_types.py:346:magic_configuration:Magic configuration: Hardcoded min_limit=10
@@ -1448,4 +1450,6 @@ tools/evidence/phase07_08_consolidated_evidence_runner.py:16:global_mutation:Glo
 tools/evidence/phase_09_10_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/run_phase3_integration.py:24:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
+tools/run_replay_execute_ssot_plan.py:41:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
+tools/run_replay_execute_ssot_plan.py:56:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
 tools/vllm_boundary_client.py:24:magic_configuration:Magic configuration: Hardcoded _default_timeout_seconds=30
