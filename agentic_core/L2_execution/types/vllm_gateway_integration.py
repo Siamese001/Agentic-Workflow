@@ -15,31 +15,6 @@ import threading
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L2_execution.types.vllm_backpressure_types import (
-    CIRCUIT_BREAKER_FAILURE_THRESHOLD,
-    MAX_QUEUE_DEPTH,
-    QUEUE_WAIT_TIMEOUT_SECONDS,
-    BackpressureDecision,
-    VLLMCircuitBreaker,
-    VLLMQueueState,
-    evaluate_backpressure,
-)
-from agentic_core.L2_execution.types.vllm_serving_profile_types import (
-    PROFILE_LOCAL_FAST_7B,
-    PROFILE_LOCAL_STRONG_14B,
-    VLLMServingProfile,
-)
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
-    VLLMInfrastructureFingerprint,
-)
-from agentic_core.L2_execution.types.vllm_token_budget_types import (
-    GEMINI_25_PRO_MODEL_ID,
-    VLLMFailureType,
-    VLLMPreflightResult,
-    get_output_cap,
-    run_preflight_budget_check,
-)
-
 # ---------------------------------------------------------------------------
 # WAVE 1 — Serving profile selection
 # ---------------------------------------------------------------------------
@@ -58,6 +33,13 @@ def select_serving_profile(severity: str) -> VLLMServingProfile:
     Returns:
         VLLMServingProfile for the selected tier.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_serving_profile_types import (
+        PROFILE_LOCAL_FAST_7B,
+        PROFILE_LOCAL_STRONG_14B,
+        VLLMServingProfile,
+    )
+    
     if severity == "high":
         return PROFILE_LOCAL_STRONG_14B
     return PROFILE_LOCAL_FAST_7B
@@ -97,29 +79,26 @@ def shape_local_request(
     task_class: str,
     profile: VLLMServingProfile,
 ) -> VLLMLocalRequest:
-    """Shape a deterministic local vLLM request.
+    """Shape a local vLLM request with deterministic parameters.
 
     Args:
         prompt: Input prompt string.
         task_class: Task class string from TaskClass enum.
-        profile: Serving profile to use.
+        profile: Selected serving profile.
 
     Returns:
-        VLLMLocalRequest with explicit max_tokens (never None).
-
-    Raises:
-        ValueError: If task_class has no output cap (undefined class).
+        VLLMLocalRequest with explicit max_tokens and determinism policy.
     """
-    cap = get_output_cap(task_class)
-    if cap is None:
-        raise ValueError(
-            f"shape_local_request: task_class={task_class!r} has no output cap. "
-            "Route to Gemini-2.5-Pro instead."
-        )
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_token_budget_types import get_output_cap
+    
+    max_output = get_output_cap(task_class)
+    max_tokens = min(max_output, profile.max_model_len)
+
     return VLLMLocalRequest(
         model=profile.model,
         prompt=prompt,
-        max_tokens=cap,
+        max_tokens=max_tokens,
         temperature=VLLM_TEMPERATURE,
         top_p=VLLM_TOP_P,
         seed=VLLM_SEED,
@@ -142,16 +121,25 @@ class VLLMQueueController:
 
     def __init__(
         self,
-        max_depth: int = MAX_QUEUE_DEPTH,
-        timeout_seconds: float = QUEUE_WAIT_TIMEOUT_SECONDS,
+        max_depth: int | None = None,
+        timeout_seconds: float | None = None,
     ) -> None:
-        self._max_depth = max_depth
-        self._timeout_seconds = timeout_seconds
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+            MAX_QUEUE_DEPTH,
+            QUEUE_WAIT_TIMEOUT_SECONDS,
+        )
+        
+        self._max_depth = max_depth if max_depth is not None else MAX_QUEUE_DEPTH
+        self._timeout_seconds = timeout_seconds if timeout_seconds is not None else QUEUE_WAIT_TIMEOUT_SECONDS
         self._depth: int = 0
         self._lock = threading.Lock()
 
     def snapshot(self, oldest_wait_seconds: float = 0.0) -> VLLMQueueState:
         """Return an immutable snapshot of current queue state."""
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_backpressure_types import VLLMQueueState
+        
         with self._lock:
             return VLLMQueueState(
                 current_depth=self._depth,
@@ -192,10 +180,16 @@ class VLLMCircuitBreakerRegistry:
     """
 
     def __init__(self) -> None:
-        self._breakers: dict[str, VLLMCircuitBreaker] = {}
+        self._breakers: dict[str, "VLLMCircuitBreaker"] = {}
         self._lock = threading.Lock()
 
     def get(self, tier: str) -> VLLMCircuitBreaker:
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_backpressure_types import (
+            CIRCUIT_BREAKER_FAILURE_THRESHOLD,
+            VLLMCircuitBreaker,
+        )
+        
         with self._lock:
             if tier not in self._breakers:
                 self._breakers[tier] = VLLMCircuitBreaker(
@@ -338,10 +332,26 @@ def evaluate_gateway_call(
         queue_controller: In-gateway queue depth controller.
         breaker_registry: Circuit breaker registry.
         oldest_wait_seconds: Age of oldest queued request in seconds.
+        fingerprint: Optional infrastructure fingerprint for Phase 4 replay sealing.
 
     Returns:
         VLLMGatewayCallResult with routing decision, shaped request, telemetry.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_backpressure_types import (
+        BackpressureDecision,
+        evaluate_backpressure,
+    )
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        VLLMInfrastructureFingerprint,
+    )
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        GEMINI_25_PRO_MODEL_ID,
+        VLLMFailureType,
+        VLLMPreflightResult,
+        run_preflight_budget_check,
+    )
+    
     # Select profile based on severity
     profile = select_serving_profile(severity)
     tier = "local_fast" if profile.profile_name == "LOCAL_FAST_7B" else "local_strong"

@@ -177,24 +177,28 @@ def main() -> None:
 
     # Proof: Identical replay_hash across two runs
     h("## Proof: Identical Replay Hash Across Two Runs")
-    replay_proof = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
-        "from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint",
-        "from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash",
-        "fp = VLLMInfrastructureFingerprint.deterministic_test_instance()",
-        "ctrl1, reg1 = VLLMQueueController(), VLLMCircuitBreakerRegistry()",
-        "ctrl2, reg2 = VLLMQueueController(), VLLMCircuitBreakerRegistry()",
-        "result1 = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl1, reg1, fingerprint=fp)",
-        "result2 = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl2, reg2, fingerprint=fp)",
-        "hash1 = compute_replay_hash('hello', result1.local_request, fp, result1)",
-        "hash2 = compute_replay_hash('hello', result2.local_request, fp, result2)",
-        "print(f'replay_hash_run1={hash1}')",
-        "print(f'replay_hash_run2={hash2}')",
-        "print(f'hashes_match={hash1 == hash2}')",
-        "assert hash1 == hash2, 'Replay hashes must be identical'",
-        "print('OK: identical replay_hash confirmed')",
-    ])
-    out, rc = run([sys.executable, "-c", replay_proof])
+    replay_proof_code = """
+from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+
+fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
+ctrl1, reg1 = VLLMQueueController(), VLLMCircuitBreakerRegistry()
+ctrl2, reg2 = VLLMQueueController(), VLLMCircuitBreakerRegistry()
+
+result1 = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl1, reg1, fingerprint=fp)
+result2 = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl2, reg2, fingerprint=fp)
+
+hash1 = compute_replay_hash('hello', result1.local_request, fp, result1)
+hash2 = compute_replay_hash('hello', result2.local_request, fp, result2)
+
+print(f'replay_hash_run1={hash1}')
+print(f'replay_hash_run2={hash2}')
+print(f'hashes_match={hash1 == hash2}')
+assert hash1 == hash2, 'Replay hashes must be identical'
+print('OK: identical replay_hash confirmed')
+"""
+    out, rc = run([sys.executable, "-c", replay_proof_code])
     fence(out)
     if rc != 0:
         print("FAIL: identical replay_hash proof")
@@ -203,23 +207,35 @@ def main() -> None:
 
     # Proof: replay_hash changes when fingerprint changes
     h("## Proof: Replay Hash Changes When Fingerprint Changes")
-    fingerprint_change_proof = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
-        "from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint",
-        "from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash",
-        "fp1 = VLLMInfrastructureFingerprint.deterministic_test_instance()",
-        "fp2 = VLLMInfrastructureFingerprint(model_name='DifferentModel', model_revision_sha='def456', vllm_version='0.6.4', transformers_version='4.46.1', torch_version='2.5.2', cuda_version='12.5', driver_version='550.54.15')",
-        "ctrl, reg = VLLMQueueController(), VLLMCircuitBreakerRegistry()",
-        "result = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl, reg, fingerprint=fp1)",
-        "hash1 = compute_replay_hash('hello', result.local_request, fp1, result)",
-        "hash2 = compute_replay_hash('hello', result.local_request, fp2, result)",
-        "print(f'hash_fp1={hash1}')",
-        "print(f'hash_fp2={hash2}')",
-        "print(f'hashes_differ={hash1 != hash2}')",
-        "assert hash1 != hash2, 'Replay hashes must differ when fingerprint changes'",
-        "print('OK: replay_hash changes on fingerprint change confirmed')",
-    ])
-    out, rc = run([sys.executable, "-c", fingerprint_change_proof])
+    fingerprint_change_proof_code = """
+from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+
+fp1 = VLLMInfrastructureFingerprint.deterministic_test_instance()
+fp2 = VLLMInfrastructureFingerprint(
+    model_name='DifferentModel',
+    model_revision_sha='def456',
+    vllm_version='0.6.4',
+    transformers_version='4.46.1',
+    torch_version='2.5.2',
+    cuda_version='12.5',
+    driver_version='550.54.15'
+)
+
+ctrl, reg = VLLMQueueController(), VLLMCircuitBreakerRegistry()
+result = evaluate_gateway_call('hello', 'patch_suggestion', 'low', ctrl, reg, fingerprint=fp1)
+
+hash1 = compute_replay_hash('hello', result.local_request, fp1, result)
+hash2 = compute_replay_hash('hello', result.local_request, fp2, result)
+
+print(f'hash_fp1={hash1}')
+print(f'hash_fp2={hash2}')
+print(f'hashes_differ={hash1 != hash2}')
+assert hash1 != hash2, 'Replay hashes must differ when fingerprint changes'
+print('OK: replay_hash changes on fingerprint change confirmed')
+"""
+    out, rc = run([sys.executable, "-c", fingerprint_change_proof_code])
     fence(out)
     if rc != 0:
         print("FAIL: fingerprint change proof")

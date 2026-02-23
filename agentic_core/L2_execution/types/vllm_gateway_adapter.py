@@ -20,15 +20,6 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
-    VLLMCircuitBreakerRegistry,
-    VLLMGatewayCallResult,
-    VLLMQueueController,
-    evaluate_gateway_call,
-)
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
-    VLLMInfrastructureFingerprint,
-)
 
 # Singleton-style shared state (one queue + one breaker registry per process).
 # Replaced in tests via VLLMGatewayAdapter(queue=..., registry=...).
@@ -92,6 +83,17 @@ class VLLMGatewayAdapter:
         Returns:
             VLLMGatewayCallResult with routing decision + telemetry.
         """
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_gateway_integration import (
+            VLLMCircuitBreakerRegistry,
+            VLLMGatewayCallResult,
+            VLLMQueueController,
+            evaluate_gateway_call,
+        )
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+            VLLMInfrastructureFingerprint,
+        )
+        
         q = self.queue if self.queue is not None else _get_default_queue()
         r = self.registry if self.registry is not None else _get_default_registry()
         return evaluate_gateway_call(

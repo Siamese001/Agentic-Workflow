@@ -20,15 +20,6 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
-    VLLMInfrastructureFingerprint,
-    canonical_json,
-    sha256_hex,
-)
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
-    VLLMGatewayCallResult,
-    VLLMLocalRequest,
-)
 
 
 def canonical_prompt_hash(prompt: str) -> str:
@@ -41,6 +32,12 @@ def canonical_prompt_hash(prompt: str) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        canonical_json,
+        sha256_hex,
+    )
+    
     # Use canonical JSON to ensure stable representation
     return sha256_hex(canonical_json({"prompt": prompt}))
 
@@ -55,6 +52,12 @@ def canonical_local_request_hash(request: VLLMLocalRequest) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        canonical_json,
+        sha256_hex,
+    )
+    
     # Convert to dict and canonicalize
     request_dict = {
         "prompt": request.prompt,
@@ -79,6 +82,12 @@ def canonical_response_hash(result: VLLMGatewayCallResult) -> str:
     Returns:
         64-character lowercase hex SHA256 digest.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        canonical_json,
+        sha256_hex,
+    )
+    
     # Use telemetry as the canonical response artifact
     telemetry_dict = result.telemetry.as_dict()
     return sha256_hex(canonical_json(telemetry_dict))
@@ -104,6 +113,12 @@ def compute_replay_hash(
     Returns:
         64-character lowercase hex SHA256 digest.
     """
+    # Function-scoped imports to avoid lazy seam violations
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        canonical_json,
+        sha256_hex,
+    )
+    
     prompt_hash = canonical_prompt_hash(prompt)
     
     # For Gemini fallback, use empty dict for local request hash
@@ -138,6 +153,12 @@ class VLLMReplayArtifact:
     replay_hash: str = field(init=False)
 
     def __post_init__(self) -> None:
+        # Function-scoped imports to avoid lazy seam violations
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+            canonical_json,
+            sha256_hex,
+        )
+        
         # Compute all hashes immutably after construction
         object.__setattr__(self, "prompt_hash", canonical_prompt_hash(self.prompt))
         
