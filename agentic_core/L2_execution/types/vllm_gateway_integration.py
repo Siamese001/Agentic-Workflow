@@ -37,9 +37,8 @@ def select_serving_profile(severity: str) -> VLLMServingProfile:
     from agentic_core.L2_execution.types.vllm_serving_profile_types import (
         PROFILE_LOCAL_FAST_7B,
         PROFILE_LOCAL_STRONG_14B,
-        VLLMServingProfile,
     )
-    
+
     if severity == "high":
         return PROFILE_LOCAL_STRONG_14B
     return PROFILE_LOCAL_FAST_7B
@@ -91,8 +90,10 @@ def shape_local_request(
     """
     # Function-scoped imports to avoid lazy seam violations
     from agentic_core.L2_execution.types.vllm_token_budget_types import get_output_cap
-    
+
     max_output = get_output_cap(task_class)
+    if max_output is None:
+        raise ValueError(f"task_class={task_class!r} has no output cap; route to Gemini-2.5-Pro instead")
     max_tokens = min(max_output, profile.max_model_len)
 
     return VLLMLocalRequest(
@@ -129,7 +130,7 @@ class VLLMQueueController:
             MAX_QUEUE_DEPTH,
             QUEUE_WAIT_TIMEOUT_SECONDS,
         )
-        
+
         self._max_depth = max_depth if max_depth is not None else MAX_QUEUE_DEPTH
         self._timeout_seconds = timeout_seconds if timeout_seconds is not None else QUEUE_WAIT_TIMEOUT_SECONDS
         self._depth: int = 0
@@ -139,7 +140,7 @@ class VLLMQueueController:
         """Return an immutable snapshot of current queue state."""
         # Function-scoped imports to avoid lazy seam violations
         from agentic_core.L2_execution.types.vllm_backpressure_types import VLLMQueueState
-        
+
         with self._lock:
             return VLLMQueueState(
                 current_depth=self._depth,
@@ -180,7 +181,7 @@ class VLLMCircuitBreakerRegistry:
     """
 
     def __init__(self) -> None:
-        self._breakers: dict[str, "VLLMCircuitBreaker"] = {}
+        self._breakers: dict[str, VLLMCircuitBreaker] = {}
         self._lock = threading.Lock()
 
     def get(self, tier: str) -> VLLMCircuitBreaker:
@@ -189,7 +190,7 @@ class VLLMCircuitBreakerRegistry:
             CIRCUIT_BREAKER_FAILURE_THRESHOLD,
             VLLMCircuitBreaker,
         )
-        
+
         with self._lock:
             if tier not in self._breakers:
                 self._breakers[tier] = VLLMCircuitBreaker(
@@ -300,7 +301,7 @@ class VLLMGatewayCallResult:
     """Result of a gateway call-path evaluation.
 
     Contains routing decision, shaped request (if local), and telemetry.
-    
+
     PHASE 5: Includes invariant_violations list for runtime enforcement.
     """
 
@@ -310,11 +311,11 @@ class VLLMGatewayCallResult:
     preflight: VLLMPreflightResult
     backpressure: BackpressureDecision
     invariant_violations: list[Any] = None  # Phase 5: List of InvariantViolation objects
-    
+
     def __post_init__(self):
         """Initialize invariant_violations to empty list if None."""
         if self.invariant_violations is None:
-            object.__setattr__(self, 'invariant_violations', [])
+            object.__setattr__(self, "invariant_violations", [])
 
 
 def evaluate_gateway_call(
@@ -347,7 +348,6 @@ def evaluate_gateway_call(
     """
     # Function-scoped imports to avoid lazy seam violations
     from agentic_core.L2_execution.types.vllm_backpressure_types import (
-        BackpressureDecision,
         evaluate_backpressure,
     )
     from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
@@ -356,10 +356,9 @@ def evaluate_gateway_call(
     from agentic_core.L2_execution.types.vllm_token_budget_types import (
         GEMINI_25_PRO_MODEL_ID,
         VLLMFailureType,
-        VLLMPreflightResult,
         run_preflight_budget_check,
     )
-    
+
     # Select profile based on severity
     profile = select_serving_profile(severity)
     tier = "local_fast" if profile.profile_name == "LOCAL_FAST_7B" else "local_strong"
@@ -397,7 +396,11 @@ def evaluate_gateway_call(
         local_request = shape_local_request(prompt, task_class, profile)
 
     # PHASE 4: Use provided fingerprint or deterministic test instance
-    fp = fingerprint if fingerprint is not None else VLLMInfrastructureFingerprint.deterministic_test_instance()
+    fp = (
+        fingerprint
+        if fingerprint is not None
+        else VLLMInfrastructureFingerprint.deterministic_test_instance()
+    )
 
     telemetry = VLLMGatewayTelemetry(
         provider_selected=provider_selected,
