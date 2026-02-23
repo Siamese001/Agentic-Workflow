@@ -8,7 +8,7 @@ Ensures tampered artifacts are rejected with stable 64-hex replay_hash deltas.
 9a60b006843eaff3551b1f25856328a12bd035bc
 
 ## EVIDENCE_COMMIT
-PENDING
+eb3c7438b1a9adc71807b4d1a76c93526ad94b79
 
 ## FILES_CHANGED_CODE
 tests/unit_min_deps/test_vllm_replay_tamper_roundtrip.py
