@@ -69,6 +69,11 @@ cache/               # Unauthorized root folder - strictly ignored
 temp_*/              # Automated sprawl - strictly ignored
 tmp*                 # Cascade/temp subprocess temp files
 _temp_cmd*           # Temporary command files from phase execution
+_out_*               # Phase execution output files
+_typed_*             # Typed output files from phase execution
+_rebuild_*           # Rebuild script files from phase execution
+_selfcheck_*         # Self-check script files from phase execution
+_run_*               # Run script files from phase execution
 .tmp/                # Temporary directory - strictly ignored
 
 # Runtime state artifacts
