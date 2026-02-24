@@ -2331,3 +2331,159 @@ def test_non_allowlisted_healer_skips_escalation_even_with_flag(self) -> None:
     assert "reason=not_in_allowlist" in result.notes
     assert "healer=some_other_healer" in result.notes  # Shows healer_name in skip note
     assert len(fake.calls) == 0  # No invoker calls
+
+
+@pytest.mark.unit_min_deps
+class TestCanonicalEscalationPayload:
+    """Tests for hardened confidence tier escalation contract."""
+
+    def test_deterministic_payload_across_runs(self) -> None:
+        """Canonical payload must be identical across runs for same inputs."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Deterministic test"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        try:
+            # Create identical failed result
+            failed_result = HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="complex failure requiring LLM",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=complex_rewrite",
+            )
+
+            # Run escalation twice with identical inputs
+            note1 = _tier_escalate("guardian_drift_detection", failed_result, retry_count=2)
+            note2 = _tier_escalate("guardian_drift_detection", failed_result, retry_count=2)
+
+            # Extract payloads from notes
+            payload1 = note1.split("payload=")[1]
+            payload2 = note2.split("payload=")[1]
+
+            # Payloads must be identical (deterministic)
+            assert payload1 == payload2, f"Payloads differ: {payload1} != {payload2}"
+
+            # Verify payload structure
+            import json
+
+            payload_dict = json.loads(payload1)
+            assert "provider" in payload_dict
+            assert "model_id" in payload_dict
+            assert "decision_reason" in payload_dict
+            assert payload_dict["retry_count"] == 2
+            assert payload_dict["allowlist_check_id"] == "guardian_drift_detection"
+            assert payload_dict["allowlist_healer_name"] == "heal_guardian_drift_detection"
+            assert payload_dict["authoritative_healer_name"] == "heal_guardian_drift_detection"
+
+        finally:
+            sys.modules.pop("openai", None)
+
+    def test_negative_control_needs_llm_escalation_false(self) -> None:
+        """When needs_llm_escalation=False, escalation must NOT occur."""
+        fake = _FakeInvokerForIntegration()
+
+        # Create failed result WITHOUT escalation flag
+        failed_result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="simple failure",
+            needs_llm_escalation=False,  # Explicitly false
+        )
+
+        # Run escalation
+        note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0)
+
+        # Must be skipped with correct reason
+        assert "tier_escalation_skipped:" in note
+        assert "reason=needs_llm_escalation_false" in note
+        assert "check_id=guardian_drift_detection" in note
+
+        # No adapter invocations
+        assert len(fake.calls) == 0
+
+        # No payload in note
+        assert "payload=" not in note
+
+    def test_negative_control_allowlist_mismatch(self) -> None:
+        """When allowlist mismatches, escalation must NOT occur."""
+        fake = _FakeInvokerForIntegration()
+
+        # Create failed result with escalation flag but wrong check_id
+        failed_result = HealCheckResult(
+            check_id="non_allowlisted_check",  # Not in HEALER_ESCALATION_ALLOWLIST
+            status=HealStatus.FAILED,
+            notes="failure from non-allowlisted check",
+            needs_llm_escalation=True,
+        )
+
+        # Run escalation
+        note = _tier_escalate("non_allowlisted_check", failed_result, retry_count=0)
+
+        # Must be skipped with correct reason
+        assert "tier_escalation_skipped:" in note
+        assert "reason=not_in_allowlist" in note
+        assert "check_id=non_allowlisted_check" in note
+
+        # No adapter invocations
+        assert len(fake.calls) == 0
+
+        # No payload in note
+        assert "payload=" not in note
+
+    def test_payload_decision_reason_retry_threshold(self) -> None:
+        """Payload decision_reason should be retry_count_threshold when retry_count >= 2."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Retry threshold test"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        try:
+            failed_result = HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="retry threshold test",
+                needs_llm_escalation=True,
+            )
+
+            # Use retry_count >= 2 to trigger retry threshold reason
+            note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=3)
+
+            # Extract and verify payload
+            payload_str = note.split("payload=")[1]
+            import json
+
+            payload_dict = json.loads(payload_str)
+
+            assert payload_dict["decision_reason"] == "retry_count_threshold"
+            assert payload_dict["retry_count"] == 3
+
+        finally:
+            sys.modules.pop("openai", None)

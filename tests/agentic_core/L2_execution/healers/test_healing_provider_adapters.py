@@ -550,3 +550,136 @@ class TestAdapterIntegrationWithDispatcher:
         assert record.agent_name == "DispatcherLocalTest"
         assert record.method_called == "invoke_local"
         assert record.trace_id == "dispatcher-local-003"
+
+
+class TestTokenLimitConstants:
+    """Tests for externalized token limit constants."""
+
+    def test_token_limit_constants_exist_and_have_correct_values(self) -> None:
+        """Module should define token limit constants with correct values."""
+        from agentic_core.L2_execution.healers.healing_provider_adapters import (
+            DEFAULT_MAX_OUTPUT_TOKENS,
+            DEFAULT_MAX_TOKENS,
+        )
+
+        # Constants should exist and have the expected values
+        assert DEFAULT_MAX_TOKENS == 2048
+        assert DEFAULT_MAX_OUTPUT_TOKENS == 2048
+
+    def test_qwen_adapter_uses_default_max_tokens_constant(self) -> None:
+        """Qwen adapter should use DEFAULT_MAX_TOKENS constant."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Test response"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        sys.modules["openai"] = fake_openai
+
+        try:
+            from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                DEFAULT_MAX_TOKENS,
+                QwenInvokerAdapter,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                load_default_healing_tier_config,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_types import (
+                HealingDecision,
+                HealingInput,
+                HealingTier,
+            )
+
+            # Create adapter and invoke
+            adapter = QwenInvokerAdapter(base_url="http://localhost:8000")
+            healing_input = HealingInput(
+                failure_type="test_failure",
+                error_signature="TestError",
+                trace_id="test-001",
+                retry_count=0,
+                blast_radius_estimate=0.5,
+                required_tools=(),
+                violation_metadata_refs=(),
+            )
+            decision = HealingDecision(
+                tier=HealingTier.QWEN_VLLM, heal_confidence=0.8, reason_codes=("test",)
+            )
+            config = load_default_healing_tier_config()
+
+            adapter.invoke_qwen_vllm(healing_input, decision, config, agent_name="TestAgent")
+
+            # Verify the constant was used
+            fake_client.chat.completions.create.assert_called_once()
+            call_args = fake_client.chat.completions.create.call_args
+            assert call_args.kwargs["max_tokens"] == DEFAULT_MAX_TOKENS
+
+        finally:
+            sys.modules.pop("openai", None)
+
+    def test_gemini_adapter_uses_default_max_output_tokens_constant(self) -> None:
+        """Gemini adapter should use DEFAULT_MAX_OUTPUT_TOKENS constant."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake Gemini module
+        fake_genai = Mock()
+        fake_model = Mock()
+        fake_response = Mock()
+        fake_response.text = "Test response"
+
+        fake_model.generate_content.return_value = fake_response
+        fake_genai.GenerativeModel.return_value = fake_model
+        fake_genai.types.GenerationConfig = Mock
+
+        sys.modules["google.generativeai"] = fake_genai
+
+        try:
+            from agentic_core.L2_execution.healers.healing_provider_adapters import (
+                DEFAULT_MAX_OUTPUT_TOKENS,
+                GeminiInvokerAdapter,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                load_default_healing_tier_config,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_types import (
+                HealingDecision,
+                HealingInput,
+                HealingTier,
+            )
+
+            # Create adapter and invoke
+            adapter = GeminiInvokerAdapter(api_key="test-key")
+            healing_input = HealingInput(
+                failure_type="test_failure",
+                error_signature="TestError",
+                trace_id="test-002",
+                retry_count=0,
+                blast_radius_estimate=0.5,
+                required_tools=(),
+                violation_metadata_refs=(),
+            )
+            decision = HealingDecision(
+                tier=HealingTier.GEMINI_2_5_PRO, heal_confidence=0.8, reason_codes=("test",)
+            )
+            config = load_default_healing_tier_config()
+
+            adapter.invoke_gemini(healing_input, decision, config, agent_name="TestAgent")
+
+            # Verify the constant was used
+            fake_model.generate_content.assert_called_once()
+            call_args = fake_model.generate_content.call_args
+            generation_config = call_args.kwargs["generation_config"]
+            assert generation_config.max_output_tokens == DEFAULT_MAX_OUTPUT_TOKENS
+
+        finally:
+            sys.modules.pop("google.generativeai", None)

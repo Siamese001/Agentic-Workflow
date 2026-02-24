@@ -85,8 +85,8 @@ class QwenInvokerAdapter:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.1,  # guardian: allow-magic_configuration
-                max_tokens=2048,  # guardian: allow-magic_configuration
+                temperature=0.1,
+                max_tokens=DEFAULT_MAX_TOKENS,
             )
 
             usage = response.usage
@@ -221,8 +221,8 @@ class GeminiInvokerAdapter:
             response = model.generate_content(
                 prompt,
                 generation_config=genai.types.GenerationConfig(
-                    temperature=0.1,  # guardian: allow-magic_configuration
-                    max_output_tokens=2048,  # guardian: allow-magic_configuration
+                    temperature=0.1,
+                    max_output_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
                 ),
             )
 

@@ -27,6 +27,7 @@ import json
 import re as _re
 import sys
 from dataclasses import dataclass
+from enum import Enum
 from pathlib import Path
 from typing import Any
 
@@ -86,6 +87,49 @@ HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
 
 # Hint key pattern: "key=value" pairs, space-separated
 _HINT_KV_RE = _re.compile(r"(\w+)=([^\s]+)")
+
+
+class EscalationDecisionReason(Enum):
+    """Canonical reasons for tier escalation decisions."""
+
+    RETRY_COUNT_THRESHOLD = "retry_count_threshold"
+    POLICY_ALLOWLIST = "policy_allowlist"
+    EXPLICIT_FLAG = "explicit_flag"
+
+
+@dataclass(frozen=True, slots=True)
+class CanonicalEscalationPayload:
+    """Canonical, deterministic escalation payload for audit trails.
+
+    This payload is stable across runs for identical inputs and contains
+    all essential decision metadata without transient identifiers.
+    """
+
+    provider: str  # e.g., "qwen_vllm" | "gemini"
+    model_id: str  # exact string used
+    decision_reason: str  # from EscalationDecisionReason
+    retry_count: int
+    allowlist_check_id: str
+    allowlist_healer_name: str
+    authoritative_healer_name: str
+
+    def to_dict(self) -> dict[str, Any]:
+        """Convert to dict with sorted keys for deterministic serialization."""
+        return {
+            "provider": self.provider,
+            "model_id": self.model_id,
+            "decision_reason": self.decision_reason,
+            "retry_count": self.retry_count,
+            "allowlist_check_id": self.allowlist_check_id,
+            "allowlist_healer_name": self.allowlist_healer_name,
+            "authoritative_healer_name": self.authoritative_healer_name,
+        }
+
+    def to_canonical_string(self) -> str:
+        """Return deterministic string representation for comparison."""
+        payload_dict = self.to_dict()
+        # Use json with sorted keys for deterministic ordering
+        return json.dumps(payload_dict, separators=(",", ":"), sort_keys=True)
 
 
 @dataclass(frozen=True, slots=True)
@@ -515,12 +559,43 @@ def _tier_escalate(
         invoker=invoker,
         agent_name="remediation_dispatcher",
     )
+
+    # Determine decision reason
+    if ctx.retry_count >= 2:
+        decision_reason = EscalationDecisionReason.RETRY_COUNT_THRESHOLD.value
+    elif healer_pair in HEALER_ESCALATION_ALLOWLIST:
+        decision_reason = EscalationDecisionReason.POLICY_ALLOWLIST.value
+    else:
+        decision_reason = EscalationDecisionReason.EXPLICIT_FLAG.value
+
+    # Map tier to provider
+    provider_map = {
+        "QWEN_VLLM": "qwen_vllm",
+        "GEMINI_2_5_PRO": "gemini",
+        "LOCAL_AGENT": "local_agent",
+    }
+    provider = provider_map.get(decision.tier.value, "unknown")
+
+    # Create canonical payload
+    canonical_payload = CanonicalEscalationPayload(
+        provider=provider,
+        model_id=record.model_id,
+        decision_reason=decision_reason,
+        retry_count=ctx.retry_count,
+        allowlist_check_id=check_id,
+        allowlist_healer_name=escalation_ctx.healer_name,
+        authoritative_healer_name=escalation_ctx.healer_name,
+    )
+
+    # Include canonical payload in the note (separate from trace_id)
+    payload_str = canonical_payload.to_canonical_string()
     return (
         f"tier_escalation: check_id={check_id} "
         f"tier={decision.tier.value} "
         f"model={record.model_id} "
         f"confidence={decision.heal_confidence:.4f} "
-        f"trace_id={ctx.trace_id}"
+        f"trace_id={ctx.trace_id} "
+        f"payload={payload_str}"
     )
 
 
