@@ -12,17 +12,6 @@ from __future__ import annotations
 
 import logging
 
-# Imports are lazy to avoid dependency issues in environments without SDKs
-try:
-    from openai import OpenAI
-except ImportError:
-    OpenAI = None
-
-try:
-    import google.generativeai as genai
-except ImportError:
-    genai = None
-
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 from agentic_core.L2_execution.healers.healing_tier_types import (
@@ -52,9 +41,8 @@ class QwenInvokerAdapter:
             base_url: vLLM server URL (e.g. "http://localhost:8000/v1").
             api_key: Optional API key for vLLM server.
         """
-        if OpenAI is None:
-            raise ImportError("openai package required for QwenInvokerAdapter")
-        self.client = OpenAI(base_url=base_url, api_key=api_key or "dummy")
+        self.base_url = base_url
+        self.api_key = api_key
 
     def invoke_qwen_vllm(
         self,
@@ -75,11 +63,19 @@ class QwenInvokerAdapter:
         Returns:
             InvocationRecord with actual model response metadata.
         """
+        # Lazy import to avoid dependency issues in test environments
+        try:
+            from openai import OpenAI
+        except ImportError as exc:
+            raise ImportError("OpenAI SDK is required for QwenInvokerAdapter") from exc
+
+        client = OpenAI(base_url=self.base_url, api_key=self.api_key or "dummy")
+
         # Build structured prompt from healing context
         prompt = self._build_prompt(healing_input, decision, agent_name)
 
         try:
-            response = self.client.chat.completions.create(
+            response = client.chat.completions.create(
                 model=config.model_qwen_vllm_id,
                 messages=[
                     {
@@ -186,10 +182,7 @@ class GeminiInvokerAdapter:
         Args:
             api_key: Google AI API key for Gemini access.
         """
-        if genai is None:
-            raise ImportError("google-generativeai package required for GeminiInvokerAdapter")
-        genai.configure(api_key=api_key)
-        self.model_name = "gemini-2.0-flash-exp"  # Will be overridden in invoke
+        self.api_key = api_key
 
     def invoke_gemini(
         self,
@@ -210,6 +203,14 @@ class GeminiInvokerAdapter:
         Returns:
             InvocationRecord with actual model response metadata.
         """
+        # Lazy import to avoid dependency issues in test environments
+        try:
+            import google.generativeai as genai
+        except ImportError as exc:
+            raise ImportError("google-generativeai SDK is required for GeminiInvokerAdapter") from exc
+
+        genai.configure(api_key=self.api_key)
+
         # Build structured prompt from healing context
         prompt = self._build_prompt(healing_input, decision, agent_name)
 

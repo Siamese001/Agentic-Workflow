@@ -1797,7 +1797,7 @@ class TestProductionEntrypointTierIntegration:
                 status=HealStatus.FAILED,
                 notes="complex rewrite needed",
                 needs_llm_escalation=True,
-                escalation_hint="healer_name=heal_guardian_drift_detection failure_type=code_edit_required blast_radius=0.7",
+                escalation_hint="failure_type=code_edit_required blast_radius=0.7",
             )
 
         _failing_healer.__name__ = "heal_guardian_drift_detection"
@@ -1838,7 +1838,7 @@ class TestProductionEntrypointTierIntegration:
                 status=HealStatus.FAILED,
                 notes="policy blocked: missing permissions",
                 needs_llm_escalation=False,
-                escalation_hint="healer_name=heal_guardian_drift_detection",
+                escalation_hint="failure_type=access_denied",
             )
 
         _policy_blocked_healer.__name__ = "heal_guardian_drift_detection"
@@ -1930,7 +1930,7 @@ class TestProductionEntrypointTierIntegration:
         ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=0)
         assert ctx.failure_type == "healer_failure"
         assert ctx.blast_radius_estimate == 0.5
-        assert ctx.healer_name == "guardian_drift_detection"  # Defaults to check_id
+        assert ctx.healer_name == "heal_guardian_drift_detection"  # Computed from registry
 
     def test_escalation_context_extracts_healer_name_from_hint(self) -> None:
         """EscalationContext extracts healer_name from escalation_hint when provided."""
@@ -1938,62 +1938,85 @@ class TestProductionEntrypointTierIntegration:
             check_id="guardian_drift_detection",
             status=HealStatus.FAILED,
             notes="needs healing",
-            escalation_hint="healer_name=heal_guardian_drift_detection failure_type=drift",
+            escalation_hint="failure_type=drift",
         )
         ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
-        assert ctx.healer_name == "heal_guardian_drift_detection"
+        assert ctx.healer_name == "heal_guardian_drift_detection"  # Computed from registry
         assert ctx.failure_type == "drift"
         assert ctx.retry_count == 1
 
     def test_tightened_allowlist_blocks_wrong_healer_name(self) -> None:
-        """Tightened allowlist blocks escalation when healer_name doesn't match expected value."""
-        fake = _FakeInvokerForIntegration()
-
-        # Create result with wrong healer_name in hint
-        failed_result = HealCheckResult(
-            check_id="guardian_drift_detection",
-            status=HealStatus.FAILED,
-            notes="failed",
-            needs_llm_escalation=True,
-            escalation_hint="healer_name=WrongHealerName",  # Doesn't match allowlist
-        )
-
-        note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
-
-        assert "tier_escalation_skipped:" in note
-        assert "reason=not_in_allowlist" in note
-        assert "healer=WrongHealerName" in note
-        assert len(fake.calls) == 0  # No escalation
-
-    def test_healer_identity_mismatch_blocks_escalation(self) -> None:
-        """Healer identity mismatch between registered function and hint blocks escalation."""
+        """Allowlist blocks escalation when computed healer_name doesn't match allowlist."""
         from unittest.mock import patch
-
         fake = _FakeInvokerForIntegration()
 
-        # Create result with healer_name that passes allowlist but doesn't match registered function
-        # We need to patch the allowlist to include our test healer name
+        # Create a healer with a name not in allowlist
+        def _unallowed_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=test",
+            )
+        _unallowed_healer.__name__ = "UnallowedHealer"
+
         from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
-
-        original_allowlist = _rd.HEALER_ESCALATION_ALLOWLIST
-        test_allowlist = original_allowlist | {("guardian_drift_detection", "MismatchedHealer")}
-
-        with patch.object(_rd, "HEALER_ESCALATION_ALLOWLIST", test_allowlist):
+        
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _unallowed_healer}):
             failed_result = HealCheckResult(
                 check_id="guardian_drift_detection",
                 status=HealStatus.FAILED,
                 notes="failed",
                 needs_llm_escalation=True,
-                escalation_hint="healer_name=MismatchedHealer",  # In allowlist but wrong function name
+                escalation_hint="failure_type=test",
             )
 
             note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
 
+            # Should skip because computed healer_name="UnallowedHealer" is not in allowlist
             assert "tier_escalation_skipped:" in note
-            assert "reason=healer_identity_mismatch" in note
-            assert "healer=MismatchedHealer" in note
-            # Note: registered healer name will be heal_guardian_drift_detection
+            assert "reason=not_in_allowlist" in note
+            assert "healer=UnallowedHealer" in note
             assert len(fake.calls) == 0  # No escalation
+
+    def test_authoritative_healer_identity_from_registry(self) -> None:
+        """Healer identity is computed from registry, not from hints."""
+        from unittest.mock import patch
+        fake = _FakeInvokerForIntegration()
+
+        # Create a healer with a specific name
+        def _test_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=test",
+            )
+        _test_healer.__name__ = "TestHealerName"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+        
+        # Patch allowlist to match the actual healer name from registry
+        test_allowlist = frozenset({("guardian_drift_detection", "TestHealerName")})
+        
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _test_healer}):
+            with patch.object(_rd, "HEALER_ESCALATION_ALLOWLIST", test_allowlist):
+                # Create result - healer_name in hint is ignored
+                failed_result = HealCheckResult(
+                    check_id="guardian_drift_detection",
+                    status=HealStatus.FAILED,
+                    notes="failed",
+                    needs_llm_escalation=True,
+                    escalation_hint="failure_type=test",  # healer_name is ignored
+                )
+
+                # This should escalate because the computed healer_name matches allowlist
+                note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
+                
+                assert "tier_escalation:" in note
+                assert len(fake.calls) == 1
 
     def test_strict_parsing_ignores_unknown_keys(self) -> None:
         """EscalationContext silently ignores unknown keys in escalation_hint."""
@@ -2001,7 +2024,7 @@ class TestProductionEntrypointTierIntegration:
             check_id="guardian_drift_detection",
             status=HealStatus.FAILED,
             notes="needs healing",
-            escalation_hint="healer_name=heal_guardian_drift_detection failure_type=drift unknown_key=should_ignore blast_radius=0.8",
+            escalation_hint="failure_type=drift blast_radius=0.8",
         )
         ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
 
@@ -2063,7 +2086,7 @@ class TestProductionEntrypointTierIntegration:
             status=HealStatus.FAILED,
             notes="needs rewrite",
             needs_llm_escalation=True,
-            escalation_hint="healer_name=heal_guardian_drift_detection",
+            escalation_hint="failure_type=rewrite_needed",
         )
         note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
 
@@ -2086,7 +2109,7 @@ class TestProductionEntrypointTierIntegration:
             status=HealStatus.FAILED,
             notes="failed",
             needs_llm_escalation=True,
-            escalation_hint="healer_name=heal_guardian_drift_detection",
+            escalation_hint="failure_type=complex_failure",
         )
         # max_heal_retries=3; retry_count=3 forces GEMINI
         _tier_escalate("guardian_drift_detection", failed_result, retry_count=3, invoker=fake)

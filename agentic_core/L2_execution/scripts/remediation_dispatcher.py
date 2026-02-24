@@ -73,6 +73,8 @@ OUTPUT_FILENAME = "combined_heal_result.json"
 # Using pairs prevents check_id drift where a different healer could reuse the same check_id.
 # A healer NOT in this set will never trigger _tier_escalate, even if it
 # sets needs_llm_escalation=True.  Extend this list as healers mature.
+# Allowlist of (check_id, healer_identity) pairs that can escalate
+# healer_identity is computed from the registry function __name__ attribute
 HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
         ("guardian_drift_detection", "heal_guardian_drift_detection"),
@@ -81,14 +83,6 @@ HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
         ("guardian_ssot_drift", "heal_guardian_ssot_drift"),
     }
 )
-
-# Mapping from check_id to healer_name for escalation hints
-_CHECK_ID_TO_HEALER_NAME: dict[str, str] = {
-    "guardian_drift_detection": "heal_guardian_drift_detection",
-    "guardian_import_boundary": "heal_guardian_import_boundary",
-    "guardian_layer_inversion": "heal_guardian_layer_inversion",
-    "guardian_ssot_drift": "heal_guardian_ssot_drift",
-}
 
 # Hint key pattern: "key=value" pairs, space-separated
 _HINT_KV_RE = _re.compile(r"(\w+)=([^\s]+)")
@@ -127,7 +121,7 @@ class EscalationContext:
             for m in _HINT_KV_RE.finditer(result.escalation_hint):
                 key, value = m.group(1), m.group(2)
                 # Only allow known keys - ignore unknown keys silently
-                if key in {"healer_name", "failure_type", "blast_radius"}:
+                if key in {"failure_type", "blast_radius"}:
                     hint_kvs[key] = value
 
         # Parse failure_type with strict default
@@ -143,8 +137,11 @@ class EscalationContext:
         # Truncate summary to prevent bloat
         summary = (result.notes or "")[:120]
 
-        # Extract healer_name with fallback to check_id
-        healer_name = hint_kvs.get("healer_name", check_id)
+        # Compute healer identity from registry (authoritative source)
+        if check_id in HEALER_REGISTRY:
+            healer_identity = getattr(HEALER_REGISTRY[check_id], "__name__", "<unknown>")
+        else:
+            healer_identity = "<unknown>"
 
         # Generate longer, more collision-resistant trace_id (16 chars instead of 12)
         canonical = f"{check_id}:{retry_count}"
@@ -152,7 +149,7 @@ class EscalationContext:
 
         return EscalationContext(
             check_id=check_id,
-            healer_name=healer_name,
+            healer_name=healer_identity,
             retry_count=retry_count,
             failure_type=failure_type,
             blast_radius_estimate=blast,
@@ -489,23 +486,12 @@ def _tier_escalate(
     escalation_ctx = EscalationContext.from_result(check_id, result, retry_count)
     healer_pair = (check_id, escalation_ctx.healer_name)
 
-    # Guard 3: Check allowlist
+    # Guard 3: Check allowlist (healer_name is computed from registry, so this is authoritative)
     if healer_pair not in HEALER_ESCALATION_ALLOWLIST:
         return (
             f"tier_escalation_skipped: check_id={check_id} "
             f"healer={escalation_ctx.healer_name} reason=not_in_allowlist"
         )
-
-    # Guard 4: Verify registered healer identity matches expected
-    if check_id in HEALER_REGISTRY:
-        registered_healer = HEALER_REGISTRY[check_id]
-        registered_name = getattr(registered_healer, "__name__", str(registered_healer))
-        if registered_name != escalation_ctx.healer_name:
-            return (
-                f"tier_escalation_skipped: check_id={check_id} "
-                f"healer={escalation_ctx.healer_name} "
-                f"registered={registered_name} reason=healer_identity_mismatch"
-            )
 
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
@@ -565,15 +551,14 @@ def _invoke_healer(
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
-        healer_name = _CHECK_ID_TO_HEALER_NAME.get(check_id, check_id)
         result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,
             changes_made=(),
             rollback_info=None,
             notes=f"healer error: {type(exc).__name__}: {exc}",
-            needs_llm_escalation=(check_id, healer_name) in HEALER_ESCALATION_ALLOWLIST,
-            escalation_hint=f"healer_name={healer_name} failure_type=healer_exception blast_radius=0.5",
+            needs_llm_escalation=True,
+            escalation_hint="failure_type=healer_error",
         )
 
     if result.status == HealStatus.FAILED:

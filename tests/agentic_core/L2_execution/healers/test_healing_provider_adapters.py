@@ -50,8 +50,8 @@ class TestQwenAdapterContract:
         mock_response.usage.completion_tokens = 75
         mock_client.chat.completions.create.return_value = mock_response
 
-        # Create adapter with mocked client
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.OpenAI") as mock_openai:
+        # Create adapter with mocked client (patch openai module for lazy import)
+        with patch("openai.OpenAI") as mock_openai:
             mock_openai.return_value = mock_client
             adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1", api_key="test-key")
 
@@ -103,7 +103,7 @@ class TestQwenAdapterContract:
         mock_client = Mock()
         mock_client.chat.completions.create.side_effect = Exception("API Error")
 
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.OpenAI") as mock_openai:
+        with patch("openai.OpenAI") as mock_openai:
             mock_openai.return_value = mock_client
             adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
 
@@ -158,8 +158,8 @@ class TestGeminiAdapterContract:
         mock_response.text = "Fix: add missing import statement"
         mock_model.generate_content.return_value = mock_response
 
-        # Create adapter with mocked SDK
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.genai") as mock_genai:
+        # Create adapter with mocked SDK (patch the lazy import)
+        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.google.generativeai") as mock_genai:
             # Mock the types.GenerationConfig as well
             mock_genai.types.GenerationConfig = Mock
             mock_genai.GenerativeModel.return_value = mock_model
@@ -213,7 +213,7 @@ class TestGeminiAdapterContract:
         mock_model = Mock()
         mock_model.generate_content.side_effect = Exception("Gemini API Error")
 
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.genai") as mock_genai:
+        with patch("google.generativeai") as mock_genai:
             mock_genai.GenerativeModel.return_value = mock_model
             adapter = GeminiInvokerAdapter(api_key="test-key")
 
@@ -236,7 +236,7 @@ class TestGeminiAdapterContract:
 
     def test_gemini_adapter_not_implemented_methods(self) -> None:
         """Gemini adapter should raise NotImplementedError for unsupported methods."""
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.genai"):
+        with patch("google.generativeai"):
             adapter = GeminiInvokerAdapter(api_key="test-key")
 
         healing_input = HealingInput(
@@ -326,7 +326,7 @@ class TestAdapterIntegrationWithDispatcher:
         mock_response.usage.completion_tokens = 50
         mock_client.chat.completions.create.return_value = mock_response
 
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.OpenAI") as mock_openai:
+        with patch("openai.OpenAI") as mock_openai:
             mock_openai.return_value = mock_client
             qwen_adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
 
@@ -367,7 +367,7 @@ class TestAdapterIntegrationWithDispatcher:
         mock_response.text = "Gemini fix applied"
         mock_model.generate_content.return_value = mock_response
 
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.genai") as mock_genai:
+        with patch("google.generativeai") as mock_genai:
             mock_genai.GenerativeModel.return_value = mock_model
             gemini_adapter = GeminiInvokerAdapter(api_key="test-key")
 
