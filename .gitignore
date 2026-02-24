@@ -24,6 +24,7 @@ tools/_patch_evidence.py
 # [NEURAL LINK] SENSITIVE DATA
 .env
 .env.*
+!.env.example
 
 # Python artifacts
 __pycache__/
