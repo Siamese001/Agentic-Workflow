@@ -229,8 +229,15 @@ def build_seed_embedding_pack(
 
         # Step 6-7: Generate embeddings and write embeddings.f32
         texts = [row["content_hash"] for row in rows]  # Use content_hash as text input
-        dimensions = 8  # Default for tests; in production this comes from embedder
-        vectors = embedder.embed_batch(texts, dimensions)
+        # For DeterministicHashEmbedder, use its configured dimensions
+        # For production embedders, we'll need to get dimensions from the model
+        if hasattr(embedder, 'dimensions'):
+            dimensions = embedder.dimensions
+        else:
+            # For OpenAI embedder, we need to get dimensions from model info
+            # This is a fallback - in production, dimensions should be determined by the model
+            dimensions = 3072  # Default for text-embedding-3-large
+        vectors = embedder.embed_batch(texts, dimensions=dimensions)
         embeddings_path = temp_path / "embeddings.f32"
         matrix_hash = _write_embeddings_f32(vectors, embeddings_path)
 
