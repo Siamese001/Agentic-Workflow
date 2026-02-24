@@ -22,6 +22,12 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
 
 logger = logging.getLogger(__name__)
 
+# Module-level constants for token limits
+# guardian: allow-magic-config
+DEFAULT_MAX_TOKENS = 2048
+# guardian: allow-magic-config
+DEFAULT_MAX_OUTPUT_TOKENS = 2048
+
 # ---------------------------------------------------------------------------
 # Qwen/vLLM Adapter — wraps OpenAI-compatible client
 # ---------------------------------------------------------------------------
