@@ -68,12 +68,14 @@ cache/               # Unauthorized root folder - strictly ignored
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
 tmp*                 # Cascade/temp subprocess temp files
-_temp_cmd*           # Temporary command files from phase execution
-_out_*               # Phase execution output files
-_typed_*             # Typed output files from phase execution
-_rebuild_*           # Rebuild script files from phase execution
-_selfcheck_*         # Self-check script files from phase execution
-_run_*               # Run script files from phase execution
+**/_temp_cmd*        # Temporary command files (any directory)
+**/_out_*            # Phase execution output files (any directory)
+**/_typed_*          # Typed output files (any directory)
+**/_rebuild_*        # Rebuild script files (any directory)
+**/_selfcheck_*      # Self-check script files (any directory)
+**/_run_*            # Run script files (any directory)
+**/_capture_*        # Capture script files (any directory)
+**/_make_*           # Make/build script files (any directory)
 .tmp/                # Temporary directory - strictly ignored
 
 # Runtime state artifacts
