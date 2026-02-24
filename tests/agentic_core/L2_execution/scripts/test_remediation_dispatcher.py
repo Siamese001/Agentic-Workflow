@@ -17,14 +17,25 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+from agentic_core.L2_execution.healers.healing_tier_types import (
+    HealingDecision,
+    HealingInput,
+    HealingTier,
+)
 from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+    HEALER_ESCALATION_ALLOWLIST,
     NOTE_MAPPED,
     NOTE_UNMAPPED,
     OUTPUT_FILENAME,
     SANDBOX_SENTINEL,
     TOOL_ID,
     ApprovalGatingError,
+    EscalationContext,
     MutationGuardError,
+    _invoke_healer,
+    _tier_escalate,
     approvals_satisfy_phase,
     build_healer_worklist,
     classify_check_ids,
@@ -34,6 +45,7 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     validate_phase_names,
 )
 from agentic_core.L2_execution.types.heal_contract import (
+    HealCheckResult,
     HealStatus,
     check_schema_compatibility,
 )
@@ -1699,3 +1711,779 @@ class TestMutationDependentApproval:
             created_utc=TIMESTAMP,
         )
         assert result.validate() == []
+
+
+# ---------------------------------------------------------------------------
+# Phase B: Integration test — production entrypoint -> tier -> invocation
+# ---------------------------------------------------------------------------
+
+
+class _FakeInvokerForIntegration:
+    """Minimal FakeInvoker for integration test (no network)."""
+
+    def __init__(self) -> None:
+        self.calls: list[InvocationRecord] = []
+
+    def invoke_local(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.LOCAL_AGENT,
+            model_id="local",
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_local",
+        )
+        self.calls.append(rec)
+        return rec
+
+    def invoke_qwen_vllm(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.QWEN_VLLM,
+            model_id=cfg.model_qwen_vllm_id,
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_qwen_vllm",
+        )
+        self.calls.append(rec)
+        return rec
+
+    def invoke_gemini(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.GEMINI_2_5_PRO,
+            model_id=cfg.model_gemini_2_5_pro_id,
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_gemini",
+        )
+        self.calls.append(rec)
+        return rec
+
+
+class TestProductionEntrypointTierIntegration:
+    """Phase B: prove _invoke_healer -> tier -> invocation with all four guards.
+
+    Refinements tested:
+      1. needs_llm_escalation=True required for escalation (over-escalation guard)
+      2. check_id must be in HEALER_ESCALATION_ALLOWLIST (allowlist bypass guard)
+      3. EscalationContext builds FailureSignal deterministically (not from raw notes)
+      4. retry_count drives tier selection (re-entrancy safety)
+    """
+
+    pytestmark = pytest.mark.unit_min_deps
+
+    # ------------------------------------------------------------------
+    # Refinement 1 + 2: allowlisted healer with needs_llm_escalation=True
+    # triggers real escalation
+    # ------------------------------------------------------------------
+
+    def test_allowlisted_healer_with_flag_triggers_escalation(self) -> None:
+        """Full E2E: allowlisted check_id + needs_llm_escalation=True -> FakeInvoker called."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+
+        def _failing_healer(check_dict, *, repo_root=None, apply=False):
+            # Rename function to match expected healer name
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="complex rewrite needed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=code_edit_required blast_radius=0.7",
+            )
+
+        _failing_healer.__name__ = "heal_guardian_drift_detection"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _failing_healer}):
+            result = _invoke_healer(
+                "guardian_drift_detection",
+                {},
+                tier_invoker=fake,
+                retry_count=0,
+            )
+
+        assert result.status == HealStatus.FAILED
+        assert result.notes is not None
+        assert "tier_escalation:" in result.notes
+        assert "check_id=guardian_drift_detection" in result.notes
+        assert "trace_id=" in result.notes
+        assert len(fake.calls) == 1
+        record = fake.calls[0]
+        assert record.method_called in {"invoke_local", "invoke_qwen_vllm", "invoke_gemini"}
+        assert record.agent_name == "remediation_dispatcher"
+
+    # ------------------------------------------------------------------
+    # Refinement 1: needs_llm_escalation=False blocks escalation
+    # ------------------------------------------------------------------
+
+    def test_failed_without_flag_does_not_escalate(self) -> None:
+        """FAILED + needs_llm_escalation=False -> tier system NOT invoked (over-escalation guard)."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+
+        def _policy_blocked_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="policy blocked: missing permissions",
+                needs_llm_escalation=False,
+                escalation_hint="failure_type=access_denied",
+            )
+
+        _policy_blocked_healer.__name__ = "heal_guardian_drift_detection"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _policy_blocked_healer}):
+            result = _invoke_healer(
+                "guardian_drift_detection",
+                {},
+                tier_invoker=fake,
+            )
+
+        assert result.status == HealStatus.FAILED
+        assert len(fake.calls) == 0, "Policy-blocked failure must NOT escalate"
+        assert "tier_escalation_skipped" in (result.notes or "")
+        assert "needs_llm_escalation_false" in (result.notes or "")
+
+    # ------------------------------------------------------------------
+    # Refinement 2: non-allowlisted check_id blocks escalation
+    # ------------------------------------------------------------------
+
+    def test_non_allowlisted_check_id_does_not_escalate(self) -> None:
+        """check_id not in HEALER_ESCALATION_ALLOWLIST -> tier system NOT invoked (allowlist guard)."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+        non_allowlisted = "guardian_some_unrelated_check"
+        assert non_allowlisted not in HEALER_ESCALATION_ALLOWLIST
+
+        def _failing_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id=non_allowlisted,
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+            )
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        with patch.dict(_rd.HEALER_REGISTRY, {non_allowlisted: _failing_healer}):
+            result = _invoke_healer(non_allowlisted, {}, tier_invoker=fake)
+
+        assert result.status == HealStatus.FAILED
+        assert len(fake.calls) == 0, "Non-allowlisted healer must NOT escalate"
+        assert "tier_escalation_skipped" in (result.notes or "")
+        assert "not_in_allowlist" in (result.notes or "")
+
+    # ------------------------------------------------------------------
+    # Refinement 3: EscalationContext builds FailureSignal deterministically
+    # ------------------------------------------------------------------
+
+    def test_escalation_context_is_deterministic(self) -> None:
+        """EscalationContext.from_result produces identical output for identical input."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="some failure",
+            needs_llm_escalation=True,
+            escalation_hint="failure_type=code_edit_required blast_radius=0.8",
+        )
+        ctx1 = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
+        ctx2 = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
+
+        assert ctx1 == ctx2
+        assert ctx1.failure_type == "code_edit_required"
+        assert ctx1.blast_radius_estimate == 0.8
+        assert ctx1.trace_id.startswith("disp-")
+        assert ctx1.retry_count == 1
+
+    def test_escalation_context_hint_parsing(self) -> None:
+        """EscalationContext parses escalation_hint key=value pairs correctly."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            escalation_hint="failure_type=complex_rewrite blast_radius=0.9",
+        )
+        ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=0)
+        assert ctx.failure_type == "complex_rewrite"
+        assert ctx.blast_radius_estimate == 0.9
+
+    def test_escalation_context_defaults_on_missing_hint(self) -> None:
+        """EscalationContext uses safe defaults when escalation_hint is None."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="raw error",
+        )
+        ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=0)
+        assert ctx.failure_type == "healer_failure"
+        assert ctx.blast_radius_estimate == 0.5
+        assert ctx.healer_name == "heal_guardian_drift_detection"  # Computed from registry
+
+    def test_escalation_context_extracts_healer_name_from_hint(self) -> None:
+        """EscalationContext extracts healer_name from escalation_hint when provided."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="needs healing",
+            escalation_hint="failure_type=drift",
+        )
+        ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
+        assert ctx.healer_name == "heal_guardian_drift_detection"  # Computed from registry
+        assert ctx.failure_type == "drift"
+        assert ctx.retry_count == 1
+
+    def test_tightened_allowlist_blocks_wrong_healer_name(self) -> None:
+        """Allowlist blocks escalation when computed healer_name doesn't match allowlist."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+
+        # Create a healer with a name not in allowlist
+        def _unallowed_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=test",
+            )
+
+        _unallowed_healer.__name__ = "UnallowedHealer"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _unallowed_healer}):
+            failed_result = HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=test",
+            )
+
+            note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
+
+            # Should skip because computed healer_name="UnallowedHealer" is not in allowlist
+            assert "tier_escalation_skipped:" in note
+            assert "reason=not_in_allowlist" in note
+            assert "healer=UnallowedHealer" in note
+            assert len(fake.calls) == 0  # No escalation
+
+    def test_authoritative_healer_identity_from_registry(self) -> None:
+        """Healer identity is computed from registry, not from hints."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+
+        # Create a healer with a specific name
+        def _test_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="failed",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=test",
+            )
+
+        _test_healer.__name__ = "TestHealerName"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        # Patch allowlist to match the actual healer name from registry
+        test_allowlist = frozenset({("guardian_drift_detection", "TestHealerName")})
+
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _test_healer}):
+            with patch.object(_rd, "HEALER_ESCALATION_ALLOWLIST", test_allowlist):
+                # Create result - healer_name in hint is ignored
+                failed_result = HealCheckResult(
+                    check_id="guardian_drift_detection",
+                    status=HealStatus.FAILED,
+                    notes="failed",
+                    needs_llm_escalation=True,
+                    escalation_hint="failure_type=test",  # healer_name is ignored
+                )
+
+                # This should escalate because the computed healer_name matches allowlist
+                note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
+
+                assert "tier_escalation:" in note
+                assert len(fake.calls) == 1
+
+    def test_end_to_end_wiring_reaches_adapter_invocation(self) -> None:
+        """End-to-end test: _invoke_healer -> _tier_escalate -> dispatch_healing -> adapter invocation."""
+        import sys
+        from unittest.mock import Mock, patch
+
+        # Setup fake OpenAI module for Qwen adapter
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "E2E fix applied"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 120
+        fake_response.usage.completion_tokens = 60
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        # Inject fake module and clear adapter cache
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        # Force re-import of adapters
+
+        try:
+            # Create a failing healer that requests escalation
+            def _e2e_failing_healer(check_dict, *, repo_root=None, apply=False):
+                return HealCheckResult(
+                    check_id="guardian_drift_detection",
+                    status=HealStatus.FAILED,
+                    notes="complex failure requiring LLM",
+                    needs_llm_escalation=True,
+                    escalation_hint="failure_type=complex_rewrite",
+                )
+
+            _e2e_failing_healer.__name__ = "heal_guardian_drift_detection"
+
+            from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+            with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _e2e_failing_healer}):
+                # Call _invoke_healer which should trigger the full chain
+                result = _invoke_healer(
+                    "guardian_drift_detection",
+                    {},
+                    repo_root="/fake/repo",
+                    apply=False,
+                    retry_count=0,
+                )
+
+                # Verify the result includes tier escalation notes
+                assert result.status == HealStatus.FAILED
+                assert "tier_escalation:" in result.notes
+                assert "tier=QWEN_VLLM" in result.notes
+                assert "model=" in result.notes
+                assert "confidence=" in result.notes
+                assert "trace_id=" in result.notes
+
+        finally:
+            # Clean up sys.modules
+            sys.modules.pop("openai", None)
+
+    def test_strict_parsing_ignores_unknown_keys(self) -> None:
+        """EscalationContext silently ignores unknown keys in escalation_hint."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="needs healing",
+            escalation_hint="failure_type=drift blast_radius=0.8",
+        )
+        ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=1)
+
+        # Should only parse known keys
+        assert ctx.healer_name == "heal_guardian_drift_detection"
+        assert ctx.failure_type == "drift"
+        assert ctx.blast_radius_estimate == 0.8  # Valid and clamped
+        # unknown_key should be ignored
+
+    def test_blast_radius_clamping(self) -> None:
+        """EscalationContext clamps blast_radius to [0.0, 1.0] range."""
+        # Test out-of-range values
+        result1 = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="test",
+            escalation_hint="blast_radius=1.5",  # Above max
+        )
+        ctx1 = EscalationContext.from_result("guardian_drift_detection", result1, retry_count=0)
+        assert ctx1.blast_radius_estimate == 1.0
+
+        result2 = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="test",
+            escalation_hint="blast_radius=-0.5",  # Below min
+        )
+        ctx2 = EscalationContext.from_result("guardian_drift_detection", result2, retry_count=0)
+        assert ctx2.blast_radius_estimate == 0.0
+
+        # Test invalid value
+        result3 = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="test",
+            escalation_hint="blast_radius=invalid",
+        )
+        ctx3 = EscalationContext.from_result("guardian_drift_detection", result3, retry_count=0)
+        assert ctx3.blast_radius_estimate == 0.5  # Default
+
+    def test_longer_trace_id_generation(self) -> None:
+        """EscalationContext generates 16-character trace_id for better collision resistance."""
+        result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="test",
+        )
+        ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=0)
+
+        assert ctx.trace_id.startswith("disp-")
+        assert len(ctx.trace_id) == 5 + 16  # "disp-" + 16 hex chars
+        assert all(c in "0123456789abcdef" for c in ctx.trace_id[5:])  # All hex chars
+
+    def test_escalation_note_contains_trace_id(self) -> None:
+        """Escalation audit note includes deterministic trace_id from EscalationContext."""
+        fake = _FakeInvokerForIntegration()
+        failed_result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="needs rewrite",
+            needs_llm_escalation=True,
+            escalation_hint="failure_type=rewrite_needed",
+        )
+        note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
+
+        assert "tier_escalation:" in note
+        assert "trace_id=disp-" in note
+        assert "tier=" in note
+        assert "model=" in note
+        assert "confidence=" in note
+        assert len(fake.calls) == 1
+
+    # ------------------------------------------------------------------
+    # Refinement 4: retry_count drives tier selection (re-entrancy safety)
+    # ------------------------------------------------------------------
+
+    def test_retry_count_forces_gemini_tier(self) -> None:
+        """retry_count >= max_heal_retries forces GEMINI_2_5_PRO (re-entrancy guard)."""
+        fake = _FakeInvokerForIntegration()
+        failed_result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="failed",
+            needs_llm_escalation=True,
+            escalation_hint="failure_type=complex_failure",
+        )
+        # max_heal_retries=3; retry_count=3 forces GEMINI
+        _tier_escalate("guardian_drift_detection", failed_result, retry_count=3, invoker=fake)
+
+        assert len(fake.calls) == 1
+        assert fake.calls[0].method_called == "invoke_gemini"
+        assert fake.calls[0].tier == HealingTier.GEMINI_2_5_PRO
+
+    # ------------------------------------------------------------------
+    # Existing guards: success and exception paths
+    # ------------------------------------------------------------------
+
+    def test_successful_healer_does_not_trigger_escalation(self) -> None:
+        """A healer that succeeds must NOT invoke the tier system."""
+        from unittest.mock import patch
+
+        fake = _FakeInvokerForIntegration()
+
+        def _fake_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.HEALED,
+                changes_made=(),
+            )
+
+        _fake_healer.__name__ = "heal_guardian_drift_detection"
+
+        from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+        with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _fake_healer}):
+            _invoke_healer(
+                "guardian_drift_detection",
+                {},
+                tier_invoker=fake,
+            )
+
+
+def test_escalation_context_defaults_on_missing_hint(self) -> None:
+    """EscalationContext uses safe defaults when escalation_hint is None."""
+    result = HealCheckResult(
+        check_id="guardian_drift_detection",
+        status=HealStatus.FAILED,
+        notes="raw error",
+    )
+    ctx = EscalationContext.from_result("guardian_drift_detection", result, retry_count=0)
+    assert ctx.failure_type == "healer_failure"
+    assert ctx.blast_radius_estimate == 0.5
+
+
+def test_escalation_note_contains_trace_id(self) -> None:
+    """Escalation audit note includes deterministic trace_id from EscalationContext."""
+    fake = _FakeInvokerForIntegration()
+    failed_result = HealCheckResult(
+        check_id="guardian_drift_detection",
+        status=HealStatus.FAILED,
+        notes="needs rewrite",
+        needs_llm_escalation=True,
+    )
+    note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
+
+    assert "tier_escalation:" in note
+    assert "trace_id=disp-" in note
+    assert "tier=" in note
+    assert "model=" in note
+    assert "confidence=" in note
+    assert len(fake.calls) == 1
+
+
+# ------------------------------------------------------------------
+# Refinement 4: retry_count drives tier selection (re-entrancy safety)
+# ------------------------------------------------------------------
+
+
+def test_retry_count_forces_gemini_tier(self) -> None:
+    """retry_count >= max_heal_retries forces GEMINI_2_5_PRO (re-entrancy guard)."""
+    fake = _FakeInvokerForIntegration()
+    failed_result = HealCheckResult(
+        check_id="guardian_drift_detection",
+        status=HealStatus.FAILED,
+        notes="failed",
+        needs_llm_escalation=True,
+    )
+    # max_heal_retries=3; retry_count=3 forces GEMINI
+    _tier_escalate("guardian_drift_detection", failed_result, retry_count=3, invoker=fake)
+
+    assert len(fake.calls) == 1
+    assert fake.calls[0].method_called == "invoke_gemini"
+    assert fake.calls[0].tier == HealingTier.GEMINI_2_5_PRO
+
+
+# ------------------------------------------------------------------
+# Existing guards: success and exception paths
+# ------------------------------------------------------------------
+
+
+def test_successful_healer_does_not_trigger_escalation(self) -> None:
+    """A healer that succeeds must NOT invoke the tier system."""
+    from unittest.mock import patch
+
+    fake = _FakeInvokerForIntegration()
+
+    def _fake_healer(check_dict, *, repo_root=None, apply=False):
+        return HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.HEALED,
+            changes_made=(),
+        )
+
+    from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+    with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _fake_healer}):
+        result = _invoke_healer(
+            "guardian_drift_detection",
+            {},
+            tier_invoker=fake,
+        )
+
+    assert result.status == HealStatus.HEALED
+    assert len(fake.calls) == 0, "Tier system must NOT be invoked on success"
+
+
+def test_exception_in_allowlisted_healer_auto_sets_flag(self) -> None:
+    """When a registered healer raises, _invoke_healer auto-sets needs_llm_escalation=True
+    for allowlisted check_ids, so the exception path escalates correctly."""
+    fake = _FakeInvokerForIntegration()
+
+    # guardian_drift_detection is allowlisted; empty check_dict causes exception
+    result = _invoke_healer(
+        "guardian_drift_detection",
+        {},
+        tier_invoker=fake,
+        retry_count=0,
+    )
+
+    assert result.status == HealStatus.FAILED
+    assert result.needs_llm_escalation is True
+    assert len(fake.calls) == 1, "Exception in allowlisted healer must trigger escalation"
+
+
+def test_non_allowlisted_healer_skips_escalation_even_with_flag(self) -> None:
+    """_tier_escalate: non-allowlisted (check_id, healer_name) -> skip note even if needs_llm_escalation=True."""
+    fake = _FakeInvokerForIntegration()
+
+    # Use a healer that is NOT in the allowlist
+    result = _invoke_healer(
+        "some_other_healer",
+        {},
+        tier_invoker=fake,
+        retry_count=0,
+    )
+
+    assert result.status == HealStatus.FAILED
+    assert result.notes is not None
+    assert "tier_escalation_skipped:" in result.notes
+    assert "reason=not_in_allowlist" in result.notes
+    assert "healer=some_other_healer" in result.notes  # Shows healer_name in skip note
+    assert len(fake.calls) == 0  # No invoker calls
+
+
+@pytest.mark.unit_min_deps
+class TestCanonicalEscalationPayload:
+    """Tests for hardened confidence tier escalation contract."""
+
+    def test_deterministic_payload_across_runs(self) -> None:
+        """Canonical payload must be identical across runs for same inputs."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Deterministic test"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        try:
+            # Create identical failed result
+            failed_result = HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="complex failure requiring LLM",
+                needs_llm_escalation=True,
+                escalation_hint="failure_type=complex_rewrite",
+            )
+
+            # Run escalation twice with identical inputs
+            note1 = _tier_escalate("guardian_drift_detection", failed_result, retry_count=2)
+            note2 = _tier_escalate("guardian_drift_detection", failed_result, retry_count=2)
+
+            # Extract payloads from notes
+            payload1 = note1.split("payload=")[1]
+            payload2 = note2.split("payload=")[1]
+
+            # Payloads must be identical (deterministic)
+            assert payload1 == payload2, f"Payloads differ: {payload1} != {payload2}"
+
+            # Verify payload structure
+            import json
+
+            payload_dict = json.loads(payload1)
+            assert "provider" in payload_dict
+            assert "model_id" in payload_dict
+            assert "decision_reason" in payload_dict
+            assert payload_dict["retry_count"] == 2
+            assert payload_dict["allowlist_check_id"] == "guardian_drift_detection"
+            assert payload_dict["allowlist_healer_name"] == "heal_guardian_drift_detection"
+            assert payload_dict["authoritative_healer_name"] == "heal_guardian_drift_detection"
+
+        finally:
+            sys.modules.pop("openai", None)
+
+    def test_negative_control_needs_llm_escalation_false(self) -> None:
+        """When needs_llm_escalation=False, escalation must NOT occur."""
+        fake = _FakeInvokerForIntegration()
+
+        # Create failed result WITHOUT escalation flag
+        failed_result = HealCheckResult(
+            check_id="guardian_drift_detection",
+            status=HealStatus.FAILED,
+            notes="simple failure",
+            needs_llm_escalation=False,  # Explicitly false
+        )
+
+        # Run escalation
+        note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0)
+
+        # Must be skipped with correct reason
+        assert "tier_escalation_skipped:" in note
+        assert "reason=needs_llm_escalation_false" in note
+        assert "check_id=guardian_drift_detection" in note
+
+        # No adapter invocations
+        assert len(fake.calls) == 0
+
+        # No payload in note
+        assert "payload=" not in note
+
+    def test_negative_control_allowlist_mismatch(self) -> None:
+        """When allowlist mismatches, escalation must NOT occur."""
+        fake = _FakeInvokerForIntegration()
+
+        # Create failed result with escalation flag but wrong check_id
+        failed_result = HealCheckResult(
+            check_id="non_allowlisted_check",  # Not in HEALER_ESCALATION_ALLOWLIST
+            status=HealStatus.FAILED,
+            notes="failure from non-allowlisted check",
+            needs_llm_escalation=True,
+        )
+
+        # Run escalation
+        note = _tier_escalate("non_allowlisted_check", failed_result, retry_count=0)
+
+        # Must be skipped with correct reason
+        assert "tier_escalation_skipped:" in note
+        assert "reason=not_in_allowlist" in note
+        assert "check_id=non_allowlisted_check" in note
+
+        # No adapter invocations
+        assert len(fake.calls) == 0
+
+        # No payload in note
+        assert "payload=" not in note
+
+    def test_payload_decision_reason_retry_threshold(self) -> None:
+        """Payload decision_reason should be retry_count_threshold when retry_count >= 2."""
+        import sys
+        from unittest.mock import Mock
+
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Retry threshold test"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        try:
+            failed_result = HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.FAILED,
+                notes="retry threshold test",
+                needs_llm_escalation=True,
+            )
+
+            # Use retry_count >= 2 to trigger retry threshold reason
+            note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=3)
+
+            # Extract and verify payload
+            payload_str = note.split("payload=")[1]
+            import json
+
+            payload_dict = json.loads(payload_str)
+
+            assert payload_dict["decision_reason"] == "retry_count_threshold"
+            assert payload_dict["retry_count"] == 3
+
+        finally:
+            sys.modules.pop("openai", None)

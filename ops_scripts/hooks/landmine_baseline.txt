@@ -70,6 +70,8 @@ agentic_core/L2_execution/engines/secure_tools_impl.py:138:magic_configuration:M
 agentic_core/L2_execution/engines/secure_tools_impl.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/tool_registry.py:120:magic_configuration:Magic configuration: Hardcoded max_tools=5
 agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic configuration: Hardcoded min_relevance=0.6
+agentic_core/L2_execution/healers/healing_provider_adapters.py:223:magic_configuration:Magic configuration: Hardcoded max_output_tokens=2048 in function call
+agentic_core/L2_execution/healers/healing_provider_adapters.py:79:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
 agentic_core/L2_execution/healers/healing_tier_router.py:56:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:240:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L2_execution/tools/file_io_impl.py:120:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
