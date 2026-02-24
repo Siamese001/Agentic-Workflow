@@ -22,8 +22,8 @@ tools/_patch_evidence.py
 *.DS_Store
 
 # [NEURAL LINK] SENSITIVE DATA
-# Note: .env files can now be committed - use with caution
-# .env
+.env
+.env.*
 
 # Python artifacts
 __pycache__/
@@ -48,7 +48,7 @@ env/
 *.egg-info/
 
 # Generated analysis and technical docs
-docs/analysis/
+docs/
 docs/reports/plans/confidence_logic_rationalization_report.md
 docs/technical/agent_confidence_tiering_recommendations.*
 
@@ -136,6 +136,7 @@ artifacts/import_health/import_health_report.json
 docs/technical/*.png
 docs/technical/*.jpeg
 docs/technical/Archive/
+docs/technical/agentic_process_mapping.md
 
 # Root README (auto-generated / user-local)
 /README.md
