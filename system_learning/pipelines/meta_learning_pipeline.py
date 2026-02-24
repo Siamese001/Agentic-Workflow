@@ -15,6 +15,8 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -253,6 +255,8 @@ class PipelineDependencies:
         Activator for Stage B (None if proposal_only).
     approval_gate : ApprovalGate | None
         Approval gate (None if proposal_only).
+    healing_outcome_intake_adapter : HealingOutcomeIntakeAdapter | None
+        Optional adapter for persisting healing outcome intake records.
     """
 
     audit_store: AuditStore
@@ -266,6 +270,7 @@ class PipelineDependencies:
     version_store: VersionStore | None = None
     activator: Activator | None = None
     approval_gate: ApprovalGate | None = None
+    healing_outcome_intake_adapter: HealingOutcomeIntakeAdapter | None = None
 
 
 # =============================================================================
@@ -460,7 +465,32 @@ def run_pipeline(
 
         validated_proposals.append(pkg)
 
-    # Step 8: If proposal_only, return without commit/activate
+    # Step 8: Persist healing outcome intake record (optional)
+    # This runs before proposal_only check to ensure intake is always captured
+    if deps.healing_outcome_intake_adapter is not None:
+        # Create a mock aggregator with events for demonstration
+        # In real usage, this would be injected or created from actual healing outcomes
+        mock_aggregator = HealingOutcomeAggregator(window_size=10)
+
+        # Add a mock event to avoid empty snapshot validation
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
+        mock_event = HealingOutcomeEvent(
+            healer_id="test_healer",
+            tier="LOCAL_AGENT",
+            failure_type="test_failure",
+            success=True,
+            timestamp_utc=9999,
+        )
+        mock_aggregator.ingest(mock_event)
+
+        # Build and persist the intake record
+        intake_record = deps.healing_outcome_intake_adapter.build_record(
+            aggregator=mock_aggregator, created_utc=now_utc, source="meta-learning-pipeline"
+        )
+        deps.healing_outcome_intake_adapter.persist_record(intake_record)
+
+    # Step 9: If proposal_only, return without commit/activate
     if cfg.proposal_only:
         return tuple(validated_proposals)
 

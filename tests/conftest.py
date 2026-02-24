@@ -213,11 +213,11 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
 
     if exitstatus == 0:
         terminalreporter.write_line("")
-        terminalreporter.write_line("✅ GUARDIAN STATUS: PASS")
+        terminalreporter.write_line("OK: GUARDIAN STATUS: PASS")
         terminalreporter.write_line("All architectural integrity checks passed.")
     else:
         terminalreporter.write_line("")
-        terminalreporter.write_line("❌ GUARDIAN STATUS: FAIL")
+        terminalreporter.write_line("FAIL: GUARDIAN STATUS: FAIL")
         terminalreporter.write_line("Architectural violations detected. Review failed tests.")
 
     terminalreporter.write_sep("=", "")
