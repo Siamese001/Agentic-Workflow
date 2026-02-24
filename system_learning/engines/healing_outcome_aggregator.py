@@ -1,20 +1,19 @@
-"""Deterministic count-windowed aggregator for L2.3 healing outcomes.
+"""Healing Outcome Aggregator - Deterministic aggregation engine.
 
-Consumes HealingOutcomeEvent instances and produces deterministic
-snapshots and proposals.
-
-Invariants:
-  - No wall-clock reads; timestamp comes from event only
-  - Count-based window only (drop oldest beyond window_size)
-  - Stable rounding via _stable_rate (round-half-up to 4 decimals)
-  - Stable sort key: (healer_id, tier, failure_type)
-  - build_proposal() is proposal-only; no file/config/routing writes
+Phase 6: Aggregates L2.3 healing invocation records for meta-learning.
+No wall-clock reads; all timestamps are explicit.
 """
 
 from __future__ import annotations
 
-from collections import deque
+from collections import defaultdict, deque
+from typing import Dict, Tuple
 
+from system_learning.types.healing_outcome_learning_types import (
+    HealingOutcomeAggregate,
+    HealingOutcomeAggregateKey,
+    HealingOutcomeAggregateSnapshot,
+)
 from system_learning.types.healing_outcome_types import (
     HealingOutcomeEvent,
     HealingOutcomeProposal,
@@ -23,20 +22,27 @@ from system_learning.types.healing_outcome_types import (
 
 
 class HealingOutcomeAggregator:
-    """Count-windowed aggregator producing deterministic snapshots.
+    """Deterministic aggregator for healing outcome data.
 
-    Parameters
-    ----------
-    window_size : int
-        Maximum number of events retained.  When exceeded, the oldest
-        event is dropped (FIFO).  Must be >= 1.
+    Aggregates healing invocation records into deterministic snapshots.
+    No wall-clock reads; all timestamps are explicit.
     """
 
-    def __init__(self, window_size: int) -> None:
+    def __init__(self, window_size: int = 1000) -> None:
+        """Initialize aggregator with optional window size.
+
+        Parameters
+        ----------
+        window_size : int
+            Maximum number of events retained. When exceeded, the oldest
+            event is dropped (FIFO). Must be >= 1.
+        """
         if window_size < 1:
             raise ValueError(f"window_size must be >= 1, got {window_size}")
         self._window_size = window_size
         self._buffer: deque[HealingOutcomeEvent] = deque(maxlen=window_size)
+        # Internal state for new aggregation methods
+        self._aggregates: Dict[HealingOutcomeAggregateKey, Tuple[int, int]] = defaultdict(lambda: (0, 0))
 
     # -----------------------------------------------------------------
     # Ingest
@@ -111,7 +117,147 @@ class HealingOutcomeAggregator:
         """Number of events currently in the buffer."""
         return len(self._buffer)
 
+    # -----------------------------------------------------------------
+    # New Phase 6 Methods
+    # -----------------------------------------------------------------
+
+    def ingest_invocation(self, invocation_record: InvocationRecord) -> None:
+        """Ingest a healing invocation record.
+
+        Args:
+            invocation_record: Record of a healing invocation attempt.
+        """
+        key = HealingOutcomeAggregateKey(
+            healer_name=invocation_record.healer_name,
+            tier=invocation_record.tier,
+            failure_type=invocation_record.failure_type
+        )
+
+        success_count, failure_count = self._aggregates[key]
+        if invocation_record.success:
+            success_count += 1
+        else:
+            failure_count += 1
+
+        self._aggregates[key] = (success_count, failure_count)
+
+    def compute_success_rate(self, key: HealingOutcomeAggregateKey) -> float:
+        """Compute success rate for a specific key.
+
+        Args:
+            key: The aggregation key to compute rate for.
+
+        Returns:
+            Success rate (0.0 to 1.0) with deterministic rounding.
+        """
+        success_count, failure_count = self._aggregates[key]
+        total_count = success_count + failure_count
+
+        if total_count == 0:
+            return 0.0
+
+        # Round to 4 decimal places using round-half-up
+        raw_rate = success_count / total_count
+        return round(raw_rate + 1e-10, 4)  # Small epsilon for round-half-up
+
+    def create_snapshot(self, created_utc: int) -> HealingOutcomeAggregateSnapshot:
+        """Create a deterministic snapshot of current aggregates.
+
+        Args:
+            created_utc: Explicit timestamp for the snapshot.
+
+        Returns:
+            Deterministic snapshot with sorted aggregates.
+        """
+        # Convert internal state to aggregate objects
+        aggregate_pairs = []
+        for key, (success_count, failure_count) in self._aggregates.items():
+            total_count = success_count + failure_count
+            aggregate = HealingOutcomeAggregate(
+                success_count=success_count,
+                failure_count=failure_count,
+                total_count=total_count
+            )
+            aggregate_pairs.append((key, aggregate))
+
+        # Sort deterministically by (healer_name, tier, failure_type)
+        aggregate_pairs.sort(key=lambda pair: (
+            pair[0].healer_name,
+            pair[0].tier,
+            pair[0].failure_type
+        ))
+
+        # Create temporary snapshot without version_id to compute hash
+        temp_snapshot = HealingOutcomeAggregateSnapshot(
+            version_id="temp",  # Temporary value
+            created_utc=created_utc,
+            aggregates=tuple(aggregate_pairs)
+        )
+
+        # Compute version_id as hash of content (excluding version_id)
+        version_id = temp_snapshot.content_hash()
+
+        # Create final snapshot with correct version_id
+        snapshot = HealingOutcomeAggregateSnapshot(
+            version_id=version_id,
+            created_utc=created_utc,
+            aggregates=tuple(aggregate_pairs)
+        )
+
+        return snapshot
+
+    def clear_aggregates(self) -> None:
+        """Clear all aggregated data."""
+        self._aggregates.clear()
+
+
+# Protocol for injection
+class InvocationRecord:
+    """Record of a single healing invocation.
+
+    This is a simplified version for the aggregator.
+    In practice, this would be imported from L2.3.
+    """
+
+    def __init__(
+        self,
+        healer_name: str,
+        tier: str,
+        failure_type: str,
+        success: bool,
+        timestamp_utc: int,
+        trace_id: str | None = None,
+        error_signature: str | None = None
+    ) -> None:
+        """Initialize invocation record."""
+        self.healer_name = healer_name
+        self.tier = tier
+        self.failure_type = failure_type
+        self.success = success
+        self.timestamp_utc = timestamp_utc
+        self.trace_id = trace_id
+        self.error_signature = error_signature
+
+
+# Protocol for the aggregator seam
+class HealingOutcomeAggregatorProtocol:
+    """Protocol for healing outcome aggregator injection."""
+
+    def ingest_invocation(self, invocation_record: InvocationRecord) -> None:
+        """Ingest a healing invocation record."""
+        ...
+
+    def compute_success_rate(self, key: HealingOutcomeAggregateKey) -> float:
+        """Compute success rate for a key."""
+        ...
+
+    def create_snapshot(self, created_utc: int) -> HealingOutcomeAggregateSnapshot:
+        """Create snapshot of aggregates."""
+        ...
+
 
 __all__ = [
     "HealingOutcomeAggregator",
+    "InvocationRecord",
+    "HealingOutcomeAggregatorProtocol",
 ]

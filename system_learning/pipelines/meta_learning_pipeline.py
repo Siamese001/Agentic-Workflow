@@ -17,6 +17,7 @@ from typing import Any, Protocol
 
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -257,6 +258,8 @@ class PipelineDependencies:
         Approval gate (None if proposal_only).
     healing_outcome_intake_adapter : HealingOutcomeIntakeAdapter | None
         Optional adapter for persisting healing outcome intake records.
+    healing_config_optimizer : HealingConfigOptimizer | None
+        Optional optimizer for healing threshold adjustments.
     """
 
     audit_store: AuditStore
@@ -271,6 +274,7 @@ class PipelineDependencies:
     activator: Activator | None = None
     approval_gate: ApprovalGate | None = None
     healing_outcome_intake_adapter: HealingOutcomeIntakeAdapter | None = None
+    healing_config_optimizer: HealingConfigOptimizer | None = None
 
 
 # =============================================================================
@@ -489,6 +493,22 @@ def run_pipeline(
             aggregator=mock_aggregator, created_utc=now_utc, source="meta-learning-pipeline"
         )
         deps.healing_outcome_intake_adapter.persist_record(intake_record)
+
+    # Step 8.5: Run healing config optimizer if available
+    if deps.healing_config_optimizer is not None and hasattr(intake_record, 'snapshot'):
+        # Create aggregate snapshot from intake
+        aggregate_snapshot = deps.healing_config_optimizer.create_snapshot_from_intake(
+            intake_record, created_utc=now_utc
+        )
+
+        # Generate threshold adjustment proposals
+        threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
+            aggregate_snapshot
+        )
+
+        # Add to proposals if there are adjustments
+        if threshold_proposal.adjustments:
+            proposals.append(threshold_proposal)
 
     # Step 9: If proposal_only, return without commit/activate
     if cfg.proposal_only:

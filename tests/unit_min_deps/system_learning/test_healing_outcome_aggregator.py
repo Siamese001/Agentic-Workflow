@@ -18,11 +18,17 @@ pytestmark = pytest.mark.unit_min_deps
 
 from system_learning.engines.healing_outcome_aggregator import (
     HealingOutcomeAggregator,
+    InvocationRecord,
 )
 from system_learning.types.healing_outcome_types import (
     HealingOutcomeEvent,
     HealingOutcomeProposal,
     HealingOutcomeStats,
+)
+from system_learning.types.healing_outcome_learning_types import (
+    HealingOutcomeAggregate,
+    HealingOutcomeAggregateKey,
+    HealingOutcomeAggregateSnapshot,
 )
 
 
@@ -244,3 +250,125 @@ class TestAggregatorDeterminism:
         agg.ingest(_event(healer_id="h2", tier="LOCAL_AGENT", failure_type="import"))
         stats = agg.snapshot()
         assert len(stats) == 3
+
+
+# -------------------------------------------------------------------------
+# Phase 6 Tests - New Learning Types
+# -------------------------------------------------------------------------
+
+class TestPhase6Aggregation:
+    """Test Phase 6 functionality with new learning types."""
+
+    def test_aggregate_deterministic_same_sequence(self):
+        """Test that same sequence produces identical aggregates."""
+        aggregator1 = HealingOutcomeAggregator()
+        aggregator2 = HealingOutcomeAggregator()
+
+        # Same sequence of records
+        records = [
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", True, 1000),
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", False, 1001),
+            InvocationRecord("healer2", "REMOTE_AGENT", "failure2", True, 1002),
+        ]
+
+        for record in records:
+            aggregator1.ingest_invocation(record)
+            aggregator2.ingest_invocation(record)
+
+        # Check success rates
+        key1 = HealingOutcomeAggregateKey("healer1", "LOCAL_AGENT", "failure1")
+        key2 = HealingOutcomeAggregateKey("healer2", "REMOTE_AGENT", "failure2")
+
+        assert aggregator1.compute_success_rate(key1) == 0.5
+        assert aggregator2.compute_success_rate(key1) == 0.5
+        assert aggregator1.compute_success_rate(key2) == 1.0
+        assert aggregator2.compute_success_rate(key2) == 1.0
+
+        # Check snapshots
+        snapshot1 = aggregator1.create_snapshot(2000)
+        snapshot2 = aggregator2.create_snapshot(2000)
+
+        assert snapshot1.content_hash() == snapshot2.content_hash()
+        assert len(snapshot1.aggregates) == 2
+        assert len(snapshot2.aggregates) == 2
+
+    def test_aggregate_permutation_invariant(self):
+        """Test that order of ingestion doesn't affect results."""
+        aggregator1 = HealingOutcomeAggregator()
+        aggregator2 = HealingOutcomeAggregator()
+
+        # Same records in different order
+        records1 = [
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", True, 1000),
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", False, 1001),
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", True, 1002),
+        ]
+
+        records2 = [
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", True, 1002),
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", False, 1001),
+            InvocationRecord("healer1", "LOCAL_AGENT", "failure1", True, 1000),
+        ]
+
+        for record in records1:
+            aggregator1.ingest_invocation(record)
+
+        for record in records2:
+            aggregator2.ingest_invocation(record)
+
+        # Should produce identical results
+        key = HealingOutcomeAggregateKey("healer1", "LOCAL_AGENT", "failure1")
+        assert aggregator1.compute_success_rate(key) == aggregator2.compute_success_rate(key)
+        assert aggregator1.compute_success_rate(key) == 0.6667  # 2/3 rounded
+
+        snapshot1 = aggregator1.create_snapshot(2000)
+        snapshot2 = aggregator2.create_snapshot(2000)
+
+        assert snapshot1.content_hash() == snapshot2.content_hash()
+
+    def test_success_rate_correctness(self):
+        """Test success rate calculations with various inputs."""
+        aggregator = HealingOutcomeAggregator()
+
+        # Test empty case
+        key = HealingOutcomeAggregateKey("healer", "LOCAL_AGENT", "failure")
+        assert aggregator.compute_success_rate(key) == 0.0
+
+        # Test all successes
+        for i in range(10):
+            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", True, 1000 + i))
+        assert aggregator.compute_success_rate(key) == 1.0
+
+        # Clear and test all failures
+        aggregator.clear_aggregates()
+        for i in range(10):
+            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1000 + i))
+        assert aggregator.compute_success_rate(key) == 0.0
+
+        # Test mixed case with rounding
+        aggregator.clear_aggregates()
+        # 7 successes, 3 failures = 0.7
+        for i in range(7):
+            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", True, 1000 + i))
+        for i in range(3):
+            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1010 + i))
+        assert aggregator.compute_success_rate(key) == 0.7
+
+    def test_canonical_bytes_stable(self):
+        """Test that canonical_bytes produces stable output."""
+        aggregate = HealingOutcomeAggregate(
+            success_count=10,
+            failure_count=5,
+            total_count=15
+        )
+
+        bytes1 = aggregate.canonical_bytes()
+        bytes2 = aggregate.canonical_bytes()
+
+        assert bytes1 == bytes2
+        assert isinstance(bytes1, bytes)
+
+        # Verify it's valid JSON
+        import json
+        data = json.loads(bytes1.decode('utf-8'))
+        assert data == {"success_count": 10, "failure_count": 5, "total_count": 15}
