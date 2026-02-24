@@ -27,7 +27,6 @@ tools/_patch_evidence.py
 
 # Python artifacts
 __pycache__/
-**/__pycache__/
 *.pyc
 *.pyo
 .mypy_cache/
@@ -49,8 +48,6 @@ env/
 
 # Generated analysis and technical docs
 docs/
-docs/reports/plans/confidence_logic_rationalization_report.md
-docs/technical/agent_confidence_tiering_recommendations.*
 
 # IDE and OS noise
 .vscode/
@@ -65,7 +62,6 @@ artifacts/governance/docs_structure_report.json
 artifacts/governance/artifacts_guard_report.json
 artifacts/governance/logs_guard_report.json
 artifacts/governance/cache_guard_report.json
-logs/                # Unauthorized root folder - strictly ignored
 cache/               # Unauthorized root folder - strictly ignored
 
 # Temp extraction folders
@@ -107,9 +103,6 @@ coverage_html/
 guardian_report.txt
 .test_artifacts/
 
-# Ephemeral governance scope snapshots (COMMIT_SCOPE_SNAPSHOTS=false by default)
-docs/reports/plans/_artifacts/
-
 # Agent discovery artifacts (auto-generated)
 agent_discovery_full.manifest.json
 .backup/guardian_tests/
@@ -132,18 +125,5 @@ artifacts/import_health/import_health_report.json
 # Runtime logs (any layer)
 **/logs/
 
-# User-owned technical docs/images (not version-controlled)
-docs/technical/*.png
-docs/technical/*.jpeg
-docs/technical/Archive/
-docs/technical/agentic_process_mapping.md
-
 # Root README (auto-generated / user-local)
-/README.md
-docs/reports/assessments/rca_gravity_leak_corruption_phase4.md
-docs/reports/evidence/windsurf_*
-docs/reports/plans/RCA_windsurf_*
-docs/reports/plans/execute_ssot_capability_ranking.md
-
-# Tool-call storage (runtime artifacts, not version-controlled)
-docs/store/
+ /README.md
