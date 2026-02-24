@@ -69,17 +69,26 @@ OUTPUT_FILENAME = "combined_heal_result.json"
 # Escalation subsystem — allowlist + structured context
 # ---------------------------------------------------------------------------
 
-# check_ids whose healers are allowed to escalate to the LLM tier.
+# check_id:healer_name pairs whose healers are allowed to escalate to the LLM tier.
+# Using pairs prevents check_id drift where a different healer could reuse the same check_id.
 # A healer NOT in this set will never trigger _tier_escalate, even if it
 # sets needs_llm_escalation=True.  Extend this list as healers mature.
-HEALER_ESCALATION_ALLOWLIST: frozenset[str] = frozenset(
+HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
-        "guardian_drift_detection",
-        "guardian_import_boundary",
-        "guardian_layer_inversion",
-        "guardian_ssot_drift",
+        ("guardian_drift_detection", "GuardianDriftDetectionHealer"),
+        ("guardian_import_boundary", "GuardianImportBoundaryHealer"),
+        ("guardian_layer_inversion", "GuardianLayerInversionHealer"),
+        ("guardian_ssot_drift", "GuardianSSOTDriftHealer"),
     }
 )
+
+# Mapping from check_id to healer_name for escalation hints
+_CHECK_ID_TO_HEALER_NAME: dict[str, str] = {
+    "guardian_drift_detection": "GuardianDriftDetectionHealer",
+    "guardian_import_boundary": "GuardianImportBoundaryHealer",
+    "guardian_layer_inversion": "GuardianLayerInversionHealer",
+    "guardian_ssot_drift": "GuardianSSOTDriftHealer",
+}
 
 # Hint key pattern: "key=value" pairs, space-separated
 _HINT_KV_RE = _re.compile(r"(\w+)=([^\s]+)")
@@ -131,12 +140,15 @@ class EscalationContext:
 
         summary = (result.notes or "")[:120]
 
+        # Extract healer_name from hint, default to check_id for backward compatibility
+        healer_name = hint_kvs.get("healer_name", check_id)
+
         canonical = f"{check_id}:{retry_count}"
         trace_id = "disp-" + hashlib.sha256(canonical.encode()).hexdigest()[:12]
 
         return EscalationContext(
             check_id=check_id,
-            healer_name=check_id,
+            healer_name=healer_name,
             retry_count=retry_count,
             failure_type=failure_type,
             blast_radius_estimate=blast,
@@ -444,7 +456,7 @@ def _tier_escalate(
     """Escalate a FAILED heal result to the confidence-tier LLM system.
 
     Guards:
-      1. check_id must be in HEALER_ESCALATION_ALLOWLIST.
+      1. (check_id, healer_name) must be in HEALER_ESCALATION_ALLOWLIST.
       2. result.needs_llm_escalation must be True (healer opt-in).
 
     Builds a FailureSignal from EscalationContext (never from raw notes),
@@ -459,8 +471,15 @@ def _tier_escalate(
     Returns:
         A deterministic audit note string, or a skip note if guards block.
     """
-    if check_id not in HEALER_ESCALATION_ALLOWLIST:
-        return f"tier_escalation_skipped: check_id={check_id} reason=not_in_allowlist"
+    # Extract healer_name from escalation context or notes
+    escalation_ctx = EscalationContext.from_result(check_id, result, retry_count)
+    healer_pair = (check_id, escalation_ctx.healer_name)
+
+    if healer_pair not in HEALER_ESCALATION_ALLOWLIST:
+        return (
+            f"tier_escalation_skipped: check_id={check_id} "
+            f"healer={escalation_ctx.healer_name} reason=not_in_allowlist"
+        )
 
     if not result.needs_llm_escalation:
         return f"tier_escalation_skipped: check_id={check_id} reason=needs_llm_escalation_false"
@@ -468,7 +487,8 @@ def _tier_escalate(
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
 
-    ctx = EscalationContext.from_result(check_id, result, retry_count)
+    # Re-use the context we already created for the allowlist check
+    ctx = escalation_ctx
 
     signal = FailureSignal(
         source_agent="remediation_dispatcher",
@@ -522,14 +542,15 @@ def _invoke_healer(
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
+        healer_name = _CHECK_ID_TO_HEALER_NAME.get(check_id, check_id)
         result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,
             changes_made=(),
             rollback_info=None,
             notes=f"healer error: {type(exc).__name__}: {exc}",
-            needs_llm_escalation=check_id in HEALER_ESCALATION_ALLOWLIST,
-            escalation_hint="failure_type=healer_exception blast_radius=0.5",
+            needs_llm_escalation=(check_id, healer_name) in HEALER_ESCALATION_ALLOWLIST,
+            escalation_hint=f"healer_name={healer_name} failure_type=healer_exception blast_radius=0.5",
         )
 
     if result.status == HealStatus.FAILED:
