@@ -46,6 +46,7 @@ ROUTER_MODULE = "agentic_core.L2_execution.healers.healing_tier_router"
 HEALING_TIER_SYSTEM_FILES = frozenset(
     {
         "agentic_core/L2_execution/healers/healing_tier_router.py",
+        "agentic_core/L2_execution/healers/healing_tier_dispatcher.py",
         "agentic_core/L2_execution/healers/healing_tier_types.py",
         "agentic_core/L2_execution/healers/healing_tier_config.py",
         "agentic_core/L2_execution/healers/tiering_allowlist.py",
