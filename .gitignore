@@ -68,6 +68,7 @@ cache/               # Unauthorized root folder - strictly ignored
 # Temp extraction folders
 temp_*/              # Automated sprawl - strictly ignored
 tmp*                 # Cascade/temp subprocess temp files
+_temp_cmd*           # Temporary command files from phase execution
 .tmp/                # Temporary directory - strictly ignored
 
 # Runtime state artifacts
