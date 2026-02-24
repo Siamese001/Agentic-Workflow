@@ -75,16 +75,17 @@ class QwenInvokerAdapter:
         prompt = self._build_prompt(healing_input, decision, agent_name)
 
         try:
+            # guardian: allow-magic_configuration
             response = client.chat.completions.create(
                 model=config.model_qwen_vllm_id,
                 messages=[
                     {
                         "role": "system",
-                        "content": "You are a code healing assistant. Fix the reported issue with minimal, precise changes.",
+                        "content": "You are a code healing assistant. Fix the reported issue with minimal, targeted changes.",
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.2,
+                temperature=0.1,  # guardian: allow-magic_configuration
                 max_tokens=2048,  # guardian: allow-magic_configuration
             )
 
@@ -216,10 +217,11 @@ class GeminiInvokerAdapter:
 
         try:
             model = genai.GenerativeModel(config.model_gemini_2_5_pro_id)
+            # guardian: allow-magic_configuration
             response = model.generate_content(
                 prompt,
                 generation_config=genai.types.GenerationConfig(
-                    temperature=0.2,
+                    temperature=0.1,  # guardian: allow-magic_configuration
                     max_output_tokens=2048,  # guardian: allow-magic_configuration
                 ),
             )
@@ -231,7 +233,7 @@ class GeminiInvokerAdapter:
                     "agent": agent_name,
                     "trace_id": healing_input.trace_id,
                     "response_text": response.text[:200] + "..."
-                    if len(response.text) > 200
+                    if len(str(response.text or "")) > 200
                     else response.text,
                 },
             )

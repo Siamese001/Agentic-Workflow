@@ -1,20 +1,21 @@
 """
-Adapter Contract Tests — Prove Real Adapters Are Invoked with Mocked SDKs.
+Adapter Contract Tests — Prove Real Adapters Are Invoked with Faked SDKs.
 
 These tests verify that the actual Qwen and Gemini adapters are selected
-and invoked correctly, with mocked SDK calls to avoid network dependencies.
+and invoked correctly, with faked SDK modules to avoid network dependencies.
 
 Tests cover:
 - Correct adapter chosen for each tier
 - SDK methods called with expected arguments
 - Model IDs and context passed through correctly
 - Prompt payload is structured and non-empty
-- Error handling and logging
+- Error handling when SDK is missing
 """
 
 from __future__ import annotations
 
-from unittest.mock import Mock, patch
+import sys
+from unittest.mock import Mock
 
 import pytest
 
@@ -36,23 +37,26 @@ pytestmark = pytest.mark.unit_min_deps
 
 
 class TestQwenAdapterContract:
-    """Contract tests for QwenInvokerAdapter with mocked OpenAI SDK."""
+    """Contract tests for QwenInvokerAdapter with faked OpenAI SDK."""
 
     def test_qwen_adapter_invokes_sdk_with_correct_args(self) -> None:
         """Qwen adapter should call OpenAI SDK with expected parameters."""
-        # Setup mock OpenAI client
-        mock_client = Mock()
-        mock_response = Mock()
-        mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = "Fix: import missing module"
-        mock_response.usage = Mock()
-        mock_response.usage.prompt_tokens = 150
-        mock_response.usage.completion_tokens = 75
-        mock_client.chat.completions.create.return_value = mock_response
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Fix: import missing module"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 150
+        fake_response.usage.completion_tokens = 75
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
 
-        # Create adapter with mocked client (patch openai module for lazy import)
-        with patch("openai.OpenAI") as mock_openai:
-            mock_openai.return_value = mock_client
+        # Inject fake module into sys.modules before adapter method is called
+        sys.modules["openai"] = fake_openai
+
+        try:
             adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1", api_key="test-key")
 
             # Prepare healing input
@@ -73,8 +77,11 @@ class TestQwenAdapterContract:
             record = adapter.invoke_qwen_vllm(healing_input, decision, config, agent_name="TestAgent")
 
             # Verify SDK was called correctly
-            mock_client.chat.completions.create.assert_called_once()
-            call_args = mock_client.chat.completions.create.call_args
+            fake_openai.OpenAI.assert_called_once_with(
+                base_url="http://localhost:8000/v1", api_key="test-key"
+            )
+            fake_client.chat.completions.create.assert_called_once()
+            call_args = fake_client.chat.completions.create.call_args
 
             assert call_args.kwargs["model"] == config.model_qwen_vllm_id
             assert len(call_args.kwargs["messages"]) == 2
@@ -98,13 +105,56 @@ class TestQwenAdapterContract:
             assert record.trace_id == "test-trace-123"
             assert record.method_called == "invoke_qwen_vllm"
 
+        finally:
+            # Clean up sys.modules
+            sys.modules.pop("openai", None)
+
+    def test_qwen_adapter_raises_import_error_when_sdk_missing(self) -> None:
+        """Qwen adapter should raise ImportError when OpenAI SDK is not available."""
+        # Temporarily replace openai module with one that raises ImportError on import
+        original_openai = sys.modules.get("openai")
+
+        class FakeOpenAIModule:
+            def __getattr__(self, name):
+                raise ImportError("No module named 'openai'")
+
+        sys.modules["openai"] = FakeOpenAIModule()
+
+        try:
+            adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
+
+            healing_input = HealingInput(
+                failure_type="test",
+                error_signature="test",
+                trace_id="test",
+                retry_count=0,
+                blast_radius_estimate=0.0,
+                required_tools=(),
+                violation_metadata_refs=(),
+            )
+            config = load_default_healing_tier_config()
+            decision = route_healing_tier(healing_input, config)
+
+            with pytest.raises(ImportError, match="OpenAI SDK is required"):
+                adapter.invoke_qwen_vllm(healing_input, decision, config)
+        finally:
+            # Restore original module
+            if original_openai is not None:
+                sys.modules["openai"] = original_openai
+            else:
+                sys.modules.pop("openai", None)
+
     def test_qwen_adapter_handles_sdk_error(self) -> None:
         """Qwen adapter should properly handle and log SDK errors."""
-        mock_client = Mock()
-        mock_client.chat.completions.create.side_effect = Exception("API Error")
+        # Setup fake OpenAI module that raises an error
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_client.chat.completions.create.side_effect = Exception("API Error")
+        fake_openai.OpenAI.return_value = fake_client
 
-        with patch("openai.OpenAI") as mock_openai:
-            mock_openai.return_value = mock_client
+        sys.modules["openai"] = fake_openai
+
+        try:
             adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
 
             healing_input = HealingInput(
@@ -123,6 +173,9 @@ class TestQwenAdapterContract:
             # Should raise the SDK error
             with pytest.raises(Exception, match="API Error"):
                 adapter.invoke_qwen_vllm(healing_input, decision, config)
+
+        finally:
+            sys.modules.pop("openai", None)
 
     def test_qwen_adapter_not_implemented_methods(self) -> None:
         """Qwen adapter should raise NotImplementedError for unsupported methods."""
@@ -148,21 +201,26 @@ class TestQwenAdapterContract:
 
 
 class TestGeminiAdapterContract:
-    """Contract tests for GeminiInvokerAdapter with mocked Google SDK."""
+    """Contract tests for GeminiInvokerAdapter with faked Google SDK."""
 
     def test_gemini_adapter_invokes_sdk_with_correct_args(self) -> None:
         """Gemini adapter should call Google SDK with expected parameters."""
-        # Setup mock Gemini response
-        mock_model = Mock()
-        mock_response = Mock()
-        mock_response.text = "Fix: add missing import statement"
-        mock_model.generate_content.return_value = mock_response
+        # Setup fake google.generativeai module
+        fake_genai = Mock()
+        fake_model = Mock()
+        fake_response = Mock()
+        fake_response.text = "Fix: add missing import statement"
+        fake_response.__len__ = lambda: len(fake_response.text)
+        fake_model.generate_content.return_value = fake_response
+        fake_genai.configure = Mock()
+        fake_genai.GenerativeModel.return_value = fake_model
+        fake_genai.types = Mock()
+        fake_genai.types.GenerationConfig = Mock
 
-        # Create adapter with mocked SDK (patch the lazy import)
-        with patch("agentic_core.L2_execution.healers.healing_provider_adapters.google.generativeai") as mock_genai:
-            # Mock the types.GenerationConfig as well
-            mock_genai.types.GenerationConfig = Mock
-            mock_genai.GenerativeModel.return_value = mock_model
+        # Inject fake module into sys.modules
+        sys.modules["google.generativeai"] = fake_genai
+
+        try:
             adapter = GeminiInvokerAdapter(api_key="test-gemini-key")
 
             # Prepare healing input
@@ -183,10 +241,11 @@ class TestGeminiAdapterContract:
             record = adapter.invoke_gemini(healing_input, decision, config, agent_name="GeminiTestAgent")
 
             # Verify SDK was called correctly
-            mock_genai.GenerativeModel.assert_called_once_with(config.model_gemini_2_5_pro_id)
-            mock_model.generate_content.assert_called_once()
+            fake_genai.configure.assert_called_once_with(api_key="test-gemini-key")
+            fake_genai.GenerativeModel.assert_called_once_with(config.model_gemini_2_5_pro_id)
+            fake_model.generate_content.assert_called_once()
 
-            call_args = mock_model.generate_content.call_args
+            call_args = fake_model.generate_content.call_args
             prompt = call_args.args[0]  # First positional argument
 
             # Verify prompt is structured and non-empty
@@ -198,7 +257,7 @@ class TestGeminiAdapterContract:
             assert "Context Files: /path/to/typed.py, /path/to/types.py" in prompt
             assert len(prompt) > 100  # Substantial content
 
-            # Verify generation config was passed (mocked, so just check it's called)
+            # Verify generation config was passed
             assert "generation_config" in call_args.kwargs
 
             # Verify returned record
@@ -208,13 +267,54 @@ class TestGeminiAdapterContract:
             assert record.trace_id == "gemini-trace-789"
             assert record.method_called == "invoke_gemini"
 
+        finally:
+            # Clean up sys.modules
+            sys.modules.pop("google.generativeai", None)
+
+    def test_gemini_adapter_raises_import_error_when_sdk_missing(self) -> None:
+        """Gemini adapter should raise ImportError when Google SDK is not available."""
+        # Clear any cached imports and remove the module
+        sys.modules.pop("google.generativeai", None)
+
+        # Also clear the adapter module from cache to force re-import
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        # Re-import the adapter to test fresh import
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+
+        adapter = GeminiInvokerAdapter(api_key="test-key")
+
+        healing_input = HealingInput(
+            failure_type="test",
+            error_signature="test",
+            trace_id="test",
+            retry_count=0,
+            blast_radius_estimate=0.0,
+            required_tools=(),
+            violation_metadata_refs=(),
+        )
+        config = load_default_healing_tier_config()
+        decision = route_healing_tier(healing_input, config)
+
+        with pytest.raises(ImportError, match="google-generativeai SDK is required"):
+            adapter.invoke_gemini(healing_input, decision, config)
+
     def test_gemini_adapter_handles_sdk_error(self) -> None:
         """Gemini adapter should properly handle and log SDK errors."""
-        mock_model = Mock()
-        mock_model.generate_content.side_effect = Exception("Gemini API Error")
+        # Setup fake google.generativeai module that raises an error
+        fake_genai = Mock()
+        fake_model = Mock()
+        fake_model.generate_content.side_effect = Exception("Gemini API Error")
+        fake_genai.configure = Mock()
+        fake_genai.GenerativeModel.return_value = fake_model
 
-        with patch("google.generativeai") as mock_genai:
-            mock_genai.GenerativeModel.return_value = mock_model
+        sys.modules["google.generativeai"] = fake_genai
+
+        # Clear adapter module cache
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+
+        try:
             adapter = GeminiInvokerAdapter(api_key="test-key")
 
             healing_input = HealingInput(
@@ -234,10 +334,12 @@ class TestGeminiAdapterContract:
             with pytest.raises(Exception, match="Gemini API Error"):
                 adapter.invoke_gemini(healing_input, decision, config)
 
+        finally:
+            sys.modules.pop("google.generativeai", None)
+
     def test_gemini_adapter_not_implemented_methods(self) -> None:
         """Gemini adapter should raise NotImplementedError for unsupported methods."""
-        with patch("google.generativeai"):
-            adapter = GeminiInvokerAdapter(api_key="test-key")
+        adapter = GeminiInvokerAdapter(api_key="test-key")
 
         healing_input = HealingInput(
             failure_type="test",
@@ -316,18 +418,21 @@ class TestAdapterIntegrationWithDispatcher:
 
     def test_dispatcher_with_real_qwen_adapter(self) -> None:
         """Dispatcher should correctly select and invoke real Qwen adapter."""
-        # Mock OpenAI SDK
-        mock_client = Mock()
-        mock_response = Mock()
-        mock_response.choices = [Mock()]
-        mock_response.choices[0].message.content = "Qwen fix applied"
-        mock_response.usage = Mock()
-        mock_response.usage.prompt_tokens = 100
-        mock_response.usage.completion_tokens = 50
-        mock_client.chat.completions.create.return_value = mock_response
+        # Setup fake OpenAI module
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Qwen fix applied"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 100
+        fake_response.usage.completion_tokens = 50
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
 
-        with patch("openai.OpenAI") as mock_openai:
-            mock_openai.return_value = mock_client
+        sys.modules["openai"] = fake_openai
+
+        try:
             qwen_adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1")
 
             # Use real adapter with dispatcher
@@ -357,18 +462,31 @@ class TestAdapterIntegrationWithDispatcher:
             assert record.trace_id == "dispatcher-qwen-001"
 
             # Verify SDK was called through adapter
-            mock_client.chat.completions.create.assert_called_once()
+            fake_client.chat.completions.create.assert_called_once()
+
+        finally:
+            sys.modules.pop("openai", None)
 
     def test_dispatcher_with_real_gemini_adapter(self) -> None:
         """Dispatcher should correctly select and invoke real Gemini adapter."""
-        # Mock Gemini SDK
-        mock_model = Mock()
-        mock_response = Mock()
-        mock_response.text = "Gemini fix applied"
-        mock_model.generate_content.return_value = mock_response
+        # Setup fake google.generativeai module
+        fake_genai = Mock()
+        fake_model = Mock()
+        fake_response = Mock()
+        fake_response.text = "Gemini fix applied"
+        fake_model.generate_content.return_value = fake_response
+        fake_genai.configure = Mock()
+        fake_genai.GenerativeModel.return_value = fake_model
+        fake_genai.types = Mock()
+        fake_genai.types.GenerationConfig = Mock
 
-        with patch("google.generativeai") as mock_genai:
-            mock_genai.GenerativeModel.return_value = mock_model
+        sys.modules["google.generativeai"] = fake_genai
+
+        # Clear adapter module cache
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+        from agentic_core.L2_execution.healers.healing_provider_adapters import GeminiInvokerAdapter
+
+        try:
             gemini_adapter = GeminiInvokerAdapter(api_key="test-key")
 
             # Use real adapter with dispatcher
@@ -398,8 +516,11 @@ class TestAdapterIntegrationWithDispatcher:
             assert record.trace_id == "dispatcher-gemini-002"
 
             # Verify SDK was called through adapter
-            mock_genai.GenerativeModel.assert_called_once_with(config.model_gemini_2_5_pro_id)
-            mock_model.generate_content.assert_called_once()
+            fake_genai.GenerativeModel.assert_called_once_with(config.model_gemini_2_5_pro_id)
+            fake_model.generate_content.assert_called_once()
+
+        finally:
+            sys.modules.pop("google.generativeai", None)
 
     def test_dispatcher_with_local_adapter(self) -> None:
         """Dispatcher should correctly select and invoke local adapter."""
