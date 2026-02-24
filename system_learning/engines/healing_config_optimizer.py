@@ -7,12 +7,14 @@ All proposals are proposal-only via ChangePackage; no direct config mutation.
 from __future__ import annotations
 
 from dataclasses import dataclass, field
-from typing import Tuple
 
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
+)
+from system_learning.types.pattern_analysis_types import (
+    PatternFindingReport,
 )
 
 
@@ -28,7 +30,8 @@ class HealingConfigOptimizer:
         min_sample_size: int = 20,
         low_success_rate_threshold: float = 0.5,
         escalation_delta: float = 0.1,
-        max_threshold: float = 2.0
+        max_threshold: float = 2.0,
+        max_delta: float = 0.2,  # Maximum delta per run for bounded adjustments
     ) -> None:
         """Initialize optimizer with deterministic parameters.
 
@@ -37,6 +40,7 @@ class HealingConfigOptimizer:
             low_success_rate_threshold: Success rate below which escalation is considered.
             escalation_delta: Fixed delta to add to threshold when escalating.
             max_threshold: Maximum allowed threshold value.
+            max_delta: Maximum delta per run for bounded adjustments.
         """
         if min_sample_size < 1:
             raise ValueError("min_sample_size must be >= 1")
@@ -46,17 +50,16 @@ class HealingConfigOptimizer:
             raise ValueError("escalation_delta must be > 0")
         if max_threshold <= 0:
             raise ValueError("max_threshold must be > 0")
+        if max_delta <= 0:
+            raise ValueError("max_delta must be > 0")
 
         self._min_sample_size = min_sample_size
         self._low_success_rate_threshold = low_success_rate_threshold
         self._escalation_delta = escalation_delta
         self._max_threshold = max_threshold
+        self._max_delta = max_delta
 
-    def create_snapshot_from_intake(
-        self,
-        intake_record,
-        created_utc: int
-    ) -> HealingOutcomeAggregateSnapshot:
+    def create_snapshot_from_intake(self, intake_record, created_utc: int) -> HealingOutcomeAggregateSnapshot:
         """Create aggregate snapshot from healing outcome intake record.
 
         Args:
@@ -69,32 +72,26 @@ class HealingConfigOptimizer:
         # Convert intake snapshot to aggregate format
         aggregate_pairs = []
 
-        if hasattr(intake_record, 'snapshot'):
+        if hasattr(intake_record, "snapshot"):
             for stats in intake_record.snapshot:
                 key = HealingOutcomeAggregateKey(
-                    healer_name=stats.healer_id,
-                    tier=stats.tier,
-                    failure_type=stats.failure_type
+                    healer_name=stats.healer_id, tier=stats.tier, failure_type=stats.failure_type
                 )
                 aggregate = HealingOutcomeAggregate(
                     success_count=stats.success_count,
                     failure_count=stats.failure_count,
-                    total_count=stats.total_count
+                    total_count=stats.total_count,
                 )
                 aggregate_pairs.append((key, aggregate))
 
         # Sort deterministically
-        aggregate_pairs.sort(key=lambda pair: (
-            pair[0].healer_name,
-            pair[0].tier,
-            pair[0].failure_type
-        ))
+        aggregate_pairs.sort(key=lambda pair: (pair[0].healer_name, pair[0].tier, pair[0].failure_type))
 
         # Create temporary snapshot to compute hash
         temp_snapshot = HealingOutcomeAggregateSnapshot(
             version_id="temp",  # Temporary value
             created_utc=created_utc,
-            aggregates=tuple(aggregate_pairs)
+            aggregates=tuple(aggregate_pairs),
         )
 
         # Compute version_id as hash of content
@@ -102,16 +99,13 @@ class HealingConfigOptimizer:
 
         # Create final snapshot with correct version_id
         snapshot = HealingOutcomeAggregateSnapshot(
-            version_id=version_id,
-            created_utc=created_utc,
-            aggregates=tuple(aggregate_pairs)
+            version_id=version_id, created_utc=created_utc, aggregates=tuple(aggregate_pairs)
         )
 
         return snapshot
 
     def propose_threshold_adjustments(
-        self,
-        snapshot: HealingOutcomeAggregateSnapshot
+        self, snapshot: HealingOutcomeAggregateSnapshot
     ) -> ThresholdAdjustmentProposal:
         """Analyze snapshot and propose threshold adjustments.
 
@@ -132,10 +126,7 @@ class HealingConfigOptimizer:
             if aggregate.success_rate < self._low_success_rate_threshold:
                 # Propose escalation
                 current_threshold = self._get_current_threshold(key)
-                new_threshold = min(
-                    current_threshold + self._escalation_delta,
-                    self._max_threshold
-                )
+                new_threshold = min(current_threshold + self._escalation_delta, self._max_threshold)
 
                 if new_threshold != current_threshold:
                     adjustment = ThresholdAdjustment(
@@ -149,23 +140,156 @@ class HealingConfigOptimizer:
                             f"< {self._low_success_rate_threshold} "
                             f"with {aggregate.total_count} samples"
                         ),
-                        confidence=self._compute_confidence(aggregate)
+                        confidence=self._compute_confidence(aggregate),
                     )
                     adjustments.append(adjustment)
 
         # Sort adjustments deterministically
-        adjustments.sort(key=lambda a: (
-            a.healer_name,
-            a.tier,
-            a.failure_type,
-            a.proposed_threshold
-        ))
+        adjustments.sort(key=lambda a: (a.healer_name, a.tier, a.failure_type, a.proposed_threshold))
 
         return ThresholdAdjustmentProposal(
             snapshot_version_id=snapshot.version_id,
             created_utc=snapshot.created_utc,
-            adjustments=tuple(adjustments)
+            adjustments=tuple(adjustments),
         )
+
+    def propose_threshold_adjustments_with_patterns(
+        self, snapshot: HealingOutcomeAggregateSnapshot, pattern_report: PatternFindingReport | None = None
+    ) -> ThresholdAdjustmentProposal:
+        """Analyze snapshot with pattern findings and propose threshold adjustments.
+
+        Args:
+            snapshot: Healing outcome aggregate snapshot.
+            pattern_report: Optional pattern analysis report.
+
+        Returns:
+            Proposal with threshold adjustments (proposal-only).
+        """
+        # First get base adjustments from snapshot
+        base_proposal = self.propose_threshold_adjustments(snapshot)
+        adjustments = list(base_proposal.adjustments)
+
+        # Apply pattern-based adjustments
+        if pattern_report:
+            pattern_adjustments = self._apply_pattern_findings(pattern_report)
+            adjustments.extend(pattern_adjustments)
+
+        # Sort deterministically and apply bounds
+        adjustments.sort(key=lambda a: (a.healer_name, a.tier, a.failure_type, a.proposed_threshold))
+
+        # Apply bounded delta constraints
+        bounded_adjustments = self._apply_bounded_constraints(adjustments)
+
+        return ThresholdAdjustmentProposal(
+            snapshot_version_id=snapshot.version_id,
+            created_utc=snapshot.created_utc,
+            adjustments=tuple(bounded_adjustments),
+        )
+
+    def _apply_pattern_findings(self, pattern_report: PatternFindingReport) -> list[ThresholdAdjustment]:
+        """Apply pattern findings to generate adjustments."""
+        adjustments = []
+
+        for finding in pattern_report.findings:
+            if finding.key.label == "UNDERPERFORMING_HEALER_TIER":
+                # Increase escalation aggressiveness
+                component = finding.key.component
+                # Map component to healer/tier (simplified)
+                healer_name = component.split("_")[0] if "_" in component else component
+                tier = "LOCAL_AGENT"  # Default tier
+
+                current_threshold = self._get_current_threshold_for_healer(healer_name, tier)
+                # Apply bounded delta based on severity
+                delta = min(self._escalation_delta * finding.severity, self._max_delta)
+                new_threshold = min(current_threshold + delta, self._max_threshold)
+
+                if new_threshold != current_threshold:
+                    adjustment = ThresholdAdjustment(
+                        healer_name=healer_name,
+                        tier=tier,
+                        failure_type="pattern_based",
+                        current_threshold=current_threshold,
+                        proposed_threshold=new_threshold,
+                        reason=f"Pattern finding: {finding.key.label} (severity={finding.severity:.3f})",
+                        confidence=finding.severity,
+                    )
+                    adjustments.append(adjustment)
+
+            elif finding.key.label == "ROUTING_DRIFT_HIGH":
+                # Tighten thresholds for components with high drift
+                component = finding.key.component
+                healer_name = component.split("_")[0] if "_" in component else component
+                tier = "LOCAL_AGENT"
+
+                current_threshold = self._get_current_threshold_for_healer(healer_name, tier)
+                # Decrease threshold to be more strict (but not below minimum)
+                delta = min(self._escalation_delta * finding.severity * 0.5, self._max_delta)
+                new_threshold = max(current_threshold - delta, 0.1)
+
+                if new_threshold != current_threshold:
+                    adjustment = ThresholdAdjustment(
+                        healer_name=healer_name,
+                        tier=tier,
+                        failure_type="drift_based",
+                        current_threshold=current_threshold,
+                        proposed_threshold=new_threshold,
+                        reason=f"Pattern finding: {finding.key.label} (severity={finding.severity:.3f})",
+                        confidence=finding.severity,
+                    )
+                    adjustments.append(adjustment)
+
+        return adjustments
+
+    def _apply_bounded_constraints(self, adjustments: list[ThresholdAdjustment]) -> list[ThresholdAdjustment]:
+        """Apply bounded delta constraints to adjustments."""
+        bounded_adjustments = []
+
+        # Group by healer_name and tier
+        grouped = {}
+        for adj in adjustments:
+            key = (adj.healer_name, adj.tier)
+            if key not in grouped:
+                grouped[key] = []
+            grouped[key].append(adj)
+
+        # Apply constraints per group
+        for (healer_name, tier), group_adj in grouped.items():
+            # Get current threshold
+            current_threshold = self._get_current_threshold_for_healer(healer_name, tier)
+
+            # Calculate total delta
+            total_delta = 0.0
+            for adj in group_adj:
+                total_delta += adj.proposed_threshold - current_threshold
+
+            # Clamp to max_delta
+            if abs(total_delta) > self._max_delta:
+                # Scale down all adjustments proportionally
+                scale = self._max_delta / abs(total_delta)
+                for adj in group_adj:
+                    scaled_delta = (adj.proposed_threshold - current_threshold) * scale
+                    adj = ThresholdAdjustment(
+                        healer_name=adj.healer_name,
+                        tier=adj.tier,
+                        failure_type=adj.failure_type,
+                        current_threshold=current_threshold,
+                        proposed_threshold=current_threshold + scaled_delta,
+                        reason=adj.reason + f" (scaled to max_delta={self._max_delta})",
+                        confidence=adj.confidence,
+                    )
+                    bounded_adjustments.append(adj)
+            else:
+                bounded_adjustments.extend(group_adj)
+
+        return bounded_adjustments
+
+    def _get_current_threshold_for_healer(self, healer_name: str, tier: str) -> float:
+        """Get current threshold for a healer and tier."""
+        # Use existing method with a temporary key
+        from system_learning.types.healing_outcome_learning_types import HealingOutcomeAggregateKey
+
+        key = HealingOutcomeAggregateKey(healer_name=healer_name, tier=tier, failure_type="generic")
+        return self._get_current_threshold(key)
 
     def _get_current_threshold(self, key: HealingOutcomeAggregateKey) -> float:
         """Get current threshold for a key.
@@ -229,12 +353,14 @@ class ThresholdAdjustment:
             "confidence": self.confidence,
         }
         import json
+
         json_str = json.dumps(data, separators=(",", ":"), sort_keys=True)
-        return json_str.encode('utf-8')
+        return json_str.encode("utf-8")
 
     def content_hash(self) -> str:
         """Generate SHA-256 hash."""
         import hashlib
+
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
 
 
@@ -244,21 +370,23 @@ class ThresholdAdjustmentProposal:
 
     snapshot_version_id: str
     created_utc: int
-    adjustments: Tuple[ThresholdAdjustment, ...] = field(default_factory=tuple)
+    adjustments: tuple[ThresholdAdjustment, ...] = field(default_factory=tuple)
 
     def canonical_bytes(self) -> bytes:
         """Generate canonical byte representation."""
         adjustments_data = []
         for adj in self.adjustments:
-            adjustments_data.append({
-                "healer_name": adj.healer_name,
-                "tier": adj.tier,
-                "failure_type": adj.failure_type,
-                "current_threshold": adj.current_threshold,
-                "proposed_threshold": adj.proposed_threshold,
-                "reason": adj.reason,
-                "confidence": adj.confidence,
-            })
+            adjustments_data.append(
+                {
+                    "healer_name": adj.healer_name,
+                    "tier": adj.tier,
+                    "failure_type": adj.failure_type,
+                    "current_threshold": adj.current_threshold,
+                    "proposed_threshold": adj.proposed_threshold,
+                    "reason": adj.reason,
+                    "confidence": adj.confidence,
+                }
+            )
 
         data = {
             "snapshot_version_id": self.snapshot_version_id,
@@ -267,15 +395,15 @@ class ThresholdAdjustmentProposal:
         }
 
         import json
+
         json_str = json.dumps(data, separators=(",", ":"), sort_keys=True)
-        return json_str.encode('utf-8')
+        return json_str.encode("utf-8")
 
     def content_hash(self) -> str:
         """Generate SHA-256 hash."""
         import hashlib
+
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
-
-
 
 
 __all__ = [

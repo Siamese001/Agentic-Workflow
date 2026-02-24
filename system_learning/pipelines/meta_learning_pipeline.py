@@ -19,6 +19,7 @@ from system_learning.engines.healing_config_optimizer import HealingConfigOptimi
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.l4_state_writer import L4StateWriter
+from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -263,6 +264,8 @@ class PipelineDependencies:
         Optional optimizer for healing threshold adjustments.
     l4_state_writer : L4StateWriter | None
         Optional L4 state writer for persistence.
+    pattern_analysis_engine : PatternAnalysisEngine | None
+        Optional pattern analysis engine for detecting patterns.
     """
 
     audit_store: AuditStore
@@ -279,6 +282,7 @@ class PipelineDependencies:
     healing_outcome_intake_adapter: HealingOutcomeIntakeAdapter | None = None
     healing_config_optimizer: HealingConfigOptimizer | None = None
     l4_state_writer: L4StateWriter | None = None
+    pattern_analysis_engine: PatternAnalysisEngine | None = None
 
 
 # =============================================================================
@@ -518,12 +522,53 @@ def run_pipeline(
                 # In production, this would be logged
                 pass
 
-        # Generate threshold adjustment proposals
-        threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(aggregate_snapshot)
+        # Step 8.6: Run pattern analysis if engine available
+        pattern_report = None
+        if deps.pattern_analysis_engine is not None and deps.l4_state_writer is not None:
+            try:
+                # Read healing snapshot bytes
+                healing_snapshot_bytes = deps.l4_state_writer.read_latest_healing_snapshot()
+
+                # Read optional detection and drift signals
+                detection_signal_bytes = None
+                if hasattr(deps.l4_state_writer, "read_latest_detection_signal"):
+                    detection_signal_bytes = deps.l4_state_writer.read_latest_detection_signal()
+
+                drift_snapshot_bytes = None
+                if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
+                    drift_snapshot_bytes = deps.l4_state_writer.read_latest_drift_snapshot()
+
+                # Run pattern analysis
+                pattern_report = deps.pattern_analysis_engine.analyze(
+                    healing_snapshot_bytes=healing_snapshot_bytes,
+                    detection_signal_bytes=detection_signal_bytes,
+                    drift_snapshot_bytes=drift_snapshot_bytes,
+                    now_utc=now_utc,
+                )
+            except Exception:
+                # Pattern analysis failure should not break pipeline
+                # In production, this would be logged
+                pass
+
+        # Generate threshold adjustment proposals with patterns
+        if deps.healing_config_optimizer is not None:
+            if hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
+                threshold_proposal = (
+                    deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns(
+                        aggregate_snapshot, pattern_report
+                    )
+                )
+            else:
+                threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
+                    aggregate_snapshot
+                )
+        else:
+            threshold_proposal = None
 
         # Add to proposals if there are adjustments
-        if threshold_proposal.adjustments:
+        if threshold_proposal and threshold_proposal.adjustments:
             proposals.append(threshold_proposal)
+            validated_proposals.append(threshold_proposal)
 
     # Step 9: If proposal_only, return without commit/activate
     if cfg.proposal_only:
