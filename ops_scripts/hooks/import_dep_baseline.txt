@@ -278,6 +278,7 @@ C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 23: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\healers\healing_provider_adapters.py: Line 209: Module 'google.generativeai' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
@@ -2580,10 +2581,10 @@ C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_scripts_purity_rules
 C:\Git\Agentic-Workflow\tests\unit_min_deps\test_evidence_contract_v2.py: Line 11: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 145: 'ast_fuzzy' not found in module 'agentic_core.utils'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 161: Module 'agentic_core.utils.ast_fuzzy' not found
-C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
-C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
-C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
-C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 125: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 139: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 139: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 139: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
+C:\Git\Agentic-Workflow\tools\evidence\e2e_gemini_qwen_runner.py: Line 139: Module 'tests.integration_e2e.test_gemini_qwen_e2e' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase02_consolidated_evidence_runner.py: Line 15: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase03_04_consolidated_evidence_runner.py: Line 15: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tools\evidence\phase05_06_consolidated_evidence_runner.py: Line 18: Module 'evidence_contract_v2' not found

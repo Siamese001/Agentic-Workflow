@@ -1948,6 +1948,7 @@ class TestProductionEntrypointTierIntegration:
     def test_tightened_allowlist_blocks_wrong_healer_name(self) -> None:
         """Allowlist blocks escalation when computed healer_name doesn't match allowlist."""
         from unittest.mock import patch
+
         fake = _FakeInvokerForIntegration()
 
         # Create a healer with a name not in allowlist
@@ -1959,10 +1960,11 @@ class TestProductionEntrypointTierIntegration:
                 needs_llm_escalation=True,
                 escalation_hint="failure_type=test",
             )
+
         _unallowed_healer.__name__ = "UnallowedHealer"
 
         from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
-        
+
         with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _unallowed_healer}):
             failed_result = HealCheckResult(
                 check_id="guardian_drift_detection",
@@ -1983,6 +1985,7 @@ class TestProductionEntrypointTierIntegration:
     def test_authoritative_healer_identity_from_registry(self) -> None:
         """Healer identity is computed from registry, not from hints."""
         from unittest.mock import patch
+
         fake = _FakeInvokerForIntegration()
 
         # Create a healer with a specific name
@@ -1994,13 +1997,14 @@ class TestProductionEntrypointTierIntegration:
                 needs_llm_escalation=True,
                 escalation_hint="failure_type=test",
             )
+
         _test_healer.__name__ = "TestHealerName"
 
         from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
-        
+
         # Patch allowlist to match the actual healer name from registry
         test_allowlist = frozenset({("guardian_drift_detection", "TestHealerName")})
-        
+
         with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _test_healer}):
             with patch.object(_rd, "HEALER_ESCALATION_ALLOWLIST", test_allowlist):
                 # Create result - healer_name in hint is ignored
@@ -2014,9 +2018,69 @@ class TestProductionEntrypointTierIntegration:
 
                 # This should escalate because the computed healer_name matches allowlist
                 note = _tier_escalate("guardian_drift_detection", failed_result, retry_count=0, invoker=fake)
-                
+
                 assert "tier_escalation:" in note
                 assert len(fake.calls) == 1
+
+    def test_end_to_end_wiring_reaches_adapter_invocation(self) -> None:
+        """End-to-end test: _invoke_healer -> _tier_escalate -> dispatch_healing -> adapter invocation."""
+        import sys
+        from unittest.mock import Mock, patch
+
+        # Setup fake OpenAI module for Qwen adapter
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "E2E fix applied"
+        fake_response.usage = Mock()
+        fake_response.usage.prompt_tokens = 120
+        fake_response.usage.completion_tokens = 60
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+
+        # Inject fake module and clear adapter cache
+        sys.modules["openai"] = fake_openai
+        sys.modules.pop("agentic_core.L2_execution.healers.healing_provider_adapters", None)
+
+        # Force re-import of adapters
+
+        try:
+            # Create a failing healer that requests escalation
+            def _e2e_failing_healer(check_dict, *, repo_root=None, apply=False):
+                return HealCheckResult(
+                    check_id="guardian_drift_detection",
+                    status=HealStatus.FAILED,
+                    notes="complex failure requiring LLM",
+                    needs_llm_escalation=True,
+                    escalation_hint="failure_type=complex_rewrite",
+                )
+
+            _e2e_failing_healer.__name__ = "heal_guardian_drift_detection"
+
+            from agentic_core.L2_execution.scripts import remediation_dispatcher as _rd
+
+            with patch.dict(_rd.HEALER_REGISTRY, {"guardian_drift_detection": _e2e_failing_healer}):
+                # Call _invoke_healer which should trigger the full chain
+                result = _invoke_healer(
+                    "guardian_drift_detection",
+                    {},
+                    repo_root="/fake/repo",
+                    apply=False,
+                    retry_count=0,
+                )
+
+                # Verify the result includes tier escalation notes
+                assert result.status == HealStatus.FAILED
+                assert "tier_escalation:" in result.notes
+                assert "tier=QWEN_VLLM" in result.notes
+                assert "model=" in result.notes
+                assert "confidence=" in result.notes
+                assert "trace_id=" in result.notes
+
+        finally:
+            # Clean up sys.modules
+            sys.modules.pop("openai", None)
 
     def test_strict_parsing_ignores_unknown_keys(self) -> None:
         """EscalationContext silently ignores unknown keys in escalation_hint."""
