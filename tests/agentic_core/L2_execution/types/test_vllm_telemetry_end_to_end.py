@@ -300,7 +300,7 @@ def test_telemetry_as_dict_key_order_stable():
     # Verify exact declared order (stable, not alphabetical)
     assert keys[0] == "provider_selected"
     assert keys[1] == "model_tier"
-    assert keys[-1] == "failure_type"
+    assert keys[-1] == "fingerprint_hash"
     # Verify same order on repeated call
     ctrl2, reg2 = make_clean()
     result2 = evaluate_gateway_call(SHORT_PROMPT, TASK, "low", ctrl2, reg2)
