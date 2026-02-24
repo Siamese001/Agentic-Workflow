@@ -87,7 +87,7 @@ class TestMetaLearningPipelinePathDWiring:
         # Find DPO proposal
         dpo_proposal = None
         for proposal in proposals:
-            if hasattr(proposal, 'source') and proposal.source == "rlhf_optimizer":
+            if hasattr(proposal, "source") and proposal.source == "rlhf_optimizer":
                 dpo_proposal = proposal
                 break
 
@@ -136,7 +136,7 @@ class TestMetaLearningPipelinePathDWiring:
         )
 
         # Should not have DPO proposal
-        dpo_proposals = [p for p in proposals if hasattr(p, 'source') and p.source == "rlhf_optimizer"]
+        dpo_proposals = [p for p in proposals if hasattr(p, "source") and p.source == "rlhf_optimizer"]
         assert len(dpo_proposals) == 0
 
     def test_no_rlhf_optimizer_no_processing(self):
@@ -179,7 +179,7 @@ class TestMetaLearningPipelinePathDWiring:
         )
 
         # Should not have DPO proposal
-        dpo_proposals = [p for p in proposals if hasattr(p, 'source') and p.source == "rlhf_optimizer"]
+        dpo_proposals = [p for p in proposals if hasattr(p, "source") and p.source == "rlhf_optimizer"]
         assert len(dpo_proposals) == 0
 
     def test_proposal_only_no_activation(self):
@@ -236,7 +236,7 @@ class TestMetaLearningPipelinePathDWiring:
         # Should have DPO proposal but no activation
         dpo_proposal = None
         for proposal in proposals:
-            if hasattr(proposal, 'source') and proposal.source == "rlhf_optimizer":
+            if hasattr(proposal, "source") and proposal.source == "rlhf_optimizer":
                 dpo_proposal = proposal
                 break
 
@@ -349,8 +349,12 @@ class TestMetaLearningPipelinePathDWiring:
         )
 
         # Should have identical DPO proposals
-        dpo_proposal1 = next((p for p in proposals1 if hasattr(p, 'source') and p.source == "rlhf_optimizer"), None)
-        dpo_proposal2 = next((p for p in proposals2 if hasattr(p, 'source') and p.source == "rlhf_optimizer"), None)
+        dpo_proposal1 = next(
+            (p for p in proposals1 if hasattr(p, "source") and p.source == "rlhf_optimizer"), None
+        )
+        dpo_proposal2 = next(
+            (p for p in proposals2 if hasattr(p, "source") and p.source == "rlhf_optimizer"), None
+        )
 
         assert dpo_proposal1 is not None
         assert dpo_proposal2 is not None
@@ -364,26 +368,33 @@ class MockAuditStore:
     def read_audit_slice(self, start, end):
         return []
 
+
 class MockTelemetryStore:
     def read_events(self, start, end):
         return []
+
 
 class MockConfigProvider:
     def get_current_configs(self):
         return {"threshold_a": 0.5, "threshold_b": 1.0}
 
+
 class MockBaselineMetricsProvider:
     def get_baseline_metrics(self):
         return {}
 
+
 class MockShadowThresholds:
     pass
+
 
 class MockCooldownPolicy:
     pass
 
+
 class MockSampleSizePolicy:
     pass
+
 
 class MockOscillationPolicy:
     pass

@@ -130,7 +130,7 @@ class TestDPOPairGenerator:
 
         # Must be ASCII-only
         try:
-            canonical.decode('ascii')
+            canonical.decode("ascii")
         except UnicodeDecodeError:
             pytest.fail("canonical_bytes() must be ASCII-only")
 

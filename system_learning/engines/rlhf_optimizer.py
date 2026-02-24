@@ -110,7 +110,7 @@ class DefaultDeterministicRLHFOptimizer:
             # Sort pairs by control_hash, then candidate_hash for determinism
             sorted_pairs = sorted(
                 dpo_data["pairs"],
-                key=lambda p: (p["example_id"]["control_hash"], p["example_id"]["candidate_hash"])
+                key=lambda p: (p["example_id"]["control_hash"], p["example_id"]["candidate_hash"]),
             )
 
             for pair in sorted_pairs:

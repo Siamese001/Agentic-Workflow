@@ -479,7 +479,9 @@ def run_pipeline(
     if deps.dpo_batch_bytes is not None and deps.rlhf_optimizer is not None:
         try:
             # Get current threshold config for time-shifted rule
-            current_threshold_config_bytes = json.dumps(current_configs, separators=(",", ":"), sort_keys=True).encode("utf-8")
+            current_threshold_config_bytes = json.dumps(
+                current_configs, separators=(",", ":"), sort_keys=True
+            ).encode("utf-8")
 
             # Generate proposal-only adjustments from DPO batch
             dpo_proposal = deps.rlhf_optimizer.propose_from_dpo(
