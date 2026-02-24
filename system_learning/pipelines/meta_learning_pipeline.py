@@ -20,6 +20,7 @@ from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAgg
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -270,6 +271,10 @@ class PipelineDependencies:
         Optional serialized ResourcePrediction artifact from L2 execution.
     rollback_refinement_decision_bytes : bytes | None
         Optional serialized RollbackRefinementDecision artifact from L2 execution.
+    dpo_batch_bytes : bytes | None
+        Optional serialized DPOBatch artifact from HITL feedback processing.
+    rlhf_optimizer : RLHFOptimizer | None
+        Optional RLHF optimizer for DPO-driven threshold adjustments.
     """
 
     audit_store: AuditStore
@@ -289,6 +294,8 @@ class PipelineDependencies:
     pattern_analysis_engine: PatternAnalysisEngine | None = None
     resource_predictor_bytes: bytes | None = None
     rollback_refinement_decision_bytes: bytes | None = None
+    dpo_batch_bytes: bytes | None = None
+    rlhf_optimizer: RLHFOptimizer | None = None
 
 
 # =============================================================================
@@ -464,6 +471,26 @@ def run_pipeline(
                 timestamp_utc=now_utc,
             )
             proposals.append(rollback_proposal)
+        except Exception:  # noqa: BLE001
+            # Log error but continue pipeline
+            pass
+
+    # Step 6c: Process DPO batch (Path D - HITL + Deterministic DPO Loop)
+    if deps.dpo_batch_bytes is not None and deps.rlhf_optimizer is not None:
+        try:
+            # Get current threshold config for time-shifted rule
+            current_threshold_config_bytes = json.dumps(current_configs, separators=(",", ":"), sort_keys=True).encode("utf-8")
+
+            # Generate proposal-only adjustments from DPO batch
+            dpo_proposal = deps.rlhf_optimizer.propose_from_dpo(
+                dpo_batch_bytes=deps.dpo_batch_bytes,
+                current_threshold_config_bytes=current_threshold_config_bytes,
+            )
+
+            # Set timestamp for proposal
+            dpo_proposal.timestamp_utc = now_utc
+
+            proposals.append(dpo_proposal)
         except Exception:  # noqa: BLE001
             # Log error but continue pipeline
             pass
