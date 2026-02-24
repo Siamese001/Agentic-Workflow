@@ -22,8 +22,11 @@ CLI:
 from __future__ import annotations
 
 import argparse
+import hashlib
 import json
+import re as _re
 import sys
+from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
@@ -61,6 +64,86 @@ def _get_approval_types():
 
 TOOL_ID = "remediation_dispatcher"
 OUTPUT_FILENAME = "combined_heal_result.json"
+
+# ---------------------------------------------------------------------------
+# Escalation subsystem — allowlist + structured context
+# ---------------------------------------------------------------------------
+
+# check_ids whose healers are allowed to escalate to the LLM tier.
+# A healer NOT in this set will never trigger _tier_escalate, even if it
+# sets needs_llm_escalation=True.  Extend this list as healers mature.
+HEALER_ESCALATION_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "guardian_drift_detection",
+        "guardian_import_boundary",
+        "guardian_layer_inversion",
+        "guardian_ssot_drift",
+    }
+)
+
+# Hint key pattern: "key=value" pairs, space-separated
+_HINT_KV_RE = _re.compile(r"(\w+)=([^\s]+)")
+
+
+@dataclass(frozen=True, slots=True)
+class EscalationContext:
+    """Structured escalation payload built from a failed HealCheckResult.
+
+    This is the SSOT for what gets passed to FailureSignal — never build
+    FailureSignal directly from free-text notes.
+
+    Attributes:
+        check_id: The check_id that failed.
+        healer_name: Canonical healer identity (same as check_id for now).
+        retry_count: Monotonic retry counter from _invoke_healer.
+        failure_type: Stable category string (from escalation_hint or default).
+        blast_radius_estimate: Float in [0.0, 1.0] (from hint or default 0.5).
+        summary: Short human-readable summary (from notes, truncated).
+        trace_id: Deterministic SHA-256 prefix of (check_id, retry_count).
+    """
+
+    check_id: str
+    healer_name: str
+    retry_count: int
+    failure_type: str
+    blast_radius_estimate: float
+    summary: str
+    trace_id: str
+
+    @staticmethod
+    def from_result(
+        check_id: str,
+        result: HealCheckResult,
+        retry_count: int,
+    ) -> EscalationContext:
+        """Build deterministically from a HealCheckResult."""
+        hint_kvs: dict[str, str] = {}
+        if result.escalation_hint:
+            for m in _HINT_KV_RE.finditer(result.escalation_hint):
+                hint_kvs[m.group(1)] = m.group(2)
+
+        failure_type = hint_kvs.get("failure_type", "healer_failure")
+        try:
+            blast = float(hint_kvs.get("blast_radius", "0.5"))
+            blast = max(0.0, min(1.0, blast))
+        except ValueError:
+            blast = 0.5
+
+        summary = (result.notes or "")[:120]
+
+        canonical = f"{check_id}:{retry_count}"
+        trace_id = "disp-" + hashlib.sha256(canonical.encode()).hexdigest()[:12]
+
+        return EscalationContext(
+            check_id=check_id,
+            healer_name=check_id,
+            retry_count=retry_count,
+            failure_type=failure_type,
+            blast_radius_estimate=blast,
+            summary=summary,
+            trace_id=trace_id,
+        )
+
 
 # ---------------------------------------------------------------------------
 # Canonical phase names and phase-to-check_id mapping
@@ -360,33 +443,41 @@ def _tier_escalate(
 ) -> str:
     """Escalate a FAILED heal result to the confidence-tier LLM system.
 
-    Builds a FailureSignal from the failed HealCheckResult, calls
-    dispatch_healing to select the correct tier (LOCAL_AGENT / QWEN_VLLM /
-    GEMINI_2_5_PRO), and returns a note string recording the invocation.
+    Guards:
+      1. check_id must be in HEALER_ESCALATION_ALLOWLIST.
+      2. result.needs_llm_escalation must be True (healer opt-in).
 
-    This is the production wire-in point between the SSOT healer pipeline
-    and the confidence-tier LLM escalation subsystem.
+    Builds a FailureSignal from EscalationContext (never from raw notes),
+    calls dispatch_healing, and returns a deterministic audit note string.
 
     Args:
         check_id: The check_id that failed healing.
         result: The FAILED HealCheckResult from the healer.
-        retry_count: Number of prior heal attempts (drives tier selection).
+        retry_count: Monotonic retry counter (drives tier selection).
         invoker: Injectable provider invoker (default: DefaultHealingProviderInvoker).
 
     Returns:
-        A note string describing the tier escalation for audit.
+        A deterministic audit note string, or a skip note if guards block.
     """
+    if check_id not in HEALER_ESCALATION_ALLOWLIST:
+        return f"tier_escalation_skipped: check_id={check_id} reason=not_in_allowlist"
+
+    if not result.needs_llm_escalation:
+        return f"tier_escalation_skipped: check_id={check_id} reason=needs_llm_escalation_false"
+
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
 
+    ctx = EscalationContext.from_result(check_id, result, retry_count)
+
     signal = FailureSignal(
         source_agent="remediation_dispatcher",
-        failure_type="healer_failure",
-        error_signature=check_id,
-        trace_id=f"dispatcher-{check_id}",
-        context={"notes": result.notes or ""},
-        retry_count=retry_count,
-        blast_radius_estimate=0.5,
+        failure_type=ctx.failure_type,
+        error_signature=ctx.check_id,
+        trace_id=ctx.trace_id,
+        context={"healer_name": ctx.healer_name, "summary": ctx.summary},
+        retry_count=ctx.retry_count,
+        blast_radius_estimate=ctx.blast_radius_estimate,
     )
     config = load_default_healing_tier_config()
     decision, record = dispatch_healing(
@@ -399,7 +490,8 @@ def _tier_escalate(
         f"tier_escalation: check_id={check_id} "
         f"tier={decision.tier.value} "
         f"model={record.model_id} "
-        f"confidence={decision.heal_confidence:.4f}"
+        f"confidence={decision.heal_confidence:.4f} "
+        f"trace_id={ctx.trace_id}"
     )
 
 
@@ -418,8 +510,12 @@ def _invoke_healer(
     Returns the healer's HealCheckResult on success, or a FAILED result
     containing the exception class name on error.
 
-    When a healer returns FAILED, escalates to the confidence-tier LLM system
-    via _tier_escalate, appending the escalation note to the result.
+    When a healer returns FAILED AND sets needs_llm_escalation=True AND its
+    check_id is in HEALER_ESCALATION_ALLOWLIST, escalates to the confidence-tier
+    LLM system via _tier_escalate, appending the audit note to result.notes.
+
+    Re-entrancy: retry_count must be incremented by the caller on each retry.
+    _tier_escalate is side-effect bounded (no writes, no recursion).
     """
     healer_fn = HEALER_REGISTRY[check_id]
     try:
@@ -432,6 +528,8 @@ def _invoke_healer(
             changes_made=(),
             rollback_info=None,
             notes=f"healer error: {type(exc).__name__}: {exc}",
+            needs_llm_escalation=check_id in HEALER_ESCALATION_ALLOWLIST,
+            escalation_hint="failure_type=healer_exception blast_radius=0.5",
         )
 
     if result.status == HealStatus.FAILED:
@@ -447,6 +545,8 @@ def _invoke_healer(
             changes_made=result.changes_made,
             rollback_info=result.rollback_info,
             notes=f"{result.notes or ''} | {escalation_note}".strip(" |"),
+            needs_llm_escalation=result.needs_llm_escalation,
+            escalation_hint=result.escalation_hint,
         )
 
     return result
