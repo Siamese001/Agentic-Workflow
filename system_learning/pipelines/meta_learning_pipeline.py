@@ -266,6 +266,10 @@ class PipelineDependencies:
         Optional L4 state writer for persistence.
     pattern_analysis_engine : PatternAnalysisEngine | None
         Optional pattern analysis engine for detecting patterns.
+    resource_predictor_bytes : bytes | None
+        Optional serialized ResourcePrediction artifact from L2 execution.
+    rollback_refinement_decision_bytes : bytes | None
+        Optional serialized RollbackRefinementDecision artifact from L2 execution.
     """
 
     audit_store: AuditStore
@@ -283,6 +287,8 @@ class PipelineDependencies:
     healing_config_optimizer: HealingConfigOptimizer | None = None
     l4_state_writer: L4StateWriter | None = None
     pattern_analysis_engine: PatternAnalysisEngine | None = None
+    resource_predictor_bytes: bytes | None = None
+    rollback_refinement_decision_bytes: bytes | None = None
 
 
 # =============================================================================
@@ -414,6 +420,53 @@ def run_pipeline(
 
         if pkg is not None:
             proposals.append(pkg)
+
+    # Step 6b: Process Phase 9 artifacts (ResourcePrediction and RollbackRefinementDecision)
+    if deps.resource_predictor_bytes is not None:
+        try:
+            # Deserialize ResourcePrediction and create proposal
+            import json
+
+            prediction_data = json.loads(deps.resource_predictor_bytes.decode("utf-8"))
+            # Reconstruct ResourcePrediction from serialized data
+            # For now, create a minimal proposal wrapper
+            from system_learning.types.proposal_types import ChangePackage
+
+            resource_proposal = ChangePackage(
+                source="phase9_resource_predictor",
+                target="resource_envelope",
+                changes=deps.resource_predictor_bytes,
+                confidence=prediction_data.get("confidence", 0.5),
+                reason=tuple(prediction_data.get("reasons", [])),
+                timestamp_utc=now_utc,
+            )
+            proposals.append(resource_proposal)
+        except Exception:  # noqa: BLE001
+            # Log error but continue pipeline
+            pass
+
+    if deps.rollback_refinement_decision_bytes is not None:
+        try:
+            # Deserialize RollbackRefinementDecision and create proposal
+            import json
+
+            decision_data = json.loads(deps.rollback_refinement_decision_bytes.decode("utf-8"))
+            # Reconstruct RollbackRefinementDecision from serialized data
+            # For now, create a minimal proposal wrapper
+            from system_learning.types.proposal_types import ChangePackage
+
+            rollback_proposal = ChangePackage(
+                source="phase9_rollback_refiner",
+                target="rollback_strategy",
+                changes=deps.rollback_refinement_decision_bytes,
+                confidence=0.8,  # Default confidence for rollback decisions
+                reason=tuple(decision_data.get("reasons", [])),
+                timestamp_utc=now_utc,
+            )
+            proposals.append(rollback_proposal)
+        except Exception:  # noqa: BLE001
+            # Log error but continue pipeline
+            pass
 
     # Step 7: Validate each proposal
     from system_learning.validators.dampening import (

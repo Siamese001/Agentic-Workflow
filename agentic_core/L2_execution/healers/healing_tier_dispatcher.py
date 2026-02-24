@@ -16,6 +16,7 @@ Production callers use dispatch_healing() with the default invoker.
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass
 from typing import TYPE_CHECKING, Protocol
@@ -29,6 +30,8 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
 )
 
 if TYPE_CHECKING:
+    from agentic_core.L2_execution.engines.resource_predictor import ResourcePredictor
+    from agentic_core.L2_execution.engines.rollback_refiner import RollbackRefiner
     from system_learning.ports.healing_outcome_sink import HealingOutcomeSink
 
 logger = logging.getLogger(__name__)
@@ -174,6 +177,8 @@ def dispatch_healing(
     agent_name: str = "",
     outcome_sink: HealingOutcomeSink | None = None,
     timestamp_utc: int | None = None,
+    resource_predictor: ResourcePredictor | None = None,
+    rollback_refiner: RollbackRefiner | None = None,
 ) -> tuple[HealingDecision, InvocationRecord]:
     """End-to-end: route tier, then invoke the matching provider.
 
@@ -186,6 +191,8 @@ def dispatch_healing(
             When None (the default), no emission occurs and behaviour is unchanged.
         timestamp_utc: Deterministic timestamp for the outcome event.
             Required when outcome_sink is provided; ignored otherwise.
+        resource_predictor: Optional resource predictor for proposal-only predictions.
+        rollback_refiner: Optional rollback refiner for proposal-only strategy selection.
 
     Returns:
         (HealingDecision, InvocationRecord) — the routing decision and invocation trace.
@@ -194,6 +201,14 @@ def dispatch_healing(
         invoker = DefaultHealingProviderInvoker()
 
     decision = route_healing_tier(healing_input, config)
+
+    # Emit proposal-only resource prediction if predictor available
+    if resource_predictor is not None:
+        _emit_resource_prediction(resource_predictor, healing_input, agent_name, timestamp_utc)
+
+    # Emit proposal-only rollback refinement if refiner available
+    if rollback_refiner is not None:
+        _emit_rollback_refinement(rollback_refiner, healing_input, agent_name, timestamp_utc)
 
     method_name = _TIER_TO_METHOD[decision.tier]
     method = getattr(invoker, method_name)
@@ -243,6 +258,103 @@ def _emit_outcome(
         sink.emit(event)
     except Exception:  # noqa: BLE001
         logger.debug("outcome_sink.emit failed; swallowed to preserve dispatch path")
+
+
+def _emit_resource_prediction(
+    resource_predictor: ResourcePredictor,
+    healing_input: HealingInput,
+    agent_name: str,
+    timestamp_utc: int | None,
+) -> None:
+    """Emit resource prediction as proposal-only artifact."""
+    from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+
+    # Create deterministic failure signature
+    fingerprint = hashlib.sha256(
+        f"{healing_input.failure_type}:{healing_input.error_signature}:{healing_input.trace_id}".encode()
+    ).hexdigest()[:64]
+
+    signature = FailureSignature(
+        component=agent_name or "unknown",
+        failure_type=healing_input.failure_type,
+        fingerprint=fingerprint,
+    )
+
+    try:
+        prediction = resource_predictor.predict(signature=signature, history_bytes=None)
+
+        # Emit as proposal artifact (no direct mutation)
+        logger.info(
+            "Resource prediction emitted",
+            extra={
+                "agent": agent_name,
+                "trace_id": healing_input.trace_id,
+                "prediction_hash": prediction.content_hash(),
+                "confidence": prediction.confidence,
+            },
+        )
+    except Exception:  # noqa: BLE001
+        logger.debug("resource prediction failed; swallowed to preserve dispatch path")
+
+
+def _emit_rollback_refinement(
+    rollback_refiner: RollbackRefiner,
+    healing_input: HealingInput,
+    agent_name: str,
+    timestamp_utc: int | None,
+) -> None:
+    """Emit rollback refinement as proposal-only artifact."""
+    from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+    from agentic_core.L2_execution.types.rollback_refinement_types import (
+        RollbackRefinementRequest,
+        RollbackStrategyId,
+    )
+
+    # Create deterministic failure signature
+    fingerprint = hashlib.sha256(
+        f"{healing_input.failure_type}:{healing_input.error_signature}:{healing_input.trace_id}".encode()
+    ).hexdigest()[:64]
+
+    signature = FailureSignature(
+        component=agent_name or "unknown",
+        failure_type=healing_input.failure_type,
+        fingerprint=fingerprint,
+    )
+
+    # Default candidate strategies
+    candidates = tuple(
+        RollbackStrategyId(name)
+        for name in [
+            "graceful_shutdown",
+            "checkpoint_restore",
+            "state_snapshot",
+            "incremental_rollback",
+            "full_restart",
+            "circuit_breaker",
+        ]
+    )
+
+    request = RollbackRefinementRequest(
+        failure_signature=signature,
+        candidates=candidates,
+        history_bytes=None,
+    )
+
+    try:
+        decision = rollback_refiner.refine(request=request)
+
+        # Emit as proposal artifact (no direct mutation)
+        logger.info(
+            "Rollback refinement emitted",
+            extra={
+                "agent": agent_name,
+                "trace_id": healing_input.trace_id,
+                "chosen_strategy": decision.chosen.name,
+                "decision_hash": decision.content_hash(),
+            },
+        )
+    except Exception:  # noqa: BLE001
+        logger.debug("rollback refinement failed; swallowed to preserve dispatch path")
 
 
 __all__ = [

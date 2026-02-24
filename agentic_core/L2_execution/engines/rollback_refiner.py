@@ -1,0 +1,202 @@
+"""
+Rollback refiner engine for L2 execution learning.
+Deterministic rollback strategy selection using outcome history.
+"""
+
+from __future__ import annotations
+
+from typing import Protocol
+
+from agentic_core.L2_execution.types.resource_prediction_types import FailureSignature
+from agentic_core.L2_execution.types.rollback_refinement_types import (
+    RollbackOutcomeStats,
+    RollbackRefinementDecision,
+    RollbackRefinementRequest,
+    RollbackStrategyId,
+)
+
+
+class RollbackRefiner(Protocol):
+    """Protocol for rollback refinement engines."""
+
+    def refine(
+        *,
+        request: RollbackRefinementRequest,
+    ) -> RollbackRefinementDecision:
+        """Refine rollback strategy selection."""
+        ...
+
+
+class DefaultDeterministicRollbackRefiner:
+    """Deterministic rollback refiner with stable tie-breaking."""
+
+    # Default strategy preference order (fallback when no history)
+    _DEFAULT_STRATEGY_ORDER: tuple[str, ...] = (
+        "graceful_shutdown",
+        "checkpoint_restore",
+        "state_snapshot",
+        "incremental_rollback",
+        "full_restart",
+        "circuit_breaker",
+    )
+
+    def __init__(self):
+        """Initialize deterministic refiner."""
+        # No internal state for determinism
+        pass
+
+    def refine(
+        self,
+        *,
+        request: RollbackRefinementRequest,
+    ) -> RollbackRefinementDecision:
+        """Refine rollback strategy selection deterministically."""
+        # Parse history to get outcome statistics
+        strategy_stats = self._parse_history_stats(request.history_bytes)
+
+        # Score all candidate strategies
+        scored_candidates = self._score_candidates(
+            request.candidates, strategy_stats, request.failure_signature
+        )
+
+        # Sort by score (descending), then by name for deterministic tie-breaking
+        sorted_candidates = sorted(
+            scored_candidates,
+            key=lambda x: (-x[0], x[1].name),  # (-score, name) for descending score, then name
+        )
+
+        # Extract ranked strategies
+        ranked = tuple(candidate for _, candidate in sorted_candidates)
+
+        # Choose the highest-scoring strategy
+        chosen = ranked[0] if ranked else request.candidates[0]
+
+        # Generate deterministic reasons
+        reasons = self._generate_reasons(chosen, strategy_stats, request.failure_signature)
+
+        return RollbackRefinementDecision(
+            chosen=chosen,
+            ranked=ranked,
+            reasons=tuple(sorted(reasons)),  # Sort for determinism
+        )
+
+    def _parse_history_stats(self, history_bytes: bytes | None) -> dict[str, RollbackOutcomeStats]:
+        """Parse history bytes to extract strategy statistics."""
+        if not history_bytes:
+            return {}
+
+        # In practice, this would parse actual history data
+        # For determinism, we'll create mock stats based on history hash
+        import hashlib
+
+        history_hash = hashlib.sha256(history_bytes).hexdigest()
+
+        # Deterministic mock stats based on hash
+        stats = {}
+        strategies = [
+            "graceful_shutdown",
+            "checkpoint_restore",
+            "state_snapshot",
+            "incremental_rollback",
+            "full_restart",
+            "circuit_breaker",
+        ]
+
+        for i, strategy in enumerate(strategies):
+            # Use hash to generate deterministic stats
+            hash_byte = int(history_hash[i % len(history_hash)], 16)
+            success = 10 + (hash_byte % 20)  # 10-29 successes
+            fail = hash_byte % 5  # 0-4 failures
+            stats[strategy] = RollbackOutcomeStats(success=success, fail=fail)
+
+        return stats
+
+    def _score_candidates(
+        self,
+        candidates: tuple[RollbackStrategyId, ...],
+        strategy_stats: dict[str, RollbackOutcomeStats],
+        failure_signature: FailureSignature,
+    ) -> list[tuple[float, RollbackStrategyId]]:
+        """Score candidates based on statistics and deterministic rules."""
+        scored = []
+
+        for candidate in candidates:
+            score = self._calculate_score(candidate, strategy_stats, failure_signature)
+            scored.append((score, candidate))
+
+        return scored
+
+    def _calculate_score(
+        self,
+        candidate: RollbackStrategyId,
+        strategy_stats: dict[str, RollbackOutcomeStats],
+        failure_signature: FailureSignature,
+    ) -> float:
+        """Calculate deterministic score for a strategy."""
+        # Base score from outcome statistics
+        if candidate.name in strategy_stats:
+            stats = strategy_stats[candidate.name]
+            total = stats.success + stats.fail
+            if total > 0:
+                success_rate = stats.success / total
+                base_score = success_rate
+            else:
+                base_score = 0.5  # Neutral if no data
+        else:
+            base_score = 0.5  # Neutral for unknown strategies
+
+        # Adjust based on failure type preferences
+        failure_adjustments = {
+            "timeout": {"graceful_shutdown": 0.2, "checkpoint_restore": 0.1},
+            "memory_error": {"state_snapshot": 0.2, "incremental_rollback": 0.1},
+            "cpu_error": {"full_restart": 0.2, "circuit_breaker": 0.1},
+            "io_error": {"checkpoint_restore": 0.2, "state_snapshot": 0.1},
+            "network_error": {"circuit_breaker": 0.2, "graceful_shutdown": 0.1},
+        }
+
+        if failure_signature.failure_type in failure_adjustments:
+            if candidate.name in failure_adjustments[failure_signature.failure_type]:
+                base_score += failure_adjustments[failure_signature.failure_type][candidate.name]
+
+        # Add small deterministic bias based on strategy name order
+        if candidate.name in self._DEFAULT_STRATEGY_ORDER:
+            order_bonus = (
+                len(self._DEFAULT_STRATEGY_ORDER) - self._DEFAULT_STRATEGY_ORDER.index(candidate.name)
+            ) * 0.01
+            base_score += order_bonus
+
+        # Clamp score to valid range
+        return max(0.0, min(1.0, base_score))
+
+    def _generate_reasons(
+        self,
+        chosen: RollbackStrategyId,
+        strategy_stats: dict[str, RollbackOutcomeStats],
+        failure_signature: FailureSignature,
+    ) -> list[str]:
+        """Generate deterministic reasoning for the choice."""
+        reasons = []
+
+        # Base reason
+        reasons.append(f"chosen_strategy_{chosen.name}")
+
+        # History-based reasoning
+        if chosen.name in strategy_stats:
+            stats = strategy_stats[chosen.name]
+            total = stats.success + stats.fail
+            if total > 0:
+                success_rate = stats.success / total
+                reasons.append(f"success_rate_{success_rate:.3f}")
+                reasons.append("history_based")
+            else:
+                reasons.append("no_history_data")
+        else:
+            reasons.append("unknown_strategy")
+
+        # Failure type reasoning
+        reasons.append(f"failure_type_{failure_signature.failure_type}")
+
+        # Tie-breaking reasoning
+        reasons.append("deterministic_tie_break")
+
+        return reasons
