@@ -75,19 +75,19 @@ OUTPUT_FILENAME = "combined_heal_result.json"
 # sets needs_llm_escalation=True.  Extend this list as healers mature.
 HEALER_ESCALATION_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
     {
-        ("guardian_drift_detection", "GuardianDriftDetectionHealer"),
-        ("guardian_import_boundary", "GuardianImportBoundaryHealer"),
-        ("guardian_layer_inversion", "GuardianLayerInversionHealer"),
-        ("guardian_ssot_drift", "GuardianSSOTDriftHealer"),
+        ("guardian_drift_detection", "heal_guardian_drift_detection"),
+        ("guardian_import_boundary", "heal_guardian_import_boundary"),
+        ("guardian_layer_inversion", "heal_guardian_layer_inversion"),
+        ("guardian_ssot_drift", "heal_guardian_ssot_drift"),
     }
 )
 
 # Mapping from check_id to healer_name for escalation hints
 _CHECK_ID_TO_HEALER_NAME: dict[str, str] = {
-    "guardian_drift_detection": "GuardianDriftDetectionHealer",
-    "guardian_import_boundary": "GuardianImportBoundaryHealer",
-    "guardian_layer_inversion": "GuardianLayerInversionHealer",
-    "guardian_ssot_drift": "GuardianSSOTDriftHealer",
+    "guardian_drift_detection": "heal_guardian_drift_detection",
+    "guardian_import_boundary": "heal_guardian_import_boundary",
+    "guardian_layer_inversion": "heal_guardian_layer_inversion",
+    "guardian_ssot_drift": "heal_guardian_ssot_drift",
 }
 
 # Hint key pattern: "key=value" pairs, space-separated
@@ -119,32 +119,36 @@ class EscalationContext:
     summary: str
     trace_id: str
 
-    @staticmethod
-    def from_result(
-        check_id: str,
-        result: HealCheckResult,
-        retry_count: int,
-    ) -> EscalationContext:
-        """Build deterministically from a HealCheckResult."""
+    @classmethod
+    def from_result(cls, check_id: str, result: HealCheckResult, retry_count: int) -> EscalationContext:
+        """Build deterministically from a HealCheckResult with strict parsing."""
         hint_kvs: dict[str, str] = {}
         if result.escalation_hint:
             for m in _HINT_KV_RE.finditer(result.escalation_hint):
-                hint_kvs[m.group(1)] = m.group(2)
+                key, value = m.group(1), m.group(2)
+                # Only allow known keys - ignore unknown keys silently
+                if key in {"healer_name", "failure_type", "blast_radius"}:
+                    hint_kvs[key] = value
 
+        # Parse failure_type with strict default
         failure_type = hint_kvs.get("failure_type", "healer_failure")
+
+        # Parse and clamp blast_radius to [0.0, 1.0]
         try:
             blast = float(hint_kvs.get("blast_radius", "0.5"))
-            blast = max(0.0, min(1.0, blast))
-        except ValueError:
-            blast = 0.5
+            blast = max(0.0, min(1.0, blast))  # Clamp to valid range
+        except (ValueError, TypeError):
+            blast = 0.5  # Safe default on invalid input
 
+        # Truncate summary to prevent bloat
         summary = (result.notes or "")[:120]
 
-        # Extract healer_name from hint, default to check_id for backward compatibility
+        # Extract healer_name with fallback to check_id
         healer_name = hint_kvs.get("healer_name", check_id)
 
+        # Generate longer, more collision-resistant trace_id (16 chars instead of 12)
         canonical = f"{check_id}:{retry_count}"
-        trace_id = "disp-" + hashlib.sha256(canonical.encode()).hexdigest()[:12]
+        trace_id = "disp-" + hashlib.sha256(canonical.encode()).hexdigest()[:16]
 
         return EscalationContext(
             check_id=check_id,
@@ -456,8 +460,10 @@ def _tier_escalate(
     """Escalate a FAILED heal result to the confidence-tier LLM system.
 
     Guards:
-      1. (check_id, healer_name) must be in HEALER_ESCALATION_ALLOWLIST.
-      2. result.needs_llm_escalation must be True (healer opt-in).
+      1. result.status must be FAILED (explicit check)
+      2. result.needs_llm_escalation must be True (healer opt-in)
+      3. (check_id, healer_name) must be in HEALER_ESCALATION_ALLOWLIST
+      4. registered healer identity must match expected healer_name
 
     Builds a FailureSignal from EscalationContext (never from raw notes),
     calls dispatch_healing, and returns a deterministic audit note string.
@@ -471,18 +477,35 @@ def _tier_escalate(
     Returns:
         A deterministic audit note string, or a skip note if guards block.
     """
-    # Extract healer_name from escalation context or notes
+    # Guard 1: Explicitly check status is FAILED
+    if result.status != HealStatus.FAILED:
+        return f"tier_escalation_skipped: check_id={check_id} reason=status_not_failed"
+
+    # Guard 2: Healer must opt-in to escalation
+    if not result.needs_llm_escalation:
+        return f"tier_escalation_skipped: check_id={check_id} reason=needs_llm_escalation_false"
+
+    # Extract healer_name from escalation context
     escalation_ctx = EscalationContext.from_result(check_id, result, retry_count)
     healer_pair = (check_id, escalation_ctx.healer_name)
 
+    # Guard 3: Check allowlist
     if healer_pair not in HEALER_ESCALATION_ALLOWLIST:
         return (
             f"tier_escalation_skipped: check_id={check_id} "
             f"healer={escalation_ctx.healer_name} reason=not_in_allowlist"
         )
 
-    if not result.needs_llm_escalation:
-        return f"tier_escalation_skipped: check_id={check_id} reason=needs_llm_escalation_false"
+    # Guard 4: Verify registered healer identity matches expected
+    if check_id in HEALER_REGISTRY:
+        registered_healer = HEALER_REGISTRY[check_id]
+        registered_name = getattr(registered_healer, "__name__", str(registered_healer))
+        if registered_name != escalation_ctx.healer_name:
+            return (
+                f"tier_escalation_skipped: check_id={check_id} "
+                f"healer={escalation_ctx.healer_name} "
+                f"registered={registered_name} reason=healer_identity_mismatch"
+            )
 
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
