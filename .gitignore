@@ -22,8 +22,8 @@ tools/_patch_evidence.py
 *.DS_Store
 
 # [NEURAL LINK] SENSITIVE DATA
-# Note: .env files can now be committed - use with caution
-# .env
+.env
+.env.*
 
 # Python artifacts
 __pycache__/
