@@ -15,9 +15,10 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
-from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -260,6 +261,8 @@ class PipelineDependencies:
         Optional adapter for persisting healing outcome intake records.
     healing_config_optimizer : HealingConfigOptimizer | None
         Optional optimizer for healing threshold adjustments.
+    l4_state_writer : L4StateWriter | None
+        Optional L4 state writer for persistence.
     """
 
     audit_store: AuditStore
@@ -275,6 +278,7 @@ class PipelineDependencies:
     approval_gate: ApprovalGate | None = None
     healing_outcome_intake_adapter: HealingOutcomeIntakeAdapter | None = None
     healing_config_optimizer: HealingConfigOptimizer | None = None
+    l4_state_writer: L4StateWriter | None = None
 
 
 # =============================================================================
@@ -495,16 +499,27 @@ def run_pipeline(
         deps.healing_outcome_intake_adapter.persist_record(intake_record)
 
     # Step 8.5: Run healing config optimizer if available
-    if deps.healing_config_optimizer is not None and hasattr(intake_record, 'snapshot'):
+    if deps.healing_config_optimizer is not None and hasattr(intake_record, "snapshot"):
         # Create aggregate snapshot from intake
         aggregate_snapshot = deps.healing_config_optimizer.create_snapshot_from_intake(
             intake_record, created_utc=now_utc
         )
 
+        # Write L4B healing snapshot if writer available
+        if deps.l4_state_writer is not None:
+            try:
+                # Serialize aggregate snapshot to bytes
+                payload_bytes = aggregate_snapshot.canonical_bytes()
+                deps.l4_state_writer.write_l4b_healing_snapshot(
+                    payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
+                )
+            except Exception:
+                # L4B write failure should not break pipeline
+                # In production, this would be logged
+                pass
+
         # Generate threshold adjustment proposals
-        threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
-            aggregate_snapshot
-        )
+        threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(aggregate_snapshot)
 
         # Add to proposals if there are adjustments
         if threshold_proposal.adjustments:
