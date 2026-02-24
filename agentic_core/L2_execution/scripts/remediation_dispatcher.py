@@ -27,6 +27,15 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    load_default_healing_tier_config,
+)
+from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+    DefaultHealingProviderInvoker,
+    HealingProviderInvoker,
+    dispatch_healing,
+)
+from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
 from agentic_core.L2_execution.types.heal_contract import (
     CombinedHealResult,
     HealCheckResult,
@@ -342,31 +351,105 @@ def load_approval_bundle(path: Path) -> ApprovalBundle:
 # ---------------------------------------------------------------------------
 
 
+def _tier_escalate(
+    check_id: str,
+    result: HealCheckResult,
+    *,
+    retry_count: int = 0,
+    invoker: HealingProviderInvoker | None = None,
+) -> str:
+    """Escalate a FAILED heal result to the confidence-tier LLM system.
+
+    Builds a FailureSignal from the failed HealCheckResult, calls
+    dispatch_healing to select the correct tier (LOCAL_AGENT / QWEN_VLLM /
+    GEMINI_2_5_PRO), and returns a note string recording the invocation.
+
+    This is the production wire-in point between the SSOT healer pipeline
+    and the confidence-tier LLM escalation subsystem.
+
+    Args:
+        check_id: The check_id that failed healing.
+        result: The FAILED HealCheckResult from the healer.
+        retry_count: Number of prior heal attempts (drives tier selection).
+        invoker: Injectable provider invoker (default: DefaultHealingProviderInvoker).
+
+    Returns:
+        A note string describing the tier escalation for audit.
+    """
+    if invoker is None:
+        invoker = DefaultHealingProviderInvoker()
+
+    signal = FailureSignal(
+        source_agent="remediation_dispatcher",
+        failure_type="healer_failure",
+        error_signature=check_id,
+        trace_id=f"dispatcher-{check_id}",
+        context={"notes": result.notes or ""},
+        retry_count=retry_count,
+        blast_radius_estimate=0.5,
+    )
+    config = load_default_healing_tier_config()
+    decision, record = dispatch_healing(
+        signal.to_healing_input(),
+        config,
+        invoker=invoker,
+        agent_name="remediation_dispatcher",
+    )
+    return (
+        f"tier_escalation: check_id={check_id} "
+        f"tier={decision.tier.value} "
+        f"model={record.model_id} "
+        f"confidence={decision.heal_confidence:.4f}"
+    )
+
+
 def _invoke_healer(
     check_id: str,
     check_dict: dict,
     *,
     repo_root: Path | None = None,
     apply: bool = False,
+    tier_invoker: HealingProviderInvoker | None = None,
+    retry_count: int = 0,
 ) -> HealCheckResult:
     """Invoke a registered healer safely, converting errors to FAILED results.
 
     Passes repo_root and apply as keyword arguments to healers that accept them.
     Returns the healer's HealCheckResult on success, or a FAILED result
     containing the exception class name on error.
+
+    When a healer returns FAILED, escalates to the confidence-tier LLM system
+    via _tier_escalate, appending the escalation note to the result.
     """
     healer_fn = HEALER_REGISTRY[check_id]
     try:
-        return healer_fn(check_dict, repo_root=repo_root, apply=apply)
+        result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
-        return HealCheckResult(
+        result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,
             changes_made=(),
             rollback_info=None,
             notes=f"healer error: {type(exc).__name__}: {exc}",
         )
+
+    if result.status == HealStatus.FAILED:
+        escalation_note = _tier_escalate(
+            check_id,
+            result,
+            retry_count=retry_count,
+            invoker=tier_invoker,
+        )
+        return HealCheckResult(
+            check_id=result.check_id,
+            status=result.status,
+            changes_made=result.changes_made,
+            rollback_info=result.rollback_info,
+            notes=f"{result.notes or ''} | {escalation_note}".strip(" |"),
+        )
+
+    return result
 
 
 # ---------------------------------------------------------------------------

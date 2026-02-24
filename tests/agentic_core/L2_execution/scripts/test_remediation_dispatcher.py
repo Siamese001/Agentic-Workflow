@@ -17,6 +17,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+from agentic_core.L2_execution.healers.healing_tier_types import (
+    HealingDecision,
+    HealingInput,
+    HealingTier,
+)
 from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     NOTE_MAPPED,
     NOTE_UNMAPPED,
@@ -25,6 +32,8 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     TOOL_ID,
     ApprovalGatingError,
     MutationGuardError,
+    _invoke_healer,
+    _tier_escalate,
     approvals_satisfy_phase,
     build_healer_worklist,
     classify_check_ids,
@@ -1699,3 +1708,165 @@ class TestMutationDependentApproval:
             created_utc=TIMESTAMP,
         )
         assert result.validate() == []
+
+
+# ---------------------------------------------------------------------------
+# Phase B: Integration test — production entrypoint -> tier -> invocation
+# ---------------------------------------------------------------------------
+
+
+class _FakeInvokerForIntegration:
+    """Minimal FakeInvoker for integration test (no network)."""
+
+    def __init__(self) -> None:
+        self.calls: list[InvocationRecord] = []
+
+    def invoke_local(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.LOCAL_AGENT,
+            model_id="local",
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_local",
+        )
+        self.calls.append(rec)
+        return rec
+
+    def invoke_qwen_vllm(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.QWEN_VLLM,
+            model_id=cfg.model_qwen_vllm_id,
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_qwen_vllm",
+        )
+        self.calls.append(rec)
+        return rec
+
+    def invoke_gemini(
+        self, inp: HealingInput, dec: HealingDecision, cfg: HealingTierConfig, *, agent_name: str = ""
+    ) -> InvocationRecord:
+        rec = InvocationRecord(
+            tier=HealingTier.GEMINI_2_5_PRO,
+            model_id=cfg.model_gemini_2_5_pro_id,
+            agent_name=agent_name,
+            trace_id=inp.trace_id,
+            heal_confidence=dec.heal_confidence,
+            method_called="invoke_gemini",
+        )
+        self.calls.append(rec)
+        return rec
+
+
+class TestProductionEntrypointTierIntegration:
+    """Phase B: prove _invoke_healer (production entrypoint) -> tier -> invocation.
+
+    Uses a registered healer (guardian_drift_detection) that returns FAILED
+    when given a check_dict that triggers an exception, then asserts the
+    confidence-tier system was invoked via the injected FakeInvoker.
+    """
+
+    pytestmark = pytest.mark.unit_min_deps
+
+    def test_failed_healer_triggers_tier_escalation_via_fake_invoker(self) -> None:
+        """_invoke_healer: FAILED result -> _tier_escalate -> FakeInvoker invoked.
+
+        This is the full E2E proof:
+          production entrypoint (_invoke_healer)
+          -> healer raises / returns FAILED
+          -> _tier_escalate builds FailureSignal
+          -> dispatch_healing selects tier
+          -> FakeInvoker.invoke_* called (no network)
+          -> InvocationRecord recorded
+          -> HealCheckResult.notes contains tier_escalation audit string
+        """
+        fake = _FakeInvokerForIntegration()
+
+        # guardian_drift_detection is a registered healer; passing an empty
+        # check_dict causes it to raise/return FAILED, triggering escalation.
+        result = _invoke_healer(
+            "guardian_drift_detection",
+            {},
+            tier_invoker=fake,
+            retry_count=0,
+        )
+
+        assert result.status == HealStatus.FAILED
+        assert result.notes is not None
+        assert "tier_escalation:" in result.notes
+        assert "check_id=guardian_drift_detection" in result.notes
+        assert len(fake.calls) == 1
+        record = fake.calls[0]
+        assert record.method_called in {"invoke_local", "invoke_qwen_vllm", "invoke_gemini"}
+        assert record.agent_name == "remediation_dispatcher"
+        assert record.trace_id == "dispatcher-guardian_drift_detection"
+
+    def test_tier_escalation_note_contains_model_and_confidence(self) -> None:
+        """Escalation note records tier, model_id, and confidence for audit."""
+        from agentic_core.L2_execution.types.heal_contract import HealCheckResult, HealStatus
+
+        fake = _FakeInvokerForIntegration()
+        failed_result = HealCheckResult(
+            check_id="test_check",
+            status=HealStatus.FAILED,
+            notes="original failure",
+        )
+        note = _tier_escalate("test_check", failed_result, retry_count=0, invoker=fake)
+
+        assert "tier_escalation:" in note
+        assert "check_id=test_check" in note
+        assert "tier=" in note
+        assert "model=" in note
+        assert "confidence=" in note
+        assert len(fake.calls) == 1
+
+    def test_successful_healer_does_not_trigger_escalation(self) -> None:
+        """A healer that succeeds must NOT invoke the tier system."""
+        from unittest.mock import patch
+
+        from agentic_core.L2_execution.types.heal_contract import HealCheckResult, HealStatus
+
+        fake = _FakeInvokerForIntegration()
+
+        def _fake_healer(check_dict, *, repo_root=None, apply=False):
+            return HealCheckResult(
+                check_id="guardian_drift_detection",
+                status=HealStatus.HEALED,
+                changes_made=(),
+            )
+
+        with patch.dict(
+            "agentic_core.L2_execution.types.healer_registry.HEALER_REGISTRY",
+            {"guardian_drift_detection": _fake_healer},
+        ):
+            result = _invoke_healer(
+                "guardian_drift_detection",
+                {},
+                tier_invoker=fake,
+            )
+
+        assert result.status == HealStatus.HEALED
+        assert len(fake.calls) == 0, "Tier system must NOT be invoked on success"
+
+    def test_retry_count_drives_tier_selection(self) -> None:
+        """retry_count >= max_heal_retries forces GEMINI_2_5_PRO tier."""
+        from agentic_core.L2_execution.types.heal_contract import HealCheckResult, HealStatus
+
+        fake = _FakeInvokerForIntegration()
+        failed_result = HealCheckResult(
+            check_id="test_check",
+            status=HealStatus.FAILED,
+            notes="failed",
+        )
+        # max_heal_retries=3; retry_count=3 forces GEMINI
+        _tier_escalate("test_check", failed_result, retry_count=3, invoker=fake)
+
+        assert len(fake.calls) == 1
+        assert fake.calls[0].method_called == "invoke_gemini"
+        assert fake.calls[0].tier == HealingTier.GEMINI_2_5_PRO
