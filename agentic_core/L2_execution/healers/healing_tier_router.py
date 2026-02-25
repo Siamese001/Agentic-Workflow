@@ -170,7 +170,7 @@ def route_healing_tier(
         raise V15HardFailAbort(
             f"§AgentProfile: Agent '{healing_input.agent_id}' not found in registry: {e}"
         )
-    
+
     # Enforce execution mode - deterministic agents cannot escalate to LLM tiers
     if not profile.is_llm_allowed():
         # Deterministic agents can ONLY use LOCAL_AGENT tier
@@ -200,30 +200,30 @@ def route_healing_tier(
             reason_codes=tuple(reason_codes),
         )
 
-    # Route by X/Y bands with model validation
+    # Route by X/Y bands with model validation (fail-closed)
     if heal_confidence >= config.heal_confidence_x:
         tier = HealingTier.LOCAL_AGENT
         reason_codes.append(f"heal_confidence>={config.heal_confidence_x}:LOCAL_AGENT")
     elif heal_confidence >= config.heal_confidence_y:
-        # QWEN_VLLM tier - validate model access
+        # QWEN_VLLM tier - validate model access (fail-closed)
         if not profile.can_use_model("qwen-vllm"):
-            # Fall back to LOCAL_AGENT if QWEN not allowed
-            tier = HealingTier.LOCAL_AGENT
-            reason_codes.append(f"heal_confidence>={config.heal_confidence_y}:QWEN_NOT_ALLOWED:FALLBACK_LOCAL")
-        else:
-            tier = HealingTier.QWEN_VLLM
-            reason_codes.append(
-                f"{config.heal_confidence_y}<=heal_confidence<{config.heal_confidence_x}:QWEN_VLLM"
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{healing_input.agent_id}' not allowed to use model 'qwen-vllm'. "
+                f"Allowed models: {profile.allowed_models}"
             )
+        tier = HealingTier.QWEN_VLLM
+        reason_codes.append(
+            f"{config.heal_confidence_y}<=heal_confidence<{config.heal_confidence_x}:QWEN_VLLM"
+        )
     else:
-        # GEMINI_2_5_PRO tier - validate model access
+        # GEMINI_2_5_PRO tier - validate model access (fail-closed)
         if not profile.can_use_model("gemini-2.5-pro"):
-            # Fall back to LOCAL_AGENT if GEMINI not allowed
-            tier = HealingTier.LOCAL_AGENT
-            reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_NOT_ALLOWED:FALLBACK_LOCAL")
-        else:
-            tier = HealingTier.GEMINI_2_5_PRO
-            reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_2_5_PRO")
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{healing_input.agent_id}' not allowed to use model 'gemini-2.5-pro'. "
+                f"Allowed models: {profile.allowed_models}"
+            )
+        tier = HealingTier.GEMINI_2_5_PRO
+        reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_2_5_PRO")
 
     return HealingDecision(
         heal_confidence=heal_confidence,

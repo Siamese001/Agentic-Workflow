@@ -2,8 +2,11 @@
 Governance test configuration and fixtures.
 
 Phase 3: Network-call tripwire to ensure heal paths make no outbound calls.
+Phase 5-H: Single W5-DETERMINISM-DIGEST print per run.
 """
 
+import hashlib
+import json
 from unittest import mock
 
 import pytest
@@ -70,3 +73,37 @@ def mock_httpx_block(monkeypatch):
         monkeypatch.setattr(httpx, "post", blocked_request)
     except ImportError:
         pass  # httpx not installed
+
+
+def pytest_sessionfinish(session, exitstatus):
+    """Print W5-DETERMINISM-DIGEST exactly once per test run."""
+    try:
+        from agentic_core.agents.agent_registry import AGENT_REGISTRY
+
+        # Create canonical JSON of registry + policy thresholds
+        registry_data = {
+            "registry": sorted([
+                {
+                    "agent_id": agent_id,
+                    "execution_mode": profile.execution_mode.value,
+                    "reasoning_intensity": profile.reasoning_intensity.value,
+                    "allowed_models": sorted(profile.allowed_models)
+                }
+                for agent_id, profile in AGENT_REGISTRY.items()
+            ], key=lambda x: x["agent_id"]),
+            "policy_thresholds": {
+                "heal_confidence_x": 0.80,
+                "heal_confidence_y": 0.60,
+                "max_heal_retries": 3
+            }
+        }
+
+        # Compute deterministic digest
+        canonical_json = json.dumps(registry_data, separators=(',', ':'), sort_keys=True)
+        digest = hashlib.sha256(canonical_json.encode('utf-8')).hexdigest()
+
+        print(f"W5-DETERMINISM-DIGEST: {digest}")
+
+    except Exception as e:
+        # Fail gracefully - if we can't compute digest, print error but don't crash
+        print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
