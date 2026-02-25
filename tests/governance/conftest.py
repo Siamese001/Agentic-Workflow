@@ -89,6 +89,7 @@ def pytest_sessionfinish(session, exitstatus):
         is_phase5 = any("test_phase5_gap_closure_policy_enforcement.py" in nid for nid in collected_nodeids)
         is_phase6 = any("test_phase6_agent_fleet_conformance.py" in nid for nid in collected_nodeids)
         is_phase7 = any("test_phase7_embedding_sovereignty.py" in nid for nid in collected_nodeids)
+        is_phase8 = any("test_phase8_signature_boundary.py" in nid for nid in collected_nodeids)
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
@@ -130,6 +131,48 @@ def pytest_sessionfinish(session, exitstatus):
                 print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: {w7_digest}")
             except Exception as e:
                 print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: ERROR - {e}")
+        elif is_phase8:
+            # Compute W8 signature integrity digest
+            try:
+                # Compute digest over security infrastructure
+                import hashlib
+                import json
+                import pathlib
+                
+                repo_root = pathlib.Path(__file__).parent.parent.parent
+                
+                # Hash critical security files
+                security_files = {
+                    "signature_verifier": repo_root / "agentic_core/security/signature_verifier.py",
+                    "side_effect_guard": repo_root / "agentic_core/security/side_effect_guard.py",
+                }
+                
+                file_hashes = {}
+                for name, path in security_files.items():
+                    if path.exists():
+                        file_hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    else:
+                        file_hashes[name] = "MISSING"
+                
+                # Build canonical state
+                state = {
+                    "security_file_hashes": file_hashes,
+                    "guarded_modules": [
+                        "agentic_core.L2_execution",
+                        "agentic_core.L4_state",
+                        "agentic_core.L2_execution.enforcement.SovereignLLMGateway",
+                        "agentic_core.embeddings.embedding_factory",
+                    ],
+                    "enforcement_ordering": ["verify", "guard", "execute"],
+                    "phase": "8",
+                }
+                
+                # Compute deterministic hash
+                canonical_json = json.dumps(state, separators=(",", ":"), sort_keys=True)
+                w8_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+                print(f"W8-SIGNATURE-INTEGRITY-DIGEST: {w8_digest}")
+            except Exception as e:
+                print(f"W8-SIGNATURE-INTEGRITY-DIGEST: ERROR - {e}")
         else:
             # Default: print both for other governance test runs
             canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
@@ -148,6 +191,8 @@ def pytest_sessionfinish(session, exitstatus):
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
         elif is_phase7:
             print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: ERROR - {e}")
+        elif is_phase8:
+            print(f"W8-SIGNATURE-INTEGRITY-DIGEST: ERROR - {e}")
         else:
             print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
