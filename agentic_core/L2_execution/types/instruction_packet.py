@@ -15,6 +15,7 @@ import json
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 
 # ---------------------------------------------------------------------------
 # Canonicalization helper
@@ -64,7 +65,16 @@ class InstructionPacket:
     instruction_id: str
     payload: str
     metadata: dict[str, Any] = field(default_factory=dict)
-    signature: str = ""
+    signature: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        """Enforce mandatory signing at construction."""
+        if not self.signature:
+            # Auto-sign with injected secret
+            secret = get_current_secret()
+            mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
+            # Use object.__setattr__ since dataclass is frozen
+            object.__setattr__(self, "signature", mac.hexdigest().lower())
 
     # ------------------------------------------------------------------
     # Signing surface
@@ -86,7 +96,7 @@ class InstructionPacket:
     # sign / verify
     # ------------------------------------------------------------------
 
-    def sign(self, secret: bytes) -> "InstructionPacket":
+    def sign(self, secret: bytes) -> InstructionPacket:
         """Return a *new* InstructionPacket with HMAC-SHA256 signature set."""
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
         return replace(self, signature=mac.hexdigest().lower())
@@ -94,9 +104,7 @@ class InstructionPacket:
     def verify(self, secret: bytes) -> None:
         """Raise SignatureVerificationError if signature is absent or wrong."""
         if not self.signature:
-            raise SignatureVerificationError(
-                "InstructionPacket has no signature -- packet is unsigned"
-            )
+            raise SignatureVerificationError("InstructionPacket has no signature -- packet is unsigned")
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
         expected = mac.hexdigest().lower()
         if not hmac.compare_digest(self.signature, expected):

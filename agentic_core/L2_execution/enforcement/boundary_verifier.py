@@ -9,6 +9,7 @@ Phase 1: Cryptographic Boundary Contracts (Item 39/40 -- L2 wiring)
 
 from __future__ import annotations
 
+from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L2_execution.types.instruction_packet import (
     InstructionPacket,
     SignatureVerificationError,
@@ -21,36 +22,33 @@ class L2BoundaryVerifier:
 
     Usage
     -----
-    verifier = L2BoundaryVerifier(secret=b"shared-secret")
-    verifier.verify_packet(packet)    # raises if invalid
-    verifier.verify_envelope(envelope)  # raises if invalid
+    verifier = L2BoundaryVerifier()
+    verifier.verify_instruction_packet(packet)    # raises if invalid
+    verifier.verify_sandbox_envelope(envelope)  # raises if invalid
     """
 
-    def __init__(self, secret: bytes) -> None:
-        if not secret:
-            raise ValueError("L2BoundaryVerifier: secret must be non-empty bytes")
-        self._secret = secret
+    def __init__(self) -> None:
+        # No constructor args - uses injected key source
+        pass
 
-    def verify_packet(self, packet: InstructionPacket) -> None:
+    def verify_instruction_packet(self, packet: InstructionPacket) -> None:
         """Verify InstructionPacket signature.  Raises SignatureVerificationError on failure."""
         if not isinstance(packet, InstructionPacket):
-            raise TypeError(
-                f"Expected InstructionPacket, got {type(packet).__name__}"
-            )
-        packet.verify(self._secret)
+            raise TypeError(f"Expected InstructionPacket, got {type(packet).__name__}")
+        secret = get_current_secret()
+        packet.verify(secret)
 
-    def verify_envelope(self, envelope: SandboxEnvelope) -> None:
+    def verify_sandbox_envelope(self, envelope: SandboxEnvelope) -> None:
         """Verify SandboxEnvelope signature before side-effects.  Raises on failure."""
         if not isinstance(envelope, SandboxEnvelope):
-            raise TypeError(
-                f"Expected SandboxEnvelope, got {type(envelope).__name__}"
-            )
-        envelope.verify(self._secret)
+            raise TypeError(f"Expected SandboxEnvelope, got {type(envelope).__name__}")
+        secret = get_current_secret()
+        envelope.verify(secret)
 
     def is_packet_valid(self, packet: InstructionPacket) -> bool:
         """Return True if packet passes verification, False otherwise (no exception)."""
         try:
-            self.verify_packet(packet)
+            self.verify_instruction_packet(packet)
             return True
         except (SignatureVerificationError, TypeError):
             return False
@@ -58,7 +56,7 @@ class L2BoundaryVerifier:
     def is_envelope_valid(self, envelope: SandboxEnvelope) -> bool:
         """Return True if envelope passes verification, False otherwise (no exception)."""
         try:
-            self.verify_envelope(envelope)
+            self.verify_sandbox_envelope(envelope)
             return True
         except (SignatureVerificationError, TypeError):
             return False

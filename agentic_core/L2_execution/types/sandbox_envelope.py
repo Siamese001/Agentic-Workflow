@@ -11,15 +11,14 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import json
 from dataclasses import dataclass, field, replace
 from typing import Any
 
+from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L2_execution.types.instruction_packet import (
     SignatureVerificationError,
     _canonical_bytes,
 )
-
 
 # ---------------------------------------------------------------------------
 # SandboxEnvelope
@@ -51,7 +50,16 @@ class SandboxEnvelope:
     tool_args: dict[str, Any] = field(default_factory=dict)
     instruction_packet_id: str = ""
     invocation_metadata: dict[str, Any] = field(default_factory=dict)
-    signature: str = ""
+    signature: str = field(default="", init=False)
+
+    def __post_init__(self) -> None:
+        """Enforce mandatory signing at construction."""
+        if not self.signature:
+            # Auto-sign with injected secret
+            secret = get_current_secret()
+            mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
+            # Use object.__setattr__ since dataclass is frozen
+            object.__setattr__(self, "signature", mac.hexdigest().lower())
 
     # ------------------------------------------------------------------
     # Signing surface
@@ -74,7 +82,7 @@ class SandboxEnvelope:
     # sign / verify
     # ------------------------------------------------------------------
 
-    def sign(self, secret: bytes) -> "SandboxEnvelope":
+    def sign(self, secret: bytes) -> SandboxEnvelope:
         """Return a *new* SandboxEnvelope with HMAC-SHA256 signature set."""
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
         return replace(self, signature=mac.hexdigest().lower())
@@ -85,9 +93,7 @@ class SandboxEnvelope:
         Must be called before any tool execution, write, or network call.
         """
         if not self.signature:
-            raise SignatureVerificationError(
-                "SandboxEnvelope has no signature -- envelope is unsigned"
-            )
+            raise SignatureVerificationError("SandboxEnvelope has no signature -- envelope is unsigned")
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
         expected = mac.hexdigest().lower()
         if not hmac.compare_digest(self.signature, expected):
