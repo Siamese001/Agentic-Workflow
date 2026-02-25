@@ -190,7 +190,7 @@ class SovereignLLMGateway:
 
         effective_model = model or "unknown"
         
-        # Model injection guard - ensure model resolution from immutable config
+        # Model injection lock - ensure model resolution from immutable config
         if model and provider == "openai":
             # Verify model is from approved config
             approved_models = [self.config.openai_model]
@@ -198,11 +198,21 @@ class SovereignLLMGateway:
                 raise V15HardFailAbort(
                     f"§ModelInjection: Runtime model override detected - '{model}' not in approved config for {provider}"
                 )
+            # Defensive assertion: model_id resolved from immutable config surface
+            if model != self.config.openai_model and not self._is_policy_approved_model(model, provider):
+                raise V15HardFailAbort(
+                    f"§ModelInjection: Model ID '{model}' not resolved from immutable config surface for {provider}"
+                )
         elif model and provider == "anthropic":
             approved_models = [self.config.anthropic_model]
             if model not in approved_models and not self._is_policy_approved_model(model, provider):
                 raise V15HardFailAbort(
                     f"§ModelInjection: Runtime model override detected - '{model}' not in approved config for {provider}"
+                )
+            # Defensive assertion: model_id resolved from immutable config surface
+            if model != self.config.anthropic_model and not self._is_policy_approved_model(model, provider):
+                raise V15HardFailAbort(
+                    f"§ModelInjection: Model ID '{model}' not resolved from immutable config surface for {provider}"
                 )
 
         # §Wave1.8 — Hard token budget enforcement (pre-call gate)

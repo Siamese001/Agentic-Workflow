@@ -151,6 +151,11 @@ class EmbeddingServiceFactory:
         """
         # Check kill-switch first - NO instantiation if disabled
         if not cls._is_embedding_enabled():
+            # Runtime guard: assert no embedding model instance may exist
+            if cls._INSTANCE is not None:
+                raise EmbeddingIntegrityError(
+                    "KILL_SWITCH_VIOLATION: EmbeddingServiceFactory instance exists while EMBEDDING_ENABLED=false"
+                )
             return _DisabledEmbeddingService()
 
         # Service is enabled - get singleton instance

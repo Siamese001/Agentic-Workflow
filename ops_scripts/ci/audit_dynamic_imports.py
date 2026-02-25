@@ -206,13 +206,45 @@ def scan_file(file_path: Path) -> List[DynamicImportViolation]:
 
 
 def scan_directory(root_dir: Path) -> List[DynamicImportViolation]:
-    """Scan all Python files in directory recursively."""
+    """Scan all Python files in directory recursively, restricted to first-party code."""
     violations = []
     
+    # Define first-party scope
+    first_party_prefixes = [
+        "agentic_core/",
+        "system_learning/", 
+        "apps_rg/",
+        "apps_shared/",
+        "data/",
+        "tests/",
+        "ops_scripts/",
+    ]
+    
+    # Define third-party directories to ignore
+    third_party_patterns = [
+        ".nox/",
+        "venv/",
+        "env/",
+        "__pycache__/",
+        ".git/",
+        "site-packages/",
+        "build/",
+        "dist/",
+        ".pytest_cache/",
+    ]
+    
     for py_file in root_dir.rglob("*.py"):
-        # Skip __pycache__ and .git
-        if "__pycache__" in str(py_file) or ".git" in str(py_file):
+        file_str = str(py_file)
+        
+        # Skip third-party directories
+        if any(pattern in file_str for pattern in third_party_patterns):
             continue
+        
+        # Only scan first-party code
+        if not any(py_file.is_relative_to(Path(p)) if Path(p).exists() else file_str.startswith(p) for p in first_party_prefixes):
+            # Check if file is in first-party directory by string matching
+            if not any(file_str.startswith(p) for p in first_party_prefixes):
+                continue
         
         file_violations = scan_file(py_file)
         violations.extend(file_violations)
