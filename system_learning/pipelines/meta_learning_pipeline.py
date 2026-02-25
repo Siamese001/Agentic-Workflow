@@ -33,6 +33,12 @@ W4-D Integration:
 - Does NOT mutate active RetrievalProfile
 - Deterministic digest for recommendation verification
 
+W4-E Integration:
+- RetrievalProfileProposalManager stages recommendations as proposals
+- RetrievalProfileProposal written to L4 requiring explicit approval
+- Does NOT mutate ACTIVE_RETRIEVAL_PROFILE_ID
+- Deterministic digest for proposal verification
+
 Invariants:
   - Default proposal_only=True (zero execution authority)
   - No wall-clock reads (now_utc injected)
@@ -56,6 +62,8 @@ from system_learning.engines.retrieval_profile_manager import get_active_retriev
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer, DriftSummary
 from system_learning.engines.policy_recommendation_engine import PolicyRecommendationEngine, PolicyRecommendation
+from system_learning.engines.retrieval_profile_proposal import RetrievalProfileProposal
+from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -72,6 +80,9 @@ _shadow_drift_analyzer = ShadowDriftAnalyzer()
 
 # W4-D: Policy recommendation engine (advisory only)
 _policy_recommendation_engine = PolicyRecommendationEngine()
+
+# W4-E: Retrieval profile proposal manager (requires approval)
+_proposal_manager = RetrievalProfileProposalManager()
 
 
 def _accumulate_shadow_telemetry(telemetry: dict[str, Any]) -> None:
@@ -170,6 +181,48 @@ def _generate_policy_recommendation_and_write(
         pass
     
     return recommendation
+
+
+def _create_proposal_and_write(
+    policy_recommendation: PolicyRecommendation,
+    active_profile: RetrievalProfile,
+    now_utc: int,
+    l4_writer: L4StateWriter,
+) -> RetrievalProfileProposal | None:
+    """Create proposal from policy recommendation and write to L4.
+    
+    Args:
+        policy_recommendation: Policy recommendation from W4-D
+        active_profile: Current active RetrievalProfile
+        now_utc: Current timestamp
+        l4_writer: L4 state writer
+        
+    Returns:
+        RetrievalProfileProposal if created, None otherwise
+    """
+    if policy_recommendation is None:
+        return None
+    
+    # Create proposal from recommendation
+    proposal = _proposal_manager.create_proposal(
+        recommendation=policy_recommendation,
+        active_profile=active_profile,
+        now_utc=now_utc,
+    )
+    
+    # Write to L4 (requires approval)
+    try:
+        proposal_json = proposal.to_canonical_json().encode('utf-8')
+        l4_writer.write_l4c_retrieval_profile_proposal(
+            payload_bytes=proposal_json,
+            component_name="meta-learning",
+            created_utc=now_utc,
+        )
+    except Exception:
+        # L4 write failure should not break pipeline
+        pass
+    
+    return proposal
 
 
 # =============================================================================
@@ -1073,6 +1126,19 @@ def run_pipeline(
         # Emit recommendation digest for verification (informational only)
         if policy_recommendation is not None:
             policy_recommendation.emit_digest()
+
+        # Step 8.10: W4-E Profile proposal creation (requires approval)
+        # Create proposal from policy recommendation
+        profile_proposal = _create_proposal_and_write(
+            policy_recommendation=policy_recommendation,
+            active_profile=active_profile,
+            now_utc=now_utc,
+            l4_writer=deps.l4_state_writer,
+        )
+        
+        # Emit proposal digest for verification (informational only)
+        if profile_proposal is not None:
+            profile_proposal.emit_digest()
 
         # Generate threshold adjustment proposals with patterns and semantic context
         if deps.healing_config_optimizer is not None:
