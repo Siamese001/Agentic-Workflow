@@ -12,7 +12,7 @@ from typing import Optional, Dict, Any
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_invariant_checker import RetrievalProfileInvariantChecker
-from system_learning.engines.retrieval_profile_replay_check import RetrievalProfileReplayChecker, ReplayCheckResult
+from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine, ReplayResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -23,6 +23,7 @@ class ActivationResult:
     proposal_digest: str
     new_profile_id: Optional[str]
     activation_digest: str
+    replay_digest: Optional[str]
     reason: str
     
     def emit_digest(self) -> None:
@@ -36,7 +37,7 @@ class RetrievalProfileActivationGate:
     def __init__(self):
         """Initialize activation gate with required components."""
         self.invariant_checker = RetrievalProfileInvariantChecker()
-        self.replay_checker = RetrievalProfileReplayChecker()
+        self.replay_engine = DeterministicReplayEngine()
     
     def activate_if_approved(
         self,
@@ -89,16 +90,17 @@ class RetrievalProfileActivationGate:
             )
         
         # Step 3: Run deterministic replay check
-        replay_result = self.replay_checker.replay_check_profile_change(
-            base_profile=base_profile,
-            proposed_profile=proposal.proposed_profile,
-        )
-        
-        if not replay_result.passed:
+        try:
+            replay_result = self.replay_engine.replay(
+                base_profile=base_profile,
+                candidate_profile=proposal.proposed_profile,
+            )
+        except ValueError as e:
+            # Determinism self-check failed
             return self._create_failure_result(
                 base_profile_id=base_profile_id,
                 proposal_digest=proposal_digest,
-                reason=f"Replay check failed: {replay_result.reason}",
+                reason=f"Replay determinism check failed: {str(e)}",
                 now_utc=now_utc,
             )
         
@@ -135,7 +137,7 @@ class RetrievalProfileActivationGate:
             base_profile_id=base_profile_id,
             proposal_digest=proposal_digest,
             new_profile_id=new_profile_id,
-            replay_digest=replay_result.digest,
+            replay_digest=replay_result.replay_digest,
             now_utc=now_utc,
         )
         
@@ -145,6 +147,7 @@ class RetrievalProfileActivationGate:
             proposal_digest=proposal_digest,
             new_profile_id=new_profile_id,
             activation_digest=activation_digest,
+            replay_digest=replay_result.replay_digest,
             reason="Activation successful: all checks passed",
         )
         
@@ -186,6 +189,7 @@ class RetrievalProfileActivationGate:
             proposal_digest=proposal_digest,
             new_profile_id=None,
             activation_digest=activation_digest,
+            replay_digest=None,
             reason=reason,
         )
     
