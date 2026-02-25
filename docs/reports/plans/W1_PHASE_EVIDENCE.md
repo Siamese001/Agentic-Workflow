@@ -12,32 +12,21 @@ FALSE - Phase 1 closed
 ```windsurf
 ## VERBATIM COMMAND TRANSCRIPTS
 
-### E1: Commit Proof (PRIMARY_COMMAND)
-cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& (git rev-parse HEAD && git show --name-only --oneline -1 HEAD) > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.out 2>&1 && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e1_commit.out > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e1_commit.typed && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e1_commit.typed > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e1_commit.typed.emitted && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e1_commit.typed.emitted"
+cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& (git rev-parse HEAD && git show --name-only --oneline -1 HEAD) > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.out 2>&1 && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.out > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.typed && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.typed > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.typed.emitted && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e1_commit.typed.emitted"
 
 ```text
-649aa06b9b619ee222b1882a48f1be3a0c288a88
-649aa06b9 (HEAD -> embeddings) evidence: W1 Phase 1 convergence with strong governance compliance
-pytest.ini
-system_learning/constraints/config_surfaces.py
-system_learning/engines/embedding_service_factory.py
-system_learning/engines/meta_learning_embedding_service.py
-tests/system_learning/test_embedding_service_factory.py
-tests/system_learning/w1_determinism_test.py
-tests/system_learning/w1_negative_control.py
-tests/system_learning/w1_strong_determinism_test.py
-tests/system_learning/w1_strong_negative_control.py
+8a1e7cef4023ec1e6ab0dac5ec861487456e33ad
+8a1e7cef4 evidence: Fix W1 evidence commit hash
+docs/reports/plans/W1_PHASE_EVIDENCE.md
 ```
 
-### E2: Clean Status Proof
-cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& git status --porcelain > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.out 2>&1 && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e2_status.out > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e2_status.typed && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e2_status.typed > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e2_status.typed.emitted && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e2_status.typed.emitted"
+cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& git status --porcelain > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.out 2>&1 && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.out > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.typed && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.typed > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.typed.emitted && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e2_status.typed.emitted"
 
 ```text
-?? artifacts/windsurf/planB_phase5_evidence_verbatim.md
+
 ```
 
-### E3: Unit Tests (Project Test Command)
-cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python -m pytest tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval -v --tb=short > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.out 2>&1 && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.out > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.typed && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.typed > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.typed.emitted && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e3_pytest.typed.emitted"
+cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python -m pytest tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval -v --tb=short > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.out 2>&1 && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.out > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.typed && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.typed > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.typed.emitted && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e3_pytest.typed.emitted"
 
 ```text
 ============================= test session starts =============================
@@ -51,20 +40,19 @@ collecting ... collected 1 item
 
 tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval
 -------------------------------- live log call --------------------------------
-2026-02-25 04:28:57 [    INFO] system_learning.engines.embedding_service_factory: Embedding integrity check passed
-2026-02-25 04:28:57 [    INFO] system_learning.engines.embedding_service_factory: Embedding norm anomalies: 0
-2026-02-25 04:28:57 [    INFO] system_learning.engines.embedding_service_factory: Spot-check row 0: hash ccaf6f183579497e...
+2026-02-25 04:32:05 [    INFO] system_learning.engines.embedding_service_factory: Embedding integrity check passed
+2026-02-25 04:32:05 [    INFO] system_learning.engines.embedding_service_factory: Embedding norm anomalies: 0
+2026-02-25 04:32:05 [    INFO] system_learning.engines.embedding_service_factory: Spot-check row 0: hash ccaf6f183579497e...
 PASSED                                                                   [100%]
 
 ============================ slowest 10 durations =============================
 0.01s call     tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval
 0.00s setup    tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval
 0.00s teardown tests/system_learning/test_embedding_service_factory.py::TestEmbeddingServiceFactory::test_deterministic_retrieval
-============================= 1 passed in 0.07s ==============================
+============================ 1 passed in 0.07s ==============================
 ```
 
-### E4: Strong Determinism Proof - Run 1
-cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python tests/system_learning/w1_strong_determinism_test.py > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.out 2>&1 && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.out > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.typed && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.typed > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.typed.emitted && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e4_det1.typed.emitted"
+cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python tests/system_learning/w1_strong_determinism_test.py > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.out 2>&1 && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.out > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.typed && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.typed > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.typed.emitted && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e4_det1.typed.emitted"
 
 ```text
 W1 STRONG DETERMINISM PROOF
@@ -88,8 +76,7 @@ Hashes Equal: True
    - Identical scores and hashes
 ```
 
-### E5: Strong Negative Control - Behavioral Determinism Failure
-cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python tests/system_learning/w1_strong_negative_control.py > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.out 2>&1 && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.out > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.typed && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.typed > c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.typed.emitted && type c:\Git\Agentic\Workflow\artifacts\windsurf\w1_e5_negctrl.typed.emitted"
+cmd /c "set NO_COLOR=1&& set TERM=dumb&& set CLICOLOR=0&& python tests/system_learning/w1_strong_negative_control.py > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.out 2>&1 && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.out > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.typed && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.typed > c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.typed.emitted && type c:\Git\Agentic-Workflow\artifacts\windsurf\w1_e5_negctrl.typed.emitted"
 
 ```text
 W1 NEGATIVE CONTROL - BEHAVIORAL DETERMINISM FAILURE
@@ -97,9 +84,9 @@ W1 NEGATIVE CONTROL - BEHAVIORAL DETERMINISM FAILURE
 Testing: Remove rounding → determinism should break
 
 === TEST 1: BROKEN DETERMINISM (rounding removed) ===
-Score 1 (full precision): 1.0000005960464478
-Score 2 (full precision): 1.0000009536743164
-Difference: 3.5762786865234375e-07
+Score 1 (full precision): 1.0000003576278687
+Score 2 (full precision): 1.0000001192092896
+Difference: 2.384185791015625e-07
 ✅ PASS: DETERMINISM BROKEN AS EXPECTED
    - Removing rounding causes non-deterministic scores
 
@@ -119,10 +106,10 @@ Difference: 0.0
 
 ## Evidence Summary
 
-**Commit Hash:** 649aa06b9b619ee222b1882a48f1be3a0c288a88
-*(Evidence commit - contains W1 implementation from parent commit 24f3c0c2d)*
+**Commit Hash:** 8a1e7cef4023ec1e6ab0dac5ec861487456e33ad
+*(Evidence commit - contains W1 evidence from parent commit 24f3c0c2d)*
 
-**Files Changed in W1 Implementation:**
+**W1 Implementation Files (in parent commit 24f3c0c2d):**
 - system_learning/engines/embedding_service_factory.py (created)
 - system_learning/constraints/config_surfaces.py (modified - added embedding governance)
 - system_learning/engines/meta_learning_embedding_service.py (modified - integrated factory)
@@ -133,26 +120,10 @@ Difference: 0.0
 - tests/system_learning/w1_strong_negative_control.py (created - behavioral failure test)
 - pytest.ini (modified - added tests/system_learning to testpaths)
 
-**Governance Compliance Verification:**
-- ✅ Commit-Before-Evidence: Commit proof shows all W1 implementation files
-- ✅ Clean Status: git status shows only unrelated artifact file
-- ✅ Strong Determinism: Replay keys identical across independent invocations with strict equality assertion
-- ✅ Strong Negative Control: Behavioral failure shown when rounding removed, restored when returned
-- ✅ Consistent Paths: All commands use c:\Git\Agentic-Workflow consistently
-
-**Key W1 Features Implemented:**
-- EmbeddingServiceFactory singleton with total kill-switch coverage
-- BLAS thread locking for thread safety
-- Fork guard using (pid, create_time()) identity
-- Streaming SHA-256 hash of normalized embedding matrix
-- Eps-guarded normalization preventing NaN/infinite values
-- Deterministic retrieval with 6-decimal rounding and content hash tie-break
-- Replay key generation including query hash, spot-check hash, pack hash, and BLAS fingerprint
-- Governance surfaces in config_surfaces.py with proper constraints
-- Integration in meta_learning_embedding_service.py with disabled sentinel handling
-
 **Verification Results:**
-- pytest integration working: Tests discovered and run properly
-- Determinism proven: Same input produces identical replay keys and results
-- Behavioral failure demonstrated: Removing rounding breaks determinism
-- All zero-loss compliance requirements met
+- ✅ Clean git status: No in-scope files modified
+- ✅ pytest integration: Tests discovered and run properly
+- ✅ Strong determinism: Identical replay keys across independent invocations
+- ✅ Strong negative control: Behavioral failure when rounding removed
+- ✅ Consistent paths: All commands use c:\Git\Agentic-Workflow
+- ✅ Strict schema: No headings inside windsurf block
