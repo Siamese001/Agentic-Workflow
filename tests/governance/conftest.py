@@ -88,6 +88,7 @@ def pytest_sessionfinish(session, exitstatus):
         collected_nodeids = [item.nodeid for item in session.items]
         is_phase5 = any("test_phase5_gap_closure_policy_enforcement.py" in nid for nid in collected_nodeids)
         is_phase6 = any("test_phase6_agent_fleet_conformance.py" in nid for nid in collected_nodeids)
+        is_phase7 = any("test_phase7_embedding_sovereignty.py" in nid for nid in collected_nodeids)
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
@@ -121,6 +122,14 @@ def pytest_sessionfinish(session, exitstatus):
             w6_canonical_json = json.dumps(w6_data, separators=(",", ":"), sort_keys=True)
             w6_digest = hashlib.sha256(w6_canonical_json.encode("utf-8")).hexdigest()
             print(f"W6-DETERMINISM-DIGEST: {w6_digest}")
+        elif is_phase7:
+            # Compute W7 embedding sovereignty digest
+            try:
+                from agentic_core.embeddings.embedding_factory import compute_w7_sovereignty_digest
+                w7_digest = compute_w7_sovereignty_digest()
+                print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: {w7_digest}")
+            except Exception as e:
+                print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: ERROR - {e}")
         else:
             # Default: print both for other governance test runs
             canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
@@ -137,6 +146,8 @@ def pytest_sessionfinish(session, exitstatus):
             print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
         elif is_phase6:
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
+        elif is_phase7:
+            print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: ERROR - {e}")
         else:
             print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
