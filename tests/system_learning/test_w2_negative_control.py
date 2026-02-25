@@ -140,7 +140,7 @@ class TestW2NegativeControl:
                 current_threshold=1.0,
                 proposed_threshold=1.2,
                 confidence=0.8,
-                reason=("embedding_influenced", "weight=0.25", "score=0.950000"),
+                reason="embedding_influenced, weight=0.25, score=0.950000",
             )
 
             mock_proposal = MagicMock()
