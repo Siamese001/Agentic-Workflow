@@ -97,8 +97,8 @@ def main() -> int:
     parser.add_argument(
         "--mode",
         choices=["dry-run", "warn", "strict"],
-        default="warn",
-        help="Enforcement mode (default: warn)",
+        default="strict",
+        help="Enforcement mode (default: strict)",
     )
     parser.add_argument(
         "--fix",
