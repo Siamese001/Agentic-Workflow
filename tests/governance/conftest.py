@@ -91,6 +91,7 @@ def pytest_sessionfinish(session, exitstatus):
         is_phase7 = any("test_phase7_embedding_sovereignty.py" in nid for nid in collected_nodeids)
         is_phase8 = any("test_phase8_signature_boundary.py" in nid for nid in collected_nodeids)
         is_phase9 = any("test_phase9_apps_generation_routing_sovereignty.py" in nid for nid in collected_nodeids)
+        is_phase10 = any("test_phase10_embedding_non_mutation.py" in nid for nid in collected_nodeids)
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
@@ -217,6 +218,63 @@ def pytest_sessionfinish(session, exitstatus):
                 print(f"W9-DETERMINISM-DIGEST: {w9_digest}")
             except Exception as e:
                 print(f"W9-DETERMINISM-DIGEST: ERROR - {e}")
+        elif is_phase10:
+            # Compute W10 embedding high-signal digest
+            try:
+                import hashlib
+                import json
+                import pathlib
+                
+                repo_root = pathlib.Path(__file__).parent.parent.parent
+                
+                # Hash critical embedding files
+                embedding_files = {
+                    "embedding_factory": repo_root / "agentic_core/embeddings/embedding_factory.py",
+                    "routing_module": repo_root / "agentic_core/L0_routing/types/routing_artifact_types.py",
+                    "policy_module": repo_root / "agentic_core/L5_safety/config/safety_config.py",
+                }
+                
+                file_hashes = {}
+                for name, path in embedding_files.items():
+                    if path.exists():
+                        file_hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    else:
+                        file_hashes[name] = "MISSING"
+                
+                # Build canonical state for HS embedding activation
+                state = {
+                    "embedding_file_hashes": file_hashes,
+                    "embedder_config": {
+                        "provider": "openai",
+                        "model": "text-embedding-3-large",
+                        "k": 1536,
+                        "distance_metric": "cosine",
+                        "version": "1.0",
+                    },
+                    "hs_injection_points": sorted([
+                        "HS-1_runtime_prompt_assembly",
+                        "HS-2_failure_signal_enrichment", 
+                        "HS-4_rag_candidate_retrieval",
+                        "HS-5_pattern_clustering",
+                        "HS-6_dpo_rlhf_context",
+                    ]),
+                    "replay_key_fields": ["provider", "model", "pack_hash", "k", "distance_metric", "version"],
+                    "non_mutation_guarantees": [
+                        "no_routing_mutation",
+                        "no_tier_selection_mutation",
+                        "no_safety_threshold_mutation",
+                        "no_provider_bypass",
+                        "deterministic_replay_compatibility",
+                    ],
+                    "phase": "10",
+                }
+                
+                # Compute deterministic hash
+                canonical_json = json.dumps(state, separators=(",", ":"), sort_keys=True)
+                w10_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+                print(f"W10-EMBEDDING-HS-DIGEST: {w10_digest}")
+            except Exception as e:
+                print(f"W10-EMBEDDING-HS-DIGEST: ERROR - {e}")
         else:
             # Default: print both for other governance test runs
             canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
@@ -239,6 +297,8 @@ def pytest_sessionfinish(session, exitstatus):
             print(f"W8-SIGNATURE-INTEGRITY-DIGEST: ERROR - {e}")
         elif is_phase9:
             print(f"W9-DETERMINISM-DIGEST: ERROR - {e}")
+        elif is_phase10:
+            print(f"W10-EMBEDDING-HS-DIGEST: ERROR - {e}")
         else:
             print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")

@@ -102,21 +102,39 @@ def create_embedding_client(
         raw_client = create_openai_client()
         # Wrap to provide embedding interface
         class OpenAIEmbeddingClient:
+            def __init__(self, model: str):
+                self.model = model
+                # Compute pack hash for replay key
+                self.pack_hash = hashlib.sha256(
+                    f"openai_{model}".encode("utf-8")
+                ).hexdigest()[:16]
+            
             async def get_embedding(self, text: str) -> list[float]:
                 response = await raw_client.embeddings.create(
-                    model=model or "text-embedding-ada-002",
+                    model=self.model,
                     input=text
                 )
                 return response.data[0].embedding
             
             async def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]:
                 response = await raw_client.embeddings.create(
-                    model=model or "text-embedding-ada-002",
+                    model=self.model,
                     input=texts
                 )
                 return [item.embedding for item in response.data]
+            
+            def get_replay_metadata(self) -> dict[str, Any]:
+                """Get embedder metadata for replay key surface."""
+                return {
+                    "provider": "openai",
+                    "model": self.model,
+                    "pack_hash": self.pack_hash,
+                    "k": 1536,  # OpenAI text-embedding-3-large dimension
+                    "distance_metric": "cosine",
+                    "version": "1.0",
+                }
         
-        client = OpenAIEmbeddingClient()
+        client = OpenAIEmbeddingClient(model or "text-embedding-3-large")
         
     elif provider == "gemini":
         raw_client = create_vertex_client()
