@@ -76,34 +76,44 @@ def mock_httpx_block(monkeypatch):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """Print W5-DETERMINISM-DIGEST exactly once per test run."""
+    """Print W5 and W6 DETERMINISM-DIGEST exactly once per test run."""
     try:
         from agentic_core.agents.agent_registry import AGENT_REGISTRY
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
-            "registry": sorted([
-                {
-                    "agent_id": agent_id,
-                    "execution_mode": profile.execution_mode.value,
-                    "reasoning_intensity": profile.reasoning_intensity.value,
-                    "allowed_models": sorted(profile.allowed_models)
-                }
-                for agent_id, profile in AGENT_REGISTRY.items()
-            ], key=lambda x: x["agent_id"]),
+            "registry": sorted(
+                [
+                    {
+                        "agent_id": agent_id,
+                        "execution_mode": profile.execution_mode.value,
+                        "reasoning_intensity": profile.reasoning_intensity.value,
+                        "allowed_models": sorted(profile.allowed_models),
+                    }
+                    for agent_id, profile in AGENT_REGISTRY.items()
+                ],
+                key=lambda x: x["agent_id"],
+            ),
             "policy_thresholds": {
                 "heal_confidence_x": 0.80,
                 "heal_confidence_y": 0.60,
-                "max_heal_retries": 3
-            }
+                "max_heal_retries": 3,
+            },
         }
 
-        # Compute deterministic digest
-        canonical_json = json.dumps(registry_data, separators=(',', ':'), sort_keys=True)
-        digest = hashlib.sha256(canonical_json.encode('utf-8')).hexdigest()
+        # Compute W5 deterministic digest
+        canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
+        w5_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
 
-        print(f"W5-DETERMINISM-DIGEST: {digest}")
+        # Compute W6 deterministic digest (includes gateway config)
+        w6_data = {**registry_data, "gateway_config": {"timeout": 30.0, "max_retries": 3, "rate_limit": 100}}
+        w6_canonical_json = json.dumps(w6_data, separators=(",", ":"), sort_keys=True)
+        w6_digest = hashlib.sha256(w6_canonical_json.encode("utf-8")).hexdigest()
+
+        print(f"W5-DETERMINISM-DIGEST: {w5_digest}")
+        print(f"W6-DETERMINISM-DIGEST: {w6_digest}")
 
     except Exception as e:
         # Fail gracefully - if we can't compute digest, print error but don't crash
         print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
+        print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
