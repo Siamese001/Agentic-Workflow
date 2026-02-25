@@ -6,6 +6,7 @@ W2: Embedding-augmented semantic retrieval (C0-only, informational). Final close
 W3: Pattern Analysis Engine (Deterministic, Informational-Only).
 W4-A: RetrievalProfile Authority (L4 Only).
 W4-B: Shadow Embedder wiring for drift detection (non-influential).
+W4-C: Shadow drift analysis and L4 informational state (non-influential).
 
 W4-A Integration:
 - RetrievalProfile provides embedder identity and retrieval knobs from L4
@@ -18,6 +19,12 @@ W4-B Integration:
 - Shadow embeddings do NOT affect retrieval scoring or ranking
 - Provides drift detection via cosine similarity metrics
 - Stable float rounding (6 decimal places) for deterministic telemetry
+
+W4-C Integration:
+- ShadowDriftAnalyzer converts W4-B telemetry into drift signals
+- DriftSummary written to L4 as informational state only
+- No automatic mutation or policy changes
+- Deterministic digest for drift verification
 
 Invariants:
   - Default proposal_only=True (zero execution authority)
@@ -40,11 +47,77 @@ from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngin
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
+from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer, DriftSummary
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
 from system_learning.validators.oscillation_detector import OscillationPolicy
 from system_learning.validators.shadow_evaluator import ShadowThresholds
+
+# =============================================================================
+# W4-C: Shadow Drift Analysis State
+# =============================================================================
+
+# Global batch accumulator for shadow telemetry (informational only)
+_shadow_telemetry_batch: list[dict[str, Any]] = []
+_shadow_drift_analyzer = ShadowDriftAnalyzer()
+
+
+def _accumulate_shadow_telemetry(telemetry: dict[str, Any]) -> None:
+    """Accumulate shadow telemetry for drift analysis.
+    
+    Args:
+        telemetry: Shadow telemetry dictionary from _retrieve_semantic_context
+    """
+    global _shadow_telemetry_batch
+    if "shadow_embedder_id" in telemetry:
+        _shadow_telemetry_batch.append(telemetry.copy())
+
+
+def _analyze_shadow_drift_and_write(
+    profile_id: str,
+    now_utc: int,
+    l4_writer: L4StateWriter,
+) -> DriftSummary | None:
+    """Analyze accumulated shadow telemetry and write to L4.
+    
+    Args:
+        profile_id: Active RetrievalProfile ID
+        now_utc: Current timestamp
+        l4_writer: L4 state writer
+        
+    Returns:
+        DriftSummary if analysis was performed, None otherwise
+    """
+    global _shadow_telemetry_batch
+    
+    if not _shadow_telemetry_batch:
+        return None
+    
+    # Analyze the batch
+    drift_summary = _shadow_drift_analyzer.analyze_batch(
+        shadow_records=_shadow_telemetry_batch,
+        profile_id=profile_id,
+        now_utc=now_utc,
+    )
+    
+    # Write to L4 (informational only)
+    try:
+        summary_json = drift_summary.to_canonical_json().encode('utf-8')
+        l4_writer.write_l4c_shadow_drift(
+            payload_bytes=summary_json,
+            component_name="meta-learning",
+            created_utc=now_utc,
+        )
+    except Exception:
+        # L4 write failure should not break pipeline
+        pass
+    
+    # Clear the batch for next run
+    _shadow_telemetry_batch.clear()
+    
+    return drift_summary
+
 
 # =============================================================================
 # Exceptions
@@ -550,6 +623,9 @@ def _retrieve_semantic_context(
             "shadow_embedding_norm": shadow_norm,
             "primary_shadow_cosine": cosine_sim,
         }
+        
+        # W4-C: Accumulate shadow telemetry for drift analysis
+        _accumulate_shadow_telemetry(shadow_telemetry)
 
     # Retrieve with RetrievalProfile configuration (W4-A authority)
     try:
@@ -915,6 +991,22 @@ def run_pipeline(
         embedding_metadata = _retrieve_semantic_context(
             rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
         )
+
+        # Step 8.8: W4-C Shadow drift analysis (informational only)
+        # Get active profile ID for drift analysis
+        from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
+        active_profile = get_active_retrieval_profile(now_utc)
+        
+        # Analyze accumulated shadow telemetry and write to L4
+        drift_summary = _analyze_shadow_drift_and_write(
+            profile_id=active_profile.profile_id,
+            now_utc=now_utc,
+            l4_writer=deps.l4_state_writer,
+        )
+        
+        # Emit drift digest for verification (informational only)
+        if drift_summary is not None:
+            drift_summary.emit_digest()
 
         # Generate threshold adjustment proposals with patterns and semantic context
         if deps.healing_config_optimizer is not None:
