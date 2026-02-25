@@ -1,14 +1,15 @@
 """W1 Determinism Test - Run twice to prove identical results."""
 
 import sys
-import os
+
 sys.path.insert(0, '.')
 
-import tempfile
-import json
 import hashlib
-import numpy as np
+import json
+import tempfile
 from pathlib import Path
+
+import numpy as np
 
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 

@@ -1,15 +1,17 @@
 """W1 Negative Control - Tamper with hash to cause integrity failure."""
 
 import sys
+
 sys.path.insert(0, '.')
 
-import tempfile
-import json
 import hashlib
-import numpy as np
+import json
+import tempfile
 from pathlib import Path
 
-from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory, EmbeddingIntegrityError
+import numpy as np
+
+from system_learning.engines.embedding_service_factory import EmbeddingIntegrityError, EmbeddingServiceFactory
 
 
 def create_test_pack():
@@ -37,10 +39,6 @@ def create_test_pack():
         [0.0, 1.0, 0.0, 0.0],
         [0.0, 0.0, 1.0, 0.0],
     ], dtype=np.float32)
-
-    # TAMPER: Use wrong hash in manifest
-    actual_hash = hashlib.sha256(embeddings.tobytes()).hexdigest()
-    manifest["matrix_hash"] = "tampered_hash_12345"  # Wrong hash
 
     # Write files
     with open(tmpdir / "seed_manifest.json", "w") as f:
@@ -71,7 +69,7 @@ def run_negative_control():
     print("Manifest hash tampered - expecting EmbeddingIntegrityError")
 
     try:
-        service = EmbeddingServiceFactory.get(pack_dir)
+        EmbeddingServiceFactory.get(pack_dir)
         print("FAIL: No exception raised - integrity check failed to detect tamper")
         return False
     except EmbeddingIntegrityError as e:
