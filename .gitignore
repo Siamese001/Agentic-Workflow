@@ -48,7 +48,7 @@ env/
 *.egg-info/
 
 # Generated analysis and technical docs
-docs/
+# docs/ - REMOVED: docs/ is now tracked
 
 # IDE and OS noise
 .vscode/
