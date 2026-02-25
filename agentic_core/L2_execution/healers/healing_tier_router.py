@@ -22,6 +22,8 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
+from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+from agentic_core.agents.agent_registry import get_profile
 
 # ---------------------------------------------------------------------------
 # Failure class priors — deterministic mapping from failure_type to base score.
@@ -152,6 +154,8 @@ def route_healing_tier(
     This is the SINGLE CHOKE POINT for all healing model selection.
     No other module may select between LOCAL_AGENT, QWEN_VLLM, GEMINI_2_5_PRO.
 
+    Phase 5-G: Enforces agent execution profile restrictions.
+
     Args:
         healing_input: Structured failure context.
         config: Validated healing tier configuration.
@@ -159,10 +163,33 @@ def route_healing_tier(
     Returns:
         Immutable HealingDecision with tier, heal_confidence, and reason_codes.
     """
+    # Phase 5-G: Agent execution profile enforcement
+    try:
+        profile = get_profile(healing_input.agent_id)
+    except KeyError as e:
+        raise V15HardFailAbort(
+            f"§AgentProfile: Agent '{healing_input.agent_id}' not found in registry: {e}"
+        )
+    
+    # Enforce execution mode - deterministic agents cannot escalate to LLM tiers
+    if not profile.is_llm_allowed():
+        # Deterministic agents can ONLY use LOCAL_AGENT tier
+        reason_codes = [f"agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT"]
+        return HealingDecision(
+            heal_confidence=1.0,  # Maximum confidence for local agents
+            tier=HealingTier.LOCAL_AGENT,
+            reason_codes=tuple(reason_codes),
+        )
+
     heal_confidence, reason_codes = compute_heal_confidence(healing_input)
 
     # Force GEMINI_2_5_PRO if max retries exceeded
     if healing_input.retry_count >= config.max_heal_retries:
+        # For LLM agents, validate that GEMINI_2_5_PRO is allowed
+        if not profile.can_use_model("gemini-2.5-pro"):
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{healing_input.agent_id}' not allowed to use model 'gemini-2.5-pro' for forced escalation. Allowed models: {profile.allowed_models}"
+            )
         reason_codes.append(
             f"retry_count={healing_input.retry_count}>="
             f"max_heal_retries={config.max_heal_retries}:FORCED_GEMINI"
@@ -173,18 +200,30 @@ def route_healing_tier(
             reason_codes=tuple(reason_codes),
         )
 
-    # Route by X/Y bands
+    # Route by X/Y bands with model validation
     if heal_confidence >= config.heal_confidence_x:
         tier = HealingTier.LOCAL_AGENT
         reason_codes.append(f"heal_confidence>={config.heal_confidence_x}:LOCAL_AGENT")
     elif heal_confidence >= config.heal_confidence_y:
-        tier = HealingTier.QWEN_VLLM
-        reason_codes.append(
-            f"{config.heal_confidence_y}<=heal_confidence<{config.heal_confidence_x}:QWEN_VLLM"
-        )
+        # QWEN_VLLM tier - validate model access
+        if not profile.can_use_model("qwen-vllm"):
+            # Fall back to LOCAL_AGENT if QWEN not allowed
+            tier = HealingTier.LOCAL_AGENT
+            reason_codes.append(f"heal_confidence>={config.heal_confidence_y}:QWEN_NOT_ALLOWED:FALLBACK_LOCAL")
+        else:
+            tier = HealingTier.QWEN_VLLM
+            reason_codes.append(
+                f"{config.heal_confidence_y}<=heal_confidence<{config.heal_confidence_x}:QWEN_VLLM"
+            )
     else:
-        tier = HealingTier.GEMINI_2_5_PRO
-        reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_2_5_PRO")
+        # GEMINI_2_5_PRO tier - validate model access
+        if not profile.can_use_model("gemini-2.5-pro"):
+            # Fall back to LOCAL_AGENT if GEMINI not allowed
+            tier = HealingTier.LOCAL_AGENT
+            reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_NOT_ALLOWED:FALLBACK_LOCAL")
+        else:
+            tier = HealingTier.GEMINI_2_5_PRO
+            reason_codes.append(f"heal_confidence<{config.heal_confidence_y}:GEMINI_2_5_PRO")
 
     return HealingDecision(
         heal_confidence=heal_confidence,

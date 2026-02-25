@@ -29,6 +29,7 @@ class HealingInput:
     """Structured failure context consumed by the L2.3 healing router.
 
     Attributes:
+        agent_id: Identifier of the agent requesting healing (for execution profile enforcement).
         failure_type: Category of the failure (e.g. 'syntax_error', 'import_cycle').
         error_signature: Deterministic hash or short string identifying the error class.
         trace_id: Correlation ID linking to the execution cycle.
@@ -38,6 +39,7 @@ class HealingInput:
         violation_metadata_refs: Paths to violation artifacts for context.
     """
 
+    agent_id: str
     failure_type: str
     error_signature: str
     trace_id: str
@@ -47,6 +49,8 @@ class HealingInput:
     violation_metadata_refs: tuple[str, ...]
 
     def __post_init__(self) -> None:
+        if not self.agent_id:
+            raise ValueError("agent_id must not be empty")
         if not self.failure_type:
             raise ValueError("failure_type must not be empty")
         if not self.error_signature:
@@ -120,6 +124,7 @@ class FailureSignal:
     ) -> HealingInput:
         """Convert FailureSignal to HealingInput for L2.3 router consumption."""
         return HealingInput(
+            agent_id=self.source_agent,
             failure_type=self.failure_type,
             error_signature=self.error_signature,
             trace_id=self.trace_id,
