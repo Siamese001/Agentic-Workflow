@@ -4,6 +4,13 @@ End-to-end deterministic pipeline: snapshot → telemetry/audit → RCA → prop
 → validation → optional commit/activation.
 W2: Embedding-augmented semantic retrieval (C0-only, informational). Final closeout.
 W3: Pattern Analysis Engine (Deterministic, Informational-Only).
+W4-A: RetrievalProfile Authority (L4 Only).
+
+W4-A Integration:
+- RetrievalProfile provides embedder identity and retrieval knobs from L4
+- All retrieval configuration is versioned and deterministic
+- No behavioral changes - only authority shift from hardcoded to governed
+- Active profile pointer enables future optimizer wiring
 
 Invariants:
   - Default proposal_only=True (zero execution authority)
@@ -23,6 +30,8 @@ from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAgg
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+from system_learning.engines.retrieval_profile import RetrievalProfile
+from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
@@ -436,6 +445,8 @@ def _retrieve_semantic_context(
 
     This is C0 informational context only - it augments candidate context
     but does not directly mutate any routing thresholds or safety tiers.
+    
+    W4-A: Uses RetrievalProfile from L4 for configuration authority.
 
     Args:
         rca_report: RCA report containing failure signatures
@@ -445,6 +456,13 @@ def _retrieve_semantic_context(
     Returns:
         Dictionary containing embedding metadata for audit purposes only
     """
+    # Load active RetrievalProfile from L4 (W4-A authority)
+    try:
+        retrieval_profile = get_active_retrieval_profile()
+    except ValueError:
+        # No active profile - use fallback behavior
+        retrieval_profile = RetrievalProfile.create_default()
+    
     # Get embedding service with total kill-switch coverage
     embedding_service = EmbeddingServiceFactory.get_or_disabled()
 
@@ -456,6 +474,7 @@ def _retrieve_semantic_context(
             "embedding_artifact_hash": None,
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
+            "retrieval_profile_id": retrieval_profile.profile_id,
         }
 
     # Construct deterministic query from failure signature material
@@ -497,11 +516,11 @@ def _retrieve_semantic_context(
 
     query_vector = np.array(query_vector, dtype=np.float32)
 
-    # Retrieve with governance constraints
+    # Retrieve with RetrievalProfile configuration (W4-A authority)
     try:
-        # Use governance defaults (would be from config in production)
-        top_k_cap = 5
-        similarity_cutoff = 0.5
+        # Use RetrievalProfile parameters instead of hardcoded values
+        top_k_cap = retrieval_profile.top_k
+        similarity_cutoff = retrieval_profile.similarity_cutoff
 
         results = embedding_service.retrieve(query_vector=query_vector, k=top_k_cap, cutoff=similarity_cutoff)
 
@@ -512,6 +531,7 @@ def _retrieve_semantic_context(
                 "embedding_artifact_hash": None,
                 "embedding_topk_hashes": [],
                 "embedding_topk_scores_round6": [],
+                "retrieval_profile_id": retrieval_profile.profile_id,
             }
 
         # Extract metadata for audit (C0 informational only)
@@ -528,6 +548,7 @@ def _retrieve_semantic_context(
             "embedding_artifact_hash": artifact_hash,
             "embedding_topk_hashes": topk_hashes,
             "embedding_topk_scores_round6": topk_scores,
+            "retrieval_profile_id": retrieval_profile.profile_id,
         }
 
     except Exception:
@@ -539,6 +560,7 @@ def _retrieve_semantic_context(
             "embedding_artifact_hash": "RETRIEVAL_FAILED",
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
+            "retrieval_profile_id": retrieval_profile.profile_id,
         }
 
 
