@@ -19,11 +19,12 @@ import logging
 import os
 import time
 from dataclasses import dataclass, field
-from typing import Any, Literal
+from typing import Any, Literal, Dict, Optional
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
+    V15SoftFailAbort,
     is_v15_enforced,
 )
 from agentic_core.L0_routing.types.routing_artifact_types import (
@@ -36,6 +37,14 @@ from data.sdks_mcps.client_wrappers import (
     create_openai_client,
     create_vertex_client,
 )
+
+# Agent execution profile enforcement
+try:
+    from agentic_core.agents.agent_registry import get_profile
+except ImportError:
+    # Fallback for environments without agent registry
+    def get_profile(agent_id: str):
+        raise KeyError(f"Agent registry not available: {agent_id}")
 
 Logger = logging.getLogger(__name__)
 
@@ -166,6 +175,7 @@ class SovereignLLMGateway:
         trace_id: str = "",
         token_budget_limit: int = 0,
         response_schema: Any | None = None,
+        agent_id: str | None = None,
         **kwargs,
     ) -> dict:
         # §11.1 — TokenCapArtifact gate (existing V15 enforcement)
@@ -180,6 +190,32 @@ class SovereignLLMGateway:
                     f"§11.1 TokenCapArtifact denied: gate_result={token_cap.gate_result.value}",
                 )
 
+        # Phase 5: Agent execution profile enforcement
+        if agent_id is None:
+            raise V15HardFailAbort(
+                "§AgentProfile: agent_id is required for all gateway calls"
+            )
+        
+        try:
+            profile = get_profile(agent_id)
+        except KeyError as e:
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}"
+            )
+        
+        # Enforce execution mode - only LLM_API agents can use gateway
+        if not profile.is_llm_allowed():
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{agent_id}' has execution_mode=DETERMINISTIC, cannot use LLM gateway"
+            )
+        
+        # Enforce allowed models
+        if model and not profile.can_use_model(model):
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{agent_id}' not allowed to use model '{model}'. Allowed models: {profile.allowed_models}"
+            )
+
+        # Model resolution (if not explicitly provided)
         if model is None:
             if provider == "openai":
                 model = self.config.openai_model
@@ -187,6 +223,12 @@ class SovereignLLMGateway:
                 model = self.config.anthropic_model
             elif provider == "google":
                 model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+
+        # Enforce allowed models after resolution
+        if model and not profile.can_use_model(model):
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{agent_id}' not allowed to use model '{model}'. Allowed models: {profile.allowed_models}"
+            )
 
         effective_model = model or "unknown"
         
