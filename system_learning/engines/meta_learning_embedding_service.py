@@ -13,6 +13,7 @@ import struct
 from pathlib import Path
 from typing import Any, Protocol
 
+from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.types.embedding_artifact import EmbeddingArtifact
 
 
@@ -37,6 +38,7 @@ class Embedder(Protocol):
 
 class IntegrityError(Exception):
     """Raised when seed pack integrity validation fails."""
+
     pass
 
 
@@ -52,6 +54,8 @@ class MetaLearningEmbeddingService:
         """
         self.base_path = Path(base_path)
         self.embedder = embedder
+        # Initialize factory (will return disabled sentinel if kill-switch is off)
+        self._factory = EmbeddingServiceFactory.get_or_disabled()
 
     def retrieve(
         self,
@@ -70,38 +74,39 @@ class MetaLearningEmbeddingService:
             k: Number of results to retrieve.
 
         Returns:
-            EmbeddingArtifact with results, or None if pack doesn't exist.
-        
+            EmbeddingArtifact with results, or None if pack doesn't exist or disabled.
+
         Raises:
             IntegrityError: If pack integrity validation fails.
         """
+        # Check if embedding service is disabled
+        if self._factory.is_disabled():
+            return None
+
         # Resolve pack directory
         pack_dir = self.base_path / "seed_packs" / namespace / seed_index_version_hash
-        
+
         # Missing pack - neutral behavior
         if not pack_dir.exists():
             return None
-        
+
         # Load and validate pack
         manifest, row_data, embeddings_matrix = self._load_and_validate_pack(
             pack_dir, seed_index_version_hash
         )
-        
+
         # Embed query
         query_vecs = self.embedder.embed_batch([query_text], dimensions=manifest["dimensions"])
         query_vec = query_vecs[0]
-        
+
         # Compute similarities and rank
         candidates = self._compute_similarities(query_vec, row_data, embeddings_matrix)
-        
+
         # Sort deterministically and select top-k
-        sorted_candidates = sorted(
-            candidates,
-            key=lambda x: (-x["score"], x["content_hash"], x["trace_id"])
-        )
-        
+        sorted_candidates = sorted(candidates, key=lambda x: (-x["score"], x["content_hash"], x["trace_id"]))
+
         top_k = sorted_candidates[:k]
-        
+
         # Build EmbeddingArtifact
         return EmbeddingArtifact(
             namespace=namespace,
@@ -134,18 +139,18 @@ class MetaLearningEmbeddingService:
         manifest_path = pack_dir / "seed_manifest.json"
         row_index_path = pack_dir / "row_index.jsonl"
         embeddings_path = pack_dir / "embeddings.f32"
-        
+
         if not all(p.exists() for p in [manifest_path, row_index_path, embeddings_path]):
             raise IntegrityError(f"Missing required files in seed pack: {pack_dir}")
-        
+
         # Read raw bytes for hash validation
         row_index_bytes = row_index_path.read_bytes()
         embeddings_bytes = embeddings_path.read_bytes()
-        
+
         # Load manifest
-        with open(manifest_path, "r", encoding="utf-8") as f:
+        with open(manifest_path, encoding="utf-8") as f:
             manifest = json.load(f)
-        
+
         # Validate manifest hash
         if manifest.get("seed_index_version_hash") != seed_index_version_hash:
             raise IntegrityError(
@@ -153,7 +158,7 @@ class MetaLearningEmbeddingService:
                 f"manifest {manifest.get('seed_index_version_hash')}, "
                 f"expected {seed_index_version_hash}"
             )
-        
+
         # Validate file hashes
         row_index_hash = hashlib.sha256(row_index_bytes).hexdigest()
         if row_index_hash != manifest.get("row_index_hash"):
@@ -161,30 +166,30 @@ class MetaLearningEmbeddingService:
                 f"Row index hash mismatch: computed {row_index_hash}, "
                 f"expected {manifest.get('row_index_hash')}"
             )
-        
+
         embeddings_hash = hashlib.sha256(embeddings_bytes).hexdigest()
         if embeddings_hash != manifest.get("matrix_hash"):
             raise IntegrityError(
                 f"Embeddings hash mismatch: computed {embeddings_hash}, "
                 f"expected {manifest.get('matrix_hash')}"
             )
-        
+
         # Parse row_index.jsonl
         row_data = []
         for line in row_index_bytes.decode("utf-8").strip().split("\n"):
             if line:
                 row_data.append(json.loads(line))
-        
+
         # Parse embeddings.f32
         dimensions = manifest["dimensions"]
         vector_count = manifest["vector_count"]
-        
+
         if len(embeddings_bytes) != vector_count * dimensions * 4:
             raise IntegrityError(
                 f"Embeddings file size mismatch: expected {vector_count * dimensions * 4} bytes, "
                 f"got {len(embeddings_bytes)}"
             )
-        
+
         # Parse little-endian float32 matrix
         embeddings_matrix = []
         for i in range(vector_count):
@@ -193,10 +198,10 @@ class MetaLearningEmbeddingService:
             for j in range(dimensions):
                 byte_offset = offset + j * 4
                 # Unpack little-endian float32
-                value = struct.unpack("<f", embeddings_bytes[byte_offset:byte_offset + 4])[0]
+                value = struct.unpack("<f", embeddings_bytes[byte_offset : byte_offset + 4])[0]
                 vector.append(value)
             embeddings_matrix.append(vector)
-        
+
         return manifest, row_data, embeddings_matrix
 
     def _compute_similarities(
@@ -216,29 +221,31 @@ class MetaLearningEmbeddingService:
             List of candidates with similarity scores.
         """
         candidates = []
-        
+
         # Compute query norm once
         query_norm = math.sqrt(sum(x * x for x in query_vec))
         if query_norm == 0:
             return candidates
-        
+
         for i, (row, embedding) in enumerate(zip(row_data, embeddings_matrix)):
             # Compute embedding norm
             embed_norm = math.sqrt(sum(x * x for x in embedding))
             if embed_norm == 0:
                 continue
-            
+
             # Compute cosine similarity
             dot_product = sum(q * e for q, e in zip(query_vec, embedding))
             cosine_sim = dot_product / (query_norm * embed_norm)
-            
-            candidates.append({
-                "score": cosine_sim,
-                "trace_id": row["trace_id"],
-                "content_hash": row["content_hash"],
-                "row_id": row["row_id"],
-            })
-        
+
+            candidates.append(
+                {
+                    "score": cosine_sim,
+                    "trace_id": row["trace_id"],
+                    "content_hash": row["content_hash"],
+                    "row_id": row["row_id"],
+                }
+            )
+
         return candidates
 
 

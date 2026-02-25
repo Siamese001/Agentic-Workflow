@@ -147,6 +147,65 @@ L5_POLICY_INT_CONSTRAINTS: dict[str, IntConstraint] = {
 }
 
 # =============================================================================
+# Embedding Governance (W1 - Zero-Loss Compliant)
+# =============================================================================
+
+EMBEDDING_GOVERNANCE_BOOL: dict[str, bool] = {
+    "embedding_enabled": True,  # kill-switch; only L4 may mutate
+}
+
+EMBEDDING_GOVERNANCE_POINTER: dict[str, PointerConstraint] = {
+    "active_embedder_id": PointerConstraint(
+        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small"})
+    ),
+    "vector_pack_hash": PointerConstraint(
+        allowlist=frozenset({"5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"})
+    ),  # sealed at deploy
+    "normalized_pack_hash": PointerConstraint(
+        allowlist=frozenset({""})  # computed W1 init; placeholder
+    ),  # computed W1 init
+    "retrieval_backend_mode": PointerConstraint(
+        allowlist=frozenset({"LOCAL_FIRST", "EXTERNAL_FIRST", "STRICT_EXTERNAL", "FAIL_CLOSED"})
+    ),
+}
+
+EMBEDDING_GOVERNANCE_FLOAT: dict[str, FloatConstraint] = {
+    "similarity_cutoff": FloatConstraint(
+        min_value=0.5,
+        max_value=0.99,
+        max_delta_per_cycle=0.05,
+    ),
+    "retrieval_alpha": FloatConstraint(
+        min_value=0.2,
+        max_value=0.6,
+        max_delta_per_cycle=0.10,
+    ),
+    "embedding_influence_cap": FloatConstraint(
+        min_value=0.05,
+        max_value=0.25,
+        max_delta_per_cycle=0.05,
+    ),  # anchored at 0.25; >0.25 degrades under correlated features
+}
+
+EMBEDDING_GOVERNANCE_INT: dict[str, IntConstraint] = {
+    "top_k_cap": IntConstraint(
+        min_value=3,
+        max_value=20,
+        max_delta_per_cycle=3,
+    ),
+    "episodic_ttl_cycles": IntConstraint(
+        min_value=1,
+        max_value=100,
+        max_delta_per_cycle=10,
+    ),  # logical time, not wall-clock
+    "min_sample_threshold": IntConstraint(
+        min_value=5,
+        max_value=100,
+        max_delta_per_cycle=5,
+    ),
+}
+
+# =============================================================================
 # Forbidden Surfaces (Immutable Components)
 # =============================================================================
 
@@ -178,4 +237,8 @@ ALLOWED_SURFACES: frozenset[str] = frozenset(
     | set(RAG_CONSTRAINTS.keys())
     | set(L1_MODEL_POINTER_CONSTRAINTS.keys())
     | set(L5_POLICY_INT_CONSTRAINTS.keys())
+    | set(EMBEDDING_GOVERNANCE_BOOL.keys())
+    | set(EMBEDDING_GOVERNANCE_POINTER.keys())
+    | set(EMBEDDING_GOVERNANCE_FLOAT.keys())
+    | set(EMBEDDING_GOVERNANCE_INT.keys())
 )
