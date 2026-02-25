@@ -162,6 +162,57 @@ class SovereignLLMGateway:
                 raise
         return self._google_client
 
+    async def route_generation(
+        self,
+        prompt: str,
+        agent_id: str,
+        model: str | None = None,
+        provider: Provider = "openai",
+        temperature: float = 0.7,
+        max_tokens: int = 4096,
+        fallback_providers: list[Provider] | None = None,
+        token_cap: TokenCapArtifact | None = None,
+        trace_id: str = "",
+        token_budget_limit: int = 0,
+        response_schema: Any | None = None,
+        **kwargs,
+    ) -> dict:
+        """
+        Route generation for apps_* - the ONLY supported public generation method.
+        
+        This method enforces:
+        - agent_id is required (from agent_registry.py SSOT)
+        - temperature=0.0 for deterministic classes OR normalized to 0.0 in deterministic contexts
+        - allowed model selection (Qwen + gemini-2.5-pro) via policy surface
+        """
+        # Get agent profile to enforce deterministic temperature
+        try:
+            profile = get_profile(agent_id)
+        except KeyError as e:
+            raise V15HardFailAbort(
+                f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}"
+            )
+        
+        # Enforce temperature=0.0 for deterministic classes
+        if profile.is_deterministic():
+            temperature = 0.0
+        
+        # Call the existing generate method with agent_id
+        return await self.generate(
+            prompt=prompt,
+            model=model,
+            provider=provider,
+            temperature=temperature,
+            max_tokens=max_tokens,
+            fallback_providers=fallback_providers,
+            token_cap=token_cap,
+            trace_id=trace_id,
+            token_budget_limit=token_budget_limit,
+            response_schema=response_schema,
+            agent_id=agent_id,
+            **kwargs,
+        )
+
     # guardian: allow-magic-config
     async def generate(
         self,

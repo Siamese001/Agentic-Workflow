@@ -90,6 +90,7 @@ def pytest_sessionfinish(session, exitstatus):
         is_phase6 = any("test_phase6_agent_fleet_conformance.py" in nid for nid in collected_nodeids)
         is_phase7 = any("test_phase7_embedding_sovereignty.py" in nid for nid in collected_nodeids)
         is_phase8 = any("test_phase8_signature_boundary.py" in nid for nid in collected_nodeids)
+        is_phase9 = any("test_phase9_apps_generation_routing_sovereignty.py" in nid for nid in collected_nodeids)
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
@@ -173,6 +174,49 @@ def pytest_sessionfinish(session, exitstatus):
                 print(f"W8-SIGNATURE-INTEGRITY-DIGEST: {w8_digest}")
             except Exception as e:
                 print(f"W8-SIGNATURE-INTEGRITY-DIGEST: ERROR - {e}")
+        elif is_phase9:
+            # Compute W9 apps generation routing determinism digest
+            try:
+                import hashlib
+                import json
+                import pathlib
+                
+                repo_root = pathlib.Path(__file__).parent.parent.parent
+                
+                # Hash critical routing files
+                routing_files = {
+                    "sovereign_llm_gateway": repo_root / "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
+                    "agent_registry": repo_root / "agentic_core/agents/agent_registry.py",
+                }
+                
+                file_hashes = {}
+                for name, path in routing_files.items():
+                    if path.exists():
+                        file_hashes[name] = hashlib.sha256(path.read_bytes()).hexdigest()
+                    else:
+                        file_hashes[name] = "MISSING"
+                
+                # Build canonical state for apps_* routing
+                state = {
+                    "routing_file_hashes": file_hashes,
+                    "sanctioned_seam": "SovereignLLMGateway.route_generation",
+                    "allowed_providers": ["openai", "anthropic", "google"],
+                    "allowed_models": ["qwen", "gemini-2.5-pro"],
+                    "routing_enforcement": [
+                        "agent_id_required",
+                        "temperature_enforced",
+                        "model_policy_enforced",
+                        "no_direct_sdk_calls",
+                    ],
+                    "phase": "9",
+                }
+                
+                # Compute deterministic hash
+                canonical_json = json.dumps(state, separators=(",", ":"), sort_keys=True)
+                w9_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+                print(f"W9-DETERMINISM-DIGEST: {w9_digest}")
+            except Exception as e:
+                print(f"W9-DETERMINISM-DIGEST: ERROR - {e}")
         else:
             # Default: print both for other governance test runs
             canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
@@ -193,6 +237,8 @@ def pytest_sessionfinish(session, exitstatus):
             print(f"W7-EMBEDDING-SOVEREIGNTY-DIGEST: ERROR - {e}")
         elif is_phase8:
             print(f"W8-SIGNATURE-INTEGRITY-DIGEST: ERROR - {e}")
+        elif is_phase9:
+            print(f"W9-DETERMINISM-DIGEST: ERROR - {e}")
         else:
             print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
             print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
