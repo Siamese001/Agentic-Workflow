@@ -3,6 +3,7 @@
 End-to-end deterministic pipeline: snapshot → telemetry/audit → RCA → proposals
 → validation → optional commit/activation.
 W2: Embedding-augmented semantic retrieval (C0-only, informational). Final closeout.
+W3: Pattern Analysis Engine (Deterministic, Informational-Only).
 
 Invariants:
   - Default proposal_only=True (zero execution authority)
@@ -298,6 +299,127 @@ class PipelineDependencies:
     rollback_refinement_decision_bytes: bytes | None = None
     dpo_batch_bytes: bytes | None = None
     rlhf_optimizer: RLHFOptimizer | None = None
+
+
+# =============================================================================
+# Pattern Analysis (W3 - Deterministic, Informational-Only)
+# =============================================================================
+
+
+def _analyze_historical_patterns(
+    deps: PipelineDependencies,
+    aggregate_snapshot: Any,
+) -> Any:
+    """Analyze historical patterns using W3 PatternAnalysisEngine.
+    
+    W3: Pattern Analysis Engine (Deterministic, Informational-Only).
+    
+    Args:
+        deps: Pipeline dependencies containing pattern_analysis_engine
+        aggregate_snapshot: Healing outcome aggregate snapshot
+        
+    Returns:
+        PatternSummary or None if analysis fails or is disabled
+    """
+    if deps.pattern_analysis_engine is None:
+        return None
+    
+    # Check embedding kill switch
+    embedding_service = EmbeddingServiceFactory.get_or_disabled()
+    if embedding_service.is_disabled():
+        return None
+    
+    try:
+        # Extract historical embeddings from aggregate snapshot
+        historical_embeddings = []
+        metadata = []
+        
+        if hasattr(aggregate_snapshot, 'outcomes'):
+            for outcome in aggregate_snapshot.outcomes:
+                # Create embedding from failure signature
+                if hasattr(outcome, 'failure_signature'):
+                    # For W3, create simple deterministic embeddings
+                    # In production, these would come from actual embedding service
+                    embedding = _create_deterministic_embedding(outcome.failure_signature)
+                    historical_embeddings.append(embedding)
+                    
+                    # Extract metadata
+                    meta = {
+                        'healer_name': getattr(outcome, 'healer_name', 'unknown'),
+                        'failure_type': getattr(outcome, 'failure_type', 'unknown'),
+                        'component': getattr(outcome, 'component', 'unknown'),
+                    }
+                    metadata.append(meta)
+        
+        if not historical_embeddings:
+            return None
+        
+        # Apply small-N guard (minimum 10 data points for pattern analysis)
+        if len(historical_embeddings) < 10:
+            return None
+        
+        # Run pattern analysis with deterministic parameters
+        pattern_summary = deps.pattern_analysis_engine.analyze(
+            historical_embeddings=historical_embeddings,
+            metadata=metadata,
+            min_cluster_size=3,  # Fixed minimum cluster size
+        )
+        
+        # Print digest for determinism proof
+        print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
+        
+        return pattern_summary
+        
+    except Exception:
+        # Pattern analysis failure should not break pipeline
+        return None
+
+
+def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
+    """Create deterministic embedding from failure signature.
+    
+    W3 requires deterministic embeddings for reproducible clustering.
+    
+    Args:
+        failure_signature: Failure signature object
+        
+    Returns:
+        Deterministic 4-dimensional embedding vector
+    """
+    import hashlib
+    
+    # Extract deterministic features from failure signature
+    components = []
+    
+    # Component name (hashed)
+    if hasattr(failure_signature, 'component'):
+        comp_hash = hashlib.sha256(failure_signature.component.encode()).hexdigest()
+        components.append(int(comp_hash[:8], 16) / 2**32)
+    else:
+        components.append(0.0)
+    
+    # Failure type (hashed)
+    if hasattr(failure_signature, 'failure_type'):
+        type_hash = hashlib.sha256(failure_signature.failure_type.encode()).hexdigest()
+        components.append(int(type_hash[:8], 16) / 2**32)
+    else:
+        components.append(0.0)
+    
+    # Healer name (hashed)
+    if hasattr(failure_signature, 'healer_name'):
+        healer_hash = hashlib.sha256(failure_signature.healer_name.encode()).hexdigest()
+        components.append(int(healer_hash[:8], 16) / 2**32)
+    else:
+        components.append(0.0)
+    
+    # Timestamp (normalized)
+    if hasattr(failure_signature, 'timestamp_utc'):
+        # Normalize to [0, 1] range using last 32 bits
+        components.append((failure_signature.timestamp_utc & 0xFFFFFFFF) / 2**32)
+    else:
+        components.append(0.0)
+    
+    return components
 
 
 # =============================================================================
@@ -726,33 +848,8 @@ def run_pipeline(
                 # In production, this would be logged
                 pass
 
-        # Step 8.6: Run pattern analysis if engine available
-        pattern_report = None
-        if deps.pattern_analysis_engine is not None and deps.l4_state_writer is not None:
-            try:
-                # Read healing snapshot bytes
-                healing_snapshot_bytes = deps.l4_state_writer.read_latest_healing_snapshot()
-
-                # Read optional detection and drift signals
-                detection_signal_bytes = None
-                if hasattr(deps.l4_state_writer, "read_latest_detection_signal"):
-                    detection_signal_bytes = deps.l4_state_writer.read_latest_detection_signal()
-
-                drift_snapshot_bytes = None
-                if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
-                    drift_snapshot_bytes = deps.l4_state_writer.read_latest_drift_snapshot()
-
-                # Run pattern analysis
-                pattern_report = deps.pattern_analysis_engine.analyze(
-                    healing_snapshot_bytes=healing_snapshot_bytes,
-                    detection_signal_bytes=detection_signal_bytes,
-                    drift_snapshot_bytes=drift_snapshot_bytes,
-                    now_utc=now_utc,
-                )
-            except Exception:
-                # Pattern analysis failure should not break pipeline
-                # In production, this would be logged
-                pass
+        # Step 8.6: Pattern analysis (W3 - deterministic, informational only)
+        pattern_report = _analyze_historical_patterns(deps, aggregate_snapshot)
 
         # Step 8.7: Retrieve semantic context (W2 - C0 informational only)
         embedding_metadata = _retrieve_semantic_context(

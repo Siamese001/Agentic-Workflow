@@ -1,282 +1,208 @@
-"""Pattern Analysis Engine - Phase 8.
+"""Pattern Analysis Engine - Deterministic semantic clustering for W3.
 
-Analyzes healing outcomes and drift signals to generate deterministic findings.
+W3: Pattern Analysis Engine (Deterministic, Informational-Only).
+
+Provides deterministic clustering of historical embeddings to detect
+recurring failure motifs. All outputs are stable, hash-verifiable,
+and bounded to C0 influence only.
 """
 
 from __future__ import annotations
 
+import hashlib
 import json
-from dataclasses import dataclass
-from typing import Any
-
-from system_learning.types.healing_outcome_learning_types import (
-    HealingOutcomeAggregate,
-    HealingOutcomeAggregateKey,
-    HealingOutcomeAggregateSnapshot,
-)
-from system_learning.types.pattern_analysis_types import (
-    PatternFinding,
-    PatternFindingKey,
-    PatternFindingReport,
-    PatternSourceIds,
-)
+import math
+from dataclasses import dataclass, asdict
+from typing import Any, Dict, List, Sequence
 
 
-@dataclass(frozen=True, slots=True)
-class PatternAnalysisConfig:
-    """Configuration for pattern analysis thresholds."""
+@dataclass(frozen=True)
+class Cluster:
+    """Deterministic cluster representation."""
+    centroid: List[float]  # Rounded to fixed precision
+    cluster_size: int
+    representative_metadata_keys: List[str]  # Stable ordering
 
-    # Underperforming healer thresholds
-    success_rate_threshold_low: float = 0.5
-    min_observations: int = 20
 
-    # Flapping healer thresholds
-    flapping_variance_epsilon: float = 0.1
-
-    # Drift and detection thresholds
-    drift_trigger_threshold: float = 0.7
-    spike_trigger_threshold: float = 0.8
+@dataclass(frozen=True)
+class PatternSummary:
+    """Summary of pattern analysis with deterministic digest."""
+    clusters: List[Cluster]
+    pattern_digest: str  # SHA-256 over canonical JSON
 
 
 class PatternAnalysisEngine:
-    """Engine for analyzing patterns in healing outcomes and drift signals."""
+    """Deterministic pattern analysis engine for semantic clustering.
 
-    def __init__(self, config: PatternAnalysisConfig | None = None) -> None:
-        self.config = config or PatternAnalysisConfig()
+    Clusters historical embeddings to detect recurring failure motifs.
+    All operations are deterministic with stable ordering and fixed
+    precision rounding to ensure identical outputs across runs.
+    """
+
+    def __init__(self, *, precision: int = 6) -> None:
+        """Initialize engine with deterministic precision.
+        
+        Args:
+            precision: Decimal places for float rounding (default: 6)
+        """
+        self._precision = precision
 
     def analyze(
         self,
+        historical_embeddings: List[List[float]],
+        metadata: List[Dict[str, Any]],
         *,
-        healing_snapshot_bytes: bytes,
-        detection_signal_bytes: bytes | None,
-        drift_snapshot_bytes: bytes | None,
-        now_utc: int,
-    ) -> PatternFindingReport:
-        """Analyze patterns and generate findings report.
-
+        min_cluster_size: int,
+    ) -> PatternSummary:
+        """Analyze historical embeddings for deterministic patterns.
+        
         Args:
-            healing_snapshot_bytes: Serialized healing outcome snapshot
-            detection_signal_bytes: Serialized detection signal (optional)
-            drift_snapshot_bytes: Serialized drift snapshot (optional)
-            now_utc: Current time for deterministic analysis
-
+            historical_embeddings: List of embedding vectors
+            metadata: Corresponding metadata for each embedding
+            min_cluster_size: Minimum cluster size to consider valid
+            
         Returns:
-            PatternFindingReport with deterministic findings
+            PatternSummary with deterministic clusters and digest
         """
-        # Parse healing snapshot
-        healing_snapshot = self._parse_healing_snapshot(healing_snapshot_bytes)
-
-        # Parse optional inputs
-        detection_data = (
-            self._parse_detection_signal(detection_signal_bytes) if detection_signal_bytes else None
+        if len(historical_embeddings) != len(metadata):
+            raise ValueError("Embeddings and metadata must have same length")
+        
+        if not historical_embeddings:
+            return PatternSummary(clusters=[], pattern_digest=self._empty_digest())
+        
+        # Deterministic preprocessing
+        processed_embeddings = [
+            self._round_vector(emb) for emb in historical_embeddings
+        ]
+        
+        # Deterministic clustering
+        clusters = self._deterministic_cluster(
+            processed_embeddings, metadata, min_cluster_size
         )
-        drift_data = self._parse_drift_snapshot(drift_snapshot_bytes) if drift_snapshot_bytes else None
+        
+        # Generate deterministic digest
+        digest = self._compute_digest(clusters)
+        
+        return PatternSummary(clusters=clusters, pattern_digest=digest)
 
-        # Generate source IDs
-        source_ids = PatternSourceIds(
-            healing_snapshot_version=healing_snapshot.version_id,
-            detection_signal_version=detection_data.get("version") if detection_data else None,
-            drift_snapshot_version=drift_data.get("version") if drift_data else None,
-        )
+    def _round_vector(self, vector: List[float]) -> List[float]:
+        """Round vector to fixed precision for determinism."""
+        return [round(x, self._precision) for x in vector]
 
-        # Collect findings
-        findings = []
-
-        # Analyze healing outcomes
-        healing_findings = self._analyze_healing_outcomes(healing_snapshot)
-        findings.extend(healing_findings)
-
-        # Analyze drift if present
-        if drift_data:
-            drift_findings = self._analyze_drift(drift_data)
-            findings.extend(drift_findings)
-
-        # Analyze detection signals if present
-        if detection_data:
-            detection_findings = self._analyze_detection_signals(detection_data)
-            findings.extend(detection_findings)
-
-        # Sort findings deterministically
-        findings.sort(key=lambda f: (f.key.component, f.key.dimension, f.key.label))
-
-        return PatternFindingReport(
-            source_ids=source_ids,
-            findings=tuple(findings),
-        )
-
-    def _parse_healing_snapshot(self, bytes_data: bytes) -> HealingOutcomeAggregateSnapshot:
-        """Parse healing snapshot from bytes."""
-        try:
-            data = json.loads(bytes_data.decode("utf-8"))
-
-            # Parse aggregates
-            aggregates = []
-            for agg_data in data.get("aggregates", []):
-                key_data = agg_data["key"]
-                aggregate_data = agg_data["aggregate"]
-
-                key = HealingOutcomeAggregateKey(
-                    healer_name=key_data["healer_name"],
-                    tier=key_data["tier"],
-                    failure_type=key_data["failure_type"],
-                )
-
-                aggregate = HealingOutcomeAggregate(
-                    success_count=aggregate_data["success_count"],
-                    failure_count=aggregate_data["failure_count"],
-                    total_count=aggregate_data["total_count"],
-                )
-
-                aggregates.append((key, aggregate))
-
-            # Sort aggregates deterministically
-            aggregates.sort(key=lambda pair: (pair[0].healer_name, pair[0].tier, pair[0].failure_type))
-
-            return HealingOutcomeAggregateSnapshot(
-                version_id=data["version_id"], created_utc=data["created_utc"], aggregates=tuple(aggregates)
-            )
-        except (json.JSONDecodeError, UnicodeDecodeError, KeyError, ValueError) as e:
-            raise ValueError(f"Invalid healing snapshot bytes: {e}")
-
-    def _parse_detection_signal(self, bytes_data: bytes) -> dict[str, Any] | None:
-        """Parse detection signal from bytes."""
-        try:
-            return json.loads(bytes_data.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            return None
-
-    def _parse_drift_snapshot(self, bytes_data: bytes) -> dict[str, Any] | None:
-        """Parse drift snapshot from bytes."""
-        try:
-            return json.loads(bytes_data.decode("utf-8"))
-        except (json.JSONDecodeError, UnicodeDecodeError):
-            return None
-
-    def _analyze_healing_outcomes(self, snapshot: HealingOutcomeAggregateSnapshot) -> list[PatternFinding]:
-        """Analyze healing outcomes for patterns."""
-        findings = []
-
-        for key, aggregate in snapshot.aggregates:
-            # Check underperforming healer tier
-            if (
-                aggregate.success_rate < self.config.success_rate_threshold_low
-                and aggregate.total_count >= self.config.min_observations
-            ):
-                finding = PatternFinding(
-                    key=PatternFindingKey(
-                        component=key.healer_name,
-                        dimension="performance",
-                        label="UNDERPERFORMING_HEALER_TIER",
-                    ),
-                    severity=round(1.0 - aggregate.success_rate, 6),
-                    evidence=(
-                        f"success_rate_{aggregate.success_rate:.6f}",
-                        f"threshold_{self.config.success_rate_threshold_low:.6f}",
-                        f"sample_size_{aggregate.total_count}",
-                    ),
-                    metrics=(
-                        ("success_rate", aggregate.success_rate),
-                        ("sample_size", aggregate.total_count),
-                        ("error_rate", 1.0 - aggregate.success_rate),
-                    ),
-                )
-                findings.append(finding)
-
-            # Check for flapping (if we have bucket data)
-            if hasattr(aggregate, "bucket_success_rates") and aggregate.bucket_success_rates:
-                variance = self._calculate_variance(aggregate.bucket_success_rates)
-                if variance > self.config.flapping_variance_epsilon:
-                    finding = PatternFinding(
-                        key=PatternFindingKey(
-                            component=key.healer_name,
-                            dimension="stability",
-                            label="FLAPPING_HEALER_TIER",
-                        ),
-                        severity=round(variance, 6),
-                        evidence=(
-                            f"variance_{variance:.6f}",
-                            f"threshold_{self.config.flapping_variance_epsilon:.6f}",
-                            f"bucket_count_{len(aggregate.bucket_success_rates)}",
-                        ),
-                        metrics=(
-                            ("variance", variance),
-                            ("bucket_count", len(aggregate.bucket_success_rates)),
-                            ("success_rate", aggregate.success_rate),
-                        ),
+    def _deterministic_cluster(
+        self,
+        embeddings: List[List[float]],
+        metadata: List[Dict[str, Any]],
+        min_cluster_size: int,
+    ) -> List[Cluster]:
+        """Perform deterministic clustering using distance threshold."""
+        if not embeddings:
+            return []
+        
+        # Sort by vector hash for deterministic order
+        indexed_embeddings = list(enumerate(embeddings))
+        indexed_embeddings.sort(key=lambda x: self._vector_hash(x[1]))
+        
+        # Simple deterministic clustering with fixed distance threshold
+        distance_threshold = 0.5  # Fixed threshold for determinism
+        clusters = []
+        assigned = set()
+        
+        for idx, embedding in indexed_embeddings:
+            if idx in assigned:
+                continue
+            
+            # Find all embeddings within threshold distance
+            cluster_indices = [idx]
+            cluster_vectors = [embedding]
+            
+            for other_idx, other_embedding in indexed_embeddings:
+                if other_idx != idx and other_idx not in assigned:
+                    distance = self._euclidean_distance(embedding, other_embedding)
+                    if distance <= distance_threshold:
+                        cluster_indices.append(other_idx)
+                        cluster_vectors.append(other_embedding)
+                        assigned.add(other_idx)
+            
+            assigned.add(idx)
+            
+            # Only keep clusters meeting minimum size
+            if len(cluster_indices) >= min_cluster_size:
+                # Compute deterministic centroid
+                centroid = self._compute_centroid(cluster_vectors)
+                
+                # Extract representative metadata keys with stable ordering
+                metadata_keys = []
+                for cluster_idx in sorted(cluster_indices):  # Stable order
+                    if cluster_idx < len(metadata):
+                        keys = list(metadata[cluster_idx].keys())
+                        keys.sort()  # Stable ordering
+                        metadata_keys.extend(keys)
+                
+                # Remove duplicates while preserving order
+                seen = set()
+                unique_keys = []
+                for key in metadata_keys:
+                    if key not in seen:
+                        seen.add(key)
+                        unique_keys.append(key)
+                
+                clusters.append(
+                    Cluster(
+                        centroid=centroid,
+                        cluster_size=len(cluster_indices),
+                        representative_metadata_keys=unique_keys[:10],  # Limit for stability
                     )
-                    findings.append(finding)
+                )
+        
+        # Sort clusters by centroid hash for deterministic output
+        clusters.sort(key=lambda c: self._vector_hash(c.centroid))
+        
+        return clusters
 
-        return findings
+    def _euclidean_distance(self, v1: List[float], v2: List[float]) -> float:
+        """Compute Euclidean distance between vectors."""
+        if len(v1) != len(v2):
+            return float('inf')
+        
+        return math.sqrt(sum((a - b) ** 2 for a, b in zip(v1, v2)))
 
-    def _analyze_drift(self, drift_data: dict[str, Any]) -> list[PatternFinding]:
-        """Analyze drift data for patterns."""
-        findings = []
+    def _compute_centroid(self, vectors: List[List[float]]) -> List[float]:
+        """Compute deterministic centroid of cluster."""
+        if not vectors:
+            return []
+        
+        dim = len(vectors[0])
+        centroid = []
+        
+        for i in range(dim):
+            mean_val = sum(v[i] for v in vectors) / len(vectors)
+            centroid.append(round(mean_val, self._precision))
+        
+        return centroid
 
-        # Look for high drift scores
-        drift_scores = drift_data.get("drift_scores", [])
-        for score_data in drift_scores:
-            if isinstance(score_data, dict):
-                component = score_data.get("component", "unknown")
-                drift_score = score_data.get("score", 0.0)
+    def _vector_hash(self, vector: List[float]) -> str:
+        """Compute deterministic hash of vector for sorting."""
+        # Use fixed precision string representation
+        vector_str = json.dumps(vector, separators=(',', ':'))
+        return hashlib.sha256(vector_str.encode()).hexdigest()[:16]
 
-                if drift_score >= self.config.drift_trigger_threshold:
-                    finding = PatternFinding(
-                        key=PatternFindingKey(
-                            component=component,
-                            dimension="drift",
-                            label="ROUTING_DRIFT_HIGH",
-                        ),
-                        severity=round(drift_score, 6),
-                        evidence=(
-                            f"drift_score_{drift_score:.6f}",
-                            f"threshold_{self.config.drift_trigger_threshold:.6f}",
-                        ),
-                        metrics=(
-                            ("drift_score", drift_score),
-                            ("threshold", self.config.drift_trigger_threshold),
-                        ),
-                    )
-                    findings.append(finding)
+    def _compute_digest(self, clusters: List[Cluster]) -> str:
+        """Compute deterministic digest over all clusters."""
+        # Convert to canonical JSON for deterministic hashing
+        cluster_data = [asdict(cluster) for cluster in clusters]
+        canonical_json = json.dumps(cluster_data, separators=(',', ':'), sort_keys=True)
+        
+        return hashlib.sha256(canonical_json.encode()).hexdigest()
 
-        return findings
+    def _empty_digest(self) -> str:
+        """Digest for empty input."""
+        return hashlib.sha256(json.dumps([]).encode()).hexdigest()
 
-    def _analyze_detection_signals(self, detection_data: dict[str, Any]) -> list[PatternFinding]:
-        """Analyze detection signals for patterns."""
-        findings = []
 
-        # Look for spike in severity
-        signals = detection_data.get("signals", [])
-        for signal in signals:
-            if isinstance(signal, dict):
-                component = signal.get("component", "unknown")
-                severity = signal.get("severity", 0.0)
-
-                if severity >= self.config.spike_trigger_threshold:
-                    finding = PatternFinding(
-                        key=PatternFindingKey(
-                            component=component,
-                            dimension="detection",
-                            label="DETECTION_SIGNAL_SPIKE",
-                        ),
-                        severity=round(severity, 6),
-                        evidence=(
-                            f"severity_{severity:.6f}",
-                            f"threshold_{self.config.spike_trigger_threshold:.6f}",
-                        ),
-                        metrics=(
-                            ("severity", severity),
-                            ("threshold", self.config.spike_trigger_threshold),
-                        ),
-                    )
-                    findings.append(finding)
-
-        return findings
-
-    def _calculate_variance(self, values: list[float]) -> float:
-        """Calculate variance of a list of values."""
-        if not values:
-            return 0.0
-
-        mean = sum(values) / len(values)
-        variance = sum((x - mean) ** 2 for x in values) / len(values)
-        return variance
+# Export public interface
+__all__ = [
+    'PatternAnalysisEngine',
+    'PatternSummary',
+    'Cluster',
+]
