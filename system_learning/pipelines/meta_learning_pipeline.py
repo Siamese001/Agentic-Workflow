@@ -7,6 +7,7 @@ W3: Pattern Analysis Engine (Deterministic, Informational-Only).
 W4-A: RetrievalProfile Authority (L4 Only).
 W4-B: Shadow Embedder wiring for drift detection (non-influential).
 W4-C: Shadow drift analysis and L4 informational state (non-influential).
+W4-D: Policy recommendation engine with advisory-only L4 state (non-influential).
 
 W4-A Integration:
 - RetrievalProfile provides embedder identity and retrieval knobs from L4
@@ -25,6 +26,12 @@ W4-C Integration:
 - DriftSummary written to L4 as informational state only
 - No automatic mutation or policy changes
 - Deterministic digest for drift verification
+
+W4-D Integration:
+- PolicyRecommendationEngine converts drift into bounded recommendations
+- PolicyRecommendation written to L4 as advisory state only
+- Does NOT mutate active RetrievalProfile
+- Deterministic digest for recommendation verification
 
 Invariants:
   - Default proposal_only=True (zero execution authority)
@@ -48,6 +55,7 @@ from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer, DriftSummary
+from system_learning.engines.policy_recommendation_engine import PolicyRecommendationEngine, PolicyRecommendation
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -61,6 +69,9 @@ from system_learning.validators.shadow_evaluator import ShadowThresholds
 # Global batch accumulator for shadow telemetry (informational only)
 _shadow_telemetry_batch: list[dict[str, Any]] = []
 _shadow_drift_analyzer = ShadowDriftAnalyzer()
+
+# W4-D: Policy recommendation engine (advisory only)
+_policy_recommendation_engine = PolicyRecommendationEngine()
 
 
 def _accumulate_shadow_telemetry(telemetry: dict[str, Any]) -> None:
@@ -117,6 +128,48 @@ def _analyze_shadow_drift_and_write(
     _shadow_telemetry_batch.clear()
     
     return drift_summary
+
+
+def _generate_policy_recommendation_and_write(
+    drift_summary: DriftSummary,
+    active_profile: RetrievalProfile,
+    now_utc: int,
+    l4_writer: L4StateWriter,
+) -> PolicyRecommendation | None:
+    """Generate policy recommendation from drift analysis and write to L4.
+    
+    Args:
+        drift_summary: Drift analysis from W4-C
+        active_profile: Current active RetrievalProfile
+        now_utc: Current timestamp
+        l4_writer: L4 state writer
+        
+    Returns:
+        PolicyRecommendation if generated, None otherwise
+    """
+    if drift_summary is None:
+        return None
+    
+    # Generate recommendation
+    recommendation = _policy_recommendation_engine.generate_recommendation(
+        drift_summary=drift_summary,
+        active_profile=active_profile,
+        now_utc=now_utc,
+    )
+    
+    # Write to L4 (advisory only)
+    try:
+        recommendation_json = recommendation.to_canonical_json().encode('utf-8')
+        l4_writer.write_l4c_policy_recommendation(
+            payload_bytes=recommendation_json,
+            component_name="meta-learning",
+            created_utc=now_utc,
+        )
+    except Exception:
+        # L4 write failure should not break pipeline
+        pass
+    
+    return recommendation
 
 
 # =============================================================================
@@ -1007,6 +1060,19 @@ def run_pipeline(
         # Emit drift digest for verification (informational only)
         if drift_summary is not None:
             drift_summary.emit_digest()
+
+        # Step 8.9: W4-D Policy recommendation generation (advisory only)
+        # Generate policy recommendation from drift analysis
+        policy_recommendation = _generate_policy_recommendation_and_write(
+            drift_summary=drift_summary,
+            active_profile=active_profile,
+            now_utc=now_utc,
+            l4_writer=deps.l4_state_writer,
+        )
+        
+        # Emit recommendation digest for verification (informational only)
+        if policy_recommendation is not None:
+            policy_recommendation.emit_digest()
 
         # Generate threshold adjustment proposals with patterns and semantic context
         if deps.healing_config_optimizer is not None:

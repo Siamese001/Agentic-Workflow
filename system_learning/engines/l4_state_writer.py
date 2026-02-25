@@ -100,6 +100,21 @@ class L4StateWriter(Protocol):
         """
         ...
 
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        """Write L4C policy recommendation to L4 state (advisory only).
+
+        Args:
+            payload_bytes: Serialized policy recommendation.
+            component_name: Name of the component (typically 'meta-learning').
+            created_utc: Timestamp for the write (injected, no wall clock).
+
+        Returns:
+            Version ID of the written state.
+        """
+        ...
+
 
 class DefaultL4StateWriter:
     """Default implementation of L4 state writer using version store.
@@ -211,6 +226,30 @@ class DefaultL4StateWriter:
         )
         return version_id
 
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        """Write L4C policy recommendation to L4 state (advisory only)."""
+        # Create a change package for the policy recommendation
+        package = SimpleChangePackage(
+            component=f"l4c_policy_recommendation_{component_name}",
+            payload_bytes=payload_bytes,
+            metadata={
+                "type": "policy_recommendation",
+                "component_name": component_name,
+                "created_utc": created_utc,
+            },
+        )
+
+        # Write to version store (content-hash keyed, write-once)
+        version_id = self._version_store.commit_change_package(
+            package=package,
+            parent_version_id=None,
+            change_spec_hash="policy_recommendation",
+            committed_at_utc=created_utc,
+        )
+        return version_id
+
 
 # No-op implementation for safe default
 class NoOpL4StateWriter:
@@ -242,6 +281,12 @@ class NoOpL4StateWriter:
     ) -> str:
         """No-op write that returns a placeholder version ID."""
         return f"noop_shadow_drift_{created_utc}"
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        """No-op write that returns a placeholder version ID."""
+        return f"noop_policy_recommendation_{created_utc}"
 
 
 __all__ = [
