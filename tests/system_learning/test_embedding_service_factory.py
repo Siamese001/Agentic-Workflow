@@ -113,17 +113,12 @@ class TestEmbeddingServiceFactory:
             assert r1.row_idx == r2.row_idx == r3.row_idx
             assert r1.embedding_artifact_hash == r2.embedding_artifact_hash == r3.embedding_artifact_hash
 
-<<<<<<< HEAD
-        # Close memmap to release Windows file lock before fixture teardown
-        del service._raw
-        EmbeddingServiceFactory._INSTANCE = None
-        EmbeddingServiceFactory._INSTANCE_IDENTITY = None
-=======
-        # Close memmap to prevent Windows file lock
+# Close memmap to release Windows file lock before fixture teardown
         if hasattr(service, '_raw') and hasattr(service._raw, '_mmap'):
             service._raw._mmap.close()
         del service._raw
->>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
+        EmbeddingServiceFactory._INSTANCE = None
+        EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
     def test_deterministic_replay_key(self, temp_pack_dir):
         """T1: Same replay key across runs."""
