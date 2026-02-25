@@ -5,12 +5,19 @@ End-to-end deterministic pipeline: snapshot → telemetry/audit → RCA → prop
 W2: Embedding-augmented semantic retrieval (C0-only, informational). Final closeout.
 W3: Pattern Analysis Engine (Deterministic, Informational-Only).
 W4-A: RetrievalProfile Authority (L4 Only).
+W4-B: Shadow Embedder wiring for drift detection (non-influential).
 
 W4-A Integration:
 - RetrievalProfile provides embedder identity and retrieval knobs from L4
 - All retrieval configuration is versioned and deterministic
 - No behavioral changes - only authority shift from hardcoded to governed
 - Active profile pointer enables future optimizer wiring
+
+W4-B Integration:
+- Shadow embedder computes parallel embeddings for telemetry
+- Shadow embeddings do NOT affect retrieval scoring or ranking
+- Provides drift detection via cosine similarity metrics
+- Stable float rounding (6 decimal places) for deterministic telemetry
 
 Invariants:
   - Default proposal_only=True (zero execution authority)
@@ -472,6 +479,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
+            **shadow_telemetry,  # W4-B: Include shadow telemetry even when disabled
         }
 
     # Construct deterministic query from failure signature material
@@ -513,6 +521,36 @@ def _retrieve_semantic_context(
 
     query_vector = np.array(query_vector, dtype=np.float32)
 
+    # W4-B: Compute shadow embedding if configured (non-influential telemetry)
+    shadow_telemetry = {}
+    if retrieval_profile.shadow_embedder_id is not None:
+        # Compute shadow vector using same deterministic method but different embedder ID
+        shadow_signature = f"{failure_signature}|shadow:{retrieval_profile.shadow_embedder_id}"
+        shadow_hash = hashlib.sha256(shadow_signature.encode()).hexdigest()
+        
+        # Create shadow vector (same dimension, different seed)
+        shadow_vector = []
+        for i in range(0, 8, 2):
+            val = int(shadow_hash[i : i + 2], 16) / 255.0  # Normalize to [0, 1]
+            shadow_vector.append(val)
+        
+        shadow_vector = np.array(shadow_vector, dtype=np.float32)
+        
+        # Compute telemetry metrics with stable rounding
+        primary_norm = round(float(np.linalg.norm(query_vector)), 6)
+        shadow_norm = round(float(np.linalg.norm(shadow_vector)), 6)
+        
+        # Compute cosine similarity
+        cosine_sim = round(float(np.dot(query_vector, shadow_vector) / 
+                                (np.linalg.norm(query_vector) * np.linalg.norm(shadow_vector))), 6)
+        
+        shadow_telemetry = {
+            "shadow_embedder_id": retrieval_profile.shadow_embedder_id,
+            "primary_embedding_norm": primary_norm,
+            "shadow_embedding_norm": shadow_norm,
+            "primary_shadow_cosine": cosine_sim,
+        }
+
     # Retrieve with RetrievalProfile configuration (W4-A authority)
     try:
         # Use RetrievalProfile parameters instead of hardcoded values
@@ -529,6 +567,7 @@ def _retrieve_semantic_context(
                 "embedding_topk_hashes": [],
                 "embedding_topk_scores_round6": [],
                 "retrieval_profile_id": retrieval_profile.profile_id,
+                **shadow_telemetry,  # W4-B: Include shadow telemetry
             }
 
         # Extract metadata for audit (C0 informational only)
@@ -546,6 +585,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": topk_hashes,
             "embedding_topk_scores_round6": topk_scores,
             "retrieval_profile_id": retrieval_profile.profile_id,
+            **shadow_telemetry,  # W4-B: Include shadow telemetry
         }
 
     except Exception:
@@ -558,6 +598,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
+            **shadow_telemetry,  # W4-B: Include shadow telemetry even on failure
         }
 
 

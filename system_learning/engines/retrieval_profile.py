@@ -1,7 +1,10 @@
-"""RetrievalProfile Authority (W4-A)
+"""RetrievalProfile Authority (W4-A/B)
 
 Deterministic, versioned profile for embedder and retrieval configuration.
 Stored in L4, read by L1. No behavioral changes - only authority shift.
+
+W4-A: RetrievalProfile Authority (L4 Only)
+W4-B: Shadow Embedder wiring for drift detection (non-influential)
 """
 
 from __future__ import annotations
@@ -17,9 +20,11 @@ class RetrievalProfile:
     """Deterministic profile for embedder and retrieval configuration.
     
     W4-A: RetrievalProfile Authority (L4 Only)
+    W4-B: Shadow Embedder wiring for drift detection (non-influential)
     
     This object governs embedder identity and retrieval knobs.
     It is versioned, deterministic, and stored in L4.
+    Shadow embedder provides parallel embeddings for telemetry.
     """
     profile_id: str
     primary_embedder_id: str
