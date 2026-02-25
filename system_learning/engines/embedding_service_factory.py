@@ -115,6 +115,12 @@ class EmbeddingServiceFactory:
         Args:
             pack_base_path: Base path to seed pack directory.
         """
+        # Kill-switch object lifetime guard
+        if not self._is_embedding_enabled():
+            raise EmbeddingDisabledError(
+                "EmbeddingServiceFactory construction attempted while EMBEDDING_ENABLED=false"
+            )
+        
         self._pack_base_path = pack_base_path
         self._blas_impl = self._get_blas_fingerprint()
         self._integrity_ok: bool = False
@@ -154,6 +160,13 @@ class EmbeddingServiceFactory:
                 "C:/AgenticEmbeddings/seed_packs/healing_contexts/5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"
             )
         )
+
+    @classmethod
+    def reset_instance(cls):
+        """Reset singleton instance for testing."""
+        with cls._LOCK:
+            cls._INSTANCE = None
+            cls._INSTANCE_IDENTITY = None
 
     @classmethod
     def get(cls, pack_base_path: Path) -> EmbeddingServiceFactory:

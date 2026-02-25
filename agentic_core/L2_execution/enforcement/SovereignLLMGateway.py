@@ -84,6 +84,21 @@ class SovereignLLMGateway:
     @property
     def config(self):
         return get_sovereign_config()
+    
+    def _is_policy_approved_model(self, model: str, provider: Provider) -> bool:
+        """Check if model override is policy-approved.
+        
+        Currently only allows environment-based overrides for Google provider.
+        All other providers must use config defaults.
+        """
+        # Google provider allows environment override
+        if provider == "google":
+            env_model = os.getenv("GEMINI_MODEL")
+            if env_model and model == env_model:
+                return True
+        
+        # No other overrides allowed
+        return False
 
     def _audit(self, provider: str, model: str, success: bool, latency_ms: float, tokens: int = 0) -> None:
         limit = self.config.max_audit_log_size
@@ -174,6 +189,21 @@ class SovereignLLMGateway:
                 model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
 
         effective_model = model or "unknown"
+        
+        # Model injection guard - ensure model resolution from immutable config
+        if model and provider == "openai":
+            # Verify model is from approved config
+            approved_models = [self.config.openai_model]
+            if model not in approved_models and not self._is_policy_approved_model(model, provider):
+                raise V15HardFailAbort(
+                    f"§ModelInjection: Runtime model override detected - '{model}' not in approved config for {provider}"
+                )
+        elif model and provider == "anthropic":
+            approved_models = [self.config.anthropic_model]
+            if model not in approved_models and not self._is_policy_approved_model(model, provider):
+                raise V15HardFailAbort(
+                    f"§ModelInjection: Runtime model override detected - '{model}' not in approved config for {provider}"
+                )
 
         # §Wave1.8 — Hard token budget enforcement (pre-call gate)
         if trace_id and token_budget_limit > 0:
