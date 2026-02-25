@@ -2,7 +2,7 @@
 
 End-to-end deterministic pipeline: snapshot → telemetry/audit → RCA → proposals
 → validation → optional commit/activation.
-W2: Embedding-augmented semantic retrieval (C0-only, informational).
+W2: Embedding-augmented semantic retrieval (C0-only, informational). Final closeout.
 
 Invariants:
   - Default proposal_only=True (zero execution authority)

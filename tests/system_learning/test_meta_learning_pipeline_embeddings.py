@@ -1,6 +1,6 @@
 """Tests for W2 embedding integration in meta_learning_pipeline.
 
-W2: Informational semantic retrieval + bounded scoring (C0-only).
+W2: Informational semantic retrieval + bounded scoring (C0-only). Final closeout.
 
 Tests cover:
 - Semantic retrieval with kill-switch

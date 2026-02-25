@@ -1,4 +1,4 @@
-"""Tests for EmbeddingServiceFactory - W1 Zero-Loss Compliance."""
+"""Tests for EmbeddingServiceFactory - W1 Zero-Loss Compliance. W2 final closeout."""
 
 from __future__ import annotations
 

@@ -201,6 +201,8 @@ class TestHealingConfigOptimizerEmbeddings:
         self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
     ) -> None:
         """T4 - Deterministic aggregation: same inputs should produce same outputs."""
+        import hashlib
+
         # Create embedding metadata
         embedding_metadata = {
             "embedding_enabled_at_time": True,
@@ -235,6 +237,14 @@ class TestHealingConfigOptimizerEmbeddings:
             assert adj1.failure_type == adj2.failure_type
             assert adj1.confidence == adj2.confidence
             assert adj1.proposed_threshold == adj2.proposed_threshold
+
+        # Compute and print deterministic digest — identical across runs proves determinism
+        digest_input = "|".join(
+            f"{a.healer_name}:{a.tier}:{a.failure_type}:{a.confidence}:{a.proposed_threshold}"
+            for a in proposal1.adjustments
+        ).encode()
+        digest = hashlib.sha256(digest_input).hexdigest()
+        print(f"W2-DETERMINISM-DIGEST: {digest}")
 
     def test_audit_metadata_present(
         self, optimizer: HealingConfigOptimizer, sample_snapshot: HealingOutcomeAggregateSnapshot
