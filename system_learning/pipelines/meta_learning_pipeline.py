@@ -457,11 +457,8 @@ def _retrieve_semantic_context(
         Dictionary containing embedding metadata for audit purposes only
     """
     # Load active RetrievalProfile from L4 (W4-A authority)
-    try:
-        retrieval_profile = get_active_retrieval_profile()
-    except ValueError:
-        # No active profile - use fallback behavior
-        retrieval_profile = RetrievalProfile.create_default()
+    # No fallback - RetrievalProfile must be bootstrapped into L4 before use
+    retrieval_profile = get_active_retrieval_profile(now_utc)
     
     # Get embedding service with total kill-switch coverage
     embedding_service = EmbeddingServiceFactory.get_or_disabled()

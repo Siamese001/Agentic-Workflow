@@ -46,14 +46,17 @@ class RetrievalProfileManager:
         # In a full implementation, this would read from L4
         return "retrieval-profile-v1"
     
-    def load_active_profile(self) -> RetrievalProfile:
+    def load_active_profile(self, now_utc: int) -> RetrievalProfile:
         """Load the active RetrievalProfile.
         
+        Args:
+            now_utc: Current timestamp for bootstrap operations.
+            
         Returns:
             Active RetrievalProfile.
             
         Raises:
-            ValueError: If no active profile is found.
+            ValueError: If no active profile can be loaded or bootstrapped.
         """
         if self._active_profile_cache is not None:
             return self._active_profile_cache
@@ -61,10 +64,15 @@ class RetrievalProfileManager:
         # Get active profile ID
         profile_id = self.get_active_profile_id()
         if profile_id is None:
-            raise ValueError("No active RetrievalProfile found")
+            # Bootstrap: Create default profile and persist to L4
+            profile = RetrievalProfile.create_default()
+            version_id = self.activate_profile(profile, now_utc)
+            # Cache the bootstrapped profile
+            self._active_profile_cache = profile
+            return profile
         
-        # For now, return the default profile
-        # In a full implementation, this would load from L4
+        # Load profile from L4 (for now, return default)
+        # In a full implementation, this would load from L4 using profile_id
         profile = RetrievalProfile.create_default()
         
         # Cache the profile
@@ -134,17 +142,20 @@ def get_retrieval_profile_manager(
     return _default_manager
 
 
-def get_active_retrieval_profile() -> RetrievalProfile:
+def get_active_retrieval_profile(now_utc: int) -> RetrievalProfile:
     """Get the currently active RetrievalProfile.
     
+    Args:
+        now_utc: Current timestamp for bootstrap operations.
+        
     Returns:
         Active RetrievalProfile.
         
     Raises:
-        ValueError: If no active profile is found.
+        ValueError: If no active profile can be loaded or bootstrapped.
     """
     manager = get_retrieval_profile_manager()
-    return manager.load_active_profile()
+    return manager.load_active_profile(now_utc)
 
 
 # Export public interface

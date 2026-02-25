@@ -174,7 +174,7 @@ class TestRetrievalProfileManager:
 
     def test_get_active_profile_default(self):
         """Test getting active profile returns default."""
-        profile = get_active_retrieval_profile()
+        profile = get_active_retrieval_profile(now_utc=1234567890)
         
         assert isinstance(profile, RetrievalProfile)
         assert profile.profile_id == "retrieval-profile-v1"
@@ -184,16 +184,16 @@ class TestRetrievalProfileManager:
         manager = RetrievalProfileManager()
         
         # First call loads profile
-        profile1 = manager.load_active_profile()
+        profile1 = manager.load_active_profile(now_utc=1234567890)
         
         # Second call returns cached profile
-        profile2 = manager.load_active_profile()
+        profile2 = manager.load_active_profile(now_utc=1234567890)
         
         assert profile1 is profile2  # Same object (cached)
         
         # Clear cache and reload
         manager.clear_cache()
-        profile3 = manager.load_active_profile()
+        profile3 = manager.load_active_profile(now_utc=1234567890)
         
         assert profile1 is not profile3  # New object after cache clear
         assert profile1.profile_id == profile3.profile_id  # Same values
@@ -209,8 +209,35 @@ class TestRetrievalProfileManager:
         assert version_id == "noop_activation_1234567890"
         
         # Profile should be cached
-        cached_profile = manager.load_active_profile()
+        cached_profile = manager.load_active_profile(now_utc=1234567890)
         assert cached_profile is profile
+
+    def test_bootstrap_when_no_active_profile(self):
+        """Test bootstrap creates and persists default profile."""
+        from unittest.mock import Mock
+        
+        # Create manager with mock L4 writer
+        mock_writer = Mock()
+        mock_writer.write_l4c_retrieval_profile.return_value = "bootstrap_version_123"
+        
+        manager = RetrievalProfileManager(l4_state_writer=mock_writer)
+        
+        # Mock get_active_profile_id to return None (no active profile)
+        manager.get_active_profile_id = Mock(return_value=None)
+        
+        # Load profile should trigger bootstrap
+        profile = manager.load_active_profile(now_utc=1234567890)
+        
+        # Should have created and activated default profile
+        assert isinstance(profile, RetrievalProfile)
+        assert profile.profile_id == "retrieval-profile-v1"
+        
+        # Should have called L4 writer
+        mock_writer.write_l4c_retrieval_profile.assert_called_once_with(
+            payload_bytes=profile.to_canonical_json().encode(),
+            component_name="meta-learning",
+            created_utc=1234567890,
+        )
 
 
 @pytest.mark.unit_min_deps
