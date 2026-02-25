@@ -15,6 +15,7 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
@@ -296,6 +297,126 @@ class PipelineDependencies:
     rollback_refinement_decision_bytes: bytes | None = None
     dpo_batch_bytes: bytes | None = None
     rlhf_optimizer: RLHFOptimizer | None = None
+
+
+# =============================================================================
+# Semantic Retrieval (W2 - Informational Context Only)
+# =============================================================================
+
+
+def _retrieve_semantic_context(
+    rca_report: Any,
+    pattern_report: Any,
+    now_utc: int,
+) -> dict[str, Any]:
+    """Retrieve semantic context for healing configuration optimization.
+
+    This is C0 informational context only - it augments candidate context
+    but does not directly mutate any routing thresholds or safety tiers.
+
+    Args:
+        rca_report: RCA report containing failure signatures
+        pattern_report: Optional pattern analysis report
+        now_utc: Current timestamp
+
+    Returns:
+        Dictionary containing embedding metadata for audit purposes only
+    """
+    # Get embedding service with total kill-switch coverage
+    embedding_service = EmbeddingServiceFactory.get_or_disabled()
+
+    # If disabled, return empty metadata (no telemetry, no placeholders)
+    if embedding_service.is_disabled():
+        return {
+            "embedding_enabled_at_time": False,
+            "embedding_replay_key": None,
+            "embedding_artifact_hash": None,
+            "embedding_topk_hashes": [],
+            "embedding_topk_scores_round6": [],
+        }
+
+    # Construct deterministic query from failure signature material
+    # Use RCA failure patterns and pattern findings if available
+    query_components = []
+
+    # Extract failure type and component from RCA
+    if hasattr(rca_report, "failures"):
+        for failure in rca_report.failures:
+            if hasattr(failure, "failure_type"):
+                query_components.append(failure.failure_type)
+            if hasattr(failure, "component"):
+                query_components.append(failure.component)
+            if hasattr(failure, "error_tokens"):
+                query_components.extend(failure.error_tokens[:3])  # First 3 tokens
+
+    # Add pattern tags if available
+    if pattern_report and hasattr(pattern_report, "findings"):
+        for finding in pattern_report.findings:
+            if hasattr(finding, "key") and hasattr(finding.key, "label"):
+                query_components.append(finding.key.label)
+
+    # Create deterministic query string
+    failure_signature = "|".join(sorted(query_components)) if query_components else "generic_failure"
+
+    # For W2, we use a simple hash-based approach since no embedder is available
+    # In a full implementation, this would use the pinned embedder from governance
+    import hashlib
+
+    # Create a deterministic query vector from the signature hash
+    query_hash = hashlib.sha256(failure_signature.encode()).hexdigest()
+    # Use first 8 hex digits to create a simple 4D vector for demonstration
+    query_vector = []
+    for i in range(0, 8, 2):
+        val = int(query_hash[i : i + 2], 16) / 255.0  # Normalize to [0, 1]
+        query_vector.append(val)
+
+    import numpy as np
+
+    query_vector = np.array(query_vector, dtype=np.float32)
+
+    # Retrieve with governance constraints
+    try:
+        # Use governance defaults (would be from config in production)
+        top_k_cap = 5
+        similarity_cutoff = 0.5
+
+        results = embedding_service.retrieve(query_vector=query_vector, k=top_k_cap, cutoff=similarity_cutoff)
+
+        if results is None:
+            return {
+                "embedding_enabled_at_time": True,
+                "embedding_replay_key": getattr(embedding_service, "replay_key", None),
+                "embedding_artifact_hash": None,
+                "embedding_topk_hashes": [],
+                "embedding_topk_scores_round6": [],
+            }
+
+        # Extract metadata for audit (C0 informational only)
+        topk_hashes = [r.content_hash for r in results]
+        topk_scores = [r.score_round6 for r in results]
+
+        # Compute artifact hash from results
+        result_data = f"{failure_signature}|{topk_hashes}|{topk_scores}"
+        artifact_hash = hashlib.sha256(result_data.encode()).hexdigest()
+
+        return {
+            "embedding_enabled_at_time": True,
+            "embedding_replay_key": getattr(embedding_service, "replay_key", None),
+            "embedding_artifact_hash": artifact_hash,
+            "embedding_topk_hashes": topk_hashes,
+            "embedding_topk_scores_round6": topk_scores,
+        }
+
+    except Exception:
+        # Embedding retrieval failure should not break pipeline
+        # Return minimal metadata indicating failure
+        return {
+            "embedding_enabled_at_time": True,
+            "embedding_replay_key": None,
+            "embedding_artifact_hash": "RETRIEVAL_FAILED",
+            "embedding_topk_hashes": [],
+            "embedding_topk_scores_round6": [],
+        }
 
 
 # =============================================================================
@@ -632,20 +753,66 @@ def run_pipeline(
                 # In production, this would be logged
                 pass
 
-        # Generate threshold adjustment proposals with patterns
+        # Step 8.7: Retrieve semantic context (W2 - C0 informational only)
+        embedding_metadata = _retrieve_semantic_context(
+            rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
+        )
+
+        # Generate threshold adjustment proposals with patterns and semantic context
         if deps.healing_config_optimizer is not None:
-            if hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
+            if hasattr(
+                deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns_and_embeddings"
+            ):
+                threshold_proposal = (
+                    deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns_and_embeddings(
+                        aggregate_snapshot, pattern_report, embedding_metadata
+                    )
+                )
+            elif hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns(
-                        aggregate_snapshot, pattern_report
+                        aggregate_snapshot, pattern_report, embedding_metadata
                     )
                 )
             else:
                 threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
-                    aggregate_snapshot
+                    aggregate_snapshot, embedding_metadata
                 )
         else:
             threshold_proposal = None
+
+        # Add embedding metadata to ChangePackage for auditability (C0 informational only)
+        if threshold_proposal and hasattr(threshold_proposal, "embedding_metadata"):
+            # Update the ChangePackage to include embedding metadata
+            # This is for audit purposes only and must not be used for execution
+            if hasattr(threshold_proposal, "changes"):
+                # Serialize embedding metadata and append to changes
+                import json
+
+                embedding_metadata_json = json.dumps(
+                    embedding_metadata, separators=(",", ":"), sort_keys=True
+                )
+                if isinstance(threshold_proposal.changes, bytes):
+                    # Append metadata to existing changes
+                    combined_changes = (
+                        threshold_proposal.changes
+                        + b"\nEMBEDDING_METADATA:"
+                        + embedding_metadata_json.encode()
+                    )
+                    # Create new proposal with combined changes (immutable pattern)
+                    from system_learning.engines.change_package_impl import ChangePackage
+
+                    threshold_proposal = ChangePackage(
+                        source=threshold_proposal.source,
+                        target=threshold_proposal.target,
+                        changes=combined_changes,
+                        confidence=threshold_proposal.confidence,
+                        reason=threshold_proposal.reason
+                        + (
+                            f"Embedding enabled: {embedding_metadata.get('embedding_enabled_at_time', False)}",
+                        ),
+                        timestamp_utc=threshold_proposal.timestamp_utc,
+                    )
 
         # Add to proposals if there are adjustments
         if threshold_proposal and threshold_proposal.adjustments:

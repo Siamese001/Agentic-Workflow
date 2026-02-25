@@ -105,7 +105,9 @@ class HealingConfigOptimizer:
         return snapshot
 
     def propose_threshold_adjustments(
-        self, snapshot: HealingOutcomeAggregateSnapshot
+        self,
+        snapshot: HealingOutcomeAggregateSnapshot,
+        embedding_metadata: dict[str, Any] | None = None,
     ) -> ThresholdAdjustmentProposal:
         """Analyze snapshot and propose threshold adjustments.
 
@@ -154,18 +156,28 @@ class HealingConfigOptimizer:
         )
 
     def propose_threshold_adjustments_with_patterns(
-        self, snapshot: HealingOutcomeAggregateSnapshot, pattern_report: PatternFindingReport | None = None
+        self,
+        snapshot: HealingOutcomeAggregateSnapshot,
+        pattern_report: PatternFindingReport | None = None,
+        embedding_metadata: dict[str, Any] | None = None,
     ) -> ThresholdAdjustmentProposal:
         """Analyze snapshot with pattern findings and propose threshold adjustments.
 
         Args:
             snapshot: Healing outcome aggregate snapshot.
             pattern_report: Optional pattern analysis report.
+            embedding_metadata: Optional embedding metadata for W2 integration.
 
         Returns:
             Proposal with threshold adjustments (proposal-only).
         """
-        # First get base adjustments from snapshot
+        # If embedding metadata is provided, use the embedding-aware method
+        if embedding_metadata:
+            return self.propose_threshold_adjustments_with_embeddings(
+                snapshot, pattern_report, embedding_metadata
+            )
+
+        # Otherwise, use the original pattern-only logic
         base_proposal = self.propose_threshold_adjustments(snapshot)
         adjustments = list(base_proposal.adjustments)
 
@@ -176,8 +188,6 @@ class HealingConfigOptimizer:
 
         # Sort deterministically and apply bounds
         adjustments.sort(key=lambda a: (a.healer_name, a.tier, a.failure_type, a.proposed_threshold))
-
-        # Apply bounded delta constraints
         bounded_adjustments = self._apply_bounded_constraints(adjustments)
 
         return ThresholdAdjustmentProposal(
@@ -326,6 +336,110 @@ class HealingConfigOptimizer:
         # Combine factors
         confidence = (normalized_samples * 0.6) + (normalized_gap * 0.4)
         return round(confidence + 1e-10, 4)  # Round-half-up
+
+    def propose_threshold_adjustments_with_embeddings(
+        self,
+        snapshot: HealingOutcomeAggregateSnapshot,
+        pattern_report: Any = None,
+        embedding_metadata: dict[str, Any] | None = None,
+        embedding_influence_cap: float = 0.25,
+        min_sample_threshold: int = 20,
+    ) -> ThresholdAdjustmentProposal:
+        """Analyze snapshot with embedding influence and propose threshold adjustments.
+
+        This is W2 implementation: embeddings provide C0 informational context
+        and contribute to scoring with bounded influence.
+
+        Args:
+            snapshot: Healing outcome aggregate snapshot.
+            pattern_report: Optional pattern analysis report.
+            embedding_metadata: Embedding retrieval metadata for C0 context.
+            embedding_influence_cap: Maximum influence of embeddings (<= 0.25).
+            min_sample_threshold: Minimum samples for embedding influence.
+
+        Returns:
+            Proposal with threshold adjustments (proposal-only).
+        """
+        # Get base adjustments from snapshot
+        base_proposal = self.propose_threshold_adjustments(snapshot)
+        adjustments = list(base_proposal.adjustments)
+
+        # Apply pattern-based adjustments if available
+        if pattern_report:
+            pattern_adjustments = self._apply_pattern_findings(pattern_report)
+            adjustments.extend(pattern_adjustments)
+
+        # Apply embedding-influenced scoring if enabled and guard passes
+        if embedding_metadata and embedding_metadata.get("embedding_enabled_at_time", False):
+            # Calculate total sample size across all aggregates
+            total_samples = sum(agg.total_count for _, agg in snapshot.aggregates)
+
+            # Small-N guard: if insufficient samples, embedding_weight = 0.0
+            if total_samples >= min_sample_threshold:
+                # Apply embedding influence to confidence scores
+                embedding_weight = min(embedding_influence_cap, 0.25)
+
+                # Get embedding scores for aggregation
+                embedding_scores = embedding_metadata.get("embedding_topk_scores_round6", [])
+                embedding_score = self._aggregate_embedding_scores(embedding_scores)
+
+                # Update adjustments with embedding-influenced confidence
+                embedding_influenced_adjustments = []
+                for adj in adjustments:
+                    # Combine statistical confidence with embedding score
+                    statistical_confidence = adj.confidence
+                    embedding_confidence = embedding_score
+
+                    # Bounded combination: statistical remains dominant
+                    final_confidence = (
+                        1.0 - embedding_weight
+                    ) * statistical_confidence + embedding_weight * embedding_confidence
+
+                    # Round to 6 decimal places for determinism
+                    final_confidence = round(final_confidence + 1e-10, 6)
+
+                    # Create new adjustment with embedding-influenced confidence
+                    influenced_adj = ThresholdAdjustment(
+                        healer_name=adj.healer_name,
+                        tier=adj.tier,
+                        failure_type=adj.failure_type,
+                        current_threshold=adj.current_threshold,
+                        proposed_threshold=adj.proposed_threshold,
+                        reason=(
+                            adj.reason + f" (embedding_influenced: weight={embedding_weight:.3f}, "
+                            f"score={embedding_score:.6f})"
+                        ),
+                        confidence=final_confidence,
+                    )
+                    embedding_influenced_adjustments.append(influenced_adj)
+
+                adjustments = embedding_influenced_adjustments
+
+        # Sort deterministically and apply bounds
+        adjustments.sort(key=lambda a: (a.healer_name, a.tier, a.failure_type, a.proposed_threshold))
+        bounded_adjustments = self._apply_bounded_constraints(adjustments)
+
+        return ThresholdAdjustmentProposal(
+            snapshot_version_id=snapshot.version_id,
+            created_utc=snapshot.created_utc,
+            adjustments=tuple(bounded_adjustments),
+        )
+
+    def _aggregate_embedding_scores(self, scores: list[float]) -> float:
+        """Aggregate embedding scores deterministically.
+
+        Args:
+            scores: List of similarity scores (rounded to 6 decimals).
+
+        Returns:
+            Aggregated score (0.0 to 1.0).
+        """
+        if not scores:
+            return 0.0
+
+        # Use max for deterministic aggregation (most relevant context)
+        # Could also use mean of top-3, but max is simpler and deterministic
+        return max(scores) if scores else 0.0
 
 
 # Data structures for proposals
