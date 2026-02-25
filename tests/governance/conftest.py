@@ -76,9 +76,18 @@ def mock_httpx_block(monkeypatch):
 
 
 def pytest_sessionfinish(session, exitstatus):
-    """Print W5 and W6 DETERMINISM-DIGEST exactly once per test run."""
+    """Print phase-specific DETERMINISM-DIGEST exactly once per test run.
+    
+    - Phase 5 tests: print only W5-DETERMINISM-DIGEST
+    - Phase 6 tests: print only W6-DETERMINISM-DIGEST
+    """
     try:
         from agentic_core.agents.agent_registry import AGENT_REGISTRY
+
+        # Determine which phase is running based on collected test files
+        collected_nodeids = [item.nodeid for item in session.items]
+        is_phase5 = any("test_phase5_gap_closure_policy_enforcement.py" in nid for nid in collected_nodeids)
+        is_phase6 = any("test_phase6_agent_fleet_conformance.py" in nid for nid in collected_nodeids)
 
         # Create canonical JSON of registry + policy thresholds
         registry_data = {
@@ -101,19 +110,33 @@ def pytest_sessionfinish(session, exitstatus):
             },
         }
 
-        # Compute W5 deterministic digest
-        canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
-        w5_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
-
-        # Compute W6 deterministic digest (includes gateway config)
-        w6_data = {**registry_data, "gateway_config": {"timeout": 30.0, "max_retries": 3, "rate_limit": 100}}
-        w6_canonical_json = json.dumps(w6_data, separators=(",", ":"), sort_keys=True)
-        w6_digest = hashlib.sha256(w6_canonical_json.encode("utf-8")).hexdigest()
-
-        print(f"W5-DETERMINISM-DIGEST: {w5_digest}")
-        print(f"W6-DETERMINISM-DIGEST: {w6_digest}")
+        if is_phase5:
+            # Compute W5 deterministic digest
+            canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
+            w5_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+            print(f"W5-DETERMINISM-DIGEST: {w5_digest}")
+        elif is_phase6:
+            # Compute W6 deterministic digest (includes gateway config)
+            w6_data = {**registry_data, "gateway_config": {"timeout": 30.0, "max_retries": 3, "rate_limit": 100}}
+            w6_canonical_json = json.dumps(w6_data, separators=(",", ":"), sort_keys=True)
+            w6_digest = hashlib.sha256(w6_canonical_json.encode("utf-8")).hexdigest()
+            print(f"W6-DETERMINISM-DIGEST: {w6_digest}")
+        else:
+            # Default: print both for other governance test runs
+            canonical_json = json.dumps(registry_data, separators=(",", ":"), sort_keys=True)
+            w5_digest = hashlib.sha256(canonical_json.encode("utf-8")).hexdigest()
+            w6_data = {**registry_data, "gateway_config": {"timeout": 30.0, "max_retries": 3, "rate_limit": 100}}
+            w6_canonical_json = json.dumps(w6_data, separators=(",", ":"), sort_keys=True)
+            w6_digest = hashlib.sha256(w6_canonical_json.encode("utf-8")).hexdigest()
+            print(f"W5-DETERMINISM-DIGEST: {w5_digest}")
+            print(f"W6-DETERMINISM-DIGEST: {w6_digest}")
 
     except Exception as e:
         # Fail gracefully - if we can't compute digest, print error but don't crash
-        print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
-        print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
+        if is_phase5:
+            print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
+        elif is_phase6:
+            print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
+        else:
+            print(f"W5-DETERMINISM-DIGEST: ERROR - {e}")
+            print(f"W6-DETERMINISM-DIGEST: ERROR - {e}")
