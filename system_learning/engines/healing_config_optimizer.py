@@ -2,6 +2,7 @@
 
 Phase 6: Consumes healing outcome aggregates to propose threshold adjustments.
 All proposals are proposal-only via ChangePackage; no direct config mutation.
+W2: Embedding-augmented scoring (C0-only, informational).
 """
 
 from __future__ import annotations

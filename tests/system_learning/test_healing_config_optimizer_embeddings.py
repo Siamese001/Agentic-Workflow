@@ -1,5 +1,7 @@
 """Tests for W2 embedding integration in HealingConfigOptimizer.
 
+W2: Informational semantic retrieval + bounded scoring (C0-only).
+
 Tests cover:
 - Kill-switch path (embeddings disabled)
 - Small-N guard (insufficient samples)

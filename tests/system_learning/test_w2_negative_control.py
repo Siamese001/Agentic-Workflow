@@ -2,6 +2,7 @@
 
 When W2_NEGCTRL_TAMPER=1: tests FAIL (proving guards can be broken).
 When W2_NEGCTRL_TAMPER unset: tests PASS (guards intact).
+W2: Informational semantic retrieval + bounded scoring (C0-only).
 """
 
 from __future__ import annotations
