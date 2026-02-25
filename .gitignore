@@ -135,5 +135,15 @@ artifacts/import_health/import_health_report.json
 # Runtime logs (any layer)
 **/logs/
 
+# Windsurf evidence artifacts (temporary, auto-generated)
+artifacts/windsurf/*.txt
+artifacts/windsurf/*.out
+artifacts/windsurf/*.typed
+artifacts/windsurf/*.emitted
+artifacts/windsurf/*_commit.*
+artifacts/windsurf/*_acceptance.*
+artifacts/windsurf/*_det*
+artifacts/windsurf/*_neg*
+
 # Root README (auto-generated / user-local)
  /README.md
