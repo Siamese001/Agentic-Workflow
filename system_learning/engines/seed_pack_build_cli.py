@@ -23,11 +23,12 @@ from typing import Any
 # Load environment variables from .env file
 try:
     from dotenv import load_dotenv
+
     load_dotenv()
 except ImportError:
     pass
 
-from system_learning.engines.openai_embedder import OpenAIEmbedder
+from agentic_core.embeddings.embedding_factory import create_embedding_client
 from system_learning.engines.seed_embedding_pack_builder import build_seed_embedding_pack
 from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
 
@@ -83,7 +84,7 @@ def load_canonical_corpus(namespace: str, corpus_path: Path | None = None) -> li
         )
 
     corpus_rows: list[dict[str, Any]] = []
-    with open(corpus_path, "r", encoding="utf-8") as f:
+    with open(corpus_path, encoding="utf-8") as f:
         for line_num, line in enumerate(f, 1):
             line = line.strip()
             if not line:
@@ -130,6 +131,15 @@ def main() -> None:
         help="OpenAI model to use (default: text-embedding-3-large)",
     )
     parser.add_argument(
+        "--provider", default="openai", choices=["openai"], help="Embedding provider to use (default: openai)"
+    )
+    parser.add_argument(
+        "--dimensions",
+        type=int,
+        default=1536,
+        help="Embedding dimensions to use (default: 1536 for OpenAI Matryoshka)",
+    )
+    parser.add_argument(
         "--bootstrap-mode",
         default="minimal_seed",
         choices=["minimal_seed", "curated_seed"],
@@ -168,27 +178,31 @@ def main() -> None:
 
         # Initialize embedder
         print(f"Initializing OpenAI embedder with model: {args.model}")
-        
+
         # Check if we should use test mode (no real API key)
         if os.getenv("OPENAI_API_KEY") == "sk-proj-YOUR_ACTUAL_API_KEY_HERE":
             print("WARNING: Using test mode with deterministic embedder (no real API calls)")
             from system_learning.engines.seed_embedding_pack_builder import DeterministicHashEmbedder
-            embedder = DeterministicHashEmbedder(dimensions=3072)  # text-embedding-3-large dimensions
-            model_info = {"dimensions": 3072}
+
+            embedder = DeterministicHashEmbedder(dimensions=args.dimensions)
         else:
-            embedder = OpenAIEmbedder(model=args.model)
-            model_info = embedder.get_model_info()
-        
-        dims = int(model_info["dimensions"])
-        print(f"Model dimensions: {dims}")
+            embedder = create_embedding_client(
+                provider=args.provider, model=args.model, dimensions=args.dimensions
+            )
+
+        print(f"Model dimensions: {args.dimensions}")
 
         # Create config
+        model_checksum = hashlib.sha256(
+            f"{args.provider}_{args.model}_{args.dimensions}".encode()
+        ).hexdigest()
+
         config = SeedEmbeddingPackConfig(
             namespace=args.namespace,
             bootstrap_mode=args.bootstrap_mode,
             minimal_seed_count=args.minimal_seed_count,
             embedding_model_version=args.model,
-            embedding_model_checksum=embedder.get_model_checksum() if hasattr(embedder, 'get_model_checksum') else "test_mode_checksum",
+            embedding_model_checksum=model_checksum,
             canonicalization_version="v1",
         )
 

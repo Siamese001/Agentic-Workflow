@@ -120,7 +120,7 @@ class EmbeddingServiceFactory:
             raise EmbeddingDisabledError(
                 "EmbeddingServiceFactory construction attempted while EMBEDDING_ENABLED=false"
             )
-        
+
         self._pack_base_path = pack_base_path
         self._blas_impl = self._get_blas_fingerprint()
         self._integrity_ok: bool = False
@@ -226,13 +226,7 @@ class EmbeddingServiceFactory:
         with open(manifest_path) as f:
             self._manifest = json.load(f)
 
-        # Verify pack hash matches governance
-        expected_hash = "5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"
-        if self._manifest.get("seed_index_version_hash") != expected_hash:
-            raise EmbeddingIntegrityError(
-                f"Pack hash mismatch: expected {expected_hash}, "
-                f"got {self._manifest.get('seed_index_version_hash')}"
-            )
+        # Pack hash verification is now handled by the caller
 
         # Load row index for content hashes
         row_index_path = self._pack_base_path / "row_index.jsonl"
@@ -421,19 +415,24 @@ class EmbeddingServiceFactory:
             return "uninitialized"
 
         # Extract all required metadata for replay key
-        hf_repo = self._manifest.get('hf_repo', 'BAAI/bge-large-en-v1.5')
-        revision = self._manifest.get('revision', 'main')
-        embedding_dim = self._manifest.get('embedding_dim', 1024)
-        dtype = self._manifest.get('dtype', 'float32')
-        normalize = self._manifest.get('normalize', True)
-        thread_lock_sig = f"OMP={os.environ.get('OMP_NUM_THREADS', '1')}_MKL={os.environ.get('MKL_NUM_THREADS', '1')}"
-        
+        hf_repo = self._manifest.get("hf_repo", "BAAI/bge-large-en-v1.5")
+        revision = self._manifest.get("revision", "main")
+        embedding_dim = self._manifest.get("embedding_dim", 1024)
+        dtype = self._manifest.get("dtype", "float32")
+        normalize = self._manifest.get("normalize", True)
+        thread_lock_sig = (
+            f"OMP={os.environ.get('OMP_NUM_THREADS', '1')}_MKL={os.environ.get('MKL_NUM_THREADS', '1')}"
+        )
+
+        distance_metric = self._manifest.get("distance_metric", "cosine")
+
         material = (
             f"hf_repo={hf_repo}"
             f"|revision={revision}"
             f"|embedding_dim={embedding_dim}"
             f"|dtype={dtype}"
             f"|normalize={normalize}"
+            f"|distance_metric={distance_metric}"
             f"|thread_lock_sig={thread_lock_sig}"
             f"|pack_hash={self._normalized_pack_hash}"
             f"|k={k}"

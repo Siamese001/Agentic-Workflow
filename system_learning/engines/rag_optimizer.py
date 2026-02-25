@@ -80,6 +80,7 @@ def propose_rag_param_changes(
     history: dict[str, int],
     cooldown_policy: CooldownPolicy,
     sample_policy: SampleSizePolicy,
+    mean_cosine_similarity: float | None = None,
 ) -> RAGChangePackage | None:
     """Propose RAG parameter changes based on metrics.
 
@@ -131,21 +132,31 @@ def propose_rag_param_changes(
         # Dampening violated - no proposal
         return None
 
-    # Simple heuristic: if precision < 0.70, increase top_k
-    # if precision > 0.85, decrease top_k
-    if retrieval_precision < 0.70:
-        proposed_value = min(current_value + 2, 20)
-    elif retrieval_precision > 0.85:
-        proposed_value = max(current_value - 2, 3)
-    else:
-        # No change needed
+    # Heuristic now includes semantic quality signal
+    justification_parts = [f"retrieval_precision={retrieval_precision:.2f}"]
+    proposed_value = current_value
+
+    if mean_cosine_similarity is not None:
+        justification_parts.append(f"mean_cosine_similarity={mean_cosine_similarity:.2f}")
+        if mean_cosine_similarity < 0.65:
+            proposed_value = min(current_value + 2, 20)
+        elif mean_cosine_similarity > 0.85 and retrieval_precision > 0.85:
+            proposed_value = max(current_value - 2, 3)
+
+    if proposed_value == current_value:  # If semantic signal didn't trigger a change, check precision
+        if retrieval_precision < 0.70:
+            proposed_value = min(current_value + 2, 20)
+        elif retrieval_precision > 0.85:
+            proposed_value = max(current_value - 2, 3)
+
+    if proposed_value == current_value:
         return None
 
     # Validate constraint
     validate_surface_change(surface_name, current_value, proposed_value)
 
     # Create proposal
-    justification = f"retrieval_precision={retrieval_precision:.2f}, adjusting top_k"
+    justification = ", ".join(justification_parts) + ", adjusting top_k"
     return RAGChangePackage(
         surface_name=surface_name,
         old_value=current_value,

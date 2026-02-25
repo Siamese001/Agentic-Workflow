@@ -86,6 +86,7 @@ class DefaultDeterministicRLHFOptimizer:
                 confidence=0.0,
                 reason=("malformed_dpo_batch",),
                 timestamp_utc=0,  # Will be set by caller
+                embedding_context_hash=embedding_context_hash,
             )
 
         # Parse current threshold config
@@ -168,4 +169,5 @@ class DefaultDeterministicRLHFOptimizer:
             confidence=confidence,
             reason=tuple(reasons) if reasons else ("no_adjustments",),
             timestamp_utc=0,  # Will be set by caller
+            embedding_context_hash=embedding_context_hash,
         )

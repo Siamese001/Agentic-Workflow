@@ -13,7 +13,9 @@ import struct
 from pathlib import Path
 from typing import Any, Protocol
 
+from agentic_core.embeddings.embedding_factory import create_embedding_client
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.types.embedding_artifact import EmbeddingArtifact
 
 
@@ -45,15 +47,21 @@ class IntegrityError(Exception):
 class MetaLearningEmbeddingService:
     """Read-only embedding retrieval service for Seed Embedding Packs."""
 
-    def __init__(self, base_path: str, embedder: Embedder):
+    def __init__(self, base_path: str, embedder: Embedder | None = None):
         """Initialize the service.
 
         Args:
             base_path: Base directory containing seed packs.
-            embedder: Embedder instance for query embedding.
+            embedder: Embedder instance for query embedding. If None, a live OpenAI client is created.
         """
         self.base_path = Path(base_path)
-        self.embedder = embedder
+        if embedder:
+            self.embedder = embedder
+        else:
+            profile = RetrievalProfile.create_default()
+            self.embedder = create_embedding_client(
+                provider="openai", model=profile.primary_embedder_id, dimensions=profile.embedding_dim
+            )
         # Initialize factory (will return disabled sentinel if kill-switch is off)
         self._factory = EmbeddingServiceFactory.get_or_disabled()
 
@@ -63,7 +71,7 @@ class MetaLearningEmbeddingService:
         namespace: str,
         seed_index_version_hash: str,
         query_text: str,
-        k: int,
+        profile: RetrievalProfile,
     ) -> EmbeddingArtifact | None:
         """Retrieve top-k embeddings for a query.
 
@@ -95,6 +103,13 @@ class MetaLearningEmbeddingService:
             pack_dir, seed_index_version_hash
         )
 
+        # FAISS Dimension Migration Guard
+        if manifest["dimensions"] != profile.embedding_dim:
+            raise IntegrityError(
+                f"FAISS dimension mismatch: manifest={manifest['dimensions']}, "
+                f"profile={profile.embedding_dim}. Rebuild seed pack for this profile."
+            )
+
         # Embed query
         query_vecs = self.embedder.embed_batch([query_text], dimensions=manifest["dimensions"])
         query_vec = query_vecs[0]
@@ -105,7 +120,7 @@ class MetaLearningEmbeddingService:
         # Sort deterministically and select top-k
         sorted_candidates = sorted(candidates, key=lambda x: (-x["score"], x["content_hash"], x["trace_id"]))
 
-        top_k = sorted_candidates[:k]
+        top_k = sorted_candidates[: profile.top_k]
 
         # Build EmbeddingArtifact
         return EmbeddingArtifact(

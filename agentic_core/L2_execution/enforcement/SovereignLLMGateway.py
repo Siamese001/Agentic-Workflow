@@ -19,12 +19,12 @@ import logging
 import os
 import time
 from dataclasses import dataclass, field
-from typing import Any, Literal, Dict, Optional
+from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.embeddings.embedding_factory import create_embedding_client
 from agentic_core.L0_routing.types.guardian_contract import (
     V15HardFailAbort,
-    V15SoftFailAbort,
     is_v15_enforced,
 )
 from agentic_core.L0_routing.types.routing_artifact_types import (
@@ -32,11 +32,13 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     TokenGateResult,
 )
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
+from agentic_core.replay.replay_envelope import ReplayEnvelope
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
     create_vertex_client,
 )
+from system_learning.engines.retrieval_profile import RetrievalProfile
 
 # Agent execution profile enforcement
 try:
@@ -45,6 +47,7 @@ except ImportError:
     # Fallback for environments without agent registry
     def get_profile(agent_id: str):
         raise KeyError(f"Agent registry not available: {agent_id}")
+
 
 Logger = logging.getLogger(__name__)
 
@@ -93,10 +96,10 @@ class SovereignLLMGateway:
     @property
     def config(self):
         return get_sovereign_config()
-    
+
     def _is_policy_approved_model(self, model: str, provider: Provider) -> bool:
         """Check if model override is policy-approved.
-        
+
         Currently only allows environment-based overrides for Google provider.
         All other providers must use config defaults.
         """
@@ -105,7 +108,7 @@ class SovereignLLMGateway:
             env_model = os.getenv("GEMINI_MODEL")
             if env_model and model == env_model:
                 return True
-        
+
         # No other overrides allowed
         return False
 
@@ -179,7 +182,7 @@ class SovereignLLMGateway:
     ) -> dict:
         """
         Route generation for apps_* - the ONLY supported public generation method.
-        
+
         This method enforces:
         - agent_id is required (from agent_registry.py SSOT)
         - temperature=0.0 for deterministic classes OR normalized to 0.0 in deterministic contexts
@@ -189,14 +192,12 @@ class SovereignLLMGateway:
         try:
             profile = get_profile(agent_id)
         except KeyError as e:
-            raise V15HardFailAbort(
-                f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}"
-            )
-        
+            raise V15HardFailAbort(f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}")
+
         # Enforce temperature=0.0 for deterministic classes
         if profile.is_deterministic():
             temperature = 0.0
-        
+
         # Call the existing generate method with agent_id
         return await self.generate(
             prompt=prompt,
@@ -243,23 +244,19 @@ class SovereignLLMGateway:
 
         # Phase 5: Agent execution profile enforcement
         if agent_id is None:
-            raise V15HardFailAbort(
-                "§AgentProfile: agent_id is required for all gateway calls"
-            )
-        
+            raise V15HardFailAbort("§AgentProfile: agent_id is required for all gateway calls")
+
         try:
             profile = get_profile(agent_id)
         except KeyError as e:
-            raise V15HardFailAbort(
-                f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}"
-            )
-        
+            raise V15HardFailAbort(f"§AgentProfile: Agent '{agent_id}' not found in registry: {e}")
+
         # Enforce execution mode - only LLM_API agents can use gateway
         if not profile.is_llm_allowed():
             raise V15HardFailAbort(
                 f"§AgentProfile: Agent '{agent_id}' has execution_mode=DETERMINISTIC, cannot use LLM gateway"
             )
-        
+
         # Enforce allowed models
         if model and not profile.can_use_model(model):
             raise V15HardFailAbort(
@@ -282,7 +279,7 @@ class SovereignLLMGateway:
             )
 
         effective_model = model or "unknown"
-        
+
         # Model injection lock - ensure model resolution from immutable config
         if model and provider == "openai":
             # Verify model is from approved config
@@ -343,6 +340,39 @@ class SovereignLLMGateway:
 
         # §P1 — Pre-call injection scan (uses instance detector)
         self._injection_detector.scan(prompt)
+
+        # W11: Build Universal Replay Envelope
+        retrieval_profile = RetrievalProfile.create_default()
+        embedding_client = create_embedding_client(
+            provider="openai",
+            model=retrieval_profile.primary_embedder_id,
+            dimensions=retrieval_profile.embedding_dim,
+        )
+        embedder_metadata = embedding_client.get_replay_metadata()
+
+        # This is a placeholder for the real hashes that would be computed.
+        # In a real scenario, these would be calculated based on the current state.
+        replay_envelope = ReplayEnvelope(
+            routing_hash="placeholder_routing_hash",
+            manifest_hash="placeholder_manifest_hash",
+            model_id=effective_model,
+            model_version="1.0",  # Placeholder
+            temperature=temperature,
+            allowed_model_policy_version="1.0",  # Placeholder
+            embedder_provider=embedder_metadata.get("provider"),
+            embedder_model=embedder_metadata.get("model"),
+            embedder_dim=embedder_metadata.get("embedding_dimension"),
+            normalization_policy=embedder_metadata.get("normalization_policy"),
+            chunking_policy=embedder_metadata.get("chunking_policy"),
+            distance_metric=embedder_metadata.get("distance_metric"),
+            retrieval_top_k=retrieval_profile.top_k,
+            retrieval_similarity_cutoff=retrieval_profile.similarity_cutoff,
+            policy_version="1.0",  # Placeholder
+            gateway_version="1.0",  # Placeholder
+            agent_registry_hash="placeholder_agent_registry_hash",
+            code_commit_hash=None,  # Optional
+            deterministic_engine_version="1.0",  # Placeholder
+        )
 
         # §Phase3 — vLLM gateway controller seam (local import: no heavy deps at module level)
         _p3_route_to_gemini = False
@@ -495,8 +525,10 @@ class SovereignLLMGateway:
 
                 # §P3 — Post-call output injection scan (warn-mode)
                 _response_content = result.get("content")
+                result["replay_envelope"] = replay_envelope.to_canonical_json()
+
                 if _response_content:
-                    from agentic_core.prompt_governance.security import (
+                    from agentic_core.prompt_governance.security.utils import (
                         injection_scan_util as _isu,
                     )
                     from agentic_core.runtime.exceptions.SovereignError import (

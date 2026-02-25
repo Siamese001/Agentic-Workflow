@@ -24,6 +24,7 @@ class ChangePackage:
     confidence: float
     reason: tuple[str, ...]
     timestamp_utc: int
+    embedding_context_hash: str | None = None
 
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
@@ -37,6 +38,7 @@ class ChangePackage:
                 "confidence": self.confidence,
                 "reason": list(self.reason),
                 "timestamp_utc": self.timestamp_utc,
+                "embedding_context_hash": self.embedding_context_hash,
             },
             separators=(",", ":"),
             sort_keys=True,

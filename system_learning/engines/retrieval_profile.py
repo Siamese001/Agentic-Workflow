@@ -12,79 +12,81 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import asdict, dataclass
-from typing import Any, Dict, Optional
 
 
 @dataclass(frozen=True, slots=True)
 class RetrievalProfile:
     """Deterministic profile for embedder and retrieval configuration.
-    
+
     W4-A: RetrievalProfile Authority (L4 Only)
     W4-B: Shadow Embedder wiring for drift detection (non-influential)
-    
+
     This object governs embedder identity and retrieval knobs.
     It is versioned, deterministic, and stored in L4.
     Shadow embedder provides parallel embeddings for telemetry.
     """
+
     profile_id: str
     primary_embedder_id: str
     embedding_dim: int
     similarity_cutoff: float
     top_k: int
     influence_cap: float
-    
+    normalization_policy: str
+
     # Optional fields
-    shadow_embedder_id: Optional[str] = None
-    hybrid_alpha: Optional[float] = None
-    
+    shadow_embedder_id: str | None = None
+    hybrid_alpha: float | None = None
+
     def to_canonical_json(self) -> str:
         """Serialize to canonical JSON with deterministic ordering.
-        
+
         Returns:
             Canonical JSON string with sorted keys and fixed precision.
         """
         # Convert to dict and handle None values
         data = asdict(self)
-        
+
         # Remove None values to ensure deterministic serialization
         data = {k: v for k, v in data.items() if v is not None}
-        
+
         # Round floats to 6 decimal places for deterministic output
         for key, value in data.items():
             if isinstance(value, float):
                 data[key] = round(value, 6)
-        
+
         # Serialize with sorted keys and no whitespace
-        return json.dumps(data, separators=(',', ':'), sort_keys=True)
-    
+        return json.dumps(data, separators=(",", ":"), sort_keys=True)
+
     @property
     def profile_digest(self) -> str:
         """Compute SHA-256 digest of the canonical JSON.
-        
+
         Returns:
             64-character hex digest.
         """
         canonical_json = self.to_canonical_json()
         return hashlib.sha256(canonical_json.encode()).hexdigest()
-    
+
     def emit_digest(self) -> None:
         """Print the profile digest for determinism verification."""
         print(f"W4-PROFILE-DIGEST: {self.profile_digest}")
-    
+
     @classmethod
     def create_default(cls) -> RetrievalProfile:
         """Create the default RetrievalProfile matching current baseline.
-        
+
         Returns:
             Default profile with current hardcoded values.
         """
         return cls(
-            profile_id="retrieval-profile-v1",
-            primary_embedder_id="text-embedding-3-small",
+            profile_id="retrieval-profile-v2",
+            primary_embedder_id="openai/text-embedding-3-large",
             embedding_dim=1536,
-            similarity_cutoff=0.7,
+            similarity_cutoff=0.75,
             top_k=10,
             influence_cap=0.25,
+            normalization_policy="l2",
             shadow_embedder_id=None,
             hybrid_alpha=None,
         )
@@ -92,5 +94,5 @@ class RetrievalProfile:
 
 # Export public interface
 __all__ = [
-    'RetrievalProfile',
+    "RetrievalProfile",
 ]

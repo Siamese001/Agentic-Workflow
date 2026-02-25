@@ -16,6 +16,7 @@ import time
 from collections.abc import Awaitable, Callable
 from typing import Any
 
+from agentic_core.embeddings.tokenization_adapter import TokenCountAdapter
 from agentic_core.L4_state.utils.circuit_breaker_util import CircuitBreakerOpenError, get_breaker
 from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorRecoveryStrategy
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
@@ -184,26 +185,10 @@ class HardeningMixin:
             TokenLimitError: If prompt exceeds token budget
         """
         try:
-            import tiktoken
+            tokens = TokenCountAdapter.count_tokens(prompt, model)
         except ImportError:
             # tiktoken not available - skip validation
             return
-
-        # Get encoding for model
-        try:
-            if model.startswith("gpt-4"):
-                encoding = tiktoken.encoding_for_model("gpt-4")
-            elif model.startswith("gpt-3.5"):
-                encoding = tiktoken.encoding_for_model("gpt-3.5-turbo")
-            else:
-                # Default to cl100k_base (most models)
-                encoding = tiktoken.get_encoding("cl100k_base")
-        except KeyError:
-            # Unknown model - use default
-            encoding = tiktoken.get_encoding("cl100k_base")
-
-        # Count tokens
-        tokens = len(encoding.encode(prompt))
 
         # Model-specific limits
         model_limits = {

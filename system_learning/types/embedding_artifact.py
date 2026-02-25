@@ -7,7 +7,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass
+from dataclasses import dataclass, field
+from typing import Literal
 
 
 @dataclass(frozen=True)
@@ -25,6 +26,7 @@ class EmbeddingArtifact:
     k: int
     similarity_metric: str
     embedding_model_version: str
+    influence_class: Literal["C0_INFORMATIONAL"] = field(default="C0_INFORMATIONAL", init=False)
 
     def __post_init__(self) -> None:
         """Enforce invariants after initialization."""
@@ -79,6 +81,11 @@ class EmbeddingArtifact:
         """
         canonical = self.canonical_bytes()
         return hashlib.sha256(canonical).hexdigest()
+
+    def assert_non_authoritative(self) -> None:
+        """Raise an error if the artifact is used in an authoritative context."""
+        if self.influence_class != "C0_INFORMATIONAL":
+            raise ValueError("EmbeddingArtifact cannot be used in an authoritative context.")
 
 
 __all__ = ["EmbeddingArtifact"]

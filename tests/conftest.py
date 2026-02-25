@@ -76,6 +76,7 @@ def pytest_configure(config):
         "markers",
         "import_safety: marks tests that validate import safety and dependencies",
     )
+    config.addinivalue_line("markers", "allow_network: allow network access for a test")
 
 
 # =============================================================================

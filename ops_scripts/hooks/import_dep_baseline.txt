@@ -12,9 +12,6 @@ C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\legacypath.py
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\monkeypatch.py: Line 351: Module 'pkg_resources' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\monkeypatch.py: Line 352: Module 'pkg_resources' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\pytester.py: Line 72: Module 'pexpect' not found
-C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\python_api.py: Line 18: Module 'numpy' not found
-C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\python_api.py: Line 199: Module 'numpy' not found
-C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\python_api.py: Line 215: Module 'numpy' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\raises.py: Line 64: Module 'exceptiongroup' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\raises.py: Line 65: Module 'exceptiongroup' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\_pytest\reports.py: Line 40: Module 'exceptiongroup' not found
@@ -152,6 +149,8 @@ C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\pygments\sphinxext.py
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\typing_extensions.py: Line 19: Module 'annotationlib' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\typing_extensions.py: Line 3897: Module 'annotationlib' not found
 C:\Git\Agentic-Workflow\.nox\integration\Lib\site-packages\typing_extensions.py: Line 3897: Module 'annotationlib' not found
+C:\Git\Agentic-Workflow\L6_observability\engines\dpo_pair_generator.py: Line 11: Module 'L6_observability.types.dpo_types' not found
+C:\Git\Agentic-Workflow\L6_observability\engines\dpo_pair_generator.py: Line 11: Module 'L6_observability.types.dpo_types' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 26: Module 'agentic_core.discovery' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 27: Module 'agentic_core.L0_routing.enforcement.manifest_guardian_util' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\enforcement\boot_sequence.py: Line 28: Module 'agentic_core.L0_routing.scripts.compliance_gate_validator' not found
@@ -179,11 +178,11 @@ C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\compliance_gate_util.py:
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\coverage.py: Line 22: Module 'agentic_core.L3_orchestration.reasoning.mission_controller_convergence' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\coverage.py: Line 46: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\emoji_fixer.py: Line 8: 'get_python_files' not found in module 'agentic_core.L0_routing.scripts.full_agent_discovery'
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 147: 'HEAL_RESULT_SCHEMA' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 147: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 1505: Module 'agentic_core.utils.discovery.Full_Agent_discovery' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 156: Module 'agentic_core.base_agents.IHealerProtocol' not found
-C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 156: Module 'agentic_core.base_agents.IHealerProtocol' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 1522: Module 'agentic_core.utils.discovery.Full_Agent_discovery' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 153: 'HEAL_RESULT_SCHEMA' not found in module 'agentic_core.utils.decorators_compat_util'
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 153: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 162: Module 'agentic_core.base_agents.IHealerProtocol' not found
+C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execute_ssot.py: Line 162: Module 'agentic_core.base_agents.IHealerProtocol' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\execution_context.py: Line 19: Module 'agentic_core.L3_orchestration.reasoning.subatomic_testing_mixin' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\extract_net.py: Line 25: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\L0_routing\scripts\find_agents_in_low_heal_territories_util.py: Line 34: Module 'agentic_core.utils.ssot_discovery_validator' not found
@@ -255,10 +254,9 @@ C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\spiffe_validator.py
 C:\Git\Agentic-Workflow\agentic_core\L1_cognition\validators\spiffe_validator.py: Line 25: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\hybrid_retriever_config.py: Line 18: Module 'rank_bm25' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\config\hybrid_retriever_config.py: Line 198: Module 'agentic_core.L0_routing.scripts.sovereign_ingestion_mission' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 34: Module 'data.sdks_mcps.client_wrappers' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 366: 'injection_scan_util' not found in module 'agentic_core.prompt_governance.security'
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 36: Module 'data.sdks_mcps.client_wrappers' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 36: Module 'data.sdks_mcps.client_wrappers' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\SovereignLLMGateway.py: Line 36: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\dashboard_e2_e_pipeline.py: Line 22: Module 'agentic_core.utils.security' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\dashboard_e2_e_pipeline_enforcer.py: Line 22: Module 'agentic_core.utils.security' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manager.py: Line 16: Module 'agentic_core.L2_execution.types.firecracker_manager_types' not found
@@ -274,11 +272,10 @@ C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manage
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manager_enforcer.py: Line 29: Module 'agentic_core.utils.security' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\firecracker_manager_enforcer.py: Line 31: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\execute_command_executor.py: Line 12: Module 'agentic_core.utils.security' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 17: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\tool_registry.py: Line 385: Module 'agentic_core.L2_execution.tools.dependency_graph_tool' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\engines\validation_orchestrator.py: Line 23: Module 'agentic_core.utils.core_extensions.timeout_decorator' not found
-C:\Git\Agentic-Workflow\agentic_core\L2_execution\healers\healing_provider_adapters.py: Line 209: Module 'google.generativeai' not found
+C:\Git\Agentic-Workflow\agentic_core\L2_execution\healers\healing_provider_adapters.py: Line 215: Module 'google.generativeai' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\L2_execution\reasoning\EmbeddingSovereignAgent.py: Line 28: Module 'data.sdks_mcps.client_wrappers' not found
@@ -342,7 +339,6 @@ C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_mcp_rout
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_rag_orchestrator.py: Line 102: Module 'apps_shared.utils.TitaniumRAGPipeline' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_rag_orchestrator.py: Line 41: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\engines\sovereign_redis_orchestrator.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\CoverageAgent.py: Line 13: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\CoverageAgent.py: Line 22: Module 'agentic_core.L6_observability.reasoning.layer_decorator' not found
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\CoverageAgent.py: Line 28: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L3_orchestration\reasoning\CoverageAgent.py: Line 33: Module 'agentic_core.runtime.shared_runtime' not found
@@ -387,7 +383,6 @@ C:\Git\Agentic-Workflow\agentic_core\L4_state\memory\verifiable_checkpoint_manag
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\CachedStateLedgerAgent.py: Line 17: Module 'agentic_core.runtime.types.anomaly_report' not found
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\CheckpointManagerAgent.py: Line 42: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\GravityStateAgent.py: Line 41: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
-C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\PineconeSovereignAgent.py: Line 28: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\PineconeSovereignAgent.py: Line 33: Module 'agentic_core.config.agent_defaults' not found
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\PineconeSovereignAgent.py: Line 586: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\agentic_core\L4_state\reasoning\RedisSovereignAgent.py: Line 24: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
@@ -788,6 +783,8 @@ C:\Git\Agentic-Workflow\agentic_core\config\core\non_conforming_agent_finder_con
 C:\Git\Agentic-Workflow\agentic_core\config\core\reflection_config.py: Line 16: Module 'agentic_core.L5_safety.validators.circuit_breaker_types' not found
 C:\Git\Agentic-Workflow\agentic_core\config\core\reflection_config.py: Line 16: Module 'agentic_core.L5_safety.validators.circuit_breaker_types' not found
 C:\Git\Agentic-Workflow\agentic_core\config\core\reflection_config.py: Line 16: Module 'agentic_core.L5_safety.validators.circuit_breaker_types' not found
+C:\Git\Agentic-Workflow\agentic_core\embeddings\embedding_factory.py: Line 101: Module 'data.sdks_mcps.client_wrappers' not found
+C:\Git\Agentic-Workflow\agentic_core\embeddings\embedding_factory.py: Line 101: Module 'data.sdks_mcps.client_wrappers' not found
 C:\Git\Agentic-Workflow\agentic_core\interfaces\IBlackboardLeaseVerifier.py: Line 19: Module 'agentic_core.L2_execution.reasoning.definitions' not found
 C:\Git\Agentic-Workflow\agentic_core\interfaces\IBlackboardLeaseVerifier.py: Line 19: Module 'agentic_core.L2_execution.reasoning.definitions' not found
 C:\Git\Agentic-Workflow\agentic_core\interfaces\IBlackboardLeaseVerifier.py: Line 19: Module 'agentic_core.L2_execution.reasoning.definitions' not found
@@ -847,8 +844,7 @@ C:\Git\Agentic-Workflow\agentic_core\mixins\feature_flagged_agent_mixin.py: Line
 C:\Git\Agentic-Workflow\agentic_core\mixins\feature_flagged_agent_mixin.py: Line 31: Module 'agentic_core.utils.verification_types' not found
 C:\Git\Agentic-Workflow\agentic_core\mixins\feature_flagged_agent_mixin.py: Line 31: Module 'agentic_core.utils.verification_types' not found
 C:\Git\Agentic-Workflow\agentic_core\mixins\feature_flagged_agent_mixin.py: Line 31: Module 'agentic_core.utils.verification_types' not found
-C:\Git\Agentic-Workflow\agentic_core\mixins\hardening_mixin.py: Line 187: Module 'tiktoken' not found
-C:\Git\Agentic-Workflow\agentic_core\mixins\hardening_mixin.py: Line 236: Module 'agentic_core.base_agents.circuit_breaker_config' not found
+C:\Git\Agentic-Workflow\agentic_core\mixins\hardening_mixin.py: Line 221: Module 'agentic_core.base_agents.circuit_breaker_config' not found
 C:\Git\Agentic-Workflow\agentic_core\mixins\healing_mixin.py: Line 8: 'HealingSovereignOrchestrator' not found in module 'agentic_core.L5_safety.types.healing_orchestration_types'
 C:\Git\Agentic-Workflow\agentic_core\mixins\healing_mixin.py: Line 8: 'get_healing_orchestrator' not found in module 'agentic_core.L5_safety.types.healing_orchestration_types'
 C:\Git\Agentic-Workflow\agentic_core\mixins\healing_policy_mixin.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
@@ -897,7 +893,6 @@ C:\Git\Agentic-Workflow\agentic_core\runtime\exceptions\workflow_exceptions.py: 
 C:\Git\Agentic-Workflow\agentic_core\runtime\exceptions\workflow_exceptions.py: Line 11: Module 'agentic_core.runtime.types.core_contracts_types' not found
 C:\Git\Agentic-Workflow\agentic_core\runtime\exceptions\workflow_exceptions.py: Line 11: Module 'agentic_core.runtime.types.core_contracts_types' not found
 C:\Git\Agentic-Workflow\agentic_core\runtime\exceptions\workflow_exceptions.py: Line 11: Module 'agentic_core.runtime.types.core_contracts_types' not found
-C:\Git\Agentic-Workflow\agentic_core\runtime\types\cache_entry_types.py: Line 17: Module 'numpy' not found
 C:\Git\Agentic-Workflow\agentic_core\runtime\types\cache_entry_types.py: Line 24: Module 'agentic_core.semantic_memory.embeddings.core_embedder' not found
 C:\Git\Agentic-Workflow\agentic_core\runtime\utils\discovery_util.py: Line 16: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\agentic_core\runtime\utils\main_util.py: Line 12: Module 'agentic_core.runtime.P1_core.runtime_bootstrapper' not found
@@ -1058,7 +1053,6 @@ C:\Git\Agentic-Workflow\apps_rg\utils\enhanced_rg_flow_router_util.py: Line 189:
 C:\Git\Agentic-Workflow\apps_rg\utils\enhanced_rg_flow_router_util.py: Line 293: Module 'apps_rg.types.thematic_analysis_node' not found
 C:\Git\Agentic-Workflow\apps_rg\utils\enhanced_rg_flow_router_util.py: Line 298: Module 'apps_rg.validators.word_count_enforcer' not found
 C:\Git\Agentic-Workflow\apps_rg\utils\rg_agent_base_util.py: Line 29: Module 'apps_shared.utils.AppBase' not found
-C:\Git\Agentic-Workflow\apps_shared\enforcement\GlobalcacheStrategy.py: Line 15: Module 'numpy' not found
 C:\Git\Agentic-Workflow\apps_shared\scripts\find_long_lines.py: Line 7: Module 'apps_shared.utils.ConfigurationService' not found
 C:\Git\Agentic-Workflow\apps_shared\scripts\fix_all_violations.py: Line 7: Module 'apps_shared.utils.ConfigurationService' not found
 C:\Git\Agentic-Workflow\apps_shared\scripts\fix_long_lines.py: Line 11: Module 'apps_shared.utils.ConfigurationService' not found
@@ -1072,7 +1066,6 @@ C:\Git\Agentic-Workflow\apps_shared\types\execution_orchestrator_types.py: Line 
 C:\Git\Agentic-Workflow\apps_shared\types\golden_state_evaluator_types.py: Line 14: Module 'apps_rg.core.JudgeEvaluation' not found
 C:\Git\Agentic-Workflow\apps_shared\types\golden_state_evaluator_types.py: Line 14: Module 'apps_rg.core.JudgeEvaluation' not found
 C:\Git\Agentic-Workflow\apps_shared\types\golden_state_evaluator_types.py: Line 14: Module 'apps_rg.core.JudgeEvaluation' not found
-C:\Git\Agentic-Workflow\apps_shared\types\validation_status_types.py: Line 21: Module 'numpy' not found
 C:\Git\Agentic-Workflow\apps_shared\types\validation_status_types.py: Line 27: Module 'sklearn.feature_extraction.text' not found
 C:\Git\Agentic-Workflow\apps_shared\types\validation_status_types.py: Line 28: Module 'sklearn.metrics.pairwise' not found
 C:\Git\Agentic-Workflow\apps_shared\utils\app_base_util.py: Line 21: Module 'agentic_core.L1_cognition.reasoning.meta_learning_mixin' not found
@@ -1091,7 +1084,6 @@ C:\Git\Agentic-Workflow\apps_shared\utils\providers_google_genai_client_util.py:
 C:\Git\Agentic-Workflow\apps_shared\utils\unified_config_helper_util.py: Line 17: Module 'apps_shared.config.config_loader_config' not found
 C:\Git\Agentic-Workflow\apps_shared\utils\unified_config_helper_util.py: Line 17: Module 'apps_shared.config.config_loader_config' not found
 C:\Git\Agentic-Workflow\apps_shared\utils\unified_config_helper_util.py: Line 17: Module 'apps_shared.config.config_loader_config' not found
-C:\Git\Agentic-Workflow\apps_shared\validators\cache_entry_validator.py: Line 13: Module 'numpy' not found
 C:\Git\Agentic-Workflow\apps_shared\validators\resume_prompts_validator.py: Line 13: Module 'config.config' not found
 C:\Git\Agentic-Workflow\apps_shared\validators\resume_prompts_validator.py: Line 16: Module 'apps_shared.rag.hardening.models' not found
 C:\Git\Agentic-Workflow\apps_shared\validators\resume_prompts_validator.py: Line 16: Module 'apps_shared.rag.hardening.models' not found
@@ -1368,7 +1360,6 @@ C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\rescue_reviewer.py: Lin
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\rescue_reviewer.py: Line 83: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\rescue_reviewer.py: Line 85: 'CANON_SIGNALS' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\rescue_reviewer.py: Line 85: 'DEFAULT_CORE_HEALING_TERRITORY' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
-C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\runtime_shared_data_layer_example_util.py: Line 13: Module 'numpy' not found
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\runtime_shared_data_layer_example_util.py: Line 18: Module 'batch_embeddings' not found
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\show_manual_review_files_util.py: Line 103: Module 'agentic_core.utils.ssot_discovery_validator' not found
 C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\show_manual_review_files_util.py: Line 103: Module 'agentic_core.utils.ssot_discovery_validator' not found
@@ -1446,6 +1437,8 @@ C:\Git\Agentic-Workflow\ops_scripts\maintenance\verification.py: Line 348: Modul
 C:\Git\Agentic-Workflow\ops_scripts\maintenance\verification.py: Line 348: Module 'agentic_core.L3_orchestration.contextual_router' not found
 C:\Git\Agentic-Workflow\ops_scripts\maintenance\verification.py: Line 348: Module 'agentic_core.L3_orchestration.contextual_router' not found
 C:\Git\Agentic-Workflow\ops_scripts\maintenance\verification.py: Line 348: Module 'agentic_core.L3_orchestration.contextual_router' not found
+C:\Git\Agentic-Workflow\system_learning\pipelines\meta_learning_pipeline.py: Line 926: Module 'system_learning.types.proposal_types' not found
+C:\Git\Agentic-Workflow\system_learning\pipelines\meta_learning_pipeline.py: Line 949: Module 'system_learning.types.proposal_types' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L0_routing\scripts\test_audit_complexity_health_util.py: Line 9: Module 'tests.helpers.dev_tools_loader' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L0_routing\scripts\test_audit_dashboard_ssot_flow_util.py: Line 9: Module 'tests.helpers.dev_tools_loader' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L0_routing\scripts\test_audit_dashboard_ssot_util.py: Line 9: Module 'tests.helpers.dev_tools_loader' not found
@@ -1609,10 +1602,6 @@ C:\Git\Agentic-Workflow\tests\agentic_core\L1_cognition\thought_engine\test_l_l_
 C:\Git\Agentic-Workflow\tests\agentic_core\L1_cognition\thought_engine\test_sovereign_cognitive_plane_agent.py: Line 35: Module 'tests.support.l1_cognition.SovereignCognitivePlaneAgent' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L1_cognition\thought_engine\test_sovereign_cognitive_plane_agent.py: Line 94: Module 'tests.support.l1_cognition.SovereignCognitivePlaneAgent' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L1_cognition\thought_engine\test_system_hardening.py: Line 150: 'structure_blueprint' not found in module 'agentic_core.L5_safety.validators'
-C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\healers\test_healing_provider_adapters.py: Line 560: 'DEFAULT_MAX_OUTPUT_TOKENS' not found in module 'agentic_core.L2_execution.healers.healing_provider_adapters'
-C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\healers\test_healing_provider_adapters.py: Line 560: 'DEFAULT_MAX_TOKENS' not found in module 'agentic_core.L2_execution.healers.healing_provider_adapters'
-C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\healers\test_healing_provider_adapters.py: Line 590: 'DEFAULT_MAX_TOKENS' not found in module 'agentic_core.L2_execution.healers.healing_provider_adapters'
-C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\healers\test_healing_provider_adapters.py: Line 647: 'DEFAULT_MAX_OUTPUT_TOKENS' not found in module 'agentic_core.L2_execution.healers.healing_provider_adapters'
 C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\tool_registry\test_historian_agent.py: Line 37: Module 'agentic_core.L2_execution.tools.HistorianAgent' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L2_execution\tool_registry\test_historian_agent.py: Line 88: Module 'agentic_core.L2_execution.tools.HistorianAgent' not found
 C:\Git\Agentic-Workflow\tests\agentic_core\L3_orchestration\workflow_engines\test_decomposition_orchestrator_agent.py: Line 39: Module 'agentic_core.L3_orchestration.engines.decomposition_orchestratorAgent' not found
@@ -2390,6 +2379,10 @@ C:\Git\Agentic-Workflow\tests\governance\test_heal_escalation_flag_contract.py: 
 C:\Git\Agentic-Workflow\tests\governance\test_heal_model_routing_enabled_path.py: Line 26: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\tests\governance\test_heal_policy_model_escalation_flag.py: Line 24: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
 C:\Git\Agentic-Workflow\tests\governance\test_heal_policy_runtime_integration.py: Line 22: 'standard_heal' not found in module 'agentic_core.utils.decorators_compat_util'
+C:\Git\Agentic-Workflow\tests\governance\test_phase5_gap_closure_policy_enforcement.py: Line 295: Module 'tests.governance.test_agent_execution_profiles' not found
+C:\Git\Agentic-Workflow\tests\governance\test_phase9_apps_generation_routing_sovereignty.py: Line 250: 'AgentProfile' not found in module 'agentic_core.agents.agent_registry'
+C:\Git\Agentic-Workflow\tests\governance\test_phase9_apps_generation_routing_sovereignty.py: Line 382: 'AgentProfile' not found in module 'agentic_core.agents.agent_registry'
+C:\Git\Agentic-Workflow\tests\governance\test_phase9_apps_generation_routing_sovereignty.py: Line 515: 'AgentProfile' not found in module 'agentic_core.agents.agent_registry'
 C:\Git\Agentic-Workflow\tests\guardian\conftest.py: Line 229: Module 'tests.guardian.base' not found
 C:\Git\Agentic-Workflow\tests\guardian\conftest.py: Line 33: Module 'tests._helpers.robust_fs' not found
 C:\Git\Agentic-Workflow\tests\guardian\conftest.py: Line 39: Module 'tests.guardian.guardian_report' not found
@@ -2475,6 +2468,7 @@ C:\Git\Agentic-Workflow\tests\guardian\test_v15_p10_4_incident_bundle.py: Line 9
 C:\Git\Agentic-Workflow\tests\guardian\test_v15_p10_4_incident_bundle.py: Line 9: Module 'ops_scripts.incident.create_v15_incident_bundle' not found
 C:\Git\Agentic-Workflow\tests\guardian\test_v15_p10_4_incident_bundle.py: Line 9: Module 'ops_scripts.incident.create_v15_incident_bundle' not found
 C:\Git\Agentic-Workflow\tests\integration\agentic_core\test_prompt_governance_yaml_integration.py: Line 6: 'InjectionConfig' not found in module 'agentic_core.runtime.config.prompt_injection_loader_config'
+C:\Git\Agentic-Workflow\tests\integration_full_deps\system_learning\test_seed_pack_full_build_b5.py: Line 18: 'SeedEmbeddingPackBuilder' not found in module 'system_learning.engines.seed_embedding_pack_builder'
 C:\Git\Agentic-Workflow\tests\misc\test_meta_learning.py: Line 110: Module 'agentic_core.L1_cognition.reasoning.meta_learning_client_types' not found
 C:\Git\Agentic-Workflow\tests\misc\test_meta_learning.py: Line 141: Module 'agentic_core.L1_cognition.reasoning.meta_learning_client_types' not found
 C:\Git\Agentic-Workflow\tests\misc\test_meta_learning.py: Line 176: Module 'agentic_core.L1_cognition.reasoning.meta_learning_client_types' not found
@@ -2582,6 +2576,9 @@ C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_layer_roots_and_requ
 C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_nested_lcd_prevention.py: Line 12: 'LEAF_DOMAINS_NO_LCD' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
 C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_nested_lcd_prevention.py: Line 12: 'validate_no_nested_lcd' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
 C:\Git\Agentic-Workflow\tests\unit\structure_blueprint\test_scripts_purity_rules.py: Line 16: 'CORE_SUBFOLDER_MAP' not found in module 'agentic_core.L5_safety.config.structure_blueprint_config'
+C:\Git\Agentic-Workflow\tests\unit_min_deps\L6_observability\test_dpo_pair_generator.py: Line 5: Module 'L6_observability.engines.dpo_pair_generator' not found
+C:\Git\Agentic-Workflow\tests\unit_min_deps\L6_observability\test_dpo_pair_generator.py: Line 8: Module 'L6_observability.types.dpo_types' not found
+C:\Git\Agentic-Workflow\tests\unit_min_deps\system_learning\test_pattern_analysis_engine.py: Line 9: 'PatternAnalysisConfig' not found in module 'system_learning.engines.pattern_analysis_engine'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\test_evidence_contract_v2.py: Line 11: Module 'evidence_contract_v2' not found
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 145: 'ast_fuzzy' not found in module 'agentic_core.utils'
 C:\Git\Agentic-Workflow\tests\unit_min_deps\utils\test_ast_fuzzy.py: Line 161: Module 'agentic_core.utils.ast_fuzzy' not found

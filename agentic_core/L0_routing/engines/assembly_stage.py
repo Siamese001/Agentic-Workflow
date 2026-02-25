@@ -11,7 +11,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Any
+from typing import Any, Literal
 
 
 def canonical_bytes(data: dict[str, Any]) -> bytes:
@@ -47,11 +47,14 @@ class GovernedPayload:
     d0_injections: str = ""  # Reserved for future use
     check_ids: tuple[str, ...] = ()
     sanitized: bool = False
+    c0_context_source: str = "static"
     manifest_hash: str = ""
+    routing_hash: str = ""
 
     def __post_init__(self):
         # Compute manifest hash if not provided
-        if not self.manifest_hash:
+        if not self.manifest_hash or not self.routing_hash:
+            # Manifest hash includes all slots for full auditability
             manifest = {
                 "s0_system": self.s0_system,
                 "d0_injections": self.d0_injections,
@@ -60,9 +63,22 @@ class GovernedPayload:
                 "u0_user_prompt": self.u0_user_prompt,
                 "check_ids": tuple(sorted(self.check_ids)),
                 "sanitized": self.sanitized,
+                "c0_context_source": self.c0_context_source,
             }
-            hash_hex = hashlib.sha256(canonical_bytes(manifest)).hexdigest()
-            object.__setattr__(self, "manifest_hash", hash_hex)
+            manifest_hash_hex = hashlib.sha256(canonical_bytes(manifest)).hexdigest()
+            object.__setattr__(self, "manifest_hash", manifest_hash_hex)
+
+            # Routing hash excludes c0_context to prevent embedding influence
+            routing_manifest = {
+                "s0_system": self.s0_system,
+                "d0_injections": self.d0_injections,
+                "i0_instructional": self.i0_instructional,
+                "u0_user_prompt": self.u0_user_prompt,
+                "check_ids": tuple(sorted(self.check_ids)),
+                "sanitized": self.sanitized,
+            }
+            routing_hash_hex = hashlib.sha256(canonical_bytes(routing_manifest)).hexdigest()
+            object.__setattr__(self, "routing_hash", routing_hash_hex)
 
 
 class AirlockAssembler:
@@ -155,6 +171,7 @@ class AirlockAssembler:
         c0_context: str,
         u0_user_prompt: str,
         d0_injections: str = "",
+        c0_context_source: Literal["static", "embedding_artifact"] = "static",
     ) -> GovernedPayload:
         """
         Assemble a governed payload from component slots.
@@ -187,6 +204,7 @@ class AirlockAssembler:
             u0_user_prompt=sanitized_prompt,
             check_ids=check_ids,
             sanitized=sanitized,
+            c0_context_source=c0_context_source,
         )
 
         return payload
