@@ -162,6 +162,12 @@ class EmbeddingServiceFactory:
             if cls._INSTANCE is None:
                 cls._INSTANCE = cls(pack_base_path)
             else:
+                # Defensive assertion: prevent duplicate construction
+                if str(pack_base_path) != str(cls._INSTANCE._pack_base_path):
+                    raise EmbeddingIntegrityError(
+                        f"EmbeddingServiceFactory already constructed with different pack: "
+                        f"existing={cls._INSTANCE._pack_base_path}, requested={pack_base_path}"
+                    )
                 # Validate process identity (fork guard)
                 current_identity = (os.getpid(), psutil.Process().create_time())
                 if current_identity != cls._INSTANCE_IDENTITY:
@@ -392,17 +398,29 @@ class EmbeddingServiceFactory:
         )
 
     def replay_key(self, k: int = 10, cutoff: float = 0.5) -> str:
-        """Compute deterministic replay key."""
+        """Compute deterministic replay key with complete embedder metadata."""
         if not self._manifest or not self._normalized_pack_hash:
             return "uninitialized"
 
+        # Extract all required metadata for replay key
+        hf_repo = self._manifest.get('hf_repo', 'BAAI/bge-large-en-v1.5')
+        revision = self._manifest.get('revision', 'main')
+        embedding_dim = self._manifest.get('embedding_dim', 1024)
+        dtype = self._manifest.get('dtype', 'float32')
+        normalize = self._manifest.get('normalize', True)
+        thread_lock_sig = f"OMP={os.environ.get('OMP_NUM_THREADS', '1')}_MKL={os.environ.get('MKL_NUM_THREADS', '1')}"
+        
         material = (
-            f"{self._manifest.get('embedding_model_version', 'unknown')}"
-            f"{self._manifest.get('seed_index_version_hash', '')}"
-            f"{self._normalized_pack_hash}"
-            f"{k}"
-            f"{round(cutoff, 6)}"
-            f"{self._blas_impl}"
+            f"hf_repo={hf_repo}"
+            f"|revision={revision}"
+            f"|embedding_dim={embedding_dim}"
+            f"|dtype={dtype}"
+            f"|normalize={normalize}"
+            f"|thread_lock_sig={thread_lock_sig}"
+            f"|pack_hash={self._normalized_pack_hash}"
+            f"|k={k}"
+            f"|cutoff={round(cutoff, 6)}"
+            f"|blas_impl={self._blas_impl}"
         )
         return hashlib.sha256(material.encode()).hexdigest()
 
