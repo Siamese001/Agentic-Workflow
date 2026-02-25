@@ -173,7 +173,7 @@ class TestEmbeddingServiceFactory:
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
         # Create service
-svc = EmbeddingServiceFactory.get(temp_pack_dir)
+        svc = EmbeddingServiceFactory.get(temp_pack_dir)
 
         # Simulate fork by changing stored identity
         original_identity = EmbeddingServiceFactory._INSTANCE_IDENTITY
