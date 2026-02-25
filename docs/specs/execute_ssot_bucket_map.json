@@ -1,0 +1,884 @@
+[
+  {
+    "qualname": "execute_ssot._optional_v15_runtime_guard",
+    "bucket": "CI_GATE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.v15_runtime_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "lazy V15 decorator factory; env-gated"
+  },
+  {
+    "qualname": "execute_ssot.resolve_repo_root",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L5_safety.config.structure_blueprint.get_validated_project_root",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "duplicate of existing get_validated_project_root"
+  },
+  {
+    "qualname": "execute_ssot.REPO_ROOT",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L5_safety.config.structure_blueprint.get_validated_project_root",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "module-level singleton; replace with lazy call"
+  },
+  {
+    "qualname": "execute_ssot._apply_v15_enforcement_flag",
+    "bucket": "CI_GATE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "CLI→env mapping for V15 enforcement"
+  },
+  {
+    "qualname": "execute_ssot._configure_logging",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "logging setup; stays in entrypoint"
+  },
+  {
+    "qualname": "execute_ssot._maybe_force_utf8_console",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "Windows UTF-8 coercion; stays in entrypoint"
+  },
+  {
+    "qualname": "execute_ssot._v15_build_ssot_manifest",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.reasoning.v15_telemetry",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "V15 SurgicalManifest construction"
+  },
+  {
+    "qualname": "execute_ssot._v15_ssot_gateway_audit",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.reasoning.v15_telemetry",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "V15 gateway audit trail emission"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "non-deterministic env-threshold scoring"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore._high_threshold",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "env-based threshold property"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore._med_threshold",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "env-based threshold property"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore.is_high_confidence",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "confidence predicate"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore.is_medium_confidence",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "confidence predicate"
+  },
+  {
+    "qualname": "execute_ssot.ConfidenceScore.is_low_confidence",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "confidence predicate"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationViolation",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "structured violation; maps to GuardianCheck"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationViolation.to_dict",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "serialization helper"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationManifest",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract.GuardianResult",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "telemetry manifest; maps to GuardianResult"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationManifest.add_modification",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract.GuardianResult",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "mutation tracker method"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationManifest.add_failure",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract.GuardianResult",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "failure tracker method"
+  },
+  {
+    "qualname": "execute_ssot.ReconciliationManifest.finalize",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_contract.GuardianResult.to_dict",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "finalization + serialization"
+  },
+  {
+    "qualname": "execute_ssot.ASTCodeQualityValidator",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_ast_quality",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "AST quality scan; scan-only, no writes"
+  },
+  {
+    "qualname": "execute_ssot.ASTCodeQualityValidator.__init__",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_ast_quality",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "constructor; sets project_root + size cap"
+  },
+  {
+    "qualname": "execute_ssot.ASTCodeQualityValidator._read_and_parse_file",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_ast_quality",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "file reader with size guard"
+  },
+  {
+    "qualname": "execute_ssot.ASTCodeQualityValidator.check_file_quality",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_ast_quality",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "missing-type-hint scanner"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "confidence + LLM arbitration engine"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine.__init__",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "init for confidence engine"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine._calculate_semantic_similarity",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "Jaccard heuristic; non-deterministic"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine._calculate_pattern_confidence",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "regex confidence heuristic"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine._check_healing_budget",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_budget",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "cycle+budget guard; deterministic"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine.calculate_healing_confidence",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "weighted scoring; non-deterministic"
+  },
+  {
+    "qualname": "execute_ssot.AutonomousDecisionEngine.should_proceed_with_healing",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "LLM-gated healing decision"
+  },
+  {
+    "qualname": "execute_ssot.EnhancedAutonomousDecisionEngine",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "CDA integration; cognitive analysis"
+  },
+  {
+    "qualname": "execute_ssot.EnhancedAutonomousDecisionEngine.__init__",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "CDA-enhanced init"
+  },
+  {
+    "qualname": "execute_ssot.EnhancedAutonomousDecisionEngine.analyze_violations_with_cognitive_disposition",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "async CDA analysis; non-deterministic"
+  },
+  {
+    "qualname": "execute_ssot.SovereignDecisionEngine",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "sovereign token + confidence scoring"
+  },
+  {
+    "qualname": "execute_ssot.SovereignDecisionEngine.__init__",
+    "bucket": "RETIRED",
+    "behavior_type": "control",
+    "replacement_target": "NONE",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "ALLOWED_DELTA",
+    "notes": "sovereignty + atomic lock init"
+  },
+  {
+    "qualname": "execute_ssot.SovereignDecisionEngine.request_sovereignty_token",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_lock",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "atomic lock + cycle guard; deterministic"
+  },
+  {
+    "qualname": "execute_ssot.SovereignDecisionEngine.release_sovereignty_token",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_lock",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "lock release; deterministic"
+  },
+  {
+    "qualname": "execute_ssot.PreFlightValidator",
+    "bucket": "CI_GATE",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_guardian_preflight",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "env readiness checks"
+  },
+  {
+    "qualname": "execute_ssot.PreFlightValidator.__init__",
+    "bucket": "CI_GATE",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_guardian_preflight",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "constructor"
+  },
+  {
+    "qualname": "execute_ssot.PreFlightValidator.run_checks",
+    "bucket": "CI_GATE",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_guardian_preflight",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "env/dir/write checks"
+  },
+  {
+    "qualname": "execute_ssot.PreFlightValidator.validate_agent_integrity",
+    "bucket": "CI_GATE",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_guardian_preflight",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "agent signature/MRO validation"
+  },
+  {
+    "qualname": "execute_ssot.NonInteractiveGuard",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.non_interactive_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "builtins.input trap for CI safety"
+  },
+  {
+    "qualname": "execute_ssot.NonInteractiveGuard.__init__",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.non_interactive_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "constructor"
+  },
+  {
+    "qualname": "execute_ssot.NonInteractiveGuard.__enter__",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.non_interactive_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "context manager enter"
+  },
+  {
+    "qualname": "execute_ssot.NonInteractiveGuard.__exit__",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.non_interactive_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "context manager exit"
+  },
+  {
+    "qualname": "execute_ssot.NonInteractiveGuard._trap_input",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.non_interactive_guard",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "prompt blocker with exhaustion guard"
+  },
+  {
+    "qualname": "execute_ssot.with_retry",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L2_execution.engines.retry_decorator",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry with exponential backoff"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase2_reconciliation",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_reconciliation",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "agent.heal() dispatch loop"
+  },
+  {
+    "qualname": "execute_ssot.validate_territory_input",
+    "bucket": "CI_GATE",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.input_validation",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "regex + injection guard for territory"
+  },
+  {
+    "qualname": "execute_ssot.AGENTIC_CORE_DIR",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "string constant"
+  },
+  {
+    "qualname": "execute_ssot.APPS_SHARED_DIR",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "string constant"
+  },
+  {
+    "qualname": "execute_ssot.APPS_LIC_DIR",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "string constant"
+  },
+  {
+    "qualname": "execute_ssot.APPS_RG_DIR",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "string constant"
+  },
+  {
+    "qualname": "execute_ssot.SCRIPTS_DIR",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "string constant"
+  },
+  {
+    "qualname": "execute_ssot.AGENT_DISCOVERY_JSON",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "discovery cache filename constant"
+  },
+  {
+    "qualname": "execute_ssot.RUNTIME_STATE_FILE",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.config.observability_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "runtime state filename constant"
+  },
+  {
+    "qualname": "execute_ssot.ALLOWED_MODULE_PREFIXES",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.path_constants",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "dynamic import whitelist"
+  },
+  {
+    "qualname": "execute_ssot.logger",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "module logger instance"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "dashboard state writer; writes runtime_state.json"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.__init__",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "init + atexit registration"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.start_mission",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "mission lifecycle start"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.update_agent",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "agent progress tracking"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.complete_agent",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "agent completion recording"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.add_event",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "event log appender"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.finish_mission",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "mission lifecycle end"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.save",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "atomic JSON write with chmod 600"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager._emergency_cleanup",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "atexit handler for zombie state"
+  },
+  {
+    "qualname": "execute_ssot.RuntimeStateManager.update_meta_learning",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.runtime_state_manager",
+    "replacement_artifact": "TELEMETRY",
+    "parity_requirement": "REQUIRED",
+    "notes": "cognitive metric updates for dashboard"
+  },
+  {
+    "qualname": "execute_ssot.discover_agents_from_registry",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_registry",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "hybrid discovery; cache JSON + live scan"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase3_validation",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_post_heal",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "post-heal AST re-scan"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase1_discovery",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_all_guardians",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry wrapper for discovery impl"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase1_discovery_impl",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_discovery_phase",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "mixed detect+heal; reconciler+location+FCA"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase2_alignment",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_alignment_phase",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry wrapper for alignment impl"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase2_alignment_impl",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_alignment_phase",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "HierarchyAgent scan+heal dispatch"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase3_architectural_validation",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_architecture",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry wrapper for arch validation"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase3_validation_impl",
+    "bucket": "L5_GUARDIAN",
+    "behavior_type": "detection",
+    "replacement_target": "agentic_core.L5_safety.scripts.run_guardian_architecture",
+    "replacement_artifact": "RESULT",
+    "parity_requirement": "REQUIRED",
+    "notes": "ArchGov+SystemArchitect audit"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase4_healing",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_governor_phase",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry wrapper for governor heal"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase4_healing_impl",
+    "bucket": "L2_HEALER_PIPE",
+    "behavior_type": "remediation",
+    "replacement_target": "agentic_core.L2_execution.engines.healer_governor_phase",
+    "replacement_artifact": "HEALING_PLAN",
+    "parity_requirement": "REQUIRED",
+    "notes": "ArchGov plan generation+execution"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase5_final",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.certification_reporter",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "retry wrapper for certification"
+  },
+  {
+    "qualname": "execute_ssot.execute_phase5_final_impl",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.certification_reporter",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "348-line report builder; JSON+Markdown"
+  },
+  {
+    "qualname": "execute_ssot.save_comprehensive_reports",
+    "bucket": "L6_OBSERVABILITY",
+    "behavior_type": "artifact",
+    "replacement_target": "agentic_core.L6_observability.engines.certification_reporter",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "writes JSON+MD to logs/compliance_reports/"
+  },
+  {
+    "qualname": "execute_ssot.try_summon_orchestrator",
+    "bucket": "L3_HIL",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L3_orchestration.ConsolidatedOrchestratorAgent",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "L3 orchestrator delegation attempt"
+  },
+  {
+    "qualname": "execute_ssot.EXECUTION_PLAN",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "declarative PhaseSpec; SSOT for pipeline"
+  },
+  {
+    "qualname": "execute_ssot.AGENT_DEPENDENCIES",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "agent dependency DAG"
+  },
+  {
+    "qualname": "execute_ssot.CANONICAL_ROSTER_KEYS",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "allowed agent keys frozenset"
+  },
+  {
+    "qualname": "execute_ssot.get_execution_plan",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "pure introspection accessor"
+  },
+  {
+    "qualname": "execute_ssot.print_execution_plan",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "stdout plan printer"
+  },
+  {
+    "qualname": "execute_ssot.resolve_agent_subset",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.config.phase_spec",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "transitive dependency closure"
+  },
+  {
+    "qualname": "execute_ssot.list_available_agents",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_registry",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "alias for discover_agents_from_registry"
+  },
+  {
+    "qualname": "execute_ssot.main",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint.main",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "deprecated direct-invoke wrapper"
+  },
+  {
+    "qualname": "execute_ssot._legacy_main",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.run_all_guardians",
+    "replacement_artifact": "AGGREGATE",
+    "parity_requirement": "REQUIRED",
+    "notes": "588-line orchestrator; phased dispatch"
+  },
+  {
+    "qualname": "execute_ssot.load_agents",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.types.guardian_registry",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "dynamic walk+import; replace w/ registry"
+  },
+  {
+    "qualname": "execute_ssot.GracefulExitHandler",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.signal_handler",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "SIGINT/SIGTERM capture for safe shutdown"
+  },
+  {
+    "qualname": "execute_ssot.GracefulExitHandler.__init__",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.signal_handler",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "signal registration"
+  },
+  {
+    "qualname": "execute_ssot.GracefulExitHandler.exit_gracefully",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.enforcement.signal_handler",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "graceful shutdown handler"
+  },
+  {
+    "qualname": "execute_ssot_entrypoint._resolve_repo_root",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L5_safety.config.structure_blueprint.get_validated_project_root",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "duplicate repo root resolver"
+  },
+  {
+    "qualname": "execute_ssot_entrypoint.main",
+    "bucket": "L0_ROUTER",
+    "behavior_type": "control",
+    "replacement_target": "agentic_core.L0_maintenance.scripts.execute_ssot_entrypoint.main",
+    "replacement_artifact": "NONE",
+    "parity_requirement": "REQUIRED",
+    "notes": "V15 entrypoint; delegates to _legacy_main"
+  }
+]

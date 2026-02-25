@@ -45,6 +45,8 @@ REPORT_FILE_PATTERNS: Final[tuple[str, ...]] = (
     r".*[Rr]eport.*\.txt$",
     r"RCA.*\.md$",
     r"PHASE\d+.*\.(md|json)$",
+    r"W\d+_.*\.(md|json)$",
+    r".*_EVIDENCE.*\.md$",
     r".*_SUMMARY\.md$",
     r".*_ANALYSIS\.md$",
     r".*_AUDIT.*\.md$",
@@ -52,6 +54,9 @@ REPORT_FILE_PATTERNS: Final[tuple[str, ...]] = (
     r".*_IMPLEMENTATION.*\.md$",
     r".*_COMPLETION.*\.md$",
     r".*_STATUS.*\.md$",
+    r".*_COMPLIANCE.*\.(md|json)$",
+    r".*_VIOLATIONS.*\.(md|json)$",
+    r".*_FIX.*\.md$",
 )
 
 EXCLUDED_DIRECTORIES: Final[tuple[str, ...]] = (

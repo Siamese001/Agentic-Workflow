@@ -113,10 +113,17 @@ class TestEmbeddingServiceFactory:
             assert r1.row_idx == r2.row_idx == r3.row_idx
             assert r1.embedding_artifact_hash == r2.embedding_artifact_hash == r3.embedding_artifact_hash
 
+<<<<<<< HEAD
         # Close memmap to release Windows file lock before fixture teardown
         del service._raw
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
+=======
+        # Close memmap to prevent Windows file lock
+        if hasattr(service, '_raw') and hasattr(service._raw, '_mmap'):
+            service._raw._mmap.close()
+        del service._raw
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
 
     def test_deterministic_replay_key(self, temp_pack_dir):
         """T1: Same replay key across runs."""
@@ -133,11 +140,14 @@ class TestEmbeddingServiceFactory:
         assert key1 == key2
         assert key1 != "uninitialized"
 
+<<<<<<< HEAD
         # Close memmap to release Windows file lock before fixture teardown
         del service1._raw
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
+=======
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
     @patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"})
     def test_kill_switch_total_coverage(self, temp_pack_dir):
         """T2: embedding_enabled=false bypasses everything."""
@@ -170,7 +180,11 @@ class TestEmbeddingServiceFactory:
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
         # Create service
+<<<<<<< HEAD
         svc = EmbeddingServiceFactory.get(temp_pack_dir)
+=======
+        EmbeddingServiceFactory.get(temp_pack_dir)
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
 
         # Simulate fork by changing stored identity
         original_identity = EmbeddingServiceFactory._INSTANCE_IDENTITY
@@ -184,11 +198,14 @@ class TestEmbeddingServiceFactory:
             # Restore for cleanup
             EmbeddingServiceFactory._INSTANCE_IDENTITY = original_identity
 
+<<<<<<< HEAD
         # Close memmap to release Windows file lock before fixture teardown
         del svc._raw
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
+=======
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
     def test_integrity_fail_closed(self, temp_pack_dir):
         """T4: Corrupt hash raises EmbeddingIntegrityError."""
         # Reset singleton for test
@@ -249,21 +266,46 @@ class TestEmbeddingServiceFactory:
             assert not np.isnan(result.score_round6)
             assert not np.isinf(result.score_round6)
 
+<<<<<<< HEAD
         # Close memmap to release Windows file lock before fixture teardown
         del service._raw
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
+=======
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
     def test_streaming_hash_no_full_bytes(self, temp_pack_dir):
         """T6: Streaming hash implementation doesn't use normalized.tobytes()."""
         # Reset singleton for test
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
+<<<<<<< HEAD
         # Skip this test on newer numpy versions where tobytes is immutable
         # The streaming hash implementation is verified by other tests
         import pytest
         pytest.skip("numpy.ndarray.tobytes patching not supported on this numpy version")
+=======
+        # Monkey-patch tobytes to track calls
+        original_tobytes = np.ndarray.tobytes
+        tobytes_called = []
+
+        def tracking_tobytes(self, *args, **kwargs):
+            if self.shape == (4,):  # Individual vectors in iteration
+                tobytes_called.append(True)
+            return original_tobytes(self, *args, **kwargs)
+
+        with patch.object(np.ndarray, "tobytes", tracking_tobytes):
+            service = EmbeddingServiceFactory.get(temp_pack_dir)
+
+            # Check that we didn't call tobytes on the full matrix
+            # (Only individual vectors during streaming)
+            assert len(tobytes_called) > 0  # Should have called for chunks
+
+            # Verify hash was computed
+            assert service._normalized_pack_hash != ""
+            assert len(service._normalized_pack_hash) == 64  # SHA-256 hex
+>>>>>>> 82919fa69b348b73d644179d04f55c6bf76b2842
 
 
 class TestDisabledEmbeddingService:
