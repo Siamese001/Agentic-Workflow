@@ -88,31 +88,31 @@ class TestEmbeddingServiceFactory:
         # Reset singleton for test
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
-        
+
         # Get service
         service = EmbeddingServiceFactory.get(temp_pack_dir)
-        
+
         # Query vector
         query = np.array([1.0, 0.0, 0.0, 0.0], dtype=np.float32)
-        
+
         # Run retrieval 3 times
         results1 = service.retrieve(query_vector=query, k=2, cutoff=0.5)
         results2 = service.retrieve(query_vector=query, k=2, cutoff=0.5)
         results3 = service.retrieve(query_vector=query, k=2, cutoff=0.5)
-        
+
         # Results should be identical
         assert results1 is not None
         assert results2 is not None
         assert results3 is not None
-        
+
         assert len(results1) == len(results2) == len(results3)
-        
+
         for r1, r2, r3 in zip(results1, results2, results3):
             assert r1.content_hash == r2.content_hash == r3.content_hash
             assert r1.score_round6 == r2.score_round6 == r3.score_round6
             assert r1.row_idx == r2.row_idx == r3.row_idx
             assert r1.embedding_artifact_hash == r2.embedding_artifact_hash == r3.embedding_artifact_hash
-        
+
         # Close memmap to prevent Windows file lock
         if hasattr(service, '_raw') and hasattr(service._raw, '_mmap'):
             service._raw._mmap.close()
