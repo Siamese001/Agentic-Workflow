@@ -1,0 +1,24 @@
+{
+  "version": "1.0.0",
+  "layers": {
+    "system_learning": 0,
+    "agentic_core.L6_observability": 1,
+    "agentic_core.L5_safety": 2,
+    "agentic_core.L4_state": 3,
+    "agentic_core.L3_orchestration": 4,
+    "agentic_core.L2_execution": 5,
+    "agentic_core.L1_cognition": 6,
+    "agentic_core.L0_routing": 7,
+    "apps_lic": 8,
+    "apps_rg": 8,
+    "apps_shared": 8
+  },
+  "forbidden_cross_imports": {
+    "agentic_core.L*": ["apps_*"],
+    "system_learning": ["agentic_core.L*", "apps_*"]
+  },
+  "allowed_cross_imports": {
+    "apps_*": ["agentic_core.types", "agentic_core.interfaces", "agentic_core.runtime"],
+    "agentic_core.L*": ["system_learning.types", "system_learning.interfaces"]
+  }
+}
