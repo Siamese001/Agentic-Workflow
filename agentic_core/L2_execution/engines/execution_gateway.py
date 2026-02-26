@@ -13,6 +13,7 @@ from typing import Any
 from agentic_core.L2_execution.enforcement.budget_enforcer import BudgetEnforcer, BudgetExceeded
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L2_execution.types.execution_trace import ExecutionTrace, ExecutionTraceBuilder
+from agentic_core.L2_execution.types.ptc_tool_contracts import ToolContractViolation, ToolResult
 from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, SignatureVerificationError
 
 
@@ -68,11 +69,21 @@ class ExecutionGateway:
         try:
             # Execute under budget caps — returns (exit_code, stdout_bytes) per Contract [3]
             exit_code, stdout_bytes = self._budget_enforcer.run(envelope, tool_fn)
-            builder.validation_decision = "PASS" if exit_code == 0 else "FAIL"
-            builder.error = None if exit_code == 0 else f"Tool exited with code {exit_code}"
+            # Contract [3] validation: exit_code must be 0 or 1, stdout must be within cap
+            tool_result = ToolResult.from_budget_enforcer(
+                exit_code=exit_code,
+                stdout_bytes=stdout_bytes,
+                stdout_bytes_cap=envelope.budget.stdout_bytes,
+            )
+            builder.validation_decision = "PASS" if tool_result.exit_code == 0 else "FAIL"
+            builder.error = None if tool_result.exit_code == 0 else f"Tool exited with code {tool_result.exit_code}"
         except BudgetExceeded as e:
             builder.validation_decision = "FAIL"
             builder.error = f"Budget exceeded: {e}"
+            raise
+        except ToolContractViolation as e:
+            builder.validation_decision = "FAIL"
+            builder.error = f"ToolContract violation: {e}"
             raise
         finally:
             builder.timing_ms = int(time.time() * 1000) - start_ms
