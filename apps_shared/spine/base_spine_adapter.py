@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import Any
 
-from agentic_core.L2_execution.cid_registry import CIDRegistry, ExecutionCycle
+from agentic_core.interfaces.execution import CIDRegistry, ExecutionCycle
 from apps_shared.utils.determinism_util import canonical_hash, strip_nondeterministic
 
 

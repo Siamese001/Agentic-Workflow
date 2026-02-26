@@ -20,22 +20,14 @@ from collections.abc import Callable, Sequence
 from pathlib import Path
 from typing import Any, Literal
 
-from agentic_core.L0_routing.meta_control.config_store import (
-    apply_change_package_readonly,
-    load_current,
-)
-from agentic_core.L0_routing.meta_control.config_store_types import (
-    ConfigDeltaArtifact,
-)
-from agentic_core.L0_routing.meta_control.meta_apply import (
-    apply_meta_learning_rollout,
-)
-from agentic_core.L0_routing.meta_control.meta_apply_ops import (
-    apply_with_invariants,
-)
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L2_execution.types.capability_token_types import (
+from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
+from agentic_core.interfaces.meta_control import (
     CapabilityTokenArtifact,
+    ConfigDeltaArtifact,
+    apply_change_package_readonly,
+    apply_meta_learning_rollout,
+    apply_with_invariants,
+    load_current,
 )
 from system_learning.types.app_signal_types import (
     AppSignalEventArtifact,

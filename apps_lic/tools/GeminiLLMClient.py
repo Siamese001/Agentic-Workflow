@@ -5,8 +5,7 @@ __version__ = "13.0"
 
 import asyncio
 
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
 
 
 class GeminiLLMClient:

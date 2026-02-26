@@ -27,27 +27,23 @@ from typing import Any, Final
 # CORE SOCKETING: Align with Phase 2A Unified Base Class
 from apps_shared.utils.AppBase import AppBase
 
-from agentic_core.L1_cognition.engines.meta_client import (
-    MetaLearningClient,
-    get_meta_learning_client,
-)
-
-# PHASE 2.1: MetaLearningClient Integration
-from agentic_core.L1_cognition.types.client_types import HealingPattern
-
-# PHASE 1.1: Guardrails Integration
-from agentic_core.L1_cognition.utils.guardrails import (
+from agentic_core.interfaces.meta_learning import (
+    HealingPattern,
     MetaLearningGuardrails,
     get_guardrails,
+)
+from agentic_core.interfaces.meta_learning import (
+    SovereignMetaLearningClient as MetaLearningClient,
+)
+from agentic_core.interfaces.meta_learning import (
+    get_sovereign_meta_client as get_meta_learning_client,
 )
 
 Logger = logging.getLogger(__name__)
 
-# Import mixins with fallbacks
+# Import mixins via sovereign interface
 try:
-    from agentic_core.L1_cognition.reasoning.meta_learning_mixin import (
-        MetaLearningMixin,
-    )
+    from agentic_core.interfaces.mixins import MetaLearningMixin
 except ImportError:
 
     class MetaLearningMixin:
@@ -55,7 +51,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
+    from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
 
     class HealerMixin:

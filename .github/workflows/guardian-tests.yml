@@ -9,12 +9,24 @@ on:
     paths:
       - 'agentic_core/L0_routing/**'
       - 'agentic_core/L5_safety/**'
+      - 'agentic_core/interfaces/**'
+      - 'agentic_core/enforcement/**'
+      - 'apps_lic/**'
+      - 'apps_rg/**'
+      - 'apps_shared/**'
       - 'tests/guardian/**'
+      - 'tests/unit_min_deps/test_sovereignty_interfaces.py'
   pull_request:
     paths:
       - 'agentic_core/L0_routing/**'
       - 'agentic_core/L5_safety/**'
+      - 'agentic_core/interfaces/**'
+      - 'agentic_core/enforcement/**'
+      - 'apps_lic/**'
+      - 'apps_rg/**'
+      - 'apps_shared/**'
       - 'tests/guardian/**'
+      - 'tests/unit_min_deps/test_sovereignty_interfaces.py'
 
 jobs:
   guardian-contract-gate:
@@ -30,6 +42,10 @@ jobs:
       - name: Install dependencies
         run: |
           pip install pytest
+
+      - name: Sovereignty interface tests (apps_* direct L* import boundary)
+        run: |
+          pytest tests/unit_min_deps/test_sovereignty_interfaces.py -v --tb=short
 
       - name: Run Guardian tests
         run: |

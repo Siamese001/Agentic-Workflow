@@ -15,9 +15,9 @@ from __future__ import annotations
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.meta_control.config_store import load_current
-from agentic_core.L0_routing.meta_control.config_store_types import (
+from agentic_core.interfaces.meta_control import (
     canonical_json,
+    load_current,
     validate_component_allowed,
 )
 

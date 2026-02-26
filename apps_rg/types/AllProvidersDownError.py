@@ -11,8 +11,7 @@ from typing import Any
 
 from apps_shared.utils.Provider import Provider
 
-from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
-from agentic_core.runtime.types.circuit_breaker_types import CircuitBreakerState
+from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
 # [Diff Start: Updated Imports for Relocation]

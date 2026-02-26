@@ -14,7 +14,7 @@ import logging
 import os
 from dataclasses import dataclass
 
-from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
+from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.mixins.hardening_mixin import HardeningMixin
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 

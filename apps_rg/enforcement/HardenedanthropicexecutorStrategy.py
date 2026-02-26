@@ -15,7 +15,7 @@ from dataclasses import dataclass
 
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
-from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry
+from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.mixins.hardening_mixin import HardeningMixin, TokenLimitError
 
 logger = logging.getLogger(__name__)
@@ -93,7 +93,7 @@ class HardenedAnthropicExecutor(HardeningMixin):
 
     def _setup_client(self) -> None:
         """Delegate to SovereignLLMGateway — no direct Anthropic SDK access."""
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+        from agentic_core.interfaces.gateway import SovereignLLMGateway
 
         self._gateway = SovereignLLMGateway()
         self._client = None  # kept for isinstance checks in callers; not used

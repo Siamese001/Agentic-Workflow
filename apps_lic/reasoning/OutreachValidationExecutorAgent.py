@@ -24,7 +24,7 @@ class RuleFailure:
 
 
 if TYPE_CHECKING:
-    from agentic_core.L5_safety.validators import RuleFailure
+    from agentic_core.interfaces.validators import RuleFailure
 
 LOGGER = logging.getLogger(__name__)
 

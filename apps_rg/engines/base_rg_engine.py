@@ -7,8 +7,11 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 try:
-    from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-    from agentic_core.L2_execution.types.agent_output_contract import AgentOutputContract, wrap_output
+    from agentic_core.interfaces.execution_contracts import (
+        AgentOutputContract,
+        get_current_secret,
+        wrap_output,
+    )
 
     _OUTPUT_CONTRACT_AVAILABLE = True
 except ImportError:

@@ -20,7 +20,7 @@ from apps_lic.utils.hop_stage_capability import HOPStageCapability
 from apps_lic.utils.LICAgentBase import LICAgentBase
 
 if TYPE_CHECKING:
-    from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningIntensityProfile
+    from agentic_core.interfaces.routing_types import ReasoningIntensityProfile
 
 
 @dataclass

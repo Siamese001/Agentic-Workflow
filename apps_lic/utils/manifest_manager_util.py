@@ -24,7 +24,7 @@ except ImportError:
 
 
 try:
-    from agentic_core.L5_safety.validators.healing_mixin import HealerMixin
+    from agentic_core.interfaces.mixins import HealerMixin
 except ImportError:
 
     class HealerMixin:

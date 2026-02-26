@@ -13,7 +13,7 @@ from pathlib import Path
 
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.interfaces.structure_config import (
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,

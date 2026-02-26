@@ -16,7 +16,7 @@ import hashlib
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.engines.assembly_stage import canonical_bytes
+from agentic_core.interfaces.determinism import canonical_bytes
 
 DETERMINISM_EXCLUDED_FIELDS: frozenset[str] = frozenset(
     {

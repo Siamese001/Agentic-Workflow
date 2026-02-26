@@ -17,11 +17,14 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler, GovernedPayload
-from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
-from agentic_core.L0_routing.engines.path_router import PathRouter
-from agentic_core.L2_execution.cid_registry import CIDRegistry
-from agentic_core.L2_execution.reentry_loop import ReEntryLoop
+from agentic_core.interfaces.execution import CIDRegistry
+from agentic_core.interfaces.spine import (
+    AirlockAssembler,
+    ExecutionOrchestrator,
+    GovernedPayload,
+    PathRouter,
+    ReEntryLoop,
+)
 from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
 # Default maximum re-entry attempts for the RG spine.
