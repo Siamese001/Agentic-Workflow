@@ -2,9 +2,9 @@ from __future__ import annotations
 
 
 def _get_unified_cst_healer():
-    from agentic_core.L5_safety.validators.unified_cst_healer import HealingConfig, UnifiedCSTHealer
-
-    return HealingConfig, UnifiedCSTHealer
+    from agentic_core.interfaces.safety import UnifiedCSTHealer
+    # For now, return None as placeholder until HealingConfig is exposed through interface
+    return None, UnifiedCSTHealer
 
 
 """

@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 """Brief description of functionality and purpose."""
 
@@ -75,7 +79,7 @@ class Historian:
             memory_dir: Directory to store historical data
         """
         self.memory_dir = memory_dir or Path("observability/memory")
-        _wg.ensure_dir(self.memory_dir)
+        _get_write_gateway().ensure_dir(self.memory_dir)
 
         # Context manager (injected dependency)
         self.context_manager = context_manager
@@ -109,7 +113,7 @@ class Historian:
         """Save historical data to memory files."""
         # Save file history
         try:
-            _wg.write_json(self.file_history_file, self.file_history, indent=2)
+            _get_write_gateway().write_json(self.file_history_file, self.file_history, indent=2)
         except Exception as e:
             LOGGER.error(f"Failed to save file history: {e}")
 

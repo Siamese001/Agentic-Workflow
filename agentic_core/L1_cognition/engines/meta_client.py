@@ -20,19 +20,19 @@ from __future__ import annotations
 
 
 def _get_redis_sovereign_agent():
-    from agentic_core.L4_state.reasoning.RedisSovereignAgent import RedisSovereignAgent
+    from agentic_core.interfaces.execution_agents import RedisSovereignAgent
 
     return RedisSovereignAgent
 
 
 def _get_pinecone_sovereign_agent():
-    from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
+    from agentic_core.interfaces.execution_agents import PineconeSovereignAgent
 
     return PineconeSovereignAgent
 
 
 def _get_embedding_sovereign_agent():
-    from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import EmbeddingSovereignAgent
+    from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
 
     return EmbeddingSovereignAgent
 

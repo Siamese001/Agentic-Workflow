@@ -18,7 +18,7 @@ from typing import Any
 
 
 def _get_embedding_sovereign_agent():
-    from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import EmbeddingSovereignAgent
+    from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
 
     return EmbeddingSovereignAgent
 

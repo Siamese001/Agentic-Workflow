@@ -10,7 +10,11 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -304,7 +308,7 @@ class ThinkActObserveEngine:
             raise ValueError("No state to save")
 
         assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-        _wg.write_json(path, self.state.to_dict(), indent=2)
+        _get_write_gateway().write_json(path, self.state.to_dict(), indent=2)
         if self.enable_logging:
             LOGGER.info("state_saved", extra={"path": path})
 

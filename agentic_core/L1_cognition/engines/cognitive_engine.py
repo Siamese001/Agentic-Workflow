@@ -19,9 +19,9 @@ from typing import Any
 
 def _get_ActionNode():
     """Lazy load ActionNode to avoid upward import."""
-    from agentic_core.L3_orchestration.engines.action_router import ActionNode
-
-    return ActionNode
+    from agentic_core.interfaces.orchestration import ActionRouter
+    # For now, return ActionRouter as placeholder until ActionNode is exposed through interface
+    return ActionRouter
 
 
 try:

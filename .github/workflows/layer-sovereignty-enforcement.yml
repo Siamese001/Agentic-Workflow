@@ -1,0 +1,141 @@
+name: Layer Sovereignty Enforcement
+# Comprehensive layer boundary and sovereignty enforcement
+# Runs on all changes to ensure architectural integrity is maintained
+
+on:
+  push:
+    paths:
+      - 'agentic_core/**'
+      - 'tests/guardian/**'
+  pull_request:
+    paths:
+      - 'agentic_core/**'
+      - 'tests/guardian/**'
+
+jobs:
+  layer-sovereignty-checks:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+
+      - name: Install dependencies
+        run: |
+          pip install pytest
+
+      - name: Check L4 State Write Sovereignty
+        run: |
+          python ops_scripts/ci/check_layer_write_sovereignty.py
+
+      - name: Run L4 State Guardian Tests
+        run: |
+          pytest tests/guardian/test_l4_state_write_sovereignty.py -m guardian --tb=short
+
+      - name: Run L1 Cognition Purity Tests
+        run: |
+          pytest tests/guardian/test_l1_cognition_purity_contract.py -m guardian --tb=short
+
+      - name: Check Interface Layer Compliance
+        run: |
+          # Ensure interfaces only re-export from appropriate layers
+          python -c "
+          import ast
+          import sys
+          from pathlib import Path
+
+          violations = []
+          interfaces_dir = Path('agentic_core/interfaces')
+          if interfaces_dir.exists():
+              for py_file in interfaces_dir.glob('*.py'):
+                  tree = ast.parse(py_file.read_text())
+                  for node in ast.walk(tree):
+                      if isinstance(node, ast.ImportFrom):
+                          if node.module and node.module.startswith('agentic_core.L'):
+                              # Allow imports from L2 (execution), L3 (orchestration), L4 (state), L5 (safety)
+                              # But not from L0 (routing) or L1 (cognition) to avoid cycles
+                              if node.module.startswith('agentic_core.L0') or node.module.startswith('agentic_core.L1'):
+                                  violations.append(f'{py_file.name}:{node.lineno} - Import from {node.module} not allowed in interface')
+          
+          if violations:
+              print('FAIL: Interface layer violations:')
+              for v in violations:
+                  print(f'  {v}')
+              sys.exit(1)
+          else:
+              print('OK: Interface layer compliance clean')
+          "
+
+      - name: Verify No Direct L* Cross-Layer Imports
+        run: |
+          # Check that layers only import through interfaces, not directly
+          python -c "
+          import ast
+          import sys
+          from pathlib import Path
+
+          FORBIDDEN_PATTERNS = [
+              # L1 should not directly import from L2/L3/L4/L5
+              ('agentic_core/L1_cognition', ['agentic_core.L2', 'agentic_core.L3', 'agentic_core.L4', 'agentic_core.L5']),
+              # L4 should not directly import from L2/L5
+              ('agentic_core/L4_state', ['agentic_core.L2', 'agentic_core.L5']),
+              # L3 should not directly import from L5
+              ('agentic_core/L3_orchestration', ['agentic_core.L5']),
+          ]
+
+          violations = []
+          repo_root = Path('.')
+          
+          for layer_path, forbidden_imports in FORBIDDEN_PATTERNS:
+              layer_dir = repo_root / layer_path
+              if not layer_dir.exists():
+                  continue
+                  
+              for py_file in layer_dir.rglob('*.py'):
+                  if '__pycache__' in str(py_file):
+                      continue
+                  try:
+                      tree = ast.parse(py_file.read_text())
+                      for node in ast.walk(tree):
+                          if isinstance(node, (ast.Import, ast.ImportFrom)):
+                              module_name = None
+                              if isinstance(node, ast.Import):
+                                  for alias in node.names:
+                                      module_name = alias.name
+                              elif isinstance(node, ast.ImportFrom):
+                                  module_name = node.module
+                                  
+                              if module_name and any(module_name.startswith(pattern) for pattern in forbidden_imports):
+                                  rel_path = py_file.relative_to(repo_root)
+                                  violations.append(f'{rel_path}:{node.lineno} - Forbidden import {module_name}')
+                  except SyntaxError:
+                      continue
+          
+          if violations:
+              print('FAIL: Cross-layer import violations:')
+              for v in violations:
+                  print(f'  {v}')
+              sys.exit(1)
+          else:
+              print('OK: Cross-layer import compliance clean')
+          "
+
+      - name: Generate Sovereignty Report
+        run: |
+          mkdir -p docs/reports/verification/sovereignty
+          echo "Layer Sovereignty Enforcement Report" > docs/reports/verification/sovereignty/report.txt
+          echo "Generated: $(date)" >> docs/reports/verification/sovereignty/report.txt
+          echo "Commit: ${{ github.sha }}" >> docs/reports/verification/sovereignty/report.txt
+          echo "" >> docs/reports/verification/sovereignty/report.txt
+          echo "All sovereignty checks passed successfully." >> docs/reports/verification/sovereignty/report.txt
+
+      - name: Upload sovereignty artifacts
+        uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: sovereignty-report-${{ github.sha }}
+          path: docs/reports/verification/sovereignty/
+          retention-days: 30

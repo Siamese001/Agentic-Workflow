@@ -8,6 +8,10 @@ on:
   push:
     paths:
       - 'agentic_core/L0_routing/**'
+      - 'agentic_core/L1_cognition/**'
+      - 'agentic_core/L2_execution/**'
+      - 'agentic_core/L3_orchestration/**'
+      - 'agentic_core/L4_state/**'
       - 'agentic_core/L5_safety/**'
       - 'agentic_core/interfaces/**'
       - 'agentic_core/enforcement/**'
@@ -19,6 +23,10 @@ on:
   pull_request:
     paths:
       - 'agentic_core/L0_routing/**'
+      - 'agentic_core/L1_cognition/**'
+      - 'agentic_core/L2_execution/**'
+      - 'agentic_core/L3_orchestration/**'
+      - 'agentic_core/L4_state/**'
       - 'agentic_core/L5_safety/**'
       - 'agentic_core/interfaces/**'
       - 'agentic_core/enforcement/**'
@@ -50,6 +58,14 @@ jobs:
       - name: Run Guardian tests
         run: |
           pytest tests/guardian/ -v --tb=short
+
+      - name: Run L4 State Sovereignty tests
+        run: |
+          pytest tests/guardian/test_l4_state_write_sovereignty.py -v --tb=short
+
+      - name: Run L1 Cognition Purity tests
+        run: |
+          pytest tests/guardian/test_l1_cognition_purity_contract.py -v --tb=short
 
       - name: Run sovereignty guardian tests
         run: |

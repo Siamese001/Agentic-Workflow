@@ -5,7 +5,11 @@ from typing import Any
 
 from agentic_core.L0_routing.config import RUNTIME_STATE_JSON
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 
 class RuntimeStateGuard:
@@ -46,7 +50,7 @@ class RuntimeStateGuard:
         except json.JSONDecodeError:
             print(f"[StateGuard] CORRUPTION DETECTED in {self.state_path}. Attempting restore...")
             if self.backup_path.exists():
-                _wg.copy_file(self.backup_path, self.state_path)
+                _get_write_gateway().copy_file(self.backup_path, self.state_path)
                 with open(self.state_path) as f:
                     self._state_cache = json.load(f)
             else:
@@ -80,11 +84,11 @@ class RuntimeStateGuard:
         try:
             # 1. Write to temp
             assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-            _wg.write_json(temp_path, self._state_cache, indent=4)
+            _get_write_gateway().write_json(temp_path, self._state_cache, indent=4)
 
             # 2. Create backup of current valid state
             if self.state_path.exists():
-                _wg.copy_file(self.state_path, self.backup_path)
+                _get_write_gateway().copy_file(self.state_path, self.backup_path)
 
             # 3. Atomic rename (replace)
             os.replace(temp_path, self.state_path)
@@ -92,4 +96,4 @@ class RuntimeStateGuard:
             print(f"[StateGuard] PERSISTENCE FAILURE: {e}")
             if temp_path.exists():
                 assert_no_persistent_write("L4", "os.mutate")  # G-12-1: mutation prohibition guard
-                _wg.remove_file(temp_path)
+                _get_write_gateway().remove_file(temp_path)

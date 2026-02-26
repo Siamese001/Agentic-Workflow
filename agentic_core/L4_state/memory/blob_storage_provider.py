@@ -1,7 +1,11 @@
 from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 """
 Storage adapters for different backend types.
@@ -56,7 +60,7 @@ class LocalDiskAdapter:
             base_path: Base directory for storage
         """
         self.base_path = Path(base_path)
-        _wg.ensure_dir(self.base_path)
+        _get_write_gateway().ensure_dir(self.base_path)
         LOGGER.info(f"Local disk adapter initialized at: {self.base_path}")
 
     def _get_path(self: Any, key: str) -> Path:
@@ -91,14 +95,14 @@ class LocalDiskAdapter:
         """
         target_path: Any = self._get_path(key)
         temp_path: Any = target_path.with_suffix(".tmp")
-        _wg.ensure_dir(target_path.parent)
-        _wg.open_write(temp_path, data)
+        _get_write_gateway().ensure_dir(target_path.parent)
+        _get_write_gateway().open_write(temp_path, data)
         if metadata:
             meta_path: Any = target_path.with_suffix(".meta.json")
             assert_no_persistent_write("L4", "json.dump")  # G-12-1: mutation prohibition guard
-            _wg.write_json(meta_path, metadata)
+            _get_write_gateway().write_json(meta_path, metadata)
         assert_no_persistent_write("L4", "shutil.mutate")  # G-12-1: mutation prohibition guard
-        _wg.move_path(str(temp_path), str(target_path))
+        _get_write_gateway().move_path(str(temp_path), str(target_path))
         checksum: Any = hashlib.md5(data).hexdigest()
         LOGGER.debug(f"Wrote blob: {key} (checksum={checksum})")
         return checksum
@@ -148,10 +152,10 @@ class LocalDiskAdapter:
         """
         target_path: Any = self._get_path(key)
         if target_path.exists():
-            _wg.remove_file(target_path)
+            _get_write_gateway().remove_file(target_path)
             meta_path: Any = target_path.with_suffix(".meta.json")
             if meta_path.exists():
-                _wg.remove_file(meta_path)
+                _get_write_gateway().remove_file(meta_path)
             LOGGER.debug(f"Deleted blob: {key}")
             return True
         return False

@@ -3,12 +3,16 @@ Filesystem-based Storage Backend
 
 Local-only, append-only storage implementation for agentic artifacts.
 Provides deterministic versioning and path traversal protection.
+All writes go through UniversalWriteGateway for sovereignty compliance.
 """
 
 from __future__ import annotations
 
 import json
+import uuid
 from pathlib import Path
+
+from agentic_core.interfaces.write_gateway import get_write_gateway, InstructionPacket
 
 from .persistent_store import (
     StoredArtifact,
@@ -109,16 +113,54 @@ class FileSystemStore:
             "metadata": artifact.metadata,
         }
 
-        # Write atomically
+        # Write atomically through UWG with signed instruction
         temp_path = artifact_path.with_suffix(".tmp")
+        write_content = json.dumps(storage_data, sort_keys=True, indent=2)
+        
         try:
-            temp_path.write_text(json.dumps(storage_data, sort_keys=True, indent=2), encoding="utf-8")
-            # Atomic rename
+            # Create signed instruction packet for write operation
+            instruction = InstructionPacket(
+                instruction_id=f"filesystem_write_{uuid.uuid4().hex}",
+                payload=write_content,
+                metadata={
+                    "operation": "write_text",
+                    "target_path": str(temp_path),
+                    "encoding": "utf-8",
+                    "artifact_kind": artifact.kind,
+                    "logical_id": artifact.logical_id,
+                    "version": version
+                }
+            )
+            
+            # Execute through UniversalWriteGateway
+            gateway = get_write_gateway()
+            gateway.execute_instruction(instruction)
+            
+            # Verify write was recorded and permitted
+            if not gateway.check_write_permission(str(temp_path), "write"):
+                raise PermissionError(f"UWG denied write to {temp_path}")
+            
+            # Atomic rename (this is safe as it's a metadata operation)
             temp_path.rename(artifact_path)
+            
         except Exception:
             # Clean up temp file if it exists
             if temp_path.exists():
-                temp_path.unlink()
+                try:
+                    # Use UWG for cleanup as well
+                    cleanup_instruction = InstructionPacket(
+                        instruction_id=f"filesystem_cleanup_{uuid.uuid4().hex}",
+                        payload="",
+                        metadata={
+                            "operation": "delete",
+                            "target_path": str(temp_path)
+                        }
+                    )
+                    gateway = get_write_gateway()
+                    gateway.execute_instruction(cleanup_instruction)
+                except Exception:
+                    # If UWG cleanup fails, try direct removal as last resort
+                    temp_path.unlink(missing_ok=True)
             raise
 
         # Get file size for reference

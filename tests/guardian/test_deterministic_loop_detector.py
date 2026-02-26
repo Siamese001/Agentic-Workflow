@@ -20,11 +20,7 @@ import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 MODULE_PATH = (
-    PROJECT_ROOT
-    / "agentic_core"
-    / "L2_execution"
-    / "enforcement"
-    / "deterministic_loop_detector.py"
+    PROJECT_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "deterministic_loop_detector.py"
 )
 
 pytestmark = pytest.mark.guardian
@@ -58,9 +54,7 @@ class TestStructuralContract:
                 detector_cls = node
                 break
         assert detector_cls is not None, "DeterministicLoopDetector class not found"
-        method_names = {
-            n.name for n in detector_cls.body if isinstance(n, ast.FunctionDef)
-        }
+        method_names = {n.name for n in detector_cls.body if isinstance(n, ast.FunctionDef)}
         missing = self.REQUIRED_METHODS - method_names
         assert not missing, "Missing methods on DeterministicLoopDetector: " + str(missing)
 
@@ -70,8 +64,7 @@ class TestStructuralContract:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name == "ToolBudgetExceededError":
                 bases = [
-                    ast.unparse(b) if hasattr(ast, "unparse") else getattr(b, "id", "")
-                    for b in node.bases
+                    ast.unparse(b) if hasattr(ast, "unparse") else getattr(b, "id", "") for b in node.bases
                 ]
                 assert any("Exception" in b or "Error" in b for b in bases), (
                     "ToolBudgetExceededError must inherit from Exception"
@@ -109,6 +102,7 @@ class TestToolBudgetExceededError:
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
+
         exc = ToolBudgetExceededError(tool_name="my_tool", budget=5)
         assert exc.reason_code == "TOOL_BUDGET_EXCEEDED"
 
@@ -116,6 +110,7 @@ class TestToolBudgetExceededError:
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
+
         exc = ToolBudgetExceededError(tool_name="analyze", budget=10)
         assert exc.tool_name == "analyze"
         assert exc.budget == 10
@@ -124,6 +119,7 @@ class TestToolBudgetExceededError:
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
+
         exc = ToolBudgetExceededError(tool_name="crawl_tool", budget=3)
         assert "crawl_tool" in str(exc)
 
@@ -139,11 +135,13 @@ class TestIncrementAndCheck:
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             DeterministicLoopDetector,
         )
+
         return DeterministicLoopDetector()
 
     @pytest.fixture
     def budget_3(self):
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import ToolBudget
+
         return ToolBudget(max_steps=3)
 
     def test_allows_calls_up_to_budget_minus_one(self, detector, budget_3):
@@ -156,6 +154,7 @@ class TestIncrementAndCheck:
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
             ToolBudgetExceededError,
         )
+
         with pytest.raises(ToolBudgetExceededError):
             detector.increment_and_check("trace-b", "tool_y", budget_3)
 
@@ -177,6 +176,7 @@ class TestTraceIsolation:
             ToolBudget,
             ToolBudgetExceededError,
         )
+
         detector = DeterministicLoopDetector()
         budget = ToolBudget(max_steps=2)
 
@@ -196,6 +196,7 @@ class TestTraceIsolation:
             ToolBudget,
             ToolBudgetExceededError,
         )
+
         detector = DeterministicLoopDetector()
         budget = ToolBudget(max_steps=1)
 
@@ -217,6 +218,7 @@ class TestResetTrace:
             DeterministicLoopDetector,
             ToolBudget,
         )
+
         detector = DeterministicLoopDetector()
         budget = ToolBudget(max_steps=5)
 
@@ -232,6 +234,7 @@ class TestResetTrace:
             DeterministicLoopDetector,
             ToolBudget,
         )
+
         detector = DeterministicLoopDetector()
         budget = ToolBudget(max_steps=5)
 

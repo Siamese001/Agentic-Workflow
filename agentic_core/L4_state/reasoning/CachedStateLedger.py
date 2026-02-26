@@ -18,7 +18,7 @@ from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
 
 # NAMING FIXED: CachedStateLedgerAgent → CachedStateLedgerAgent
-class CachedStateLedgerAgent(SovereignBaseAgent):
+class CachedStateLedger(SovereignBaseAgent):
     """
     Sovereign L4 state base — Redis cache for context, audit, Historian.
     All L4 components inherit from this.

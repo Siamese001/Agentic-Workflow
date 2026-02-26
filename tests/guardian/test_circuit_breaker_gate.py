@@ -18,13 +18,7 @@ from pathlib import Path
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = (
-    PROJECT_ROOT
-    / "agentic_core"
-    / "L5_safety"
-    / "enforcement"
-    / "circuit_breaker_gate.py"
-)
+MODULE_PATH = PROJECT_ROOT / "agentic_core" / "L5_safety" / "enforcement" / "circuit_breaker_gate.py"
 
 pytestmark = pytest.mark.guardian
 
@@ -70,8 +64,7 @@ class TestStructuralContract:
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef) and node.name == "CircuitBreakerOpenError":
                 bases = [
-                    ast.unparse(b) if hasattr(ast, "unparse") else getattr(b, "id", "")
-                    for b in node.bases
+                    ast.unparse(b) if hasattr(ast, "unparse") else getattr(b, "id", "") for b in node.bases
                 ]
                 assert any("Exception" in b or "Error" in b for b in bases), (
                     "CircuitBreakerOpenError must inherit from Exception"
@@ -97,6 +90,7 @@ class TestClosedState:
     @pytest.fixture(autouse=True)
     def _reset(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+
         reset_registry()
         yield
         reset_registry()
@@ -106,17 +100,20 @@ class TestClosedState:
             CircuitBreaker,
             get_breaker,
         )
+
         breaker = get_breaker("test_cb_closed")
         assert isinstance(breaker, CircuitBreaker)
 
     def test_same_name_returns_same_instance(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+
         b1 = get_breaker("test_singleton")
         b2 = get_breaker("test_singleton")
         assert b1 is b2
 
     def test_successful_call_does_not_raise(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+
         breaker = get_breaker("test_success")
         assert breaker.allow_request(), "CLOSED breaker must allow requests"
         breaker.record_success()
@@ -127,6 +124,7 @@ class TestClosedState:
             get_all_breakers,
             get_breaker,
         )
+
         get_breaker("test_all_a")
         get_breaker("test_all_b")
         all_b = get_all_breakers()
@@ -145,12 +143,14 @@ class TestOpenState:
     @pytest.fixture(autouse=True)
     def _reset(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import reset_registry
+
         reset_registry()
         yield
         reset_registry()
 
     def test_open_after_threshold_failures(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+
         breaker = get_breaker("test_open_threshold", failure_threshold=2, reset_timeout_seconds=999.0)
 
         for _ in range(2):
@@ -160,6 +160,7 @@ class TestOpenState:
 
     def test_open_state_rejects_requests(self):
         from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
+
         breaker = get_breaker("test_open_reject", failure_threshold=1, reset_timeout_seconds=999.0)
 
         breaker.record_failure()
@@ -179,6 +180,7 @@ class TestResetRegistry:
             get_breaker,
             reset_registry,
         )
+
         get_breaker("reset_a")
         get_breaker("reset_b")
         reset_registry()
@@ -191,6 +193,7 @@ class TestResetRegistry:
             get_breaker,
             reset_registry,
         )
+
         b1 = get_breaker("fresh_after_reset")
         reset_registry()
         b2 = get_breaker("fresh_after_reset")

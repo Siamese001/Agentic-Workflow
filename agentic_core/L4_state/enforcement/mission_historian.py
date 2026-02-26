@@ -1,6 +1,10 @@
 from __future__ import annotations
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 """
 MissionHistorian - L4 State Framework Agent
@@ -30,7 +34,7 @@ class MissionHistorian:
         """
         self.log_path = log_path or Path("mission_audit.csv")
         if not self.log_path.exists():
-            _wg.init_csv(
+            _get_write_gateway().init_csv(
                 self.log_path,
                 ["timestamp", "file", "action", "source", "destination", "reason"],
             )
@@ -47,7 +51,7 @@ class MissionHistorian:
             reason: Reason for the action
         """
         try:
-            _wg.append_csv_row(
+            _get_write_gateway().append_csv_row(
                 self.log_path,
                 [datetime.now().isoformat(), file_name, action, source, destination, reason],
             )

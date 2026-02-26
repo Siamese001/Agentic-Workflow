@@ -2,7 +2,11 @@ from __future__ import annotations
 
 import logging
 
-from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.interfaces.write_gateway import get_write_gateway
+
+def _get_write_gateway():
+    """Get UWG instance - L4 may only use, not import tools."""
+    return get_write_gateway()
 
 """Brief description of functionality and purpose."""
 
@@ -23,11 +27,11 @@ class LocalDiskAdapter:  # v15-exception: storage-provider-not-behavioral-adapte
     def __init__(self, config: dict[str, Any]):
         self.config = config
         self.root = Path(config.get("storage_path", "./data/storage"))
-        _wg.ensure_dir(self.root)
+        _get_write_gateway().ensure_dir(self.root)
 
     async def write_blob(self, key: str, data: bytes, METADATA: dict = None) -> Any:
         """Writes data to the sovereign storage area."""
         safe_path = self.root / key.lstrip("/")
-        _wg.ensure_dir(safe_path.parent)
-        _wg.open_write(safe_path, data)
+        _get_write_gateway().ensure_dir(safe_path.parent)
+        _get_write_gateway().open_write(safe_path, data)
         logging.info(f"DiskAdapter: Persisted {len(data)} bytes to {key}")
