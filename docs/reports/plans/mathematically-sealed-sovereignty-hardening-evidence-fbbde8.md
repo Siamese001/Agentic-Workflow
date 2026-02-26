@@ -22,7 +22,7 @@ fbbde86194f98cc415830a0058e7c0994074708e
 
 ## EVIDENCE_COMMIT
 
-PENDING
+9839431beac659227e1a4c9251ee1f375655e12b
 
 ## FILES_CHANGED_CODE
 
@@ -51,7 +51,7 @@ tests/governance/test_shadow_replay.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/mathematically-sealed-sovereignty-hardening-evidence-fbbde8.md
 
 ## INSPECTED_FILES
 
@@ -205,4 +205,4 @@ tests/governance/test_replay_guard_expanded.py::TestReplayGuardContextManager::t
 0.03s call     tests/governance/test_replay_guard_expanded.py::TestReplayGuardSubprocess::test_subprocess_restored_after_context
 
 (9 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 119 passed in 0.20s =============================
+============================= 119 passed in 0.19s =============================
