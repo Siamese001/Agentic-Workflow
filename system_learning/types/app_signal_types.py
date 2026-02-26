@@ -17,7 +17,7 @@ from collections.abc import Callable, Sequence
 from dataclasses import dataclass
 from typing import Literal
 
-from agentic_core.L0_routing.types.determinism_types import (
+from agentic_core.interfaces.determinism_types import (
     SemanticClockSnapshot,
     validate_semantic_clock,
 )

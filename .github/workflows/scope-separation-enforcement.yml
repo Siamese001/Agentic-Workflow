@@ -1,0 +1,120 @@
+name: Scope Separation Enforcement
+
+on:
+  push:
+    branches: ["**"]
+  pull_request:
+    branches: ["**"]
+
+jobs:
+  check-scope-boundaries:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e . --quiet
+
+      - name: Check agentic_core import boundaries
+        run: python -m agentic_core.enforcement.import_boundary_check
+
+      - name: Check system_learning isolation
+        run: python -m system_learning.enforcement.boundary_guard
+
+      - name: Validate hierarchy config hash
+        run: |
+          python -c "
+          from agentic_core.enforcement.hierarchy_validator import get_hierarchy_validator
+          v = get_hierarchy_validator()
+          print('Hierarchy config hash:', v.config_hash)
+          print('OK: hierarchy config valid')
+          "
+
+      - name: Verify no agentic_core layer imports in system_learning
+        run: |
+          python -c "
+          import ast, sys
+          from pathlib import Path
+          violations = []
+          sl = Path('system_learning')
+          for f in sl.rglob('*.py'):
+              try:
+                  tree = ast.parse(f.read_text())
+              except SyntaxError:
+                  continue
+              for node in ast.walk(tree):
+                  if isinstance(node, (ast.Import, ast.ImportFrom)):
+                      mod = getattr(node, 'module', None) or ''
+                      for alias in getattr(node, 'names', []):
+                          mod = mod or alias.name
+                      if 'agentic_core.L' in mod:
+                          violations.append(f'{f}:{node.lineno}: {mod}')
+          if violations:
+              print('FAIL: system_learning L* imports found:')
+              for v in violations:
+                  print(' ', v)
+              sys.exit(1)
+          print('OK: No agentic_core.L* imports in system_learning')
+          "
+
+  check-cryptographic-sovereignty:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up Python
+        uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e . --quiet
+
+      - name: Syntax-check sovereignty modules
+        run: |
+          python -m py_compile \
+            agentic_core/runtime/mathematical_determinism.py \
+            agentic_core/runtime/execution_trace.py \
+            agentic_core/runtime/execution_bound_token.py \
+            agentic_core/runtime/sovereignty_exceptions.py \
+            agentic_core/runtime/sovereignty_bootstrap.py \
+            agentic_core/enforcement/hierarchy_validator.py \
+            agentic_core/enforcement/structural_namespace_fence.py
+          echo "OK: all sovereignty modules pass syntax check"
+
+      - name: Double-run determinism verification
+        run: |
+          python -c "
+          import json, hashlib
+          from agentic_core.runtime.mathematical_determinism import (
+              MathematicalDeterminismEngine,
+          )
+          policy_hash = hashlib.sha256(b'test-policy').hexdigest()
+          hierarchy_hash = hashlib.sha256(b'test-hierarchy').hexdigest()
+          authority_hash = hashlib.sha256(b'test-authority').hexdigest()
+
+          def make_proof():
+              engine = MathematicalDeterminismEngine(
+                  policy_hash, hierarchy_hash, authority_hash
+              )
+              engine.add_artifact('artifact_a', hashlib.sha256(b'a').hexdigest())
+              engine.add_artifact('artifact_b', hashlib.sha256(b'b').hexdigest())
+              return engine.seal()
+
+          proof1 = make_proof()
+          proof2 = make_proof()
+
+          assert proof1.core_digest == proof2.core_digest, (
+              f'FAIL: core_digest mismatch: {proof1.core_digest} != {proof2.core_digest}'
+          )
+          assert proof1.run_id != proof2.run_id, 'run_ids should differ across runs'
+          print('OK: determinism replay verified - identical core_digest across two runs')
+          print('OK: run_id correctly differs across runs')
+          "

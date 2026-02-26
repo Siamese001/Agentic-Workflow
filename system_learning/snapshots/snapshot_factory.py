@@ -16,7 +16,7 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
 from system_learning.enforcement.authority_invariants import (
     AuthorityContext,
     assert_zero_execution_authority,

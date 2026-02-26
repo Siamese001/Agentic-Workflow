@@ -13,7 +13,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
-from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.interfaces.determinism_types import SemanticClockSnapshot
 
 # =============================================================================
 # MetaLearningSnapshot
