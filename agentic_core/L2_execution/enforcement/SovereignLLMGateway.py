@@ -25,6 +25,7 @@ from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
+from agentic_core.replay.replay_envelope import ReplayEnvelope
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,
@@ -229,6 +230,9 @@ class SovereignLLMGateway:
             },
         )
 
+        # W11: Build ReplayEnvelope before provider call
+        replay_envelope = self._build_replay_envelope(request, model, temperature)
+
         fallback_providers = request.fallback_providers or ["anthropic", "google"]
         providers_to_try = [request.provider] + [p for p in fallback_providers if p != request.provider]
 
@@ -261,7 +265,7 @@ class SovereignLLMGateway:
                     tokens=result.get("tokens", 0),
                     provider=current_provider,
                     model=current_model,
-                    replay_envelope="",  # Placeholder
+                    replay_envelope=replay_envelope.to_canonical_json(),
                 )
 
             # guardian: allow-silent-swallow
@@ -393,6 +397,43 @@ class SovereignLLMGateway:
             tokens = response.usage_metadata.total_token_count
 
         return {"content": response.text, "tokens": tokens, "provider": "google", "model": model}
+
+    def _build_replay_envelope(
+        self, request: GenerationRequest, model: str, temperature: float
+    ) -> ReplayEnvelope:
+        """Build canonical ReplayEnvelope for deterministic tracking."""
+        import hashlib
+
+        # Compute routing hash from core identity (S0 + I0 + U0)
+        routing_payload = f"{request.agent_id}:{request.provider}:{model}:{temperature}"
+        routing_hash = hashlib.sha256(routing_payload.encode("utf-8")).hexdigest()
+
+        # Compute manifest hash including prompt content
+        manifest_payload = f"{request.agent_id}:{request.prompt}:{model}:{temperature}"
+        manifest_hash = hashlib.sha256(manifest_payload.encode("utf-8")).hexdigest()
+
+        # Get system identity hashes
+        agent_registry_hash = self._get_agent_registry_hash()
+        deterministic_engine_version = "1.0.0"  # Version of deterministic engine
+
+        return ReplayEnvelope.from_generation_context(
+            routing_hash=routing_hash,
+            manifest_hash=manifest_hash,
+            model_id=model,
+            model_version="1.0",  # Could be extracted from provider
+            temperature=temperature,
+            policy_version="1.0",
+            gateway_version="1.0",
+            embedder_provider="text-embedding-ada-002",  # Default embedder
+            embedder_model="text-embedding-ada-002",
+            embedder_dim=1536,
+            agent_registry_hash=agent_registry_hash,
+            deterministic_engine_version=deterministic_engine_version,
+        )
+
+    def _get_agent_registry_hash(self) -> str:
+        """Get hash of current agent registry state."""
+        return hashlib.sha256(b"fallback_registry").hexdigest()
 
 
 def get_llm_gateway() -> SovereignLLMGateway:

@@ -166,21 +166,28 @@ class DeterministicReplayEngine:
             # Use stable case ID based on query content hash
             query_hash = hashlib.md5(case["query"].encode("utf-8")).hexdigest()[:8]
             case_id = f"case_{query_hash}"
+
+            # W11: Get query hash integer for deterministic seeding
+            query_hash_int = int(query_hash, 16)
             dim = profile.embedding_dim
 
-            # Generate deterministic query vector
+            # Generate deterministic query vector using RetrievalProfile.embedding_dim
             query_embedding = np.zeros(dim)
-            query_embedding[0] = 1.0
+            # W11: Use deterministic index based on query hash for reproducibility
+            deterministic_index = query_hash_int % dim
+            query_embedding[deterministic_index] = 1.0
 
             corpus = case["corpus"]
 
             # Compute similarities (deterministic dot product)
             similarities = []
             for i, doc in enumerate(corpus):
-                # Generate deterministic doc vector
+                # Generate deterministic doc vector using RetrievalProfile.embedding_dim
                 doc_embedding = np.zeros(dim)
                 if i < dim:
-                    doc_embedding[i] = 0.9  # Create some variance
+                    # W11: Use deterministic pattern based on doc index and query hash
+                    doc_seed = (query_hash_int + i) % dim
+                    doc_embedding[doc_seed] = 0.9  # Create some variance
 
                 # Dot product similarity
                 similarity = np.dot(query_embedding, doc_embedding)
@@ -243,7 +250,7 @@ class DeterministicReplayEngine:
             "candidate_outputs": {k: sorted(v) for k, v in sorted(candidate_outputs.items())},
             "changed_cases": changed_cases,
             "case_count": len(self._synthetic_cases),
-            "replay_version": "W5-v1.0",
+            "replay_version": "W11-v1.0",
         }
 
         # Serialize to canonical JSON

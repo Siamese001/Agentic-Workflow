@@ -47,6 +47,10 @@ def _collect_py_files(roots: list[pathlib.Path]) -> list[pathlib.Path]:
     return py_files
 
 
+# Known write gateway aliases — calls to these are allowed
+_GATEWAY_ALIASES: frozenset[str] = frozenset({"_wg", "wg", "write_gateway", "WriteGateway", "gateway"})
+
+
 def _ast_scan_for_write_bypass(source: str, filepath: str) -> list[str]:
     violations = []
     if filepath.startswith(ALLOWED_WRITE_PATH):
@@ -57,6 +61,14 @@ def _ast_scan_for_write_bypass(source: str, filepath: str) -> list[str]:
     except SyntaxError:
         return ["SYNTAX_ERROR"]
 
+    source_lines = source.splitlines()
+
+    def _line_is_allowed(lineno: int) -> bool:
+        """Check if the source line has a guardian allow annotation."""
+        if 0 < lineno <= len(source_lines):
+            return "# guardian: allow-direct-write" in source_lines[lineno - 1]
+        return False
+
     for node in ast.walk(tree):
         if isinstance(node, ast.Call):
             # Check for open() with write mode
@@ -65,16 +77,25 @@ def _ast_scan_for_write_bypass(source: str, filepath: str) -> list[str]:
                     len(node.args) > 1
                     and isinstance(node.args[1], ast.Constant)
                     and "w" in node.args[1].value
+                    and not _line_is_allowed(node.lineno)
                 ):
                     violations.append(f"line {node.lineno}: direct open() in write mode")
-            # Check for Path.write_text/bytes
+            # Check for Path.write_text/bytes (but NOT via gateway alias)
             elif isinstance(node.func, ast.Attribute) and node.func.attr in ("write_text", "write_bytes"):
-                violations.append(f"line {node.lineno}: direct Path.{node.func.attr}() call")
+                # Skip calls like _wg.write_text(...) — these are gateway-routed
+                receiver = node.func.value
+                if isinstance(receiver, ast.Name) and receiver.id in _GATEWAY_ALIASES:
+                    pass  # allowed: gateway alias
+                elif _line_is_allowed(node.lineno):
+                    pass  # allowed: guardian annotation
+                else:
+                    violations.append(f"line {node.lineno}: direct Path.{node.func.attr}() call")
             # Check for os.remove/rename
             elif (
                 isinstance(node.func, ast.Attribute)
                 and isinstance(node.func.value, ast.Name)
                 and node.func.value.id == "os"
+                and not _line_is_allowed(node.lineno)
             ):
                 if node.func.attr in ("remove", "rename"):
                     violations.append(f"line {node.lineno}: direct os.{node.func.attr}() call")

@@ -26,8 +26,8 @@ class EmbeddingArtifact:
     k: int
     similarity_metric: str
     embedding_model_version: str
-    vector: list[float] = field(repr=False)  # Exclude from default repr
-    vector_hash: str = field(init=False)
+    vector: list[float] = field(default_factory=list, repr=False)  # Exclude from default repr
+    vector_hash: str = field(default="", init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(default="C0_INFORMATIONAL", init=False)
 
     def __post_init__(self) -> None:

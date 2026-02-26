@@ -16,6 +16,7 @@ import os
 from typing import Any, Literal, Protocol, runtime_checkable
 
 from agentic_core.embeddings.embedding_input_guard import GuardedText
+from agentic_core.replay.replay_envelope import create_deterministic_cache_key
 
 logger = logging.getLogger(__name__)
 
@@ -119,8 +120,18 @@ def create_embedding_client(
                 pack_hash_str = f"openai_{model}_{dimensions or 'default'}"
                 self.pack_hash = hashlib.sha256(pack_hash_str.encode("utf-8")).hexdigest()[:16]
 
+                # W11: Embedder identity for deterministic cache keys
+                self.embedder_identity = {
+                    "provider": "openai",
+                    "model": self.model,
+                    "dimensions": self.dimensions,
+                    "normalization_policy": "l2",
+                    "chunking_policy": "none",
+                }
+
             async def get_embedding(self, guarded_text: GuardedText) -> list[float]:
-                cache_key = guarded_text.hash
+                # W11: Use deterministic cache key with embedder identity
+                cache_key = create_deterministic_cache_key(guarded_text.redacted_text, self.embedder_identity)
                 if cache_key in self._cache:
                     return self._cache[cache_key]
 
@@ -129,6 +140,10 @@ def create_embedding_client(
                     kwargs["dimensions"] = self.dimensions
                 response = await raw_client.embeddings.create(**kwargs)
                 embedding = response.data[0].embedding
+
+                # W11: Stable float32 casting for determinism
+                embedding = [float(x) for x in embedding]
+
                 if self.observed_dimension is None:
                     self.observed_dimension = len(embedding)
 
@@ -140,8 +155,12 @@ def create_embedding_client(
                 texts_to_embed: list[tuple[int, GuardedText]] = []
 
                 for i, guarded_text in enumerate(guarded_texts):
-                    if guarded_text.hash in self._cache:
-                        results[i] = self._cache[guarded_text.hash]
+                    # W11: Use deterministic cache key with embedder identity
+                    cache_key = create_deterministic_cache_key(
+                        guarded_text.redacted_text, self.embedder_identity
+                    )
+                    if cache_key in self._cache:
+                        results[i] = self._cache[cache_key]
                     else:
                         texts_to_embed.append((i, guarded_text))
 
@@ -155,12 +174,19 @@ def create_embedding_client(
                 response = await raw_client.embeddings.create(**kwargs)
                 embeddings = [item.embedding for item in response.data]
 
+                # W11: Stable float32 casting for determinism
+                embeddings = [[float(x) for x in emb] for emb in embeddings]
+
                 if self.observed_dimension is None and embeddings:
                     self.observed_dimension = len(embeddings[0])
 
                 for i, embedding in enumerate(embeddings):
                     original_index, guarded_text = texts_to_embed[i]
-                    self._cache[guarded_text.hash] = embedding
+                    # W11: Use deterministic cache key
+                    cache_key = create_deterministic_cache_key(
+                        guarded_text.redacted_text, self.embedder_identity
+                    )
+                    self._cache[cache_key] = embedding
                     results[original_index] = embedding
 
                 return [r for r in results if r is not None]
