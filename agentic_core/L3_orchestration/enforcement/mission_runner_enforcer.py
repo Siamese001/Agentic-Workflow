@@ -19,12 +19,11 @@ import sys
 import time
 from pathlib import Path
 
-from agentic_core.utils.security import safe_git_execute
-
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.utils.security_util import safe_git_execute
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

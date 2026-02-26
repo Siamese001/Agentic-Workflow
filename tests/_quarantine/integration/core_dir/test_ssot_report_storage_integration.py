@@ -36,7 +36,8 @@ class TestValidatorAgentIntegration:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from agentic_core.utils.report_location_validator_types import (
+
+            from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
             )
 
@@ -63,7 +64,8 @@ class TestValidatorAgentIntegration:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from agentic_core.utils.report_location_validator_types import (
+
+            from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
             )
 
@@ -130,7 +132,7 @@ class TestHookValidatorIntegration:
 
     def test_hook_uses_validator_patterns(self) -> None:
         """Test that hook uses same patterns as validator."""
-        from agentic_core.utils.report_location_validator_types import (
+        from agentic_core.utils.report_location_validator_types_util import (
             REPORT_FILE_PATTERNS,
             SSOT_REPORTS_DIR,
         )
@@ -141,7 +143,7 @@ class TestHookValidatorIntegration:
 
     def test_hook_and_validator_agree_on_locations(self) -> None:
         """Test that hook and validator agree on approved locations."""
-        from agentic_core.utils.report_location_validator_types import (
+        from agentic_core.utils.report_location_validator_types_util import (
             APPROVED_REPORT_LOCATIONS,
         )
 
@@ -206,7 +208,8 @@ class TestInventoryIntegration:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from agentic_core.utils.report_location_validator_types import (
+
+            from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
             )
 
@@ -232,13 +235,13 @@ class TestConstantsIntegration:
 
     def test_ssot_dir_consistent(self) -> None:
         """Test that SSOT directory is consistent across modules."""
-        from agentic_core.utils.report_location_validator_types import SSOT_REPORTS_DIR
+        from agentic_core.utils.report_location_validator_types_util import SSOT_REPORTS_DIR
 
         assert SSOT_REPORTS_DIR == "docs/reports"
 
     def test_approved_locations_consistent(self) -> None:
         """Test that approved locations are consistent."""
-        from agentic_core.utils.report_location_validator_types import (
+        from agentic_core.utils.report_location_validator_types_util import (
             APPROVED_REPORT_LOCATIONS,
         )
 
@@ -249,7 +252,7 @@ class TestConstantsIntegration:
         """Test that all patterns are valid regex."""
         import re
 
-        from agentic_core.utils.report_location_validator_types import (
+        from agentic_core.utils.report_location_validator_types_util import (
             REPORT_FILE_PATTERNS,
         )
 

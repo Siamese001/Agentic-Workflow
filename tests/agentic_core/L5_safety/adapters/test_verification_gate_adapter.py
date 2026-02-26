@@ -7,7 +7,7 @@ import tempfile
 #     VerificationGateAdapter,
 # )
 # from agentic_core.utils.feature_flags import FeatureFlagManager
-# from agentic_core.utils.verification_types import (
+# from agentic_core.utils.verification_types_util import (
 #     VerificationRequest,
 #     VerificationResult,
 # )
@@ -224,7 +224,7 @@ class TestVerificationGateAdapterProtocolCompliance:
 
     def test_implements_protocol(self):
         """Test that adapter implements VerificationGateProtocol."""
-        from agentic_core.utils.verification_types import (
+        from agentic_core.utils.verification_types_util import (
             VerificationGateProtocol,
         )
 

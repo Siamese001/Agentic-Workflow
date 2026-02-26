@@ -9,11 +9,11 @@ import logging
 from typing import Any
 
 from agentic_core.utils.dependency_resolver import DynamicLoader
-from agentic_core.utils.detection_protocol import DetectionSignalProtocol
+from agentic_core.utils.detection_protocol_util import DetectionSignalProtocol
 from agentic_core.utils.feature_flags import FeatureFlagManager
-from agentic_core.utils.meta_learning_types import MetaLearningProtocol
-from agentic_core.utils.review_protocol import HumanReviewProtocol
-from agentic_core.utils.verification_types import VerificationGateProtocol
+from agentic_core.utils.meta_learning_types_util import MetaLearningProtocol
+from agentic_core.utils.review_protocol_util import HumanReviewProtocol
+from agentic_core.utils.verification_types_util import VerificationGateProtocol
 
 logger = logging.getLogger(__name__)
 

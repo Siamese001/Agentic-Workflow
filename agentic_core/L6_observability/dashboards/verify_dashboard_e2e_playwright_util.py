@@ -97,7 +97,7 @@ def kill_existing_servers():
 
 def start_server():
     """Start HTTP server on port 8080."""
-    from agentic_core.utils.security import safe_popen
+    from agentic_core.utils.security_util import safe_popen
 
     print(f"\n🚀 Starting HTTP server on port {PORT}...")
     serve_path = Path(__file__).parent / "serve_dashboard.py"

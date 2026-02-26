@@ -34,13 +34,17 @@ Usage:
 from __future__ import annotations
 
 import logging
-from dataclasses import dataclass
 from typing import Any
+
+from agentic_core.mixins.caching_mixin import CachingMixin
+from agentic_core.mixins.context_management_mixin import ContextManagementMixin
+from agentic_core.mixins.cost_mixin import CostGuardrailMixin
+from agentic_core.mixins.metrics_mixin import MetricsMixin
+from agentic_core.mixins.tracing_mixin import TracingMixin
 
 Logger = logging.getLogger(__name__)
 
 
-@dataclass
 class LightweightAgentBase(
     CostGuardrailMixin,
     ContextManagementMixin,
@@ -67,31 +71,9 @@ class LightweightAgentBase(
     - MCPHardenedMixin: For MCP protocol safety
     """
 
-    def __post_init__(self) -> None:
-        """Initialize lightweight infrastructure."""
-        # Initialize all parent mixins
-        # Note: dataclass doesn't call __init__ automatically for mixins
-        # so we need to initialize them here
-
-        # Initialize CachingMixin
-        import threading
-        from collections import OrderedDict
-
-        from agentic_core.mixins.caching_mixin import CacheConfig
-
-        self._cache_config = CacheConfig()
-        self._cache_store = OrderedDict()
-        self._cache_lock = threading.RLock()
-        self._caching_initialized = True
-
-        # Initialize MetricsMixin
-        from agentic_core.mixins.metrics_mixin import MetricsConfig
-
-        self._metrics_config = MetricsConfig()
-        self._metrics_store = {}
-        self._metrics_lock = threading.RLock()
-        self._metrics_initialized = True
-
+    def __init__(self, **kwargs: Any) -> None:
+        """Initializes all parent mixins in the correct MRO order."""
+        super().__init__(**kwargs)
         self._lightweight_initialized = True
 
         Logger.debug(f"[LIGHTWEIGHT] {self.__class__.__name__} lightweight agent initialized")

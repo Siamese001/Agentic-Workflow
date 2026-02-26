@@ -64,6 +64,78 @@ EXECUTION_PROFILES: dict[str, AgentExecutionProfile] = {
         allowed_models=("qwen-vllm", "gemini-2.5-pro"),  # Frozen, includes GEMINI
         notes="Research and information gathering",
     ),
+    # L5 Safety healing agents (LLM_API) - YES_TIERING agents
+    "CodeHealerAgent": AgentExecutionProfile(
+        agent_id="CodeHealerAgent",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 surgical code healing via CST",
+    ),
+    "GravityLeakRepairAgent": AgentExecutionProfile(
+        agent_id="GravityLeakRepairAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 gravity leak detection and repair",
+    ),
+    "IntegrityGateExecutorAgent": AgentExecutionProfile(
+        agent_id="IntegrityGateExecutorAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 integrity gate enforcement",
+    ),
+    "LocationHealerAgent": AgentExecutionProfile(
+        agent_id="LocationHealerAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 report location healing",
+    ),
+    "SafetyExecutorAgent": AgentExecutionProfile(
+        agent_id="SafetyExecutorAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 safety policy execution",
+    ),
+    "StructureHealerAgent": AgentExecutionProfile(
+        agent_id="StructureHealerAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 structural violation healing",
+    ),
+    "TypeHintFixerAgent": AgentExecutionProfile(
+        agent_id="TypeHintFixerAgent",
+        reasoning_intensity=ReasoningIntensity.LOW,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L5 type hint correction",
+    ),
+    "OutreachValidationExecutorAgent": AgentExecutionProfile(
+        agent_id="OutreachValidationExecutorAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="apps_lic outreach validation executor",
+    ),
+    "DispatchResumeToolsAgent": AgentExecutionProfile(
+        agent_id="DispatchResumeToolsAgent",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="apps_rg resume tools dispatcher",
+    ),
+    # Internal dispatchers (LLM_API) - route healing on behalf of agents
+    "remediation_dispatcher": AgentExecutionProfile(
+        agent_id="remediation_dispatcher",
+        reasoning_intensity=ReasoningIntensity.MEDIUM,
+        execution_mode=ExecutionMode.LLM_API,
+        allowed_models=("qwen-vllm", "gemini-2.5-pro"),
+        notes="L2 internal dispatcher that routes healing tier decisions",
+    ),
     # Low reasoning agents (DETERMINISTIC) - empty allowed_models
     "ClassificationComplianceHealer": AgentExecutionProfile(
         agent_id="ClassificationComplianceHealer",

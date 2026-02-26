@@ -2,7 +2,7 @@
 
 from typing import Any
 
-# from agentic_core.utils.verification_types import (
+# from agentic_core.utils.verification_types_util import (
 #     VerificationGateProtocol,
 #     VerificationRequest,
 #     VerificationResult,

@@ -9,7 +9,7 @@ import sys
 from pathlib import Path
 from typing import Any, TypedDict
 
-from agentic_core.utils.security import safe_execute
+from agentic_core.utils.security_util import safe_execute
 
 
 class ExecuteCommandArgs(TypedDict):

@@ -2,7 +2,7 @@
 
 from typing import Any
 
-# from agentic_core.utils.detection_protocol import (
+# from agentic_core.utils.detection_protocol_util import (
 #     DetectionRequest,
 #     DetectionResult,
 #     DetectionSignalProtocol,

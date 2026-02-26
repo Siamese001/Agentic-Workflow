@@ -347,7 +347,7 @@ class TestTieringAllowlist:
     """Verify allowlist matches CSV SSOT."""
 
     def test_allowlist_count(self):
-        assert len(TIERING_ALLOWLIST) == 10, f"Expected 10 YES_TIERING agents, got {len(TIERING_ALLOWLIST)}"
+        assert len(TIERING_ALLOWLIST) == 11, f"Expected 11 YES_TIERING agents, got {len(TIERING_ALLOWLIST)}"
 
     def test_yes_tiering_agents_in_allowlist(self):
         expected_agents = {
@@ -361,6 +361,7 @@ class TestTieringAllowlist:
             "DispatchOutreachToolsAgent",
             "OutreachValidationExecutorAgent",
             "DispatchResumeToolsAgent",
+            "remediation_dispatcher",
         }
         actual_agents = {name for name, _ in TIERING_ALLOWLIST}
         assert actual_agents == expected_agents

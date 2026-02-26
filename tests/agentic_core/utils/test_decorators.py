@@ -4,20 +4,21 @@ Test for decorators
 Generated as part of test structure mirror contract enforcement.
 """
 
-import agentic_core.utils.decorators
 import pytest
+
+import agentic_core.utils.decorators_shim_util
 
 
 def test_decorators_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.utils.decorators is not None
+    assert agentic_core.utils.decorators_shim_util is not None
 
 
 def test_standard_heal_exists():
     """Test that standard_heal function exists."""
     try:
-        func = agentic_core.utils.decorators.standard_heal
+        func = agentic_core.utils.decorators_shim_util.standard_heal
         assert callable(func)
     except AttributeError:
         pytest.skip("Function standard_heal not found in module")
@@ -26,7 +27,7 @@ def test_standard_heal_exists():
 def test_standard_heal_async_exists():
     """Test that standard_heal_async function exists."""
     try:
-        func = agentic_core.utils.decorators.standard_heal_async
+        func = agentic_core.utils.decorators_shim_util.standard_heal_async
         assert callable(func)
     except AttributeError:
         pytest.skip("Function standard_heal_async not found in module")
@@ -35,7 +36,7 @@ def test_standard_heal_async_exists():
 def test_wrapper_exists():
     """Test that wrapper function exists."""
     try:
-        func = agentic_core.utils.decorators.wrapper
+        func = agentic_core.utils.decorators_shim_util.wrapper
         assert callable(func)
     except AttributeError:
         pytest.skip("Function wrapper not found in module")
@@ -44,7 +45,7 @@ def test_wrapper_exists():
 def test_F_exists():
     """Test that F constant exists."""
     try:
-        value = agentic_core.utils.decorators.F
+        value = agentic_core.utils.decorators_shim_util.F
         assert value is not None
     except AttributeError:
         pytest.skip("Constant F not found in module")
@@ -53,7 +54,7 @@ def test_F_exists():
 def test_HEAL_RESULT_SCHEMA_exists():
     """Test that HEAL_RESULT_SCHEMA constant exists."""
     try:
-        value = agentic_core.utils.decorators.HEAL_RESULT_SCHEMA
+        value = agentic_core.utils.decorators_shim_util.HEAL_RESULT_SCHEMA
         assert value is not None
     except AttributeError:
         pytest.skip("Constant HEAL_RESULT_SCHEMA not found in module")
@@ -62,10 +63,10 @@ def test_HEAL_RESULT_SCHEMA_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.utils.decorators
+    import agentic_core.utils.decorators_shim_util
 
     # Check that module has some content
-    module_dict = agentic_core.utils.decorators.__dict__
+    module_dict = agentic_core.utils.decorators_shim_util.__dict__
 
     # Count meaningful items (excluding dunder methods)
     meaningful_items = [
@@ -73,4 +74,4 @@ def test_module_has_minimum_coverage():
     ]
 
     # At least one meaningful item should exist
-    assert len(meaningful_items) > 0, "Module agentic_core.utils.decorators appears to be empty"
+    assert len(meaningful_items) > 0, "Module agentic_core.utils.decorators_shim_util appears to be empty"

@@ -18,6 +18,15 @@ from typing import Any
 from agentic_core.embeddings.embedding_factory import EmbeddingClient
 
 
+@dataclass
+class PatternAnalysisConfig:
+    """Configuration for PatternAnalysisEngine."""
+
+    precision: int = 6
+    min_cluster_size: int = 2
+    distance_threshold: float = 0.25
+
+
 @dataclass(frozen=True)
 class Cluster:
     """Deterministic cluster representation."""
@@ -225,6 +234,7 @@ class PatternAnalysisEngine:
 
 # Export public interface
 __all__ = [
+    "PatternAnalysisConfig",
     "PatternAnalysisEngine",
     "PatternSummary",
     "Cluster",

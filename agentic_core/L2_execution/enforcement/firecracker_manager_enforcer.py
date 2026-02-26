@@ -26,9 +26,8 @@ except ImportError:
     VMStatus = None  # type: ignore[misc,assignment]
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
-from agentic_core.utils.security import safe_execute
-
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.utils.security_util import safe_execute
 
 Logger: Any = logging.getLogger(__name__)
 

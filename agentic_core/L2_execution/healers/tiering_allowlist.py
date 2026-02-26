@@ -18,18 +18,21 @@ logger = logging.getLogger(__name__)
 # Format: (agent_name, file_path)
 # ---------------------------------------------------------------------------
 
-TIERING_ALLOWLIST: frozenset[tuple[str, str]] = frozenset({
-    ("CodeHealerAgent", "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"),
-    ("GravityLeakRepairAgent", "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"),
-    ("IntegrityGateExecutorAgent", "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py"),
-    ("LocationHealerAgent", "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"),
-    ("SafetyExecutorAgent", "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py"),
-    ("StructureHealerAgent", "agentic_core/L5_safety/reasoning/StructureHealerAgent.py"),
-    ("TypeHintFixerAgent", "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py"),
-    ("DispatchOutreachToolsAgent", "apps_lic/reasoning/DispatchOutreachToolsAgent.py"),
-    ("OutreachValidationExecutorAgent", "apps_lic/reasoning/OutreachValidationExecutorAgent.py"),
-    ("DispatchResumeToolsAgent", "apps_rg/reasoning/DispatchResumeToolsAgent.py"),
-})
+TIERING_ALLOWLIST: frozenset[tuple[str, str]] = frozenset(
+    {
+        ("CodeHealerAgent", "agentic_core/L5_safety/reasoning/CodeHealerAgent.py"),
+        ("GravityLeakRepairAgent", "agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py"),
+        ("IntegrityGateExecutorAgent", "agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py"),
+        ("LocationHealerAgent", "agentic_core/L5_safety/reasoning/LocationHealerAgent.py"),
+        ("SafetyExecutorAgent", "agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py"),
+        ("StructureHealerAgent", "agentic_core/L5_safety/reasoning/StructureHealerAgent.py"),
+        ("TypeHintFixerAgent", "agentic_core/L5_safety/reasoning/TypeHintFixerAgent.py"),
+        ("DispatchOutreachToolsAgent", "apps_lic/reasoning/DispatchOutreachToolsAgent.py"),
+        ("OutreachValidationExecutorAgent", "apps_lic/reasoning/OutreachValidationExecutorAgent.py"),
+        ("DispatchResumeToolsAgent", "apps_rg/reasoning/DispatchResumeToolsAgent.py"),
+        ("remediation_dispatcher", "agentic_core/L2_execution/scripts/remediation_dispatcher.py"),
+    }
+)
 
 # Compile-time frozen agent names - no CSV loading
 TIERING_ALLOWLIST_AGENT_NAMES: frozenset[str] = frozenset(name for name, _ in TIERING_ALLOWLIST)

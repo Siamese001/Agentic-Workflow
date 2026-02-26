@@ -101,7 +101,7 @@ class TestConstantsConsistency:
 
     def test_ssot_dir_matches(self) -> None:
         """Test that SSOT directory in docs matches implementation."""
-        from agentic_core.utils.report_location_validator_types import SSOT_REPORTS_DIR
+        from agentic_core.utils.report_location_validator_types_util import SSOT_REPORTS_DIR
 
         guide_path = PROJECT_ROOT / "docs" / "reports" / "SSOT_REPORT_STORAGE_GUIDE.md"
         if guide_path.exists():
@@ -110,7 +110,7 @@ class TestConstantsConsistency:
 
     def test_approved_locations_documented(self) -> None:
         """Test that approved locations are documented."""
-        from agentic_core.utils.report_location_validator_types import (
+        from agentic_core.utils.report_location_validator_types_util import (
             APPROVED_REPORT_LOCATIONS,
         )
 
@@ -138,7 +138,7 @@ class TestCodeExamplesValid:
     def test_validator_import_works(self) -> None:
         """Test that documented validator import works."""
         try:
-            from agentic_core.utils.report_location_validator_types import (
+            from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
                 validate_report_location,
             )

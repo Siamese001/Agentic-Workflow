@@ -18,8 +18,7 @@ import libcst as cst
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.enforcement.verification_gate import VerificationGate
-
-from .cst_transformers_types import (
+from agentic_core.L5_safety.types.cst_transformers_types import (
     create_bare_except_fixer,
     create_blank_line_normalizer,
     create_docstring_inserter,
@@ -28,7 +27,7 @@ from .cst_transformers_types import (
     create_trailing_whitespace_fixer,
     create_type_hint_inserter,
 )
-from .surgical_context_types import (
+from agentic_core.L5_safety.types.surgical_context_types import (
     ASTCoordinate,
     SurgicalContext,
     ViolationConstraint,

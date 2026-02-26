@@ -11,24 +11,24 @@ from collections.abc import Callable
 from typing import Any, TypeVar
 
 from agentic_core.utils.dependency_resolver import DynamicLoader
-from agentic_core.utils.detection_protocol import (
+from agentic_core.utils.detection_protocol_util import (
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
 )
 from agentic_core.utils.feature_flags import FeatureFlagManager
-from agentic_core.utils.meta_learning_types import (
+from agentic_core.utils.meta_learning_types_util import (
     LearningContext,
     LearningResult,
     MetaLearningProtocol,
 )
-from agentic_core.utils.review_protocol import (
+from agentic_core.utils.review_protocol_util import (
     HumanReviewProtocol,
     ReviewRequest,
     ReviewResult,
     ReviewStatus,
 )
-from agentic_core.utils.verification_types import (
+from agentic_core.utils.verification_types_util import (
     VerificationGateProtocol,
     VerificationRequest,
     VerificationResult,

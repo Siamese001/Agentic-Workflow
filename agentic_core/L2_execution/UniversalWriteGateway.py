@@ -12,10 +12,17 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+
+
+class ToolNotAllowedError(PermissionError):
+    """Raised when an instruction attempts to execute a tool not on the allowlist."""
+
 
 @dataclass(frozen=True)
 class MutationRecord:
     """Immutable record of a write operation for audit trails."""
+
     timestamp: str
     operation: str  # "write", "append", "delete", "rename", etc.
     path: str
@@ -28,6 +35,7 @@ class MutationRecord:
 @dataclass
 class SimulationResult:
     """Result of a simulated write operation in replay mode."""
+
     operation: str
     path: str
     would_succeed: bool
@@ -57,8 +65,21 @@ class UniversalWriteGateway:
         }
         self._blocked_extensions = {
             # Block direct writes to executable files
-            ".exe", ".dll", ".so", ".dylib",
-            ".py", ".js", ".ts", ".jsx", ".tsx",
+            ".exe",
+            ".dll",
+            ".so",
+            ".dylib",
+            ".py",
+            ".js",
+            ".ts",
+            ".jsx",
+            ".tsx",
+        }
+        self._allowed_tools: set[str] = {
+            # Explicitly allowlist safe tools. This is the SOVEREIGN GATE.
+            "file_system.read",
+            "file_system.write",
+            "code_interpreter.run_python",
         }
 
     def check_write_permission(self, path: str, operation: str = "write") -> bool:
@@ -81,11 +102,7 @@ class UniversalWriteGateway:
         return self._write_permissions.get(path_normalized, False)
 
     def record_mutation(
-        self,
-        path: str,
-        operation: str,
-        data: str | bytes | None = None,
-        permitted: bool | None = None
+        self, path: str, operation: str, data: str | bytes | None = None, permitted: bool | None = None
     ) -> MutationRecord:
         """Record mutation for audit trail."""
         if permitted is None:
@@ -108,17 +125,12 @@ class UniversalWriteGateway:
             data_hash=data_hash,
             size_bytes=size_bytes,
             permitted=permitted,
-            replay_mode=self.replay_mode
+            replay_mode=self.replay_mode,
         )
         self._mutation_ledger.append(record)
         return record
 
-    def simulate_write(
-        self,
-        path: str,
-        operation: str,
-        data: str | bytes | None = None
-    ) -> SimulationResult:
+    def simulate_write(self, path: str, operation: str, data: str | bytes | None = None) -> SimulationResult:
         """Simulate write operation in replay mode."""
         if not self.replay_mode:
             raise RuntimeError("simulate_write called outside replay mode")
@@ -141,7 +153,7 @@ class UniversalWriteGateway:
             would_succeed=would_succeed,
             simulated_size=simulated_size,
             simulated_hash=simulated_hash,
-            replay_mode=True
+            replay_mode=True,
         )
 
     def grant_write_permission(self, path: str) -> None:
@@ -166,6 +178,34 @@ class UniversalWriteGateway:
             return  # No ledger changes in replay mode
         self._mutation_ledger.clear()
 
+    def execute_instruction(self, instruction: InstructionPacket) -> None:
+        """
+        The sovereign entry point for all tool executions.
+
+        Validates the tool name from the InstructionPacket against the allowlist
+        before allowing any operation to proceed.
+
+        Raises:
+            ToolNotAllowedError: If the tool is not in the allowlist.
+        """
+        tool_name = instruction.metadata.get("tool_name")
+        if not tool_name or tool_name not in self._allowed_tools:
+            # Immediate termination and audit emission
+            self.record_mutation(
+                path=f"tool_execution/{tool_name or 'unknown'}",
+                operation="execute_instruction_blocked",
+                permitted=False,
+            )
+            raise ToolNotAllowedError(f"Tool '{tool_name}' is not on the allowlist. Execution blocked.")
+
+        # If validation passes, record the permitted execution attempt.
+        # The actual tool execution logic would follow here.
+        self.record_mutation(
+            path=f"tool_execution/{tool_name}",
+            operation="execute_instruction_allowed",
+            permitted=True,
+        )
+
     def get_write_stats(self) -> dict[str, Any]:
         """Get statistics about write operations."""
         total = len(self._mutation_ledger)
@@ -177,7 +217,7 @@ class UniversalWriteGateway:
             "blocked_mutations": blocked,
             "replay_mode": self.replay_mode,
             "allowed_paths": list(self._allowed_paths),
-            "write_permissions": dict(self._write_permissions)
+            "write_permissions": dict(self._write_permissions),
         }
 
 

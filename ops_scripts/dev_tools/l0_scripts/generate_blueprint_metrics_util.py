@@ -7,11 +7,10 @@ Phase 1 of duplicate cleanup workflow.
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.utils.security import safe_git_execute
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.security_util import safe_git_execute
 
 
 def count_methods(file_path: Path) -> int:

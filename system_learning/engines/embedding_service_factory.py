@@ -50,6 +50,10 @@ class EmbeddingForkViolationError(RuntimeError):
 class EmbeddingIntegrityError(RuntimeError):
     """Raised when seed pack integrity validation fails."""
 
+
+class EmbeddingReplayViolationError(RuntimeError):
+    """Raised when a replay operation is attempted with a mismatched pack hash."""
+
     pass
 
 
@@ -174,11 +178,30 @@ class EmbeddingServiceFactory:
             cls._INSTANCE_IDENTITY = None
 
     @classmethod
-    def get(cls, pack_base_path: Path) -> EmbeddingServiceFactory:
+    @classmethod
+    def get(
+        cls,
+        pack_base_path: Path,
+        replay_mode: bool = False,
+        expected_pack_hash: str | None = None,
+    ) -> EmbeddingServiceFactory:
         """Get singleton instance with fork guard validation."""
         with cls._LOCK:
             if cls._INSTANCE is None:
                 cls._INSTANCE = cls(pack_base_path)
+
+            # Sovereign Replay Guard: In replay mode, the pack hash must match.
+            if replay_mode:
+                if not expected_pack_hash:
+                    raise EmbeddingReplayViolationError(
+                        "Replay mode is active, but no expected_pack_hash was provided."
+                    )
+                actual_pack_hash = cls._INSTANCE._manifest.get("seed_index_version_hash")
+                if actual_pack_hash != expected_pack_hash:
+                    raise EmbeddingReplayViolationError(
+                        f"Pack hash mismatch in replay mode. Expected: {expected_pack_hash}, Actual: {actual_pack_hash}"
+                    )
+
             else:
                 # Defensive assertion: prevent duplicate construction
                 if str(pack_base_path) != str(cls._INSTANCE._pack_base_path):
@@ -199,11 +222,11 @@ class EmbeddingServiceFactory:
     def _is_embedding_enabled() -> bool:
         """Check L4 governance kill-switch.
 
-        TODO: Wire to actual L4 config accessor when available.
-        For now, reads from environment or defaults to True.
+        For now, reads from environment. Must be explicitly 'true'.
         """
-        # Placeholder - will be replaced with actual L4 config access
-        return os.environ.get("EMBEDDING_ENABLED", "true").lower() == "true"
+        # This is a sovereign kill-switch. It overrides all other configuration.
+        # It must be explicitly set to "true" to be enabled.
+        return os.environ.get("EMBEDDING_ENABLED", "false").lower() == "true"
 
     def _get_blas_fingerprint(self) -> str:
         """Get BLAS implementation fingerprint for replay key."""

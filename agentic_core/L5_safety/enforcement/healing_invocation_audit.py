@@ -12,11 +12,10 @@ import re
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.utils.security import safe_execute
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.security_util import safe_execute
 
 
 class HealingInvocationAudit:

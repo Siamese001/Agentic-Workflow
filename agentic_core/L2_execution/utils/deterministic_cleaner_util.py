@@ -16,7 +16,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.shared.architecture_constants import ALLOWED_ROOT_FILES
-from agentic_core.utils.security import safe_execute
+
+from agentic_core.utils.security_util import safe_execute
 
 LOGGER = logging.getLogger(__name__)
 

@@ -50,6 +50,7 @@ HEALING_TIER_SYSTEM_FILES = frozenset(
         "agentic_core/L2_execution/healers/healing_tier_types.py",
         "agentic_core/L2_execution/healers/healing_tier_config.py",
         "agentic_core/L2_execution/healers/tiering_allowlist.py",
+        "agentic_core/L2_execution/healers/healing_provider_adapters.py",
     }
 )
 
@@ -388,7 +389,7 @@ class TestBlastRadiusCheck:
             f"\nBlast Radius: total={total_agents} tiered={tiered_count} "
             f"non_tiered={non_tiered} pct={pct:.1f}%"
         )
-        assert tiered_count == 10, f"Expected 10 tiered agents, got {tiered_count}"
+        assert tiered_count == 11, f"Expected 11 tiered agents, got {tiered_count}"
         assert total_agents >= tiered_count
 
 

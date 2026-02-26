@@ -22,8 +22,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security import safe_git_execute
-
+from agentic_core.utils.security_util import safe_git_execute
 from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)

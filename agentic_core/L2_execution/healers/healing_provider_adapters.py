@@ -45,6 +45,10 @@ class OOMEscalatedError(Exception):
 MAX_TOKENS = 2048
 MAX_OUTPUT_TOKENS = 2048
 
+# Canonical exported names (aliases for external consumers)
+DEFAULT_MAX_TOKENS = MAX_TOKENS
+DEFAULT_MAX_OUTPUT_TOKENS = MAX_OUTPUT_TOKENS
+
 # Fixed provider configurations - compile-time frozen
 QWEN_CONFIG: dict[str, Any] = {
     "temperature": 0.0,
@@ -63,11 +67,11 @@ GEMINI_CONFIG: dict[str, Any] = {
 
 # Pre-computed configuration hashes for replay determinism
 QWEN_CONFIG_HASH = hashlib.sha256(
-    '|'.join(f"{k}={v}" for k, v in sorted(QWEN_CONFIG.items())).encode()
+    "|".join(f"{k}={v}" for k, v in sorted(QWEN_CONFIG.items())).encode()
 ).hexdigest()[:16]
 
 GEMINI_CONFIG_HASH = hashlib.sha256(
-    '|'.join(f"{k}={v}" for k, v in sorted(GEMINI_CONFIG.items())).encode()
+    "|".join(f"{k}={v}" for k, v in sorted(GEMINI_CONFIG.items())).encode()
 ).hexdigest()[:16]
 
 
@@ -90,11 +94,11 @@ class QwenInvokerAdapter:
         self.api_key = api_key
         self._config_hash = QWEN_CONFIG_HASH
 
-    async def invoke_qwen_vllm(
+    def invoke_qwen_vllm(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        model_id: str = "qwen-vllm",
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -103,56 +107,61 @@ class QwenInvokerAdapter:
         Args:
             healing_input: Structured failure context
             decision: Routing decision from tier router
-            model_id: Model identifier (explicit, no config loading)
+            config: HealingTierConfig providing model IDs
             agent_name: Agent making the request
 
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        prompt = self._build_prompt(healing_input, decision, agent_name)
-        gateway = get_llm_gateway()
+        try:
+            import openai
 
-        # Explicit configuration - no environment access
-        request = GenerationRequest(
-            prompt=prompt,
-            agent_id="SovereignLLMGateway",
+            client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
+        except (ImportError, Exception) as exc:
+            raise ImportError(
+                "OpenAI SDK is required for Qwen/vLLM adapter. Install with: pip install openai"
+            ) from exc
+
+        model_id = config.model_qwen_vllm_id
+        prompt = self._build_prompt(healing_input, decision, agent_name)
+
+        client.chat.completions.create(
             model=model_id,
-            provider="openai",
-            **QWEN_CONFIG  # Unpack frozen config
+            messages=[
+                {"role": "system", "content": "You are a code healing assistant."},
+                {"role": "user", "content": prompt},
+            ],
+            temperature=QWEN_CONFIG["temperature"],
+            max_tokens=DEFAULT_MAX_TOKENS,
+            top_p=QWEN_CONFIG["top_p"],
+            frequency_penalty=QWEN_CONFIG["frequency_penalty"],
+            presence_penalty=QWEN_CONFIG["presence_penalty"],
         )
 
-        try:
-            response = await gateway.route_generation(request, base_url=self.base_url)
+        record = InvocationRecord(
+            tier=HealingTier.QWEN_VLLM,
+            model_id=model_id,
+            agent_name=agent_name,
+            trace_id=healing_input.trace_id,
+            heal_confidence=decision.heal_confidence,
+            method_called="invoke_qwen_vllm",
+            provider_config_hash=self._config_hash,
+            historical_data_hash=HISTORICAL_DATA_HASH,
+            replay_key=_compute_replay_key(healing_input, decision),
+        )
 
-            # Create replay-deterministic record
-            record = InvocationRecord(
-                tier=HealingTier.QWEN_VLLM,
-                model_id=model_id,
-                agent_name=agent_name,
-                trace_id=healing_input.trace_id,
-                heal_confidence=decision.heal_confidence,
-                method_called="invoke_qwen_vllm",
-                provider_config_hash=self._config_hash,
-                historical_data_hash=HISTORICAL_DATA_HASH,
-                replay_key=_compute_replay_key(healing_input, decision),
-            )
+        logger.info(
+            "Qwen healing invoked with deterministic config",
+            extra={
+                "model": model_id,
+                "agent": agent_name,
+                "trace_id": healing_input.trace_id,
+                "config_hash": self._config_hash,
+                "replay_key": record.replay_key,
+            },
+        )
 
-            logger.info(
-                "Qwen healing invoked with deterministic config",
-                extra={
-                    "model": model_id,
-                    "agent": agent_name,
-                    "trace_id": healing_input.trace_id,
-                    "config_hash": self._config_hash,
-                    "replay_key": record.replay_key,
-                },
-            )
-
-            return record
-
-        except Exception:
-            logger.error("Qwen healing failed", exc_info=True)
-            raise
+        return record
 
     def _build_prompt(self, healing_input: HealingInput, decision: HealingDecision, agent_name: str) -> str:
         """Build structured prompt from healing context."""
@@ -172,22 +181,22 @@ class QwenInvokerAdapter:
         parts.append("\nPlease provide a minimal fix for this issue.")
         return "\n".join(parts)
 
-    async def invoke_local(
+    def invoke_local(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
         """Local agent not supported by Qwen adapter."""
         raise NotImplementedError("invoke_local not supported by QwenInvokerAdapter")
 
-    async def invoke_gemini(
+    def invoke_gemini(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -212,11 +221,11 @@ class GeminiInvokerAdapter:
         self.api_key = api_key
         self._config_hash = GEMINI_CONFIG_HASH
 
-    async def invoke_gemini(
+    def invoke_gemini(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        model_id: str = "gemini-2.5-pro",
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -225,56 +234,59 @@ class GeminiInvokerAdapter:
         Args:
             healing_input: Structured failure context
             decision: Routing decision from tier router
-            model_id: Model identifier (explicit, no config loading)
+            config: HealingTierConfig providing model IDs
             agent_name: Agent making the request
 
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        prompt = self._build_prompt(healing_input, decision, agent_name)
-        gateway = get_llm_gateway()
+        try:
+            import google.generativeai as genai
+        except (ImportError, Exception) as exc:
+            raise ImportError(
+                "google-generativeai SDK is required for Gemini adapter. "
+                "Install with: pip install google-generativeai"
+            ) from exc
 
-        # Explicit configuration - no environment access
-        request = GenerationRequest(
-            prompt=prompt,
-            agent_id="SovereignLLMGateway",
-            model=model_id,
-            provider="google",
-            **GEMINI_CONFIG  # Unpack frozen config
+        model_id = config.model_gemini_2_5_pro_id
+        prompt = self._build_prompt(healing_input, decision, agent_name)
+
+        genai.configure(api_key=self.api_key)
+        model = genai.GenerativeModel(model_id)
+
+        generation_config = genai.types.GenerationConfig(
+            temperature=GEMINI_CONFIG["temperature"],
+            max_output_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
+            top_p=GEMINI_CONFIG["top_p"],
+            top_k=GEMINI_CONFIG["top_k"],
         )
 
-        try:
-            response = await gateway.route_generation(request)
+        model.generate_content(prompt, generation_config=generation_config)
 
-            # Create replay-deterministic record
-            record = InvocationRecord(
-                tier=HealingTier.GEMINI_2_5_PRO,
-                model_id=model_id,
-                agent_name=agent_name,
-                trace_id=healing_input.trace_id,
-                heal_confidence=decision.heal_confidence,
-                method_called="invoke_gemini",
-                provider_config_hash=self._config_hash,
-                historical_data_hash=HISTORICAL_DATA_HASH,
-                replay_key=_compute_replay_key(healing_input, decision),
-            )
+        record = InvocationRecord(
+            tier=HealingTier.GEMINI_2_5_PRO,
+            model_id=model_id,
+            agent_name=agent_name,
+            trace_id=healing_input.trace_id,
+            heal_confidence=decision.heal_confidence,
+            method_called="invoke_gemini",
+            provider_config_hash=self._config_hash,
+            historical_data_hash=HISTORICAL_DATA_HASH,
+            replay_key=_compute_replay_key(healing_input, decision),
+        )
 
-            logger.info(
-                "Gemini healing invoked with deterministic config",
-                extra={
-                    "model": model_id,
-                    "agent": agent_name,
-                    "trace_id": healing_input.trace_id,
-                    "config_hash": self._config_hash,
-                    "replay_key": record.replay_key,
-                },
-            )
+        logger.info(
+            "Gemini healing invoked with deterministic config",
+            extra={
+                "model": model_id,
+                "agent": agent_name,
+                "trace_id": healing_input.trace_id,
+                "config_hash": self._config_hash,
+                "replay_key": record.replay_key,
+            },
+        )
 
-            return record
-
-        except Exception:
-            logger.error("Gemini healing failed", exc_info=True)
-            raise
+        return record
 
     def _build_prompt(self, healing_input: HealingInput, decision: HealingDecision, agent_name: str) -> str:
         """Build structured prompt from healing context."""
@@ -294,22 +306,22 @@ class GeminiInvokerAdapter:
         parts.append("\nPlease provide a minimal fix for this issue.")
         return "\n".join(parts)
 
-    async def invoke_local(
+    def invoke_local(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
         """Local agent not supported by Gemini adapter."""
         raise NotImplementedError("invoke_local not supported by GeminiInvokerAdapter")
 
-    async def invoke_qwen_vllm(
+    def invoke_qwen_vllm(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -325,11 +337,11 @@ class GeminiInvokerAdapter:
 class LocalAgentAdapter:
     """Local agent adapter for simple, deterministic healing without LLM calls."""
 
-    async def invoke_local(
+    def invoke_local(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        model_id: str = "local",
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -338,21 +350,20 @@ class LocalAgentAdapter:
         Args:
             healing_input: Structured failure context
             decision: Routing decision from tier router
-            model_id: Model identifier (defaults to "local")
+            config: HealingTierConfig (unused for local agent)
             agent_name: Agent making the request
 
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        # Create replay-deterministic record
         record = InvocationRecord(
             tier=HealingTier.LOCAL_AGENT,
-            model_id=model_id,
+            model_id="local",
             agent_name=agent_name,
             trace_id=healing_input.trace_id,
             heal_confidence=decision.heal_confidence,
             method_called="invoke_local",
-            provider_config_hash="local",  # No config for local agent
+            provider_config_hash="local",
             historical_data_hash=HISTORICAL_DATA_HASH,
             replay_key=_compute_replay_key(healing_input, decision),
         )
@@ -370,22 +381,22 @@ class LocalAgentAdapter:
 
         return record
 
-    async def invoke_qwen_vllm(
+    def invoke_qwen_vllm(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        model_id: str = "qwen-vllm",
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
         """Qwen not supported by local adapter."""
         raise NotImplementedError("invoke_qwen_vllm not supported by LocalAgentAdapter")
 
-    async def invoke_gemini(
+    def invoke_gemini(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        model_id: str = "gemini-2.5-pro",
+        config: Any,
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -401,4 +412,6 @@ __all__ = [
     "GEMINI_CONFIG_HASH",
     "MAX_TOKENS",
     "MAX_OUTPUT_TOKENS",
+    "DEFAULT_MAX_TOKENS",
+    "DEFAULT_MAX_OUTPUT_TOKENS",
 ]

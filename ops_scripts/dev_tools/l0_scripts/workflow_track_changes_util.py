@@ -15,11 +15,10 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.security import safe_git_execute
-
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.security_util import safe_git_execute
 
 sovereign_agents: Any = {AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR}
 

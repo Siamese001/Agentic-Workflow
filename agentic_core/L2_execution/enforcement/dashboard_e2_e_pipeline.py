@@ -19,14 +19,13 @@ import subprocess
 import sys
 from pathlib import Path
 
-from agentic_core.utils.security import safe_execute
-
 # Import SSOT paths
 from agentic_core.L0_routing.config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
 from agentic_core.seams.contracts.activation import assert_activation_allowed
+from agentic_core.utils.security_util import safe_execute
 
 
 class DashboardE2EPipeline:

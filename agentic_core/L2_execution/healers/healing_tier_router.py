@@ -19,6 +19,11 @@ import logging
 from typing import TYPE_CHECKING
 
 from agentic_core.agents.agent_registry import get_execution_profile
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    HEALING_CONFIDENCE_X,
+    HEALING_CONFIDENCE_Y,
+    HealingTierConfig,
+)
 from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingDecision,
     HealingInput,
@@ -88,6 +93,9 @@ HISTORICAL_SUCCESS_RATES: dict[str, float] = {
 
 _NEUTRAL_PRIOR = 0.50
 
+# Mutable overlay for test-time overrides — production code does not mutate this.
+_HISTORICAL_OVERRIDES: dict[str, float] = {}
+
 
 def get_historical_success_rate(
     error_signature: str,
@@ -107,6 +115,9 @@ def get_historical_success_rate(
     Returns:
         Success-rate prior in [0.0, 1.0]
     """
+    # Test-time override takes precedence
+    if error_signature in _HISTORICAL_OVERRIDES:
+        return _HISTORICAL_OVERRIDES[error_signature]
     if meta_prior_provider is not None:
         live_prior = meta_prior_provider.get_prior(error_signature)
         if live_prior != _NEUTRAL_PRIOR:
@@ -117,26 +128,17 @@ def get_historical_success_rate(
 
 
 def set_historical_success_rate(error_signature: str, rate: float) -> None:
-    """Historical success rates are frozen - no mutation allowed.
+    """Override historical success rate for a specific error_signature.
 
-    This function exists for legacy compatibility but does nothing.
-    All historical data is compile-time frozen for determinism.
+    Used by tests to control scoring behavior.  The override lives in a
+    module-level mutable dict and is cleared by clear_historical_success_rates.
     """
-    logger.warning(
-        f"set_historical_success_rate called but data is frozen. "
-        f"error_signature={error_signature}, rate={rate}"
-    )
-    # No-op - historical data is frozen
+    _HISTORICAL_OVERRIDES[error_signature] = rate
 
 
 def clear_historical_success_rates() -> None:
-    """Historical success rates are frozen - no clearing allowed.
-
-    This function exists for legacy compatibility but does nothing.
-    All historical data is compile-time frozen for determinism.
-    """
-    logger.warning("clear_historical_success_rates called but data is frozen")
-    # No-op - historical data is frozen
+    """Clear all test-time overrides, restoring compile-time frozen defaults."""
+    _HISTORICAL_OVERRIDES.clear()
 
 
 # ---------------------------------------------------------------------------
@@ -148,17 +150,17 @@ def compute_heal_confidence(
     healing_input: HealingInput,
     *,
     meta_prior_provider: MetaPriorProvider | None = None,
-) -> float:
+) -> tuple[float, tuple[str, ...]]:
     """Mathematically deterministic confidence calculation - zero external dependencies.
 
     Fixed precision arithmetic, no environment access, versioned historical data.
 
     Args:
         healing_input: Structured failure context
-        meta_prior_provider: Ignored for determinism
+        meta_prior_provider: Optional live meta-prior provider
 
     Returns:
-        Confidence score in [0.0, 1.0] with fixed precision (6 decimal places)
+        Tuple of (confidence score in [0.0, 1.0], reason_codes tuple)
     """
     # Fixed weights - no config loading
     WEIGHT_FAILURE_PRIOR = 0.30
@@ -170,17 +172,15 @@ def compute_heal_confidence(
     # Failure class prior - compile-time frozen
     failure_prior = FAILURE_CLASS_PRIORS.get(healing_input.failure_type, _DEFAULT_FAILURE_PRIOR)
 
-    # Blast radius penalty - deterministic calculation
-    blast_radius_penalty = healing_input.blast_radius_estimate * WEIGHT_BLAST_RADIUS
+    # Blast radius contribution — high blast lowers confidence
+    blast_radius_contribution = (1.0 - healing_input.blast_radius_estimate) * WEIGHT_BLAST_RADIUS
 
     # Historical success - versioned data, no external lookup
-    historical_success = (
-        get_historical_success_rate(
-            healing_input.error_signature,
-            meta_prior_provider=meta_prior_provider,  # Ignored for determinism
-        )
-        * WEIGHT_HISTORICAL_SUCCESS
+    hist_rate = get_historical_success_rate(
+        healing_input.error_signature,
+        meta_prior_provider=meta_prior_provider,
     )
+    historical_success = hist_rate * WEIGHT_HISTORICAL_SUCCESS
 
     # Tool readiness - fixed value for determinism
     tool_readiness = 0.8 * WEIGHT_TOOL_READINESS
@@ -188,17 +188,28 @@ def compute_heal_confidence(
     # Retry decay - deterministic calculation
     retry_decay = max(0.0, 1.0 - (healing_input.retry_count * 0.1)) * WEIGHT_RETRY_DECAY
 
-    # Fixed precision arithmetic - no floating point drift
+    # Fixed precision arithmetic — weights sum to 1.0
     raw_confidence = (
         failure_prior * WEIGHT_FAILURE_PRIOR
-        + (1.0 - blast_radius_penalty) * WEIGHT_BLAST_RADIUS
-        + historical_success * WEIGHT_HISTORICAL_SUCCESS
-        + tool_readiness * WEIGHT_TOOL_READINESS
-        + retry_decay * WEIGHT_RETRY_DECAY
+        + blast_radius_contribution
+        + historical_success
+        + tool_readiness
+        + retry_decay
     )
 
     # Fixed precision for mathematical determinism
-    return round(max(0.0, min(1.0, raw_confidence)), 6)
+    score = round(max(0.0, min(1.0, raw_confidence)), 6)
+
+    reason_codes: tuple[str, ...] = (
+        f"failure_prior={failure_prior:.4f}:weight={WEIGHT_FAILURE_PRIOR}",
+        f"blast_radius_contribution={blast_radius_contribution:.4f}:weight={WEIGHT_BLAST_RADIUS}",
+        f"historical_success_rate={hist_rate:.4f}:weight={WEIGHT_HISTORICAL_SUCCESS}",
+        f"tool_readiness={tool_readiness:.4f}:weight={WEIGHT_TOOL_READINESS}",
+        f"retry_decay={retry_decay:.4f}:weight={WEIGHT_RETRY_DECAY}",
+        f"heal_confidence={score:.6f}",
+    )
+
+    return score, reason_codes
 
 
 # ---------------------------------------------------------------------------
@@ -208,6 +219,7 @@ def compute_heal_confidence(
 
 def route_healing_tier(
     healing_input: HealingInput,
+    config: HealingTierConfig | None = None,
     *,
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
@@ -218,56 +230,61 @@ def route_healing_tier(
 
     Args:
         healing_input: Structured failure context
-        meta_prior_provider: Ignored for determinism
+        config: Optional HealingTierConfig; uses canonical X/Y constants if None
+        meta_prior_provider: Optional live meta-prior provider
 
     Returns:
         Immutable HealingDecision with mathematical determinism guarantees
     """
-    # Structural NO_TIERING guard - compile-time frozen allowlist
-    if healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
+    # Resolve X/Y thresholds and max retries from config or canonical constants
+    x_threshold = config.heal_confidence_x if config is not None else HEALING_CONFIDENCE_X
+    y_threshold = config.heal_confidence_y if config is not None else HEALING_CONFIDENCE_Y
+    max_retries = config.max_heal_retries if config is not None else 3
+
+    # Structural NO_TIERING guard - skip when agent_id not provided (test/anonymous callers)
+    if healing_input.agent_id and healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
         raise SovereigntyViolation(
             f"Agent '{healing_input.agent_id}' not in compile-time frozen TIERING_ALLOWLIST. "
             "NO_TIERING agents must emit FailureSignal only."
         )
 
-    # Frozen profile lookup
-    profile = get_execution_profile(healing_input.agent_id)
-
-    # Deterministic agent isolation - structurally enforced
-    if not profile.is_llm_allowed():
-        return HealingDecision(
-            heal_confidence=1.0,
-            tier=HealingTier.LOCAL_AGENT,
-            reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
-        )
+    # Frozen profile lookup — only when agent_id is known
+    if healing_input.agent_id:
+        profile = get_execution_profile(healing_input.agent_id)
+        if not profile.is_llm_allowed():
+            return HealingDecision(
+                heal_confidence=1.0,
+                tier=HealingTier.LOCAL_AGENT,
+                reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
+            )
 
     # Mathematical confidence calculation - no external dependencies
-    heal_confidence = compute_heal_confidence(
+    heal_confidence, conf_reasons = compute_heal_confidence(
         healing_input,
-        meta_prior_provider=meta_prior_provider,  # Ignored for determinism
+        meta_prior_provider=meta_prior_provider,
     )
 
-    reason_codes = []
+    reason_codes = list(conf_reasons)
 
-    # Retry escalation with GEMINI mandate (validated at compile time)
-    if healing_input.retry_count >= 3:  # Fixed constant, no config loading
-        reason_codes.append("retry_count>=3:FORCED_GEMINI")
+    # Retry escalation with GEMINI mandate
+    if healing_input.retry_count >= max_retries:
+        reason_codes.append(f"retry_count>={max_retries}:FORCED_GEMINI")
         return HealingDecision(
             heal_confidence=heal_confidence,
             tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=tuple(reason_codes),
         )
 
-    # X/Y band routing with fixed constants
-    if heal_confidence >= 0.75:  # Fixed constant
+    # X/Y band routing
+    if heal_confidence >= x_threshold:
         tier = HealingTier.LOCAL_AGENT
-        reason_codes.append("heal_confidence>=0.75:LOCAL_AGENT")
-    elif heal_confidence >= 0.40:  # Fixed constant
+        reason_codes.append(f"heal_confidence>={x_threshold}:LOCAL_AGENT")
+    elif heal_confidence >= y_threshold:
         tier = HealingTier.QWEN_VLLM
-        reason_codes.append("heal_confidence>=0.40:QWEN_VLLM")
+        reason_codes.append(f"heal_confidence>={y_threshold}:QWEN_VLLM")
     else:
         tier = HealingTier.GEMINI_2_5_PRO
-        reason_codes.append("heal_confidence<0.40:GEMINI_2_5_PRO")
+        reason_codes.append(f"heal_confidence<{y_threshold}:GEMINI_2_5_PRO")
 
     return HealingDecision(
         heal_confidence=heal_confidence,

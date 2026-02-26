@@ -31,7 +31,7 @@ from agentic_core.L0_routing.seams.safety_validators_seam import (
 
 _ctv = load_canonical_truth_validator()
 get_canonical_layer = _ctv.get_canonical_layer
-from agentic_core.utils.security import safe_execute
+from agentic_core.utils.security_util import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR

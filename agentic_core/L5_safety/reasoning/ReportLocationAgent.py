@@ -27,16 +27,15 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.report_location_validator_types import (
+from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
+from agentic_core.utils.report_location_validator_types_util import (
     APPROVED_REPORT_LOCATIONS,
     SSOT_REPORTS_DIR,
     ReportInventory,
     ReportLocationValidator,
     ReportValidationResult,
 )
-
-from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.mixins.atomic_execution_mixin import AtomicExecutionMixin
 
 Logger = logging.getLogger(__name__)
 

@@ -11,7 +11,7 @@ PHASE 9 MIGRATION (Jan 2026):
 PHASE 2 META-LEARNING (Feb 2026):
 - MetaLearningClientMixin integration for healing pattern memory.
 - Redis hot-path caching for expensive AST analysis results.
-- Pinecone semantic retrieval for successful healing strategies.
+- Pinecone semantic retrieval for successful HealerMixin strategies.
 - Domain isolation for apps_lic and apps_rg territories.
 
 L0 DNA FLATTENING:
@@ -26,7 +26,6 @@ MRO HARDENING:
 """
 
 import logging
-from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
@@ -57,12 +56,10 @@ from agentic_core.mixins.embedding_mixin import EmbeddingMixin
 
 # [COGNITIVE HARDENING] Anti-Context Drift and Token Overload
 from agentic_core.mixins.golden_context_mixin import GoldenContextMixin
-from agentic_core.mixins.healing_mixin import HealingStrategyMixin
 from agentic_core.mixins.infrastructure_mixin import infrastructure_mixin
 from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin
 from agentic_core.mixins.meta_learning_client_mixin import MetaLearningClientMixin
 from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
-from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
 from agentic_core.runtime.exceptions.SovereignError import SovereignError
@@ -70,49 +67,37 @@ from agentic_core.runtime.exceptions.SovereignError import SovereignError
 logger = logging.getLogger(__name__)
 
 
-@dataclass
 class SovereignBaseAgent(
-    AtomicExecutionMixin,
-    infrastructure_mixin,
-    SubatomicTestingMixin,
-    ConfigMixin,
-    LLMProviderMixin,
-    EmbeddingMixin,
-    HealingStrategyMixin,
-    ValidatorMixin,
-    AuditTrailMixin,  # ADDED: Black Box telemetry
-    MetaLearningClientMixin,  # [PHASE 2] Meta-Learning integration
-    GoldenContextMixin,  # [COGNITIVE HARDENING] Anti-Context Drift
-    RuntimeSafetyMixin,  # [OPERATIONAL SAFETY] Process lifecycle management
+    infrastructure_mixin,  # Provides the core set of mixins
+    AtomicExecutionMixin,  # Not in infrastructure_mixin
+    ConfigMixin,  # Not in infrastructure_mixin
+    LLMProviderMixin,  # Not in infrastructure_mixin
+    EmbeddingMixin,  # Not in infrastructure_mixin
+    ValidatorMixin,  # Not in infrastructure_mixin
+    AuditTrailMixin,  # Not in infrastructure_mixin
+    MetaLearningClientMixin,  # Not in infrastructure_mixin
+    GoldenContextMixin,  # Not in infrastructure_mixin
+    RuntimeSafetyMixin,  # Not in infrastructure_mixin
 ):
     """
     Sovereign Single Source of Truth (SSOT) Root.
     HARDENED: SSOT Root with comprehensive type safety and security validation.
     """
 
-    project_root: Path = field(default_factory=Path.cwd)
-    _initialized: bool = field(default=False, init=False)
-    _security_validator: Any = field(default=None, init=False)
-
-    def __post_init__(self) -> None:
+    def __init__(self, project_root: Path = None, **kwargs: Any) -> None:
         """
         Initialize sovereign capabilities with Hardening AND Integrity Lock.
         """
-        # Initialize infrastructure first (calls super().__init__() internally)
-        try:
-            super().__post_init__()
-        except AttributeError:
-            # Some mixins don't have __post_init__, that's okay
-            pass
+        super().__init__(**kwargs)
+
+        self.project_root = project_root or Path.cwd()
+        self._initialized: bool = False
+        self._security_validator: Any = None
 
         # 1. THE IMMUTABLE LOCK CHECK
-        # If this fails, the agent refuses to exist.
-        # Critical integrity check - failure triggers emergency shutdown
         try:
             CoreIntegrityVerifier.verify_core_integrity()
-            # guardian: allow-silent-swallow
         except Exception as e:
-            # Panic mode: Log fatal error and die
             emergency_shutdown(f"CORE INTEGRITY COMPROMISED. TERMINATING AGENT. {e}")
 
         # 2. Security Validation

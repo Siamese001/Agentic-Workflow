@@ -288,7 +288,8 @@ class TestE2ECompleteSystem:
             from agentic_core.L5_safety.validators.ReportLocationAgent import (
                 ReportLocationAgent,
             )
-            from agentic_core.utils.report_location_validator_types import (
+
+            from agentic_core.utils.report_location_validator_types_util import (
                 ReportLocationValidator,
             )
 

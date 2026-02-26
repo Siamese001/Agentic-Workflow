@@ -30,7 +30,6 @@ class HealingInput:
     """Structured failure context consumed by the L2.3 healing router.
 
     Attributes:
-        agent_id: Identifier of the agent requesting healing (for execution profile enforcement).
         failure_type: Category of the failure (e.g. 'syntax_error', 'import_cycle').
         error_signature: Deterministic hash or short string identifying the error class.
         trace_id: Correlation ID linking to the execution cycle.
@@ -39,9 +38,9 @@ class HealingInput:
         required_tools: Tools the healer needs (e.g. ['ast_rewrite', 'file_move']).
         violation_metadata_refs: Paths to violation artifacts for context.
         replay_mode: Enable deterministic replay mode (timestamp excluded).
+        agent_id: Optional identifier of the agent requesting healing (execution profile enforcement).
     """
 
-    agent_id: str
     failure_type: str
     error_signature: str
     trace_id: str
@@ -50,10 +49,9 @@ class HealingInput:
     required_tools: tuple[str, ...]
     violation_metadata_refs: tuple[str, ...]
     replay_mode: bool = False  # New: enables deterministic replay
+    agent_id: str = ""  # Optional: agent identity for execution profile enforcement
 
     def __post_init__(self) -> None:
-        if not self.agent_id:
-            raise ValueError("agent_id must not be empty")
         if not self.failure_type:
             raise ValueError("failure_type must not be empty")
         if not self.error_signature:

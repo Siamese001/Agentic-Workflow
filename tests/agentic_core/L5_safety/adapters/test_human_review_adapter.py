@@ -2,7 +2,7 @@
 
 # from agentic_core.L5_safety.reasoning.human_review_adapter import HumanReviewAdapter  # TODO: Fix import
 # from agentic_core.utils.feature_flags import FeatureFlagManager  # TODO: Fix import
-# from agentic_core.utils.review_protocol import (
+# from agentic_core.utils.review_protocol_util import (
 #     ReviewRequest,
 #     ReviewResult,
 #     ReviewStatus,
@@ -296,7 +296,7 @@ class TestHumanReviewAdapterProtocolCompliance:
 
     def test_implements_protocol(self):
         """Test that adapter implements HumanReviewProtocol."""
-        from agentic_core.utils.review_protocol import HumanReviewProtocol
+        from agentic_core.utils.review_protocol_util import HumanReviewProtocol
 
         adapter = HumanReviewAdapter()
         assert isinstance(adapter, HumanReviewProtocol)

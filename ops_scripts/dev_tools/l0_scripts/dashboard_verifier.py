@@ -331,7 +331,7 @@ class DashboardVerifier:
 
         # Start dashboard server
         print("\n11. Starting dashboard server on port 8765...")
-        from agentic_core.utils.security import safe_popen
+        from agentic_core.utils.security_util import safe_popen
 
         server_process = safe_popen(
             [sys.executable, "-m", "http.server", "8765"],

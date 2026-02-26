@@ -10,9 +10,13 @@ This module consolidates duplicate code blocks found across:
 Import from here instead of duplicating code.
 """
 
+import hashlib
+import json
 from dataclasses import dataclass, field
 from datetime import datetime
 from typing import Any
+
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 
 def _get_subatomic_testing_mixin():
@@ -27,6 +31,29 @@ except ImportError:
 
     class SubatomicTestingMixin:  # type: ignore[no-redef]
         pass
+
+
+@dataclass(frozen=True)
+class ConfigSurface:
+    """A container for all sovereign configuration values that affect determinism."""
+
+    threshold_configs: dict[str, float]
+    tier_constants: dict[str, float]  # e.g., {"X": 0.75, "Y": 0.40}
+    tool_budget_caps: dict[str, int]
+    freshness_windows: dict[str, int]
+
+    def compute_hash(self) -> str:
+        """Computes a deterministic hash of the entire configuration surface."""
+        # Using a simplified canonical JSON helper here. In the final system,
+        # this would delegate to the single digest_authority module.
+        from dataclasses import asdict
+
+        canonical_string = json.dumps(
+            asdict(self),
+            sort_keys=True,
+            separators=(",", ":"),
+        ).encode("utf-8")
+        return hashlib.sha256(canonical_string).hexdigest()
 
 
 @dataclass
@@ -53,6 +80,7 @@ class ExecutionContext:
     replay_mode: bool = False
     active_policy_hash: str | None = None
     safety_status: str = "PENDING"
+    config_surface_hash: str | None = None
 
     def to_dict(self) -> dict[str, Any]:
         """Convert to dictionary for serialization."""
@@ -66,7 +94,12 @@ class ExecutionContext:
             "replay_mode": self.replay_mode,
             "active_policy_hash": self.active_policy_hash,
             "safety_status": self.safety_status,
+            "config_surface_hash": self.config_surface_hash,
         }
+
+    def set_config_surface(self, config_surface: ConfigSurface) -> None:
+        """Computes and sets the config surface hash for this context."""
+        self.config_surface_hash = config_surface.compute_hash()
 
 
 class BaseRefiner:
@@ -112,7 +145,7 @@ class BaseRefiner:
         return result
 
 
-class BaseTaskExecutor(MCPHardenedMixin, HealerMixin, SubatomicTestingMixin):
+class BaseTaskExecutor(SovereignBaseAgent, SubatomicTestingMixin):
     """
     Base class for task execution with error handling.
     Previously duplicated 7+ times as execute() function.

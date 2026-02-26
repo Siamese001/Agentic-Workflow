@@ -9,7 +9,7 @@ import logging
 import subprocess
 from typing import Any
 
-from agentic_core.utils.security import safe_execute
+from agentic_core.utils.security_util import safe_execute
 
 Logger: Any = logging.getLogger(__name__)
 

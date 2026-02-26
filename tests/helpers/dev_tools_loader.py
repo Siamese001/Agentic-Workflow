@@ -16,7 +16,7 @@ from pathlib import Path
 from types import ModuleType
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-DEV_SCRIPTS_DIR = REPO_ROOT / "dev_tools" / "l0_scripts"
+DEV_SCRIPTS_DIR = REPO_ROOT / "ops_scripts" / "dev_tools" / "l0_scripts"
 
 
 def load_dev_script(filename: str) -> ModuleType:

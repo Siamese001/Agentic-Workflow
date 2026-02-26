@@ -2,7 +2,7 @@
 
 from typing import Any
 
-# from agentic_core.utils.meta_learning_types import (
+# from agentic_core.utils.meta_learning_types_util import (
 #     LearningContext,
 #     LearningResult,
 #     MetaLearningProtocol,
