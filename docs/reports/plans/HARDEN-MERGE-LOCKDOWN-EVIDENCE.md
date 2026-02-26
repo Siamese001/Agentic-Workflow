@@ -4,10 +4,10 @@
 L2 side-effect boundary enforcement, universal write gateway, determinism digest, system invariant scanner, negative control tests
 
 ## CODE_COMMIT
-7e8f1a2b3c4d5e6f7a8b9c0d1e2f3a4b5c6d7e8f
+4270d01d71fe1839af3006ab7e95c6dbb0437924
 
 ## EVIDENCE_COMMIT
-PENDING
+4270d01d71fe1839af3006ab7e95c6dbb0437924
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/engines/execution_gateway.py
