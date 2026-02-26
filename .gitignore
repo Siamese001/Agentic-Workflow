@@ -145,5 +145,8 @@ artifacts/windsurf/*_acceptance.*
 artifacts/windsurf/*_det*
 artifacts/windsurf/*_neg*
 
+# Generated tool call store
+docs/store/
+
 # Root README (auto-generated / user-local)
  /README.md
