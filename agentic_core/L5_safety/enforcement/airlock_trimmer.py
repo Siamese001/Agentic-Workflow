@@ -13,8 +13,8 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
 
-root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / AGENTIC_CORE_DIR
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
+CORE: Any = ROOT / AGENTIC_CORE_DIR
 
 
 def trim_airlock(init_file: Any) -> Any:

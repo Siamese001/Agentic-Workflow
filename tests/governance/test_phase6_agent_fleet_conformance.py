@@ -19,6 +19,12 @@ import pathlib
 
 import pytest
 
+from agentic_core.L2_execution.determinism import (
+    INVENTORY_ARTIFACT_PATH,
+    build_agent_2x2_inventory,
+    write_agent_2x2_inventory,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 # ---------------------------------------------------------------------------
@@ -112,18 +118,14 @@ def _ast_has_forbidden_provider_import(source: str, filepath: str) -> list[str]:
             for alias in node.names:
                 top = alias.name.split(".")[0]
                 if top in FORBIDDEN_PROVIDER_MODULES or alias.name in FORBIDDEN_PROVIDER_MODULES:
-                    violations.append(
-                        f"line {node.lineno}: import {alias.name}"
-                    )
+                    violations.append(f"line {node.lineno}: import {alias.name}")
         elif isinstance(node, ast.ImportFrom):
             if node.module:
                 top = node.module.split(".")[0]
                 full = node.module
                 if top in FORBIDDEN_PROVIDER_MODULES or full in FORBIDDEN_PROVIDER_MODULES:
                     names = ", ".join(a.name for a in node.names)
-                    violations.append(
-                        f"line {node.lineno}: from {node.module} import {names}"
-                    )
+                    violations.append(f"line {node.lineno}: from {node.module} import {names}")
 
     return violations
 
@@ -195,9 +197,7 @@ def test_fleet_inventory_combined_count():
         rg_count = len(json.load(f))
 
     fleet_total = ssot_count + lic_count + rg_count
-    assert fleet_total > 0, (
-        f"Fleet total must be > 0: ssot={ssot_count}, lic={lic_count}, rg={rg_count}"
-    )
+    assert fleet_total > 0, f"Fleet total must be > 0: ssot={ssot_count}, lic={lic_count}, rg={rg_count}"
 
 
 # ---------------------------------------------------------------------------
@@ -238,17 +238,13 @@ def test_bypass_detection_no_direct_provider_sdk_outside_allowlist():
     delta = found_count - ceiling
 
     # Print governance signal (§32)
-    print(
-        f"\nBYPASS-DEBT: found={found_count}, ceiling={ceiling}, delta={delta}"
-    )
+    print(f"\nBYPASS-DEBT: found={found_count}, ceiling={ceiling}, delta={delta}")
     for path, viols in sorted(violations_by_file.items()):
         for v in viols:
             print(f"  {'[KNOWN]' if path in KNOWN_BYPASS_DEBT else '[NEW!]'} {path}: {v}")
 
     # Detect unknown bypasses (files not in known debt set)
-    unknown_bypasses = sorted(
-        path for path in violations_by_file if path not in KNOWN_BYPASS_DEBT
-    )
+    unknown_bypasses = sorted(path for path in violations_by_file if path not in KNOWN_BYPASS_DEBT)
     if unknown_bypasses:
         lines = ["NEW BYPASS VIOLATIONS — not in known-debt baseline:"]
         for path in unknown_bypasses:
@@ -275,8 +271,6 @@ def test_bypass_detection_allowlisted_seams_exist():
         "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
         "agentic_core/L2_execution/healers/healing_provider_adapters.py",
     ]
-    missing_required = [p for p in required_seams if (REPO_ROOT / p) not in [REPO_ROOT / m for m in missing]]
-    # Inverse: required seams that are truly missing
     truly_missing = [p for p in required_seams if not (REPO_ROOT / p).exists()]
     assert not truly_missing, f"Required seam files missing: {truly_missing}"
 
@@ -315,15 +309,13 @@ def test_seam_gateway_requires_agent_id_fail_closed():
     with pytest.raises(V15HardFailAbort, match="agent_id is required"):
         agent_id = None
         if agent_id is None:
-            raise V15HardFailAbort(
-                "\u00a7AgentProfile: agent_id is required for all gateway calls"
-            )
+            raise V15HardFailAbort("\u00a7AgentProfile: agent_id is required for all gateway calls")
 
 
 def test_seam_gateway_rejects_deterministic_agent():
     """Gateway must raise V15HardFailAbort for DETERMINISTIC agents (fail-closed)."""
-    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
     from agentic_core.agents.agent_registry import get_deterministic_agents, get_profile
+    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
 
     det_agents = get_deterministic_agents()
     if not det_agents:
@@ -342,8 +334,8 @@ def test_seam_gateway_rejects_deterministic_agent():
 
 def test_seam_gateway_enforces_allowed_models():
     """Gateway must raise V15HardFailAbort when LLM agent requests forbidden model."""
-    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
     from agentic_core.agents.agent_registry import get_llm_agents, get_profile
+    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
 
     llm_agents = get_llm_agents()
     if not llm_agents:
@@ -375,17 +367,15 @@ def test_seam_gateway_enforces_allowed_models():
 
 def test_seam_gateway_rejects_unregistered_agent():
     """Gateway must raise V15HardFailAbort for agents not in SSOT registry."""
-    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
     from agentic_core.agents.agent_registry import get_profile
+    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
 
     with pytest.raises(V15HardFailAbort, match="not found in registry"):
         agent_id = "UNREGISTERED_AGENT_PHASE6_TEST"
         try:
             get_profile(agent_id)
         except KeyError as e:
-            raise V15HardFailAbort(
-                f"\u00a7AgentProfile: Agent '{agent_id}' not found in registry: {e}"
-            )
+            raise V15HardFailAbort(f"\u00a7AgentProfile: Agent '{agent_id}' not found in registry: {e}")
 
 
 def test_seam_tier_router_requires_registered_agent():
@@ -419,10 +409,10 @@ def test_seam_tier_router_requires_registered_agent():
 
 def test_seam_tier_router_blocks_deterministic_escalation():
     """HealingTierRouter must not escalate DETERMINISTIC agents to LLM tiers."""
+    from agentic_core.agents.agent_registry import get_deterministic_agents
     from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
     from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
     from agentic_core.L2_execution.healers.healing_tier_types import HealingInput, HealingTier
-    from agentic_core.agents.agent_registry import get_deterministic_agents
 
     det_agents = get_deterministic_agents()
     if not det_agents:
@@ -508,18 +498,27 @@ def test_w6_digest_is_stable():
     """W6-DETERMINISM-DIGEST must be identical on two sequential computations."""
     digest_a = _compute_w6_fleet_digest()
     digest_b = _compute_w6_fleet_digest()
-    assert digest_a == digest_b, (
-        f"W6 digest is not deterministic: {digest_a} != {digest_b}"
-    )
+    assert digest_a == digest_b, f"W6 digest is not deterministic: {digest_a} != {digest_b}"
 
 
 def test_w6_digest_is_nonempty_hex():
     """W6-DETERMINISM-DIGEST must be a 64-char hex string."""
     digest = _compute_w6_fleet_digest()
     assert len(digest) == 64, f"W6 digest must be 64 chars, got {len(digest)}"
-    assert all(c in "0123456789abcdef" for c in digest), (
-        f"W6 digest must be lowercase hex: {digest}"
-    )
+    assert all(c in "0123456789abcdef" for c in digest), f"W6 digest must be lowercase hex: {digest}"
+
+
+def test_w6_inventory_artifact_generation():
+    """Phase 6 must generate canonical agent_2x2_inventory artifact."""
+    artifact_path = write_agent_2x2_inventory()
+    assert artifact_path == INVENTORY_ARTIFACT_PATH
+    assert artifact_path.exists(), f"Inventory artifact missing: {artifact_path}"
+
+    content = artifact_path.read_text(encoding="utf-8")
+    parsed = json.loads(content)
+    expected = build_agent_2x2_inventory()
+
+    assert parsed == expected, "Written inventory artifact must match canonical builder output"
 
 
 # ---------------------------------------------------------------------------
@@ -552,9 +551,7 @@ def test_w6_negative_control_tamper_detection():
     try:
         agent_id = None
         if agent_id is None:
-            raise V15HardFailAbort(
-                "\u00a7AgentProfile: agent_id is required for all gateway calls"
-            )
+            raise V15HardFailAbort("\u00a7AgentProfile: agent_id is required for all gateway calls")
     except V15HardFailAbort:
         caught = True
 
@@ -581,9 +578,7 @@ def test_w6_full_fleet_conformance_system():
     try:
         agent_id = None  # injected tamper: missing agent_id
         if agent_id is None:
-            raise V15HardFailAbort(
-                "\u00a7AgentProfile: agent_id is required for all gateway calls"
-            )
+            raise V15HardFailAbort("\u00a7AgentProfile: agent_id is required for all gateway calls")
     except V15HardFailAbort:
         caught = True
 
