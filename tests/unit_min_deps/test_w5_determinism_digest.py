@@ -18,7 +18,7 @@ from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
     compute_determinism_digest,
 )
 
-pytestmark = pytest.mark.unit
+pytestmark = pytest.mark.unit_min_deps
 
 
 class TestW5DeterminismDigest:
@@ -204,25 +204,26 @@ class TestW5DeterminismDigest:
         # Digests should be different
         assert result1.determinism_digest != result2.determinism_digest
 
-    @pytest.mark.xfail(strict=True, reason="Negative control test - should fail when tampering")
+    @pytest.mark.xfail(strict=True, reason="Negative control: tampered digest differs from canonical")
     def test_negative_control_tamper_detection(self, orchestrator, sample_payload):
-        """Test negative control: tampering should be detected."""
-        # Set tamper environment variable
-        with patch.dict(os.environ, {"W5_NEGCTRL_TAMPER": "1"}):
-            # This should cause deterministic sort order to be reversed
-            # leading to different digest and assertion failure
-            orchestrator.orchestrate(
-                governed_payload=sample_payload,
-                route_mode="B",
-                trace_id="test_trace_tamper",
-                policy_hash="policy_hash_001",
-                allowed_tools=("tool1", "tool2"),
-            )
+        """Test negative control: tamper toggle produces different digest, assertion fails."""
+        params = {
+            "governed_payload": sample_payload,
+            "route_mode": "B",
+            "trace_id": "test_trace_tamper",
+            "policy_hash": "policy_hash_001",
+            "allowed_tools": ("tool1", "tool2"),
+        }
+        # Canonical digest (no tamper)
+        result_clean = orchestrator.orchestrate(**params)
+        clean_digest = result_clean.determinism_digest
 
-            # If we reach here, tampering wasn't detected properly
-            # This test should be marked as XFAIL(strict=True)
-            # and exit with code 0 when tampering is detected
-            pytest.fail("Tampering was not detected - test should have failed")
+        # Tampered digest (reversed sort)
+        with patch.dict(os.environ, {"W5_NEGCTRL_TAMPER": "1"}):
+            result_tampered = orchestrator.orchestrate(**params)
+
+        # This assertion MUST fail (different digests) → test is xfail strict → exit 0
+        assert result_tampered.determinism_digest == clean_digest
 
     def test_negative_control_restore_behavior(self, orchestrator, sample_payload):
         """Test negative control: restore should pass after tamper env is unset."""

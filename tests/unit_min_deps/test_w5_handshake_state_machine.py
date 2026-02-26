@@ -13,7 +13,7 @@ from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     create_handshake_machine,
 )
 
-pytestmark = pytest.mark.unit
+pytestmark = pytest.mark.unit_min_deps
 
 
 class TestW5HandshakeStateMachine:
@@ -173,7 +173,8 @@ class TestW5HandshakeStateMachine:
         with pytest.raises(ValueError, match="Cannot modify_diff from PRECLEAR_REQUESTED"):
             machine.modify_diff()
 
-        # Try to modify from SEALED
+        # Try to modify from SEALED (reset first - machine is in PRECLEAR_REQUESTED)
+        machine.reset()
         machine.request_preclear()
         machine.certify()
         machine.seal()
@@ -306,7 +307,7 @@ class TestW5HandshakeStateMachine:
 
         transition = machine.transition_history[0]
         assert transition.timestamp is not None
-        assert transition.timestamp.endswith("Z")  # UTC indicator
+        assert "+00:00" in transition.timestamp or "Z" in transition.timestamp  # UTC indicator
         assert "T" in transition.timestamp  # ISO format separator
 
     def _execute_full_sequence(self, machine: HandshakeStateMachine) -> str:

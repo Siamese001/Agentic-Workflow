@@ -88,7 +88,7 @@ def create_execution_trace_skeleton(
     Returns:
         ExecutionTrace with populated skeleton
     """
-    from datetime import datetime
+    from datetime import datetime, timezone
 
     # Compute governed payload hash
     payload_dict = {
@@ -107,7 +107,7 @@ def create_execution_trace_skeleton(
         actor=actor,
         target=target,
         governed_payload_hash=governed_payload_hash,
-        timestamp=datetime.utcnow().isoformat() + "Z",
+        timestamp=datetime.now(timezone.utc).isoformat(),
     )
 
     return trace

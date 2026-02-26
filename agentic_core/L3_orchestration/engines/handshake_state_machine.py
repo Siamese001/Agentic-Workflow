@@ -143,9 +143,8 @@ class HandshakeStateMachine:
             "transitions": [
                 {
                     "from_state": t.from_state.value,
-                    "to_state": t.to_state.value,
-                    "timestamp": t.timestamp,
                     "reason": t.reason,
+                    "to_state": t.to_state.value,
                 }
                 for t in self._transition_history
             ],
@@ -163,12 +162,12 @@ class HandshakeStateMachine:
 
         Records transition in history for audit trail.
         """
-        from datetime import datetime
+        from datetime import datetime, timezone
 
         transition = StateTransition(
             from_state=self._current_state,
             to_state=new_state,
-            timestamp=datetime.utcnow().isoformat() + "Z",
+            timestamp=datetime.now(timezone.utc).isoformat(),
             reason=reason,
         )
 

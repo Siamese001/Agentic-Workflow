@@ -18,7 +18,7 @@ from agentic_core.L3_orchestration.types.execution_trace import (
     create_execution_trace_skeleton,
 )
 
-pytestmark = pytest.mark.unit
+pytestmark = pytest.mark.unit_min_deps
 
 
 class TestW5ExecutionTracePlanHash:

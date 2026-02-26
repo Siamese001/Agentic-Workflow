@@ -14,7 +14,7 @@ from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
 from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
 from agentic_core.L3_orchestration.types.human_decision_artifact import HumanAction
 
-pytestmark = pytest.mark.unit
+pytestmark = pytest.mark.unit_min_deps
 
 
 class TestW5L3OrchestratorPaths:
@@ -177,7 +177,7 @@ class TestW5L3OrchestratorPaths:
 
     def test_invalid_route_mode_raises_error(self, orchestrator, sample_payload):
         """Test that invalid route mode raises ValueError."""
-        with pytest.raises(ValueError, match="Unsupported route_mode"):
+        with pytest.raises(ValueError, match="is not a valid RouteMode"):
             orchestrator.orchestrate(
                 governed_payload=sample_payload,
                 route_mode="INVALID",

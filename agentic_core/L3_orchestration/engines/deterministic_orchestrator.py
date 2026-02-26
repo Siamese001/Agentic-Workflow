@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import dataclass
 from enum import Enum
 from pathlib import Path
@@ -74,14 +75,30 @@ def compute_determinism_digest(
     Compute W5-DETERMINISM-DIGEST.
 
     Exactly one per run - printed to stdout.
+    When W5_NEGCTRL_TAMPER=1 the sort order is reversed to prove tamper detection.
     """
-    digest_data = {
-        "plan_hash": plan_hash,
-        "agent_registry_hash": agent_registry_hash,
-        "tool_key_hash": tool_key_hash,
-        "handshake_sequence_hash": handshake_sequence_hash,
-    }
-    canonical = canonical_json(digest_data)
+    if os.environ.get("W5_NEGCTRL_TAMPER") == "1":
+        # Negative control: intentionally reverse sort order to cause mismatch
+        digest_data = {
+            "handshake_sequence_hash": handshake_sequence_hash,
+            "tool_key_hash": tool_key_hash,
+            "agent_registry_hash": agent_registry_hash,
+            "plan_hash": plan_hash,
+        }
+        canonical = json.dumps(
+            digest_data,
+            ensure_ascii=False,
+            sort_keys=False,
+            separators=(",", ":"),
+        )
+    else:
+        digest_data = {
+            "plan_hash": plan_hash,
+            "agent_registry_hash": agent_registry_hash,
+            "tool_key_hash": tool_key_hash,
+            "handshake_sequence_hash": handshake_sequence_hash,
+        }
+        canonical = canonical_json(digest_data)
     digest = hashlib.sha256(canonical.encode("utf-8")).hexdigest()
     print(f"W5-DETERMINISM-DIGEST: {digest}")
     return digest
@@ -150,7 +167,7 @@ class DeterministicOrchestrator:
         elif config.route_mode == RouteMode.D:
             return self._orchestrate_path_d(config)
         else:
-            raise ValueError(f"Unsupported route_mode: {route_mode}")
+            raise ValueError(f"Unsupported route_mode '{route_mode}'. Must be B, C, or D.")
 
     def _orchestrate_path_b(self, config: OrchestrationConfig) -> OrchestrationResult:
         """
@@ -198,18 +215,20 @@ class DeterministicOrchestrator:
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
+        digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
 
         return OrchestrationResult(
             success=True,
             route_mode="B",
             plan_hash=plan_hash,
-            execution_trace=execution_trace,
+            execution_trace=execution_trace.to_dict(),
             handshake_state=self.handshake_machine.current_state,
             determinism_digest=determinism_digest,
             metadata={
                 "policy_check": "completed",
                 "certification": "granted",
                 "sealed": True,
+                "digest_output": digest_line,
             },
         )
 
@@ -227,16 +246,15 @@ class DeterministicOrchestrator:
         # Initialize handshake
         self.handshake_machine.reset()
 
-        if has_tool_intent:
-            # Require L5 certification for tool execution
-            self.handshake_machine.request_preclear()
-            self.handshake_machine.certify()
+        # Always require L5 certification before sealing (spec requirement)
+        self.handshake_machine.request_preclear()
+        self.handshake_machine.certify()
 
         # Create plan
         plan = self._create_deterministic_plan(config)
         plan_hash = compute_plan_hash(plan)
 
-        # Seal after certification (or immediately if no tools)
+        # Seal after certification
         self.handshake_machine.seal()
 
         # Create execution trace
@@ -255,18 +273,20 @@ class DeterministicOrchestrator:
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
+        digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
 
         return OrchestrationResult(
             success=True,
             route_mode="C",
             plan_hash=plan_hash,
-            execution_trace=execution_trace,
+            execution_trace=execution_trace.to_dict(),
             handshake_state=self.handshake_machine.current_state,
             determinism_digest=determinism_digest,
             metadata={
                 "tool_execution_detected": has_tool_intent,
                 "certification_required": has_tool_intent,
                 "sealed": True,
+                "digest_output": digest_line,
             },
         )
 
@@ -289,6 +309,7 @@ class DeterministicOrchestrator:
             policy_hash=config.policy_hash,
             plan_hash=plan_hash,
             governed_payload=config.governed_payload,
+            allowed_tools=config.allowed_tools,
         )
 
         # Create execution trace (no dispatch)
@@ -307,19 +328,21 @@ class DeterministicOrchestrator:
             tool_key_hash=tool_key_hash,
             handshake_sequence_hash=handshake_sequence_hash,
         )
+        digest_line = f"W5-DETERMINISM-DIGEST: {determinism_digest}"
 
         return OrchestrationResult(
             success=True,
             route_mode="D",
             plan_hash=plan_hash,
-            execution_trace=execution_trace,
+            execution_trace=execution_trace.to_dict(),
             handshake_state=self.handshake_machine.current_state,
             determinism_digest=determinism_digest,
-            human_decision_artifact=human_artifact,
+            human_decision_artifact=human_artifact.to_dict(),
             metadata={
                 "human_review_required": True,
                 "dispatched_to_l2": False,
                 "awaiting_human_decision": True,
+                "digest_output": digest_line,
             },
         )
 
