@@ -19,7 +19,7 @@ from __future__ import annotations
 import hashlib
 import logging
 from dataclasses import dataclass
-from typing import TYPE_CHECKING, Protocol
+from typing import TYPE_CHECKING, Any, Protocol
 
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
@@ -238,7 +238,6 @@ def dispatch_healing(
 
     decision = route_healing_tier(
         healing_input,
-        config,
         meta_prior_provider=meta_prior_provider,
     )
 
@@ -260,6 +259,7 @@ def dispatch_healing(
     method = getattr(invoker, method_name)
 
     success = False
+    record: InvocationRecord | None = None
     try:
         record = method(healing_input, decision, config, agent_name=agent_name)
         success = True
@@ -280,7 +280,7 @@ def dispatch_healing(
             outcome_write_back_hook.on_outcome(
                 healing_input=healing_input,
                 decision=decision,
-                record=record if success else None,
+                record=record,
                 success=success,
             )
         # Phase 3: Emit pattern advice metadata (informational-only)
@@ -291,7 +291,7 @@ def dispatch_healing(
             meta_outcome_bus_hook.publish_outcome(
                 healing_input=healing_input,
                 decision=decision,
-                record=record if success else None,
+                record=record,
                 success=success,
             )
 
