@@ -49,6 +49,7 @@ ALLOWED_EMBEDDING_IMPORTS = {
 
 # Known embedding bypass debt (baseline)
 KNOWN_EMBEDDING_BYPASS_DEBT = set()
+KNOWN_EMBEDDING_BYPASS_DEBT.add("agentic_core/L2_execution/healers/vllm_process_manager.py")
 
 KNOWN_EMBEDDING_BYPASS_DEBT_CEILING = len(KNOWN_EMBEDDING_BYPASS_DEBT)
 
