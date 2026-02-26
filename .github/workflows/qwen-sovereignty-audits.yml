@@ -1,0 +1,72 @@
+name: Qwen Sovereignty Audits
+
+on:
+  push:
+    branches: [ main, develop ]
+  pull_request:
+    branches: [ main, develop ]
+
+jobs:
+  qwen-sovereignty:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Set up Python
+      uses: actions/setup-python@v4
+      with:
+        python-version: '3.11'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install pytest
+
+    - name: Run Qwen Enum Leakage Check
+      run: |
+        python ops_scripts/ci/audit_qwen_sovereignty.py
+
+    - name: Run Qwen Replay Validation Tests
+      run: |
+        python -m pytest tests/agentic_core/L2_execution/healers/test_qwen_replay_validation.py -v
+
+    - name: Validate Threshold Immutability
+      run: |
+        python -c "
+        import agentic_core.L2_execution.healers.healing_tier_router as router
+        assert router.HEALING_CONFIDENCE_X == 0.75, 'X threshold modified'
+        assert router.HEALING_CONFIDENCE_Y == 0.40, 'Y threshold modified'
+        print('Threshold immutability validated')
+        "
+
+    - name: Check Embedding Governance Lock
+      run: |
+        python -c "
+        import os
+        from pathlib import Path
+
+        embedding_files = [
+            'agentic_core/embeddings/embedding_factory.py',
+            'agentic_core/embeddings/embedding_input_guard.py'
+        ]
+
+        forbidden_patterns = ['qwen', 'vllm', 'Qwen', 'VLLM']
+        violations = []
+
+        for file_path in embedding_files:
+            if Path(file_path).exists():
+                content = Path(file_path).read_text(encoding='utf-8')
+                for pattern in forbidden_patterns:
+                    if pattern in content:
+                        violations.append(f'{file_path}:{pattern}')
+
+        if violations:
+            print('ERROR: Embedding governance violations detected:')
+            for violation in violations:
+                print(f'  - {violation}')
+            exit(1)
+
+        print('OK: Embedding governance lock validated')
+        "

@@ -16,14 +16,16 @@ All components are persisted into the returned HealingDecision for auditability.
 
 from __future__ import annotations
 
+import os
+
+from agentic_core.agents.agent_registry import get_profile
+from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingDecision,
     HealingInput,
     HealingTier,
 )
-from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
-from agentic_core.agents.agent_registry import get_profile
 
 # ---------------------------------------------------------------------------
 # Failure class priors — deterministic mapping from failure_type to base score.
@@ -155,6 +157,7 @@ def route_healing_tier(
     No other module may select between LOCAL_AGENT, QWEN_VLLM, GEMINI_2_5_PRO.
 
     Phase 5-G: Enforces agent execution profile restrictions.
+    Includes QWEN_VLLM_ENABLED kill switch enforcement.
 
     Args:
         healing_input: Structured failure context.
@@ -163,18 +166,21 @@ def route_healing_tier(
     Returns:
         Immutable HealingDecision with tier, heal_confidence, and reason_codes.
     """
+    # Check Qwen kill switch first
+    decision = _apply_qwen_kill_switch(healing_input, config)
+    if decision:
+        return decision
+
     # Phase 5-G: Agent execution profile enforcement
     try:
         profile = get_profile(healing_input.agent_id)
     except KeyError as e:
-        raise V15HardFailAbort(
-            f"§AgentProfile: Agent '{healing_input.agent_id}' not found in registry: {e}"
-        )
+        raise V15HardFailAbort(f"§AgentProfile: Agent '{healing_input.agent_id}' not found in registry: {e}")
 
     # Enforce execution mode - deterministic agents cannot escalate to LLM tiers
     if not profile.is_llm_allowed():
         # Deterministic agents can ONLY use LOCAL_AGENT tier
-        reason_codes = [f"agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT"]
+        reason_codes = ["agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT"]
         return HealingDecision(
             heal_confidence=1.0,  # Maximum confidence for local agents
             tier=HealingTier.LOCAL_AGENT,
@@ -230,6 +236,32 @@ def route_healing_tier(
         tier=tier,
         reason_codes=tuple(reason_codes),
     )
+
+
+def _apply_qwen_kill_switch(healing_input: HealingInput, config: HealingTierConfig) -> HealingDecision | None:
+    """Apply QWEN_VLLM_ENABLED kill switch if needed."""
+    qwen_enabled = os.environ.get("QWEN_VLLM_ENABLED", "true").lower() == "true"
+
+    if not qwen_enabled:
+        # Skip QWEN_VLLM tier entirely
+        heal_confidence, reason_codes = compute_heal_confidence(healing_input)
+        reason_codes.append("QWEN_VLLM_ENABLED=DISABLED:SKIPPED")
+
+        if heal_confidence >= config.heal_confidence_x:
+            return HealingDecision(
+                heal_confidence=heal_confidence,
+                tier=HealingTier.LOCAL_AGENT,
+                reason_codes=tuple(reason_codes),
+            )
+        else:
+            # Direct escalation to GEMINI_2_5_PRO
+            return HealingDecision(
+                heal_confidence=heal_confidence,
+                tier=HealingTier.GEMINI_2_5_PRO,
+                reason_codes=tuple(reason_codes + ["FORCED_GEMINI_ESCALATION"]),
+            )
+
+    return None  # Kill switch not engaged, use normal routing
 
 
 __all__ = [

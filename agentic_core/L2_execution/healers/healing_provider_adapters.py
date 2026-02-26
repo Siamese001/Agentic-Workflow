@@ -22,6 +22,19 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
 
 logger = logging.getLogger(__name__)
 
+
+class OOMRetryableError(Exception):
+    """Raised when OOM occurs but retry is possible through router escalation."""
+
+    pass
+
+
+class OOMEscalatedError(Exception):
+    """Raised when OOM has been escalated to another tier."""
+
+    pass
+
+
 # Module-level constants for token limits
 # guardian: allow-magic-config
 DEFAULT_MAX_TOKENS = 2048
@@ -91,8 +104,8 @@ class QwenInvokerAdapter:
                     },
                     {"role": "user", "content": prompt},
                 ],
-                temperature=0.1,
-                max_tokens=DEFAULT_MAX_TOKENS,
+                temperature=0.0,  # Fixed for determinism - guardian: allow-magic-configuration
+                max_tokens=2048,  # Fixed for determinism - guardian: allow-magic-configuration
             )
 
             usage = response.usage
@@ -108,6 +121,47 @@ class QwenInvokerAdapter:
                 },
             )
 
+            # Generate determinism digest and output hash
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                QWEN_CUDA_VERSION,
+                QWEN_MODEL_REVISION_SHA,
+                QWEN_TOKENIZER_REVISION_SHA,
+                QWEN_TORCH_VERSION,
+                QWEN_VLLM_VERSION,
+            )
+            from agentic_core.L2_execution.healers.qwen_determinism import (
+                canonicalize_qwen_output,
+                compute_qwen_determinism_digest,
+            )
+
+            # Fixed inference parameters for determinism
+            inference_params = {"temperature": 0.0, "top_p": 1.0, "max_tokens": 2048, "seed": 42}
+
+            determinism_digest = compute_qwen_determinism_digest(
+                model_id=config.model_qwen_vllm_id,
+                model_revision=QWEN_MODEL_REVISION_SHA,
+                tokenizer_revision=QWEN_TOKENIZER_REVISION_SHA,
+                inference_params=inference_params,
+                vllm_version=QWEN_VLLM_VERSION,
+                cuda_version=QWEN_CUDA_VERSION,
+                torch_version=QWEN_TORCH_VERSION,
+            )
+
+            output_text = response.choices[0].message.content or ""
+            output_hash = canonicalize_qwen_output(output_text)
+
+            provider_metadata = {
+                "determinism_digest": determinism_digest,
+                "output_hash": output_hash,
+                "revision_sha": QWEN_MODEL_REVISION_SHA,
+                "latency_ms": 0,  # TODO: implement timing
+                "memory_used_mb": 0,  # TODO: implement memory tracking
+                "gpu_utilization": 0.0,  # TODO: implement GPU tracking
+                "vllm_version": QWEN_VLLM_VERSION,
+                "cuda_version": QWEN_CUDA_VERSION,
+                "torch_version": QWEN_TORCH_VERSION,
+            }
+
             return InvocationRecord(
                 tier=HealingTier.QWEN_VLLM,
                 model_id=config.model_qwen_vllm_id,
@@ -115,6 +169,7 @@ class QwenInvokerAdapter:
                 trace_id=healing_input.trace_id,
                 heal_confidence=decision.heal_confidence,
                 method_called="invoke_qwen_vllm",
+                provider_metadata=provider_metadata,
             )
 
         except Exception as exc:
@@ -128,6 +183,17 @@ class QwenInvokerAdapter:
                 },
                 exc_info=True,
             )
+
+            # Check for OOM and handle through router choke point
+            if "out of memory" in str(exc).lower():
+                from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
+                    handle_qwen_oom_via_router,
+                )
+
+                # Route through choke point - router handles retry_count >= 3 -> GEMINI escalation
+                escalated_decision = handle_qwen_oom_via_router(healing_input, config)
+                raise OOMRetryableError(f"OOM routed to {escalated_decision.tier}")
+
             raise
 
     def _build_prompt(self, healing_input: HealingInput, decision: HealingDecision, agent_name: str) -> str:

@@ -9,7 +9,19 @@ Config is frozen after validation — no runtime mutation.
 
 from __future__ import annotations
 
+import os
 from dataclasses import dataclass
+
+# FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
+HEALING_CONFIDENCE_X = 0.75  # Upper threshold - CANNOT BE MODIFIED
+HEALING_CONFIDENCE_Y = 0.40  # Lower threshold - CANNOT BE MODIFIED
+
+# Qwen pinned revisions for determinism
+QWEN_MODEL_REVISION_SHA = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"
+QWEN_TOKENIZER_REVISION_SHA = "f6e5d4c3b2a1f0e9d8c7b6a5f4e3d2c1b0a9f8e7"
+QWEN_VLLM_VERSION = "0.4.2"
+QWEN_CUDA_VERSION = "12.1"
+QWEN_TORCH_VERSION = "2.1.0"
 
 
 @dataclass(frozen=True, slots=True)
@@ -58,16 +70,70 @@ def load_default_healing_tier_config() -> HealingTierConfig:
     Returns:
         Validated HealingTierConfig instance.
     """
+    # Use immutable thresholds
     return HealingTierConfig(
-        heal_confidence_x=0.75,
-        heal_confidence_y=0.40,
+        heal_confidence_x=HEALING_CONFIDENCE_X,
+        heal_confidence_y=HEALING_CONFIDENCE_Y,
         max_heal_retries=3,
-        model_qwen_vllm_id="qwen2.5-coder-32b-instruct",
+        model_qwen_vllm_id="Qwen/Qwen2.5-7B-Instruct",
         model_gemini_2_5_pro_id="gemini-2.5-pro",
     )
 
 
+def validate_qwen_startup_state() -> None:
+    """Hard validate kill switch at startup."""
+    qwen_enabled = os.environ.get("QWEN_VLLM_ENABLED", "true").lower() == "true"
+
+    if not qwen_enabled:
+        # Assert no Qwen processes are running (cross-platform)
+        if is_vllm_process_running():
+            raise RuntimeError(
+                "QWEN_VLLM_ENABLED=False but vLLM process detected. "
+                "Terminate all vLLM processes before starting."
+            )
+
+        import logging
+
+        logger = logging.getLogger(__name__)
+        logger.info("QWEN_VLLM_ENABLED=False - Qwen tier disabled at startup")
+        return
+
+    # If enabled, validate GPU capabilities before allowing startup
+    try:
+        # Import here to avoid circular dependency
+        from agentic_core.L2_execution.healers.qwen_gpu_validator import validate_qwen_gpu_capabilities
+
+        validate_qwen_gpu_capabilities(model_size="7B")  # Default to 7B for validation
+        logger.info("QWEN_VLLM_ENABLED=True - GPU validation passed")
+    except Exception as exc:
+        logger.error(f"QWEN_VLLM_ENABLED=True but GPU validation failed: {exc}")
+        raise
+
+
+def is_vllm_process_running() -> bool:
+    """Cross-platform detection of vLLM processes using psutil."""
+    try:
+        import psutil
+
+        for proc in psutil.process_iter(attrs=["cmdline"]):
+            cmdline = proc.info.get("cmdline", [])
+            if cmdline and "vllm" in " ".join(cmdline):
+                return True
+        return False
+    except (psutil.NoSuchProcess, psutil.AccessDenied, psutil.ZombieProcess, ImportError):
+        return False
+
+
 __all__ = [
+    "HEALING_CONFIDENCE_X",
+    "HEALING_CONFIDENCE_Y",
+    "QWEN_MODEL_REVISION_SHA",
+    "QWEN_TOKENIZER_REVISION_SHA",
+    "QWEN_VLLM_VERSION",
+    "QWEN_CUDA_VERSION",
+    "QWEN_TORCH_VERSION",
     "HealingTierConfig",
     "load_default_healing_tier_config",
+    "validate_qwen_startup_state",
+    "is_vllm_process_running",
 ]

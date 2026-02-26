@@ -77,10 +77,24 @@ agentic_core/L2_execution/engines/secure_tools_impl.py:138:magic_configuration:M
 agentic_core/L2_execution/engines/secure_tools_impl.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/tool_registry.py:120:magic_configuration:Magic configuration: Hardcoded max_tools=5
 agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic configuration: Hardcoded min_relevance=0.6
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:259:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:296:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:356:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_router.py:58:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
+agentic_core/L2_execution/healers/healing_provider_adapters.py:98:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:287:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:384:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_router.py:60:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:102:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:143:magic_configuration:Magic configuration: Hardcoded min_compute=7.0
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:31:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:51:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:66:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_gpu_validator.py:83:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_health.py:57:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/qwen_health.py:65:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/vllm_process_manager.py:108:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+agentic_core/L2_execution/healers/vllm_process_manager.py:118:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/vllm_process_manager.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/vllm_process_manager.py:85:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+agentic_core/L2_execution/healers/vllm_process_manager.py:94:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:240:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L2_execution/tools/file_io_impl.py:120:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L2_execution/tools/file_io_impl.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

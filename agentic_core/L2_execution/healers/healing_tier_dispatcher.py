@@ -51,6 +51,34 @@ class InvocationRecord:
     trace_id: str
     heal_confidence: float
     method_called: str
+    # Optional provider metadata (prevents type branching)
+    provider_metadata: dict[str, Any] | None = None
+
+
+def handle_qwen_oom_via_router(healing_input: HealingInput, config: HealingTierConfig) -> HealingDecision:
+    """Handle OOM by routing through single choke point."""
+    # Increment retry count
+    new_retry_count = healing_input.retry_count + 1
+
+    # Create FailureSignal for L2.3 consumption
+    failure_signal = FailureSignal(
+        source_agent=healing_input.agent_id,
+        failure_type="gpu_oom",
+        error_signature="qwen_gpu_oom",
+        trace_id=healing_input.trace_id,
+        context={"retry_count": new_retry_count, "error": "GPU out of memory"},
+        retry_count=new_retry_count,
+        blast_radius_estimate=0.1,
+    )
+
+    # Convert to HealingInput and route through choke point
+    escalated_input = failure_signal.to_healing_input(
+        required_tools=healing_input.required_tools,
+        violation_metadata_refs=healing_input.violation_metadata_refs,
+    )
+
+    # Return router decision directly (no exceptions, no manual tier selection)
+    return route_healing_tier(escalated_input, config)
 
 
 # ---------------------------------------------------------------------------
@@ -357,9 +385,32 @@ def _emit_rollback_refinement(
         logger.debug("rollback refinement failed; swallowed to preserve dispatch path")
 
 
+def invoke_qwen_with_oom_protection(
+    healing_input: HealingInput,
+    decision: HealingDecision,
+    config: HealingTierConfig,
+    invoker: HealingProviderInvoker,
+    agent_name: str = "",
+) -> InvocationRecord:
+    """Invoke Qwen with OOM protection and proper escalation."""
+    try:
+        return invoker.invoke_qwen_vllm(healing_input, decision, config, agent_name=agent_name)
+    except Exception as exc:
+        if "out of memory" in str(exc).lower():
+            # Route through choke point - router handles retry_count >= 3 -> GEMINI escalation
+            escalated_decision = handle_qwen_oom_via_router(healing_input, config)
+            # Retry with escalated tier
+            method_name = _TIER_TO_METHOD[escalated_decision.tier]
+            method = getattr(invoker, method_name)
+            return method(healing_input, escalated_decision, config, agent_name=agent_name)
+        raise
+
+
 __all__ = [
     "DefaultHealingProviderInvoker",
     "HealingProviderInvoker",
     "InvocationRecord",
     "dispatch_healing",
+    "handle_qwen_oom_via_router",
+    "invoke_qwen_with_oom_protection",
 ]
