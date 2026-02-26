@@ -1,8 +1,13 @@
 """
-Reasoning configuration Toggles.
+Reasoning configuration Toggles — DEFAULTS ONLY.
 
-Defines the bounds and safety switches for advanced reasoning capabilities
-(CoT, ToT, Reflexion) within the agentic workflow.
+These are static fallback defaults used when no L0-stamped
+ReasoningIntensityProfile is available (e.g. unit tests, offline mode).
+
+GOVERNANCE: Runtime reasoning intensity is governed by the
+ReasoningIntensityProfile stamped by L0 ReasoningPolicyEngine and
+injected into HOPPipelineExecutor via SignedExecutionEnvelope.
+Do NOT add environment-based overrides here.
 """
 
 from __future__ import annotations
@@ -12,17 +17,20 @@ from pydantic import BaseModel, Field, field_validator
 
 class ReasoningToggles(BaseModel):
     """
-    configuration object for enabling/disabling advanced reasoning features.
+    Static fallback defaults for reasoning feature configuration.
     Enforces strict safety bounds to prevent infinite loops or token exhaustion.
+
+    NOTE: At runtime these values are OVERRIDDEN by the L0-stamped
+    ReasoningIntensityProfile.  This class is defaults-only.
     """
 
     # Core Toggles
     use_cot: bool = Field(default=True, description="Enable Chain-of-Thought reasoning.")
-    use_reflexion: bool = Field(default=True, description="Enable self-correction loops.")
+    use_reflexion: bool = Field(default=False, description="Enable self-correction loops.")
 
     # Tree of Thought Parameters
-    tot_branches: int = Field(default=3, description="Number of alternative reasoning paths.")
-    min_tot_depth: int = Field(default=2, description="Minimum depth for tree exploration.")
+    tot_branches: int = Field(default=2, description="Number of alternative reasoning paths.")
+    min_tot_depth: int = Field(default=1, description="Minimum depth for tree exploration.")
 
     # Sampling Parameters
     self_consistency_samples: int = Field(default=3, description="Number of samples for majority voting.")
@@ -53,3 +61,6 @@ class ReasoningToggles(BaseModel):
         """Pydantic configuration."""
 
         frozen = True  # Configs should be immutable once loaded
+
+
+DEFAULT_TOGGLES = ReasoningToggles()

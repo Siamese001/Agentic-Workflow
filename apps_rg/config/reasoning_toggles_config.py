@@ -1,36 +1,39 @@
 """
-Reasoning Configuration Toggles for RG Sovereign Architecture.
+Reasoning Configuration Toggles for RG Sovereign Architecture — DEFAULTS ONLY.
 
-Defines the bounds and safety switches for advanced reasoning capabilities
-(CoT, ToT, Reflexion) within the agentic workflow.
-Aligned with LIC ReasoningToggles pattern.
+These are static fallback defaults used when no L0-stamped
+ReasoningIntensityProfile is available (e.g. unit tests, offline mode).
 
-HARDENING: Adds get_toggles factory for environment switching.
+GOVERNANCE: Runtime reasoning intensity is governed by the
+ReasoningIntensityProfile stamped by L0 ReasoningPolicyEngine and
+injected via SignedExecutionEnvelope. Do NOT add environment-based
+overrides or a get_toggles() factory here.
 """
 
 from __future__ import annotations
-
-import os
 
 from pydantic import BaseModel, Field, field_validator
 
 
 class ReasoningToggles(BaseModel):
     """
-    Configuration object for enabling/disabling advanced reasoning features.
+    Static fallback defaults for enabling/disabling advanced reasoning features.
     Enforces strict safety bounds to prevent infinite loops or token exhaustion.
+
+    NOTE: At runtime these values are OVERRIDDEN by the L0-stamped
+    ReasoningIntensityProfile.  This class is defaults-only.
     """
 
     # Core Toggles
     use_cot: bool = Field(default=True, description="Enable Chain-of-Thought reasoning.")
-    use_reflexion: bool = Field(default=True, description="Enable self-correction loops.")
+    use_reflexion: bool = Field(default=False, description="Enable self-correction loops.")
     strict_mode: bool = Field(default=True, description="Fail on minor validation errors.")
     use_persistent_tracing: bool = Field(default=True, description="Enable persistent trace storage.")
     use_cyclic_validation: bool = Field(default=True, description="Enable cyclic retry validation.")
 
     # Tree of Thought Parameters
-    tot_branches: int = Field(default=3, description="Number of alternative reasoning paths.")
-    min_tot_depth: int = Field(default=2, description="Minimum depth for tree exploration.")
+    tot_branches: int = Field(default=2, description="Number of alternative reasoning paths.")
+    min_tot_depth: int = Field(default=1, description="Minimum depth for tree exploration.")
 
     # Sampling Parameters
     temperature_cap: float = Field(default=0.5, description="Maximum temperature.")
@@ -43,16 +46,4 @@ class ReasoningToggles(BaseModel):
         return v
 
 
-def get_toggles(env: str = None) -> ReasoningToggles:
-    """Factory to load toggles based on environment."""
-    environment = env or os.getenv("RG_ENV", "prod")
-
-    if environment == "dev":
-        # Dev Mode: More expensive reasoning, loose constraints
-        return ReasoningToggles(tot_branches=5, min_tot_depth=3, strict_mode=False)
-    elif environment == "test":
-        # Test Mode: Deterministic, fast
-        return ReasoningToggles(use_cot=False, use_reflexion=False, tot_branches=1)
-
-    # Prod Mode: Default
-    return ReasoningToggles()
+DEFAULT_TOGGLES = ReasoningToggles()

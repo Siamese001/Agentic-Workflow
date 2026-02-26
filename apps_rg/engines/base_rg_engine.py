@@ -90,11 +90,11 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             self.rg_specs = None
             self.logger.warning("RG specs not available")
 
-        # Auto-load reasoning toggles
+        # Auto-load reasoning toggles (defaults-only; runtime values come from L0-stamped profile)
         try:
-            from apps_rg.config.ReasoningToggles import get_toggles
+            from apps_rg.config.reasoning_toggles_config import DEFAULT_TOGGLES
 
-            self.toggles = get_toggles()
+            self.toggles = DEFAULT_TOGGLES
         except ImportError:
             self.toggles = None
             self.logger.warning("Reasoning toggles not available")

@@ -1,0 +1,292 @@
+"""
+L0 ReasoningPolicyEngine — Authoritative reasoning intensity calibration.
+
+Authority: L0 (policy/authority layer). This engine COMPUTES and STAMPS
+a ReasoningIntensityProfile into a SignedExecutionEnvelope.
+
+Design invariants (all enforced):
+  - Complexity scoring is a PURE FUNCTION of capturable structural inputs.
+  - No C0 embedding outputs, no time-based signals, no adaptive decay,
+    no stochastic weighting, no mutable runtime memory.
+  - Same inputs => same profile (byte-for-byte deterministic).
+  - Tier mapping is discrete: LOW / MEDIUM / HIGH / CRITICAL.
+  - Output is cryptographically bound via profile_hash and envelope_hash.
+  - Telemetry from prior runs enters ONLY as pre-versioned, windowed
+    aggregates passed explicitly as arguments — never read from live state.
+"""
+
+from __future__ import annotations
+
+import hashlib
+import json
+import logging
+from dataclasses import dataclass
+from typing import Any
+
+from agentic_core.L0_routing.types.reasoning_intensity_types import (
+    TIER_PARAMETER_TABLE,
+    ReasoningIntensityProfile,
+    ReasoningTier,
+    SignedExecutionEnvelope,
+    StageTokenBudget,
+    build_envelope_hash,
+    build_profile_hash,
+)
+from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
+
+logger = logging.getLogger(__name__)
+
+PROFILE_VERSION = "1.0.0"
+
+# Default per-stage token budget (tokens) keyed by tier multiplier.
+# Applied as: floor(BASE_STAGE_TOKENS * multiplier).
+_BASE_STAGE_TOKENS = 512
+
+# Complexity thresholds for discrete tier selection (pure-function boundaries).
+_TIER_BOUNDARIES = (
+    (0.75, ReasoningTier.CRITICAL),
+    (0.50, ReasoningTier.HIGH),
+    (0.25, ReasoningTier.MEDIUM),
+    (0.0, ReasoningTier.LOW),
+)
+
+
+# =============================================================================
+# RequestStructureFeatures — capturable structural inputs only
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class RequestStructureFeatures:
+    """Capturable structural features of an incoming request.
+
+    ALL fields must be derivable from the request payload itself or from
+    known L0/L4 state.  No embedding similarity, no C0 content analysis.
+    """
+
+    input_length: int
+    tool_count_requested: int
+    risk_tier_candidate: int
+    stage_count: int
+    l4_budget_remaining_tokens: int
+    l4_rate_limit_headroom: float
+    aggregated_prior_success_rate: float
+
+    def __post_init__(self) -> None:
+        if self.input_length < 0:
+            raise ValueError("RequestStructureFeatures: input_length must be >= 0")
+        if self.tool_count_requested < 0:
+            raise ValueError("RequestStructureFeatures: tool_count_requested must be >= 0")
+        if not 0 <= self.risk_tier_candidate <= 5:
+            raise ValueError("RequestStructureFeatures: risk_tier_candidate must be 0-5")
+        if self.stage_count < 1:
+            raise ValueError("RequestStructureFeatures: stage_count must be >= 1")
+        if self.l4_budget_remaining_tokens < 0:
+            raise ValueError("RequestStructureFeatures: l4_budget_remaining_tokens must be >= 0")
+        if not 0.0 <= self.l4_rate_limit_headroom <= 1.0:
+            raise ValueError("RequestStructureFeatures: l4_rate_limit_headroom must be in [0.0, 1.0]")
+        if not 0.0 <= self.aggregated_prior_success_rate <= 1.0:
+            raise ValueError("RequestStructureFeatures: aggregated_prior_success_rate must be in [0.0, 1.0]")
+
+
+# =============================================================================
+# Pure complexity scoring function
+# =============================================================================
+
+
+def compute_complexity_score(features: RequestStructureFeatures) -> float:
+    """Compute a normalised complexity score in [0.0, 1.0].
+
+    This is a PURE FUNCTION:
+      - No side effects.
+      - No randomness.
+      - No time-based signals.
+      - No adaptive decay or mutable memory.
+      - Identical inputs => identical output.
+
+    Algorithm (additive, capped):
+      score = w1 * f(input_length)
+            + w2 * f(tool_count)
+            + w3 * f(risk_tier)
+            + w4 * f(budget_pressure)
+            + w5 * f(low_success_rate)
+
+    All component functions are monotone and bounded to [0.0, 1.0].
+    """
+    # Component 1: input length pressure (saturates at 8 192 tokens)
+    length_score = min(features.input_length / 8192.0, 1.0)
+
+    # Component 2: tool count (saturates at 10 tools)
+    tool_score = min(features.tool_count_requested / 10.0, 1.0)
+
+    # Component 3: risk tier (0-5 normalised to [0, 1])
+    risk_score = features.risk_tier_candidate / 5.0
+
+    # Component 4: budget pressure (1 - headroom; low headroom = high pressure)
+    budget_pressure = 1.0 - features.l4_rate_limit_headroom
+
+    # Component 5: prior success deficiency (low success => more reasoning needed)
+    success_deficiency = 1.0 - features.aggregated_prior_success_rate
+
+    # Weighted sum (weights sum to 1.0)
+    score = (
+        0.25 * length_score
+        + 0.20 * tool_score
+        + 0.25 * risk_score
+        + 0.15 * budget_pressure
+        + 0.15 * success_deficiency
+    )
+    return min(max(score, 0.0), 1.0)
+
+
+def select_tier(complexity_score: float) -> ReasoningTier:
+    """Map complexity score to a discrete ReasoningTier.
+
+    Pure function — deterministic boundary mapping, no heuristics.
+    """
+    for threshold, tier in _TIER_BOUNDARIES:
+        if complexity_score >= threshold:
+            return tier
+    return ReasoningTier.LOW
+
+
+# =============================================================================
+# Profile construction
+# =============================================================================
+
+
+def _build_stage_budgets(
+    stage_count: int,
+    base_tokens: int,
+    multiplier: float,
+) -> tuple[StageTokenBudget, ...]:
+    """Compute per-stage token budgets deterministically."""
+    per_stage = max(1, int(base_tokens * multiplier))
+    return tuple(StageTokenBudget(stage_id=i + 1, max_tokens=per_stage) for i in range(stage_count))
+
+
+def compute_policy_config_hash(policy_config: dict[str, Any]) -> str:
+    """Compute deterministic SHA256 hash of a policy config dict."""
+    canonical = json.dumps(policy_config, sort_keys=True, separators=(",", ":"))
+    return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
+
+
+# =============================================================================
+# ReasoningPolicyEngine
+# =============================================================================
+
+
+class ReasoningPolicyEngine:
+    """L0 authoritative engine that computes and stamps ReasoningIntensityProfile.
+
+    Usage:
+        engine = ReasoningPolicyEngine(policy_config={"version": "1.0.0"})
+        envelope = engine.compute_and_stamp(features, route_decision)
+
+    Determinism guarantee:
+        engine.compute_and_stamp(features_A, route_A) always returns the
+        same SignedExecutionEnvelope for the same (features_A, route_A).
+    """
+
+    def __init__(self, policy_config: dict[str, Any]) -> None:
+        if not policy_config:
+            raise ValueError("ReasoningPolicyEngine: policy_config must be non-empty")
+        self._policy_config = policy_config
+        self._policy_hash = compute_policy_config_hash(policy_config)
+
+    @property
+    def policy_hash(self) -> str:
+        return self._policy_hash
+
+    def compute_tier(self, features: RequestStructureFeatures) -> ReasoningTier:
+        """Compute reasoning tier from structural features (pure function)."""
+        score = compute_complexity_score(features)
+        return select_tier(score)
+
+    def build_profile(
+        self,
+        features: RequestStructureFeatures,
+        tier: ReasoningTier,
+    ) -> ReasoningIntensityProfile:
+        """Construct a versioned, hash-bound ReasoningIntensityProfile."""
+        params = TIER_PARAMETER_TABLE[tier]
+        multiplier: float = params["token_budget_multiplier"]
+        budgets = _build_stage_budgets(
+            stage_count=features.stage_count,
+            base_tokens=_BASE_STAGE_TOKENS,
+            multiplier=multiplier,
+        )
+        max_branches: int = params["max_branches"]
+        max_depth: int = params["max_depth"]
+        enable_reflection: bool = params["enable_reflection"]
+        allowed_modes: list[str] = params["allowed_modes"]
+
+        profile_hash = build_profile_hash(
+            version=PROFILE_VERSION,
+            policy_hash=self._policy_hash,
+            tier=tier,
+            max_branches=max_branches,
+            max_depth=max_depth,
+            enable_reflection=enable_reflection,
+            token_budget_per_stage=list(budgets),
+            allowed_modes=allowed_modes,
+        )
+
+        return ReasoningIntensityProfile(
+            reasoning_profile_version=PROFILE_VERSION,
+            reasoning_policy_hash=self._policy_hash,
+            tier=tier,
+            max_branches=max_branches,
+            max_depth=max_depth,
+            enable_reflection=enable_reflection,
+            token_budget_per_stage=budgets,
+            allowed_modes=tuple(sorted(allowed_modes)),
+            profile_hash=profile_hash,
+        )
+
+    def compute_and_stamp(
+        self,
+        features: RequestStructureFeatures,
+        route_decision: RouteDecisionArtifact,
+        enforcement_constraints: dict[str, Any] | None = None,
+    ) -> SignedExecutionEnvelope:
+        """Compute profile, stamp into SignedExecutionEnvelope, and return.
+
+        This is the single authoritative L0 call site.  L3 reads the
+        envelope; apps_* receive it as read-only constraints.
+        """
+        tier = self.compute_tier(features)
+        profile = self.build_profile(features, tier)
+
+        constraints = enforcement_constraints or {}
+        envelope_hash = build_envelope_hash(
+            route_decision_trace_id=route_decision.trace_id,
+            profile_hash=profile.profile_hash,
+            policy_hash=self._policy_hash,
+        )
+
+        logger.info(
+            "ReasoningPolicyEngine: stamped tier=%s profile_hash=%s envelope_hash=%s trace_id=%s",
+            tier.value,
+            profile.profile_hash[:16],
+            envelope_hash[:16],
+            route_decision.trace_id,
+        )
+
+        return SignedExecutionEnvelope(
+            route_decision=route_decision,
+            reasoning_profile=profile,
+            enforcement_constraints=constraints,
+            policy_hash=self._policy_hash,
+            envelope_hash=envelope_hash,
+        )
+
+
+__all__ = [
+    "PROFILE_VERSION",
+    "RequestStructureFeatures",
+    "ReasoningPolicyEngine",
+    "compute_complexity_score",
+    "compute_policy_config_hash",
+    "select_tier",
+]
