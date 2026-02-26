@@ -116,7 +116,7 @@ class FileSystemStore:
         # Write atomically through UWG with signed instruction
         temp_path = artifact_path.with_suffix(".tmp")
         write_content = json.dumps(storage_data, sort_keys=True, indent=2)
-        
+
         try:
             # Create signed instruction packet for write operation
             instruction = InstructionPacket(
@@ -131,18 +131,18 @@ class FileSystemStore:
                     "version": version
                 }
             )
-            
+
             # Execute through UniversalWriteGateway
             gateway = get_write_gateway()
             gateway.execute_instruction(instruction)
-            
+
             # Verify write was recorded and permitted
             if not gateway.check_write_permission(str(temp_path), "write"):
                 raise PermissionError(f"UWG denied write to {temp_path}")
-            
+
             # Atomic rename (this is safe as it's a metadata operation)
             temp_path.rename(artifact_path)
-            
+
         except Exception:
             # Clean up temp file if it exists
             if temp_path.exists():

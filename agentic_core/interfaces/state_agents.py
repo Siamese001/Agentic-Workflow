@@ -30,6 +30,6 @@ from agentic_core.L4_state.reasoning.CheckpointManager import CheckpointManager
 
 __all__ = [
     "GravityStateAgent",
-    "CachedStateLedger", 
+    "CachedStateLedger",
     "CheckpointManager",
 ]

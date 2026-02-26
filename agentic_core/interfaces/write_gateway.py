@@ -27,6 +27,6 @@ from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
 
 __all__ = [
     "UniversalWriteGateway",
-    "get_write_gateway", 
+    "get_write_gateway",
     "InstructionPacket",
 ]

@@ -59,7 +59,7 @@ jobs:
                               # But not from L0 (routing) or L1 (cognition) to avoid cycles
                               if node.module.startswith('agentic_core.L0') or node.module.startswith('agentic_core.L1'):
                                   violations.append(f'{py_file.name}:{node.lineno} - Import from {node.module} not allowed in interface')
-          
+
           if violations:
               print('FAIL: Interface layer violations:')
               for v in violations:
@@ -88,12 +88,12 @@ jobs:
 
           violations = []
           repo_root = Path('.')
-          
+
           for layer_path, forbidden_imports in FORBIDDEN_PATTERNS:
               layer_dir = repo_root / layer_path
               if not layer_dir.exists():
                   continue
-                  
+
               for py_file in layer_dir.rglob('*.py'):
                   if '__pycache__' in str(py_file):
                       continue
@@ -107,13 +107,13 @@ jobs:
                                       module_name = alias.name
                               elif isinstance(node, ast.ImportFrom):
                                   module_name = node.module
-                                  
+
                               if module_name and any(module_name.startswith(pattern) for pattern in forbidden_imports):
                                   rel_path = py_file.relative_to(repo_root)
                                   violations.append(f'{rel_path}:{node.lineno} - Forbidden import {module_name}')
                   except SyntaxError:
                       continue
-          
+
           if violations:
               print('FAIL: Cross-layer import violations:')
               for v in violations:

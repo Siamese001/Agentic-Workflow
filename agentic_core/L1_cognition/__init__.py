@@ -21,22 +21,22 @@ __all__ = [
     "CognitiveInterface",
     "PatternRecognizer",
     "InferenceEngine",
-    
+
     # Reasoning engines
-    "CognitiveEngine", 
+    "CognitiveEngine",
     "MemoryEmbedder",
     "MetaClient",
     "ASTValidatorAgent",
-    
+
     # Cognitive types
     "CognitiveContext",
     "InferenceResult",
     "PatternMatch",
-    
+
     # Telemetry
     "CognitiveTelemetry",
     "PerformanceMetrics",
-    
+
     # Validation
     "CognitiveValidator",
     "ReasoningValidator"
