@@ -12,7 +12,18 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
-BLOCKED_TOP_LEVEL = {"openai", "anthropic", "vertexai", "requests", "httpx", "aiohttp"}
+BLOCKED_TOP_LEVEL = {
+    "openai",
+    "anthropic",
+    "vertexai",
+    "requests",
+    "httpx",
+    "aiohttp",
+    # Embedding SDK imports blocked outside EmbeddingServiceFactory (Spec: Sovereign LLM Gateway)
+    "faiss",
+    "sentence_transformers",
+    "tiktoken",
+}
 BLOCKED_FROM = {("google", "generativeai"), ("urllib", "request")}
 
 ALLOWED_PATHS = {
@@ -20,6 +31,8 @@ ALLOWED_PATHS = {
     "data/sdks_mcps/client_wrappers.py",
     "apps_rg/utils/providers_anthropic_client_util.py",
     "apps_shared/utils/providers_google_genai_client_util.py",
+    # EmbeddingServiceFactory is the sole allowed seam for embedding SDK imports
+    "system_learning/engines/embedding_service_factory.py",
 }
 
 SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]

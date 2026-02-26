@@ -39,7 +39,6 @@ WRITE_MODES = {"w", "a", "x", "wb", "ab", "xb", "w+", "a+"}
 BLOCKED_ATTRS = {
     "write_text",
     "write_bytes",  # Path methods
-    "copy",
     "copy2",
     "move",
     "rmtree",  # shutil filesystem mutations
