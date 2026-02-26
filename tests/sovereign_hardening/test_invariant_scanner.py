@@ -1,16 +1,17 @@
 """Tests for System Invariant Scanner - bypass detection."""
 
-import pytest
 import ast
 import tempfile
 from pathlib import Path
 
+import pytest
+
 from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
-    SystemInvariantScanner,
     BypassViolation,
-    scan_repository_for_bypasses,
+    SystemInvariantScanner,
+    get_bypass_scan_summary,
     print_bypass_report,
-    get_bypass_scan_summary
+    scan_repository_for_bypasses,
 )
 
 
@@ -319,10 +320,39 @@ def comprehensive_bypass():
             violations = scan_repository_for_bypasses(temp_path.parent)
 
             # Should detect multiple types of violations
-            violation_types = set(v.rule_id for v in violations)
+            violation_types = {v.rule_id for v in violations}
 
             # At least one of each type should be detected
             assert len(violation_types) >= 2, "Should detect multiple bypass types"
 
         finally:
             temp_path.unlink()
+
+    def test_executable_surface_zero_violations(self):
+        """Test that executable surface has zero bypass violations."""
+        repo_root = Path(__file__).resolve().parents[4]
+        
+        # Define executable surface - must be zero-violation
+        executable_patterns = [
+            "agentic_core/L0_*/**/*.py",
+            "agentic_core/L2_execution/**/*.py", 
+            "agentic_core/L5_safety/**/*.py",
+            "agentic_core/L6_observability/**/*.py",
+            "tests/sovereign_hardening/**/*.py",
+        ]
+        
+        total_violations = 0
+        for pattern in executable_patterns:
+            try:
+                violations = scan_repository_for_bypasses(repo_root / pattern)
+                violation_count = len(violations)
+                total_violations += violation_count
+                
+                # Assert zero violations for each executable surface component
+                assert violation_count == 0, f"Executable surface {pattern} has {violation_count} violations"
+            except FileNotFoundError:
+                # Pattern doesn't match any files - skip
+                continue
+        
+        # Overall executable surface must have zero violations
+        assert total_violations == 0, f"Executable surface has {total_violations} total violations"

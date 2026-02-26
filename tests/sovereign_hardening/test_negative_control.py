@@ -1,8 +1,9 @@
 """Tests for negative control with W_HARDEN_NEGCTRL_TAMPER."""
 
-import pytest
 import os
 from unittest.mock import patch
+
+import pytest
 
 from agentic_core.L2_execution.determinism import (
     compute_lockdown_determinism_digest,
@@ -76,14 +77,15 @@ class TestNegativeControl:
         # Should be identical
         assert digest1 == digest2
 
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, condition=lambda: os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1', reason="Negative control tampering active")
     def test_negative_control_xfail_behavior(self):
-        """Test that negative control causes XFAIL(strict=True) behavior."""
+        """Test that negative control causes XFAIL(strict=True) behavior when tampered."""
         # This test should XFAIL when W_HARDEN_NEGCTRL_TAMPER=1
+        # and PASS when not tampered
         if os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1':
             pytest.fail("Negative control triggered - expected XFAIL")
 
-        # Normal execution path when not tampered
+        # Normal execution path when not tampered - should pass
         assert True
 
     @pytest.mark.negative_control

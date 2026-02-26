@@ -4,14 +4,19 @@ Tests for runtime sovereignty enforcement, bypass prevention, and
 deterministic replay validation.
 """
 
-import pytest
 import os
-from unittest.mock import patch, MagicMock
 from pathlib import Path
+from unittest.mock import patch
+
+import pytest
 
 from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
 from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, SignatureVerificationError
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, MutationRecord, SimulationResult
+from agentic_core.L2_execution.UniversalWriteGateway import (
+    MutationRecord,
+    SimulationResult,
+    UniversalWriteGateway,
+)
 
 
 @pytest.fixture
@@ -224,12 +229,13 @@ class TestNegativeControl:
         with patch.dict(os.environ, {}, clear=True):
             assert os.environ.get('W_HARDEN_NEGCTRL_TAMPER') is None
 
-    @pytest.mark.xfail(strict=True)
+    @pytest.mark.xfail(strict=True, condition=lambda: os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1', reason="Negative control tampering active")
     def test_negative_control_xfail(self):
-        """Test that negative control causes XFAIL(strict=True)."""
+        """Test that negative control causes XFAIL(strict=True) when tampered."""
         # This test should XFAIL when W_HARDEN_NEGCTRL_TAMPER=1
+        # and PASS when not tampered
         if os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1':
             pytest.fail("Negative control triggered - expected XFAIL")
 
-        # Normal execution path when not tampered
+        # Normal execution path when not tampered - should pass
         assert True
