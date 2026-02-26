@@ -1,0 +1,32 @@
+"""Re-export symbols from the standalone determinism.py module.
+
+The standalone agentic_core/L2_execution/determinism.py is shadowed by this
+package directory. This __init__ loads it via importlib and re-exports its
+public API so that existing `from agentic_core.L2_execution.determinism import ...`
+calls continue to work.
+"""
+from __future__ import annotations
+
+import importlib.util
+from pathlib import Path
+
+_STANDALONE = Path(__file__).resolve().parent.parent / "determinism.py"
+
+if _STANDALONE.exists():
+    _spec = importlib.util.spec_from_file_location(
+        "agentic_core.L2_execution._determinism_standalone", _STANDALONE
+    )
+    _mod = importlib.util.module_from_spec(_spec)  # type: ignore[arg-type]
+    _spec.loader.exec_module(_mod)  # type: ignore[union-attr]
+
+    build_agent_2x2_inventory = _mod.build_agent_2x2_inventory
+    compute_p5_determinism_digest = _mod.compute_p5_determinism_digest
+    compute_w6_determinism_digest = _mod.compute_w6_determinism_digest
+    compute_lockdown_determinism_digest = _mod.compute_lockdown_determinism_digest
+    generate_determinism_digest = _mod.generate_determinism_digest
+    generate_lockdown_determinism_digest = _mod.generate_lockdown_determinism_digest
+    write_agent_2x2_inventory = _mod.write_agent_2x2_inventory
+    get_embedding_config_surface = _mod.get_embedding_config_surface
+    get_meta_learning_config_surface = _mod.get_meta_learning_config_surface
+    INVENTORY_ARTIFACT_PATH = _mod.INVENTORY_ARTIFACT_PATH
+    REPO_ROOT = _mod.REPO_ROOT
