@@ -146,9 +146,9 @@ def compute_lockdown_determinism_digest() -> str:
 
     # Routing ruleset hash
     routing_ruleset = {
-        "execution_modes": sorted(set(profile.execution_mode.value for profile in AGENT_REGISTRY.values())),
-        "policy_versions": sorted(set(getattr(profile, 'policy_version', '1.0') for profile in AGENT_REGISTRY.values())),
-        "reasoning_intensities": sorted(set(profile.reasoning_intensity.value for profile in AGENT_REGISTRY.values())),
+        "execution_modes": sorted({profile.execution_mode.value for profile in AGENT_REGISTRY.values()}),
+        "policy_versions": sorted({getattr(profile, 'policy_version', '1.0') for profile in AGENT_REGISTRY.values()}),
+        "reasoning_intensities": sorted({profile.reasoning_intensity.value for profile in AGENT_REGISTRY.values()}),
     }
     routing_ruleset_hash = _sha256_bytes(_canonical_json(routing_ruleset).encode("utf-8"))
 

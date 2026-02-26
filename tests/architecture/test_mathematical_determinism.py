@@ -5,27 +5,25 @@ Tests that identical healing inputs produce mathematically identical outputs
 with 100% reproducibility across runs, environments, and time.
 """
 
-import pytest
 import hashlib
+
+import pytest
+
+from agentic_core.L2_execution.healers.healing_provider_adapters import (
+    GEMINI_CONFIG_HASH,
+    QWEN_CONFIG_HASH,
+    LocalAgentAdapter,
+)
 from agentic_core.L2_execution.healers.healing_tier_router import (
+    HISTORICAL_DATA_HASH,
+    HISTORICAL_DATA_VERSION,
+    HISTORICAL_SUCCESS_RATES,
+    _compute_replay_key,
     compute_heal_confidence,
     route_healing_tier,
-    _compute_replay_key,
-    HISTORICAL_DATA_VERSION,
-    HISTORICAL_DATA_HASH,
-    HISTORICAL_SUCCESS_RATES,
 )
 from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
-    HealingTier,
-    InvocationRecord,
-)
-from agentic_core.L2_execution.healers.healing_provider_adapters import (
-    QwenInvokerAdapter,
-    GeminiInvokerAdapter,
-    LocalAgentAdapter,
-    QWEN_CONFIG_HASH,
-    GEMINI_CONFIG_HASH,
 )
 
 
@@ -122,11 +120,11 @@ class TestMathematicalDeterminism:
 
         # Verify hashes are deterministic
         assert QWEN_CONFIG_HASH == hashlib.sha256(
-            "frequency_penalty=0.0|max_tokens=2048|presence_penalty=0.0|temperature=0.0|top_p=1.0".encode()
+            b"frequency_penalty=0.0|max_tokens=2048|presence_penalty=0.0|temperature=0.0|top_p=1.0"
         ).hexdigest()[:16]
 
         assert GEMINI_CONFIG_HASH == hashlib.sha256(
-            "max_tokens=2048|temperature=0.1|top_k=40|top_p=1.0".encode()
+            b"max_tokens=2048|temperature=0.1|top_k=40|top_p=1.0"
         ).hexdigest()[:16]
 
     @pytest.mark.asyncio

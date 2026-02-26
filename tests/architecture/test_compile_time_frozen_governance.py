@@ -5,25 +5,26 @@ Tests that all governance surfaces are frozen at compile time and cannot be
 mutated at runtime, ensuring absolute sovereignty guarantees.
 """
 
-import pytest
-import sys
 import importlib
+import sys
+
+import pytest
+
 from agentic_core.agents.agent_registry import (
     EXECUTION_PROFILES,
-    get_execution_profile,
     _validate_registry_sovereignty,
+    get_execution_profile,
+)
+from agentic_core.L2_execution.healers.healing_tier_router import (
+    HISTORICAL_DATA_HASH,
+    HISTORICAL_DATA_VERSION,
+    HISTORICAL_SUCCESS_RATES,
+    set_historical_success_rate,
 )
 from agentic_core.L2_execution.healers.tiering_allowlist import (
     TIERING_ALLOWLIST,
     TIERING_ALLOWLIST_AGENT_NAMES,
     _validate_allowlist_sovereignty,
-)
-from agentic_core.L2_execution.healers.healing_tier_router import (
-    HISTORICAL_SUCCESS_RATES,
-    HISTORICAL_DATA_VERSION,
-    HISTORICAL_DATA_HASH,
-    set_historical_success_rate,
-    clear_historical_success_rates,
 )
 
 

@@ -5,11 +5,12 @@ Tests that the healing system operates without any environment variable
 access, external configuration loading, or runtime dependencies.
 """
 
-import pytest
 import os
 import subprocess
 import sys
-from unittest.mock import patch, MagicMock
+from unittest.mock import patch
+
+import pytest
 
 
 class TestEnvironmentIndependence:
@@ -37,8 +38,8 @@ class TestEnvironmentIndependence:
                 with patch.object(os.environ, 'get', side_effect=mock_get):
                     # Import and use healing system
                     from agentic_core.L2_execution.healers.healing_tier_router import (
-                        route_healing_tier,
                         compute_heal_confidence,
+                        route_healing_tier,
                     )
                     from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
 
@@ -76,8 +77,8 @@ class TestEnvironmentIndependence:
 
                     # Import and use healing system
                     from agentic_core.L2_execution.healers.healing_tier_router import (
-                        route_healing_tier,
                         HISTORICAL_SUCCESS_RATES,
+                        route_healing_tier,
                     )
                     from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
 
@@ -255,9 +256,9 @@ print(f"SUCCESS: {decision.tier}, {decision.heal_confidence}")
                 with patch.object(os.environ, 'get', return_value=None):
                     # Import provider adapters
                     from agentic_core.L2_execution.healers.healing_provider_adapters import (
-                        QwenInvokerAdapter,
                         GeminiInvokerAdapter,
                         LocalAgentAdapter,
+                        QwenInvokerAdapter,
                     )
 
                     # Should be able to instantiate without environment
@@ -272,10 +273,10 @@ print(f"SUCCESS: {decision.tier}, {decision.heal_confidence}")
     def test_explicit_configuration_only(self):
         """Test that only explicit configuration is used."""
         from agentic_core.L2_execution.healers.healing_provider_adapters import (
-            QWEN_CONFIG,
             GEMINI_CONFIG,
-            QWEN_CONFIG_HASH,
             GEMINI_CONFIG_HASH,
+            QWEN_CONFIG,
+            QWEN_CONFIG_HASH,
         )
 
         # Config should be compile-time frozen
@@ -301,7 +302,6 @@ print(f"SUCCESS: {decision.tier}, {decision.heal_confidence}")
 
     def test_no_external_imports(self):
         """Test that no external configuration modules are imported."""
-        import importlib
         import sys
 
         # Get all modules imported by healing system
@@ -354,9 +354,9 @@ print(f"SUCCESS: {decision.tier}, {decision.heal_confidence}")
 
                 # Import and use healing system
                 from agentic_core.L2_execution.healers.healing_provider_adapters import (
-                    QwenInvokerAdapter,
                     GeminiInvokerAdapter,
                     LocalAgentAdapter,
+                    QwenInvokerAdapter,
                 )
 
                 # Should be able to instantiate without environment
@@ -371,10 +371,10 @@ print(f"SUCCESS: {decision.tier}, {decision.heal_confidence}")
     def test_explicit_configuration_only(self):
         """Test that only explicit configuration is used."""
         from agentic_core.L2_execution.healers.healing_provider_adapters import (
-            QWEN_CONFIG,
             GEMINI_CONFIG,
-            QWEN_CONFIG_HASH,
             GEMINI_CONFIG_HASH,
+            QWEN_CONFIG,
+            QWEN_CONFIG_HASH,
         )
 
         # Config should be compile-time frozen

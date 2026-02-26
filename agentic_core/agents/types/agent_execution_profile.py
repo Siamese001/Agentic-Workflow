@@ -3,11 +3,10 @@
 Defines the 2×2 execution policy for agent classification and enforcement.
 """
 
-from enum import Enum
-from dataclasses import dataclass
-from typing import Tuple, Optional
 import hashlib
 import json
+from dataclasses import dataclass
+from enum import Enum
 
 
 class ReasoningIntensity(Enum):
@@ -29,8 +28,8 @@ class AgentExecutionProfile:
     agent_id: str  # stable key
     reasoning_intensity: ReasoningIntensity
     execution_mode: ExecutionMode
-    allowed_models: Tuple[str, ...]  # empty for deterministic agents
-    notes: Optional[str] = None  # non-functional documentation
+    allowed_models: tuple[str, ...]  # empty for deterministic agents
+    notes: str | None = None  # non-functional documentation
 
     def __post_init__(self):
         """Validate profile constraints."""

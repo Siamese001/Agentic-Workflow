@@ -12,17 +12,15 @@ from __future__ import annotations
 
 import hashlib
 import logging
-from typing import Dict, Any
+from typing import Any
 
-from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
-from agentic_core.agents.agent_registry import get_execution_profile
+from agentic_core.L2_execution.healers.healing_tier_router import HISTORICAL_DATA_HASH, _compute_replay_key
 from agentic_core.L2_execution.healers.healing_tier_types import (
-    InvocationRecord,
     HealingDecision,
     HealingInput,
     HealingTier,
+    InvocationRecord,
 )
-from agentic_core.L2_execution.healers.healing_tier_router import HISTORICAL_DATA_HASH, _compute_replay_key
 
 logger = logging.getLogger(__name__)
 
@@ -48,7 +46,7 @@ MAX_TOKENS = 2048
 MAX_OUTPUT_TOKENS = 2048
 
 # Fixed provider configurations - compile-time frozen
-QWEN_CONFIG: Dict[str, Any] = {
+QWEN_CONFIG: dict[str, Any] = {
     "temperature": 0.0,
     "max_tokens": MAX_TOKENS,
     "top_p": 1.0,
@@ -56,7 +54,7 @@ QWEN_CONFIG: Dict[str, Any] = {
     "presence_penalty": 0.0,
 }
 
-GEMINI_CONFIG: Dict[str, Any] = {
+GEMINI_CONFIG: dict[str, Any] = {
     "temperature": 0.1,
     "max_tokens": MAX_OUTPUT_TOKENS,
     "top_p": 1.0,

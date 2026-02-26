@@ -8,9 +8,9 @@ from __future__ import annotations
 
 import hashlib
 import os
-from dataclasses import dataclass, field
+from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, List, Optional, Tuple, Union
+from typing import Any
 
 
 @dataclass(frozen=True)
@@ -19,8 +19,8 @@ class MutationRecord:
     timestamp: str
     operation: str  # "write", "append", "delete", "rename", etc.
     path: str
-    data_hash: Optional[str] = None
-    size_bytes: Optional[int] = None
+    data_hash: str | None = None
+    size_bytes: int | None = None
     permitted: bool = True
     replay_mode: bool = False
 
@@ -45,8 +45,8 @@ class UniversalWriteGateway:
 
     def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
-        self._write_permissions: Dict[str, bool] = {}
-        self._mutation_ledger: List[MutationRecord] = []
+        self._write_permissions: dict[str, bool] = {}
+        self._mutation_ledger: list[MutationRecord] = []
         self._allowed_paths: set[str] = {
             # Allow writes to specific directories
             "artifacts/",
@@ -84,8 +84,8 @@ class UniversalWriteGateway:
         self,
         path: str,
         operation: str,
-        data: Optional[Union[str, bytes]] = None,
-        permitted: Optional[bool] = None
+        data: str | bytes | None = None,
+        permitted: bool | None = None
     ) -> MutationRecord:
         """Record mutation for audit trail."""
         if permitted is None:
@@ -117,7 +117,7 @@ class UniversalWriteGateway:
         self,
         path: str,
         operation: str,
-        data: Optional[Union[str, bytes]] = None
+        data: str | bytes | None = None
     ) -> SimulationResult:
         """Simulate write operation in replay mode."""
         if not self.replay_mode:
@@ -156,7 +156,7 @@ class UniversalWriteGateway:
             return  # No permission changes in replay mode
         self._write_permissions[str(Path(path).as_posix())] = False
 
-    def get_mutation_ledger(self) -> List[MutationRecord]:
+    def get_mutation_ledger(self) -> list[MutationRecord]:
         """Get immutable copy of mutation ledger."""
         return list(self._mutation_ledger)
 
@@ -166,7 +166,7 @@ class UniversalWriteGateway:
             return  # No ledger changes in replay mode
         self._mutation_ledger.clear()
 
-    def get_write_stats(self) -> Dict[str, Any]:
+    def get_write_stats(self) -> dict[str, Any]:
         """Get statistics about write operations."""
         total = len(self._mutation_ledger)
         permitted = sum(1 for r in self._mutation_ledger if r.permitted)
@@ -182,7 +182,7 @@ class UniversalWriteGateway:
 
 
 # Global gateway instance
-_global_gateway: Optional[UniversalWriteGateway] = None
+_global_gateway: UniversalWriteGateway | None = None
 
 
 def get_write_gateway() -> UniversalWriteGateway:

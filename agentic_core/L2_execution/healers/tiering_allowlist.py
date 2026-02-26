@@ -8,6 +8,7 @@ This allowlist is compile-time frozen - no CSV loading, no runtime mutation.
 """
 
 from __future__ import annotations
+
 import logging
 
 logger = logging.getLogger(__name__)
