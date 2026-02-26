@@ -19,6 +19,7 @@ class RLHFOptimizer(Protocol):
         *,
         dpo_batch_bytes: bytes,
         current_threshold_config_bytes: bytes,
+        embedding_context_hash: str | None = None,
     ) -> ChangePackage:
         """Generate proposal-only threshold adjustments from DPO batch.
 
@@ -64,6 +65,7 @@ class DefaultDeterministicRLHFOptimizer:
         *,
         dpo_batch_bytes: bytes,
         current_threshold_config_bytes: bytes,
+        embedding_context_hash: str | None = None,
     ) -> ChangePackage:
         """Generate deterministic threshold adjustments from DPO batch.
 
@@ -109,9 +111,16 @@ class DefaultDeterministicRLHFOptimizer:
 
         if "pairs" in dpo_data:
             # Sort pairs by control_hash, then candidate_hash for determinism
+            # Stable sort by score (desc), timestamp (asc), and then hashes
             sorted_pairs = sorted(
                 dpo_data["pairs"],
-                key=lambda p: (p["example_id"]["control_hash"], p["example_id"]["candidate_hash"]),
+                key=lambda p: (
+                    p.get("score", 0.0),
+                    p.get("timestamp_utc", 0),
+                    p["example_id"]["control_hash"],
+                    p["example_id"]["candidate_hash"],
+                ),
+                reverse=True,  # Sort by score descending
             )
 
             for pair in sorted_pairs:
