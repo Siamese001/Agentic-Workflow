@@ -34,14 +34,29 @@ GUARDIAN_COVERAGE_MAP: dict[str, list[str]] = {
     "architecture_governance": [
         "tests/guardian/test_guardian_architecture_governance.py",
     ],
+    "c0_sovereignty_enforcement": [
+        "tests/guardian/test_guardian_c0_sovereignty.py",
+    ],
+    "change_package_activation_guard": [
+        "tests/guardian/test_guardian_change_package_activation.py",
+    ],
     "classification_compliance": [
         "tests/guardian/test_guardian_classification_compliance.py",
     ],
     "contract_integrity": [
         "tests/guardian/test_guardian_self_integrity.py",
     ],
+    "cross_layer_mutation_guard": [
+        "tests/guardian/test_guardian_cross_layer_mutation.py",
+    ],
     "drift_detection": [
         "tests/guardian/test_drift_detection.py",
+    ],
+    "escalation_determinism": [
+        "tests/guardian/test_guardian_escalation_determinism.py",
+    ],
+    "gateway_bypass": [
+        "tests/guardian/test_guardian_gateway_bypass.py",
     ],
     "hierarchy_compliance": [
         "tests/guardian/test_guardian_hierarchy_compliance.py",
