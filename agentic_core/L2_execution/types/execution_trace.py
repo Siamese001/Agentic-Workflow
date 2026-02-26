@@ -87,6 +87,7 @@ class ExecutionTraceBuilder:
         self.transcript_hash = ""
         self.agent_id = ""
         self.error = ""
+        self.extra: dict[str, Any] = {}
 
     def set_governed_payload(self, routing_hash: str) -> None:
         self.governed_payload_hash = routing_hash
@@ -131,4 +132,5 @@ class ExecutionTraceBuilder:
             transcript_hash=self.transcript_hash,
             agent_id=self.agent_id,
             error=self.error,
+            extra=self.extra,
         )

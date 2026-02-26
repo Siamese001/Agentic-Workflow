@@ -18,6 +18,7 @@ from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, Si
 
 class SignatureBoundaryError(RuntimeError):
     """Raised when SandboxEnvelope signature verification fails - fail-closed boundary."""
+
     pass
 
 
@@ -50,9 +51,10 @@ class ExecutionGateway:
             # No logging, no state changes, immediate fail-closed exit
             raise SignatureBoundaryError("Invalid SandboxEnvelope signature - execution blocked")
 
-        builder = ExecutionTraceBuilder()
-        builder.trace_id = envelope.envelope_id
-        builder.instruction_packet_id = envelope.instruction_packet_id
+        builder = ExecutionTraceBuilder(
+            trace_id=envelope.envelope_id,
+            instruction_packet_id=envelope.instruction_packet_id,
+        )
         builder.policy_hash = policy_hash
         builder.prev_hash = prev_hash
         builder.transcript_hash = transcript_hash
@@ -61,8 +63,10 @@ class ExecutionGateway:
 
         start_ms = int(time.time() * 1000)
 
+        stdout_bytes: bytes = b""
+        exit_code: int = -1
         try:
-            # Execute under budget caps
+            # Execute under budget caps — returns (exit_code, stdout_bytes) per Contract [3]
             exit_code, stdout_bytes = self._budget_enforcer.run(envelope, tool_fn)
             builder.validation_decision = "PASS" if exit_code == 0 else "FAIL"
             builder.error = None if exit_code == 0 else f"Tool exited with code {exit_code}"
@@ -72,17 +76,22 @@ class ExecutionGateway:
             raise
         finally:
             builder.timing_ms = int(time.time() * 1000) - start_ms
-            # Compute deterministic replay key
-            builder.replay_key = hashlib.sha256(
-                f"{builder.trace_id}{builder.policy_hash}{builder.transcript_hash}".encode()
-            ).hexdigest()
-            # Compute hash chain root (placeholder)
+            # Wire stdout_bytes and exit_code into trace extra for ToolResult audit (Contract [3])
+            builder.extra = {
+                "stdout_bytes": len(stdout_bytes),
+                "stdout_hash": hashlib.sha256(stdout_bytes).hexdigest(),
+                "exit_code": exit_code,
+                "budget_compute_ms": envelope.budget.compute_ms,
+                "budget_memory_mb": envelope.budget.memory_mb,
+                "budget_stdout_bytes": envelope.budget.stdout_bytes,
+            }
+            # hash_chain_root via deterministic inputs
             builder.hash_chain_root = hashlib.sha256(
                 f"{builder.trace_id}{builder.timing_ms}{builder.validation_decision}".encode()
             ).hexdigest()
 
-        trace = builder.build()
-        return trace, None  # tool_result would be decoded from stdout_bytes if needed
+        trace = builder.seal()
+        return trace, stdout_bytes  # return raw stdout_bytes for ToolResult construction
 
     def create_envelope(
         self,
