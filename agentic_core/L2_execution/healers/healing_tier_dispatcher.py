@@ -33,6 +33,10 @@ if TYPE_CHECKING:
     from agentic_core.L2_execution.engines.resource_predictor import ResourcePredictor
     from agentic_core.L2_execution.engines.rollback_refiner import RollbackRefiner
     from system_learning.ports.healing_outcome_sink import HealingOutcomeSink
+    from system_learning.ports.healing_pattern_advisor import HealingPatternAdvisor
+    from system_learning.ports.meta_outcome_bus_hook import MetaOutcomeBusHook
+    from system_learning.ports.meta_prior_provider import MetaPriorProvider
+    from system_learning.ports.outcome_write_back_hook import OutcomeWriteBackHook
 
 logger = logging.getLogger(__name__)
 
@@ -207,6 +211,10 @@ def dispatch_healing(
     timestamp_utc: int | None = None,
     resource_predictor: ResourcePredictor | None = None,
     rollback_refiner: RollbackRefiner | None = None,
+    meta_prior_provider: MetaPriorProvider | None = None,
+    outcome_write_back_hook: OutcomeWriteBackHook | None = None,
+    pattern_advisor: HealingPatternAdvisor | None = None,
+    meta_outcome_bus_hook: MetaOutcomeBusHook | None = None,
 ) -> tuple[HealingDecision, InvocationRecord]:
     """End-to-end: route tier, then invoke the matching provider.
 
@@ -228,7 +236,11 @@ def dispatch_healing(
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
 
-    decision = route_healing_tier(healing_input, config)
+    decision = route_healing_tier(
+        healing_input,
+        config,
+        meta_prior_provider=meta_prior_provider,
+    )
 
     # Emit proposal-only resource prediction if predictor available
     if resource_predictor is not None:
@@ -237,6 +249,12 @@ def dispatch_healing(
     # Emit proposal-only rollback refinement if refiner available
     if rollback_refiner is not None:
         _emit_rollback_refinement(rollback_refiner, healing_input, agent_name, timestamp_utc)
+
+    # Phase 3: C0 informational-only pattern advisor (cannot change tier)
+    pattern_advice = None
+    if pattern_advisor is not None:
+        pattern_advice = pattern_advisor.advise(healing_input)
+        # Note: pattern_advice is advisory-only and does NOT affect routing
 
     method_name = _TIER_TO_METHOD[decision.tier]
     method = getattr(invoker, method_name)
@@ -256,6 +274,25 @@ def dispatch_healing(
                 success=success,
                 timestamp_utc=timestamp_utc,
                 agent_name=agent_name,
+            )
+        # Phase 2: Real-time write-back into meta-learning store
+        if outcome_write_back_hook is not None:
+            outcome_write_back_hook.on_outcome(
+                healing_input=healing_input,
+                decision=decision,
+                record=record if success else None,
+                success=success,
+            )
+        # Phase 3: Emit pattern advice metadata (informational-only)
+        if pattern_advice is not None and timestamp_utc is not None:
+            _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
+        # Phase 4: Publish outcome to MetaLearningBus (proposal_only=True)
+        if meta_outcome_bus_hook is not None:
+            meta_outcome_bus_hook.publish_outcome(
+                healing_input=healing_input,
+                decision=decision,
+                record=record if success else None,
+                success=success,
             )
 
     return decision, record
@@ -321,7 +358,7 @@ def _emit_resource_prediction(
                 "confidence": prediction.confidence,
             },
         )
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("resource prediction failed; swallowed to preserve dispatch path")
 
 
@@ -381,8 +418,32 @@ def _emit_rollback_refinement(
                 "decision_hash": decision.content_hash(),
             },
         )
-    except Exception:  # noqa: BLE001
+    except Exception:  # noqa: BLE001  # guardian: allow-silent-swallower
         logger.debug("rollback refinement failed; swallowed to preserve dispatch path")
+
+
+def _emit_pattern_advice(
+    pattern_advice,
+    healing_input,
+    agent_name: str,
+    timestamp_utc: int,
+) -> None:
+    """Emit pattern advice metadata (informational-only)."""
+    try:
+        logger.info(
+            "pattern_advice",
+            extra={
+                "trace_id": healing_input.trace_id,
+                "agent_name": agent_name,
+                "timestamp_utc": timestamp_utc,
+                "pattern_match": pattern_advice["pattern_match"],
+                "pattern_name": pattern_advice["pattern_name"],
+                "pattern_boost": pattern_advice["pattern_boost"],
+                "extra_reason_codes": pattern_advice["extra_reason_codes"],
+            },
+        )
+    except Exception:  # guardian: allow-silent-swallower
+        logger.debug("pattern advice emission failed; swallowed to preserve dispatch path")
 
 
 def invoke_qwen_with_oom_protection(

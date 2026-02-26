@@ -17,6 +17,7 @@ All components are persisted into the returned HealingDecision for auditability.
 from __future__ import annotations
 
 import os
+from typing import TYPE_CHECKING
 
 from agentic_core.agents.agent_registry import get_profile
 from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
@@ -26,6 +27,9 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingInput,
     HealingTier,
 )
+
+if TYPE_CHECKING:
+    from system_learning.ports.meta_prior_provider import MetaPriorProvider
 
 # ---------------------------------------------------------------------------
 # Failure class priors — deterministic mapping from failure_type to base score.
@@ -67,11 +71,22 @@ _HISTORICAL_SUCCESS_RATES: dict[str, float] = {}
 _NEUTRAL_PRIOR = 0.50
 
 
-def get_historical_success_rate(error_signature: str) -> float:
+def get_historical_success_rate(
+    error_signature: str,
+    *,
+    meta_prior_provider: MetaPriorProvider | None = None,
+) -> float:
     """Look up historical success rate for an error signature.
+
+    Priority:
+    1. meta_prior_provider.get_prior() — live store (Phase 1+)
+    2. _HISTORICAL_SUCCESS_RATES — module-level stub (legacy / tests)
+    3. _NEUTRAL_PRIOR (0.50) — cold-start fallback
 
     Returns neutral prior (0.50) if no history is available.
     """
+    if meta_prior_provider is not None:
+        return meta_prior_provider.get_prior(error_signature)
     return _HISTORICAL_SUCCESS_RATES.get(error_signature, _NEUTRAL_PRIOR)
 
 
@@ -92,7 +107,11 @@ def clear_historical_success_rates() -> None:
 # ---------------------------------------------------------------------------
 
 
-def compute_heal_confidence(healing_input: HealingInput) -> tuple[float, list[str]]:
+def compute_heal_confidence(
+    healing_input: HealingInput,
+    *,
+    meta_prior_provider: MetaPriorProvider | None = None,
+) -> tuple[float, list[str]]:
     """Compute deterministic heal_confidence from structured failure context.
 
     Returns:
@@ -110,7 +129,10 @@ def compute_heal_confidence(healing_input: HealingInput) -> tuple[float, list[st
     reason_codes.append(f"blast_radius_inv={blast_component:.2f}")
 
     # 3. Historical success rate
-    historical_rate = get_historical_success_rate(healing_input.error_signature)
+    historical_rate = get_historical_success_rate(
+        healing_input.error_signature,
+        meta_prior_provider=meta_prior_provider,
+    )
     reason_codes.append(f"historical_success={historical_rate:.2f}")
 
     # 4. Tool readiness certainty (fraction of required tools available)
@@ -150,6 +172,8 @@ def compute_heal_confidence(healing_input: HealingInput) -> tuple[float, list[st
 def route_healing_tier(
     healing_input: HealingInput,
     config: HealingTierConfig,
+    *,
+    meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
     """Route a healing request to the appropriate tier.
 
@@ -167,7 +191,11 @@ def route_healing_tier(
         Immutable HealingDecision with tier, heal_confidence, and reason_codes.
     """
     # Check Qwen kill switch first
-    decision = _apply_qwen_kill_switch(healing_input, config)
+    decision = _apply_qwen_kill_switch(
+        healing_input,
+        config,
+        meta_prior_provider=meta_prior_provider,
+    )
     if decision:
         return decision
 
@@ -187,7 +215,10 @@ def route_healing_tier(
             reason_codes=tuple(reason_codes),
         )
 
-    heal_confidence, reason_codes = compute_heal_confidence(healing_input)
+    heal_confidence, reason_codes = compute_heal_confidence(
+        healing_input,
+        meta_prior_provider=meta_prior_provider,
+    )
 
     # Force GEMINI_2_5_PRO if max retries exceeded
     if healing_input.retry_count >= config.max_heal_retries:
@@ -238,13 +269,21 @@ def route_healing_tier(
     )
 
 
-def _apply_qwen_kill_switch(healing_input: HealingInput, config: HealingTierConfig) -> HealingDecision | None:
+def _apply_qwen_kill_switch(
+    healing_input: HealingInput,
+    config: HealingTierConfig,
+    *,
+    meta_prior_provider: MetaPriorProvider | None = None,
+) -> HealingDecision | None:
     """Apply QWEN_VLLM_ENABLED kill switch if needed."""
     qwen_enabled = os.environ.get("QWEN_VLLM_ENABLED", "true").lower() == "true"
 
     if not qwen_enabled:
         # Skip QWEN_VLLM tier entirely
-        heal_confidence, reason_codes = compute_heal_confidence(healing_input)
+        heal_confidence, reason_codes = compute_heal_confidence(
+            healing_input,
+            meta_prior_provider=meta_prior_provider,
+        )
         reason_codes.append("QWEN_VLLM_ENABLED=DISABLED:SKIPPED")
 
         if heal_confidence >= config.heal_confidence_x:
