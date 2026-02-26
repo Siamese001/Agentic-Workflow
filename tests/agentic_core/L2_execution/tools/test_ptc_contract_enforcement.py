@@ -47,6 +47,29 @@ _ENVELOPE_V = SandboxEnvelope(
 )
 
 
+def _make_unsigned_envelope(**overrides) -> SandboxEnvelope:
+    """Construct a SandboxEnvelope with empty signature, bypassing __post_init__."""
+    from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+    e = SandboxEnvelope.__new__(SandboxEnvelope)
+    object.__setattr__(e, "envelope_id", overrides.get("envelope_id", "ptc-env-0001"))
+    object.__setattr__(e, "tool_name", overrides.get("tool_name", "ptc_tool"))
+    object.__setattr__(e, "tool_args", overrides.get("tool_args", {"prompt": "write hello world"}))
+    object.__setattr__(e, "instruction_packet_id", overrides.get("instruction_packet_id", "instr-0001"))
+    object.__setattr__(e, "invocation_metadata", overrides.get("invocation_metadata", {"agent": "PTCAgent", "tick": 7}))
+    object.__setattr__(e, "budget", overrides.get("budget", ToolBudget()))
+    object.__setattr__(e, "signature", "")
+    return e
+
+
+def _tamper_envelope(env: SandboxEnvelope, **kwargs) -> SandboxEnvelope:
+    """Return a copy of env with fields overridden, bypassing __post_init__."""
+    e = SandboxEnvelope.__new__(SandboxEnvelope)
+    for f in ("envelope_id", "tool_name", "tool_args", "instruction_packet_id",
+              "invocation_metadata", "budget", "signature"):
+        object.__setattr__(e, f, kwargs.get(f, getattr(env, f)))
+    return e
+
+
 # ===========================================================================
 # Constants
 # ===========================================================================
@@ -87,15 +110,17 @@ def test_enforcer_rejects_negative_byte_cap():
 
 def test_pre_execute_rejects_unsigned_envelope():
     enforcer = PTCContractEnforcer(secret=_SECRET)
+    unsigned = _make_unsigned_envelope()
     with pytest.raises(PTCUnsignedEnvelopeError, match="unsigned"):
-        enforcer.pre_execute(_ENVELOPE_V)
+        enforcer.pre_execute(unsigned)
 
 
 def test_pre_execute_increments_violation_count_on_unsigned():
     enforcer = PTCContractEnforcer(secret=_SECRET)
     assert enforcer.violation_count == 0
+    unsigned = _make_unsigned_envelope()
     with pytest.raises(PTCUnsignedEnvelopeError):
-        enforcer.pre_execute(_ENVELOPE_V)
+        enforcer.pre_execute(unsigned)
     assert enforcer.violation_count == 1
 
 
@@ -106,7 +131,8 @@ def test_pre_execute_increments_violation_count_on_unsigned():
 
 def test_pre_execute_accepts_signed_envelope():
     enforcer = PTCContractEnforcer(secret=_SECRET)
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     enforcer.pre_execute(signed)  # must not raise
     assert enforcer.violation_count == 0
 
@@ -118,10 +144,9 @@ def test_pre_execute_accepts_signed_envelope():
 
 def test_pre_execute_rejects_tampered_envelope():
     enforcer = PTCContractEnforcer(secret=_SECRET)
-    signed = _ENVELOPE_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, tool_name="evil_tool")
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_envelope(signed, tool_name="evil_tool")
     with pytest.raises(PTCContractViolation):
         enforcer.pre_execute(tampered)
     assert enforcer.violation_count == 1
@@ -129,7 +154,8 @@ def test_pre_execute_rejects_tampered_envelope():
 
 def test_pre_execute_rejects_wrong_key():
     enforcer = PTCContractEnforcer(secret=b"wrong-key")
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     with pytest.raises(PTCContractViolation):
         enforcer.pre_execute(signed)
 
@@ -249,8 +275,9 @@ def test_violation_count_starts_at_zero():
 
 def test_violation_count_accumulates():
     enforcer = PTCContractEnforcer(secret=_SECRET, byte_cap=3)
+    unsigned = _make_unsigned_envelope()
     with pytest.raises(PTCUnsignedEnvelopeError):
-        enforcer.pre_execute(_ENVELOPE_V)
+        enforcer.pre_execute(unsigned)
     with pytest.raises(PTCBytesCapExceeded):
         enforcer.post_execute("1234")
     assert enforcer.violation_count == 2
@@ -269,10 +296,9 @@ def test_negative_control_ptc_tamper():
     """
     if os.environ.get("W1_NEGCTRL_TAMPER") == "1":
         enforcer = PTCContractEnforcer(secret=_SECRET)
-        signed = _ENVELOPE_V.sign(_SECRET)
-        from dataclasses import replace
-
-        tampered = replace(signed, tool_args={"prompt": "W1_NEGCTRL injected"})
+        unsigned = _make_unsigned_envelope()
+        signed = unsigned.sign(_SECRET)
+        tampered = _tamper_envelope(signed, tool_args={"prompt": "W1_NEGCTRL injected"})
         try:
             enforcer.pre_execute(tampered)
             pytest.fail("Expected PTCContractViolation was not raised")
@@ -283,7 +309,8 @@ def test_negative_control_ptc_tamper():
         )
     else:
         enforcer = PTCContractEnforcer(secret=_SECRET)
-        signed = _ENVELOPE_V.sign(_SECRET)
+        unsigned = _make_unsigned_envelope()
+        signed = unsigned.sign(_SECRET)
         enforcer.pre_execute(signed)  # must pass
         result = enforcer.post_execute("safe output")
         assert result == "safe output"

@@ -211,6 +211,7 @@ def test_w2_determinism_digest_printed():
         "payload": "test-payload",
     }
     envelope_dict = {
+        "budget": {"compute_ms": 5000, "memory_mb": 256, "stdout_bytes": 65536},
         "envelope_id": "test-envelope-001",
         "instruction_packet_id": "test-instruction-001",
         "invocation_metadata": {"agent": "test"},
