@@ -36,6 +36,32 @@ _PACKET_V = InstructionPacket(
     metadata={"agent": "StructureHealerAgent", "tick": 42},
 )
 
+
+def _make_unsigned_packet() -> InstructionPacket:
+    """Construct an InstructionPacket with no signature, bypassing __post_init__."""
+    p = InstructionPacket.__new__(InstructionPacket)
+    object.__setattr__(p, "instruction_id", "instr-0001")
+    object.__setattr__(p, "payload", "apply patch to file.py")
+    object.__setattr__(p, "metadata", {"agent": "StructureHealerAgent", "tick": 42})
+    object.__setattr__(p, "signature", "")
+    object.__setattr__(p, "l5_signature", "")
+    object.__setattr__(p, "certification_timestamp", "")
+    object.__setattr__(p, "expiration_timestamp", "")
+    object.__setattr__(p, "agent_registry_hash", "")
+    object.__setattr__(p, "execution_profile_hash", "")
+    object.__setattr__(p, "policy_hash", "")
+    return p
+
+
+def _tamper_field(packet: InstructionPacket, **kwargs: object) -> InstructionPacket:
+    """Return a copy of packet with fields overridden, bypassing __post_init__."""
+    p = InstructionPacket.__new__(InstructionPacket)
+    for f in ("instruction_id", "payload", "metadata", "signature",
+              "l5_signature", "certification_timestamp", "expiration_timestamp",
+              "agent_registry_hash", "execution_profile_hash", "policy_hash"):
+        object.__setattr__(p, f, kwargs.get(f, getattr(packet, f)))
+    return p
+
 # ---------------------------------------------------------------------------
 # W1-DETERMINISM-DIGEST  (printed once per run)
 # ---------------------------------------------------------------------------
@@ -88,9 +114,10 @@ def test_canonical_bytes_keys_sorted():
 
 
 def test_canonical_bytes_excludes_signature():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     # Signing must NOT affect canonical bytes (signature excluded from surface)
-    assert signed.canonical_bytes() == _PACKET_V.canonical_bytes()
+    assert signed.canonical_bytes() == unsigned.canonical_bytes()
 
 
 # ===========================================================================
@@ -99,36 +126,42 @@ def test_canonical_bytes_excludes_signature():
 
 
 def test_sign_returns_new_instance():
-    signed = _PACKET_V.sign(_SECRET)
-    assert signed is not _PACKET_V
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
+    assert signed is not unsigned
 
 
 def test_sign_sets_signature():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     assert signed.signature != ""
     assert len(signed.signature) == 64  # SHA256 hex
 
 
 def test_sign_signature_is_lowercase_hex():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     assert signed.signature == signed.signature.lower()
     assert all(c in "0123456789abcdef" for c in signed.signature)
 
 
 def test_sign_verify_pass():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     signed.verify(_SECRET)  # must not raise
 
 
 def test_sign_is_deterministic():
-    s1 = _PACKET_V.sign(_SECRET)
-    s2 = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    s1 = unsigned.sign(_SECRET)
+    s2 = unsigned.sign(_SECRET)
     assert s1.signature == s2.signature
 
 
 def test_unsigned_packet_verify_raises():
+    unsigned = _make_unsigned_packet()
     with pytest.raises(SignatureVerificationError, match="unsigned"):
-        _PACKET_V.verify(_SECRET)
+        unsigned.verify(_SECRET)
 
 
 # ===========================================================================
@@ -137,35 +170,32 @@ def test_unsigned_packet_verify_raises():
 
 
 def test_tamper_payload_fails_verify():
-    signed = _PACKET_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, payload="TAMPERED payload")
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_field(signed, payload="TAMPERED payload")
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
 
 def test_tamper_metadata_fails_verify():
-    signed = _PACKET_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, metadata={"agent": "EvilAgent", "tick": 99})
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_field(signed, metadata={"agent": "EvilAgent", "tick": 99})
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
 
 def test_wrong_key_fails_verify():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         signed.verify(b"wrong-key")
 
 
 def test_tamper_signature_directly_fails_verify():
-    signed = _PACKET_V.sign(_SECRET)
-    from dataclasses import replace
-
-    bad_sig = "a" * 64
-    tampered = replace(signed, signature=bad_sig)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_field(signed, signature="a" * 64)
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
@@ -176,11 +206,13 @@ def test_tamper_signature_directly_fails_verify():
 
 
 def test_is_signed_false_when_unsigned():
-    assert _PACKET_V.is_signed is False
+    unsigned = _make_unsigned_packet()
+    assert unsigned.is_signed is False
 
 
 def test_is_signed_true_after_sign():
-    signed = _PACKET_V.sign(_SECRET)
+    unsigned = _make_unsigned_packet()
+    signed = unsigned.sign(_SECRET)
     assert signed.is_signed is True
 
 
@@ -224,10 +256,9 @@ def test_negative_control_tamper_instruction_packet():
     No env var           -> normal path: sign+verify passes (PASS).
     """
     if os.environ.get("W1_NEGCTRL_TAMPER") == "1":
-        signed = _PACKET_V.sign(_SECRET)
-        from dataclasses import replace
-
-        tampered = replace(signed, payload="W1_NEGCTRL tampered payload")
+        unsigned = _make_unsigned_packet()
+        signed = unsigned.sign(_SECRET)
+        tampered = _tamper_field(signed, payload="W1_NEGCTRL tampered payload")
         try:
             tampered.verify(_SECRET)
             pytest.fail("Expected SignatureVerificationError was not raised")
@@ -237,5 +268,6 @@ def test_negative_control_tamper_instruction_packet():
             "W1_NEGCTRL_TAMPER=1: InstructionPacket tamper detected correctly -- XFAIL"
         )
     else:
-        signed = _PACKET_V.sign(_SECRET)
+        unsigned = _make_unsigned_packet()
+        signed = unsigned.sign(_SECRET)
         signed.verify(_SECRET)  # must pass

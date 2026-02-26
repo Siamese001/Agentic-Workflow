@@ -39,6 +39,29 @@ _ENVELOPE_V = SandboxEnvelope(
     invocation_metadata={"agent": "StructureHealerAgent", "tick": 42},
 )
 
+
+def _make_unsigned_envelope(**overrides) -> SandboxEnvelope:
+    """Construct a SandboxEnvelope with no signature, bypassing __post_init__."""
+    from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+    e = SandboxEnvelope.__new__(SandboxEnvelope)
+    object.__setattr__(e, "envelope_id", overrides.get("envelope_id", "env-0001"))
+    object.__setattr__(e, "tool_name", overrides.get("tool_name", "write_gateway"))
+    object.__setattr__(e, "tool_args", overrides.get("tool_args", {"path": "src/module.py", "content": "# patched"}))
+    object.__setattr__(e, "instruction_packet_id", overrides.get("instruction_packet_id", "instr-0001"))
+    object.__setattr__(e, "invocation_metadata", overrides.get("invocation_metadata", {"agent": "StructureHealerAgent", "tick": 42}))
+    object.__setattr__(e, "budget", overrides.get("budget", ToolBudget()))
+    object.__setattr__(e, "signature", "")
+    return e
+
+
+def _tamper_envelope(env: SandboxEnvelope, **kwargs) -> SandboxEnvelope:
+    """Return a copy of env with fields overridden, bypassing __post_init__."""
+    e = SandboxEnvelope.__new__(SandboxEnvelope)
+    for f in ("envelope_id", "tool_name", "tool_args", "instruction_packet_id",
+              "invocation_metadata", "budget", "signature"):
+        object.__setattr__(e, f, kwargs.get(f, getattr(env, f)))
+    return e
+
 # ---------------------------------------------------------------------------
 # W1-DETERMINISM-DIGEST contribution from SandboxEnvelope
 # ---------------------------------------------------------------------------
@@ -86,8 +109,9 @@ def test_envelope_canonical_bytes_keys_sorted():
 
 
 def test_envelope_canonical_bytes_excludes_signature():
-    signed = _ENVELOPE_V.sign(_SECRET)
-    assert signed.canonical_bytes() == _ENVELOPE_V.canonical_bytes()
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    assert signed.canonical_bytes() == unsigned.canonical_bytes()
 
 
 # ===========================================================================
@@ -96,31 +120,36 @@ def test_envelope_canonical_bytes_excludes_signature():
 
 
 def test_envelope_sign_returns_new_instance():
-    signed = _ENVELOPE_V.sign(_SECRET)
-    assert signed is not _ENVELOPE_V
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    assert signed is not unsigned
 
 
 def test_envelope_sign_sets_lowercase_hex_signature():
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     assert len(signed.signature) == 64
     assert signed.signature == signed.signature.lower()
     assert all(c in "0123456789abcdef" for c in signed.signature)
 
 
 def test_envelope_sign_verify_pass():
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     signed.verify(_SECRET)
 
 
 def test_envelope_sign_is_deterministic():
-    s1 = _ENVELOPE_V.sign(_SECRET)
-    s2 = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    s1 = unsigned.sign(_SECRET)
+    s2 = unsigned.sign(_SECRET)
     assert s1.signature == s2.signature
 
 
 def test_envelope_unsigned_verify_raises():
+    unsigned = _make_unsigned_envelope()
     with pytest.raises(SignatureVerificationError, match="unsigned"):
-        _ENVELOPE_V.verify(_SECRET)
+        unsigned.verify(_SECRET)
 
 
 # ===========================================================================
@@ -129,34 +158,32 @@ def test_envelope_unsigned_verify_raises():
 
 
 def test_envelope_tamper_tool_name_fails_verify():
-    signed = _ENVELOPE_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, tool_name="evil_tool")
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_envelope(signed, tool_name="evil_tool")
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
 
 def test_envelope_tamper_tool_args_fails_verify():
-    signed = _ENVELOPE_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, tool_args={"path": "/etc/passwd", "content": "evil"})
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_envelope(signed, tool_args={"path": "/etc/passwd", "content": "evil"})
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
 
 def test_envelope_wrong_key_fails_verify():
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         signed.verify(b"wrong-key")
 
 
 def test_envelope_tamper_signature_directly_fails():
-    signed = _ENVELOPE_V.sign(_SECRET)
-    from dataclasses import replace
-
-    tampered = replace(signed, signature="b" * 64)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
+    tampered = _tamper_envelope(signed, signature="b" * 64)
     with pytest.raises(SignatureVerificationError, match="mismatch"):
         tampered.verify(_SECRET)
 
@@ -167,11 +194,13 @@ def test_envelope_tamper_signature_directly_fails():
 
 
 def test_envelope_is_signed_false_when_unsigned():
-    assert _ENVELOPE_V.is_signed is False
+    unsigned = _make_unsigned_envelope()
+    assert unsigned.is_signed is False
 
 
 def test_envelope_is_signed_true_after_sign():
-    assert _ENVELOPE_V.sign(_SECRET).is_signed is True
+    unsigned = _make_unsigned_envelope()
+    assert unsigned.sign(_SECRET).is_signed is True
 
 
 # ===========================================================================
@@ -191,40 +220,60 @@ def test_envelope_is_immutable():
 
 def test_boundary_verifier_rejects_unsigned_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    packet = InstructionPacket(
-        instruction_id="x", payload="y", metadata={}, signature=""
-    )
+    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket as _IP
+    p = _IP.__new__(_IP)
+    object.__setattr__(p, "instruction_id", "x")
+    object.__setattr__(p, "payload", "y")
+    object.__setattr__(p, "metadata", {})
+    object.__setattr__(p, "signature", "")
+    object.__setattr__(p, "l5_signature", "")
+    object.__setattr__(p, "certification_timestamp", "")
+    object.__setattr__(p, "expiration_timestamp", "")
+    object.__setattr__(p, "agent_registry_hash", "")
+    object.__setattr__(p, "execution_profile_hash", "")
+    object.__setattr__(p, "policy_hash", "")
     with pytest.raises(SignatureVerificationError):
-        verifier.verify_packet(packet)
+        verifier.verify_packet(p)
 
 
 def test_boundary_verifier_rejects_unsigned_envelope():
     verifier = L2BoundaryVerifier(secret=_SECRET)
+    unsigned = _make_unsigned_envelope()
     with pytest.raises(SignatureVerificationError):
-        verifier.verify_envelope(_ENVELOPE_V)
+        verifier.verify_envelope(unsigned)
 
 
 def test_boundary_verifier_accepts_signed_envelope():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    signed = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed = unsigned.sign(_SECRET)
     verifier.verify_envelope(signed)  # must not raise
 
 
 def test_boundary_verifier_accepts_signed_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    packet = InstructionPacket(
-        instruction_id="instr-0001",
-        payload="apply patch",
-        metadata={"tick": 1},
-    ).sign(_SECRET)
-    verifier.verify_packet(packet)  # must not raise
+    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket as _IP
+    p = _IP.__new__(_IP)
+    object.__setattr__(p, "instruction_id", "instr-0001")
+    object.__setattr__(p, "payload", "apply patch")
+    object.__setattr__(p, "metadata", {"tick": 1})
+    object.__setattr__(p, "signature", "")
+    object.__setattr__(p, "l5_signature", "")
+    object.__setattr__(p, "certification_timestamp", "")
+    object.__setattr__(p, "expiration_timestamp", "")
+    object.__setattr__(p, "agent_registry_hash", "")
+    object.__setattr__(p, "execution_profile_hash", "")
+    object.__setattr__(p, "policy_hash", "")
+    signed = p.sign(_SECRET)
+    verifier.verify_packet(signed)  # must not raise
 
 
 def test_boundary_verifier_is_valid_helpers():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    signed_env = _ENVELOPE_V.sign(_SECRET)
+    unsigned = _make_unsigned_envelope()
+    signed_env = unsigned.sign(_SECRET)
     assert verifier.is_envelope_valid(signed_env) is True
-    assert verifier.is_envelope_valid(_ENVELOPE_V) is False
+    assert verifier.is_envelope_valid(unsigned) is False
 
 
 def test_boundary_verifier_rejects_empty_secret():
@@ -261,10 +310,9 @@ def test_negative_control_tamper_sandbox_envelope():
     No env var           -> normal path: sign+verify passes (PASS).
     """
     if os.environ.get("W1_NEGCTRL_TAMPER") == "1":
-        signed = _ENVELOPE_V.sign(_SECRET)
-        from dataclasses import replace
-
-        tampered = replace(signed, tool_name="W1_NEGCTRL_tampered_tool")
+        unsigned = _make_unsigned_envelope()
+        signed = unsigned.sign(_SECRET)
+        tampered = _tamper_envelope(signed, tool_name="W1_NEGCTRL_tampered_tool")
         try:
             tampered.verify(_SECRET)
             pytest.fail("Expected SignatureVerificationError was not raised")
@@ -274,5 +322,6 @@ def test_negative_control_tamper_sandbox_envelope():
             "W1_NEGCTRL_TAMPER=1: SandboxEnvelope tamper detected correctly -- XFAIL"
         )
     else:
-        signed = _ENVELOPE_V.sign(_SECRET)
+        unsigned = _make_unsigned_envelope()
+        signed = unsigned.sign(_SECRET)
         signed.verify(_SECRET)  # must pass
