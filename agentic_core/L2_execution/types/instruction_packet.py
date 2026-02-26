@@ -13,7 +13,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 import json
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from datetime import datetime, timedelta, timezone
 from typing import Any
 
@@ -101,21 +101,15 @@ class InstructionPacket:
     # ------------------------------------------------------------------
 
     def _signable_dict(self) -> dict[str, Any]:
-        """Return the dict that is signed (excludes signature fields)."""
+        """Return the dict that is signed by base signature (base fields only)."""
         return {
             "instruction_id": self.instruction_id,
             "metadata": self.metadata,
             "payload": self.payload,
-            "l5_signature": self.l5_signature,
-            "certification_timestamp": self.certification_timestamp,
-            "expiration_timestamp": self.expiration_timestamp,
-            "agent_registry_hash": self.agent_registry_hash,
-            "execution_profile_hash": self.execution_profile_hash,
-            "policy_hash": self.policy_hash,
         }
 
     def _l5_signable_dict(self) -> dict[str, Any]:
-        """Return the dict for L5 signature (excludes l5_signature field)."""
+        """Return the dict for L5 signature (excludes l5_signature to avoid circularity)."""
         return {
             "instruction_id": self.instruction_id,
             "metadata": self.metadata,
@@ -127,21 +121,9 @@ class InstructionPacket:
             "policy_hash": self.policy_hash,
         }
 
-    def _base_signable_dict(self) -> dict[str, Any]:
-        """Return the dict for base signature (excludes all L5 certification fields)."""
-        return {
-            "instruction_id": self.instruction_id,
-            "metadata": self.metadata,
-            "payload": self.payload,
-        }
-
     def canonical_bytes(self) -> bytes:
-        """Deterministic bytes over the signable surface."""
+        """Deterministic bytes over the base signing surface."""
         return _canonical_bytes(self._signable_dict())
-
-    def canonical_bytes_for_base(self) -> bytes:
-        """Deterministic bytes for base signature verification."""
-        return _canonical_bytes(self._base_signable_dict())
 
     # ------------------------------------------------------------------
     # sign / verify
@@ -150,7 +132,18 @@ class InstructionPacket:
     def sign(self, secret: bytes) -> InstructionPacket:
         """Return a *new* InstructionPacket with HMAC-SHA256 signature set."""
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
-        return replace(self, signature=mac.hexdigest().lower())
+        new_packet = InstructionPacket.__new__(InstructionPacket)
+        object.__setattr__(new_packet, "instruction_id", self.instruction_id)
+        object.__setattr__(new_packet, "payload", self.payload)
+        object.__setattr__(new_packet, "metadata", self.metadata)
+        object.__setattr__(new_packet, "signature", mac.hexdigest().lower())
+        object.__setattr__(new_packet, "l5_signature", self.l5_signature)
+        object.__setattr__(new_packet, "certification_timestamp", self.certification_timestamp)
+        object.__setattr__(new_packet, "expiration_timestamp", self.expiration_timestamp)
+        object.__setattr__(new_packet, "agent_registry_hash", self.agent_registry_hash)
+        object.__setattr__(new_packet, "execution_profile_hash", self.execution_profile_hash)
+        object.__setattr__(new_packet, "policy_hash", self.policy_hash)
+        return new_packet
 
     def certify_l5(
         self,
@@ -191,17 +184,14 @@ class InstructionPacket:
         object.__setattr__(certified, "execution_profile_hash", execution_profile_hash)
         object.__setattr__(certified, "policy_hash", policy_hash)
 
-        # Compute L5 signature using L5-specific signing surface first
+        # Preserve the original base signature (canonical_bytes covers base fields only,
+        # which are unchanged during L5 certification)
+        object.__setattr__(certified, "signature", self.signature)
+
+        # Compute L5 signature using L5-specific signing surface
         l5_canonical_bytes = _canonical_bytes(certified._l5_signable_dict())
         l5_mac = hmac.new(l5_secret, l5_canonical_bytes, hashlib.sha256)
         object.__setattr__(certified, "l5_signature", l5_mac.hexdigest().lower())
-
-        # Then compute base signature with L5 signature populated
-        from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-
-        base_secret = get_current_secret()
-        base_mac = hmac.new(base_secret, certified.canonical_bytes(), hashlib.sha256)
-        object.__setattr__(certified, "signature", base_mac.hexdigest().lower())
 
         return certified
 

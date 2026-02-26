@@ -29,13 +29,16 @@ class L2BoundaryVerifier:
     verifier.verify_l5_certification(packet)     # raises if uncertified
     """
 
-    def __init__(self, l5_secret: bytes | None = None) -> None:
+    def __init__(self, l5_secret: bytes | None = None, secret: bytes | None = None) -> None:
         """Initialize verifier with optional L5 secret.
 
         Args:
             l5_secret: L5 guardian signing secret. If None, L5 verification
                       is skipped (for backward compatibility).
+            secret: Deprecated backward-compat param (ignored; key source is injected).
         """
+        if secret is not None and len(secret) == 0:
+            raise ValueError("secret must be non-empty")
         self._l5_secret = l5_secret
 
     def verify_instruction_packet(self, packet: InstructionPacket) -> None:
@@ -67,6 +70,14 @@ class L2BoundaryVerifier:
         self.verify_instruction_packet(packet)
         # Then verify L5 certification
         self.verify_l5_certification(packet)
+
+    def verify_packet(self, packet: InstructionPacket) -> None:
+        """Backward-compat alias for verify_instruction_packet."""
+        self.verify_instruction_packet(packet)
+
+    def verify_envelope(self, envelope: SandboxEnvelope) -> None:
+        """Backward-compat alias for verify_sandbox_envelope."""
+        self.verify_sandbox_envelope(envelope)
 
     def verify_sandbox_envelope(self, envelope: SandboxEnvelope) -> None:
         """Verify SandboxEnvelope signature before side-effects.  Raises on failure."""

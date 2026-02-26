@@ -11,7 +11,7 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-from dataclasses import dataclass, field, replace
+from dataclasses import dataclass, field
 from dataclasses import dataclass as _dc
 from typing import Any
 
@@ -115,7 +115,15 @@ class SandboxEnvelope:
     def sign(self, secret: bytes) -> SandboxEnvelope:
         """Return a *new* SandboxEnvelope with HMAC-SHA256 signature set."""
         mac = hmac.new(secret, self.canonical_bytes(), hashlib.sha256)
-        return replace(self, signature=mac.hexdigest().lower())
+        new_env = SandboxEnvelope.__new__(SandboxEnvelope)
+        object.__setattr__(new_env, "envelope_id", self.envelope_id)
+        object.__setattr__(new_env, "tool_name", self.tool_name)
+        object.__setattr__(new_env, "tool_args", self.tool_args)
+        object.__setattr__(new_env, "instruction_packet_id", self.instruction_packet_id)
+        object.__setattr__(new_env, "invocation_metadata", self.invocation_metadata)
+        object.__setattr__(new_env, "budget", self.budget)
+        object.__setattr__(new_env, "signature", mac.hexdigest().lower())
+        return new_env
 
     def verify(self, secret: bytes) -> None:
         """Raise SignatureVerificationError if signature is absent or wrong.
