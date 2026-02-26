@@ -1,24 +1,25 @@
 """
-Real Healing Provider Adapters — Minimal SDK Wrappers for L2.3 Healing Tier.
+Healing Provider Adapters — Environment-Independent, Replay-Deterministic.
 
-These adapters perform real SDK calls but are designed to be mocked in tests.
-They implement the HealingProviderInvoker Protocol with actual provider logic.
-
-Production usage: instantiate directly with real clients.
-Testing: mock the underlying SDK methods; assert adapter selection and arguments.
+These adapters implement the HealingProviderInvoker Protocol with:
+- Explicit configuration injection (no environment variables)
+- Provider configuration hashing for replay determinism
+- Fixed token limits (no external config loading)
+- Deterministic error handling
 """
 
 from __future__ import annotations
 
+import hashlib
 import logging
+from typing import Any
 
-from agentic_core.L2_execution.enforcement.SovereignLLMGateway import GenerationRequest, get_llm_gateway
-from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
-from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
+from agentic_core.L2_execution.healers.healing_tier_router import HISTORICAL_DATA_HASH, _compute_replay_key
 from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingDecision,
     HealingInput,
     HealingTier,
+    InvocationRecord,
 )
 
 logger = logging.getLogger(__name__)
@@ -36,11 +37,38 @@ class OOMEscalatedError(Exception):
     pass
 
 
-# Module-level constants for token limits
-# guardian: allow-magic-config
-DEFAULT_MAX_TOKENS = 2048
-# guardian: allow-magic-config
-DEFAULT_MAX_OUTPUT_TOKENS = 2048
+# ---------------------------------------------------------------------------
+# Fixed constants - no environment access, no config loading
+# ---------------------------------------------------------------------------
+
+# Fixed token limits for mathematical determinism
+MAX_TOKENS = 2048
+MAX_OUTPUT_TOKENS = 2048
+
+# Fixed provider configurations - compile-time frozen
+QWEN_CONFIG: dict[str, Any] = {
+    "temperature": 0.0,
+    "max_tokens": MAX_TOKENS,
+    "top_p": 1.0,
+    "frequency_penalty": 0.0,
+    "presence_penalty": 0.0,
+}
+
+GEMINI_CONFIG: dict[str, Any] = {
+    "temperature": 0.1,
+    "max_tokens": MAX_OUTPUT_TOKENS,
+    "top_p": 1.0,
+    "top_k": 40,
+}
+
+# Pre-computed configuration hashes for replay determinism
+QWEN_CONFIG_HASH = hashlib.sha256(
+    '|'.join(f"{k}={v}" for k, v in sorted(QWEN_CONFIG.items())).encode()
+).hexdigest()[:16]
+
+GEMINI_CONFIG_HASH = hashlib.sha256(
+    '|'.join(f"{k}={v}" for k, v in sorted(GEMINI_CONFIG.items())).encode()
+).hexdigest()[:16]
 
 
 # ---------------------------------------------------------------------------
@@ -49,52 +77,79 @@ DEFAULT_MAX_OUTPUT_TOKENS = 2048
 
 
 class QwenInvokerAdapter:
-    """Real Qwen/vLLM provider adapter using OpenAI-compatible client."""
+    """Qwen/vLLM provider adapter with explicit configuration - no environment access."""
 
     def __init__(self, base_url: str, api_key: str | None = None) -> None:
-        """Initialize Qwen adapter with vLLM endpoint."""
+        """Initialize Qwen adapter with explicit configuration.
+
+        Args:
+            base_url: vLLM endpoint URL (explicit, no environment variable)
+            api_key: API key (explicit, no environment variable)
+        """
         self.base_url = base_url
         self.api_key = api_key
+        self._config_hash = QWEN_CONFIG_HASH
 
     async def invoke_qwen_vllm(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        model_id: str = "qwen-vllm",
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
-        """Invoke Qwen model for healing task."""
+        """Invoke Qwen model with deterministic configuration.
+
+        Args:
+            healing_input: Structured failure context
+            decision: Routing decision from tier router
+            model_id: Model identifier (explicit, no config loading)
+            agent_name: Agent making the request
+
+        Returns:
+            InvocationRecord with replay-deterministic fields
+        """
         prompt = self._build_prompt(healing_input, decision, agent_name)
         gateway = get_llm_gateway()
+
+        # Explicit configuration - no environment access
         request = GenerationRequest(
             prompt=prompt,
             agent_id="SovereignLLMGateway",
-            model=config.model_qwen_vllm_id,
+            model=model_id,
             provider="openai",
-            temperature=0.0,
-            max_tokens=DEFAULT_MAX_TOKENS,
+            **QWEN_CONFIG  # Unpack frozen config
         )
 
         try:
             response = await gateway.route_generation(request, base_url=self.base_url)
-            logger.info(
-                "Qwen healing invoked",
-                extra={
-                    "model": config.model_qwen_vllm_id,
-                    "agent": agent_name,
-                    "trace_id": healing_input.trace_id,
-                    "output_tokens": response.tokens,
-                },
-            )
-            return InvocationRecord(
+
+            # Create replay-deterministic record
+            record = InvocationRecord(
                 tier=HealingTier.QWEN_VLLM,
-                model_id=config.model_qwen_vllm_id,
+                model_id=model_id,
                 agent_name=agent_name,
                 trace_id=healing_input.trace_id,
                 heal_confidence=decision.heal_confidence,
                 method_called="invoke_qwen_vllm",
+                provider_config_hash=self._config_hash,
+                historical_data_hash=HISTORICAL_DATA_HASH,
+                replay_key=_compute_replay_key(healing_input, decision),
             )
+
+            logger.info(
+                "Qwen healing invoked with deterministic config",
+                extra={
+                    "model": model_id,
+                    "agent": agent_name,
+                    "trace_id": healing_input.trace_id,
+                    "config_hash": self._config_hash,
+                    "replay_key": record.replay_key,
+                },
+            )
+
+            return record
+
         except Exception:
             logger.error("Qwen healing failed", exc_info=True)
             raise
@@ -146,51 +201,77 @@ class QwenInvokerAdapter:
 
 
 class GeminiInvokerAdapter:
-    """Real Gemini 2.5 Pro provider adapter using Google GenAI SDK."""
+    """Gemini 2.5 Pro provider adapter with explicit configuration - no environment access."""
 
     def __init__(self, api_key: str) -> None:
-        """Initialize Gemini adapter with API key."""
+        """Initialize Gemini adapter with explicit configuration.
+
+        Args:
+            api_key: Google API key (explicit, no environment variable)
+        """
         self.api_key = api_key
+        self._config_hash = GEMINI_CONFIG_HASH
 
     async def invoke_gemini(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        model_id: str = "gemini-2.5-pro",
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
-        """Invoke Gemini model for healing task."""
+        """Invoke Gemini model with deterministic configuration.
+
+        Args:
+            healing_input: Structured failure context
+            decision: Routing decision from tier router
+            model_id: Model identifier (explicit, no config loading)
+            agent_name: Agent making the request
+
+        Returns:
+            InvocationRecord with replay-deterministic fields
+        """
         prompt = self._build_prompt(healing_input, decision, agent_name)
         gateway = get_llm_gateway()
+
+        # Explicit configuration - no environment access
         request = GenerationRequest(
             prompt=prompt,
             agent_id="SovereignLLMGateway",
-            model=config.model_gemini_2_5_pro_id,
+            model=model_id,
             provider="google",
-            temperature=0.1,
-            max_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
+            **GEMINI_CONFIG  # Unpack frozen config
         )
 
         try:
             response = await gateway.route_generation(request)
-            logger.info(
-                "Gemini healing invoked",
-                extra={
-                    "model": config.model_gemini_2_5_pro_id,
-                    "agent": agent_name,
-                    "trace_id": healing_input.trace_id,
-                    "response_text": response.content[:200] if response.content else "",
-                },
-            )
-            return InvocationRecord(
+
+            # Create replay-deterministic record
+            record = InvocationRecord(
                 tier=HealingTier.GEMINI_2_5_PRO,
-                model_id=config.model_gemini_2_5_pro_id,
+                model_id=model_id,
                 agent_name=agent_name,
                 trace_id=healing_input.trace_id,
                 heal_confidence=decision.heal_confidence,
                 method_called="invoke_gemini",
+                provider_config_hash=self._config_hash,
+                historical_data_hash=HISTORICAL_DATA_HASH,
+                replay_key=_compute_replay_key(healing_input, decision),
             )
+
+            logger.info(
+                "Gemini healing invoked with deterministic config",
+                extra={
+                    "model": model_id,
+                    "agent": agent_name,
+                    "trace_id": healing_input.trace_id,
+                    "config_hash": self._config_hash,
+                    "replay_key": record.replay_key,
+                },
+            )
+
+            return record
+
         except Exception:
             logger.error("Gemini healing failed", exc_info=True)
             raise
@@ -248,35 +329,52 @@ class LocalAgentAdapter:
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        model_id: str = "local",
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
-        """Invoke local agent for healing."""
+        """Invoke local agent with deterministic record.
+
+        Args:
+            healing_input: Structured failure context
+            decision: Routing decision from tier router
+            model_id: Model identifier (defaults to "local")
+            agent_name: Agent making the request
+
+        Returns:
+            InvocationRecord with replay-deterministic fields
+        """
+        # Create replay-deterministic record
+        record = InvocationRecord(
+            tier=HealingTier.LOCAL_AGENT,
+            model_id=model_id,
+            agent_name=agent_name,
+            trace_id=healing_input.trace_id,
+            heal_confidence=decision.heal_confidence,
+            method_called="invoke_local",
+            provider_config_hash="local",  # No config for local agent
+            historical_data_hash=HISTORICAL_DATA_HASH,
+            replay_key=_compute_replay_key(healing_input, decision),
+        )
+
         logger.info(
-            "Local healing invoked",
+            "Local healing invoked with deterministic record",
             extra={
                 "agent": agent_name,
                 "trace_id": healing_input.trace_id,
                 "confidence": decision.heal_confidence,
                 "failure_type": healing_input.failure_type,
+                "replay_key": record.replay_key,
             },
         )
 
-        return InvocationRecord(
-            tier=HealingTier.LOCAL_AGENT,
-            model_id="local",
-            agent_name=agent_name,
-            trace_id=healing_input.trace_id,
-            heal_confidence=decision.heal_confidence,
-            method_called="invoke_local",
-        )
+        return record
 
     async def invoke_qwen_vllm(
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        model_id: str = "qwen-vllm",
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -287,7 +385,7 @@ class LocalAgentAdapter:
         self,
         healing_input: HealingInput,
         decision: HealingDecision,
-        config: HealingTierConfig,
+        model_id: str = "gemini-2.5-pro",
         *,
         agent_name: str = "",
     ) -> InvocationRecord:
@@ -299,4 +397,8 @@ __all__ = [
     "QwenInvokerAdapter",
     "GeminiInvokerAdapter",
     "LocalAgentAdapter",
+    "QWEN_CONFIG_HASH",
+    "GEMINI_CONFIG_HASH",
+    "MAX_TOKENS",
+    "MAX_OUTPUT_TOKENS",
 ]

@@ -11,8 +11,14 @@ import time
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.budget_enforcer import BudgetEnforcer, BudgetExceeded
+from agentic_core.L2_execution.enforcement.key_source import get_current_secret
 from agentic_core.L2_execution.types.execution_trace import ExecutionTrace, ExecutionTraceBuilder
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, SignatureVerificationError
+
+
+class SignatureBoundaryError(RuntimeError):
+    """Raised when SandboxEnvelope signature verification fails - fail-closed boundary."""
+    pass
 
 
 class ExecutionGateway:
@@ -35,7 +41,15 @@ class ExecutionGateway:
             (ExecutionTrace, tool_result)
         Raises:
             BudgetExceeded: if any budget cap is breached
+            SignatureBoundaryError: if envelope signature verification fails (fail-closed)
         """
+        # FAIL-CLOSED: Verify signature BEFORE ANY side-effects (logging, state, IO, network)
+        try:
+            envelope.verify(get_current_secret())
+        except SignatureVerificationError:
+            # No logging, no state changes, immediate fail-closed exit
+            raise SignatureBoundaryError("Invalid SandboxEnvelope signature - execution blocked")
+
         builder = ExecutionTraceBuilder()
         builder.trace_id = envelope.envelope_id
         builder.instruction_packet_id = envelope.instruction_packet_id
