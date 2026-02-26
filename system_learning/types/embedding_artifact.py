@@ -26,6 +26,8 @@ class EmbeddingArtifact:
     k: int
     similarity_metric: str
     embedding_model_version: str
+    vector: list[float] = field(repr=False)  # Exclude from default repr
+    vector_hash: str = field(init=False)
     influence_class: Literal["C0_INFORMATIONAL"] = field(default="C0_INFORMATIONAL", init=False)
 
     def __post_init__(self) -> None:
@@ -42,6 +44,11 @@ class EmbeddingArtifact:
             sorted_content_hashes = tuple(sorted(self.supporting_content_hashes))
             if tuple(self.supporting_content_hashes) != sorted_content_hashes:
                 object.__setattr__(self, "supporting_content_hashes", list(sorted_content_hashes))
+
+        # Compute hash of the vector for deterministic inclusion in canonical form
+        if self.vector:
+            vector_bytes = json.dumps(self.vector, sort_keys=True, separators=(",", ":")).encode("utf-8")
+            object.__setattr__(self, "vector_hash", hashlib.sha256(vector_bytes).hexdigest())
 
     def canonical_bytes(self) -> bytes:
         """Return canonical UTF-8 bytes representation.
@@ -65,6 +72,7 @@ class EmbeddingArtifact:
             "k": self.k,
             "similarity_metric": self.similarity_metric,
             "embedding_model_version": self.embedding_model_version,
+            "vector_hash": self.vector_hash,
         }
 
         # Serialize to minified JSON with deterministic key order

@@ -65,17 +65,6 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
         self.exclude_patterns = ["test_", "example_", "mock_", "stub_", "legacy", "deprecated"]
         self.timestamp = None  # Set during heal_repository execution for Meta-Learning
 
-        # Initialize Gemini embedder for semantic Meta-Learning
-        self.gemini_embedder = None
-        try:
-            from agentic_core.semantic_memory.embeddings.gemini_embedder import get_gemini_embedder
-
-            self.gemini_embedder = get_gemini_embedder()
-            log.info("[AutonomyGuardian] Gemini embedder initialized for semantic Meta-Learning")
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            log.warning(f"[AutonomyGuardian] Gemini embedder unavailable: {e}")
-
         # [SSOT ALIGNMENT] Remove legacy smart_discovery.
         # Guardian now relies on the Canonical Neural Link (agent_discovery_full.json)
         # which is guaranteed fresh by the Tier 0-3 execution sequence.
@@ -297,20 +286,6 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
 
         self.timestamp = datetime.now().isoformat()
 
-        # Phase 4.4: Semantic Search for existing patterns in Pinecone
-        if self.gemini_embedder:
-            existing_pattern = self.search_healing_patterns("missing heal_repository")
-            if existing_pattern:
-                self.retrieval_stats["hits"] += 1
-                # Track confidence score if available
-                if "score" in existing_pattern:
-                    self.retrieval_stats["conf_scores"].append(existing_pattern["score"])
-                print("[Meta-Learning] Found existing healing pattern. Reusing fix signature.")
-                print(f"   Pattern ID: {existing_pattern.get('id', 'unknown')}")
-                print(f"   Previous fixes: {existing_pattern.get('metadata', {}).get('fixed', 0)}")
-            else:
-                self.retrieval_stats["misses"] += 1
-
         summary = {"violations": 0, "healed": 0, "errors": 0, "renamed": 0, "fixed": 0}
 
         try:
@@ -460,109 +435,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
             summary["errors"] += 1
             log.error(f"[AutonomyGuardian] heal_repository failed: {e}")
 
-        # Meta-Learning: Record healing events to L4 State
-        if not dry_run and summary.get("fixed", 0) > 0:
-            try:
-                import asyncio
-                import json
-
-                # Record fix event to Redis for immediate pattern reuse (async)
-                cache_key = f"autonomy_fix_{self.timestamp}"
-                try:
-                    asyncio.run(self.cache_set(key=cache_key, value=json.dumps(summary), ttl=86400))
-                    log.info(f"[META-LEARNING] Cached healing result to Redis: {cache_key}")
-                    print(f"[Meta-Learning] ✅ Recording fix signature to Redis: {cache_key}")
-                # guardian: allow-silent-swallow
-                except Exception as cache_error:
-                    log.warning(f"[META-LEARNING] Redis cache failed: {cache_error}")
-
-                # Pinecone: Semantic Meta-Learning with Gemini embeddings
-                vector_id = f"autonomy_healing_{self.timestamp.replace(':', '-')}"
-                healing_description = f"AutonomyGuardian healed {summary['fixed']} agents missing heal_repository() method. L0 DNA Integrity enforced."
-
-                if self.gemini_embedder:
-                    try:
-                        # Generate embedding using Gemini
-                        embedding = self.gemini_embedder.embed_query(healing_description)
-
-                        # Upsert full semantic signature to Pinecone
-                        asyncio.run(
-                            self.vector_upsert(
-                                id=vector_id,
-                                embedding=embedding,
-                                metadata={
-                                    "action": "inject_heal_repository_stub",
-                                    "target": "HealRepositoryStub",
-                                    "violations": summary.get("violations", 0),
-                                    "fixed": summary.get("fixed", 0),
-                                    "timestamp": self.timestamp,
-                                    "agent": "AutonomyGuardianAgent",
-                                    "description": healing_description,
-                                },
-                            ),
-                        )
-
-                        log.info(f"[META-LEARNING] Semantic fix signature persisted to Pinecone: {vector_id}")
-                        print("[Meta-Learning] ✅ Semantic fix signature persisted to Pinecone.")
-
-                    # guardian: allow-silent-swallow
-                    except Exception as pinecone_error:
-                        log.warning(f"[META-LEARNING] Pinecone upsert failed: {pinecone_error}")
-                else:
-                    log.info("[META-LEARNING] Gemini embedder unavailable - skipping Pinecone upsert")
-                    log.info(f"[META-LEARNING] Description: {healing_description}")
-                    log.info(
-                        f"[META-LEARNING] Metadata: action=inject_heal_repository_stub, target=HealRepositoryStub, fixed={summary['fixed']}",
-                    )
-
-            # guardian: allow-silent-swallow
-            except Exception as meta_error:
-                log.warning(f"[META-LEARNING] Failed to record healing event: {meta_error}")
-
         return summary
-
-    # guardian: allow-type-erasure
-    def search_healing_patterns(self, query: str) -> dict[str, Any] | None:
-        """
-        Phase 4.4: Search Pinecone for existing healing patterns.
-
-        Performs semantic search to find similar healing events from history,
-        enabling pattern reuse and accelerated convergence.
-
-        Args:
-            query: Description of the healing pattern to search for
-
-        Returns:
-            Dict with pattern metadata if found, None otherwise
-        """
-        if not self.gemini_embedder:
-            return None
-
-        try:
-            # Generate embedding for the query
-            query_embedding = self.gemini_embedder.embed_query(query)
-            if not query_embedding:
-                return None
-
-            # Search Pinecone for similar patterns
-            import asyncio
-
-            results = asyncio.run(
-                self.vector_search(
-                    query_embedding=query_embedding,
-                    top_k=1,
-                    filter={"action": "inject_heal_repository_stub"},
-                ),
-            )
-
-            if results and len(results) > 0:
-                return results[0]
-
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            log.warning(f"[META-LEARNING] Pattern search failed: {e}")
-
-        return None
 
 
 def get_autonomy_guardian(project_root: Path) -> AutonomyGuardianAgent:
