@@ -118,3 +118,88 @@ class TestLLMSdkImportScanner:
         import_node = tree.body[0]
         result = _blocked(import_node)
         assert result == "sentence_transformers"
+
+
+# ---------------------------------------------------------------------------
+# Phase 6: StructuredAgentOutput emission scanner
+# ---------------------------------------------------------------------------
+
+
+class TestStructuredOutputEmissionScanner:
+    def test_scanner_exits_zero_on_clean_repo(self):
+        code, output = _run_scanner("check_structured_output_emission.py")
+        assert code == 0, f"Scanner reported violations:\n{output}"
+
+    def test_scanner_ok_message_present(self):
+        code, output = _run_scanner("check_structured_output_emission.py")
+        assert "OK:" in output
+
+    def test_scanner_detects_missing_annotation(self, tmp_path):
+        from ops_scripts.ci.check_structured_output_emission import (
+            _has_execute_without_structured_return,
+        )
+
+        source = (
+            "class BadAgent:\n"
+            "    def execute(self, ctx):\n"
+            "        pass\n"
+        )
+        path = tmp_path / "bad_agent.py"
+        path.write_text(source, encoding="utf-8")
+        violations = _has_execute_without_structured_return(path)
+        assert len(violations) == 1
+        assert "missing return type annotation" in violations[0]
+
+    def test_scanner_detects_wrong_annotation(self, tmp_path):
+        from ops_scripts.ci.check_structured_output_emission import (
+            _has_execute_without_structured_return,
+        )
+
+        source = (
+            "class BadAgent:\n"
+            "    def execute(self, ctx) -> dict:\n"
+            "        pass\n"
+        )
+        path = tmp_path / "wrong_agent.py"
+        path.write_text(source, encoding="utf-8")
+        violations = _has_execute_without_structured_return(path)
+        assert len(violations) == 1
+        assert "dict" in violations[0]
+
+    def test_scanner_accepts_correct_annotation(self, tmp_path):
+        from ops_scripts.ci.check_structured_output_emission import (
+            _has_execute_without_structured_return,
+        )
+
+        source = (
+            "class GoodAgent:\n"
+            "    def execute(self, ctx) -> StructuredAgentOutput:\n"
+            "        pass\n"
+        )
+        path = tmp_path / "good_agent.py"
+        path.write_text(source, encoding="utf-8")
+        violations = _has_execute_without_structured_return(path)
+        assert violations == []
+
+    def test_scanner_skips_classes_without_execute(self, tmp_path):
+        from ops_scripts.ci.check_structured_output_emission import (
+            _has_execute_without_structured_return,
+        )
+
+        source = (
+            "class NotAnAgent:\n"
+            "    def process(self, data) -> dict:\n"
+            "        pass\n"
+        )
+        path = tmp_path / "not_agent.py"
+        path.write_text(source, encoding="utf-8")
+        violations = _has_execute_without_structured_return(path)
+        assert violations == []
+
+    def test_scanner_baseline_count_is_governance_signal(self):
+        from ops_scripts.ci.check_structured_output_emission import ALLOWED_BASELINE
+
+        assert len(ALLOWED_BASELINE) <= 112, (
+            f"Baseline must not grow beyond 112 (S29 Non-Growing Debt), "
+            f"found {len(ALLOWED_BASELINE)}"
+        )
