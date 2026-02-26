@@ -1,19 +1,21 @@
 """
-L2.3 Healing Tier Types — Contracts for Centralized Heal Routing.
+L2.3 Healing Tier Types — Mathematically Deterministic Contracts.
 
 Defines:
 - HealingTier enum (LOCAL_AGENT, QWEN_VLLM, GEMINI_2_5_PRO)
-- HealingInput (structured failure context)
+- HealingInput (structured failure context with replay_mode)
 - HealingDecision (tier + heal_confidence + reason_codes)
+- InvocationRecord (replay-deterministic audit trail)
 - FailureSignal (emitted by NO_TIERING agents for L2.3 consumption)
 
-All dataclasses are frozen/immutable. No silent defaults.
+All dataclasses are frozen/immutable. Timestamp excluded from replay surface.
 """
 
 from __future__ import annotations
 
 from dataclasses import dataclass
 from enum import Enum
+from typing import Optional
 
 
 class HealingTier(str, Enum):
@@ -37,6 +39,7 @@ class HealingInput:
         blast_radius_estimate: Bounded [0.0, 1.0] estimate of change scope.
         required_tools: Tools the healer needs (e.g. ['ast_rewrite', 'file_move']).
         violation_metadata_refs: Paths to violation artifacts for context.
+        replay_mode: Enable deterministic replay mode (timestamp excluded).
     """
 
     agent_id: str
@@ -47,6 +50,7 @@ class HealingInput:
     blast_radius_estimate: float
     required_tools: tuple[str, ...]
     violation_metadata_refs: tuple[str, ...]
+    replay_mode: bool = False  # New: enables deterministic replay
 
     def __post_init__(self) -> None:
         if not self.agent_id:
@@ -82,6 +86,36 @@ class HealingDecision:
             raise ValueError(f"heal_confidence must be in [0.0, 1.0], got {self.heal_confidence}")
         if not isinstance(self.tier, HealingTier):
             raise ValueError(f"tier must be a HealingTier enum, got {type(self.tier).__name__}")
+
+
+@dataclass(frozen=True, slots=True)
+class InvocationRecord:
+    """Immutable record with replay-deterministic fields only.
+
+    Timestamp excluded from replay surface for mathematical determinism.
+    Provider configuration and historical data versioning included.
+
+    Attributes:
+        tier: Selected healing tier
+        model_id: Model identifier used
+        agent_name: Agent that made the request
+        trace_id: Correlation ID for the request
+        heal_confidence: Confidence score for the decision
+        method_called: Method name that was invoked
+        provider_config_hash: Hash of provider configuration for replay
+        historical_data_hash: Hash of historical data version for replay
+        replay_key: Mathematical replay key (timestamp excluded)
+    """
+
+    tier: HealingTier
+    model_id: str
+    agent_name: str
+    trace_id: str
+    heal_confidence: float
+    method_called: str
+    provider_config_hash: str  # New: ensures replay determinism
+    historical_data_hash: str  # New: versioned historical data
+    replay_key: str  # New: mathematical replay key
 
 
 @dataclass(frozen=True, slots=True)
@@ -140,4 +174,5 @@ __all__ = [
     "HealingDecision",
     "HealingInput",
     "HealingTier",
+    "InvocationRecord",
 ]
