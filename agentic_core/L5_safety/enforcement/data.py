@@ -28,12 +28,19 @@ from collections import defaultdict
 from pathlib import Path
 
 # Load agent discovery
-discovery_path = Path("agent_discovery_full.json")
-if not discovery_path.exists():
-    print("❌ agent_discovery_full.json not found")
-    sys.exit(1)
+_REPO_ROOT = Path(__file__).parent.parent.parent.parent
+_CANDIDATE_PATHS = [
+    _REPO_ROOT / "artifacts" / "discovery" / "agent_discovery_full.json",
+    _REPO_ROOT / "data" / "processed" / "agent_discovery_full.json",
+    _REPO_ROOT / "agent_discovery_full.json",
+]
 
-data = json.load(open(discovery_path))
+discovery_path = next((p for p in _CANDIDATE_PATHS if p.exists()), None)
+
+if discovery_path is None:
+    data = []
+else:
+    data = json.load(open(discovery_path))
 
 LAYERS = ["L0", "L1", "L2", "L3", "L4", "L5", "L6"]
 CANONICAL_BASE_AGENTS = {

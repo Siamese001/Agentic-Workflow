@@ -7,6 +7,14 @@ from abc import ABC, abstractmethod
 from typing import Any
 
 try:
+    from agentic_core.L2_execution.enforcement.key_source import get_current_secret
+    from agentic_core.L2_execution.types.agent_output_contract import AgentOutputContract, wrap_output
+
+    _OUTPUT_CONTRACT_AVAILABLE = True
+except ImportError:
+    _OUTPUT_CONTRACT_AVAILABLE = False
+
+try:
     from pydantic import BaseModel
 except ImportError:
     BaseModel = Any  # type: ignore
@@ -47,6 +55,10 @@ logger = logging.getLogger(__name__)
 
 
 class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
+    # Subclasses MUST set this to their stable AGENT_REGISTRY key
+    AGENT_ID: str = ""
+    # Caller injects trace_id before calling execute(); default is empty
+    _current_trace_id: str = ""
     """
     Abstract base class for all Resume Generation engines.
 
@@ -124,6 +136,27 @@ class BaseRGEngine(MCPHardenedMixin, HealerMixin, ABC):
             Pydantic model containing output
         """
         pass
+
+    def execute_contracted(
+        self,
+        input_data: BaseModel,
+        trace_id: str = "",
+    ) -> "AgentOutputContract":
+        """Execute and wrap result in a signed AgentOutputContract.
+
+        Use this instead of execute() at all call sites that feed L6 observability.
+        """
+        if not _OUTPUT_CONTRACT_AVAILABLE:
+            raise RuntimeError("AgentOutputContract not available — check agentic_core import")
+        if not self.AGENT_ID:
+            raise RuntimeError(f"{self.__class__.__name__}.AGENT_ID must be set to its AGENT_REGISTRY key")
+        result = self.execute(input_data)
+        return wrap_output(
+            agent_id=self.AGENT_ID,
+            trace_id=trace_id or self._current_trace_id,
+            payload_model=result,
+            secret=get_current_secret(),
+        )
 
     def validate_input(self, input_data: BaseModel) -> bool:
         """Validate input data before execution."""

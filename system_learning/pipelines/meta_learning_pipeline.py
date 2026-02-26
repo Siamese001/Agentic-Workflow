@@ -51,19 +51,27 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
+from system_learning.engines.arbitration.engine import ArbitrationEngine
+from system_learning.engines.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
+from system_learning.engines.confidence.engine import HealingConfidenceScorer
+from system_learning.engines.correlation.engine import RiskCorrelator
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
+from system_learning.engines.fingerprinting.engine import FailureFingerprinter
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+from system_learning.engines.policy_recommendation_engine import (
+    PolicyRecommendation,
+    PolicyRecommendationEngine,
+)
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
-from system_learning.engines.rlhf_optimizer import RLHFOptimizer
-from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer, DriftSummary
-from system_learning.engines.policy_recommendation_engine import PolicyRecommendationEngine, PolicyRecommendation
 from system_learning.engines.retrieval_profile_proposal import RetrievalProfileProposal
 from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
+from system_learning.engines.rlhf_optimizer import RLHFOptimizer
+from system_learning.engines.shadow_drift_analyzer import DriftSummary, ShadowDriftAnalyzer
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -87,7 +95,7 @@ _proposal_manager = RetrievalProfileProposalManager()
 
 def _accumulate_shadow_telemetry(telemetry: dict[str, Any]) -> None:
     """Accumulate shadow telemetry for drift analysis.
-    
+
     Args:
         telemetry: Shadow telemetry dictionary from _retrieve_semantic_context
     """
@@ -102,30 +110,30 @@ def _analyze_shadow_drift_and_write(
     l4_writer: L4StateWriter,
 ) -> DriftSummary | None:
     """Analyze accumulated shadow telemetry and write to L4.
-    
+
     Args:
         profile_id: Active RetrievalProfile ID
         now_utc: Current timestamp
         l4_writer: L4 state writer
-        
+
     Returns:
         DriftSummary if analysis was performed, None otherwise
     """
     global _shadow_telemetry_batch
-    
+
     if not _shadow_telemetry_batch:
         return None
-    
+
     # Analyze the batch
     drift_summary = _shadow_drift_analyzer.analyze_batch(
         shadow_records=_shadow_telemetry_batch,
         profile_id=profile_id,
         now_utc=now_utc,
     )
-    
+
     # Write to L4 (informational only)
     try:
-        summary_json = drift_summary.to_canonical_json().encode('utf-8')
+        summary_json = drift_summary.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_shadow_drift(
             payload_bytes=summary_json,
             component_name="meta-learning",
@@ -134,10 +142,10 @@ def _analyze_shadow_drift_and_write(
     except Exception:
         # L4 write failure should not break pipeline
         pass
-    
+
     # Clear the batch for next run
     _shadow_telemetry_batch.clear()
-    
+
     return drift_summary
 
 
@@ -148,29 +156,29 @@ def _generate_policy_recommendation_and_write(
     l4_writer: L4StateWriter,
 ) -> PolicyRecommendation | None:
     """Generate policy recommendation from drift analysis and write to L4.
-    
+
     Args:
         drift_summary: Drift analysis from W4-C
         active_profile: Current active RetrievalProfile
         now_utc: Current timestamp
         l4_writer: L4 state writer
-        
+
     Returns:
         PolicyRecommendation if generated, None otherwise
     """
     if drift_summary is None:
         return None
-    
+
     # Generate recommendation
     recommendation = _policy_recommendation_engine.generate_recommendation(
         drift_summary=drift_summary,
         active_profile=active_profile,
         now_utc=now_utc,
     )
-    
+
     # Write to L4 (advisory only)
     try:
-        recommendation_json = recommendation.to_canonical_json().encode('utf-8')
+        recommendation_json = recommendation.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_policy_recommendation(
             payload_bytes=recommendation_json,
             component_name="meta-learning",
@@ -179,7 +187,7 @@ def _generate_policy_recommendation_and_write(
     except Exception:
         # L4 write failure should not break pipeline
         pass
-    
+
     return recommendation
 
 
@@ -190,29 +198,29 @@ def _create_proposal_and_write(
     l4_writer: L4StateWriter,
 ) -> RetrievalProfileProposal | None:
     """Create proposal from policy recommendation and write to L4.
-    
+
     Args:
         policy_recommendation: Policy recommendation from W4-D
         active_profile: Current active RetrievalProfile
         now_utc: Current timestamp
         l4_writer: L4 state writer
-        
+
     Returns:
         RetrievalProfileProposal if created, None otherwise
     """
     if policy_recommendation is None:
         return None
-    
+
     # Create proposal from recommendation
     proposal = _proposal_manager.create_proposal(
         recommendation=policy_recommendation,
         active_profile=active_profile,
         now_utc=now_utc,
     )
-    
+
     # Write to L4 (requires approval)
     try:
-        proposal_json = proposal.to_canonical_json().encode('utf-8')
+        proposal_json = proposal.to_canonical_json().encode("utf-8")
         l4_writer.write_l4c_retrieval_profile_proposal(
             payload_bytes=proposal_json,
             component_name="meta-learning",
@@ -221,7 +229,7 @@ def _create_proposal_and_write(
     except Exception:
         # L4 write failure should not break pipeline
         pass
-    
+
     return proposal
 
 
@@ -494,6 +502,11 @@ class PipelineDependencies:
     rollback_refinement_decision_bytes: bytes | None = None
     dpo_batch_bytes: bytes | None = None
     rlhf_optimizer: RLHFOptimizer | None = None
+    healing_confidence_scorer: HealingConfidenceScorer | None = None
+    failure_fingerprinter: FailureFingerprinter | None = None
+    risk_correlator: RiskCorrelator | None = None
+    arbitration_engine: ArbitrationEngine | None = None
+    arbitration_policy: ArbitrationPolicy | None = None
 
 
 # =============================================================================
@@ -506,65 +519,65 @@ def _analyze_historical_patterns(
     aggregate_snapshot: Any,
 ) -> Any:
     """Analyze historical patterns using W3 PatternAnalysisEngine.
-    
+
     W3: Pattern Analysis Engine (Deterministic, Informational-Only).
-    
+
     Args:
         deps: Pipeline dependencies containing pattern_analysis_engine
         aggregate_snapshot: Healing outcome aggregate snapshot
-        
+
     Returns:
         PatternSummary or None if analysis fails or is disabled
     """
     if deps.pattern_analysis_engine is None:
         return None
-    
+
     # Check embedding kill switch
     embedding_service = EmbeddingServiceFactory.get_or_disabled()
     if embedding_service.is_disabled():
         return None
-    
+
     try:
         # Extract historical embeddings from aggregate snapshot
         historical_embeddings = []
         metadata = []
-        
-        if hasattr(aggregate_snapshot, 'outcomes'):
+
+        if hasattr(aggregate_snapshot, "outcomes"):
             for outcome in aggregate_snapshot.outcomes:
                 # Create embedding from failure signature
-                if hasattr(outcome, 'failure_signature'):
+                if hasattr(outcome, "failure_signature"):
                     # For W3, create simple deterministic embeddings
                     # In production, these would come from actual embedding service
                     embedding = _create_deterministic_embedding(outcome.failure_signature)
                     historical_embeddings.append(embedding)
-                    
+
                     # Extract metadata
                     meta = {
-                        'healer_name': getattr(outcome, 'healer_name', 'unknown'),
-                        'failure_type': getattr(outcome, 'failure_type', 'unknown'),
-                        'component': getattr(outcome, 'component', 'unknown'),
+                        "healer_name": getattr(outcome, "healer_name", "unknown"),
+                        "failure_type": getattr(outcome, "failure_type", "unknown"),
+                        "component": getattr(outcome, "component", "unknown"),
                     }
                     metadata.append(meta)
-        
+
         if not historical_embeddings:
             return None
-        
+
         # Apply small-N guard (minimum 10 data points for pattern analysis)
         if len(historical_embeddings) < 10:
             return None
-        
+
         # Run pattern analysis with deterministic parameters
         pattern_summary = deps.pattern_analysis_engine.analyze(
             historical_embeddings=historical_embeddings,
             metadata=metadata,
             min_cluster_size=3,  # Fixed minimum cluster size
         )
-        
+
         # Print digest for determinism proof
         print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
-        
+
         return pattern_summary
-        
+
     except Exception:
         # Pattern analysis failure should not break pipeline
         return None
@@ -572,48 +585,48 @@ def _analyze_historical_patterns(
 
 def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
     """Create deterministic embedding from failure signature.
-    
+
     W3 requires deterministic embeddings for reproducible clustering.
-    
+
     Args:
         failure_signature: Failure signature object
-        
+
     Returns:
         Deterministic 4-dimensional embedding vector
     """
     import hashlib
-    
+
     # Extract deterministic features from failure signature
     components = []
-    
+
     # Component name (hashed)
-    if hasattr(failure_signature, 'component'):
+    if hasattr(failure_signature, "component"):
         comp_hash = hashlib.sha256(failure_signature.component.encode()).hexdigest()
         components.append(int(comp_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-    
+
     # Failure type (hashed)
-    if hasattr(failure_signature, 'failure_type'):
+    if hasattr(failure_signature, "failure_type"):
         type_hash = hashlib.sha256(failure_signature.failure_type.encode()).hexdigest()
         components.append(int(type_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-    
+
     # Healer name (hashed)
-    if hasattr(failure_signature, 'healer_name'):
+    if hasattr(failure_signature, "healer_name"):
         healer_hash = hashlib.sha256(failure_signature.healer_name.encode()).hexdigest()
         components.append(int(healer_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-    
+
     # Timestamp (normalized)
-    if hasattr(failure_signature, 'timestamp_utc'):
+    if hasattr(failure_signature, "timestamp_utc"):
         # Normalize to [0, 1] range using last 32 bits
         components.append((failure_signature.timestamp_utc & 0xFFFFFFFF) / 2**32)
     else:
         components.append(0.0)
-    
+
     return components
 
 
@@ -631,7 +644,7 @@ def _retrieve_semantic_context(
 
     This is C0 informational context only - it augments candidate context
     but does not directly mutate any routing thresholds or safety tiers.
-    
+
     W4-A: Uses RetrievalProfile from L4 for configuration authority.
 
     Args:
@@ -645,7 +658,7 @@ def _retrieve_semantic_context(
     # Load active RetrievalProfile from L4 (W4-A authority)
     # No fallback - RetrievalProfile must be bootstrapped into L4 before use
     retrieval_profile = get_active_retrieval_profile(now_utc)
-    
+
     # Get embedding service with total kill-switch coverage
     embedding_service = EmbeddingServiceFactory.get_or_disabled()
 
@@ -706,30 +719,35 @@ def _retrieve_semantic_context(
         # Compute shadow vector using same deterministic method but different embedder ID
         shadow_signature = f"{failure_signature}|shadow:{retrieval_profile.shadow_embedder_id}"
         shadow_hash = hashlib.sha256(shadow_signature.encode()).hexdigest()
-        
+
         # Create shadow vector (same dimension, different seed)
         shadow_vector = []
         for i in range(0, 8, 2):
             val = int(shadow_hash[i : i + 2], 16) / 255.0  # Normalize to [0, 1]
             shadow_vector.append(val)
-        
+
         shadow_vector = np.array(shadow_vector, dtype=np.float32)
-        
+
         # Compute telemetry metrics with stable rounding
         primary_norm = round(float(np.linalg.norm(query_vector)), 6)
         shadow_norm = round(float(np.linalg.norm(shadow_vector)), 6)
-        
+
         # Compute cosine similarity
-        cosine_sim = round(float(np.dot(query_vector, shadow_vector) / 
-                                (np.linalg.norm(query_vector) * np.linalg.norm(shadow_vector))), 6)
-        
+        cosine_sim = round(
+            float(
+                np.dot(query_vector, shadow_vector)
+                / (np.linalg.norm(query_vector) * np.linalg.norm(shadow_vector))
+            ),
+            6,
+        )
+
         shadow_telemetry = {
             "shadow_embedder_id": retrieval_profile.shadow_embedder_id,
             "primary_embedding_norm": primary_norm,
             "shadow_embedding_norm": shadow_norm,
             "primary_shadow_cosine": cosine_sim,
         }
-        
+
         # W4-C: Accumulate shadow telemetry for drift analysis
         _accumulate_shadow_telemetry(shadow_telemetry)
 
@@ -880,9 +898,34 @@ def run_pipeline(
         window_end_utc=window_end_utc,
     )
 
+    # Stage 5 extensions: fingerprinting, confidence scoring, risk correlation
+    if deps.failure_fingerprinter is not None and hasattr(rca_report, "failure_events"):
+        fingerprints = [
+            deps.failure_fingerprinter.fingerprint(ev).fingerprint_hex
+            for ev in (rca_report.failure_events or [])
+        ]
+        if hasattr(rca_report, "with_fingerprints"):
+            rca_report = rca_report.with_fingerprints(fingerprints)
+
+    if deps.healing_confidence_scorer is not None and hasattr(rca_report, "healing_attempts"):
+        confidence_report = deps.healing_confidence_scorer.score(rca_report.healing_attempts or [])
+        if hasattr(rca_report, "with_confidence"):
+            rca_report = rca_report.with_confidence(confidence_report)
+
+    if (
+        deps.risk_correlator is not None
+        and hasattr(rca_report, "fingerprints")
+        and hasattr(snapshot, "drift_events")
+    ):
+        correlated_risk = deps.risk_correlator.build(
+            rca_report.fingerprints or [], snapshot.drift_events or []
+        )
+        if hasattr(rca_report, "with_correlated_risk"):
+            rca_report = rca_report.with_correlated_risk(correlated_risk)
+
     # Step 6: Run enabled proposers in deterministic order
     # Fixed order: ("L0", "RAG", "L1", "L5") intersect enabled set
-    PROPOSER_ORDER = ("L0", "RAG", "L1", "L5")
+    proposer_order = ("L0", "RAG", "L1", "L5")
     proposer_map = {
         "L0": deps.l0_proposer,
         "RAG": deps.rag_proposer,
@@ -890,14 +933,25 @@ def run_pipeline(
         "L5": deps.l5_proposer,
     }
 
-    proposals = []
-    for proposer_name in PROPOSER_ORDER:
-        if proposer_name not in cfg.enabled_proposers:
-            continue
+    # G13: injection detector must be invoked before any embedding/retrieval
+    from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 
-        proposer = proposer_map[proposer_name]
+    _inj_detector = InjectionDetector()
+
+    proposals = []
+    for key in proposer_order:
+        proposer = proposer_map[key]
         if proposer is None:
             continue
+
+        # G13: Scan all text inputs for injection before proposer runs
+        # This is a guard for dual-injection attempts (prompt + embedding)
+        if hasattr(snapshot, "u0_user_prompt"):
+            _inj_detector.scan(snapshot.u0_user_prompt)
+        if hasattr(snapshot, "aggregate_snapshot"):
+            # Scan any narrative fields in the aggregate snapshot
+            if hasattr(snapshot.aggregate_snapshot, "narrative"):
+                _inj_detector.scan(snapshot.aggregate_snapshot.narrative)
 
         # Call proposer with injected dependencies
         # For now, pass minimal/placeholder args (would be real in production)
@@ -1045,6 +1099,24 @@ def run_pipeline(
 
         validated_proposals.append(pkg)
 
+    # Stage 7: ArbitrationEngine — deterministic winner selection
+    if deps.arbitration_engine is not None and deps.arbitration_policy is not None and validated_proposals:
+        candidates = [
+            ArbitrationCandidate(
+                id=getattr(p, "proposal_id", str(i)),
+                score=getattr(p, "score", 0.0),
+                cost=getattr(p, "cost", 1.0),
+                kind=getattr(p, "kind", "generic"),
+                payload=p.to_dict() if hasattr(p, "to_dict") else {},
+            )
+            for i, p in enumerate(validated_proposals)
+        ]
+        decision = deps.arbitration_engine.arbitrate(candidates, deps.arbitration_policy)
+        winner_ids = set(decision.winner_ids)
+        validated_proposals = [
+            p for i, p in enumerate(validated_proposals) if getattr(p, "proposal_id", str(i)) in winner_ids
+        ]
+
     # Step 8: Persist healing outcome intake record (optional)
     # This runs before proposal_only check to ensure intake is always captured
     if deps.healing_outcome_intake_adapter is not None:
@@ -1101,15 +1173,16 @@ def run_pipeline(
         # Step 8.8: W4-C Shadow drift analysis (informational only)
         # Get active profile ID for drift analysis
         from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
+
         active_profile = get_active_retrieval_profile(now_utc)
-        
+
         # Analyze accumulated shadow telemetry and write to L4
         drift_summary = _analyze_shadow_drift_and_write(
             profile_id=active_profile.profile_id,
             now_utc=now_utc,
             l4_writer=deps.l4_state_writer,
         )
-        
+
         # Emit drift digest for verification (informational only)
         if drift_summary is not None:
             drift_summary.emit_digest()
@@ -1122,7 +1195,7 @@ def run_pipeline(
             now_utc=now_utc,
             l4_writer=deps.l4_state_writer,
         )
-        
+
         # Emit recommendation digest for verification (informational only)
         if policy_recommendation is not None:
             policy_recommendation.emit_digest()
@@ -1135,7 +1208,7 @@ def run_pipeline(
             now_utc=now_utc,
             l4_writer=deps.l4_state_writer,
         )
-        
+
         # Emit proposal digest for verification (informational only)
         if profile_proposal is not None:
             profile_proposal.emit_digest()

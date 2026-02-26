@@ -12,6 +12,7 @@ from __future__ import annotations
 import hashlib
 import hmac
 from dataclasses import dataclass, field, replace
+from dataclasses import dataclass as _dc
 from typing import Any
 
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
@@ -19,6 +20,27 @@ from agentic_core.L2_execution.types.instruction_packet import (
     SignatureVerificationError,
     _canonical_bytes,
 )
+
+# ---------------------------------------------------------------------------
+# ToolBudget
+# ---------------------------------------------------------------------------
+
+
+@_dc(frozen=True)
+class ToolBudget:
+    """OS-level resource caps per tool invocation (spec contract [2])."""
+
+    compute_ms: int = 5_000  # wall-clock cap; enforced by BudgetEnforcer
+    memory_mb: int = 256
+    stdout_bytes: int = 65_536  # 64 KiB
+
+    def __post_init__(self) -> None:
+        if self.compute_ms <= 0 or self.memory_mb <= 0 or self.stdout_bytes <= 0:
+            raise ValueError("All ToolBudget caps must be positive")
+
+
+DEFAULT_TOOL_BUDGET = ToolBudget()
+
 
 # ---------------------------------------------------------------------------
 # SandboxEnvelope
@@ -41,6 +63,8 @@ class SandboxEnvelope:
         ``instruction_id`` of the parent InstructionPacket being executed.
     invocation_metadata : dict[str, Any]
         Additional L2 metadata (agent, tick, etc.).
+    budget : ToolBudget
+        OS-level resource caps for this invocation (spec contract [2]).
     signature : str
         Lowercase hex HMAC-SHA256.  Empty string means unsigned.
     """
@@ -50,6 +74,7 @@ class SandboxEnvelope:
     tool_args: dict[str, Any] = field(default_factory=dict)
     instruction_packet_id: str = ""
     invocation_metadata: dict[str, Any] = field(default_factory=dict)
+    budget: ToolBudget = field(default_factory=ToolBudget)
     signature: str = field(default="", init=False)
 
     def __post_init__(self) -> None:
@@ -67,6 +92,11 @@ class SandboxEnvelope:
 
     def _signable_dict(self) -> dict[str, Any]:
         return {
+            "budget": {
+                "compute_ms": self.budget.compute_ms,
+                "memory_mb": self.budget.memory_mb,
+                "stdout_bytes": self.budget.stdout_bytes,
+            },
             "envelope_id": self.envelope_id,
             "instruction_packet_id": self.instruction_packet_id,
             "invocation_metadata": self.invocation_metadata,

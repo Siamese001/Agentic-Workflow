@@ -22,6 +22,7 @@ from dataclasses import dataclass
 from typing import Any, Literal
 
 from agentic_core.config.core.sovereign_config import get_sovereign_config
+from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from data.sdks_mcps.client_wrappers import (
@@ -86,6 +87,9 @@ class SovereignLLMGateway:
 
         # v5.5 Prompt Security - Injection Detector instance
         self._injection_detector = InjectionDetector()
+
+        # Egress audit log (immutable, hash-chained)
+        self._egress_audit_log = HashChainAuditLog()
 
         # Provider clients (lazy-loaded)
         self._openai_client: Any = None
@@ -195,9 +199,35 @@ class SovereignLLMGateway:
                     f"Agent '{request.agent_id}' is not allowed to use provider '{request.provider}'."
                 )
 
+        # G7: model string must not be a bare literal from caller; it must
+        # come from profile.allowed_models or config defaults.
+        _caller_model = request.model
+        if _caller_model and _caller_model not in profile.allowed_models:
+            if not self._is_policy_approved_model(_caller_model, request.provider):
+                raise SovereigntyViolation(
+                    f"Model '{_caller_model}' not in allowed_models for '{request.agent_id}'. "
+                    "Add to agent_registry, do not hardcode."
+                )
+
         temperature = 0.0 if profile.reasoning_intensity.value == "LOW" else request.temperature
 
+        # G13: scan prompt for injection before provider dispatch
         self._injection_detector.scan(request.prompt)
+
+        # G2: egress audit — every route_generation call emits an immutable
+        # audit entry to the HashChainAuditLog bound to this gateway singleton.
+        import hashlib
+
+        self._egress_audit_log.append(
+            tier="L2",
+            action="llm_egress",
+            payload={
+                "agent_id": request.agent_id,
+                "provider": request.provider,
+                "model": model,
+                "prompt_hash": hashlib.sha256(request.prompt.encode("utf-8")).hexdigest(),
+            },
+        )
 
         fallback_providers = request.fallback_providers or ["anthropic", "google"]
         providers_to_try = [request.provider] + [p for p in fallback_providers if p != request.provider]

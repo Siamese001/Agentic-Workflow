@@ -29,6 +29,7 @@ from agentic_core.L0_routing.enforcement.governance_contracts import (
     build_hil_policy_proposal,
 )
 from agentic_core.L0_routing.types.governance_types import HILOutcome
+from agentic_core.L5_safety.types.human_decision_artifact import HumanDecisionArtifact
 
 Logger = logging.getLogger(__name__)
 
@@ -42,6 +43,7 @@ class ReviewStatus(Enum):
     REJECTED = "rejected"
     ESCALATED = "escalated"
     EXPIRED = "expired"
+    MODIFY_DIFF = "modify_diff"
 
 
 @dataclass
@@ -221,8 +223,14 @@ class HumanReviewQueue:
         request_id: str,
         reviewer_id: str,
         notes: str = "",
-    ) -> ReviewRequest:
-        """Approve a pending review request."""
+        secret: bytes = b"",
+        original_plan_hash: str = "unspecified",
+        policy_hash: str = "",
+    ) -> tuple[ReviewRequest, HumanDecisionArtifact]:
+        """Approve a pending review request.
+
+        Returns (ReviewRequest, signed HumanDecisionArtifact).
+        """
         with self._lock:
             request = self._pending_requests.get(request_id)
             if not request:
@@ -240,15 +248,29 @@ class HumanReviewQueue:
         self._trigger_callback(request_id, "approved")
         self._emit_policy_update_proposal(request, HILOutcome.APPROVED)
 
-        return request
+        artifact = HumanDecisionArtifact(
+            trace_id=request_id,
+            policy_hash=policy_hash,
+            reviewer_id=reviewer_id,
+            action="APPROVE",
+            original_plan_hash=original_plan_hash,
+            structured_patch_schema={},
+        ).sign(secret)
+        return request, artifact
 
     def reject(
         self,
         request_id: str,
         reviewer_id: str,
         notes: str,
-    ) -> ReviewRequest:
-        """Reject a pending review request."""
+        secret: bytes = b"",
+        original_plan_hash: str = "unspecified",
+        policy_hash: str = "",
+    ) -> tuple[ReviewRequest, HumanDecisionArtifact]:
+        """Reject a pending review request.
+
+        Returns (ReviewRequest, signed HumanDecisionArtifact).
+        """
         if not notes:
             raise ValueError("Rejection notes are required")
 
@@ -269,7 +291,55 @@ class HumanReviewQueue:
         self._trigger_callback(request_id, "rejected")
         self._emit_policy_update_proposal(request, HILOutcome.REJECTED)
 
-        return request
+        artifact = HumanDecisionArtifact(
+            trace_id=request_id,
+            policy_hash=policy_hash,
+            reviewer_id=reviewer_id,
+            action="REJECT",
+            original_plan_hash=original_plan_hash,
+            structured_patch_schema={},
+        ).sign(secret)
+        return request, artifact
+
+    def modify_diff(
+        self,
+        request_id: str,
+        reviewer_id: str,
+        structured_patch_schema: dict,
+        original_plan_hash: str,
+        secret: bytes,
+    ) -> HumanDecisionArtifact:
+        """Record a MODIFY_DIFF decision.
+
+        Returns a HumanDecisionArtifact bound to original_plan_hash.
+        The artifact's l5_reclear_required flag will be True.
+        """
+        from agentic_core.L5_safety.types.human_decision_artifact import HumanDecisionArtifact
+
+        with self._lock:
+            request = self._pending_requests.get(request_id)
+            if not request:
+                raise ValueError(f"Review request not found: {request_id}")
+
+            request.status = ReviewStatus.MODIFY_DIFF
+            request.reviewer_id = reviewer_id
+            request.review_completed_at = datetime.utcnow()
+            del self._pending_requests[request_id]
+            self._completed_requests.append(request)
+
+        Logger.info(f"[REVIEW_QUEUE] Request {request_id} MODIFY_DIFF by {reviewer_id}")
+
+        artifact = HumanDecisionArtifact(
+            trace_id=request_id,
+            policy_hash="",  # TODO: bind to actual policy_hash if available
+            reviewer_id=reviewer_id,
+            action="MODIFY_DIFF",
+            original_plan_hash=original_plan_hash,
+            structured_patch_schema=structured_patch_schema,
+        ).sign(secret)
+
+        assert artifact.l5_reclear_required
+        return artifact
 
     def escalate(self, request_id: str, reason: str = "") -> ReviewRequest:
         """Escalate request to next level in escalation chain."""

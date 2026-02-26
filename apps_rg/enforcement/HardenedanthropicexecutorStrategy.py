@@ -11,7 +11,6 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import logging
-import os
 from dataclasses import dataclass
 
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
@@ -93,20 +92,11 @@ class HardenedAnthropicExecutor(HardeningMixin):
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Setup Anthropic client."""
-        try:
-            import anthropic
-        except ImportError as exc:
-            raise ImportError("Anthropic package not installed. Install with: pip install anthropic") from exc
+        """Delegate to SovereignLLMGateway — no direct Anthropic SDK access."""
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
 
-        api_key = os.getenv("ANTHROPIC_API_KEY")
-        if not api_key:
-            raise RuntimeError("ANTHROPIC_API_KEY environment variable must be set")
-
-        self._client = anthropic.Anthropic(
-            api_key=api_key,
-            timeout=self.config.timeout_s,
-        )
+        self._gateway = SovereignLLMGateway()
+        self._client = None  # kept for isinstance checks in callers; not used
 
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.

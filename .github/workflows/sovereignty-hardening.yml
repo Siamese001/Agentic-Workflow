@@ -1,0 +1,21 @@
+name: sovereignty-hardening
+on: [push, pull_request]
+jobs:
+  guard:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with: { python-version: "3.11" }
+      - name: LLM SDK imports
+        run: python ops_scripts/ci/check_llm_sdk_imports.py
+      - name: Model string literals
+        run: python ops_scripts/ci/check_model_string_literals.py
+      - name: Direct execute() calls
+        run: python ops_scripts/ci/check_direct_execute_calls.py
+      - name: Healer direct model invocations
+        run: python ops_scripts/ci/check_healer_direct_model.py
+      - name: Layer write sovereignty
+        run: python ops_scripts/ci/check_layer_write_sovereignty.py
+      - name: Determinism replay proof
+        run: python ops_scripts/ci/check_determinism_replay.py

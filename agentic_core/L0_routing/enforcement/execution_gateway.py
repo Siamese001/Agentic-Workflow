@@ -35,6 +35,7 @@ def _get_guardian_decision():
     return GuardianViolationError, L5Guardian
 
 
+from agentic_core.agents.agent_registry import get_profile, registry_digest
 from agentic_core.L0_routing.types.crypto_trust_types import HashMismatchTracker
 from agentic_core.L0_routing.types.determinism_contracts import (
     create_boundary_snapshot,
@@ -64,6 +65,10 @@ from agentic_core.L0_routing.types.routing_contracts import (
 )
 
 Logger = logging.getLogger(__name__)
+
+
+class UnregisteredAgentError(RuntimeError):
+    """Raised when an agent is not found in AgentExecutionProfileRegistry."""
 
 
 def _get_enforce_healer_pipe_order():
@@ -114,6 +119,7 @@ class V15ExecutionGateway:
         self._pipe_violations: list[dict[str, object]] = []
         self._policy_violations: list[dict[str, object]] = []
         self._mismatch_tracker: HashMismatchTracker | None = None
+        self._registry_digest: str = registry_digest()
 
     @property
     def clock(self) -> SemanticClock:
@@ -126,6 +132,7 @@ class V15ExecutionGateway:
         heal_fn: Callable[[SurgicalManifest], dict[str, Any]],
         state_hash_fn: Callable[[], tuple[str, str, str]],
         trace_id: str = "gw-default",
+        agent_id: str = "",
         **kwargs: Any,
     ) -> GatewayResult:
         """Execute a healing operation under full P2 contract enforcement.
@@ -144,6 +151,9 @@ class V15ExecutionGateway:
         self._pipe_violations = []
         self._policy_violations = []
 
+        if agent_id:
+            self._enforce_agent_registered(agent_id)
+
         # §8.2a — Catch SOFT_FAIL aborts for controlled structured failure
         try:
             return self._execute_with_envelope(execution_input, heal_fn, state_hash_fn, trace_id, **kwargs)
@@ -160,6 +170,17 @@ class V15ExecutionGateway:
                 error=f"SOFT_FAIL: {sfa}",
                 dedupe_hit=False,
             )
+
+    def _enforce_agent_registered(self, agent_id: str) -> None:
+        """Raise UnregisteredAgentError if agent_id not in AGENT_REGISTRY."""
+        try:
+            profile = get_profile(agent_id)
+        except KeyError:
+            raise UnregisteredAgentError(
+                f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. "
+                f"Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py."
+            )
+        Logger.debug("[V15-GW] Agent '%s' registry check OK (mode=%s)", agent_id, profile.execution_mode)
 
     def _execute_with_envelope(
         self,

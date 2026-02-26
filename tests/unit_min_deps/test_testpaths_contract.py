@@ -25,8 +25,10 @@ REQUIRED_TESTPATHS = {
     "tests/unit_min_deps",
     "tests/integration/agentic_core",
     "tests/agentic_core",
+    "tests/architecture",
     "tests/enforcement",
     "tests/governance",
+    "tests/system_learning",
 }
 
 REQUIRED_NORECURSEDIRS = {"apps_rg", "apps_lic", "apps_shared", "ops_scripts", "_quarantine"}

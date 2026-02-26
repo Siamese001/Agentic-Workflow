@@ -1,5 +1,5 @@
-agentic_core/L0_routing/enforcement/execution_gateway.py:311:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/enforcement/execution_gateway.py:337:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/enforcement/execution_gateway.py:332:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/enforcement/execution_gateway.py:358:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2731:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:2798:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -55,8 +55,6 @@ agentic_core/L1_cognition/validators/dark_reasoning_visitor_validator.py:83:sile
 agentic_core/L1_cognition/validators/reasoningnode_validator.py:166:magic_configuration:Magic configuration: Hardcoded min_confidence=0.6
 agentic_core/L1_cognition/validators/spiffe_validator.py:274:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L1_cognition/validators/truth_keeper_validator.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/enforcement/SovereignLLMGateway.py:175:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
-agentic_core/L2_execution/enforcement/SovereignLLMGateway.py:402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/firecracker_manager.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L2_execution/enforcement/firecracker_manager_enforcer.py:263:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -77,7 +75,6 @@ agentic_core/L2_execution/engines/secure_tools_impl.py:138:magic_configuration:M
 agentic_core/L2_execution/engines/secure_tools_impl.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/engines/tool_registry.py:120:magic_configuration:Magic configuration: Hardcoded max_tools=5
 agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic configuration: Hardcoded min_relevance=0.6
-agentic_core/L2_execution/healers/healing_provider_adapters.py:98:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:287:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:384:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -895,11 +892,11 @@ apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception s
 apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
-apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded timeout_s=60
-apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded max_retries=3
-apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
-apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:46:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:41:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded timeout_s=60
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
 apps_rg/reasoning/ConfidencemetricsStrategy.py:206:magic_configuration:Magic configuration: Hardcoded min_confidence=0.8
 apps_rg/reasoning/ConfidencemetricsStrategy.py:25:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.95
 apps_rg/reasoning/ConfidencemetricsStrategy.py:26:magic_configuration:Magic configuration: Hardcoded convergence_threshold=0.9
@@ -1555,15 +1552,15 @@ system_learning/pipelines/approval_gates.py:162:magic_configuration:Magic config
 system_learning/pipelines/approval_gates.py:163:magic_configuration:Magic configuration: Hardcoded max_delta_low=0.05
 system_learning/pipelines/approval_gates.py:164:magic_configuration:Magic configuration: Hardcoded max_delta_medium=0.1
 system_learning/pipelines/approval_gates.py:96:magic_configuration:Magic configuration: Hardcoded high_impact_threshold=3
-system_learning/pipelines/meta_learning_pipeline.py:1088:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:134:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:221:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:557:magic_configuration:Magic configuration: Hardcoded min_cluster_size=3 in function call
-system_learning/pipelines/meta_learning_pipeline.py:773:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:937:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:960:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:982:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1014:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1036:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1160:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:187:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:570:magic_configuration:Magic configuration: Hardcoded min_cluster_size=3 in function call
+system_learning/pipelines/meta_learning_pipeline.py:791:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:991:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/e2e_gemini_qwen_runner.py:138:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/evidence_contract_v2.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/harden_plan_evidence_runner.py:20:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
