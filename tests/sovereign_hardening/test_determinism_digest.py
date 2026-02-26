@@ -70,8 +70,12 @@ class TestDeterminismDigest:
         assert digest1 == digest2, "Digest should be deterministic"
 
     def test_embedding_config_surface(self):
-        """Test embedding configuration surface extraction."""
-        config = get_embedding_config_surface()
+        """Test embedding configuration surface extraction (restore/clean mode)."""
+        import os
+        from unittest.mock import patch
+        with patch.dict(os.environ, {}, clear=False) as env:
+            env.pop("W_HARDEN_NEGCTRL_TAMPER", None)
+            config = get_embedding_config_surface()
 
         assert isinstance(config, dict)
         assert "model_version" in config

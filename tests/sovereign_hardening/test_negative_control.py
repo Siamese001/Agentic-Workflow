@@ -98,11 +98,9 @@ class TestNegativeControl:
         is_tampered = os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1'
 
         if is_tampered:
-            # In tampered mode, this should cause XFAIL
-            pytest.fail("Tampered mode active - test should XFAIL")
-        else:
-            # Normal mode - test should pass
-            assert True
+            pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
+        # Normal mode - test should pass
+        assert True
 
     def test_tampering_affects_multiple_components(self):
         """Test that tampering affects all relevant components."""
