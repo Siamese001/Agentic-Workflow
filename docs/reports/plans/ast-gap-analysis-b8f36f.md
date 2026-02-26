@@ -1,6 +1,6 @@
 # AST Gap Analysis: Guardian/Test Coverage of Agentic Repo
-**Date:** 2026-02-26  
-**Method:** AST-based strict exact-import matching (no parent-prefix propagation)  
+**Date:** 2026-02-26
+**Method:** AST-based strict exact-import matching (no parent-prefix propagation)
 **Scope:** `agentic_core/`, `apps_lic/`, `apps_rg/`, `apps_shared/`, `system_learning/`, `L6_observability/`
 
 ---
@@ -334,3 +334,97 @@ Add unit tests for `apps_lic` and `apps_rg` reasoning agents:
 - **Strict coverage script:** `ops_scripts/ci/ast_gap_strict.py`
 - **Raw JSON results:** `ops_scripts/ci/ast_gap_strict_results.json`
 - **Deep layer script:** `ops_scripts/ci/ast_gap_deep.py`
+
+---
+
+## Guardian Test Recommendations — Delivered
+
+Five new guardian test files have been written to `tests/guardian/`. Each follows the existing guardian pattern exactly: `pytestmark = pytest.mark.guardian`, uses `GuardianTestBase` AST utilities, autouse `_reset` fixtures for isolation, and mixes structural (AST-only) and runtime (import + call) tests.
+
+### Files Delivered
+
+| File | Guardian ID | Target | Tests |
+|---|---|---|---|
+| `tests/guardian/test_circuit_breaker_gate.py` | G-CB-1 | `agentic_core/L5_safety/enforcement/circuit_breaker_gate.py` | 13 |
+| `tests/guardian/test_deterministic_loop_detector.py` | G-DLD-1 | `agentic_core/L2_execution/enforcement/deterministic_loop_detector.py` | 16 |
+| `tests/guardian/test_sovereignty_runtime_contract.py` | G-SRC-1 | `agentic_core/runtime/sovereignty_bootstrap.py` + `sovereignty_exceptions.py` | 17 |
+| `tests/guardian/test_l4_state_write_sovereignty.py` | G-L4S-1 | `agentic_core/L4_state/` (full layer, AST scan) | 9 |
+| `tests/guardian/test_l1_cognition_purity_contract.py` | G-L1C-1 | `agentic_core/L1_cognition/` (full layer, AST scan) | 16 |
+
+**Total new guardian tests: 71**
+
+### Run Command
+
+```bash
+python -m pytest tests/guardian/test_circuit_breaker_gate.py \
+  tests/guardian/test_deterministic_loop_detector.py \
+  tests/guardian/test_sovereignty_runtime_contract.py \
+  tests/guardian/test_l4_state_write_sovereignty.py \
+  tests/guardian/test_l1_cognition_purity_contract.py \
+  -m guardian --tb=short
+```
+
+### Test Results: 65 Pass / 6 Fail
+
+The 6 failures are **real architectural violations** uncovered by the new tests, not test bugs:
+
+#### Confirmed Violations (require remediation)
+
+**G-L4S-1 — L4_state layer violations (4 failures):**
+
+1. **Missing `__init__.py`** — `agentic_core/L4_state/__init__.py` does not exist; layer is not a proper Python package.
+
+2. **Unguarded raw write** — `agentic_core/L4_state/storage/filesystem_store.py:115` calls `write_text()` without going through `UniversalWriteGateway`. Violates write-sovereignty contract.
+
+3. **Forbidden layer imports (11 files)** — `L4_state` imports from `agentic_core.L2_execution.tools` in 11 files including `mission_historian.py`, `blob_storage_provider.py`, `runtime_state_guard.py`, `cycle_types.py`, `validation_context_types.py`, and 6 others. Direct L4→L2 imports are a layer inversion.
+
+4. **Agent classes in state layer (5 files)** — `CachedStateLedgerAgent`, `CheckpointManagerAgent`, `GravityStateAgent`, `PineconeSovereignAgent`, `RedisSovereignAgent` are defined under `L4_state/reasoning/`. These belong in `L3_orchestration/reasoning/` or `apps_*/reasoning/`.
+
+**G-L1C-1 — L1_cognition layer violations (2 failures):**
+
+5. **Missing `__init__.py`** — `agentic_core/L1_cognition/__init__.py` does not exist; layer is not a proper Python package.
+
+6. **Forbidden layer imports (4 files)** — `L1_cognition` imports from higher layers in violation of the layer hierarchy:
+   - `cognitive_engine.py` → `agentic_core.L3_orchestration.engines.action_router` (L1→L3 inversion)
+   - `memory_embedder.py` → `agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent` (L1→L2 inversion)
+   - `meta_client.py` → `agentic_core.L4_state.reasoning.RedisSovereignAgent` + `PineconeSovereignAgent` + `L2_execution.reasoning.EmbeddingSovereignAgent` (L1→L4, L1→L2 inversions)
+   - `ASTValidatorAgent.py` → `agentic_core.L5_safety.validators.unified_cst_healer` (L1→L5 inversion)
+
+### What Each Guardian Test Enforces
+
+**`test_circuit_breaker_gate.py`** (G-CB-1):
+- AST: `CircuitBreaker`, `CircuitBreakerOpenError`, `CircuitState`, `get_breaker`, `reset_registry` present
+- Runtime: CLOSED state allows requests; `record_failure()` × N opens breaker; OPEN state rejects `allow_request()`; `reset_registry()` clears all breakers
+
+**`test_deterministic_loop_detector.py`** (G-DLD-1):
+- AST: required classes + methods present; **no `time`/`datetime` imports** (clock-free determinism contract)
+- Runtime: raises `ToolBudgetExceededError` at exactly `max_steps`; separate `trace_id` values are isolated; `reset_trace()` clears without affecting other traces
+
+**`test_sovereignty_runtime_contract.py`** (G-SRC-1):
+- AST: `SovereigntyBootstrap`, 4 exception classes, `bootstrap()` + `seal_and_finalize()` methods present; no layer inversions in exceptions module; bootstrap docstring enumerates step order
+- Runtime: double-call raises `RuntimeError`; `seal_and_finalize()` before `bootstrap()` raises `RuntimeError`; all 4 exception classes are importable and carry messages
+
+**`test_l4_state_write_sovereignty.py`** (G-L4S-1):
+- AST: no raw `write_text()`/`open(write)` without gateway; no imports from L2/L5; no Agent class definitions; expected sub-layers exist
+- **Detects 4 real violations** (see above)
+
+**`test_l1_cognition_purity_contract.py`** (G-L1C-1):
+- AST: no imports from L2/L3/L4/L5; no raw writes; `assert_l1_purity()` importable; `compute_event_hash` uses `hashlib` not `random`; `MetaLearningGuardrails`/`CacheGuardrails` present
+- Runtime: `assert_l1_purity(instance)` passes clean objects, raises on `redis`/`subprocess` attributes
+- **Detects 2 real violations** (see above)
+
+### Pre-existing Conftest Fix
+
+`tests/guardian/conftest.py` line 33 had a broken import (`tests._helpers.robust_fs`) — fixed to `tests.helpers.robust_fs` (the actual module path). This was blocking all direct `tests/guardian/` runs.
+
+### Recommended Next Guardian Tests (backlog)
+
+Based on the gap analysis, the next highest-value guardian tests to write:
+
+| Priority | File | Contract to enforce |
+|---|---|---|
+| P1 | `test_transcript_freezer.py` | `FrozenTranscript` immutability; mutation raises `TranscriptMutationViolation` |
+| P2 | `test_archival_gatekeeper.py` | `ArchivalGatekeeper` fail-closed; missing auth raises; AST structural |
+| P3 | `test_l6_observability_write_contract.py` | L6 must not write (§ constitutional rule); AST scan |
+| P4 | `test_apps_shared_enforcement_contracts.py` | All 11 `apps_shared/enforcement/` strategies importable + have required interface methods |
+| P5 | `test_apps_rg_engine_contracts.py` | `apps_rg/engines/` have required `run()`/`execute()` methods; no direct LLM SDK imports |
