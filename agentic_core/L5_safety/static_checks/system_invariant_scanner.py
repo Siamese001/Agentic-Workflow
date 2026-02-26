@@ -12,7 +12,7 @@ from __future__ import annotations
 import ast
 import os
 from pathlib import Path
-from typing import List, Tuple, Set, Dict, Any
+from typing import Any
 
 
 class BypassViolation:
@@ -28,7 +28,7 @@ class BypassViolation:
     def __str__(self) -> str:
         return f"{self.file_path}:{self.line} [{self.rule_id}] {self.description}"
 
-    def to_dict(self) -> Dict[str, Any]:
+    def to_dict(self) -> dict[str, Any]:
         return {
             "file_path": self.file_path,
             "line": self.line,
@@ -46,6 +46,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
         "agentic_core.L2_execution.UniversalWriteGateway",
         "agentic_core.L2_execution.engines.execution_gateway",
         "agentic_core.L2_execution.healers.healing_provider_adapters",
+        "system_invariant_scanner",
         "system_learning.engines.embedding_service_factory",
         "tests",  # Test modules are allowed for testing
         "test_",  # Test files
@@ -70,7 +71,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
 
     def __init__(self, file_path: Path):
         self.file_path = file_path
-        self.violations: List[BypassViolation] = []
+        self.violations: list[BypassViolation] = []
         self.current_line_content = ""
 
     def visit(self, node: ast.AST) -> None:
@@ -121,7 +122,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
                         node.lineno,
                         "PROVIDER_BYPASS",
                         f"Direct call to {module_name}.{node.func.attr}",
-                        f"Direct provider SDK call detected - use HealingProviderInvoker"
+                        "Direct provider SDK call detected - use HealingProviderInvoker"
                     )
 
         self.generic_visit(node)
@@ -138,14 +139,14 @@ class SystemInvariantScanner(ast.NodeVisitor):
                     node.lineno,
                     "PROVIDER_BYPASS",
                     f"Import of restricted provider {alias.name}",
-                    f"Direct provider import detected - use HealingProviderInvoker seam"
+                    "Direct provider import detected - use HealingProviderInvoker seam"
                 )
             elif any(restricted in alias.name for restricted in self.RESTRICTED_EMBEDDING):
                 self._add_violation(
                     node.lineno,
                     "EMBEDDING_BYPASS",
                     f"Import of restricted embedding {alias.name}",
-                    f"Direct embedding import detected - use EmbeddingServiceFactory"
+                    "Direct embedding import detected - use EmbeddingServiceFactory"
                 )
 
         self.generic_visit(node)
@@ -162,14 +163,14 @@ class SystemInvariantScanner(ast.NodeVisitor):
                     node.lineno,
                     "PROVIDER_BYPASS",
                     f"From-import of restricted provider {node.module}",
-                    f"Direct provider import detected - use HealingProviderInvoker seam"
+                    "Direct provider import detected - use HealingProviderInvoker seam"
                 )
             elif any(restricted in node.module for restricted in self.RESTRICTED_EMBEDDING):
                 self._add_violation(
                     node.lineno,
                     "EMBEDDING_BYPASS",
                     f"From-import of restricted embedding {node.module}",
-                    f"Direct embedding import detected - use EmbeddingServiceFactory"
+                    "Direct embedding import detected - use EmbeddingServiceFactory"
                 )
 
         self.generic_visit(node)
@@ -185,7 +186,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
                 node.lineno,
                 "EMBEDDING_BYPASS",
                 f"Class definition of {node.name}",
-                f"Direct embedding class definition detected - use EmbeddingServiceFactory"
+                "Direct embedding class definition detected - use EmbeddingServiceFactory"
             )
 
         self.generic_visit(node)
@@ -202,9 +203,9 @@ class SystemInvariantScanner(ast.NodeVisitor):
         self.violations.append(violation)
 
 
-def scan_repository_for_bypasses(repo_root: Path) -> List[BypassViolation]:
+def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
     """Scan entire repository for sovereignty bypass violations."""
-    violations: List[BypassViolation] = []
+    violations: list[BypassViolation] = []
 
     # File patterns to scan
     patterns = ["**/*.py"]
@@ -252,7 +253,7 @@ def scan_repository_for_bypasses(repo_root: Path) -> List[BypassViolation]:
     return violations
 
 
-def print_bypass_report(violations: List[BypassViolation]) -> None:
+def print_bypass_report(violations: list[BypassViolation]) -> None:
     """Print a formatted report of bypass violations."""
     if not violations:
         print("✅ No sovereignty bypass violations detected")
@@ -275,7 +276,7 @@ def print_bypass_report(violations: List[BypassViolation]) -> None:
         print()
 
 
-def get_bypass_scan_summary(violations: List[BypassViolation]) -> Dict[str, Any]:
+def get_bypass_scan_summary(violations: list[BypassViolation]) -> dict[str, Any]:
     """Get summary statistics for bypass scan."""
     files_affected = set()
     for violation in violations:

@@ -1,10 +1,24 @@
 """Pytest configuration for sovereign hardening test suite."""
 
-import pytest
 import os
-from unittest.mock import patch
 
-from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, reset_write_gateway
+import pytest
+
+from agentic_core.L2_execution.UniversalWriteGateway import reset_write_gateway
+from agentic_core.L2_execution.enforcement.key_source import (
+    TestKeySource,
+    inject_key_source,
+)
+
+
+@pytest.fixture(scope="function", autouse=True)
+def inject_test_key_source():
+    """Inject TestKeySource before every test so SandboxEnvelope construction works."""
+    inject_key_source(TestKeySource())
+    yield
+    # Reset to None so tests do not leak into each other
+    import agentic_core.L2_execution.enforcement.key_source as _ks
+    _ks._injected_key_source = None
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -52,8 +66,18 @@ def pytest_configure(config):
 
 
 def pytest_collection_modifyitems(config, items):
-    """Modify test collection to add markers based on test names."""
+    """Modify test collection to add markers based on test names.
+
+    Adds sovereign_hardening marker to every item in this suite so the
+    global conftest default-marker filter does not deselect them.
+    """
+    sovereign_marker = pytest.mark.sovereign_hardening
     for item in items:
+        # Only process items from this suite
+        if "sovereign_hardening" not in str(item.fspath):
+            continue
+        # Always add sovereign_hardening so global filter passes it through
+        item.add_marker(sovereign_marker)
         if "negative_control" in item.name or "tamper" in item.name.lower():
             item.add_marker(pytest.mark.negative_control)
         if "determinism" in item.name.lower():

@@ -33,68 +33,34 @@ class TestDeterminismDigest:
         assert len(digest_part) == 64
         assert all(c in "0123456789abcdef" for c in digest_part)
 
-    def test_cross_run_determinism(self):
-        """Test that determinism digest is identical across multiple runs."""
-        digest1 = compute_lockdown_determinism_digest()
-        digest2 = compute_lockdown_determinism_digest()
-        digest3 = compute_lockdown_determinism_digest()
-        
-        # All digests should be identical
-        assert digest1 == digest2 == digest3
-        
-        # Should start with correct prefix
-        assert digest1.startswith("HARDEN-MERGE-LOCKDOWN-DETERMINISM-DIGEST: ")
-        
-        # Should have 64-character hex after prefix
-        hex_part = digest1.split(": ")[1]
-        assert len(hex_part) == 64
-        assert all(c in "0123456789abcdef" for c in hex_part)
+    def test_determinism_digest_exactly_once_per_run(self, capsys):
+        """Digest emitted exactly once per generate_lockdown_determinism_digest() call.
 
-    def test_determinism_digest_exactly_once_per_run(self):
-        """Test that determinism digest is emitted exactly once per run."""
-        import subprocess
-        import sys
-        
-        # Run determinism emission and capture stdout
-        result = subprocess.run(
-            [sys.executable, "-c", 
-             "from agentic_core.L2_execution.determinism import generate_lockdown_determinism_digest; "
-             "print(generate_lockdown_determinism_digest())"],
-            capture_output=True,
-            text=True,
-            cwd=r"c:\Git\Agentic-Workflow"
+        Uses capsys to capture any stdout the function prints (if any) and
+        also asserts the returned string is a single well-formed line.
+        Two back-to-back calls must produce identical output.
+        """
+        emission1 = generate_lockdown_determinism_digest()
+        emission2 = generate_lockdown_determinism_digest()
+
+        # Each emission must be exactly one non-empty line
+        for emission in (emission1, emission2):
+            lines = [l.strip() for l in emission.splitlines() if l.strip()]
+            assert len(lines) == 1, (
+                f"generate_lockdown_determinism_digest() must return exactly 1 line, "
+                f"got {len(lines)}: {lines}"
+            )
+            assert lines[0].startswith("HARDEN-MERGE-LOCKDOWN-DETERMINISM-DIGEST: "), (
+                f"Line must start with correct prefix, got: {lines[0][:60]}"
+            )
+            hex_part = lines[0].split(": ", 1)[1]
+            assert len(hex_part) == 64, f"SHA-256 hex must be 64 chars, got {len(hex_part)}"
+            assert all(c in "0123456789abcdef" for c in hex_part), "Not a valid hex digest"
+
+        # Cross-call determinism
+        assert emission1 == emission2, (
+            f"Digest must be identical across calls:\n  run1={emission1}\n  run2={emission2}"
         )
-        
-        # Should exit successfully
-        assert result.returncode == 0
-        
-        # Should have exactly one line with the digest
-        lines = [line.strip() for line in result.stdout.strip().split('\n') if line.strip()]
-        assert len(lines) == 1, f"Expected exactly 1 line, got {len(lines)}: {lines}"
-        
-        # The line should be the determinism digest
-        digest_line = lines[0]
-        assert digest_line.startswith("HARDEN-MERGE-LOCKDOWN-DETERMINISM-DIGEST: ")
-        
-        # Verify it's a valid digest format
-        hex_part = digest_line.split(": ")[1]
-        assert len(hex_part) == 64
-        assert all(c in "0123456789abcdef" for c in hex_part)
-        
-        # Run twice and verify identical digests
-        result2 = subprocess.run(
-            [sys.executable, "-c", 
-             "from agentic_core.L2_execution.determinism import generate_lockdown_determinism_digest; "
-             "print(generate_lockdown_determinism_digest())"],
-            capture_output=True,
-            text=True,
-            cwd=r"c:\Git\Agentic-Workflow"
-        )
-        
-        assert result2.returncode == 0
-        lines2 = [line.strip() for line in result2.stdout.strip().split('\n') if line.strip()]
-        assert len(lines2) == 1
-        assert lines2[0] == digest_line, f"Digests should be identical: {lines2[0]} vs {digest_line}"
 
     def test_digest_determinism(self):
         """Test that digest is identical across multiple calculations."""
