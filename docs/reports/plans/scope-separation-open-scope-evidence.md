@@ -12,7 +12,7 @@ aa0485cc74f38cc52fa2cfd8d6195b99ac9d8474
 
 ## EVIDENCE_COMMIT
 
-PENDING
+336437f2913cb4eae00ccbe9f4890ca0106b3c44
 
 ## FILES_CHANGED_CODE
 
@@ -35,7 +35,7 @@ system_learning/validators/readonly_access.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/scope-separation-open-scope-evidence.md
 
 ## INSPECTED_FILES
 
