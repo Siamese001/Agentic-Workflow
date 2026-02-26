@@ -206,6 +206,84 @@ class UniversalWriteGateway:
             permitted=True,
         )
 
+    def write_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
+        """Write data to path via the UWG sovereign gate.
+
+        Spec: L2 [UWG] UNIVERSAL WRITE GATEWAY, Guarantee #6.
+        - replay_mode=True: returns SimulationResult (no real write).
+        - replay_mode=False: raises ToolNotAllowedError on blocked paths/extensions.
+        """
+        if self.replay_mode:
+            return self.simulate_write(path, "write", data)
+
+        if not self.check_write_permission(path, "write"):
+            self.record_mutation(path=path, operation="write", data=data, permitted=False)
+            ext = Path(path).suffix.lower()
+            reason = (
+                f"extension '{ext}' is blocked"
+                if ext in self._blocked_extensions
+                else f"path '{path}' is not in the allowed write set"
+            )
+            raise ToolNotAllowedError(
+                f"UWG write_file blocked: {reason}. "
+                f"Route writes through an allowed path or grant explicit permission."
+            )
+        return self.record_mutation(path=path, operation="write", data=data, permitted=True)
+
+    def append_file(self, path: str, data: str | bytes) -> SimulationResult | MutationRecord:
+        """Append data to path via the UWG sovereign gate.
+
+        Same blocking semantics as write_file.
+        """
+        if self.replay_mode:
+            return self.simulate_write(path, "append", data)
+
+        if not self.check_write_permission(path, "append"):
+            self.record_mutation(path=path, operation="append", data=data, permitted=False)
+            ext = Path(path).suffix.lower()
+            reason = (
+                f"extension '{ext}' is blocked"
+                if ext in self._blocked_extensions
+                else f"path '{path}' is not in the allowed write set"
+            )
+            raise ToolNotAllowedError(
+                f"UWG append_file blocked: {reason}."
+            )
+        return self.record_mutation(path=path, operation="append", data=data, permitted=True)
+
+    def delete_file(self, path: str) -> SimulationResult | MutationRecord:
+        """Delete a file via the UWG sovereign gate.
+
+        Same blocking semantics: replay_mode returns SimulationResult; live raises on disallowed.
+        """
+        if self.replay_mode:
+            return self.simulate_write(path, "delete")
+
+        if not self.check_write_permission(path, "delete"):
+            self.record_mutation(path=path, operation="delete", permitted=False)
+            raise ToolNotAllowedError(
+                f"UWG delete_file blocked: path '{path}' is not in the allowed write set."
+            )
+        return self.record_mutation(path=path, operation="delete", permitted=True)
+
+    def rename_file(self, src: str, dst: str) -> SimulationResult | MutationRecord:
+        """Rename/move a file via the UWG sovereign gate.
+
+        Both src and dst must be in the allowed write set.
+        """
+        if self.replay_mode:
+            return self.simulate_write(dst, "rename")
+
+        src_ok = self.check_write_permission(src, "rename")
+        dst_ok = self.check_write_permission(dst, "rename")
+        if not src_ok or not dst_ok:
+            blocked = src if not src_ok else dst
+            self.record_mutation(path=src, operation="rename", permitted=False)
+            raise ToolNotAllowedError(
+                f"UWG rename_file blocked: path '{blocked}' is not in the allowed write set."
+            )
+        return self.record_mutation(path=src, operation="rename", permitted=True)
+
     def get_write_stats(self) -> dict[str, Any]:
         """Get statistics about write operations."""
         total = len(self._mutation_ledger)
