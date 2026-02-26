@@ -21,7 +21,7 @@ agentic_core layers and system_learning. New files created:
 
 ## EVIDENCE_COMMIT
 
-PENDING
+ac71a53235568a4977d3cd46992aec7dfeb31169
 
 ## FILES_CHANGED_CODE
 
@@ -37,7 +37,7 @@ agentic_core/runtime/sovereignty_exceptions.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/mathematically-sealed-sovereignty-hardening-evidence.md
 
 ## INSPECTED_FILES
 
