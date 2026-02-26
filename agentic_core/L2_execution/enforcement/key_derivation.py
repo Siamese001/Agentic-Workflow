@@ -1,0 +1,73 @@
+"""
+HMAC Key Derivation with Versioning — L2 Execution Boundary.
+
+Provides HKDF-derived keys with version tracking for replay compatibility
+across secret rotations.  All derived keys embed key_version and
+kdf_salt_hash so that InstructionPacket / SandboxEnvelope can be
+re-verified under any in-rotation authority version.
+
+Phase 0.2: Mathematically-Sealed Sovereignty Hardening
+"""
+
+from __future__ import annotations
+
+import hashlib
+import hmac
+from typing import Final
+
+# ---------------------------------------------------------------------------
+# Version constants — bump _CURRENT_KEY_VERSION on rotation
+# ---------------------------------------------------------------------------
+
+_CURRENT_KEY_VERSION: Final[str] = "1"
+_KDF_SALT: Final[bytes] = b"sovereignty_boundary_kdf_v1"
+_KDF_INFO_PREFIX: Final[str] = "sovereignty_boundary_v"
+
+
+# ---------------------------------------------------------------------------
+# Public API
+# ---------------------------------------------------------------------------
+
+
+def derive_hmac_key(master_secret: bytes) -> tuple[bytes, str, str]:
+    """Derive an HMAC key using HKDF with version tracking.
+
+    Args:
+        master_secret: Raw master secret obtained from KeySource.
+
+    Returns:
+        Tuple of (derived_key_bytes, key_version_str, kdf_salt_hash_hex).
+    """
+    # HKDF extract — PRK = HMAC-SHA256(salt, IKM)
+    prk = hmac.new(_KDF_SALT, master_secret, hashlib.sha256).digest()
+
+    # HKDF expand — OKM = HMAC-SHA256(PRK, info || 0x01)
+    info = f"{_KDF_INFO_PREFIX}{_CURRENT_KEY_VERSION}".encode()
+    okm = hmac.new(prk, info + b"\x01", hashlib.sha256).digest()
+
+    kdf_salt_hash = hashlib.sha256(_KDF_SALT).hexdigest()
+
+    return okm, _CURRENT_KEY_VERSION, kdf_salt_hash
+
+
+def get_key_version() -> str:
+    """Return current authority key version string."""
+    return _CURRENT_KEY_VERSION
+
+
+def verify_key_version(packet_key_version: str) -> bool:
+    """Return True if *packet_key_version* matches the current version."""
+    return packet_key_version == _CURRENT_KEY_VERSION
+
+
+def get_kdf_salt_hash() -> str:
+    """Return hex digest of the KDF salt (for embedding in packets)."""
+    return hashlib.sha256(_KDF_SALT).hexdigest()
+
+
+__all__ = [
+    "derive_hmac_key",
+    "get_key_version",
+    "get_kdf_salt_hash",
+    "verify_key_version",
+]
