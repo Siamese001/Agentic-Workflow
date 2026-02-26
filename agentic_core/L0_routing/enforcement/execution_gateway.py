@@ -98,6 +98,7 @@ class GatewayResult:
     healing_output: dict[str, Any] = field(default_factory=dict)
     error: str | None = None
     dedupe_hit: bool = False
+    registry_hash: str = ""  # SHA256 digest of agent registry at execution time (Guarantee #7)
 
 
 # =============================================================================
@@ -151,8 +152,8 @@ class V15ExecutionGateway:
         self._pipe_violations = []
         self._policy_violations = []
 
-        if agent_id:
-            self._enforce_agent_registered(agent_id)
+        # Guarantee #7: agent_id is ALWAYS required — empty string is a hard fail
+        self._enforce_agent_registered(agent_id)
 
         # §8.2a — Catch SOFT_FAIL aborts for controlled structured failure
         try:
@@ -172,10 +173,18 @@ class V15ExecutionGateway:
             )
 
     def _enforce_agent_registered(self, agent_id: str) -> None:
-        """Raise UnregisteredAgentError if agent_id not in AGENT_REGISTRY."""
+        """Raise UnregisteredAgentError if agent_id is empty or not in AGENT_REGISTRY.
+
+        Spec: L0 Authority Node, Guarantee #7 — no execution without a registered profile.
+        """
+        if not agent_id or not agent_id.strip():
+            raise UnregisteredAgentError(
+                "agent_id must be a non-empty string. "
+                "All V15ExecutionGateway.execute() callers must supply a registered agent_id."
+            )
         try:
             profile = get_profile(agent_id)
-        except KeyError:
+        except (KeyError, Exception):
             raise UnregisteredAgentError(
                 f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. "
                 f"Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py."

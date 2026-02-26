@@ -246,6 +246,34 @@ def get_profile(agent_id: str) -> AgentExecutionProfile:
     return get_execution_profile(agent_id)
 
 
+def assert_registered(agent_id: str) -> AgentExecutionProfile:
+    """Assert agent_id is non-empty and present in the frozen registry.
+
+    Raises:
+        UnregisteredAgentError: if agent_id is empty string or not in registry.
+
+    Returns:
+        AgentExecutionProfile for the agent.
+
+    Spec: L0 Authority Node, AGENT EXECUTION PROFILE ENFORCEMENT, Guarantee #7.
+    """
+    from agentic_core.L0_routing.enforcement.execution_gateway import UnregisteredAgentError
+
+    if not agent_id or not agent_id.strip():
+        raise UnregisteredAgentError(
+            "agent_id must be a non-empty string. "
+            "All callers must supply a registered agent_id before execution."
+        )
+    profile = EXECUTION_PROFILES.get(agent_id)
+    if profile is None:
+        raise UnregisteredAgentError(
+            f"Agent '{agent_id}' not registered in AgentExecutionProfileRegistry. "
+            f"Available agents: {sorted(EXECUTION_PROFILES.keys())}. "
+            f"Add an AgentExecutionProfile entry to agentic_core/agents/agent_registry.py."
+        )
+    return profile
+
+
 def registry_digest() -> str:
     """Compute SHA256 digest over canonical JSON of sorted registry.
 
