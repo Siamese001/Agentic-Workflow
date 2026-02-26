@@ -15,7 +15,7 @@ a2f72dcc3bb2c95d3039df2d394bd61bdcc8c69e
 
 ## EVIDENCE_COMMIT
 
-PENDING
+fa1d67db1b138fbd4ab2554bd16555a5d2846d53
 
 ## FILES_CHANGED_CODE
 
@@ -30,7 +30,7 @@ tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/reasoning_intensity_l0_authority_evidence-008eab.md
 
 ## INSPECTED_FILES
 
