@@ -107,7 +107,6 @@ class TestStructuralContract:
 class TestToolBudgetExceededError:
     def test_error_has_reason_code(self):
         from agentic_core.L2_execution.enforcement.deterministic_loop_detector import (
-            ToolBudget,
             ToolBudgetExceededError,
         )
         exc = ToolBudgetExceededError(tool_name="my_tool", budget=5)
