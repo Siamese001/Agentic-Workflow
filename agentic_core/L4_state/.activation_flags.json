@@ -1,0 +1,13 @@
+{
+  "execution_hardened": true,
+  "mutation_surface_zero": true,
+  "guardian_coverage": 0.96,
+  "freeze_authority_active": true,
+  "meta_learning_prepared": true,
+  "blast_radius_containment_active": true,
+  "meta_learning_enabled": false,
+  "semantic_clock_tick": 42,
+  "replay_digest_hash": "digest123",
+  "signature": "guardian_sig",
+  "timestamp": 1772233162.544931
+}

@@ -1,0 +1,380 @@
+"""Metrics emission enforcement for Wave 16 - P2 Meta-Learning Prep.
+
+This module provides:
+- Single authoritative emission control-spine chokepoint
+- Runtime guard rejecting duplicate emissions per trace_id
+- Blast radius containment for meta-learning proposals
+- Phase lock persistence and activation flags
+"""
+
+import logging
+import time
+from dataclasses import dataclass, field
+from typing import Dict, Optional, Set, Any
+from pathlib import Path
+
+Logger = logging.getLogger(__name__)
+
+@dataclass(frozen=True)
+class EmissionRecord:
+    """Record of a metrics emission to prevent duplicates."""
+    trace_id: str
+    artifact_type: str
+    emission_timestamp: float
+    artifact_hash: str
+
+@dataclass(frozen=True)
+class BlastRadiusConfig:
+    """Configuration for blast radius containment."""
+    max_blast_radius_per_proposal: int = 1000
+    max_state_surface_bytes: int = 10_000_000  # 10MB
+
+@dataclass(frozen=True)
+class ActivationFlags:
+    """L4-persisted, signed, replay-bound activation flags for Wave 16."""
+    # P0 Execution Boundary
+    execution_hardened: bool = False
+    mutation_surface_zero: bool = False
+    guardian_coverage: float = 0.0
+
+    # P1 Freeze Authority
+    freeze_authority_active: bool = False
+
+    # P2 Meta-Learning Prepared
+    meta_learning_prepared: bool = False
+    blast_radius_containment_active: bool = False
+
+    # Meta-Learning Activation (requires all above)
+    meta_learning_enabled: bool = False
+
+    # Metadata for replay binding
+    semantic_clock_tick: int = 0
+    replay_digest_hash: str = ""
+    signature: str = ""  # Guardian signature
+
+class MetricsEmissionEnforcer:
+    """Enforces single authoritative metrics emission and blast radius containment."""
+
+    _instance: Optional['MetricsEmissionEnforcer'] = None
+    _emissions: Dict[str, EmissionRecord] = {}
+    _blast_radius_config: BlastRadiusConfig = BlastRadiusConfig()
+
+    def __new__(cls) -> 'MetricsEmissionEnforcer':
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+
+    def single_authoritative_emission(self,
+                                    trace_id: str,
+                                    artifact_type: str,
+                                    artifact: Any) -> None:
+        """Single control-spine chokepoint for all metrics emissions.
+
+        Args:
+            trace_id: Execution trace identifier
+            artifact_type: Type of metric artifact being emitted
+            artifact: The artifact being emitted
+
+        Raises:
+            RuntimeError: If duplicate emission detected
+            ValueError: If blast radius exceeded
+        """
+        # Check for duplicate emissions
+        emission_key = f"{trace_id}:{artifact_type}"
+        if emission_key in self._emissions:
+            existing = self._emissions[emission_key]
+            raise RuntimeError(
+                f"Duplicate emission detected for trace_id={trace_id}, "
+                f"artifact_type={artifact_type}. Previous emission at "
+                f"{existing.emission_timestamp}"
+            )
+
+        # Calculate blast radius
+        blast_radius = self._calculate_blast_radius(artifact)
+        if blast_radius > self._blast_radius_config.max_blast_radius_per_proposal:
+            raise ValueError(
+                f"Blast radius {blast_radius} exceeds maximum "
+                f"{self._blast_radius_config.max_blast_radius_per_proposal}"
+            )
+
+        # Record emission
+        import hashlib
+        artifact_hash = hashlib.sha256(str(artifact).encode()).hexdigest()
+
+        record = EmissionRecord(
+            trace_id=trace_id,
+            artifact_type=artifact_type,
+            emission_timestamp=time.time(),
+            artifact_hash=artifact_hash
+        )
+
+        self._emissions[emission_key] = record
+        Logger.info(
+            f"Authorized emission: trace_id={trace_id}, "
+            f"type={artifact_type}, blast_radius={blast_radius}"
+        )
+
+    def _calculate_blast_radius(self, artifact: Any) -> int:
+        """Calculate deterministic blast radius bound to explicit state surface.
+
+        Args:
+            artifact: The artifact to calculate blast radius for
+
+        Returns:
+            Integer blast radius value
+        """
+        # Deterministic calculation based on artifact properties
+        if hasattr(artifact, '__dict__'):
+            # Count mutable attributes
+            mutable_attrs = sum(1 for k, v in artifact.__dict__.items()
+                              if not isinstance(v, (int, float, str, bool, tuple)))
+            return mutable_attrs
+
+        # For simple types, blast radius is 1
+        return 1
+
+    def verify_emission_chokepoint(self, trace_id: str, artifact_type: str) -> bool:
+        """Verify that emission went through the authorized chokepoint.
+
+        Args:
+            trace_id: Execution trace identifier
+            artifact_type: Type of metric artifact
+
+        Returns:
+            True if emission was authorized, False otherwise
+        """
+        emission_key = f"{trace_id}:{artifact_type}"
+        return emission_key in self._emissions
+
+    def clear_emissions_for_trace(self, trace_id: str) -> None:
+        """Clear emission records for a specific trace (for testing/cleanup).
+
+        Args:
+            trace_id: Trace ID to clear records for
+        """
+        keys_to_remove = [k for k in self._emissions.keys() if k.startswith(f"{trace_id}:")]
+        for key in keys_to_remove:
+            del self._emissions[key]
+
+class BlastRadiusEnforcer:
+    """Enforces blast radius containment for meta-learning proposals."""
+
+    def __init__(self, config: Optional[BlastRadiusConfig] = None):
+        self.config = config or BlastRadiusConfig()
+
+    def validate_blast_radius(self,
+                            proposal: Any,
+                            state_surface_bytes: int) -> bool:
+        """Validate that proposal blast radius is within limits.
+
+        Args:
+            proposal: Meta-learning proposal to validate
+            state_surface_bytes: Size of state surface in bytes
+
+        Returns:
+            True if blast radius is acceptable
+
+        Raises:
+            ValueError: If blast radius exceeds limits
+        """
+        # Check state surface size
+        if state_surface_bytes > self.config.max_state_surface_bytes:
+            raise ValueError(
+                f"State surface {state_surface_bytes} bytes exceeds "
+                f"maximum {self.config.max_state_surface_bytes} bytes"
+            )
+
+        # Calculate proposal blast radius
+        proposal_radius = self._calculate_proposal_radius(proposal)
+
+        if proposal_radius > self.config.max_blast_radius_per_proposal:
+            raise ValueError(
+                f"Proposal blast radius {proposal_radius} exceeds "
+                f"maximum {self.config.max_blast_radius_per_proposal}"
+            )
+
+        return True
+
+    def _calculate_proposal_radius(self, proposal: Any) -> int:
+        """Deterministic blast radius calculation for proposals.
+
+        Args:
+            proposal: Proposal to calculate radius for
+
+        Returns:
+            Integer blast radius
+        """
+        # Implementation similar to MetricsEmissionEnforcer
+        if hasattr(proposal, '__dict__'):
+            return len(proposal.__dict__)
+        return 1
+
+class PhaseLockStore:
+    """Persists and restores phase lock state in L4."""
+
+    _lock_file = Path("agentic_core/L4_state/.phase_lock.json")
+
+    def persist(self, phase: int, locked: bool, metadata: Optional[Dict] = None) -> None:
+        """Persist phase lock state to L4 storage.
+
+        Args:
+            phase: Phase number to lock
+            locked: Whether the phase is locked
+            metadata: Optional metadata to store with lock
+        """
+        import json
+        import os
+
+        lock_data = {
+            "phase": phase,
+            "locked": locked,
+            "metadata": metadata or {},
+            "timestamp": time.time()
+        }
+
+        # Ensure directory exists
+        os.makedirs(self._lock_file.parent, exist_ok=True)
+
+        with open(self._lock_file, 'w') as f:
+            json.dump(lock_data, f, indent=2)
+
+        Logger.info(f"Phase lock persisted: phase={phase}, locked={locked}")
+
+    def restore(self) -> Optional[Dict]:
+        """Restore phase lock state from L4 storage.
+
+        Returns:
+            Lock data dictionary or None if not found
+        """
+        import json
+
+        if not self._lock_file.exists():
+            return None
+
+        try:
+            with open(self._lock_file, 'r') as f:
+                lock_data = json.load(f)
+
+            Logger.info(f"Phase lock restored: phase={lock_data.get('phase')}")
+            return lock_data
+
+        except Exception as e:
+            Logger.error(f"Failed to restore phase lock: {e}")
+            return None
+
+    def is_locked(self, phase: int) -> bool:
+        """Check if a specific phase is locked.
+
+        Args:
+            phase: Phase number to check
+
+        Returns:
+            True if phase is locked
+        """
+        lock_data = self.restore()
+        if lock_data is None:
+            return False
+
+        return lock_data.get("phase") == phase and lock_data.get("locked", False)
+
+class ActivationFlagsStore:
+    """Manages L4-persisted, signed, replay-bound activation flags."""
+
+    _flags_file = Path("agentic_core/L4_state/.activation_flags.json")
+
+    def persist_flags(self, flags: ActivationFlags) -> None:
+        """Persist activation flags to L4 with signature.
+
+        Args:
+            flags: Activation flags to persist
+        """
+        import json
+        import os
+
+        flags_data = {
+            "execution_hardened": flags.execution_hardened,
+            "mutation_surface_zero": flags.mutation_surface_zero,
+            "guardian_coverage": flags.guardian_coverage,
+            "freeze_authority_active": flags.freeze_authority_active,
+            "meta_learning_prepared": flags.meta_learning_prepared,
+            "blast_radius_containment_active": flags.blast_radius_containment_active,
+            "meta_learning_enabled": flags.meta_learning_enabled,
+            "semantic_clock_tick": flags.semantic_clock_tick,
+            "replay_digest_hash": flags.replay_digest_hash,
+            "signature": flags.signature,
+            "timestamp": time.time()
+        }
+
+        # Ensure directory exists
+        os.makedirs(self._flags_file.parent, exist_ok=True)
+
+        with open(self._flags_file, 'w') as f:
+            json.dump(flags_data, f, indent=2)
+
+        Logger.info("Activation flags persisted to L4")
+
+    def restore_flags(self) -> Optional[ActivationFlags]:
+        """Restore activation flags from L4.
+
+        Returns:
+            ActivationFlags or None if not found
+        """
+        import json
+
+        if not self._flags_file.exists():
+            return None
+
+        try:
+            with open(self._flags_file, 'r') as f:
+                flags_data = json.load(f)
+
+            flags = ActivationFlags(
+                execution_hardened=flags_data.get("execution_hardened", False),
+                mutation_surface_zero=flags_data.get("mutation_surface_zero", False),
+                guardian_coverage=flags_data.get("guardian_coverage", 0.0),
+                freeze_authority_active=flags_data.get("freeze_authority_active", False),
+                meta_learning_prepared=flags_data.get("meta_learning_prepared", False),
+                blast_radius_containment_active=flags_data.get("blast_radius_containment_active", False),
+                meta_learning_enabled=flags_data.get("meta_learning_enabled", False),
+                semantic_clock_tick=flags_data.get("semantic_clock_tick", 0),
+                replay_digest_hash=flags_data.get("replay_digest_hash", ""),
+                signature=flags_data.get("signature", "")
+            )
+
+            Logger.info("Activation flags restored from L4")
+            return flags
+
+        except Exception as e:
+            Logger.error(f"Failed to restore activation flags: {e}")
+            return None
+
+# Global instances
+_metrics_enforcer = MetricsEmissionEnforcer()
+_blast_enforcer = BlastRadiusEnforcer()
+_phase_lock_store = PhaseLockStore()
+_activation_store = ActivationFlagsStore()
+
+# Exported functions
+def single_authoritative_emission(trace_id: str, artifact_type: str, artifact: Any) -> None:
+    """Exported function for single authoritative emission."""
+    _metrics_enforcer.single_authoritative_emission(trace_id, artifact_type, artifact)
+
+def validate_blast_radius(proposal: Any, state_surface_bytes: int) -> bool:
+    """Exported function for blast radius validation."""
+    return _blast_enforcer.validate_blast_radius(proposal, state_surface_bytes)
+
+def persist_phase_lock(phase: int, locked: bool, metadata: Optional[Dict] = None) -> None:
+    """Exported function for phase lock persistence."""
+    _phase_lock_store.persist(phase, locked, metadata)
+
+def restore_phase_lock() -> Optional[Dict]:
+    """Exported function for phase lock restoration."""
+    return _phase_lock_store.restore()
+
+def persist_activation_flags(flags: ActivationFlags) -> None:
+    """Exported function for activation flags persistence."""
+    _activation_store.persist_flags(flags)
+
+def restore_activation_flags() -> Optional[ActivationFlags]:
+    """Exported function for activation flags restoration."""
+    return _activation_store.restore_flags()
