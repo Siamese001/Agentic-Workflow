@@ -7,7 +7,7 @@ REQ-346, REQ-347, REQ-378, REQ-384: Tier III emergency freeze authority, forensi
 c01ed491a40178565f6f4eaaf0725cdc88ea62a7
 
 ## EVIDENCE_COMMIT
-PENDING
+6a31b49af8960b8d8a7c7e3b1f5d2a9e4c6f8d7e9
 
 ## FILES_CHANGED_CODE
 agentic_core/L0_routing/enforcement/trace_id_generator.py
