@@ -75,11 +75,11 @@ class _DigestAuthority:
     def emit_digest(self, digest: str, wave_number: int) -> str:
         """Emits the digest string, ensuring it happens only once per run."""
         with self._LOCK:
-            if self._emitted:
+            if self.__class__._emitted:
                 raise DuplicateDigestViolation(
                     "W<n>-DETERMINISM-DIGEST has already been emitted for this run."
                 )
-            self._emitted = True
+            self.__class__._emitted = True
             emission_string = f"W{wave_number}-DETERMINISM-DIGEST: {digest}"
             # In a real system, this would use a sovereign logger.
             # For now, printing to stdout is sufficient for evidence capture.
