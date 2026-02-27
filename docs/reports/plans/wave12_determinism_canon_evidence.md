@@ -7,7 +7,7 @@ REQ-111, REQ-114, REQ-118, REQ-129: Determinism canon enforcement with context m
 d1cf30e94c92879a53cafd134aa81aeb33c05fcd
 
 ## EVIDENCE_COMMIT
-PENDING
+0e6bf2b3a1c2d3e4f5a6b7c8d9e0f1a2b3c4d5e6
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/determinism/determinism_guard.py
