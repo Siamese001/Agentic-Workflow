@@ -13,7 +13,7 @@
 dc9c77b26d78f4922c33fc14c791944c78143aff
 
 ## EVIDENCE_COMMIT
-e1f2a3b4c5d6789012345678901234567890efgh
+37d19ee159cf3e5643fe38a94baf36b63143ac7f
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/enforcement/network_egress_guard.py
