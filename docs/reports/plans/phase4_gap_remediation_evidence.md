@@ -17,7 +17,7 @@ New test files: 8 (5 Wave 9 + 3 Wave 10), 14 new test functions.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+e70da2b4553e8ee03564af85d9f41f74db4d58c5
 
 ## FILES_CHANGED_CODE
 
@@ -36,7 +36,7 @@ tests/governance/test_req345_349_freeze_subsystems.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/phase4_gap_remediation_evidence.md
 
 ## INSPECTED_FILES
 
