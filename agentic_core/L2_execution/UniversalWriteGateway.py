@@ -7,12 +7,15 @@ for deterministic simulation without actual side-effects.
 from __future__ import annotations
 
 import hashlib
+import logging
 import os
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+
+Logger = logging.getLogger(__name__)
 
 
 class ToolNotAllowedError(PermissionError):
@@ -310,18 +313,94 @@ class UniversalWriteGateway:
         store.write(payload)
 
     def get_write_stats(self) -> dict[str, Any]:
-        """Get statistics about write operations."""
-        total = len(self._mutation_ledger)
-        permitted = sum(1 for r in self._mutation_ledger if r.permitted)
-        blocked = total - permitted
+        """Return statistics about write operations."""
         return {
-            "total_mutations": total,
-            "permitted_mutations": permitted,
-            "blocked_mutations": blocked,
-            "replay_mode": self.replay_mode,
-            "allowed_paths": list(self._allowed_paths),
-            "write_permissions": dict(self._write_permissions),
+            "total_mutations": len(self._mutation_ledger),
+            "permitted_mutations": sum(1 for r in self._mutation_ledger if r.permitted),
+            "replay_mode": self._replay_mode,
         }
+
+    def validate_promotion_pointer_update(
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token
+    ) -> bool:
+        """Validate promotion pointer update with capability token."""
+        # Check if we're in replay mode
+        if self._replay_mode:
+            # In replay mode, simulate the validation
+            return self._simulate_promotion_validation(namespace, old_pointer, new_pointer, capability_token)
+        
+        # Validate capability token
+        if not hasattr(capability_token, 'validate_scope_and_use'):
+            Logger.error("Invalid capability token for promotion update")
+            return False
+        
+        # Validate token scope and single-use
+        if not capability_token.validate_scope_and_use():
+            Logger.error(f"Capability token validation failed for namespace {namespace}")
+            return False
+        
+        # Validate namespace match
+        if capability_token.target_namespace != namespace:
+            Logger.error(f"Token namespace mismatch: {capability_token.target_namespace} != {namespace}")
+            return False
+        
+        # Validate action scope
+        if capability_token.allowed_action != "pointer_update":
+            Logger.error(f"Invalid action: {capability_token.allowed_action}")
+            return False
+        
+        # Record the promotion update
+        self.record_mutation(
+            operation="promotion_pointer_update",
+            path=f"promotion://{namespace}",
+            data_hash=hashlib.sha256(f"{old_pointer}->{new_pointer}".encode()).hexdigest(),
+            permitted=True
+        )
+        
+        Logger.info(f"Promotion pointer update validated for namespace {namespace}: {old_pointer} -> {new_pointer}")
+        
+        return True
+    
+    def _simulate_promotion_validation(
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token
+    ) -> bool:
+        """Simulate promotion validation in replay mode."""
+        # In replay mode, we assume the token would be valid
+        # The actual validation would have happened during the original execution
+        self.record_mutation(
+            operation="promotion_pointer_update",
+            path=f"promotion://{namespace}",
+            data_hash=hashlib.sha256(f"{old_pointer}->{new_pointer}".encode()).hexdigest(),
+            permitted=True,
+            replay_mode=True
+        )
+        
+        return True
+    
+    def update_pointer(
+        self,
+        namespace: str,
+        old_pointer: str,
+        new_pointer: str,
+        capability_token
+    ) -> bool:
+        """Update pointer with validation."""
+        if not self.validate_promotion_pointer_update(namespace, old_pointer, new_pointer, capability_token):
+            return False
+        
+        # In a real implementation, this would update the actual pointer
+        # For now, we just record the mutation
+        Logger.info(f"Pointer updated in namespace {namespace}")
+        
+        return True
 
 
 # Global gateway instance

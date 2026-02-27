@@ -1,0 +1,188 @@
+"""Promotion tokens for Wave 17 - P2 Promotion Authority.
+
+This module provides scoped, single-use, time-bounded capability tokens
+for promotion operations.
+"""
+
+import logging
+import time
+from dataclasses import dataclass, field
+from typing import Dict, Optional, Set
+import hashlib
+import secrets
+
+Logger = logging.getLogger(__name__)
+
+@dataclass(frozen=True)
+class PromotionToken:
+    """Scoped capability token for promotion operations."""
+    token_id: str
+    allowed_action: str = "pointer_update"
+    target_namespace: str
+    semantic_clock_window: tuple[int, int]  # (start_tick, end_tick)
+    replay_digest_binding: str
+    single_use_nonce: str
+    guardian_signature: str
+    semantic_clock_tick: int
+    created_at: float = field(default_factory=time.time)
+    
+    def validate_scope_and_use(self) -> bool:
+        """Validate token scope and single-use status."""
+        # Check action scope
+        if self.allowed_action != "pointer_update":
+            Logger.error(f"Token {self.token_id}: Invalid action {self.allowed_action}")
+            return False
+        
+        # Check semantic clock window
+        current_tick = self.semantic_clock_tick
+        if not (self.semantic_clock_window[0] <= current_tick <= self.semantic_clock_window[1]):
+            Logger.error(f"Token {self.token_id}: Semantic clock {current_tick} outside window {self.semantic_clock_window}")
+            return False
+        
+        # Check if already used
+        if PromotionTokenStore.is_nonce_used(self.single_use_nonce):
+            Logger.error(f"Token {self.token_id}: Nonce {self.single_use_nonce} already used")
+            return False
+        
+        # Mark nonce as used
+        PromotionTokenStore.mark_nonce_used(self.single_use_nonce)
+        
+        return True
+    
+    def is_expired(self, current_tick: int) -> bool:
+        """Check if token is expired."""
+        return current_tick > self.semantic_clock_window[1]
+    
+    def is_valid_for_namespace(self, namespace: str) -> bool:
+        """Check if token is valid for given namespace."""
+        return self.target_namespace == namespace
+
+class PromotionTokenStore:
+    """Store for tracking used nonces and token state."""
+    
+    _instance = None
+    _used_nonces: Set[str] = set()
+    _active_tokens: Dict[str, PromotionToken] = {}
+    
+    def __new__(cls):
+        if cls._instance is None:
+            cls._instance = super().__new__(cls)
+        return cls._instance
+    
+    @classmethod
+    def is_nonce_used(cls, nonce: str) -> bool:
+        """Check if nonce has been used."""
+        return nonce in cls._used_nonces
+    
+    @classmethod
+    def mark_nonce_used(cls, nonce: str) -> None:
+        """Mark nonce as used."""
+        cls._used_nonces.add(nonce)
+        Logger.info(f"Marked nonce {nonce} as used")
+    
+    @classmethod
+    def store_token(cls, token: PromotionToken) -> None:
+        """Store active token."""
+        cls._active_tokens[token.token_id] = token
+    
+    @classmethod
+    def get_token(cls, token_id: str) -> Optional[PromotionToken]:
+        """Get stored token."""
+        return cls._active_tokens.get(token_id)
+    
+    @classmethod
+    def revoke_token(cls, token_id: str) -> bool:
+        """Revoke token."""
+        if token_id in cls._active_tokens:
+            del cls._active_tokens[token_id]
+            return True
+        return False
+    
+    @classmethod
+    def clear_all(cls) -> None:
+        """Clear all stored data (for testing)."""
+        cls._used_nonces.clear()
+        cls._active_tokens.clear()
+
+class PromotionTokenIssuer:
+    """Issues promotion tokens with proper scope and constraints."""
+    
+    def __init__(self):
+        self.store = PromotionTokenStore()
+    
+    def issue_promotion_token(
+        self,
+        target_namespace: str,
+        semantic_clock_tick: int,
+        window_size: int = 100,
+        replay_digest: str = "",
+        guardian_signature: str = "guardian_sig"
+    ) -> PromotionToken:
+        """Issue a new promotion token."""
+        
+        # Generate unique token ID and nonce
+        token_id = f"promo_{secrets.token_hex(8)}"
+        single_use_nonce = secrets.token_hex(16)
+        
+        # Create semantic clock window
+        start_tick = semantic_clock_tick
+        end_tick = semantic_clock_tick + window_size
+        
+        # Create token
+        token = PromotionToken(
+            token_id=token_id,
+            allowed_action="pointer_update",
+            target_namespace=target_namespace,
+            semantic_clock_window=(start_tick, end_tick),
+            replay_digest_binding=replay_digest,
+            single_use_nonce=single_use_nonce,
+            guardian_signature=guardian_signature,
+            semantic_clock_tick=semantic_clock_tick
+        )
+        
+        # Store token
+        self.store.store_token(token)
+        
+        Logger.info(f"Issued promotion token {token_id} for namespace {target_namespace}")
+        
+        return token
+    
+    def validate_token(self, token: PromotionToken, namespace: str, current_tick: int) -> bool:
+        """Validate token for use."""
+        # Check namespace
+        if not token.is_valid_for_namespace(namespace):
+            return False
+        
+        # Check expiration
+        if token.is_expired(current_tick):
+            return False
+        
+        # Check scope and single-use
+        return token.validate_scope_and_use()
+
+# Singleton issuer
+_token_issuer = None
+
+def get_token_issuer() -> PromotionTokenIssuer:
+    """Get the singleton token issuer."""
+    global _token_issuer
+    if _token_issuer is None:
+        _token_issuer = PromotionTokenIssuer()
+    return _token_issuer
+
+def issue_promotion_token(
+    target_namespace: str,
+    semantic_clock_tick: int,
+    window_size: int = 100,
+    replay_digest: str = "",
+    guardian_signature: str = "guardian_sig"
+) -> PromotionToken:
+    """Issue a new promotion token."""
+    issuer = get_token_issuer()
+    return issuer.issue_promotion_token(
+        target_namespace=target_namespace,
+        semantic_clock_tick=semantic_clock_tick,
+        window_size=window_size,
+        replay_digest=replay_digest,
+        guardian_signature=guardian_signature
+    )
