@@ -36,7 +36,7 @@ d6d98db83c6a9c55c9cb82fd2e727e93875bff59
 
 ## EVIDENCE_COMMIT
 
-PENDING
+1ebbecff9b5f130171c3c06db0b0db0464b1e50d
 
 ## FILES_CHANGED_CODE
 
@@ -54,7 +54,7 @@ tests/governance/test_req415_provider_substitution.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/phase1_gap_remediation_evidence.md
 
 ## INSPECTED_FILES
 
