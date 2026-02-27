@@ -9,9 +9,9 @@ Contract version: 1.0.0
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import secrets
-import uuid
 from datetime import datetime, timezone
 from typing import Any
 
@@ -31,6 +31,12 @@ from agentic_core.L0_routing.types.governance_types import (
 )
 
 _log = logging.getLogger(__name__)
+
+
+def _make_proposal_id(trace_id: str) -> str:
+    """REQ-111: deterministic ID derived from trace_id; no uuid4."""
+    return "PROP-" + hashlib.sha256(trace_id.encode()).hexdigest()[:16]
+
 
 # =============================================================================
 # §3.4 — build_evidence_pack
@@ -103,7 +109,7 @@ def build_hil_evidence_pack(
             risk_score=risk_score,
             budget_breach_data={},
             boundary_snapshot_hash=ssot_hash or "n/a",
-            evidence_id=str(uuid.uuid4()),
+            evidence_id=_make_proposal_id(trace_id),
             timestamp_utc=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             escalation_reason=escalation_reason,
             route_decision_ref=route_decision_ref,
@@ -302,11 +308,11 @@ def build_hil_policy_proposal(
     try:
         proposal = PolicyUpdateProposal(
             trace_id=trace_id,
-            override_id=request_id or str(uuid.uuid4()),
+            override_id=request_id or _make_proposal_id(trace_id),
             proposed_policy_diff=f"{hil_outcome.value}: {rationale[:200]}",
             originating_agent=f"HIL/{reviewer_id}",
             semantic_clock_tick=0,
-            proposal_id=str(uuid.uuid4()),
+            proposal_id=_make_proposal_id(trace_id),
             timestamp_utc=datetime.now(timezone.utc).strftime("%Y-%m-%dT%H:%M:%S.%fZ"),
             evidence_pack_id=evidence_pack_id,
             hil_outcome=hil_outcome,

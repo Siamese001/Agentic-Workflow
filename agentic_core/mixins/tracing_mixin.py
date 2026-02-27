@@ -27,15 +27,25 @@ THUNDERING HERD PROTECTION:
 - Priority sampling ensures critical traces are never dropped
 """
 
+import hashlib
 import logging
 import os
 import random
 import time
-import uuid
 from collections.abc import Generator
 from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any
+
+_CTR: list[int] = [0]
+
+
+def _new_span_id() -> str:
+    """Determinism-safe span ID: SHA-256 of process entropy seed + counter."""
+    _CTR[0] += 1
+    raw = f"{os.getpid()}:{_CTR[0]}:{os.urandom(8).hex()}"
+    return hashlib.sha256(raw.encode()).hexdigest()
+
 
 Logger = logging.getLogger(__name__)
 
@@ -44,8 +54,8 @@ Logger = logging.getLogger(__name__)
 class SpanContext:
     """Represents a tracing span context."""
 
-    trace_id: str = field(default_factory=lambda: str(uuid.uuid4()))
-    span_id: str = field(default_factory=lambda: str(uuid.uuid4())[:16])
+    trace_id: str = field(default_factory=lambda: _new_span_id())
+    span_id: str = field(default_factory=lambda: _new_span_id()[:16])
     parent_span_id: str | None = None
     service_name: str = "unknown"
     operation_name: str = "unknown"
@@ -199,8 +209,8 @@ class TracingMixin:
         # Create span context
         parent_span = self._span_stack[-1] if self._span_stack else None
         span = SpanContext(
-            trace_id=parent_span.trace_id if parent_span else str(uuid.uuid4()),
-            span_id=str(uuid.uuid4())[:16],
+            trace_id=parent_span.trace_id if parent_span else _new_span_id(),
+            span_id=_new_span_id()[:16],
             parent_span_id=parent_span.span_id if parent_span else None,
             service_name=self._tracing_service_name,
             operation_name=operation_name,

@@ -11,10 +11,10 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 """
 
 import logging
-import os
 from dataclasses import dataclass
 
 from agentic_core.interfaces.observability import SystemTelemetry
+from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 from agentic_core.mixins.hardening_mixin import HardeningMixin
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
@@ -95,26 +95,18 @@ class HardenedOpenAIExecutor(HardeningMixin):
             telemetry=telemetry,
         )
 
-        # Initialize OpenAI client
+        # Initialize gateway delegate
         self._client = None
+        self._gateway = None
         self._setup_client()
 
     def _setup_client(self) -> None:
-        """Setup OpenAI client."""
-        try:
-            import openai
-        except ImportError as exc:
-            raise ImportError("OpenAI package not installed. Install with: pip install openai") from exc
-
-        api_key = os.getenv("OPENAI_API_KEY")
-        if not api_key:
-            raise RuntimeError("OPENAI_API_KEY environment variable must be set")
-
-        self._client = openai.OpenAI(
-            api_key=api_key,
-            timeout=self.config.timeout_s,
-            max_retries=0,  # We handle retries ourselves
+        """Delegate to SovereignLLMGateway — no direct SDK access."""
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+            SovereignLLMGateway,
         )
+
+        self._gateway = SovereignLLMGateway()
 
     def _validate_token_budget(self, prompt: str) -> None:
         """Validate token budget before API call.
@@ -191,17 +183,17 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation
         async def _completion():
-            response = self._client.chat.completions.create(
-                model=self.config.model,
-                messages=openai_messages,
-                temperature=temperature or self.config.temperature,
-                max_tokens=max_tokens or self.config.max_tokens,
+            response = await self._gateway.route_generation(
+                GenerationRequest(
+                    agent_id="hardened_openai_executor",
+                    provider="openai",
+                    model=self.config.model,
+                    prompt=combined_prompt,
+                    temperature=temperature or self.config.temperature,
+                    max_tokens=max_tokens or self.config.max_tokens,
+                )
             )
-
-            # Extract content
-            if response.choices:
-                return response.choices[0].message.content or ""
-            return ""
+            return response.content or ""
 
         # Execute with hardening
         return await self.execute_hardened(
@@ -249,13 +241,16 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
         # Define async operation with response capture
         async def _completion():
-            response = self._client.chat.completions.create(
-                model=self.config.model,
-                messages=openai_messages,
-                temperature=temperature or self.config.temperature,
-                max_tokens=max_tokens or self.config.max_tokens,
+            return await self._gateway.route_generation(
+                GenerationRequest(
+                    agent_id="hardened_openai_executor",
+                    provider="openai",
+                    model=self.config.model,
+                    prompt=combined_prompt,
+                    temperature=temperature or self.config.temperature,
+                    max_tokens=max_tokens or self.config.max_tokens,
+                )
             )
-            return response
 
         # Execute with hardening
         raw_response = await self.execute_hardened(
@@ -269,26 +264,15 @@ class HardenedOpenAIExecutor(HardeningMixin):
             },
         )
 
-        # Extract response data
-        content = ""
+        # Extract response data from GenerationResponse
+        content = raw_response.content or "" if raw_response else ""
         usage = None
-
-        if raw_response.choices:
-            choice = raw_response.choices[0]
-            content = choice.message.content or ""
-
-        if hasattr(raw_response, "usage"):
-            usage = {
-                "prompt_tokens": raw_response.usage.prompt_tokens,
-                "completion_tokens": raw_response.usage.completion_tokens,
-                "total_tokens": raw_response.usage.total_tokens,
-            }
 
         return AgentResponse(
             content=content,
-            model=self.config.model,
+            model=raw_response.model if raw_response else self.config.model,
             usage=usage,
-            finish_reason=raw_response.choices[0].finish_reason if raw_response.choices else None,
+            finish_reason=None,
         )
 
     def run_llm_sync(

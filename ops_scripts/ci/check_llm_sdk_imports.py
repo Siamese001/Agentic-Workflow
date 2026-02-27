@@ -29,7 +29,6 @@ BLOCKED_FROM = {("google", "generativeai"), ("urllib", "request")}
 ALLOWED_PATHS = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
     "data/sdks_mcps/client_wrappers.py",
-    "apps_rg/utils/providers_anthropic_client_util.py",
     "apps_shared/utils/providers_google_genai_client_util.py",
     # EmbeddingServiceFactory is the sole allowed seam for embedding SDK imports
     "system_learning/engines/embedding_service_factory.py",
