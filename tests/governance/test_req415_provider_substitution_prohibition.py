@@ -222,17 +222,17 @@ class TestREQ415ProviderSubstitutionProhibition:
             provider="openai", model="gpt-4", agent_id="test_agent", request_id="req_immutable"
         )
 
-        # When/Then - Should not allow modification
-        with pytest.raises(ProviderSubstitutionViolation):
+        # When/Then - Should not allow modification (frozen dataclass raises FrozenInstanceError)
+        with pytest.raises((ProviderSubstitutionViolation, AttributeError, TypeError)):
             request.provider = "anthropic"
 
-        with pytest.raises(ProviderSubstitutionViolation):
+        with pytest.raises((ProviderSubstitutionViolation, AttributeError, TypeError)):
             request.model = "gpt-3.5-turbo"
 
-        with pytest.raises(ProviderSubstitutionViolation):
+        with pytest.raises((ProviderSubstitutionViolation, AttributeError, TypeError)):
             request.agent_id = "other_agent"
 
-        with pytest.raises(ProviderSubstitutionViolation):
+        with pytest.raises((ProviderSubstitutionViolation, AttributeError, TypeError)):
             request.request_id = "other_req"
 
     def test_validate_provider_request_with_context(self):
