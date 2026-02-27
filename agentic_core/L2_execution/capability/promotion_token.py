@@ -17,13 +17,13 @@ Logger = logging.getLogger(__name__)
 class PromotionToken:
     """Scoped capability token for promotion operations."""
     token_id: str
-    allowed_action: str = "pointer_update"
     target_namespace: str
     semantic_clock_window: tuple[int, int]  # (start_tick, end_tick)
     replay_digest_binding: str
     single_use_nonce: str
     guardian_signature: str
     semantic_clock_tick: int
+    allowed_action: str = "pointer_update"
     created_at: float = field(default_factory=time.time)
     
     def validate_scope_and_use(self) -> bool:
