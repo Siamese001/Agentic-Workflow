@@ -118,6 +118,24 @@ added). Phase 3 files introduce zero new governance violations:
 - test files are in tests/ (excluded from governance scans)
 - digest_authority fix resolved 1 pre-existing failure (24 -> 23)
 
+## Explicit Determinism Digest Artifact (Stricter Standard)
+
+$ python phase3_digest_demo.py
+=== Phase 3 Determinism Digest Demonstration ===
+Running replay harness suite twice to prove identical digests...
+
+W3-DETERMINISM-DIGEST: c72b7f24d7be23a6ebe6bf0a25edb207bd0d0d7d0237990ab4059c021603e5ae
+Run 1 emitted: W3-DETERMINISM-DIGEST: c72b7f24d7be23a6ebe6bf0a25edb207bd0d0d7d0237990ab4059c021603e5ae
+W3-DETERMINISM-DIGEST: c72b7f24d7be23a6ebe6bf0a25edb207bd0d0d7d0237990ab4059c021603e5ae
+Run 2 emitted: W3-DETERMINISM-DIGEST: c72b7f24d7be23a6ebe6bf0a25edb207bd0d0d7d0237990ab4059c021603e5ae
+
+PASS: Identical W3-DETERMINISM-DIGEST across independent runs.
+
+The demonstration script `phase3_digest_demo.py` runs the full replay harness suite
+twice and emits a single authoritative `W3-DETERMINISM-DIGEST` line per run.
+Both runs produce the identical hash `c72b7f24d7be23a6ebe6bf0a25edb207bd0d0d7d0237990ab4059c021603e5ae`,
+satisfying the stricter determinism artifact standard.
+
 Pre-existing failure categories (all unrelated to Phase 3 scope):
 - test_folder_purity_invariants (4): folder naming drift in mixins/interfaces/healers/engines
 - test_cross_layer_import_freeze (1): 152 > 149 baseline (L0/L5/L6 importing L2, pre-existing)
