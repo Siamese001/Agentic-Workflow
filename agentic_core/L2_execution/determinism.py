@@ -5,6 +5,7 @@ Provides canonical, reproducible outputs for:
 - Phase 6 fleet inventory artifact (agent_2x2_inventory.json)
 - W6 determinism digest (inventory + audited path surface)
 - HARDEN-MERGE-LOCKDOWN determinism digest (complete sovereignty surface)
+- Provider binding determinism (REQ-413)
 """
 
 from __future__ import annotations
@@ -15,6 +16,8 @@ import os
 from pathlib import Path
 
 from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
+from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
+from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 GATEWAY_PATH = REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
@@ -39,6 +42,34 @@ def _load_json(path: Path) -> dict:
     return json.loads(path.read_text(encoding="utf-8"))
 
 
+def compute_provider_binding_determinism_digest(
+    provider_id: str,
+    model_id: str,
+    semantic_clock: SemanticClockSnapshot,
+    additional_context: dict[str, str] | None = None,
+) -> str:
+    """Compute provider binding determinism digest (REQ-413).
+
+    Args:
+        provider_id: LLM provider identifier
+        model_id: Model identifier
+        semantic_clock: Current semantic clock snapshot
+        additional_context: Optional additional context
+
+    Returns:
+        SHA-256 hex digest including provider binding information
+    """
+    gateway_version = os.getenv("GATEWAY_VERSION", "1.0.0")
+
+    return compute_provider_binding_digest(
+        provider_id=provider_id,
+        model_id=model_id,
+        gateway_version=gateway_version,
+        semantic_clock=semantic_clock,
+        additional_context=additional_context,
+    )
+
+
 def compute_p5_determinism_digest() -> str:
     """Compute stable P5 determinism digest (64-char hex)."""
     allowed_models_map = {
@@ -47,7 +78,7 @@ def compute_p5_determinism_digest() -> str:
         if profile.execution_mode.value == "LLM_API"
     }
     policy_versions = {
-        agent_id: getattr(profile, 'policy_version', '1.0')
+        agent_id: getattr(profile, "policy_version", "1.0")
         for agent_id, profile in sorted(AGENT_REGISTRY.items())
     }
 
@@ -72,7 +103,7 @@ def build_agent_2x2_inventory() -> dict:
             "reasoning_intensity": profile.reasoning_intensity.value,
             "execution_mode": profile.execution_mode.value,
             "allowed_models": sorted(profile.allowed_models),
-            "policy_version": getattr(profile, 'policy_version', '1.0'),
+            "policy_version": getattr(profile, "policy_version", "1.0"),
         }
         for agent_id, profile in sorted(AGENT_REGISTRY.items())
     ]
@@ -130,7 +161,7 @@ def compute_lockdown_determinism_digest() -> str:
             "allowed_models": sorted(profile.allowed_models),
             "execution_mode": profile.execution_mode.value,
             "reasoning_intensity": profile.reasoning_intensity.value,
-            "policy_version": getattr(profile, 'policy_version', '1.0'),
+            "policy_version": getattr(profile, "policy_version", "1.0"),
         }
         for agent_id, profile in sorted(AGENT_REGISTRY.items())
     }
@@ -147,8 +178,12 @@ def compute_lockdown_determinism_digest() -> str:
     # Routing ruleset hash
     routing_ruleset = {
         "execution_modes": sorted({profile.execution_mode.value for profile in AGENT_REGISTRY.values()}),
-        "policy_versions": sorted({getattr(profile, 'policy_version', '1.0') for profile in AGENT_REGISTRY.values()}),
-        "reasoning_intensities": sorted({profile.reasoning_intensity.value for profile in AGENT_REGISTRY.values()}),
+        "policy_versions": sorted(
+            {getattr(profile, "policy_version", "1.0") for profile in AGENT_REGISTRY.values()}
+        ),
+        "reasoning_intensities": sorted(
+            {profile.reasoning_intensity.value for profile in AGENT_REGISTRY.values()}
+        ),
     }
     routing_ruleset_hash = _sha256_bytes(_canonical_json(routing_ruleset).encode("utf-8"))
 
@@ -217,6 +252,7 @@ __all__ = [
     "compute_p5_determinism_digest",
     "compute_w6_determinism_digest",
     "compute_lockdown_determinism_digest",
+    "compute_provider_binding_determinism_digest",
     "generate_determinism_digest",
     "generate_lockdown_determinism_digest",
     "write_agent_2x2_inventory",

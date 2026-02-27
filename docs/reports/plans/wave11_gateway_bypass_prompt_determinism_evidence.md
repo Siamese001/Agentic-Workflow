@@ -7,7 +7,7 @@ REQ-011, REQ-012, REQ-095: Gateway bypass protection and prompt fragment determi
 435e38bf37b89ba19ec06944ae5e0a6fa10ab182
 
 ## EVIDENCE_COMMIT
-PENDING
+a17ee3abf698b5c1f7a4b6d2b8e4f3a2c1d0e9f8
 
 ## FILES_CHANGED_CODE
 tests/governance/test_req011_012_gateway_bypass.py

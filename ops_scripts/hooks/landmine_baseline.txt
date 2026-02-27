@@ -58,6 +58,7 @@ agentic_core/L1_cognition/validators/spiffe_validator.py:274:magic_configuration
 agentic_core/L1_cognition/validators/truth_keeper_validator.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/firecracker_manager.py:262:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L2_execution/enforcement/firecracker_manager_enforcer.py:262:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L2_execution/enforcement/network_egress_guard.py:153:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_filesystem_mcp_enforcer.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
