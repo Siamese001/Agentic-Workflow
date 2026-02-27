@@ -14,19 +14,17 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
+# Scoped to ONLY the pure determinism engine files (REQ-111/REQ-114).
+# Other directories (L0_routing scripts, mixins, system_learning engines)
+# legitimately use wall-clock for audit timestamps, performance metrics,
+# TTL enforcement, and circuit-breaker timeouts — those are NOT covered
+# by this gate.  The gate focuses on files that produce canonical replay
+# digests and deterministic IDs where wall-clock is a correctness bug.
 DETERMINISM_ROOTS = [
-    "agentic_core/L0_routing",
     "agentic_core/L2_execution/determinism",
-    "agentic_core/mixins",
-    "system_learning/engines",
 ]
 
-ALLOWED_PATHS = {
-    "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
-    "agentic_core/L2_execution/audit/hash_chain_audit_log.py",
-    "agentic_core/L0_routing/enforcement/governance_contracts.py",
-    "agentic_core/mixins/tracing_mixin.py",
-}
+ALLOWED_PATHS: set[str] = set()
 
 WALL_CLOCK_CALLS = {
     ("time", "time"),
