@@ -26,7 +26,7 @@ Bug fixed (pre-existing, found during debug):
 
 ## EVIDENCE_COMMIT
 
-PENDING
+ababd52f736b0b01194ed78f2ee635b116be79ad
 
 ## FILES_CHANGED_CODE
 
@@ -41,7 +41,7 @@ tests/unit_min_deps/test_replay_harness_state_protocol.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/phase3_gap_remediation_evidence.md
 
 ## INSPECTED_FILES
 
