@@ -113,30 +113,24 @@ class QwenInvokerAdapter:
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        try:
-            import openai
-
-            client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
-        except (ImportError, Exception) as exc:
-            raise ImportError(
-                "OpenAI SDK is required for Qwen/vLLM adapter. Install with: pip install openai"
-            ) from exc
+        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+            SovereignLLMGateway,
+        )
+        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 
         model_id = config.model_qwen_vllm_id
         prompt = self._build_prompt(healing_input, decision, agent_name)
 
-        client.chat.completions.create(
+        _gw = SovereignLLMGateway()
+        _req = GenerationRequest(
+            agent_id=agent_name or "qwen_healer",
+            provider="openai",
             model=model_id,
-            messages=[
-                {"role": "system", "content": "You are a code healing assistant."},
-                {"role": "user", "content": prompt},
-            ],
+            prompt=prompt,
             temperature=QWEN_CONFIG["temperature"],
             max_tokens=DEFAULT_MAX_TOKENS,
-            top_p=QWEN_CONFIG["top_p"],
-            frequency_penalty=QWEN_CONFIG["frequency_penalty"],
-            presence_penalty=QWEN_CONFIG["presence_penalty"],
         )
+        _gw.route_generation(_req)
 
         record = InvocationRecord(
             tier=HealingTier.QWEN_VLLM,

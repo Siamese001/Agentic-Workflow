@@ -103,10 +103,10 @@ class VLLMProcessManager:
             return False
 
         try:
-            import requests
+            import urllib.request as _urllib_request
 
-            response = requests.get(f"{self.base_url}/health", timeout=5)
-            return response.status_code == 200
+            with _urllib_request.urlopen(f"{self.base_url}/health", timeout=5) as _resp:  # noqa: S310
+                return _resp.status == 200
         except Exception:
             return False
 

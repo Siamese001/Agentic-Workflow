@@ -32,6 +32,8 @@ ALLOWED_PATHS = {
     "apps_shared/utils/providers_google_genai_client_util.py",
     # EmbeddingServiceFactory is the sole allowed seam for embedding SDK imports
     "system_learning/engines/embedding_service_factory.py",
+    # LateInteractionReranker: sovereign seam for cross-encoder re-ranking (lazy imports, try/except fallback)
+    "apps_shared/utils/late_interaction_reranker_util.py",
 }
 
 SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]

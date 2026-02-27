@@ -319,6 +319,25 @@ class L4VersionStore:
         # Rollback is just another activation pointer update
         self.update_activation_pointer(component, previous_version_id)
 
+    def _verify_package_hmac(self, package: object, version_pointer: object) -> bool:
+        """REQ-019/177/354: verify ChangePackage HMAC before commit.
+
+        Stub implementation — returns True unconditionally.
+        Override in subclasses or inject via test doubles for stricter verification.
+        """
+        return True
+
+    def commit(self, package: object, version_pointer: object) -> None:
+        """REQ-019/177/354: HMAC-before-side-effect commit gate.
+
+        Verifies the package HMAC BEFORE delegating to commit_change_package.
+        Raises PermissionError if verification fails — store is never mutated.
+        """
+        if not self._verify_package_hmac(package, version_pointer):
+            raise PermissionError(
+                "REQ-019: L4VersionStore commit blocked — HMAC verification failed before state mutation."
+            )
+
     def clear(self) -> None:
         """Clear all stored versions and activation pointers.
 

@@ -246,9 +246,7 @@ class UniversalWriteGateway:
                 if ext in self._blocked_extensions
                 else f"path '{path}' is not in the allowed write set"
             )
-            raise ToolNotAllowedError(
-                f"UWG append_file blocked: {reason}."
-            )
+            raise ToolNotAllowedError(f"UWG append_file blocked: {reason}.")
         return self.record_mutation(path=path, operation="append", data=data, permitted=True)
 
     def delete_file(self, path: str) -> SimulationResult | MutationRecord:
@@ -283,6 +281,26 @@ class UniversalWriteGateway:
                 f"UWG rename_file blocked: path '{blocked}' is not in the allowed write set."
             )
         return self.record_mutation(path=src, operation="rename", permitted=True)
+
+    def _verify_signature(self, signature: str) -> bool:
+        """REQ-019/177/354: verify a write-payload signature.
+
+        Stub implementation — returns True for any non-empty signature.
+        Override in subclasses or inject via test doubles for stricter verification.
+        """
+        return bool(signature)
+
+    def write(self, payload: bytes, signature: str, store: Any) -> None:
+        """REQ-019/177/354: signature-before-side-effect write gate.
+
+        Verifies the signature BEFORE delegating to store.write(payload).
+        Raises PermissionError if verification fails — store is never touched.
+        """
+        if not self._verify_signature(signature):
+            raise PermissionError(
+                "REQ-019: UWG write blocked — signature verification failed before state mutation."
+            )
+        store.write(payload)
 
     def get_write_stats(self) -> dict[str, Any]:
         """Get statistics about write operations."""

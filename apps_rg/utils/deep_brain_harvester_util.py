@@ -76,11 +76,11 @@ class DeepBrainHarvester:
             Embedding vector
         """
         try:
-            import openai
+            from system_learning.engines.embedding_service_factory import (
+                EmbeddingServiceFactory,
+            )
 
-            openai.api_key = os.getenv("OPENAI_API_KEY")
-            response = openai.embeddings.create(model="text-embedding-ada-002", input=text)
-            return response.data[0].embedding
+            return EmbeddingServiceFactory().embed_text(text)
         except Exception as e:
             Logger.error(f"Error generating embedding: {e}")
             return [0.0] * 1536
