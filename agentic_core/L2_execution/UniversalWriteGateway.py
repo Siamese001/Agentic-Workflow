@@ -53,6 +53,7 @@ class UniversalWriteGateway:
 
     def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
+        self._frozen: bool = False
         self._write_permissions: dict[str, bool] = {}
         self._mutation_ledger: list[MutationRecord] = []
         self._allowed_paths: set[str] = {
@@ -290,12 +291,18 @@ class UniversalWriteGateway:
         """
         return bool(signature)
 
+    def freeze(self) -> None:
+        """REQ-091: Tier III freeze — all writes blocked until process restart."""
+        self._frozen = True
+
     def write(self, payload: bytes, signature: str, store: Any) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
         Verifies the signature BEFORE delegating to store.write(payload).
         Raises PermissionError if verification fails — store is never touched.
         """
+        if self._frozen:
+            raise PermissionError("REQ-091: UWG write blocked — gateway is frozen.")
         if not self._verify_signature(signature):
             raise PermissionError(
                 "REQ-019: UWG write blocked — signature verification failed before state mutation."

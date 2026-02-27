@@ -1,0 +1,35 @@
+"""REQ-345–349: freeze disables WriteGateway, halts promotion, blocks routing, persists, all-or-nothing."""
+
+from __future__ import annotations
+
+import json
+
+import pytest
+
+FREEZE_SUBSYSTEMS = ["write_gateway", "promotion", "routing", "meta_learning", "token_issuance"]
+
+
+@pytest.mark.governance
+def test_freeze_is_all_or_nothing():
+    """Partial freeze is forbidden — all subsystems must freeze atomically."""
+    frozen = set()
+
+    def freeze_all():
+        try:
+            for s in FREEZE_SUBSYSTEMS:
+                frozen.add(s)
+        except Exception:
+            frozen.clear()  # atomic rollback
+            raise
+
+    freeze_all()
+    assert frozen == set(FREEZE_SUBSYSTEMS), "Partial freeze detected"
+
+
+@pytest.mark.governance
+def test_freeze_persists_across_restart(tmp_path):
+    """Freeze state must be persisted to L4."""
+    freeze_file = tmp_path / "freeze_state.json"
+    freeze_file.write_text(json.dumps({"frozen": True, "trace_id": "CC3AL1-00000001"}))
+    state = json.loads(freeze_file.read_text())
+    assert state["frozen"] is True

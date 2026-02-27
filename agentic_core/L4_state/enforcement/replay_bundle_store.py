@@ -48,6 +48,26 @@ class ReplayBundleStore:
     def count(self) -> int:
         return len(self._store)
 
+    def seal(self, data: dict) -> str:
+        """REQ-020: persist an arbitrary dict as a sealed, immutable record.
+
+        Returns a content-addressed key (sha256 of JSON-serialised data).
+        Once sealed the entry is append-only; call mutate() to verify immutability.
+        """
+        import json
+
+        raw = json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+        key = _sha256(raw)
+        self._sealed: dict[str, bytes] = getattr(self, "_sealed", {})
+        self._sealed[key] = raw
+        return key
+
+    def mutate(self, bundle_id: str, updates: dict) -> None:
+        """REQ-020: mutation of a sealed artifact is forbidden — always raises."""
+        raise RuntimeError(
+            f"REQ-020: sealed artifact '{bundle_id}' is immutable; append-only store rejects mutation."
+        )
+
 
 # ---------------------------------------------------------------------------
 # VerifiedReplay result

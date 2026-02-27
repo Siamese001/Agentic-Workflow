@@ -119,6 +119,7 @@ class PolicyExceptionArtifact:
     exception_scope: ExceptionScope
     semantic_clock_tick: int
     issuer_signature: str
+    ttl_ticks: int = 0
 
     def __post_init__(self) -> None:
         if not self.trace_id:
@@ -138,6 +139,16 @@ class PolicyExceptionArtifact:
             raise ValueError(
                 "PolicyExceptionArtifact: issuer_signature must be non-empty",
             )
+
+    def is_expired(self, now_tick: int) -> bool:
+        """REQ-245: return True if this exception has expired per semantic clock.
+
+        If ttl_ticks == 0 the exception has no TTL and never expires.
+        Expired when now_tick > semantic_clock_tick + ttl_ticks.
+        """
+        if self.ttl_ticks == 0:
+            return False
+        return now_tick > self.semantic_clock_tick + self.ttl_ticks
 
 
 # =============================================================================
@@ -167,6 +178,20 @@ class HILOutcome(Enum):
     REJECTED = "rejected"
     OVERRIDDEN = "overridden"
     NEEDS_MORE_INFO = "needs_more_info"
+
+
+@dataclass(frozen=True)
+class HILReviewOutcome:
+    """§P4.W9 — REQ-085/086: HIL review record with reviewer signature.
+
+    Carries the reviewer identity and cryptographic signature for audit.
+    MODIFY_DIFF decision requires L5 re-clearance (requires_l5_reclear=True).
+    """
+
+    decision: str
+    reviewer_id: str
+    reviewer_sig: str
+    requires_l5_reclear: bool = False
 
 
 class ChangeAction(Enum):
@@ -251,6 +276,7 @@ __all__ = [
     "EvidencePack",
     "ExceptionScope",
     "HILOutcome",
+    "HILReviewOutcome",
     "PolicyExceptionArtifact",
     "PolicySnapshot",
     "PolicyUpdateProposal",

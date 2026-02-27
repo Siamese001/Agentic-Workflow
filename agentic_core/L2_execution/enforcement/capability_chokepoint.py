@@ -36,11 +36,26 @@ class CapabilityChokepoint:
 
     def __init__(self) -> None:
         self._decisions: list[CapabilityDecisionArtifact] = []
+        self._frozen: bool = False
 
     @property
     def decisions(self) -> list[CapabilityDecisionArtifact]:
         """All decisions emitted through this chokepoint."""
         return list(self._decisions)
+
+    def freeze(self) -> None:
+        """REQ-091: Tier III freeze — token issuance and execution blocked."""
+        self._frozen = True
+
+    def issue_token(self, scope: str, trace_id: str) -> None:
+        """REQ-091: Issue a capability token for a given scope.
+
+        Raises PermissionError if the chokepoint is frozen.
+        """
+        if self._frozen:
+            raise PermissionError(
+                f"REQ-091: CapabilityChokepoint frozen — token issuance blocked (scope={scope})."
+            )
 
     def authorize_and_execute(
         self,
