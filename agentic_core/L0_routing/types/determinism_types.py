@@ -371,6 +371,46 @@ class ForensicTraceBuffer:
 
 
 # =============================================================================
+# GROUP H — Semantic Clock Advancement (Wave 19)
+# =============================================================================
+
+
+@dataclass(frozen=True)
+class SemanticClockAdvancementArtifact:
+    """Wave 19: Semantic clock advancement artifact for replay verification.
+    
+    Captures semantic clock advancement events with L4 version binding
+    and provider identification for deterministic replay.
+    """
+    
+    advancement_id: str
+    previous_tick: int
+    new_tick: int
+    advancement_reason: str
+    l4_version_binding: str
+    provider_id: str
+    timestamp: float
+    artifact_hash: str = ""
+    
+    def __post_init__(self):
+        if not self.artifact_hash:
+            # Compute hash from advancement data
+            advancement_data = {
+                "advancement_id": self.advancement_id,
+                "previous_tick": self.previous_tick,
+                "new_tick": self.new_tick,
+                "advancement_reason": self.advancement_reason,
+                "l4_version_binding": self.l4_version_binding,
+                "provider_id": self.provider_id,
+                "timestamp": self.timestamp
+            }
+            import json
+            advancement_json = json.dumps(advancement_data, sort_keys=True)
+            artifact_hash = hashlib.sha256(advancement_json.encode()).hexdigest()
+            object.__setattr__(self, 'artifact_hash', artifact_hash)
+
+
+# =============================================================================
 # Exports
 # =============================================================================
 
@@ -387,6 +427,7 @@ __all__ = [
     "MemoryHypostate",
     "SemanticClock",
     "SemanticClockSnapshot",
+    "SemanticClockAdvancementArtifact",
     "StateCommitInvalid",
     "SurgicalManifest",
     "validate_semantic_clock",
