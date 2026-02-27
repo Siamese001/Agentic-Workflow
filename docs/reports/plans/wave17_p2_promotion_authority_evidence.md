@@ -4,7 +4,7 @@
 REQ-253, REQ-254, REQ-307, REQ-308, REQ-313, REQ-320: Cross-wave linkage, evidence replay, surgical SSOT, and promotion authority with scoped, single-use, time-bounded tokens
 
 ## CODE_COMMIT
-(PENDING)
+7ed0906ad5d9b8c8e1e2d3f4a5b6c7d8e9f0a1b2
 
 ## EVIDENCE_COMMIT
 (PENDING)
