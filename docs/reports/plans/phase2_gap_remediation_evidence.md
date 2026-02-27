@@ -10,7 +10,7 @@ Wave 4: Runtime mutation guard (REQ-417) + SOV-DELTA AST scanner.
 f66358245d3158b739bd43b2cf3492d3523de3a8
 
 ## EVIDENCE_COMMIT
-PENDING
+d2507d13bb471231f7d46a22802d0043cea0de29
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/UniversalWriteGateway.py
