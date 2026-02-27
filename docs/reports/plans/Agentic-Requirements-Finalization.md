@@ -1,10 +1,10 @@
-# Agentic Master Requirements — Destructive Finalization Report (v3.0)
+# Agentic Master Requirements — Destructive Finalization Report (v3.1)
 
 **Source Corpus:** REQ-001 through REQ-637 (637 requirements)
-**Final Corpus:** REQ-001 through REQ-416 (416 requirements)
+**Final Corpus:** REQ-001 through REQ-417 (417 requirements)
 **Severity Distribution (Pre-Finalization):** CRITICAL: 400 | HIGH: 236 | MEDIUM: 1
-**Severity Distribution (Post-Hardening):** CRITICAL: 347 | HIGH: 68 | MEDIUM: 1
-**Version:** 3.0 (destructive overwrite -- all sections reflect final hardened state)
+**Severity Distribution (Post-Hardening):** CRITICAL: 348 | HIGH: 68 | MEDIUM: 1
+**Version:** 3.1 (destructive overwrite -- all sections reflect final hardened state)
 
 ---
 
@@ -206,29 +206,60 @@ REQ-416 mandates: *Every CRITICAL requirement MUST have >=2 enforcement layers i
 
 **Current implementation status: MANDATED, NOT YET PROVEN.**
 
+For REQ-416 to be enforceable by CI, each requirement MUST declare machine-readable metadata (see Section 2.5). Without this metadata, CI cannot deterministically compute enforcement-layer cardinality per CRITICAL ReqID.
+
 For this mandate to transition from rule to verified state, the following evidence is required:
 
 | Evidence Required | Status |
 |-------------------|--------|
-| CI job that audits enforcement layer count per CRITICAL requirement | NOT IMPLEMENTED |
-| CI job demonstrably fails when a CRITICAL has single enforcement | NOT DEMONSTRATED |
+| Enforcement-layer metadata declared per requirement (Section 2.5 schema) | NOT DECLARED |
+| CI job that reads metadata and computes enforcement-layer cardinality per CRITICAL ReqID | NOT IMPLEMENTED |
+| CI job demonstrably fails when enforcement_layers < 2 OR no runtime layer present AND ENFORCEMENT_CLASS != STRUCTURAL | NOT DEMONSTRATED |
 | All 14 domains in Section 2.2 have prescribed hardening actions executed | NOT EXECUTED |
 | Post-hardening enforcement matrix recomputed and verified | NOT COMPUTED |
 
-**Transition criterion:** When all four evidence items above are satisfied, Section 2.2 status changes from "mandated target" to "verified state" and the certification criterion #3 upgrades from CONDITIONAL PASS to PASS.
+**Transition criterion:** When all five evidence items above are satisfied, Section 2.2 status changes from "mandated target" to "verified state" and certification criteria #3 and #12 upgrade from CONDITIONAL PASS to PASS.
 
 ## 2.4 Enforcement Policy -- CI-Only vs Runtime
 
 **Formal policy under the sovereignty model:**
 
 | Enforcement Class | Sufficient for CRITICAL? | Rationale |
-|-------------------|------------------------|-----------|
-| CI-only (AST scan, static analysis) | YES -- for *structural invariants* that are fully decidable at build time (e.g., forbidden imports, adapter patterns, file presence) | Build-time enforcement prevents violation from ever reaching deployment. No runtime path exists to bypass. |
+|-------------------|------------------------|----------|
+| CI-only (AST scan, static analysis) | YES -- only for requirements with ENFORCEMENT_CLASS = STRUCTURAL (fully decidable at build time: forbidden imports, adapter patterns, file presence) | Build-time enforcement prevents violation from ever reaching deployment. No runtime path exists to bypass. |
 | Runtime-only | NO -- runtime without CI means violations can enter codebase and rely solely on post-deployment detection | CI ratchet must also catch the pattern to prevent regression |
-| CI + Runtime | REQUIRED for *execution-path invariants* (e.g., gateway routing, token lifecycle, fail-closed behavior) | Execution-path behavior cannot be fully decided at build time; runtime enforcement required after deployment |
+| CI + Runtime | REQUIRED for all requirements with ENFORCEMENT_CLASS = EXECUTION_PATH (e.g., gateway routing, token lifecycle, fail-closed behavior) | Execution-path behavior cannot be fully decided at build time; runtime enforcement required after deployment |
 | Schema-only | NO -- schema validation alone provides no enforcement at code level | Must be paired with runtime validation or CI schema field checks |
 
-**Key distinction:** CI blocking merge is a *prevention* mechanism. Runtime enforcement is a *detection-and-halt* mechanism. For structural invariants (imports, patterns, file presence), prevention alone is sufficient because the violation cannot exist at runtime if CI blocks it. For execution-path invariants, both are required because runtime behavior can diverge from static analysis.
+**Key distinction:** CI blocking merge is a *prevention* mechanism. Runtime enforcement is a *detection-and-halt* mechanism. For structural invariants (ENFORCEMENT_CLASS = STRUCTURAL), prevention alone is sufficient because the violation cannot exist at runtime if CI blocks it. For execution-path invariants (ENFORCEMENT_CLASS = EXECUTION_PATH), both are required.
+
+## 2.5 Requirement Enforcement Metadata Schema
+
+For REQ-416 to be machine-enforceable, every requirement in the corpus MUST declare the following fields:
+
+```
+ENFORCEMENT_LAYERS: {AST | Runtime | CI | Replay | Guardian | Schema | Signature}  (one or more)
+ENFORCEMENT_CLASS:  STRUCTURAL | EXECUTION_PATH
+```
+
+**Field semantics:**
+- `ENFORCEMENT_LAYERS`: the set of active enforcement mechanisms for this requirement
+- `ENFORCEMENT_CLASS = STRUCTURAL`: invariant is fully decidable at build time (AST/static); CI-only is sufficient
+- `ENFORCEMENT_CLASS = EXECUTION_PATH`: invariant involves runtime behavior; CI + Runtime both required
+
+**CI audit rule (REQ-416 implementation spec):**
+```
+FOR EACH requirement WHERE severity = CRITICAL:
+  IF ENFORCEMENT_CLASS = EXECUTION_PATH:
+    ASSERT len(ENFORCEMENT_LAYERS) >= 2
+    ASSERT "Runtime" IN ENFORCEMENT_LAYERS
+  IF ENFORCEMENT_CLASS = STRUCTURAL:
+    ASSERT len(ENFORCEMENT_LAYERS) >= 1
+    ASSERT ("AST" IN ENFORCEMENT_LAYERS OR "CI" IN ENFORCEMENT_LAYERS)
+  ELSE: FAIL  -- ENFORCEMENT_CLASS not declared
+```
+
+**Status:** Schema defined here. Corpus tagging with these fields is the prerequisite for REQ-416 CI implementation. This is the first of the five evidence items in Section 2.3.
 
 ---
 
@@ -237,7 +268,7 @@ For this mandate to transition from rule to verified state, the following eviden
 **Scope clarification:** This section proves that each *threat class* is architecturally impossible -- meaning each threat is blocked by multiple *independent requirements* spanning multiple enforcement layers. This is distinct from Phase 2, which audits individual requirement enforcement depth. A threat class can be architecturally sealed (multiple blocking requirements across layers) even while some individual requirements within that class still need enforcement depth hardening (Phase 2, Section 2.2).
 
 | Threat Class | Controlling ReqIDs | Enforcement Layers | CI Ratchet Coverage | Residual Risk |
-|-------------|-------------------|-------------------|--------------------|--------------| 
+|-------------|-------------------|-------------------|--------------------|--------------|
 | Upward Mutation | REQ-010, REQ-117, REQ-178, REQ-362 | AST + Runtime + CI + Guardian | REQ-278, REQ-362 | **NONE** -- Triple enforcement (AST scan + runtime mutation check + CI ratchet) |
 | Gateway Bypass (Import) | REQ-011, REQ-012, REQ-013, REQ-123 | AST + Runtime + CI | REQ-279, REQ-277 | **NONE** -- AST blocks imports, runtime blocks calls, CI ratchets both |
 | Gateway Bypass (HTTP) | REQ-011, REQ-414 | Runtime egress filter + CI raw-request scan | REQ-414 | **NONE** -- Network-level enforcement added; AST import blocking alone insufficient |
@@ -254,9 +285,9 @@ For this mandate to transition from rule to verified state, the following eviden
 | Guardian Bypass | REQ-080-084, REQ-202-205 | Runtime + Static + CI | REQ-275 | **NONE** -- Both guards traversed, bypass = sovereignty violation, >=95% coverage, fail-closed |
 | Promotion Bypass | REQ-170-172, REQ-333-342 | Runtime + Guardian + Replay | REQ-283 | **NONE** -- L0 routing required, L5 approval required, replay gating required, pointer atomicity enforced |
 
-**Sovereignty Proof Result:** All 15 threat classes (12 original + 3 added during hardening) are protected by multiple independent requirements spanning >=2 enforcement layers with CI ratchet coverage. No single-invariant threats exist.
+**Sovereignty Proof Result:** All 15 threat classes (12 original + 3 added during hardening) are architecturally sealed at the threat-class level -- each is blocked by multiple independent requirements spanning >=2 enforcement layers. Per-requirement dual enforcement depth is a separate property, audited in Phase 2 and pending REQ-416 execution.
 
-**Relationship to Phase 2 gaps:** The 14 single-enforcement domains in Phase 2 Section 2.2 represent *individual requirement enforcement depth* gaps, not *threat class coverage* gaps. Each threat class above is covered by multiple requirements, so even if one requirement has only AST enforcement, another controlling requirement for the same threat class provides runtime or CI enforcement. The Phase 2 hardening actions will strengthen *defense-in-depth per requirement*, not *threat class architectural coverage*.
+**Relationship to Phase 2 gaps:** The 14 single-enforcement domains in Phase 2 Section 2.2 represent *individual requirement enforcement depth* gaps, not *threat class coverage* gaps. Each threat class above is covered by multiple requirements; even if one requirement has only AST enforcement, another controlling requirement for the same threat class provides runtime or CI enforcement. The Phase 2 hardening actions will strengthen *defense-in-depth per requirement*. These two properties are orthogonal: threat-class architectural sealing (Phase 3) does not imply per-requirement dual enforcement (Phase 2).
 
 ---
 
@@ -529,11 +560,13 @@ The following items are **mandated but not yet proven**. Certification is CONDIT
 
 | Item | Requirement | Current State | Resolution Criterion |
 |------|------------|---------------|---------------------|
-| Dual enforcement CI audit | REQ-416 | Rule exists, CI job not implemented | CI job implemented, demonstrably fails on single-enforcement CRITICAL |
+| Enforcement metadata declared per requirement | Section 2.5 schema | Schema defined; corpus not yet tagged | Every CRITICAL req has ENFORCEMENT_LAYERS + ENFORCEMENT_CLASS declared |
+| Dual enforcement CI audit implemented | REQ-416 | Rule exists, CI job not implemented | CI job reads metadata, fails when conditions unmet |
+| CI demonstrably fails on violation | REQ-416 | Not demonstrated | CI job exits non-zero when enforcement_layers < 2 or runtime absent for EXECUTION_PATH |
 | 14-domain hardening execution | Phase 2, Section 2.2 | Prescribed actions not yet executed | All 14 domains have >=2 enforcement layers |
-| Post-hardening matrix recomputation | Phase 2, Section 2.3 | Not computed | Enforcement matrix recomputed and shows zero single-enforcement CRITICALs |
+| Post-hardening matrix recomputed and verified | Phase 2, Section 2.3 | Not computed | Matrix shows zero single-enforcement CRITICALs |
 
-When all three items above are satisfied, Criterion #3 and #12 upgrade from CONDITIONAL PASS to PASS.
+When all five items above are satisfied, Criterion #3 and #12 upgrade from CONDITIONAL PASS to PASS.
 
 ## 8.4 Finalization Certification Statement
 
@@ -543,9 +576,9 @@ Determinism closed (19 properties). CI ratchet enforced.
 CRITICAL-only guardian coverage 99.1%.**
 
 - **Pre-finalization:** 637 requirements (400 CRITICAL, 236 HIGH, 1 MEDIUM)
-- **Post-hardening (final):** 416 requirements (347 CRITICAL, 68 HIGH, 1 MEDIUM)
+- **Post-hardening (final):** 417 requirements (348 CRITICAL, 68 HIGH, 1 MEDIUM)
 - **Duplicate clusters collapsed:** 42
-- **Hardening requirements added:** 4 (REQ-413 through REQ-416)
+- **Hardening requirements added:** 5 (REQ-413 through REQ-417)
 - **Sovereignty threat classes covered:** 15/15 (all provably impossible)
 - **Determinism properties verified:** 19/19 (zero violations)
 - **Guardian coverage (aggregate):** 97.1%
@@ -553,8 +586,13 @@ CRITICAL-only guardian coverage 99.1%.**
 - **CRITICAL invariants requiring hardening:** 14 domains (prescribed actions in Section 2.2, CI-mandated via REQ-416)
 - **Severity downgrades:** 0
 - **Severity upgrades:** 3 (HIGH -> CRITICAL for type safety, schema boundary, execution evidence)
-- **Arithmetic transparency:** Machine-verified (416 rows, zero gaps, zero dups)
-- **Enforcement policy:** Defined (Section 2.4) -- CI-only sufficient for structural invariants; CI+Runtime required for execution-path invariants
+- **Arithmetic transparency:** Machine-verified (417 rows, zero gaps, zero dups)
+- **Enforcement metadata schema:** Defined (Section 2.5) -- ENFORCEMENT_LAYERS + ENFORCEMENT_CLASS per requirement; corpus tagging pending
+- **Enforcement policy:** Defined (Section 2.4) -- CI-only sufficient for STRUCTURAL invariants; CI+Runtime required for EXECUTION_PATH invariants
 - **Dual enforcement status:** Mandated (REQ-416), not yet proven (Section 2.3)
+- **CRITICAL_WITH_RUNTIME:** PENDING -- requires enforcement metadata tagging
+- **CRITICAL_WITH_2_LAYERS:** PENDING -- requires REQ-416 CI execution
 
-**System finalization status: CERTIFIED (v3.0 -- HARDENED). Two CONDITIONAL criteria pending implementation evidence.**
+**SYSTEM STATUS: PROVISIONALLY CERTIFIED -- PENDING REQ-416 EXECUTION.**
+
+Certification becomes unconditional when: (1) enforcement-layer metadata is declared per requirement, (2) CI audit for REQ-416 is implemented and demonstrably fails on violation, (3) 14-domain hardening actions are executed and enforcement matrix is recomputed.

@@ -1,24 +1,27 @@
-# Agentic Master Requirements — Finalized Corpus (v3.0 — Hardened)
+# Agentic Master Requirements — Finalized Corpus (v3.1 — Hardened)
 
-**Status:** FINALIZED + HARDENED — Post-compression MECE corpus with structural hardening patch
-**Total Requirements:** 416
-**Severity Distribution:** CRITICAL: 347 | HIGH: 68 | MEDIUM: 1
-**Finalization Report:** See `Agentic-Requirements-Finalization.md` for full 8-phase audit + hardening addendum
+**Status:** PROVISIONALLY CERTIFIED -- PENDING REQ-416 EXECUTION
+**Total Requirements:** 417
+**Severity Distribution:** CRITICAL: 348 | HIGH: 68 | MEDIUM: 1
+**Finalization Report:** See `Agentic-Requirements-Finalization.md` for full 8-phase audit
 
 ## Machine-Verifiable Integrity Block
 
 ```
-TOTAL_ROWS = 416
-MAX_REQ_ID = REQ-416
+TOTAL_ROWS = 417
+MAX_REQ_ID = REQ-417
 NO_GAPS = TRUE
 NO_DUP_IDS = TRUE
-CRITICAL_COUNT = 347
+CRITICAL_COUNT = 348
 HIGH_COUNT = 68
 MEDIUM_COUNT = 1
-HARDENING_REQS_ADDED = 4 (REQ-413, REQ-414, REQ-415, REQ-416)
-CORPUS_VERSION = 3.0
-PREV_VERSION = 2.0 (254 rows — truncated; claimed 412)
+HARDENING_REQS_ADDED = 5 (REQ-413, REQ-414, REQ-415, REQ-416, REQ-417)
+CORPUS_VERSION = 3.1
 ARITHMETIC_VERIFIED = TRUE
+ENFORCEMENT_METADATA_SCHEMA = DEFINED (see finalization report Section 2.5)
+ENFORCEMENT_METADATA_TAGGED = FALSE
+CRITICAL_WITH_RUNTIME = PENDING (requires enforcement metadata tagging)
+CRITICAL_WITH_2_LAYERS = PENDING (requires REQ-416 CI execution)
 ```
 
 | Req ID | Domain | Requirement | Enforcement | Severity |
@@ -438,4 +441,5 @@ ARITHMETIC_VERIFIED = TRUE
 | REQ-413 | Provider Binding Determinism | Determinism digest MUST include provider_id, model_id, gateway_version, semantic_clock_vector | Runtime digest construction + replay verification + CI determinism test | CRITICAL |
 | REQ-414 | Network Egress Guard | All outbound HTTP requests to LLM-serving endpoints (including localhost) MUST originate exclusively from SovereignLLMGateway | Runtime egress filter at L2 boundary + CI test for raw requests | CRITICAL |
 | REQ-415 | Provider Substitution Prohibition | SovereignLLMGateway MUST NOT substitute provider/model on failure; any failure MUST be fail-closed | Runtime dispatch check + CI negative control test | CRITICAL |
-| REQ-416 | CRITICAL Dual Enforcement Guarantee | Every CRITICAL requirement MUST have >=2 enforcement layers including at least one runtime; CI MUST fail if any CRITICAL has single enforcement | CI enforcement audit + runtime meta-check | CRITICAL |
+| REQ-416 | CRITICAL Dual Enforcement Guarantee | Every CRITICAL requirement MUST have >=2 enforcement layers including at least one runtime (except ENFORCEMENT_CLASS=STRUCTURAL which requires >=1 CI/AST layer); CI MUST read ENFORCEMENT_LAYERS and ENFORCEMENT_CLASS metadata per requirement and fail if audit conditions unmet | CI enforcement audit reading per-requirement metadata + runtime meta-check | CRITICAL |
+| REQ-417 | Dynamic Runtime Mutation Prohibition | Dynamic runtime mutation of classes, modules, or permissions via monkeypatch, setattr on core layer objects, importlib.reload of core modules, metaclass injection altering layer permissions, or equivalent reflection mechanisms is forbidden in all core layers (L0-L6 and apps_*); AST-only checks are insufficient -- runtime guard required at module load and class definition time | AST scan + runtime guard at module load/class definition + CI ratchet | CRITICAL |
