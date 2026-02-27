@@ -310,17 +310,17 @@ class ActivationFlags:
     execution_hardened: bool = False
     mutation_surface_zero: bool = False
     guardian_coverage: float = 0.0
-    
+
     # P1 Freeze Authority
     freeze_authority_active: bool = False
-    
+
     # P2 Meta-Learning Prepared
     meta_learning_prepared: bool = False
     blast_radius_containment_active: bool = False
-    
+
     # Meta-Learning Activation (requires all above)
     meta_learning_enabled: bool = False
-    
+
     # Metadata for replay binding
     semantic_clock_tick: int = 0
     replay_digest_hash: str = ""
@@ -331,27 +331,27 @@ class ActivationFlags:
 ```python
 def assert_meta_learning_allowed():
     flags = load_activation_flags_from_l4()
-    
+
     # Verify signature
     if not verify_guardian_signature(flags.signature, flags):
         raise RuntimeError("Activation flags signature invalid")
-    
+
     # Check P0
     if not (flags.execution_hardened and flags.mutation_surface_zero and flags.guardian_coverage >= 0.95):
         raise RuntimeError("P0 execution boundary not hardened")
-    
+
     # Check P1
     if not flags.freeze_authority_active:
         raise RuntimeError("P1 freeze authority not active")
-    
+
     # Check P2
     if not (flags.meta_learning_prepared and flags.blast_radius_containment_active):
         raise RuntimeError("P2 meta-learning not prepared")
-    
+
     # Final gate
     if not flags.meta_learning_enabled:
         raise RuntimeError("Meta-learning explicitly disabled")
-    
+
     # Verify replay binding
     current_digest = compute_canonical_digest()
     if flags.replay_digest_hash != current_digest:
