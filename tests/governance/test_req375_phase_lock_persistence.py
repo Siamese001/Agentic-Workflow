@@ -173,17 +173,16 @@ class TestPhaseLockPersistence:
         """Test that timestamps are persisted correctly."""
         # Given - Lock a phase with known timestamp
         phase = 4
-        before_lock = time.time()
         lock = self.store.lock_phase(phase, {"test": "timestamp"}, "timestamp_sig")
-        after_lock = time.time()
 
         # When - Create new store instance
         store2 = PhaseLockStore(self.temp_dir)
 
-        # Then - Timestamp should be persisted and reasonable
+        # Then - Timestamp should be persisted (deterministic counter, not wallclock per REQ-114)
         restored_lock = store2.get_lock_record(phase)
         assert restored_lock is not None, "Lock should exist"
-        assert before_lock <= restored_lock.timestamp <= after_lock, "Timestamp should be reasonable"
+        assert restored_lock.timestamp > 0, "Timestamp should be positive"
+        assert restored_lock.timestamp == lock.timestamp, "Timestamp should be persisted exactly"
 
     def test_phase_lock_clear_all(self):
         """Test clearing all phase locks."""

@@ -15,6 +15,7 @@ SovereignLLMGateway - Unified LLM Operations Gateway
 
 from __future__ import annotations
 
+import hashlib
 import logging
 import os
 import time
@@ -208,8 +209,10 @@ class SovereignLLMGateway:
 
         try:
             profile = get_profile(request.agent_id)
-        except KeyError:
-            raise SovereigntyViolation(f"Agent '{request.agent_id}' not found in registry.")
+        except (KeyError, Exception) as _exc:
+            if "not found in registry" in str(_exc) or "HardFail" in type(_exc).__name__:
+                raise SovereigntyViolation(f"Agent '{request.agent_id}' not found in registry.")
+            raise
 
         if profile.execution_mode == ExecutionMode.DETERMINISTIC:
             raise SovereigntyViolation(

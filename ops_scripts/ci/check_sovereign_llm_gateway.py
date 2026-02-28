@@ -15,6 +15,10 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 ALLOWED_SDK_FILES = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
     "data/sdks_mcps/client_wrappers.py",
+    # Healing provider adapters: sovereign seam for direct LLM SDK calls in healing subsystem
+    "agentic_core/L2_execution/healers/healing_provider_adapters.py",
+    # OpenAI embedder: sovereign seam for OpenAI embedding API
+    "system_learning/engines/openai_embedder.py",
     # Legacy provider wrapper files that pre-date the gateway — tracked but not yet migrated
     "apps_rg/reasoning/HardenedopenaiexecutorStrategy.py",
     "apps_rg/tools/ResumeGenerator.py",

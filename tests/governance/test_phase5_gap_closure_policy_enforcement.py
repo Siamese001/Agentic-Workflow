@@ -50,8 +50,9 @@ def test_gateway_rejects_unregistered_agent_non_network():
     """Test that gateway rejects unregistered agents without network calls."""
     from agentic_core.agents.agent_registry import get_profile
 
-    # Test that unregistered agent raises KeyError
-    with pytest.raises(KeyError, match="UNREGISTERED_AGENT"):
+    # Test that unregistered agent raises V15HardFailAbort or KeyError
+    from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+    with pytest.raises((V15HardFailAbort, KeyError)):
         get_profile("UNREGISTERED_AGENT")
 
 

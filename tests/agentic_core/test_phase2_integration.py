@@ -313,7 +313,10 @@ class TestGatewayExecuteEndToEnd:
         """Legacy manifest (no Phase-2 fields) must pass through L2.0 unchanged."""
         gw = self._gateway()
         manifest = _make_manifest()
-        result = gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-legacy")
+        result = gw.execute(
+            manifest, _noop_heal, _noop_state_hash,
+            trace_id="e2e-legacy", agent_id="CodeHealerAgent"
+        )
         assert result.success is True
 
     def test_gateway_accepts_manifest_with_correct_hashes(self):
@@ -321,7 +324,10 @@ class TestGatewayExecuteEndToEnd:
         gw = self._gateway()
         correct_hashes = get_active_configs().hashes()
         manifest = _make_manifest(extra_attrs=correct_hashes)
-        result = gw.execute(manifest, _noop_heal, _noop_state_hash, trace_id="e2e-correct")
+        result = gw.execute(
+            manifest, _noop_heal, _noop_state_hash,
+            trace_id="e2e-correct", agent_id="CodeHealerAgent"
+        )
         assert result.success is True
 
     def test_gateway_rejects_manifest_with_mismatched_hash_via_execute(self):

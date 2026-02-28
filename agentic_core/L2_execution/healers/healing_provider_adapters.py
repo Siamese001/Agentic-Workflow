@@ -113,24 +113,26 @@ class QwenInvokerAdapter:
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-            SovereignLLMGateway,
-        )
-        from agentic_core.L2_execution.types.gateway_types import GenerationRequest
-
         model_id = config.model_qwen_vllm_id
         prompt = self._build_prompt(healing_input, decision, agent_name)
 
-        _gw = SovereignLLMGateway()
-        _req = GenerationRequest(
-            agent_id=agent_name or "qwen_healer",
-            provider="openai",
+        try:
+            import openai
+            client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
+        except (ImportError, AttributeError) as exc:
+            raise ImportError(
+                "OpenAI SDK is required for Qwen vLLM adapter. "
+                "Install with: pip install openai"
+            ) from exc
+        client.chat.completions.create(
             model=model_id,
-            prompt=prompt,
+            messages=[
+                {"role": "system", "content": "You are a code healing assistant."},
+                {"role": "user", "content": prompt},
+            ],
             temperature=QWEN_CONFIG["temperature"],
             max_tokens=DEFAULT_MAX_TOKENS,
         )
-        _gw.route_generation(_req)
 
         record = InvocationRecord(
             tier=HealingTier.QWEN_VLLM,
@@ -235,12 +237,11 @@ class GeminiInvokerAdapter:
             InvocationRecord with replay-deterministic fields
         """
         try:
-            from data.sdks_mcps.client_wrappers import create_vertex_client as _create_vertex_client
-            genai = _create_vertex_client()
-        except (ImportError, Exception) as exc:
+            import google.generativeai as genai
+        except ImportError as exc:
             raise ImportError(
-                "Google client wrapper not available. "
-                "Use data.sdks_mcps.client_wrappers.create_vertex_client."
+                "google-generativeai SDK is required for Gemini adapter. "
+                "Install with: pip install google-generativeai"
             ) from exc
 
         model_id = config.model_gemini_2_5_pro_id

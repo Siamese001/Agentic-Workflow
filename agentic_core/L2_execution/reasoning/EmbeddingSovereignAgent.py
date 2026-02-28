@@ -86,7 +86,8 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
 
     def __post_init__(self) -> None:
         """Initialize the EmbeddingSovereignAgent."""
-        super().__post_init__()
+        if hasattr(super(), "__post_init__"):
+            super().__post_init__()
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""

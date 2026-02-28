@@ -159,25 +159,18 @@ def test_embedding_factory_kill_switch_fails_closed():
         # Set kill-switch
         os.environ["EMBEDDING_ENABLED"] = "false"
         
-        # Clear module cache to reload
-        import importlib
-        import agentic_core.embeddings.embedding_factory
-        importlib.reload(agentic_core.embeddings.embedding_factory)
-        
         from agentic_core.embeddings.embedding_factory import (
             create_embedding_client,
             EmbeddingDisabledError,
         )
         
-        # Should raise
+        # Should raise (kill-switch is read dynamically, no reload needed)
         with pytest.raises(EmbeddingDisabledError, match="EMBEDDING_ENABLED=false"):
             create_embedding_client("openai")
             
     finally:
         # Restore original state
         os.environ["EMBEDDING_ENABLED"] = original_enabled
-        # Clear module cache again
-        importlib.reload(agentic_core.embeddings.embedding_factory)
 
 
 def test_embedding_factory_registration_tracking():

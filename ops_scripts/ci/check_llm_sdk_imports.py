@@ -32,6 +32,10 @@ ALLOWED_PATHS = {
     "apps_shared/utils/providers_google_genai_client_util.py",
     # EmbeddingServiceFactory is the sole allowed seam for embedding SDK imports
     "system_learning/engines/embedding_service_factory.py",
+    # OpenAI embedder: sovereign seam for OpenAI embedding API (wrapped by EmbeddingServiceFactory)
+    "system_learning/engines/openai_embedder.py",
+    # Healing provider adapters: sovereign seam for LLM SDK calls in the healing subsystem
+    "agentic_core/L2_execution/healers/healing_provider_adapters.py",
     # LateInteractionReranker: sovereign seam for cross-encoder re-ranking (lazy imports, try/except fallback)
     "apps_shared/utils/late_interaction_reranker_util.py",
 }

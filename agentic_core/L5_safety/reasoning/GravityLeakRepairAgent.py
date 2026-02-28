@@ -328,10 +328,18 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 # Guard: refuse single-char or empty old_import (catastrophic replace)
                 stripped_old = fix.old_import.strip()
                 if len(stripped_old) <= 1:
-                    # guardian: allow-path-fragility
+                    # Close temp_fd before removing (needed on Windows — open handle blocks delete)
+                    try:
+                        os.close(temp_fd)
+                    except OSError:
+                        pass
+                    temp_fd = None
                     # guardian: allow-path-fragility
                     if os.path.exists(temp_path):
-                        _wg.remove_file(temp_path)
+                        try:
+                            _wg.remove_file(temp_path)
+                        except Exception:
+                            pass
                     self.logger.warning(
                         f"[PLAN-ONLY] old_import too short ({stripped_old!r}), "
                         "refusing replace to prevent corruption."

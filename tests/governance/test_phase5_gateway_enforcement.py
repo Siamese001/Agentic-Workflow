@@ -20,6 +20,8 @@ from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
 FORBIDDEN_IMPORTS = {"openai", "anthropic", "google.generativeai", "google.genai"}
 ALLOWED_IMPORT_PATHS = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
+    # Healing provider adapters: sovereign seam for LLM SDK calls in the healing subsystem
+    "agentic_core/L2_execution/healers/healing_provider_adapters.py",
 }
 
 

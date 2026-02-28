@@ -238,8 +238,8 @@ signal = emit_detection_signal_with_l4a(
     anomaly_score={test_data["anomaly_score"]},
 )
 
-print(f"PAYLOAD_HASH: {{hash(writer.writes[0]["payload_bytes"])}}")
-print(f"SIGNAL_HASH: {{hash(signal.canonical_bytes())}}")
+print(f"PAYLOAD_HASH: {{hashlib.sha256(writer.writes[0]["payload_bytes"]).hexdigest()}}")
+print(f"SIGNAL_HASH: {{hashlib.sha256(signal.canonical_bytes()).hexdigest()}}")
 '''
 
         # Run in subprocess
@@ -259,8 +259,8 @@ print(f"SIGNAL_HASH: {{hash(signal.canonical_bytes())}}")
 
             # Parse output
             lines = result.stdout.strip().split("\n")
-            payload_hash = int(lines[0].split(": ")[1])
-            signal_hash = int(lines[1].split(": ")[1])
+            payload_hash = lines[0].split(": ")[1]
+            signal_hash = lines[1].split(": ")[1]
 
             # Run same process locally with same hash algorithm
             import hashlib
@@ -288,9 +288,10 @@ print(f"SIGNAL_HASH: {{hash(signal.canonical_bytes())}}")
                 anomaly_score=test_data["anomaly_score"],
             )
 
-            # Hashes should match across processes
-            assert hash(local_writer.writes[0]["payload_bytes"]) == payload_hash
-            assert hash(local_signal.canonical_bytes()) == signal_hash
+            # Hashes should match across processes (use sha256, not hash() which is non-deterministic)
+            import hashlib as _hl
+            assert _hl.sha256(local_writer.writes[0]["payload_bytes"]).hexdigest() == payload_hash
+            assert _hl.sha256(local_signal.canonical_bytes()).hexdigest() == signal_hash
 
         finally:
             os.unlink(script_path)
