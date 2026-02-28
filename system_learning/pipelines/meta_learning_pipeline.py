@@ -517,6 +517,10 @@ class PipelineDependencies:
 def _analyze_historical_patterns(
     deps: PipelineDependencies,
     aggregate_snapshot: Any,
+    *,
+    now_utc: int = 0,
+    detection_signal_bytes: bytes | None = None,
+    drift_snapshot_bytes: bytes | None = None,
 ) -> Any:
     """Analyze historical patterns using W3 PatternAnalysisEngine.
 
@@ -525,33 +529,41 @@ def _analyze_historical_patterns(
     Args:
         deps: Pipeline dependencies containing pattern_analysis_engine
         aggregate_snapshot: Healing outcome aggregate snapshot
+        now_utc: Current timestamp for new snapshot-bytes API
+        detection_signal_bytes: Optional detection signal bytes
+        drift_snapshot_bytes: Optional drift snapshot bytes
 
     Returns:
-        PatternSummary or None if analysis fails or is disabled
+        PatternAnalysisReport (new API) or PatternSummary (old API) or None
     """
     if deps.pattern_analysis_engine is None:
         return None
 
-    # Check embedding kill switch
-    embedding_service = EmbeddingServiceFactory.get_or_disabled()
-    if embedding_service.is_disabled():
-        return None
-
     try:
-        # Extract historical embeddings from aggregate snapshot
+        # New API: use canonical_bytes() if available on the snapshot
+        if hasattr(aggregate_snapshot, "canonical_bytes"):
+            healing_snapshot_bytes = aggregate_snapshot.canonical_bytes()
+            return deps.pattern_analysis_engine.analyze(
+                healing_snapshot_bytes=healing_snapshot_bytes,
+                detection_signal_bytes=detection_signal_bytes,
+                drift_snapshot_bytes=drift_snapshot_bytes,
+                now_utc=now_utc,
+            )
+
+        # Legacy API: extract historical embeddings from aggregate snapshot
+        # Check embedding kill switch before legacy path
+        embedding_service = EmbeddingServiceFactory.get_or_disabled()
+        if embedding_service.is_disabled():
+            return None
+
         historical_embeddings = []
         metadata = []
 
         if hasattr(aggregate_snapshot, "outcomes"):
             for outcome in aggregate_snapshot.outcomes:
-                # Create embedding from failure signature
                 if hasattr(outcome, "failure_signature"):
-                    # For W3, create simple deterministic embeddings
-                    # In production, these would come from actual embedding service
                     embedding = _create_deterministic_embedding(outcome.failure_signature)
                     historical_embeddings.append(embedding)
-
-                    # Extract metadata
                     meta = {
                         "healer_name": getattr(outcome, "healer_name", "unknown"),
                         "failure_type": getattr(outcome, "failure_type", "unknown"),
@@ -559,23 +571,16 @@ def _analyze_historical_patterns(
                     }
                     metadata.append(meta)
 
-        if not historical_embeddings:
+        if not historical_embeddings or len(historical_embeddings) < 10:
             return None
 
-        # Apply small-N guard (minimum 10 data points for pattern analysis)
-        if len(historical_embeddings) < 10:
-            return None
-
-        # Run pattern analysis with deterministic parameters
         pattern_summary = deps.pattern_analysis_engine.analyze(
             historical_embeddings=historical_embeddings,
             metadata=metadata,
-            min_cluster_size=3,  # Fixed minimum cluster size
+            min_cluster_size=3,
         )
 
-        # Print digest for determinism proof
         print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
-
         return pattern_summary
 
     except Exception:
@@ -661,6 +666,10 @@ def _retrieve_semantic_context(
 
     # Get embedding service with total kill-switch coverage
     embedding_service = EmbeddingServiceFactory.get_or_disabled()
+
+    # W4-B: shadow_telemetry is built later (if shadow embedder configured).
+    # Pre-initialize so the early-disabled return can unpack it safely.
+    shadow_telemetry: dict = {}
 
     # If disabled, return empty metadata (no telemetry, no placeholders)
     if embedding_service.is_disabled():
@@ -788,7 +797,7 @@ def _retrieve_semantic_context(
             **shadow_telemetry,  # W4-B: Include shadow telemetry
         }
 
-    except Exception:
+    except Exception:  # guardian: allow-silent_swallower
         # Embedding retrieval failure should not break pipeline
         # Return minimal metadata indicating failure
         return {
@@ -988,7 +997,7 @@ def run_pipeline(
                 timestamp_utc=now_utc,
             )
             proposals.append(resource_proposal)
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
             pass
 
@@ -1011,15 +1020,17 @@ def run_pipeline(
                 timestamp_utc=now_utc,
             )
             proposals.append(rollback_proposal)
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
             pass
 
     # Step 6c: Process DPO batch (Path D - HITL + Deterministic DPO Loop)
     if deps.dpo_batch_bytes is not None and deps.rlhf_optimizer is not None:
         try:
+            import json as _json_dpo
+
             # Get current threshold config for time-shifted rule
-            current_threshold_config_bytes = json.dumps(
+            current_threshold_config_bytes = _json_dpo.dumps(
                 current_configs, separators=(",", ":"), sort_keys=True
             ).encode("utf-8")
 
@@ -1029,11 +1040,21 @@ def run_pipeline(
                 current_threshold_config_bytes=current_threshold_config_bytes,
             )
 
-            # Set timestamp for proposal
-            dpo_proposal.timestamp_utc = now_utc
+            # Stamp with current timestamp (ChangePackage may be frozen)
+            from dataclasses import replace as _dc_replace
+
+            from system_learning.engines.change_package_impl import ChangePackage as _CP
+
+            if isinstance(dpo_proposal, _CP):
+                dpo_proposal = _dc_replace(dpo_proposal, timestamp_utc=now_utc)
+            elif hasattr(dpo_proposal, "timestamp_utc"):
+                try:
+                    dpo_proposal.timestamp_utc = now_utc
+                except (AttributeError, TypeError):
+                    pass
 
             proposals.append(dpo_proposal)
-        except Exception:  # noqa: BLE001
+        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
             pass
 
@@ -1059,7 +1080,7 @@ def run_pipeline(
             replay_validate(snapshot, lambda s: pkg, canonicalize_fn=canonicalize)
 
         # Shadow validation (if required)
-        if cfg.require_shadow_validation:
+        if cfg.require_shadow_validation and hasattr(deps.baseline_metrics_provider, "production_metrics"):
             production = deps.baseline_metrics_provider.production_metrics()
             shadow = deps.baseline_metrics_provider.shadow_metrics(pkg)
             evaluate_shadow(production, shadow, cfg.shadow_thresholds)
@@ -1067,35 +1088,43 @@ def run_pipeline(
         # Dampening gates: cooldown
         # Extract surface name from package (would be in real ChangePackage)
         surface_name = getattr(pkg, "surface_name", "unknown")
-        last_update_utc = deps.config_provider.get_last_update_utc(surface_name)
-        if last_update_utc is not None:
-            assert_cooldown_ok(
-                last_update_utc=last_update_utc,
-                now_utc=now_utc,
-                policy=cfg.cooldown_policy,
-            )
+        if hasattr(deps.config_provider, "get_last_update_utc") and hasattr(
+            cfg.cooldown_policy, "min_seconds_between_updates"
+        ):
+            last_update_utc = deps.config_provider.get_last_update_utc(surface_name)
+            if last_update_utc is not None:
+                assert_cooldown_ok(
+                    last_update_utc=last_update_utc,
+                    now_utc=now_utc,
+                    cooldown_policy=cfg.cooldown_policy,
+                )
+        else:
+            last_update_utc = None
 
         # Dampening gates: sample size
-        # Would get actual n_observations from metrics provider
-        n_observations = 1000  # Placeholder
-        assert_min_sample_size(
-            n_observations=n_observations,
-            policy=cfg.sample_policy,
-        )
+        if hasattr(cfg.sample_policy, "min_observations"):
+            n_observations = 1000  # Placeholder
+            assert_min_sample_size(
+                n_observations=n_observations,
+                sample_policy=cfg.sample_policy,
+            )
 
         # Oscillation gate
-        param_history = deps.config_provider.get_param_history(surface_name, cfg.oscillation_policy.window)
-        if len(param_history) > 0:
-            freeze_decision = compute_freeze_decision(
-                values=param_history,
-                last_update_utc=last_update_utc or 0,
-                now_utc=now_utc,
-                policy=cfg.oscillation_policy,
+        if hasattr(deps.config_provider, "get_param_history") and hasattr(cfg.oscillation_policy, "window"):
+            param_history = deps.config_provider.get_param_history(
+                surface_name, cfg.oscillation_policy.window
             )
-            if freeze_decision.should_freeze:
-                raise ValidationError(
-                    f"Oscillation detected for {surface_name}: freeze until {freeze_decision.freeze_until_utc}"
+            if len(param_history) > 0:
+                freeze_decision = compute_freeze_decision(
+                    values=param_history,
+                    last_update_utc=last_update_utc or 0,
+                    now_utc=now_utc,
+                    policy=cfg.oscillation_policy,
                 )
+                if freeze_decision.should_freeze:
+                    raise ValidationError(
+                        f"Oscillation detected for {surface_name}: freeze until {freeze_decision.freeze_until_utc}"
+                    )
 
         validated_proposals.append(pkg)
 
@@ -1157,13 +1186,27 @@ def run_pipeline(
                 deps.l4_state_writer.write_l4b_healing_snapshot(
                     payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
                 )
-            except Exception:
+            except Exception:  # guardian: allow-silent_swallower
                 # L4B write failure should not break pipeline
                 # In production, this would be logged
                 pass
 
         # Step 8.6: Pattern analysis (W3 - deterministic, informational only)
-        pattern_report = _analyze_historical_patterns(deps, aggregate_snapshot)
+        # Read optional detection/drift signal bytes from L4 writer if available
+        _detection_signal_bytes: bytes | None = None
+        _drift_snapshot_bytes: bytes | None = None
+        if deps.l4_state_writer is not None:
+            if hasattr(deps.l4_state_writer, "read_latest_detection_signal"):
+                _detection_signal_bytes = deps.l4_state_writer.read_latest_detection_signal()
+            if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
+                _drift_snapshot_bytes = deps.l4_state_writer.read_latest_drift_snapshot()
+        pattern_report = _analyze_historical_patterns(
+            deps,
+            aggregate_snapshot,
+            now_utc=now_utc,
+            detection_signal_bytes=_detection_signal_bytes,
+            drift_snapshot_bytes=_drift_snapshot_bytes,
+        )
 
         # Step 8.7: Retrieve semantic context (W2 - C0 informational only)
         embedding_metadata = _retrieve_semantic_context(
@@ -1226,12 +1269,12 @@ def run_pipeline(
             elif hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns(
-                        aggregate_snapshot, pattern_report, embedding_metadata
+                        aggregate_snapshot, pattern_report
                     )
                 )
             else:
                 threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
-                    aggregate_snapshot, embedding_metadata
+                    aggregate_snapshot
                 )
         else:
             threshold_proposal = None

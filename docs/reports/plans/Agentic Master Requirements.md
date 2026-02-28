@@ -1,34 +1,29 @@
 # Agentic Master Requirements — Finalized Corpus (v3.2 — Enforcement Depth Complete)
 
 **Status:** FULLY CERTIFIED -- ENFORCEMENT DEPTH COMPLETE
-**Total Requirements:** 417
-**Severity Distribution:** CRITICAL: 348 | HIGH: 68 | MEDIUM: 1
+**Total Requirements:** 486
+**Severity Distribution:** CRITICAL: 394 | HIGH: 91 | MEDIUM: 1
 **Finalization Report:** See `Agentic-Requirements-Finalization.md` for full 8-phase audit + W-FINAL execution report
 
 ## Machine-Verifiable Integrity Block
 
 ```
-TOTAL_ROWS = 417
-MAX_REQ_ID = REQ-417
-NO_GAPS = TRUE
-NO_DUP_IDS = TRUE
-CRITICAL_COUNT = 348
-HIGH_COUNT = 68
+TOTAL_ROWS = 486
+CORPUS_ROWS = 417
+EXT_ROWS = 69
+MAX_CORPUS_REQ_ID = REQ-417
+NO_DUP_IDS_GLOBAL = TRUE
+CORPUS_NO_GAPS = TRUE
+CRITICAL_COUNT = 394
+HIGH_COUNT = 91
 MEDIUM_COUNT = 1
-HARDENING_REQS_ADDED = 5 (REQ-413, REQ-414, REQ-415, REQ-416, REQ-417)
 CORPUS_VERSION = 3.2
-ARITHMETIC_VERIFIED = TRUE
 ENFORCEMENT_METADATA_SCHEMA = DEFINED (see finalization report Section 2.5)
 ENFORCEMENT_METADATA_TAGGED = TRUE
-CRITICAL_WITH_RUNTIME = 92.8% (323/348)
-CRITICAL_WITH_2_LAYERS = 96.3% (335/348)
-STRUCTURAL_CRITICAL_COUNT = 25
-EXECUTION_PATH_CRITICAL_COUNT = 323
 ENFORCEMENT_AUDIT_STATUS = PASS (0 failures)
-SOVEREIGNTY_PROOF_STATUS = PASS (22/22 tests)
-HARDENING_ACTIONS_APPLIED = 131
-CERTIFICATION_STATUS = FULLY_CERTIFIED
 ```
+
+## Master Requirements (Authoritative, CI-Failing)
 
 | Req ID | Domain | Requirement | Enforcement | Severity | ENFORCEMENT_LAYERS | ENFORCEMENT_CLASS |
 |--------|--------|------------|------------|----------|-------------------|-------------------|
@@ -51,7 +46,7 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-017 | Canonicalization | Canonical JSON MUST sort keys, use UTF-8, eliminate whitespace variance, be byte-stable, reject NaN/float | Unit + serialization test | HIGH | Schema, Runtime | EXECUTION_PATH |
 | REQ-018 | Canonicalization | All authenticity-critical artifacts MUST use HMAC-SHA256 over canonical bytes | Signature test + CI | CRITICAL | CI, Signature, Runtime | EXECUTION_PATH |
 | REQ-019 | META-INVARIANT | Signature/HMAC/hash verification MUST occur before any state mutation, commit, activation, or side-effect | Runtime boundary + guard + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
-| REQ-020 | META-INVARIANT | All sealed artifacts, audit logs, snapshots, diff bundles, registries, hash chains, pointer lineages, change histories MUST be append-only and immutable post-seal | Integrity test + runtime + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-020 | META-INVARIANT | All sealed artifacts, audit logs, snapshots, diff bundles, registries, hash chains, pointer lineages, change histories MUST be append-only and immutable post-seal. Memory writes MUST be append-only; no in-place mutation of memory stores is permitted; memory conflicts must emit INCIDENT and preserve prior versions. | Integrity test + runtime + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-021 | Packet | InstructionPacket MUST include trace_id, policy_hash, route_mode, allowed_tools[] | Schema validation | HIGH | Runtime, Schema | EXECUTION_PATH |
 | REQ-022 | Packet | InstructionPacket MUST include signature; signature MUST verify | Schema + runtime verification | CRITICAL | Runtime, Schema | EXECUTION_PATH |
 | REQ-023 | Replay | ReplayGuardStore MUST enforce single-use packets | Runtime replay check | CRITICAL | Runtime, Replay | EXECUTION_PATH |
@@ -68,7 +63,7 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-034 | Artifact | replay_key MUST bind trace_id + plan_hash + transcript_hash; transcript_hash MUST be deterministic | Runtime + determinism test | CRITICAL | Runtime, Replay | EXECUTION_PATH |
 | REQ-035 | Determinism | Determinism artifact MUST print exactly once per wave and per replay | Runtime output check + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-036 | Determinism | Two independent executions with identical inputs MUST produce identical digest | Replay test | CRITICAL | Replay, Runtime | EXECUTION_PATH |
-| REQ-037 | Determinism | Negative control MUST be env-toggle driven, strict XFAIL, exit 0, restore PASS cleanly | Test harness validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-037 | Determinism | Negative control MUST be env-toggle driven, strict XFAIL(strict=True) exit 0, restore PASS cleanly. Tamper vectors MUST cover: prompt slot order mutation; prompt slot ownership violation; embedding misuse as authority input; CitationBundle bypass; hidden context injection. | Test harness validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-038 | Healing | route_healing_tier MUST be sole tier selector | AST scan | CRITICAL | AST | STRUCTURAL |
 | REQ-039 | Healing | needs_llm_escalation MUST be explicit opt-in | Runtime check + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-040 | Healing | retry_count MUST be monotonic; >=3 MUST force GEMINI tier | Runtime validation | HIGH | Runtime | EXECUTION_PATH |
@@ -76,10 +71,10 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-042 | Healing | HealCheckResult changes_made must be deterministically sorted | Runtime check | HIGH | Runtime | EXECUTION_PATH |
 | REQ-043 | Healing | EscalationContext must derive only from HealCheckResult; FailureSignal only from EscalationContext | Runtime validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-044 | Healing | NO_TIERING agents must emit FailureSignal | Runtime contract check | HIGH | Runtime | EXECUTION_PATH |
-| REQ-045 | RAG | Embeddings are C0 informational only | Runtime route test + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-045 | Embeddings | Embeddings are C0 informational only. Embedding-derived outputs MUST NOT directly alter routing tier selection, safety thresholds, capability token issuance, guardian decisions, or mutation permissions. Any attempt to consume embedding scores as authority-bearing input MUST fail-closed. | Runtime route test + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-046 | RAG | Embedding pack SHA-256 MUST verify at startup | Startup + CI hash check | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-047 | RAG | SeedEmbeddingPackManifest MUST include model_version, vector_count, dimensions, matrix_hash | Schema validation | CRITICAL | Runtime, Schema | EXECUTION_PATH |
-| REQ-048 | RAG | embeddings.f32 SHA-256 must match matrix_hash; EmbeddingResult MUST include embedding_artifact_hash | Startup validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-048 | RAG | embeddings.f32 SHA-256 must match matrix_hash; EmbeddingResult MUST include: provider_id, model_version, embedding_dim, matrix_hash, input_hash, semantic_clock_tick. These fields MUST be bound into determinism digest. Embedding computation MUST be deterministic under replay: stable ordering, fixed threading configuration, no stochastic batching, identical EMBEDDING_DIGEST across two independent runs. | Startup validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-049 | Meta-Learning | ChangePackage MUST default proposal_only=True; kill-switch fail-closed | Config + runtime test | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-050 | Meta-Learning | Activation requires explicit VersionStore injection; Activator.activate() requires VersionPointer | Runtime gate + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-051 | Meta-Learning | ChangePackage MUST be HMAC-SHA256 signed; package_hash MUST be HMAC-SHA256 | Signature validation | CRITICAL | Runtime, Signature | EXECUTION_PATH |
@@ -124,9 +119,9 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-090 | Vigilance | Tier I log; Tier II increase scope | Runtime test | HIGH | Runtime | EXECUTION_PATH |
 | REQ-091 | Vigilance | Tier III MUST freeze: disable WriteGateway, halt tokens, freeze promotion, freeze routing, block meta-learning | Runtime + guard + gate + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-092 | Prompt Governance | All prompts via governance chokepoint; apps_* no system/safety content, no SDK | Static + runtime + AST | CRITICAL | AST, Runtime | EXECUTION_PATH |
-| REQ-093 | Prompt Governance | prompt_governance MUST emit deterministic prompt_hash binding policy_config_hash | Runtime assertion + check + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
-| REQ-094 | Prompt Governance | TokenControl MUST include prompt_hash; RouteDecision MUST include prompt_hash | Schema validation | CRITICAL | Runtime, Schema | EXECUTION_PATH |
-| REQ-095 | Prompt Governance | Prompt composition deterministic (sorted fragments); no concat outside governance | Determinism + static | CRITICAL | AST, Replay, Runtime | EXECUTION_PATH |
+| REQ-093 | Prompt Governance | prompt_governance is the sole prompt assembly chokepoint and MUST enforce REQ-PT-001..REQ-PT-012 (slot order/ownership, deterministic assembly, PromptBundleArtifact emission, negative controls). prompt_governance MUST emit deterministic prompt_hash binding policy_config_hash and MUST bind PromptBundleArtifact lineage into replay inputs. Any prompt assembly bypass or violation MUST fail-closed. | Runtime prompt_governance validator + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-094 | Prompt Governance | TokenControl MUST include prompt_hash; RouteDecision MUST include prompt_hash. Telemetry records MUST include replay_key, prompt_hash, and policy_hash; missing linkage aborts wave. | Schema validation | CRITICAL | Runtime, Schema | EXECUTION_PATH |
+| REQ-095 | Prompt Governance | Prompt composition deterministic (sorted fragments); no concat outside governance. Determinism includes: stable slot ordering, stable intra-slot ordering, deterministic token budgeting, deterministic truncation strategy, no wall-clock tokens, no UUIDs, no random few-shot ordering. Identical inputs MUST yield identical final prompt_hash under replay. | Determinism + static | CRITICAL | AST, Replay, Runtime | EXECUTION_PATH |
 | REQ-096 | Prompt Governance | prompt_governance MUST log domain fragment lineage | Runtime artifact | HIGH | Runtime | EXECUTION_PATH |
 | REQ-097 | Auth | Capability tokens MUST be scoped, include scope metadata, restrict target resources | Runtime validation + guard + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-098 | Auth | Capability tokens MUST expire, be time-bound | Runtime validation + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
@@ -136,7 +131,7 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-102 | Kill-Switch | EMBEDDING_ENABLED fail-closed; SovereigntyViolation halts execution | Runtime check + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-103 | Kill-Switch | ApprovalGate blocks without approval; UWG enforcement fail-closed | Runtime gate + interception + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-104 | Kill-Switch | needs_llm_escalation=False blocks escalation; TIERING_ALLOWLIST blocks non-allowlisted | Runtime routing check + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
-| REQ-105 | Replay | Replay input MUST include payload + policy_hash + prompt_hash + context_set | Schema validation | CRITICAL | Runtime, Schema | EXECUTION_PATH |
+| REQ-105 | Replay | Replay input MUST include payload + policy_hash + prompt_hash + context_set. context_set MUST include: hashes for S0/I0/C0/U0 slot payloads, CitationBundle hash, RAG config_hash, embedding metadata, and artifact ID references for all slot_sources. | Schema validation | CRITICAL | Runtime, Schema | EXECUTION_PATH |
 | REQ-106 | Replay | Replay MUST be read-only sandbox blocking network IO and SDK invocation | Runtime boundary + env + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-107 | Replay | Replay transcript must fully reconstruct side-effects | Replay test | CRITICAL | Replay, Runtime | EXECUTION_PATH |
 | REQ-108 | Replay | Replay MUST use deterministic stubs, detect regressions, forbid mutation tokens | Test + runtime guard + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
@@ -162,7 +157,7 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-128 | Sovereignty | PolicyUpdateProposal bind previous hash, HMAC signed, signature verify | Signature validation | CRITICAL | Runtime, Signature | EXECUTION_PATH |
 | REQ-129 | Sovereignty | No mutable global state; all exceptions subclass SovereigntyError; SovereigntyError halts | AST + static + runtime | CRITICAL | AST, Runtime | EXECUTION_PATH |
 | REQ-130 | Sovereignty | All aborts emit AbortArtifact with reason_code, trace_id, timestamp_utc | Runtime + schema | HIGH | Runtime, Schema | EXECUTION_PATH |
-| REQ-131 | Sovereignty | CI fail on CRITICAL violation, prevent merge, output failure list by Req ID | CI validation + output | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-131 | Sovereignty | CI MUST fail on ANY CRITICAL violation and prevent merge, outputting a failure list by Req ID. Enforcement applies to ALL requirements in this document (REQ-001..REQ-417 and all REQ-PT/REQ-EM/REQ-RAGX/REQ-CTX/REQ-APP/REQ-TLM/REQ-PHJ/REQ-MEMX/REQ-WLD/REQ-DPO/REQ-COG/REQ-HEALX). No distinction exists between corpus and non-corpus IDs. | CI validation + output | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-132 | Sovereignty | CI abort on discovery mismatch, signature failure, replay mismatch | CI validation | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-133 | Sovereignty | No TODO/bypass flags; no test-only backdoors in production | Static scan | CRITICAL | AST | STRUCTURAL |
 | REQ-134 | Sovereignty | Final compliance = zero CRITICAL violations | Compliance calculation | CRITICAL | Runtime, CI | EXECUTION_PATH |
@@ -229,10 +224,10 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-195 | Knowledge Supervisor | Retraining proposal-only; updates via L0; graph advisory-only | Runtime gate + static | CRITICAL | AST, Runtime | EXECUTION_PATH |
 | REQ-196 | Knowledge Supervisor | Threshold SSOT-bound; artifacts bind semantic_clock; drift emits EvalReport | Static + schema + runtime | HIGH | AST, Runtime, Schema | EXECUTION_PATH |
 | REQ-197 | Knowledge Supervisor | Retraining requires L5 approval + rollback support | Approval gate + VersionStore + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
-| REQ-198 | RAG Custody | Emit RetrievalQuery, RetrievedChunks, RerankScores artifacts | Schema validation | HIGH | Runtime, Schema | EXECUTION_PATH |
-| REQ-199 | RAG Custody | Emit CitationBundle; final output cite CitationBundle ID | Schema + runtime | CRITICAL | Runtime, Schema | EXECUTION_PATH |
-| REQ-200 | RAG Custody | Direct external knowledge forbidden; artifacts hash-bound + bind prompt_hash | Static + schema | CRITICAL | AST, Schema | STRUCTURAL |
-| REQ-201 | RAG Custody | Retrieval deterministic; custody violations fail CI | Determinism + CI | CRITICAL | CI, Replay, Runtime | EXECUTION_PATH |
+| REQ-198 | RAG Custody | Emit complete custody chain: RetrievalQuery → RetrievedChunks → RerankScores → CitationBundle. RetrievalQuery MUST include trace_id, query_hash, semantic_clock_tick, index_version, embedder_id, and namespace. RetrievedChunks MUST include chunk_id, source_ref, byte_sha256, byte_range, and score. Lists MUST be deterministically sorted with stable tie-breakers. | Schema validation | HIGH | Runtime, Schema | EXECUTION_PATH |
+| REQ-199 | RAG Custody | Emit CitationBundle; final output MUST cite CitationBundle ID. CitationBundle MUST be immutable post-seal; any modification post-seal is a failure. Outputs must only reference sources contained in CitationBundle. | Schema + runtime | CRITICAL | Runtime, Schema | EXECUTION_PATH |
+| REQ-200 | RAG Custody | Direct external knowledge access without a CitationBundle is forbidden and MUST fail-closed at runtime (emit ExternalKnowledgeAccessViolation + abort wave). Hidden context injection into [C0] slot is forbidden; any C0 payload MUST map to artifact IDs in slot_sources and MUST be runtime-validated. | AST scan + runtime guard + CI ratchet + schema | CRITICAL | AST, Runtime, CI, Schema | EXECUTION_PATH |
+| REQ-201 | RAG Custody | Retrieval deterministic; custody violations fail CI. Determinism requirements: ranking must be stable-sorted; tie-breaker on (score desc, chunk_id asc); identical input → identical RetrievedChunks set and identical RerankScores ordering and identical CitationBundle hash under replay. RAG configuration MUST be version-pinned and included in determinism digest. | Determinism + CI | CRITICAL | CI, Replay, Runtime | EXECUTION_PATH |
 | REQ-202 | Guardian Meta | >=95% invariant coverage; block merge on FAIL; deterministic suite | CI rule + test | CRITICAL | CI, Runtime | EXECUTION_PATH |
 | REQ-203 | Guardian Meta | Verify aggregate gate before L2; verify replay consistency; verify promotion sig | Runtime guard + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-204 | Guardian Meta | Reject adapter patterns; verify no illegal imports; validate artifact flow | Static + runtime | CRITICAL | AST, Runtime | EXECUTION_PATH |
@@ -447,5 +442,50 @@ CERTIFICATION_STATUS = FULLY_CERTIFIED
 | REQ-413 | Provider Binding Determinism | Determinism digest MUST include provider_id, model_id, gateway_version, semantic_clock_vector | Runtime digest construction + replay verification + CI determinism test | CRITICAL | Runtime, CI, Replay | EXECUTION_PATH |
 | REQ-414 | Network Egress Guard | All outbound HTTP requests to LLM-serving endpoints (including localhost) MUST originate exclusively from SovereignLLMGateway | Runtime egress filter at L2 boundary + CI test for raw requests | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-415 | Provider Substitution Prohibition | SovereignLLMGateway MUST NOT substitute provider/model on failure; any failure MUST be fail-closed | Runtime dispatch check + CI negative control test | CRITICAL | Runtime, CI | EXECUTION_PATH |
-| REQ-416 | CRITICAL Dual Enforcement Guarantee | Every CRITICAL requirement MUST have >=2 enforcement layers including at least one runtime (except ENFORCEMENT_CLASS=STRUCTURAL which requires >=1 CI/AST layer); CI MUST read ENFORCEMENT_LAYERS and ENFORCEMENT_CLASS metadata per requirement and fail if audit conditions unmet | CI enforcement audit reading per-requirement metadata + runtime meta-check | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-416 | CRITICAL Dual Enforcement Guarantee | Every CRITICAL requirement MUST have >=2 enforcement layers including at least one runtime (except ENFORCEMENT_CLASS=STRUCTURAL which requires >=1 CI/AST layer); CI MUST read ENFORCEMENT_LAYERS and ENFORCEMENT_CLASS metadata per requirement and fail if audit conditions unmet. This includes: prompt slot enforcement, embedding determinism, RAG custody, context determinism, and citation immutability. | CI enforcement audit reading per-requirement metadata + runtime meta-check | CRITICAL | Runtime, CI | EXECUTION_PATH |
 | REQ-417 | Dynamic Runtime Mutation Prohibition | Dynamic runtime mutation of classes, modules, or permissions via monkeypatch, setattr on core layer objects, importlib.reload of core modules, metaclass injection altering layer permissions, or equivalent reflection mechanisms is forbidden in all core layers (L0-L6 and apps_*); AST-only checks are insufficient -- runtime guard required at module load and class definition time | AST scan + runtime guard at module load/class definition + CI ratchet | CRITICAL | AST, Runtime, CI | EXECUTION_PATH |
+| REQ-PT-001 | Prompt Taxonomy | Prompt assembly MUST enforce slot order: [S0:System] → [I0:Instructional] → [C0:Context] → [U0:User]; any deviation aborts wave | Runtime prompt_governance validator + CI ratchet + negative control | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-PT-002 | Prompt Taxonomy | [S0] content may be authored/modified only by L5; non-L5 attempts (apps_*/L0-L4) MUST be rejected | AST boundary scan + runtime ownership validator | CRITICAL | AST, Runtime | EXECUTION_PATH |
+| REQ-PT-003 | Prompt Taxonomy | [I0] mixins MUST be allowlisted, versioned, and pointer-bound; changes require L5 approval and Promotion workflow | Runtime registry + VersionStore + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-PT-004 | Prompt Taxonomy | [C0] context MUST be strictly informational: forbid imperative verbs/tool directives; sanitize/quote any instruction-like text | Runtime sanitizer + schema validation + CI ratchet | CRITICAL | Runtime, CI, Schema | EXECUTION_PATH |
+| REQ-PT-005 | Prompt Taxonomy | All prompts MUST emit PromptBundleArtifact containing slot_hashes, slot_sources, prompt_hash, policy_hash, blueprint_hash | Schema + runtime emission + CI ratchet | CRITICAL | Runtime, Schema, CI | EXECUTION_PATH |
+| REQ-PT-006 | Prompt Taxonomy | PromptBundleArtifact MUST bind to deterministic PromptAssemblerVersion and TemplateRegistryHash | Runtime binding + replay tests | HIGH | Runtime, Replay | EXECUTION_PATH |
+| REQ-PT-007 | Prompt Taxonomy | Slot ownership MUST be enforced: [U0] cannot override [S0]/[I0]/[D0]; violations fail-closed | Runtime validator | CRITICAL | Runtime | EXECUTION_PATH |
+| REQ-PT-008 | Prompt Taxonomy | Injected [D0] fences MUST be applied pre-execution and included in prompt_hash lineage | Runtime injection engine + schema | HIGH | Runtime, Schema | EXECUTION_PATH |
+| REQ-PT-009 | Prompt Taxonomy | Prompt assembly MUST be deterministic: canonical serialization, stable ordering, no timestamps/uuid4 | Determinism tests + CI | CRITICAL | CI, Runtime | EXECUTION_PATH |
+| REQ-PT-010 | Prompt Taxonomy | All prompt templates must be referenced by content-addressed IDs; raw strings forbidden outside prompt_governance | AST scan + runtime guard | CRITICAL | AST, Runtime | EXECUTION_PATH |
+| REQ-PT-011 | Prompt Taxonomy | Negative control required: tamper slot order must yield XFAIL(strict=True) (exit 0) and restore must PASS | Pytest governance test | CRITICAL | CI | EXECUTION_PATH |
+| REQ-PT-012 | Prompt Taxonomy | Prompt determinism digest MUST include prompt_hash and template_registry_hash; both stable across 2 runs | Dual-run determinism test | CRITICAL | CI, Runtime | EXECUTION_PATH |
+| REQ-EM-001 | Embedding Utilization | Embeddings must be maximally utilized: all retrieval, clustering, similarity, and dedupe features must use embeddings where feasible | Coverage tests + CI ratchet | HIGH | CI, Runtime | EXECUTION_PATH |
+| REQ-EM-002 | Embedding Utilization | Embedder metadata MUST be bound into replay inputs (embedder_id, version, dim) | Replay tests + schema | HIGH | Replay, Schema | EXECUTION_PATH |
+| REQ-EM-003 | Embedding Utilization | Embedding caches must be deterministic: key=(query_hash, embedder_id, index_version); collisions forbidden | Runtime cache validator + tests | HIGH | Runtime, CI | EXECUTION_PATH |
+| REQ-EM-004 | Embedding Utilization | Embedding pipeline MUST hard-fail if embeddings disabled; no silent fallback to keyword-only | Runtime gate + CI | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-RAGX-001 | Agentic RAG Schema | RetrievalQuery schema MUST be enforced with required fields and deterministic sorting | Schema validator + CI | HIGH | Schema, CI | EXECUTION_PATH |
+| REQ-RAGX-002 | Agentic RAG Schema | RetrievalQuery MUST include namespace in addition to trace_id, query_hash, semantic_clock_tick, index_version, embedder_id | Schema validator | HIGH | Schema | EXECUTION_PATH |
+| REQ-RAGX-003 | Agentic RAG Schema | CitationBundle MUST include (chunk_id, source_ref, byte_sha256, byte_range, score) and be stable-sorted | Schema + determinism test | HIGH | Schema, Replay | EXECUTION_PATH |
+| REQ-RAGX-004 | Agentic RAG Schema | CitationBundle ID MUST be referenced by final output; missing citation is FAIL | Output validator + CI | HIGH | Runtime, CI | EXECUTION_PATH |
+| REQ-RAGX-005 | Agentic RAG Schema | RetrievedChunks must be byte-verified against repo bytes before use; mismatch aborts | Runtime verifier | CRITICAL | Runtime | EXECUTION_PATH |
+| REQ-RAGX-006 | Agentic RAG Schema | ExternalKnowledgeAccessViolation MUST be emitted and wave aborted if context used without CitationBundle | Runtime guard + tests | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-CTX-001 | Context Control | Context budget enforcement must occur pre-execution; over-budget must route recovery | Runtime budget guard | HIGH | Runtime | EXECUTION_PATH |
+| REQ-CTX-002 | Context Control | PreGuardSnapshot of context window MUST be captured before LLM submission; bound to prompt_hash | Schema + runtime | CRITICAL | Runtime, Schema | EXECUTION_PATH |
+| REQ-APP-001 | Application Boundary | apps_* may contribute only domain fragments; MUST NOT author policy/safety/tool prompts | AST scan + runtime guard | CRITICAL | AST, Runtime | EXECUTION_PATH |
+| REQ-APP-002 | Application Boundary | apps_* MUST NOT call provider SDKs directly; gateway-only | AST scan + CI ratchet | CRITICAL | AST, CI | EXECUTION_PATH |
+| REQ-TLM-001 | Telemetry | INCIDENT/RESULT must emit telemetry events; missing telemetry is FAIL | Runtime telemetry validator | HIGH | Runtime | EXECUTION_PATH |
+| REQ-PHJ-001 | Policy/HIL | HIL approval artifacts must be typed, signed, and semantic_clock-bound | Schema + signature test | CRITICAL | Schema, Signature, CI | EXECUTION_PATH |
+| REQ-PHJ-002 | Policy/HIL | PolicyExceptionArtifact scope must be single semantic_clock tick; reuse forbidden | Runtime validator | CRITICAL | Runtime | EXECUTION_PATH |
+| REQ-MEMX-001 | Shared Memory | Episodic memory updates must be proposal-only; no direct mutation | Runtime gate + CI | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-MEMX-002 | Shared Memory | Episodic memory MUST be queried before planning; query inputs bind to user_intent hash and semantic_clock | Runtime orchestrator invariant + schema | HIGH | Runtime, Schema | EXECUTION_PATH |
+| REQ-MEMX-003 | Shared Memory | Shared memory writes MUST be append-only and versioned; no in-place edits; changes only via ChangePackage proposals | Runtime gate + VersionStore + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-MEMX-004 | Shared Memory | Memory collisions/conflicts across agents MUST be detected deterministically and emit INCIDENT with conflicting pointers | Runtime conflict detector + replay test | HIGH | Runtime, Replay | EXECUTION_PATH |
+| REQ-MEMX-005 | Shared Memory | Memory sharing MUST prevent agent collisions: active job state is single authoritative per trace_id and is lock-protected | Runtime lock + invariant | HIGH | Runtime | EXECUTION_PATH |
+| REQ-WLD-001 | World-Check | Every CitationBundle entry MUST bind to byte_sha256; verification against repo/seed-pack bytes is required before use | Runtime verifier + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-WLD-002 | World-Check | Any mismatch between cited bytes and current world-state MUST emit INCIDENT and abort (ghost mutation detection) | Runtime invariant | CRITICAL | Runtime | EXECUTION_PATH |
+| REQ-WLD-003 | World-Check | ExecutionTrace MUST include context_set_hash covering all prompt slots and CitationBundle; mismatch fails replay | Replay test + schema | CRITICAL | Replay, Schema | EXECUTION_PATH |
+| REQ-WLD-004 | World-Check | CognitiveDiff MUST compare against a cryptographically trusted execution trace hash; advisory diffs without trusted trace are rejected | Runtime enforcement + replay test | CRITICAL | Runtime, Replay | EXECUTION_PATH |
+| REQ-DPO-001 | DPO/RLHF Bounds | RLHFOptimizer/DPO adjustments MUST be clamped to [0.1, 2.0] with per-decision delta ≤ 0.1; deterministic sorting by (control_hash, candidate_hash) | Runtime clamp + determinism test | HIGH | Runtime, Replay | EXECUTION_PATH |
+| REQ-DPO-002 | DPO/RLHF Bounds | DPO pair generation MUST be proposal-only; no direct weight updates; outputs are ChangePackage artifacts requiring approval | Runtime gate + schema | CRITICAL | Runtime, Schema | EXECUTION_PATH |
+| REQ-DPO-003 | DPO/RLHF Bounds | DPO evaluation artifacts MUST be deterministic, dataset-versioned, and bound into replay inputs and evidence packs | Replay test + CI ratchet | HIGH | Replay, CI | EXECUTION_PATH |
+| REQ-COG-001 | Cognitive Safety | Cognitive Engine MUST execute a static Policy Alignment Check prior to response formulation; failures abort wave and emit PolicyViolationArtifact | Runtime gate + CI ratchet | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-COG-002 | Cognitive Safety | Automatic prompt augmentation MUST inject dependency facts + MRO constraints, be ≤300 tokens, logged/auditable, and included in PromptBundleArtifact lineage | Runtime prompt_governance augmentation + schema | HIGH | Runtime, Schema | EXECUTION_PATH |
+| REQ-HEALX-001 | Healing Seam | HealingProviderInvoker MUST be an injectable Protocol seam; tests MUST use FakeInvoker (no network); production uses DefaultInvoker | Runtime dependency injection + CI enforcement | CRITICAL | Runtime, CI | EXECUTION_PATH |
+| REQ-HEALX-002 | Healing Seam | Invoker MUST return typed InvocationRecord (tier, model_id, trace_id, prompt_hash, replay_key); record persisted to L4 for meta-learning intake | Schema + runtime persistence | HIGH | Runtime, Schema | EXECUTION_PATH |

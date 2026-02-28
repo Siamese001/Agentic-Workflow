@@ -29,6 +29,7 @@ REQUIRED_TESTPATHS = {
     "tests/enforcement",
     "tests/governance",
     "tests/system_learning",
+    "tests/sovereign_hardening",
 }
 
 REQUIRED_NORECURSEDIRS = {"apps_rg", "apps_lic", "apps_shared", "ops_scripts", "_quarantine"}

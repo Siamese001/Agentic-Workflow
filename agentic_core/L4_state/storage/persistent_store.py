@@ -86,8 +86,9 @@ def _sanitize_id(identifier: str) -> str:
     """
     # Remove any path separators and normalize
     sanitized = re.sub(r"[^a-zA-Z0-9._-]", "_", identifier)
-    # Ensure it doesn't start with a dot or dash
-    if sanitized.startswith((".", "-")):
+    # Prefix with id_ only when it starts with a single leading dot (hidden file)
+    # or a dash — but NOT when it starts with .. (already sanitized path traversal)
+    if sanitized.startswith("-") or (sanitized.startswith(".") and not sanitized.startswith("..")):
         sanitized = "id_" + sanitized
     return sanitized
 

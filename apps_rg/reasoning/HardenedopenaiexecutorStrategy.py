@@ -13,8 +13,8 @@ Phase 1 - Pillar 8: Tool Ecosystem (Resilience Middleware)
 import logging
 from dataclasses import dataclass
 
+from agentic_core.interfaces.gateway import GenerationRequest
 from agentic_core.interfaces.observability import SystemTelemetry
-from agentic_core.L2_execution.types.gateway_types import GenerationRequest
 from agentic_core.mixins.hardening_mixin import HardeningMixin
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
@@ -102,9 +102,7 @@ class HardenedOpenAIExecutor(HardeningMixin):
 
     def _setup_client(self) -> None:
         """Delegate to SovereignLLMGateway — no direct SDK access."""
-        from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-            SovereignLLMGateway,
-        )
+        from agentic_core.interfaces.gateway import SovereignLLMGateway
 
         self._gateway = SovereignLLMGateway()
 

@@ -15,10 +15,10 @@ class RiskCorrelator:
         """Build correlated risk report from fingerprints and drift events."""
 
         # Validate input
-        if fingerprints is None:
-            raise TypeError("Fingerprints cannot be None")
-        if drift_events is None:
-            raise TypeError("Drift events cannot be None")
+        if not isinstance(fingerprints, (list, tuple)):
+            raise TypeError(f"fingerprints must be a list, got {type(fingerprints).__name__}")
+        if not isinstance(drift_events, (list, tuple)):
+            raise TypeError(f"drift_events must be a list, got {type(drift_events).__name__}")
 
         # Sort inputs for determinism
         sorted_fingerprints = sorted(fingerprints)

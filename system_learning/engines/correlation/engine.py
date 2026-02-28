@@ -39,4 +39,8 @@ class RiskCorrelator:
         fingerprints: list[str],
         drift_events: list[Any],
     ) -> CorrelatedRiskReport:
+        if not isinstance(fingerprints, list):
+            raise TypeError(f"fingerprints must be a list, got {type(fingerprints).__name__}")
+        if not isinstance(drift_events, list):
+            raise TypeError(f"drift_events must be a list, got {type(drift_events).__name__}")
         return CorrelatedRiskReport.build(fingerprints, drift_events)

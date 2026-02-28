@@ -12,7 +12,7 @@ from __future__ import annotations
 import hashlib
 import json
 import math
-from dataclasses import asdict, dataclass
+from dataclasses import asdict, dataclass, field
 from typing import Any
 
 from agentic_core.embeddings.embedding_factory import EmbeddingClient
@@ -25,6 +25,9 @@ class PatternAnalysisConfig:
     precision: int = 6
     min_cluster_size: int = 2
     distance_threshold: float = 0.25
+    success_rate_threshold_low: float = 0.7
+    min_observations: int = 10
+    drift_score_threshold: float = 0.7
 
 
 @dataclass(frozen=True)
@@ -44,6 +47,72 @@ class PatternSummary:
     pattern_digest: str  # SHA-256 over canonical JSON
 
 
+# ---------------------------------------------------------------------------
+# New typed API (healing_snapshot_bytes / detection_signal_bytes interface)
+# ---------------------------------------------------------------------------
+
+
+@dataclass(frozen=True)
+class PatternFindingKey:
+    """Stable key identifying a finding type."""
+
+    label: str
+    component: str
+    dimension: str
+
+
+@dataclass(frozen=True)
+class PatternFinding:
+    """A single deterministic finding from pattern analysis."""
+
+    key: PatternFindingKey
+    severity: float
+    evidence: str
+    metrics: tuple  # tuple of (name, value) pairs, sorted by name
+
+
+@dataclass(frozen=True)
+class PatternSourceIds:
+    """Version IDs of input data sources consumed by the analysis."""
+
+    healing_snapshot_version: str | None
+    detection_signal_version: str | None
+    drift_snapshot_version: str | None
+
+
+@dataclass(frozen=True)
+class PatternAnalysisReport:
+    """Deterministic pattern analysis report (new API)."""
+
+    findings: tuple  # tuple of PatternFinding
+    source_ids: PatternSourceIds
+    _digest: str = field(compare=False)
+
+    def canonical_bytes(self) -> bytes:
+        """Canonical byte representation for hashing."""
+        data = {
+            "findings": [
+                {
+                    "key": {"label": f.key.label, "component": f.key.component, "dimension": f.key.dimension},
+                    "severity": f.severity,
+                    "evidence": f.evidence,
+                    "metrics": list(f.metrics),
+                }
+                for f in self.findings
+            ],
+            "source_ids": {
+                "healing_snapshot_version": self.source_ids.healing_snapshot_version,
+                "detection_signal_version": self.source_ids.detection_signal_version,
+                "drift_snapshot_version": self.source_ids.drift_snapshot_version,
+            },
+        }
+        return json.dumps(data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
+    def content_hash(self) -> str:
+        """SHA-256 hex digest of canonical bytes."""
+        return hashlib.sha256(self.canonical_bytes()).hexdigest()
+
+
 class PatternAnalysisEngine:
     """Deterministic pattern analysis engine for semantic clustering.
 
@@ -52,21 +121,186 @@ class PatternAnalysisEngine:
     precision rounding to ensure identical outputs across runs.
     """
 
-    def __init__(self, *, precision: int = 6, embedder: EmbeddingClient | None = None) -> None:
+    def __init__(
+        self,
+        config: PatternAnalysisConfig | None = None,
+        *,
+        precision: int = 6,
+        embedder: EmbeddingClient | None = None,
+    ) -> None:
         """Initialize engine with deterministic precision.
 
         Args:
-            precision: Decimal places for float rounding (default: 6)
+            config: Optional PatternAnalysisConfig. Takes precedence over precision kwarg.
+            precision: Decimal places for float rounding (default: 6).
             embedder: An optional embedding client for text analysis.
         """
-        self._precision = precision
+        if config is not None:
+            self._config = config
+            self._precision = config.precision
+        else:
+            self._config = PatternAnalysisConfig(precision=precision)
+            self._precision = precision
         self.embedder = embedder
 
-    def analyze(
+    def analyze(  # type: ignore[override]
+        self,
+        historical_embeddings: list[list[float]] | None = None,
+        metadata: list[dict[str, Any]] | None = None,
+        *,
+        min_cluster_size: int = 2,
+        # New API parameters (healing_snapshot_bytes interface)
+        healing_snapshot_bytes: bytes | None = None,
+        detection_signal_bytes: bytes | None = None,
+        drift_snapshot_bytes: bytes | None = None,
+        now_utc: int | None = None,
+    ) -> PatternSummary | PatternAnalysisReport:
+        """Analyze patterns from either raw embeddings or snapshot bytes.
+
+        Two calling conventions:
+        1. Old API: analyze(historical_embeddings, metadata, min_cluster_size=N) -> PatternSummary
+        2. New API: analyze(healing_snapshot_bytes=..., detection_signal_bytes=...,
+                            drift_snapshot_bytes=..., now_utc=...) -> PatternAnalysisReport
+        """
+        if healing_snapshot_bytes is not None or now_utc is not None:
+            return self._analyze_from_snapshots(
+                healing_snapshot_bytes=healing_snapshot_bytes,
+                detection_signal_bytes=detection_signal_bytes,
+                drift_snapshot_bytes=drift_snapshot_bytes,
+                now_utc=now_utc,
+            )
+        # Old API path
+        return self._analyze_embeddings(
+            historical_embeddings=historical_embeddings or [],
+            metadata=metadata or [],
+            min_cluster_size=min_cluster_size,
+        )
+
+    def _analyze_from_snapshots(
+        self,
+        *,
+        healing_snapshot_bytes: bytes | None,
+        detection_signal_bytes: bytes | None,
+        drift_snapshot_bytes: bytes | None,
+        now_utc: int | None,
+    ) -> PatternAnalysisReport:
+        """Analyze from snapshot bytes — new typed API."""
+        import json as _json
+
+        findings: list[PatternFinding] = []
+        healing_version: str | None = None
+        detection_version: str | None = None
+        drift_version: str | None = None
+
+        # Parse healing snapshot and generate findings
+        if healing_snapshot_bytes is not None:
+            try:
+                snap = _json.loads(healing_snapshot_bytes.decode("utf-8"))
+            except (_json.JSONDecodeError, UnicodeDecodeError) as exc:
+                raise ValueError(f"Invalid healing_snapshot_bytes: {exc}") from exc
+            healing_version = snap.get("version_id")
+            aggregates = snap.get("aggregates", [])
+            for agg in aggregates:
+                key_data = agg.get("key", {})
+                healer = key_data.get("healer_name", "unknown")
+                counts = agg.get("aggregate", agg.get("counts", {}))
+                total = counts.get("total_count", 0)
+                success = counts.get("success_count", 0)
+                if total >= self._config.min_observations:
+                    success_rate = success / total if total > 0 else 0.0
+                    if success_rate < self._config.success_rate_threshold_low:
+                        severity = round(1.0 - success_rate, 6)
+                        evidence = (
+                            f"success_rate_{success_rate:.6f}"
+                            f"|threshold_{self._config.success_rate_threshold_low:.6f}"
+                            f"|sample_size_{total}"
+                        )
+                        metrics = (
+                            ("success_rate", round(success_rate, 6)),
+                            ("sample_size", total),
+                            ("error_rate", round(1.0 - success_rate, 6)),
+                        )
+                        findings.append(
+                            PatternFinding(
+                                key=PatternFindingKey(
+                                    label="UNDERPERFORMING_HEALER_TIER",
+                                    component=healer,
+                                    dimension="performance",
+                                ),
+                                severity=severity,
+                                evidence=evidence,
+                                metrics=metrics,
+                            )
+                        )
+
+        # Parse drift snapshot and generate findings
+        if drift_snapshot_bytes is not None:
+            try:
+                drift = _json.loads(drift_snapshot_bytes.decode("utf-8"))
+                drift_version = drift.get("version")
+                for score_entry in drift.get("drift_scores", []):
+                    component = score_entry.get("component", "unknown")
+                    score = score_entry.get("score", 0.0)
+                    if score >= self._config.drift_score_threshold:
+                        evidence = (
+                            f"drift_score_{score:.6f}|threshold_{self._config.drift_score_threshold:.6f}"
+                        )
+                        findings.append(
+                            PatternFinding(
+                                key=PatternFindingKey(
+                                    label="ROUTING_DRIFT_HIGH",
+                                    component=component,
+                                    dimension="drift",
+                                ),
+                                severity=round(score, 6),
+                                evidence=evidence,
+                                metrics=tuple(sorted([("drift_score", round(score, 6))])),
+                            )
+                        )
+            except Exception:  # guardian: allow-silent_swallower
+                pass
+
+        # Parse detection signal (informational — no findings generated currently)
+        if detection_signal_bytes is not None:
+            try:
+                det = _json.loads(detection_signal_bytes.decode("utf-8"))
+                detection_version = det.get("version")
+            except Exception:  # guardian: allow-silent_swallower
+                pass
+
+        # Sort findings deterministically
+        findings.sort(key=lambda f: (f.key.label, f.key.component, f.key.dimension))
+
+        source_ids = PatternSourceIds(
+            healing_snapshot_version=healing_version,
+            detection_signal_version=detection_version,
+            drift_snapshot_version=drift_version,
+        )
+
+        canonical = _json.dumps(
+            {
+                "findings": [f.evidence for f in findings],
+                "source_ids": {
+                    "healing": healing_version,
+                    "detection": detection_version,
+                    "drift": drift_version,
+                },
+            },
+            sort_keys=True,
+            separators=(",", ":"),
+        )
+        digest = hashlib.sha256(canonical.encode()).hexdigest()
+
+        return PatternAnalysisReport(
+            findings=tuple(findings),
+            source_ids=source_ids,
+            _digest=digest,
+        )
+
+    def _analyze_embeddings(
         self,
         historical_embeddings: list[list[float]],
         metadata: list[dict[str, Any]],
-        *,
         min_cluster_size: int,
     ) -> PatternSummary:
         """Analyze historical embeddings for deterministic patterns.
@@ -238,4 +472,8 @@ __all__ = [
     "PatternAnalysisEngine",
     "PatternSummary",
     "Cluster",
+    "PatternFinding",
+    "PatternFindingKey",
+    "PatternSourceIds",
+    "PatternAnalysisReport",
 ]

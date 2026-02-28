@@ -131,6 +131,12 @@ def analyze_failures(
     if window_start_utc >= window_end_utc:
         raise RCAAnalysisError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
 
+    # Normalize audit_slice: accept bytes or list-of-strings
+    if isinstance(audit_slice, list):
+        audit_slice = "\n".join(str(item) for item in audit_slice).encode("utf-8")
+    elif not isinstance(audit_slice, (bytes, bytearray)):
+        audit_slice = b""
+
     # Decode audit slice (fail-closed)
     try:
         audit_text = audit_slice.decode("utf-8")

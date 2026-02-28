@@ -18,8 +18,8 @@ class FailureFingerprinter:
     def fingerprint(self, event: FailureEvent) -> FailureFingerprint:
         """Generate deterministic fingerprint for failure event."""
         # Validate input
-        if event is None:
-            raise TypeError("FailureEvent cannot be None")
+        if not isinstance(event, FailureEvent):
+            raise TypeError(f"Expected FailureEvent, got {type(event).__name__}")
 
         # Normalize the event
         normalized_event = self._normalize_event(event)
@@ -80,9 +80,14 @@ class FailureFingerprinter:
             return "unknown_component"
 
         if not self.allow_absolute_paths:
-            # Remove absolute paths
-            component = re.sub(r"[A-Za-z]:\\[^\\]*\\|/", "", component)
-            component = re.sub(r"/[^/]*$", "", component)
+            # Normalise separators first
+            component = component.replace("\\", "/")
+            # Strip leading drive letter (Windows) or leading slash (Unix)
+            component = re.sub(r"^[A-Za-z]:/", "", component)
+            component = re.sub(r"^/", "", component)
+            # Keep only the base filename stem (strip all parent directories)
+            if "/" in component:
+                component = component.rsplit("/", 1)[-1]
 
         # Normalize separators and lowercase
         component = component.replace("\\", "/").lower()
@@ -151,6 +156,11 @@ class FailureFingerprinter:
                 str_value = str(value)
             else:
                 str_value = str(value).strip()
+                # Strip trailing line number references for stability
+                # e.g. "error at line 145" -> "error at line"
+                if key.lower() == "message":
+                    str_value = re.sub(r"\s+at line \d+$", "", str_value)
+                    str_value = re.sub(r"\s+line \d+$", "", str_value)
 
             normalized[key] = str_value
 

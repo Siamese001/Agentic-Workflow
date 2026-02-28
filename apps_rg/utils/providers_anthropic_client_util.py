@@ -17,10 +17,7 @@ def run_llm_anthropic(
     timeout_s: int,
 ) -> str:
     """Delegate to SovereignLLMGateway — no direct Anthropic SDK access."""
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-        SovereignLLMGateway,
-    )
-    from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+    from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
 
     gw = SovereignLLMGateway()
     req = GenerationRequest(

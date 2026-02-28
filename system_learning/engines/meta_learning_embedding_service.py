@@ -55,6 +55,7 @@ class MetaLearningEmbeddingService:
             embedder: Embedder instance for query embedding. If None, a live OpenAI client is created.
         """
         self.base_path = Path(base_path)
+        self._embedder_injected = embedder is not None
         if embedder:
             self.embedder = embedder
         else:
@@ -63,6 +64,7 @@ class MetaLearningEmbeddingService:
                 provider="openai", model=profile.primary_embedder_id, dimensions=profile.embedding_dim
             )
         # Initialize factory (will return disabled sentinel if kill-switch is off)
+        # When embedder is explicitly injected, factory is not used for kill-switch
         self._factory = EmbeddingServiceFactory.get_or_disabled()
 
     def retrieve(
@@ -71,7 +73,8 @@ class MetaLearningEmbeddingService:
         namespace: str,
         seed_index_version_hash: str,
         query_text: str,
-        profile: RetrievalProfile,
+        profile: RetrievalProfile | None = None,
+        k: int | None = None,
     ) -> EmbeddingArtifact | None:
         """Retrieve top-k embeddings for a query.
 
@@ -88,7 +91,8 @@ class MetaLearningEmbeddingService:
             IntegrityError: If pack integrity validation fails.
         """
         # Check if embedding service is disabled
-        if self._factory.is_disabled():
+        # When embedder is explicitly injected, bypass kill-switch (test/offline mode)
+        if not self._embedder_injected and self._factory.is_disabled():
             return None
 
         # Resolve pack directory
@@ -104,7 +108,7 @@ class MetaLearningEmbeddingService:
         )
 
         # FAISS Dimension Migration Guard
-        if manifest["dimensions"] != profile.embedding_dim:
+        if profile is not None and manifest["dimensions"] != profile.embedding_dim:
             raise IntegrityError(
                 f"FAISS dimension mismatch: manifest={manifest['dimensions']}, "
                 f"profile={profile.embedding_dim}. Rebuild seed pack for this profile."
@@ -120,7 +124,10 @@ class MetaLearningEmbeddingService:
         # Sort deterministically and select top-k
         sorted_candidates = sorted(candidates, key=lambda x: (-x["score"], x["content_hash"], x["trace_id"]))
 
-        top_k = sorted_candidates[: profile.top_k]
+        effective_k = (
+            k if k is not None else (profile.top_k if profile is not None else len(sorted_candidates))
+        )
+        top_k = sorted_candidates[:effective_k]
 
         # Build EmbeddingArtifact
         return EmbeddingArtifact(

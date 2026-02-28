@@ -5,6 +5,7 @@ import pytest
 from agentic_core.L3_orchestration.replay.deterministic_replay import (
     ReplayCommand,
     ReplayRecord,
+    ReplayResult,
     record_from_json,
     record_to_json,
     replay_and_compare,

@@ -65,21 +65,13 @@ class LocalFAISSStore:
         if self._rebuild_required.get(index_id, False):
             raise IndexNotBuiltError(f"Index {index_id} requires rebuild after pruning")
 
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} not built (in-memory fallback)")
+        # Check in-memory store first (populated by LocalEmbeddingPopulationService)
+        if index_id in self._memory_indexes:
             memory_idx = self._memory_indexes[index_id]
             return (memory_idx["vectors"], memory_idx["version_hash"], memory_idx["metadata"])
 
-        # Phase 1: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.open() - Phase 1 skeleton")
+        # No in-memory index: FAISS would be required for disk-based access
+        raise RuntimeError("FAISS is required but not installed. Install faiss-cpu or faiss-gpu.")
 
     def search(
         self,
@@ -107,17 +99,13 @@ class LocalFAISSStore:
         if self._rebuild_required.get(index_id, False):
             raise IndexNotBuiltError(f"Index {index_id} requires rebuild after pruning")
 
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
+        # Check in-memory store first
+        if index_id not in self._memory_indexes:
+            raise RuntimeError("FAISS is required but not installed. Install faiss-cpu or faiss-gpu.")
 
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback with cosine similarity
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} not built (in-memory fallback)")
+        if True:  # always use fallback in Phase 1
+            if False:  # placeholder, index already confirmed above
+                pass
 
             memory_idx = self._memory_indexes[index_id]
             vectors = memory_idx["vectors"]
@@ -312,6 +300,7 @@ class LocalFAISSStore:
         # Lazy import FAISS only when needed
         try:
             import importlib.util
+
             if importlib.util.find_spec("faiss") is None:
                 raise ImportError("FAISS not available")
             # Real FAISS implementation would go here
@@ -373,6 +362,7 @@ class LocalFAISSStore:
         # Lazy import FAISS only when needed
         try:
             import importlib.util
+
             if importlib.util.find_spec("faiss") is None:
                 raise ImportError("FAISS not available")
             # Real FAISS implementation would go here

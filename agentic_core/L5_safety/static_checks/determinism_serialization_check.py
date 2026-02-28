@@ -23,6 +23,7 @@ class DeterminismVisitor(ast.NodeVisitor):
     def visit_FunctionDef(self, node: ast.FunctionDef) -> None:
         """Track function context."""
         old_function = self.current_function
+        old_in_serialization = self.in_serialization_function
         self.current_function = node.name
 
         # Check if this is a serialization-related function
@@ -37,13 +38,14 @@ class DeterminismVisitor(ast.NodeVisitor):
             "load",
             "write",
             "read",
+            "serialize_with_timestamp",
         }
         self.in_serialization_function = node.name in serialization_functions
 
         self.generic_visit(node)
 
         # Restore state
-        self.in_serialization_function = old_function
+        self.in_serialization_function = old_in_serialization
         self.current_function = old_function
 
     def visit_Call(self, node: ast.Call) -> None:

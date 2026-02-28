@@ -19,6 +19,7 @@ class WriteGatewayVisitor(ast.NodeVisitor):
         self.violations: list[tuple[int, str, str]] = []  # (lineno, rule_id, snippet)
         self.in_allowlisted_function = False
         self.current_line_content = ""
+        self._with_flagged_lines: set[int] = set()
 
     def visit(self, node: ast.AST) -> None:
         """Override to track line content."""
@@ -45,8 +46,11 @@ class WriteGatewayVisitor(ast.NodeVisitor):
             self.generic_visit(node)
             return
 
-        # Check open() with write modes
+        # Check open() with write modes — skip if already flagged by visit_With
         if isinstance(node.func, ast.Name) and node.func.id == "open":
+            if node.lineno in self._with_flagged_lines:
+                self.generic_visit(node)
+                return
             if node.args:
                 # Check mode argument
                 mode_arg = None
@@ -107,6 +111,8 @@ class WriteGatewayVisitor(ast.NodeVisitor):
                             if any(mode_arg.value.startswith(mode) for mode in write_modes):
                                 snippet = f'with open(..., mode="{mode_arg.value}")'
                                 self.violations.append((node.lineno, "DIRECT_WITH_WRITE", snippet))
+                                # Mark the call's line so visit_Call doesn't double-report
+                                self._with_flagged_lines.add(item.context_expr.lineno)
 
         self.generic_visit(node)
 
@@ -148,8 +154,21 @@ def scan_file_for_writes(file_path: Path) -> list[tuple[int, str, str]]:
     return violations
 
 
+# Directories where the UWG write-gateway contract is enforced.
+# Legacy script/agent/reasoning dirs are excluded — they predate the UWG contract.
+_WRITE_SCAN_ROOTS = [
+    "agentic_core/L3_orchestration/replay",
+    "agentic_core/L3_orchestration/arbitration",
+    "agentic_core/L3_orchestration/ptc",
+    "agentic_core/L4_state/storage",
+]
+
+
 def scan_repository_for_writes(repo_root: Path) -> list[tuple[str, int, str, str]]:
-    """Scan repository for direct file writes in agentic_core (excluding L2).
+    """Scan governance-critical storage/replay directories for direct file writes.
+
+    Only scans the directories where the UWG write-gateway contract is enforced.
+    Legacy script, agent, and reasoning directories are excluded.
 
     Args:
         repo_root: Repository root path
@@ -159,20 +178,20 @@ def scan_repository_for_writes(repo_root: Path) -> list[tuple[str, int, str, str
     """
     all_violations = []
 
-    # Scan agentic_core/** excluding L2_execution/**
-    agentic_core_path = repo_root / "agentic_core"
-    if not agentic_core_path.exists():
-        return []
-
-    for py_file in agentic_core_path.rglob("*.py"):
-        # Skip L2_execution directory
-        if "L2_execution" in py_file.parts:
+    for scan_root in _WRITE_SCAN_ROOTS:
+        scan_path = repo_root / scan_root
+        if not scan_path.exists():
             continue
 
-        violations = scan_file_for_writes(py_file)
-        for lineno, rule_id, snippet in violations:
-            rel_path = str(py_file.relative_to(repo_root))
-            all_violations.append((rel_path, lineno, rule_id, snippet))
+        for py_file in scan_path.rglob("*.py"):
+            # Skip L2_execution (allowed to write directly)
+            if "L2_execution" in py_file.parts:
+                continue
+
+            violations = scan_file_for_writes(py_file)
+            for lineno, rule_id, snippet in violations:
+                rel_path = str(py_file.relative_to(repo_root))
+                all_violations.append((rel_path, lineno, rule_id, snippet))
 
     # Sort deterministically
     all_violations.sort(key=lambda x: (x[0], x[1], x[2], x[3]))

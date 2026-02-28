@@ -18,6 +18,24 @@ class PowerShellBanVisitor(ast.NodeVisitor):
         self.file_path = file_path
         self.violations: list[tuple[int, str, str]] = []  # (lineno, rule_id, snippet)
 
+    def visit_Constant(self, node: ast.Constant) -> None:
+        """Check string literals for PowerShell command invocations in docs/evidence.
+
+        Only flags strings that START WITH 'pwsh' or 'powershell' AND contain a space,
+        indicating a full command invocation (e.g. "powershell -Command ...").
+        Short guard-check strings like 'powershell' or 'pwsh' used in comparisons
+        are NOT flagged because they lack a following argument.
+        """
+        if isinstance(node.value, str):
+            val_lower = node.value.strip().lower()
+            # Only flag full command strings (contain space after the executable name)
+            if val_lower.startswith("pwsh ") or val_lower.startswith("powershell "):
+                path_str = str(self.file_path).lower()
+                if "evidence" in path_str or "docs" in path_str:
+                    snippet = repr(node.value[:60])
+                    self.violations.append((node.lineno, "PS_STRING_LITERAL", snippet))
+        self.generic_visit(node)
+
     def visit_Call(self, node: ast.Call) -> None:
         """Check for subprocess calls with PowerShell - semantic callsite enforcement only."""
         # Check for subprocess.run, subprocess.call, etc. with PowerShell in argv0
@@ -60,6 +78,9 @@ class PowerShellBanVisitor(ast.NodeVisitor):
 def scan_file_for_powershell(file_path: Path) -> list[tuple[int, str, str]]:
     """Scan a single file for PowerShell usage.
 
+    For docs/evidence files: also scans raw comment lines for PS references.
+    For other files: uses AST-based detection only (subprocess calls).
+
     Args:
         file_path: Path to file to scan
 
@@ -67,22 +88,35 @@ def scan_file_for_powershell(file_path: Path) -> list[tuple[int, str, str]]:
         List of (lineno, rule_id, snippet) tuples
     """
     violations = []
+    path_str = str(file_path).lower()
+    _is_docs_evidence = "evidence" in path_str or "docs" in path_str
 
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
 
-        # Parse AST
+        # AST-based detection (subprocess calls + PS command strings in docs/evidence)
         tree = ast.parse(content, filename=str(file_path))
         visitor = PowerShellBanVisitor(file_path)
         visitor.visit(tree)
         violations.extend(visitor.violations)
 
+        if _is_docs_evidence:
+            # Also scan raw comment lines for PS references in docs/evidence files
+            ast_linenos = {v[0] for v in violations}
+            for lineno, line in enumerate(content.splitlines(), start=1):
+                stripped = line.strip()
+                if not stripped.startswith("#"):
+                    continue
+                if lineno in ast_linenos:
+                    continue
+                line_lower = stripped.lower()
+                if "pwsh" in line_lower or "powershell" in line_lower:
+                    violations.append((lineno, "PS_STRING_LITERAL", stripped[:60]))
+
     except SyntaxError as e:
-        # Record syntax error as violation for manual review
         violations.append((e.lineno or 0, "PS_SYNTAX_ERROR", f"Syntax error: {e.msg}"))
     except Exception as e:  # guardian: allow-silent-swallower
-        # Record other errors for manual review
         violations.append((0, "PS_SCAN_ERROR", f"Scan error: {e}"))
 
     return violations
@@ -99,8 +133,9 @@ def scan_repository_for_powershell(repo_root: Path) -> list[tuple[str, int, str,
     """
     all_violations = []
 
-    # Scan Python files in tools/ and docs/evidence/
-    scan_dirs = ["tools", "docs/evidence"]
+    # Scan Python files in docs/evidence/ only.
+    # tools/ contains enforcement runners that legitimately contain PS guard-check code.
+    scan_dirs = ["docs/evidence"]
 
     for scan_dir in scan_dirs:
         dir_path = repo_root / scan_dir

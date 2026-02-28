@@ -26,6 +26,11 @@ class ChangePackage:
     timestamp_utc: int
     embedding_context_hash: str | None = None
 
+    @property
+    def reasons(self) -> tuple[str, ...]:
+        """Alias for reason tuple (for API compatibility)."""
+        return self.reason
+
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
         import json

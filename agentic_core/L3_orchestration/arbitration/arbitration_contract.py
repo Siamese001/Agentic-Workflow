@@ -23,7 +23,7 @@ class AdvisorProposal:
     artifacts: list[str] = field(default_factory=list)
 
     def __post_init__(self):
-        """Validate proposal constraints."""
+        """Validate proposal constraints and normalize list ordering."""
         if not self.advisor_id:
             raise ValueError("advisor_id cannot be empty")
         if not self.decision:
@@ -36,6 +36,10 @@ class AdvisorProposal:
             raise ValueError("risk items cannot be empty")
         if any(not a for a in self.artifacts):
             raise ValueError("artifact items cannot be empty")
+        # Normalize to sorted order for deterministic equality
+        object.__setattr__(self, "rationale", sorted(self.rationale))
+        object.__setattr__(self, "risks", sorted(self.risks))
+        object.__setattr__(self, "artifacts", sorted(self.artifacts))
 
 
 @dataclass(frozen=True)
@@ -69,11 +73,14 @@ class ArbitrationDecision:
     merged_risks: list[str] = field(default_factory=list)
 
     def __post_init__(self):
-        """Validate decision constraints."""
+        """Validate decision constraints and normalize list ordering."""
         if not self.selected_advisor_id:
             raise ValueError("selected_advisor_id cannot be empty")
         if not self.selected_decision:
             raise ValueError("selected_decision cannot be empty")
+        # Normalize to sorted order for deterministic equality
+        object.__setattr__(self, "merged_rationale", sorted(self.merged_rationale))
+        object.__setattr__(self, "merged_risks", sorted(self.merged_risks))
 
 
 # =============================================================================
