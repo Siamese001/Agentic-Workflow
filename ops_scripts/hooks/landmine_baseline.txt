@@ -1591,6 +1591,7 @@ system_learning/ports/healing_pattern_advisor.py:19:magic_configuration:Magic co
 system_learning/ports/meta_outcome_bus_hook.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:110:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/check_vram.py:3:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 tools/evidence/_w_ast_fix_evidence.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/_w_ast_fix_evidence.py:180:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/e2e_gemini_qwen_runner.py:138:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
