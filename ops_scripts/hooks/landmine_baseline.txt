@@ -1513,6 +1513,33 @@ artifacts/windsurf/phase3/_run_import_check_phase3.py:9:global_mutation:Global m
 artifacts/windsurf/phase3/_run_phase3_determinism_check.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 artifacts/windsurf/phase3/_run_phase3_discovery1.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 artifacts/windsurf/phase3/_run_phase3_discovery2.py:11:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+artifacts/windsurf/run_qwen_e2e.py:123:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+artifacts/windsurf/run_qwen_e2e.py:139:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+artifacts/windsurf/run_qwen_e2e.py:142:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+artifacts/windsurf/run_qwen_e2e.py:14:magic_configuration:Magic configuration: Hardcoded timeout=30
+artifacts/windsurf/run_qwen_e2e.py:175:global_mutation:Global mutation: os.environ['VLLM_BASE_URL'] assignment modifies global state at runtime
+artifacts/windsurf/run_qwen_e2e.py:176:global_mutation:Global mutation: os.environ['VLLM_MODEL_NAME'] assignment modifies global state at runtime
+artifacts/windsurf/run_qwen_e2e.py:180:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+artifacts/windsurf/run_qwen_e2e.py:194:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+artifacts/windsurf/run_qwen_e2e.py:229:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:233:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:259:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
+artifacts/windsurf/run_qwen_e2e.py:273:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:274:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:27:magic_configuration:Magic configuration: Hardcoded timeout=60
+artifacts/windsurf/run_qwen_e2e.py:284:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+artifacts/windsurf/run_qwen_e2e.py:297:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:298:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:47:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:48:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+artifacts/windsurf/run_qwen_e2e.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+artifacts/windsurf/run_qwen_e2e.py:66:magic_configuration:Magic configuration: Hardcoded timeout=5
+artifacts/windsurf/run_qwen_e2e.py:72:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+artifacts/windsurf/run_qwen_e2e.py:78:magic_configuration:Magic configuration: Hardcoded timeout=20 in function call
+artifacts/windsurf/run_qwen_e2e.py:85:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+artifacts/windsurf/run_qwen_e2e.py:88:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+artifacts/windsurf/run_qwen_e2e.py:89:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
+artifacts/windsurf/run_qwen_e2e.py:99:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
 artifacts/windsurf/shared/_make_typed.py:15:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 artifacts/windsurf/shared/_make_typed.py:16:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 artifacts/windsurf/shared/_rebuild_evidence.py:30:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
