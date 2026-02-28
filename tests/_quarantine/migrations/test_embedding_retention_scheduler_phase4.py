@@ -1,3 +1,6 @@
+# QUARANTINE: migration/phase-specific test
+# DELETE AFTER: Retention scheduler promoted to production and FAISS available in CI
+# Superseded by: tests/governance/test_embedding_invariants.py (INV-EMB-1)
 """Phase 4 contract tests for embedding retention scheduler.
 
 Tests prune/rebuild cycle, determinism, and invalidation enforcement.
@@ -14,7 +17,6 @@ from system_learning.engines.embedding_retention_scheduler import (
     EmbeddingRetentionScheduler,
 )
 from system_learning.engines.local_embedding_population_service import (
-    EmbeddingProvider,
     LocalEmbeddingPopulationService,
 )
 from system_learning.engines.local_faiss_store import LocalFAISSStore
@@ -28,7 +30,7 @@ class FakeEmbedder:
         out = []
         for text in texts:
             # Use SHA-256 of text to generate deterministic vector
-            h = hashlib.sha256(text.encode('utf-8')).digest()
+            h = hashlib.sha256(text.encode("utf-8")).digest()
             # Map bytes to float values in [0, 1]
             v = [(h[i % 32] / 255.0) for i in range(dimension)]
             out.append(v)
@@ -69,13 +71,10 @@ def test_prune_blocks_open_search_until_rebuild():
             {"text": "beta", "trace_id": "t2", "content_hash": "c2"},
             {"text": "gamma", "trace_id": "t3", "content_hash": "c3"},
         ]
-        test_file.write_text(
-            "\n".join(json.dumps(record) for record in test_data),
-            encoding="utf-8"
-        )
+        test_file.write_text("\n".join(json.dumps(record) for record in test_data), encoding="utf-8")
 
         # Build index
-        metadata = service.populate_from_jsonl(
+        metadata = service.populate_from_jsonl(  # noqa: F841
             index_id="test_index",
             source_files=[test_file],
             dimension=8,
@@ -95,14 +94,14 @@ def test_prune_blocks_open_search_until_rebuild():
         assert removed == 1
 
         # After prune, open and search should fail
-        with pytest.raises(Exception):  # IndexNotBuiltError
+        with pytest.raises(Exception):  # noqa: B017  # IndexNotBuiltError
             store.open("test_index")
 
-        with pytest.raises(Exception):  # IndexNotBuiltError
+        with pytest.raises(Exception):  # noqa: B017  # IndexNotBuiltError
             store.search("test_index", [1.0] * 8, top_k=5, cutoff=0.0)
 
         # Rebuild
-        new_metadata = store.rebuild(
+        new_metadata = store.rebuild(  # noqa: F841  # rebuild required to re-enable index
             "test_index",
             built_at_utc=1234567891,
             canonicalization_version="canon-v1",
@@ -144,10 +143,7 @@ def test_prune_determinism():
             {"text": "beta", "trace_id": "t2", "content_hash": "c2"},
             {"text": "gamma", "trace_id": "t3", "content_hash": "c3"},
         ]
-        test_file.write_text(
-            "\n".join(json.dumps(record) for record in test_data),
-            encoding="utf-8"
-        )
+        test_file.write_text("\n".join(json.dumps(record) for record in test_data), encoding="utf-8")
 
         # Function to build, prune, and rebuild
         def build_prune_rebuild():
@@ -220,13 +216,10 @@ def test_telemetry_policy_rolling_window():
             {"text": "new", "trace_id": "t2", "content_hash": "c2", "created_utc": 2000000},
             {"text": "newer", "trace_id": "t3", "content_hash": "c3", "created_utc": 3000000},
         ]
-        test_file.write_text(
-            "\n".join(json.dumps(record) for record in test_data),
-            encoding="utf-8"
-        )
+        test_file.write_text("\n".join(json.dumps(record) for record in test_data), encoding="utf-8")
 
         # Build index
-        metadata = service.populate_from_jsonl(
+        metadata = service.populate_from_jsonl(  # noqa: F841
             index_id="telemetry_events_v1",
             source_files=[test_file],
             dimension=8,
@@ -268,5 +261,5 @@ def test_telemetry_policy_rolling_window():
         results = store.search("telemetry_events_v1", [1.0] * 8, top_k=5, cutoff=0.0)
         trace_ids = [r[1] for r in results]
         assert "t1" not in trace_ids  # "old" should be pruned
-        assert "t2" in trace_ids     # "new" should remain
-        assert "t3" in trace_ids     # "newer" should remain
+        assert "t2" in trace_ids  # "new" should remain
+        assert "t3" in trace_ids  # "newer" should remain

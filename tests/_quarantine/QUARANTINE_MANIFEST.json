@@ -10,9 +10,9 @@
   ],
   "ceiling": {
     "_description": "Non-increasing ceilings. To raise: update ceiling value + add rationale to commit message.",
-    "total": 49,
+    "total": 58,
     "by_category": {
-      "assertion_rot": 4,
+      "assertion_rot": 13,
       "infra_required": 20,
       "missing_dep": 7,
       "missing_module": 11,
@@ -313,6 +313,60 @@
       "category": "missing_module",
       "primary_dep": "L5_safety.config",
       "re_enable": "Restore L5_safety.config.structure_blueprint_config import path"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_phase10_embedding_non_mutation.py",
+      "category": "assertion_rot",
+      "primary_dep": "openai_provider",
+      "re_enable": "OpenAI provider removed; superseded by test_embedding_invariants.py"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_phase11_universal_replay_lock.py",
+      "category": "assertion_rot",
+      "primary_dep": "bge_provider",
+      "re_enable": "BGE is canonical generator; superseded by test_replay_determinism_invariants.py"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_phase12_write_gateway_bypass.py",
+      "category": "assertion_rot",
+      "primary_dep": "write_gateway_ci",
+      "re_enable": "Write gateway bypass scanner promoted to standalone CI check"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_phase13_structural_non_mutation.py",
+      "category": "assertion_rot",
+      "primary_dep": "structural_non_mutation",
+      "re_enable": "Superseded by test_embedding_invariants.py INV-EMB-1"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_openai_embedder_stub_b5.py",
+      "category": "assertion_rot",
+      "primary_dep": "openai_provider",
+      "re_enable": "OpenAI provider removed from system_learning engines"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_embedding_retention_scheduler_phase4.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and retention scheduler promoted to production"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_local_faiss_store_phase1_contract.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_local_embedding_population_service_phase2.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_historical_ingestion_phase3.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
     }
   ]
 }

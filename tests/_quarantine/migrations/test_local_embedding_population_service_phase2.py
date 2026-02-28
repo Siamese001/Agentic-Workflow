@@ -1,3 +1,6 @@
+# QUARANTINE: migration/phase-specific test
+# DELETE AFTER: LocalEmbeddingPopulationService phase migration complete; FAISS available in CI
+# Superseded by: tests/governance/test_embedding_invariants.py (INV-EMB-1)
 """Phase 2 contract tests for LocalEmbeddingPopulationService.
 
 Tests deterministic pipeline, hash reproducibility, ordering invariance,

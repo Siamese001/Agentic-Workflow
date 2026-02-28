@@ -1,3 +1,6 @@
+# QUARANTINE: migration/provider-specific test
+# DELETE AFTER: OpenAI provider removed and invariants fully covered by test_embedding_invariants.py
+# Superseded by: tests/governance/test_embedding_invariants.py (INV-EMB-1, INV-EMB-2)
 """Phase 10: High-Signal Embedding Activation — HS-1..HS-6
 
 Tests for:

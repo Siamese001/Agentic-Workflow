@@ -1,3 +1,6 @@
+# QUARANTINE: migration/provider-specific test
+# DELETE AFTER: BGE is canonical generator and replay invariants fully covered by test_replay_determinism_invariants.py
+# Superseded by: tests/governance/test_replay_determinism_invariants.py (INV-RPL-1, INV-RPL-2)
 """
 W11 Universal Replay Lock Test
 

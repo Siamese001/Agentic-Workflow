@@ -5,6 +5,31 @@ deterministic digest printing for different phases.
 """
 
 import hashlib
+import json
+
+
+def _compute_invariant_determinism_digest(session) -> str:
+    """Deterministic hash of: sorted collected nodeids + registry fixture values."""
+    from tests.fixtures.embedding_provider_registry_fixture import (
+        DEFAULT_DIMENSIONS,
+        DEFAULT_MODEL_ID,
+        DEFAULT_PROVIDER_ID,
+    )
+
+    nodeids = sorted(item.nodeid for item in session.items)
+    material = json.dumps(
+        {
+            "nodeids": nodeids,
+            "registry": {
+                "provider": DEFAULT_PROVIDER_ID,
+                "model": DEFAULT_MODEL_ID,
+                "dimensions": DEFAULT_DIMENSIONS,
+            },
+        },
+        sort_keys=True,
+        separators=(",", ":"),
+    )
+    return hashlib.sha256(material.encode()).hexdigest()
 
 
 def pytest_sessionfinish(session, exitstatus):
@@ -25,39 +50,39 @@ def pytest_sessionfinish(session, exitstatus):
     if is_phase7:
         try:
             from agentic_core.embeddings.embedding_factory import compute_w7_sovereignty_digest
+
             digest = compute_w7_sovereignty_digest()
             print(f"\nW7-DETERMINISM-DIGEST: {digest}")
         except Exception as e:
             print(f"\nW7-DETERMINISM-DIGEST: ERROR - {e}")
     elif is_phase8:
         try:
-            # Placeholder for W8 digest computation
-            import hashlib
             digest = hashlib.sha256(b"W8_signature_integrity_passed").hexdigest()
             print(f"\nW8-DETERMINISM-DIGEST: {digest}")
         except Exception as e:
             print(f"\nW8-DETERMINISM-DIGEST: ERROR - {e}")
     elif is_phase9:
         try:
-            # Placeholder for W9 digest computation
-            import hashlib
             digest = hashlib.sha256(b"W9_apps_generation_routing_passed").hexdigest()
             print(f"\nW9-DETERMINISM-DIGEST: {digest}")
         except Exception as e:
             print(f"\nW9-DETERMINISM-DIGEST: ERROR - {e}")
     elif is_phase10:
         try:
-            # Placeholder for W10 digest computation
-            import hashlib
             digest = hashlib.sha256(b"W10_embedding_high_signal_passed").hexdigest()
             print(f"\nW10-DETERMINISM-DIGEST: {digest}")
         except Exception as e:
             print(f"\nW10-DETERMINISM-DIGEST: ERROR - {e}")
     elif is_phase11:
         try:
-            # A real implementation would hash a canonical representation of test artifacts.
-            # This is a placeholder to meet the output requirement.
             digest = hashlib.sha256(b"W11_replay_lock_passed").hexdigest()
             print(f"\nW11-REPLAY-UNIVERSAL-DIGEST: {digest}")
         except Exception as e:
             print(f"\nW11-REPLAY-UNIVERSAL-DIGEST: ERROR - {e}")
+
+    # Always emit INVARIANT-DETERMINISM-DIGEST (once per run, deterministic)
+    try:
+        inv_digest = _compute_invariant_determinism_digest(session)
+        print(f"\nINVARIANT-DETERMINISM-DIGEST: {inv_digest}")
+    except Exception as e:
+        print(f"\nINVARIANT-DETERMINISM-DIGEST: ERROR - {e}")

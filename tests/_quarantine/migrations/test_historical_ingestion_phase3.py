@@ -1,3 +1,6 @@
+# QUARANTINE: migration/phase-specific test
+# DELETE AFTER: Historical ingestion phase migration complete; FAISS available in CI
+# Superseded by: tests/governance/test_replay_determinism_invariants.py (INV-RPL-1)
 """Phase 3 contract tests for historical ingestion orchestrator.
 
 Tests deterministic corpus writing, ordering invariance, end-to-end builds,

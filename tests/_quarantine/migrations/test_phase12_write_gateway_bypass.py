@@ -1,3 +1,6 @@
+# QUARANTINE: migration/phase-specific test
+# DELETE AFTER: Write gateway bypass scanner promoted to standalone CI check
+# Superseded by: tests/governance/test_gateway_egress_invariants.py (INV-GW-1)
 """W12: Write Gateway Sovereignty Governance Test.
 
 Verifies that no direct filesystem write operations occur outside of the

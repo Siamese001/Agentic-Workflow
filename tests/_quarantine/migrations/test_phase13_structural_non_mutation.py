@@ -1,3 +1,6 @@
+# QUARANTINE: migration/phase-specific test
+# DELETE AFTER: Structural non-mutation invariants fully covered by test_embedding_invariants.py (INV-EMB-1)
+# Superseded by: tests/governance/test_embedding_invariants.py (INV-EMB-1)
 """W13: Structural Non-Mutation Enforcement Governance Test.
 
 Verifies that embedding artifacts are structurally incapable of influencing
