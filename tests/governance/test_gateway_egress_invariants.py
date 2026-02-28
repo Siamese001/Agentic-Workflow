@@ -107,10 +107,7 @@ def test_llm_egress_only_via_sovereign_gateway():
                 violations[canon] = hits
 
     if tamper == "1":
-        pytest.xfail(
-            strict=True,
-            reason="SPRAWL_NEGCTRL_TAMPER=1: INV-GW-1 xfail — tamper mode active",
-        )
+        pytest.xfail(reason="SPRAWL_NEGCTRL_TAMPER=1: INV-GW-1 xfail — tamper mode active")
 
     assert not violations, "INV-GW-1 VIOLATION — direct SDK imports outside sovereign gateway:\n" + "\n".join(
         f"  {p}: {v}" for p, vs in violations.items() for v in vs

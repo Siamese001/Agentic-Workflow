@@ -146,10 +146,7 @@ def test_no_direct_provider_sdk_imports_for_embeddings_or_llm():
                 violations[canon] = hits
 
     if tamper == "1":
-        pytest.xfail(
-            strict=True,
-            reason="SPRAWL_NEGCTRL_TAMPER=1: INV-SBS-1 xfail — tamper mode active",
-        )
+        pytest.xfail(reason="SPRAWL_NEGCTRL_TAMPER=1: INV-SBS-1 xfail — tamper mode active")
 
     assert not violations, "INV-SBS-1 VIOLATION — direct provider SDK imports outside factory:\n" + "\n".join(
         f"  {p}: {v}" for p, vs in violations.items() for v in vs
@@ -175,10 +172,7 @@ def test_no_model_string_literals_outside_registry_allowlist():
             violations[canon] = hits
 
     if tamper == "1":
-        pytest.xfail(
-            strict=True,
-            reason="SPRAWL_NEGCTRL_TAMPER=1: INV-SBS-2 xfail — tamper mode active",
-        )
+        pytest.xfail(reason="SPRAWL_NEGCTRL_TAMPER=1: INV-SBS-2 xfail — tamper mode active")
 
     assert not violations, "INV-SBS-2 VIOLATION — provider/model literals outside registry:\n" + "\n".join(
         f"  {p}: {v}" for p, vs in violations.items() for v in vs

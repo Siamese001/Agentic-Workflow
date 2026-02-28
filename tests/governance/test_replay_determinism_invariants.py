@@ -43,10 +43,7 @@ def test_replay_artifacts_stable_across_two_runs():
     result2 = engine.replay(base_profile=base, candidate_profile=candidate)
 
     if tamper == "1":
-        pytest.xfail(
-            strict=True,
-            reason="SPRAWL_NEGCTRL_TAMPER=1: INV-RPL-1 xfail — tamper mode active",
-        )
+        pytest.xfail(reason="SPRAWL_NEGCTRL_TAMPER=1: INV-RPL-1 xfail — tamper mode active")
 
     assert result1.replay_digest == result2.replay_digest, (
         "INV-RPL-1 VIOLATION — replay digest not stable across runs: "

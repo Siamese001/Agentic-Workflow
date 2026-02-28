@@ -135,10 +135,7 @@ def test_no_direct_embedding_client_instantiation_outside_factory():
                 violations[canon] = hits
 
     if tamper == "1":
-        pytest.xfail(
-            strict=True,
-            reason="SPRAWL_NEGCTRL_TAMPER=1: INV-EMB-2 xfail — tamper mode active",
-        )
+        pytest.xfail(reason="SPRAWL_NEGCTRL_TAMPER=1: INV-EMB-2 xfail — tamper mode active")
 
     assert not violations, "INV-EMB-2 VIOLATION — direct SDK instantiation outside factory:\n" + "\n".join(
         f"  {p}: {v}" for p, vs in violations.items() for v in vs
