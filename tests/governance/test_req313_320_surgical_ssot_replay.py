@@ -236,15 +236,15 @@ class TestSurgicalSSOTReplay:
         change_a = SurgicalChange(
             target="order_test.py",
             operation="insert",
-            content="A",
+            content="FIRST",
             line_number=0
         )
         
         change_b = SurgicalChange(
             target="order_test.py",
             operation="insert",
-            content="B",
-            line_number=1
+            content="SECOND",
+            line_number=0  # both insert at position 0 → order matters
         )
         
         # Manifest 1: A then B

@@ -118,25 +118,41 @@ class TestPromotionTokenTimeBounded:
     
     def test_token_issuer_time_validation(self):
         """Test time validation through token issuer."""
-        # Given - Token issued at tick 100
-        token = self.issuer.issue_promotion_token(
+        # Each validate_token call consumes the nonce (single-use),
+        # so we issue a fresh token per validation point.
+        token_100 = self.issuer.issue_promotion_token(
             target_namespace="issuer_time",
             semantic_clock_tick=100,
             window_size=10
         )
-        
-        # When/Then - Should validate at current time
-        assert self.issuer.validate_token(token, "issuer_time", 100), \
+        token_105 = self.issuer.issue_promotion_token(
+            target_namespace="issuer_time",
+            semantic_clock_tick=100,
+            window_size=10
+        )
+        token_110 = self.issuer.issue_promotion_token(
+            target_namespace="issuer_time",
+            semantic_clock_tick=100,
+            window_size=10
+        )
+        token_111 = self.issuer.issue_promotion_token(
+            target_namespace="issuer_time",
+            semantic_clock_tick=100,
+            window_size=10
+        )
+
+        # When/Then - Should validate at various ticks within window
+        assert self.issuer.validate_token(token_100, "issuer_time", 100), \
             "Should validate at issue time"
-        
-        assert self.issuer.validate_token(token, "issuer_time", 105), \
+
+        assert self.issuer.validate_token(token_105, "issuer_time", 105), \
             "Should validate within window"
-        
-        assert self.issuer.validate_token(token, "issuer_time", 110), \
+
+        assert self.issuer.validate_token(token_110, "issuer_time", 110), \
             "Should validate at window end"
-        
+
         # Should not validate after window
-        assert not self.issuer.validate_token(token, "issuer_time", 111), \
+        assert not self.issuer.validate_token(token_111, "issuer_time", 111), \
             "Should not validate after window"
     
     def test_token_time_window_persistence(self):

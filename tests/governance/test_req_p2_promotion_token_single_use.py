@@ -175,21 +175,33 @@ class TestPromotionTokenSingleUse:
     
     def test_single_use_with_time_window_expiration(self):
         """Test interaction between single-use and time window expiration."""
-        # Given - Issue token with small time window
-        token = issue_promotion_token(
+        # Given - Issue token with semantic_clock_tick that puts the window in the past
+        # tick=100, window_size=5 -> window=(100, 105)
+        # For token.validate_scope_and_use() to fail due to expiration,
+        # we need semantic_clock_tick to be outside window (already past end)
+        # Use tick=200 to issue so window=(200, 205), but stored tick=200,
+        # then manually construct an expired token for this test
+        from promotion_token import PromotionToken
+        import secrets
+        expired_token = PromotionToken(
+            token_id=f"promo_{secrets.token_hex(8)}",
             target_namespace="time_single_use",
-            semantic_clock_tick=100,
-            window_size=5
+            semantic_clock_window=(50, 55),  # window ended at 55
+            replay_digest_binding="",
+            single_use_nonce=secrets.token_hex(16),
+            guardian_signature="guardian_sig",
+            semantic_clock_tick=100,  # current tick is 100, past window end 55
+            allowed_action="pointer_update",
         )
-        
-        # When - Use after expiration
-        expired_use = token.validate_scope_and_use()
-        
+
+        # When - Use after expiration (tick=100 > window_end=55)
+        expired_use = expired_token.validate_scope_and_use()
+
         # Then - Should fail due to expiration
         assert not expired_use, "Expired token should not validate"
-        
+
         # Even if we try to "use" it again, should still fail
-        assert not token.validate_scope_and_use(), \
+        assert not expired_token.validate_scope_and_use(), \
             "Expired token should not validate even on retry"
     
     def test_single_use_clear_all_resets_state(self):

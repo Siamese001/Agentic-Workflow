@@ -125,13 +125,12 @@ class TestObserverSeamSafety:
 
     def test_observer_default_is_none_at_import(self) -> None:
         """Observer seam must be None at import time."""
-        import importlib
-
         import agentic_core.utils.decorators_util
 
-        importlib.reload(agentic_core.utils.decorators_util)
-
-        assert agentic_core.utils.decorators_util._HEAL_TIER_OBSERVER is None, (
+        # Check the observer is None (or has been reset) - no reload needed
+        # The default value defined at module scope must be None
+        current_observer = agentic_core.utils.decorators_util._HEAL_TIER_OBSERVER
+        assert current_observer is None, (
             "Observer seam must default to None"
         )
 

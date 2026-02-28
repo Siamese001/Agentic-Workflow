@@ -98,7 +98,7 @@ class TestPromotionGatewayAuthority:
         promotion_mutations = [m for m in ledger if "promotion" in m.path]
         assert len(promotion_mutations) > 0, "Should record promotion mutation"
         
-        mutation = promotion_mutations[0]
+        mutation = promotion_mutations[-1]
         assert mutation.operation == "promotion_pointer_update", \
             "Should record correct operation"
         assert "record_test" in mutation.path, "Should include namespace"

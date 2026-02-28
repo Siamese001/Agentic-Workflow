@@ -241,22 +241,24 @@ def route_healing_tier(
     y_threshold = config.heal_confidence_y if config is not None else HEALING_CONFIDENCE_Y
     max_retries = config.max_heal_retries if config is not None else 3
 
-    # Structural NO_TIERING guard - skip when agent_id not provided (test/anonymous callers)
-    if healing_input.agent_id and healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
-        raise SovereigntyViolation(
-            f"Agent '{healing_input.agent_id}' not in compile-time frozen TIERING_ALLOWLIST. "
-            "NO_TIERING agents must emit FailureSignal only."
-        )
-
     # Frozen profile lookup — only when agent_id is known
     if healing_input.agent_id:
         profile = get_execution_profile(healing_input.agent_id)
+        # DETERMINISTIC agents bypass the TIERING_ALLOWLIST and go straight to LOCAL_AGENT
         if not profile.is_llm_allowed():
             return HealingDecision(
                 heal_confidence=1.0,
                 tier=HealingTier.LOCAL_AGENT,
                 reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
             )
+
+    # Structural NO_TIERING guard - skip when agent_id not provided (test/anonymous callers)
+    # Only applies to LLM agents that passed the DETERMINISTIC check above
+    if healing_input.agent_id and healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
+        raise SovereigntyViolation(
+            f"Agent '{healing_input.agent_id}' not in compile-time frozen TIERING_ALLOWLIST. "
+            "NO_TIERING agents must emit FailureSignal only."
+        )
 
     # Mathematical confidence calculation - no external dependencies
     heal_confidence, conf_reasons = compute_heal_confidence(

@@ -93,15 +93,17 @@ class BlastRadiusCalculator:
         Returns:
             Size in bytes
         """
-        # Serialize to estimate size
+        # Serialize attribute values for accurate byte estimation
         try:
-            proposal_str = str(proposal)
+            if hasattr(proposal, '__dict__'):
+                proposal_str = str(proposal.__dict__)
+            else:
+                proposal_str = str(proposal)
             return len(proposal_str.encode('utf-8'))
         except Exception:
-            # Fallback estimation
             if hasattr(proposal, '__dict__'):
-                return len(proposal.__dict__) * 100  # 100 bytes per attribute estimate
-            return 1000  # Default estimate
+                return len(proposal.__dict__) * 100
+            return 1000
 
     def _calculate_mutation_depth(self, proposal: Any) -> int:
         """Calculate the depth of mutations this proposal would cause.
@@ -114,20 +116,30 @@ class BlastRadiusCalculator:
         """
         depth = 1
 
-        # Check for nested structures
+        def _is_nested(val: Any) -> bool:
+            if hasattr(val, '__dict__'):
+                return True
+            if isinstance(val, (dict, list, tuple)):
+                return len(val) > 0
+            return False
+
+        # Check for nested structures on object attributes
         if hasattr(proposal, '__dict__'):
             for value in proposal.__dict__.values():
-                if hasattr(value, '__dict__'):
+                if _is_nested(value):
                     depth = max(depth, 2)
-                    # Check deeper nesting
-                    for nested in value.__dict__.values():
-                        if hasattr(nested, '__dict__'):
+                    # Check one level deeper
+                    sub_iter = (value.values() if isinstance(value, dict)
+                                else (value if isinstance(value, (list, tuple))
+                                      else value.__dict__.values()))
+                    for nested in sub_iter:
+                        if _is_nested(nested):
                             depth = max(depth, 3)
 
-        # Check for collection types
+        # Check for collection types at top level
         if isinstance(proposal, (list, tuple, dict)):
-            if any(hasattr(item, '__dict__') for item in
-                  (proposal.values() if isinstance(proposal, dict) else proposal)):
+            items = (proposal.values() if isinstance(proposal, dict) else proposal)
+            if any(_is_nested(item) for item in items):
                 depth = max(depth, 2)
 
         return min(depth, 5)

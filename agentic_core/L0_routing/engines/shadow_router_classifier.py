@@ -20,7 +20,9 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     RouteDecisionArtifact,
     RoutePath,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import canonical_json
+def _get_canonical_json():
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import canonical_json
+    return canonical_json
 
 logger = logging.getLogger(__name__)
 

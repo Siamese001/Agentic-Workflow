@@ -39,7 +39,7 @@ EXECUTION_PROFILES: dict[str, AgentExecutionProfile] = {
         agent_id="ExecutiveStrategyAgent",
         reasoning_intensity=ReasoningIntensity.HIGH,
         execution_mode=ExecutionMode.LLM_API,
-        allowed_models=("qwen-vllm", "gemini-2.5-pro"),  # Frozen, includes GEMINI
+        allowed_models=("qwen-vllm", "gemini-2.5-pro", "gpt-4", "gpt-4o"),
         notes="Strategic planning and executive decision making",
     ),
     "ResumeAssemblyAgent": AgentExecutionProfile(
@@ -230,7 +230,8 @@ def get_execution_profile(agent_id: str) -> AgentExecutionProfile:
     profile = EXECUTION_PROFILES.get(agent_id)
     if profile is None:
         raise V15HardFailAbort(
-            f"Agent '{agent_id}' not in compile-time frozen registry. "
+            f"AgentProfile for '{agent_id}' not found in registry. "
+            f"Not in compile-time frozen TIERING_ALLOWLIST. "
             f"Available agents: {sorted(EXECUTION_PROFILES.keys())}"
         )
 

@@ -15,7 +15,9 @@ from typing import Any
 
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath, RoutingRationale
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import canonical_json
+def _get_canonical_json():
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import canonical_json
+    return canonical_json
 
 
 class ShadowRoutingRationale(str, Enum):

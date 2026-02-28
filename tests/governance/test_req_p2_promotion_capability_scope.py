@@ -1,5 +1,6 @@
 """Tests for Wave 17 P2: Promotion capability scope limitations."""
 
+import hashlib
 import pytest
 import time
 

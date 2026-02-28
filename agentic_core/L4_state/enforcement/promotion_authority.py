@@ -76,8 +76,9 @@ class PromotionAuthority:
     
     def _get_current_pointer(self, namespace: str) -> str:
         """Get current pointer for namespace."""
-        # In a real implementation, this would query the current state
-        # For testing, return a default value
+        existing = self._active_updates.get(namespace)
+        if existing is not None:
+            return existing.new_pointer
         return f"current_pointer_{namespace}"
     
     def get_update_history(self, namespace: str) -> Optional[PromotionPointerUpdate]:

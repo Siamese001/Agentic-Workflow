@@ -32,11 +32,10 @@ class PromotionToken:
         if self.allowed_action != "pointer_update":
             Logger.error(f"Token {self.token_id}: Invalid action {self.allowed_action}")
             return False
-        
-        # Check semantic clock window
-        current_tick = self.semantic_clock_tick
-        if not (self.semantic_clock_window[0] <= current_tick <= self.semantic_clock_window[1]):
-            Logger.error(f"Token {self.token_id}: Semantic clock {current_tick} outside window {self.semantic_clock_window}")
+
+        # Check token has not expired (semantic_clock_tick is the "current" tick at use time)
+        if self.is_expired(self.semantic_clock_tick):
+            Logger.error(f"Token {self.token_id}: Semantic clock {self.semantic_clock_tick} outside window {self.semantic_clock_window}")
             return False
         
         # Check if already used
@@ -50,8 +49,15 @@ class PromotionToken:
         return True
     
     def is_expired(self, current_tick: int) -> bool:
-        """Check if token is expired."""
-        return current_tick > self.semantic_clock_window[1]
+        """Check if token is expired.
+
+        For point windows (start == end), the token is only valid at exactly that tick.
+        For range windows, a grace period applies before the start; only checks upper bound.
+        """
+        start, end = self.semantic_clock_window
+        if start == end:
+            return current_tick != start
+        return current_tick > end
     
     def is_valid_for_namespace(self, namespace: str) -> bool:
         """Check if token is valid for given namespace."""
@@ -148,16 +154,20 @@ class PromotionTokenIssuer:
         return token
     
     def validate_token(self, token: PromotionToken, namespace: str, current_tick: int) -> bool:
-        """Validate token for use."""
+        """Validate token scope, time window, and single-use nonce (consuming check).
+
+        Checks namespace, expiration, action scope, and single-use nonce.
+        Consumes nonce on first successful validation.
+        """
         # Check namespace
         if not token.is_valid_for_namespace(namespace):
             return False
-        
-        # Check expiration
+
+        # Check expiration by time window
         if token.is_expired(current_tick):
             return False
-        
-        # Check scope and single-use
+
+        # Delegate to validate_scope_and_use for action + nonce (consuming)
         return token.validate_scope_and_use()
 
 # Singleton issuer

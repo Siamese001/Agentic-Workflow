@@ -402,7 +402,8 @@ class TestActivationGate:
             replay_digest_hash="digest",
             signature=""  # Missing
         )
-        self.store.update_flags(flags, "test", "test")
+        # Pass empty guardian_signature so stored flags.signature stays empty
+        self.store.update_flags(flags, "", "test")
 
         # When/Then - Should raise error
         with pytest.raises(RuntimeError, match="Activation flags not signed"):
@@ -448,8 +449,18 @@ class TestActivationGate:
         self.gate.assert_meta_learning_allowed()
 
         # Given - Missing prerequisite
-        flags.execution_hardened = False
-        self.store.update_flags(flags, "test", "test")
+        incomplete_flags = ActivationFlags(
+            execution_hardened=False,
+            mutation_surface_zero=True,
+            guardian_coverage=0.96,
+            freeze_authority_active=True,
+            meta_learning_prepared=True,
+            blast_radius_containment_active=True,
+            meta_learning_enabled=True,
+            replay_digest_hash="digest",
+            signature="sig"
+        )
+        self.store.update_flags(incomplete_flags, "test", "test")
 
         # When/Then - Should raise
         with pytest.raises(RuntimeError):
@@ -461,19 +472,21 @@ class TestActivationFlagsIntegration:
     def setup_method(self):
         """Set up test environment."""
         self.temp_dir = Path(tempfile.mkdtemp())
-        # Monkey patch the storage path for testing
         import activation_flags
         activation_flags.ActivationFlagsStore._instance = None
         self.original_store = activation_flags._activation_store
-        activation_flags._activation_store = ActivationFlagsStore(self.temp_dir)
+        self.original_gate = activation_flags._activation_gate
+        new_store = ActivationFlagsStore(self.temp_dir)
+        activation_flags._activation_store = new_store
+        activation_flags._activation_gate = ActivationGate(new_store)
 
     def teardown_method(self):
         """Clean up test environment."""
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
-        # Restore original store
         import activation_flags
         activation_flags._activation_store = self.original_store
+        activation_flags._activation_gate = self.original_gate
 
     def test_exported_functions(self):
         """Test exported functions work correctly."""

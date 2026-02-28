@@ -64,7 +64,7 @@ class ActivationFlagsStore:
         """Load activation flags from L4 storage."""
         if not self.flags_file.exists():
             self.storage_path.mkdir(parents=True, exist_ok=True)
-            # Don't initialize automatically - let caller handle it
+            self._current_flags = ActivationFlags()
             return
 
         try:
@@ -131,23 +131,15 @@ class ActivationFlagsStore:
         Raises:
             RuntimeError: If signature verification fails
         """
-        # Compute hash of new flags
-        new_flags_hash = self._compute_flags_hash(flags)
-
         # Get previous hash for chain of custody
         previous_hash = ""
         if self._current_proof:
             previous_hash = self._current_proof.flags_hash
 
-        # Create activation proof
-        proof = ActivationProof(
-            flags_hash=new_flags_hash,
-            guardian_signature=guardian_signature,
-            timestamp=time.time(),
-            previous_flags_hash=previous_hash
-        )
+        # Capture timestamp once
+        now = time.time()
 
-        # Update flags with metadata
+        # Update flags with metadata first
         updated_flags = ActivationFlags(
             execution_hardened=flags.execution_hardened,
             mutation_surface_zero=flags.mutation_surface_zero,
@@ -159,8 +151,19 @@ class ActivationFlagsStore:
             semantic_clock_tick=flags.semantic_clock_tick,
             replay_digest_hash=flags.replay_digest_hash,
             signature=guardian_signature,
-            activation_timestamp=time.time(),
+            activation_timestamp=now,
             activated_by=activated_by
+        )
+
+        # Compute hash of the final updated flags
+        new_flags_hash = self._compute_flags_hash(updated_flags)
+
+        # Create activation proof
+        proof = ActivationProof(
+            flags_hash=new_flags_hash,
+            guardian_signature=guardian_signature,
+            timestamp=now,
+            previous_flags_hash=previous_hash
         )
 
         # Store updates
@@ -347,7 +350,10 @@ def update_activation_flags(flags: ActivationFlags,
 
 def is_meta_learning_allowed() -> bool:
     """Exported function to check if meta-learning is allowed."""
-    return _activation_gate.check_meta_learning_allowed()
+    try:
+        return _activation_gate.check_meta_learning_allowed()
+    except RuntimeError:
+        return False
 
 def assert_meta_learning_allowed() -> None:
     """Exported function to assert meta-learning is allowed."""

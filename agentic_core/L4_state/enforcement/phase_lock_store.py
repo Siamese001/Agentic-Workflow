@@ -251,7 +251,7 @@ class PhaseLockValidator:
         for dep_phase in dependencies:
             if not self.store.is_locked(dep_phase):
                 raise RuntimeError(
-                    f"Phase {phase} requires phase {dep_phase} to be locked"
+                    f"Phase {dep_phase} must be locked before phase {phase}"
                 )
 
         return True

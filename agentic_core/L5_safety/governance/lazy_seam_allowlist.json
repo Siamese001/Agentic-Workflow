@@ -680,7 +680,127 @@
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
       "justification": "Plugin registry or dynamic dispatch boundary"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\engines\\shadow_router_classifier.py",
+      "function_name": "_get_canonical_json",
+      "imported_modules": [
+        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 lazy seam to avoid circular dependency; wraps L2 canonical_json"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\types\\shadow_routing_types.py",
+      "function_name": "_get_canonical_json",
+      "imported_modules": [
+        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 lazy seam to avoid circular dependency; wraps L2 canonical_json"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\enforcement\\mutation_prohibition.py",
+      "function_name": "assert_no_persistent_write",
+      "imported_modules": [
+        "agentic_core.L2_execution.tools.write_gateway"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 enforcement boundary lazy import to avoid circular dependency at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_legacy_main",
+      "imported_modules": [
+        "agentic_core.L4_state.config.versioned_configs"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import to enable optional config loading"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.arbitration.arbitration_contract"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.arbitration.arbitrator"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.arbitration.run_advisors"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.ptc.builtin_tools"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.ptc.ptc_registry"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.ptc.tool_call_store"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.ptc.tool_contract"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "print_execution_plan",
+      "imported_modules": [
+        "agentic_core.L3_orchestration.ptc.tool_invoker"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 entrypoint script lazy import for execution plan display"
     }
   ],
-  "total_seams": 68
+  "total_seams": 74
 }

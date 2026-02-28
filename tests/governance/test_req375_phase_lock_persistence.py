@@ -110,9 +110,19 @@ class TestPhaseLockPersistence:
         # Then - Sequence should be valid
         assert sequence_valid is True, "Phase sequence should be valid"
 
-        # But invalid if previous phase missing
-        with pytest.raises(RuntimeError, match="Phase 2 must be locked"):
-            self.validator.validate_phase_sequence(4)
+        # Phase 4 is also valid since all previous phases are locked
+        assert self.validator.validate_phase_sequence(4) is True, \
+            "Phase 4 validation should pass when phases 1-3 are locked"
+
+        # But invalid if phases are missing (fresh validator with empty store)
+        import tempfile
+        with tempfile.TemporaryDirectory() as fresh_dir:
+            from pathlib import Path as _Path
+            from phase_lock_store import PhaseLockValidator, PhaseLockStore as FreshStore
+            fresh_store = FreshStore(_Path(fresh_dir))
+            fresh_validator = PhaseLockValidator(fresh_store)
+            with pytest.raises(RuntimeError, match="Phase 1 must be locked"):
+                fresh_validator.validate_phase_sequence(5)
 
     def test_phase_lock_dependency_validation(self):
         """Test phase dependency validation."""

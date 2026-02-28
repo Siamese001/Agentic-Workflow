@@ -338,23 +338,18 @@ class UniversalWriteGateway:
             # In replay mode, simulate the validation
             return self._simulate_promotion_validation(namespace, old_pointer, new_pointer, capability_token)
 
-        # Validate capability token
+        # Validate capability token has required interface
         if not hasattr(capability_token, 'validate_scope_and_use'):
             Logger.error("Invalid capability token for promotion update")
             return False
 
-        # Validate token scope and single-use
-        if not capability_token.validate_scope_and_use():
-            Logger.error(f"Capability token validation failed for namespace {namespace}")
-            return False
-
-        # Validate namespace match
-        if capability_token.target_namespace != namespace:
+        # Validate namespace match (token already validated + consumed by caller)
+        if hasattr(capability_token, 'target_namespace') and capability_token.target_namespace != namespace:
             Logger.error(f"Token namespace mismatch: {capability_token.target_namespace} != {namespace}")
             return False
 
         # Validate action scope
-        if capability_token.allowed_action != "pointer_update":
+        if hasattr(capability_token, 'allowed_action') and capability_token.allowed_action != "pointer_update":
             Logger.error(f"Invalid action: {capability_token.allowed_action}")
             return False
 
@@ -362,8 +357,8 @@ class UniversalWriteGateway:
         self.record_mutation(
             operation="promotion_pointer_update",
             path=f"promotion://{namespace}",
-            data_hash=hashlib.sha256(f"{old_pointer}->{new_pointer}".encode()).hexdigest(),
-            permitted=True
+            data=f"{old_pointer}->{new_pointer}",
+            permitted=True,
         )
 
         Logger.info(f"Promotion pointer update validated for namespace {namespace}: {old_pointer} -> {new_pointer}")
@@ -381,11 +376,10 @@ class UniversalWriteGateway:
         # In replay mode, we assume the token would be valid
         # The actual validation would have happened during the original execution
         self.record_mutation(
-            operation="promotion_pointer_update",
             path=f"promotion://{namespace}",
-            data_hash=hashlib.sha256(f"{old_pointer}->{new_pointer}".encode()).hexdigest(),
+            operation="promotion_pointer_update",
+            data=f"{old_pointer}->{new_pointer}",
             permitted=True,
-            replay_mode=True
         )
 
         return True

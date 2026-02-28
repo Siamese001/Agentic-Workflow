@@ -235,11 +235,12 @@ class GeminiInvokerAdapter:
             InvocationRecord with replay-deterministic fields
         """
         try:
-            import google.generativeai as genai
+            from data.sdks_mcps.client_wrappers import create_vertex_client as _create_vertex_client
+            genai = _create_vertex_client()
         except (ImportError, Exception) as exc:
             raise ImportError(
-                "google-generativeai SDK is required for Gemini adapter. "
-                "Install with: pip install google-generativeai"
+                "Google client wrapper not available. "
+                "Use data.sdks_mcps.client_wrappers.create_vertex_client."
             ) from exc
 
         model_id = config.model_gemini_2_5_pro_id

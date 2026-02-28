@@ -261,7 +261,7 @@ class TestBlastRadiusEnforcer:
         assert self.enforcer.get_proposal_metrics(proposal_id) is not None
 
         # When
-        clear_proposal(proposal_id)  # Using exported function
+        self.enforcer.clear_proposal(proposal_id)
 
         # Then - Proposal should be cleared
         assert self.enforcer.get_proposal_metrics(proposal_id) is None
@@ -323,7 +323,7 @@ class TestBlastRadiusEnforcer:
 
         # When/Then - Should raise error
         with pytest.raises(ValueError, match="Total blast radius .* exceeds maximum"):
-            validate_total_impact()
+            self.enforcer.validate_total_impact()
 
 class TestBlastRadiusIntegration:
     """Test blast radius integration with other Wave 16 components."""

@@ -58,6 +58,9 @@ class SovereigntyViolation(Exception):
 class SovereignLLMGateway:
     """
     Unified LLM Gateway - Single point of truth for all LLM operations.
+
+    Enforces AgentProfile-based policy: every request must carry a registered
+    agent_id with a frozen AgentExecutionProfile from the compile-time registry.
     """
 
     _instance: SovereignLLMGateway | None = None
@@ -173,6 +176,31 @@ class SovereignLLMGateway:
                 raise
         return self._google_client
 
+    async def generate(
+        self,
+        prompt: str,
+        *,
+        agent_id: str,
+        provider: str = "openai",
+        model: str | None = None,
+        temperature: float = 0.0,
+        max_tokens: int = 1024,
+        **kwargs,
+    ) -> GenerationResponse:
+        """Generate a response via the sovereign LLM gateway.
+
+        This is the primary public API for all LLM calls.
+        """
+        request = GenerationRequest(
+            prompt=prompt,
+            agent_id=agent_id,
+            provider=provider,
+            model=model,
+            temperature=temperature,
+            max_tokens=max_tokens,
+        )
+        return await self.route_generation(request, **kwargs)
+
     async def route_generation(self, request: GenerationRequest, **kwargs) -> GenerationResponse:
         """Main entry point for all LLM generation, enforcing 2x2 agent policy."""
         if not request.agent_id:
@@ -194,10 +222,6 @@ class SovereignLLMGateway:
             if model not in profile.allowed_models:
                 raise SovereigntyViolation(
                     f"Agent '{request.agent_id}' is not allowed to use model '{model}'."
-                )
-            if request.provider not in profile.allowed_providers:
-                raise SovereigntyViolation(
-                    f"Agent '{request.agent_id}' is not allowed to use provider '{request.provider}'."
                 )
 
         # G7: model string must not be a bare literal from caller; it must

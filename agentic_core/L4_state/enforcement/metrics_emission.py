@@ -189,8 +189,8 @@ class BlastRadiusEnforcer:
 
         if proposal_radius > self.config.max_blast_radius_per_proposal:
             raise ValueError(
-                f"Proposal blast radius {proposal_radius} exceeds "
-                f"maximum {self.config.max_blast_radius_per_proposal}"
+                f"Blast radius {proposal_radius} exceeds maximum "
+                f"{self.config.max_blast_radius_per_proposal}"
             )
 
         return True

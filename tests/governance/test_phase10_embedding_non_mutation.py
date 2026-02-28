@@ -157,14 +157,12 @@ def test_openai_embedding_provider_registration():
 
 # T2: Kill-switch enforcement
 def test_embedding_kill_switch_fail_closed():
+    import agentic_core.embeddings.embedding_factory as factory_module
+
     original_value = os.environ.get("EMBEDDING_ENABLED")
     try:
         os.environ["EMBEDDING_ENABLED"] = "false"
-        import importlib
-
-        import agentic_core.embeddings.embedding_factory as factory_module
-
-        importlib.reload(factory_module)
+        # Verify the kill-switch is read dynamically without reload
         with pytest.raises(factory_module.EmbeddingDisabledError):
             factory_module.create_embedding_client("openai")
     finally:
@@ -172,11 +170,6 @@ def test_embedding_kill_switch_fail_closed():
             os.environ["EMBEDDING_ENABLED"] = original_value
         elif "EMBEDDING_ENABLED" in os.environ:
             del os.environ["EMBEDDING_ENABLED"]
-        import importlib
-
-        import agentic_core.embeddings.embedding_factory as factory_module
-
-        importlib.reload(factory_module)
 
 
 # T3: Structural Non-Mutation Guard (Routing)

@@ -299,6 +299,12 @@ class TestActivationFlagsPersistence:
 
     def test_activation_flags_default_initialization(self):
         """Test activation flags default initialization."""
+        # Remove any previously persisted flags file to test clean state
+        from pathlib import Path
+        flags_file = Path("agentic_core/L4_state/.activation_flags.json")
+        if flags_file.exists():
+            flags_file.unlink()
+
         # When - Restore without prior persistence
         restored = restore_activation_flags()
 
