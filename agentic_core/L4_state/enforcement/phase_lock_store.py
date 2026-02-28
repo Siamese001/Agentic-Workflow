@@ -6,11 +6,20 @@ in L4 storage with replay binding capabilities.
 
 import json
 import logging
-import time
 from dataclasses import dataclass, asdict
 from pathlib import Path
 from typing import Dict, Optional, Any, List
 import hashlib
+
+# REQ-114: No wall-clock in critical computation paths.
+# Use a deterministic sequence counter instead of time.time().
+_SEQUENCE_COUNTER: list[int] = [0]
+
+
+def _next_sequence() -> float:
+    """Return next deterministic sequence value (no wall-clock)."""
+    _SEQUENCE_COUNTER[0] += 1
+    return float(_SEQUENCE_COUNTER[0])
 
 Logger = logging.getLogger(__name__)
 
@@ -94,15 +103,16 @@ class PhaseLockStore:
         if phase in self._locks and self._locks[phase].locked:
             raise RuntimeError(f"Phase {phase} is already locked")
 
-        # Create replay digest
-        replay_data = f"{phase}:{time.time()}:{metadata or {}}"
+        # Create replay digest (deterministic: no wall-clock per REQ-114)
+        seq = _next_sequence()
+        replay_data = f"{phase}:{seq}:{metadata or {}}"
         replay_digest = hashlib.sha256(replay_data.encode()).hexdigest()
 
         # Create lock record
         lock_record = PhaseLockRecord(
             phase=phase,
             locked=True,
-            timestamp=time.time(),
+            timestamp=seq,
             metadata=metadata or {},
             signature=signature,
             replay_digest=replay_digest
@@ -140,7 +150,7 @@ class PhaseLockStore:
         lock_record = PhaseLockRecord(
             phase=phase,
             locked=False,
-            timestamp=time.time(),
+            timestamp=_next_sequence(),
             metadata={},
             signature=signature,
             replay_digest=""

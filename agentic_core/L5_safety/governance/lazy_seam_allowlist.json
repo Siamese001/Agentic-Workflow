@@ -282,66 +282,6 @@
       "justification": "Script/orchestration entrypoint with lazy loading"
     },
     {
-      "file_path": "agentic_core\\L1_cognition\\engines\\cognitive_engine.py",
-      "function_name": "_get_ActionNode",
-      "imported_modules": [
-        "agentic_core.L3_orchestration.engines.action_router"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
-      "justification": "Plugin registry or dynamic dispatch boundary"
-    },
-    {
-      "file_path": "agentic_core\\L1_cognition\\engines\\memory_embedder.py",
-      "function_name": "_get_embedding_sovereign_agent",
-      "imported_modules": [
-        "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_embedding_sovereign_agent",
-      "imported_modules": [
-        "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_pinecone_sovereign_agent",
-      "imported_modules": [
-        "agentic_core.L4_state.reasoning.PineconeSovereignAgent"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L1_cognition\\engines\\meta_client.py",
-      "function_name": "_get_redis_sovereign_agent",
-      "imported_modules": [
-        "agentic_core.L4_state.reasoning.RedisSovereignAgent"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
-      "justification": "Lazy seam loader for optional higher-layer dependency"
-    },
-    {
-      "file_path": "agentic_core\\L1_cognition\\reasoning\\ASTValidatorAgent.py",
-      "function_name": "_get_unified_cst_healer",
-      "imported_modules": [
-        "agentic_core.L5_safety.validators.unified_cst_healer"
-      ],
-      "imported_symbols": [],
-      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
-      "justification": "Plugin registry or dynamic dispatch boundary"
-    },
-    {
       "file_path": "agentic_core\\L2_execution\\config\\unified_workflow_config.py",
       "function_name": "_get_assert_activation_allowed",
       "imported_modules": [

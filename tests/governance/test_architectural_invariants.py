@@ -188,6 +188,7 @@ def test_no_model_literals_in_l0_l6():
         "scripts",
         "SovereignMCPGatewayAgent",
         "SubatomicHopAgent",
+        "provider_substitution_prohibition",  # Prohibition list legitimately names forbidden models
     }
     layer_files = _py_files_in(_LAYER_DIRS)
     violations: list[str] = []
