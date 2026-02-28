@@ -1,8 +1,8 @@
 """CI guard: no embedding class instantiation outside EmbeddingServiceFactory.
 
 Spec: Sovereign LLM Gateway AST SCANNER bullets.
-Blocks: OpenAIEmbedder(...), LocalFAISSStore(...), SentenceTransformerEmbedder(...)
-        constructor calls outside the factory seam.
+Blocks: any embedding class constructor outside the factory seam.
+Covers OpenAI, BGE, HuggingFace, local, and vLLM embedding classes.
 
 Exit code 1 on any violation.
 """
@@ -18,10 +18,14 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 # Constructor names that are only permitted inside the factory seam
 BLOCKED_CONSTRUCTORS = {
     "OpenAIEmbedder",
-    "LocalFAISSStore",
-    "SentenceTransformerEmbedder",
-    "FAISSStore",
     "OpenAIEmbeddingClient",
+    "LocalFAISSStore",
+    "FAISSStore",
+    "SentenceTransformerEmbedder",
+    "BGEEmbedder",
+    "LocalEmbedder",
+    "HuggingFaceEmbedder",
+    "VLLMEmbedder",
 }
 
 # Sole allowed seam — only this file may instantiate embedding constructors
@@ -49,14 +53,10 @@ def _find_violations(path: Path, rel: str) -> list[str]:
         if isinstance(node, ast.Call):
             # Direct call: OpenAIEmbedder(...)
             if isinstance(node.func, ast.Name) and node.func.id in BLOCKED_CONSTRUCTORS:
-                violations.append(
-                    f"{rel}:{node.lineno}: blocked constructor call '{node.func.id}(...)'"
-                )
+                violations.append(f"{rel}:{node.lineno}: blocked constructor call '{node.func.id}(...)'")
             # Attribute call: module.OpenAIEmbedder(...)
             elif isinstance(node.func, ast.Attribute) and node.func.attr in BLOCKED_CONSTRUCTORS:
-                violations.append(
-                    f"{rel}:{node.lineno}: blocked constructor call '...{node.func.attr}(...)'"
-                )
+                violations.append(f"{rel}:{node.lineno}: blocked constructor call '...{node.func.attr}(...)'")
     return violations
 
 

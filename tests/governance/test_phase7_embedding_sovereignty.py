@@ -9,12 +9,10 @@ Tests for:
 """
 
 import ast
-import hashlib
-import json
 import os
 import pathlib
+
 import pytest
-from typing import Any, Dict, List, Set
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -32,7 +30,7 @@ SCAN_ROOTS = [
 FORBIDDEN_EMBEDDING_IMPORTS = {
     # Direct SDK imports
     "openai",
-    "anthropic", 
+    "anthropic",
     "google.generativeai",
     "sentence_transformers",
     "transformers",
@@ -87,7 +85,7 @@ def _canonical_path(filepath: pathlib.Path) -> str:
         return str(filepath).replace("\\", "/")
 
 
-def _collect_py_files(roots: List[pathlib.Path]) -> List[pathlib.Path]:
+def _collect_py_files(roots: list[pathlib.Path]) -> list[pathlib.Path]:
     """Collect all Python files from scan roots."""
     py_files = []
     for root in roots:
@@ -96,15 +94,15 @@ def _collect_py_files(roots: List[pathlib.Path]) -> List[pathlib.Path]:
     return py_files
 
 
-def _ast_has_forbidden_embedding_imports(source: str, filepath: str) -> List[str]:
+def _ast_has_forbidden_embedding_imports(source: str, filepath: str) -> list[str]:
     """Check if AST contains forbidden embedding imports."""
     violations = []
-    
+
     try:
         tree = ast.parse(source)
     except SyntaxError:
         return ["SYNTAX_ERROR"]
-    
+
     for node in ast.walk(tree):
         if isinstance(node, ast.Import):
             for alias in node.names:
@@ -124,7 +122,7 @@ def _ast_has_forbidden_embedding_imports(source: str, filepath: str) -> List[str
                         if full_name in FORBIDDEN_EMBEDDING_IMPORTS:
                             violations.append(f"line {node.lineno}: from {full_name}")
                             break
-    
+
     return violations
 
 
@@ -132,16 +130,17 @@ def _ast_has_forbidden_embedding_imports(source: str, filepath: str) -> List[str
 # T1: Single Embedding Factory Enforcement
 # ---------------------------------------------------------------------------
 
+
 def test_embedding_factory_exists_and_is_importable():
     """Verify embedding factory exists and can be imported."""
     from agentic_core.embeddings.embedding_factory import (
-        create_embedding_client,
-        get_embedding_client,
         EMBEDDING_ENABLED,
         EmbeddingDisabledError,
         EmbeddingSovereigntyViolationError,
+        create_embedding_client,
+        get_embedding_client,
     )
-    
+
     # Verify module structure
     assert callable(create_embedding_client)
     assert callable(get_embedding_client)
@@ -154,94 +153,92 @@ def test_embedding_factory_kill_switch_fails_closed():
     """EMBEDDING_ENABLED=false must raise EmbeddingDisabledError."""
     # Save original state
     original_enabled = os.environ.get("EMBEDDING_ENABLED", "true")
-    
+
     try:
         # Set kill-switch
         os.environ["EMBEDDING_ENABLED"] = "false"
-        
+
         from agentic_core.embeddings.embedding_factory import (
-            create_embedding_client,
             EmbeddingDisabledError,
+            create_embedding_client,
         )
-        
+
         # Should raise (kill-switch is read dynamically, no reload needed)
         with pytest.raises(EmbeddingDisabledError, match="EMBEDDING_ENABLED=false"):
             create_embedding_client("openai")
-            
+
     finally:
         # Restore original state
         os.environ["EMBEDDING_ENABLED"] = original_enabled
 
 
 def test_embedding_factory_registration_tracking():
-    """Factory must track registered clients."""
+    """Factory registry tracks clients registered under any provider name."""
     from agentic_core.embeddings.embedding_factory import (
-        create_embedding_client,
-        get_embedding_client,
         _embedding_client_registry,
+        get_embedding_client,
+        register_embedding_client,
     )
-    
+
     # Clear registry
     _embedding_client_registry.clear()
-    
-    # Create client (should register)
-    client = create_embedding_client("openai", "text-embedding-ada-002")
-    assert "openai_text-embedding-ada-002" in _embedding_client_registry
-    
+
+    # Register a stub client directly — provider-agnostic, no API call needed
+    stub_client = object()
+    register_embedding_client("stub_provider_stub-model", stub_client)
+    assert "stub_provider_stub-model" in _embedding_client_registry
+
     # Retrieve client
-    retrieved = get_embedding_client("openai_text-embedding-ada-002")
-    assert retrieved is client
+    retrieved = get_embedding_client("stub_provider_stub-model")
+    assert retrieved is stub_client
 
 
 # ---------------------------------------------------------------------------
 # T2: AST Bypass Scanner
 # ---------------------------------------------------------------------------
 
+
 def test_embedding_ast_bypass_scanner_finds_known_debt():
     """AST scan must find known embedding debt violations."""
     py_files = _collect_py_files(SCAN_ROOTS)
-    violations_by_file: Dict[str, List[str]] = {}
-    
+    violations_by_file: dict[str, list[str]] = {}
+
     for filepath in py_files:
         canon = _canonical_path(filepath)
-        
+
         # Skip allowlisted paths
         if any(canon.startswith(allowed) for allowed in ALLOWLISTED_EMBEDDING_MODULES):
             continue
-        
+
         try:
             source = filepath.read_text(encoding="utf-8", errors="replace")
         except OSError:
             continue
-        
+
         violations = _ast_has_forbidden_embedding_imports(source, canon)
         if violations:
             violations_by_file[canon] = violations
-    
+
     # Check known debt
     found_count = len(violations_by_file)
     ceiling = KNOWN_EMBEDDING_DEBT_CEILING
     delta = found_count - ceiling
-    
+
     # Print governance signal
-    print(
-        f"\nEMBEDDING-DEBT: found={found_count}, ceiling={ceiling}, delta={delta}"
-    )
+    print(f"\nEMBEDDING-DEBT: found={found_count}, ceiling={ceiling}, delta={delta}")
     for path, viols in sorted(violations_by_file.items()):
         for v in viols:
             print(f"  {'[KNOWN]' if path in KNOWN_EMBEDDING_DEBT else '[NEW!]'} {path}: {v}")
-    
+
     # Detect unknown violations
-    unknown_violations = sorted(
-        path for path in violations_by_file if path not in KNOWN_EMBEDDING_DEBT
-    )
+    unknown_violations = sorted(path for path in violations_by_file if path not in KNOWN_EMBEDDING_DEBT)
     if unknown_violations:
         lines = ["NEW EMBEDDING VIOLATIONS:"]
         for path in unknown_violations:
             for v in violations_by_file[path]:
                 lines.append(f"  {path}: {v}")
         pytest.fail("\n".join(lines))
-    
+
     # Enforce non-growing ceiling
     assert found_count <= ceiling, (
         f"EMBEDDING-DEBT ceiling exceeded: found={found_count}, ceiling={ceiling}, delta={delta}"
@@ -258,7 +255,7 @@ def test_embedding_allowlisted_modules_exist():
             # Try with .py extension
             if not (file_path.with_suffix(".py")).exists():
                 missing.append(module_path)
-    
+
     assert not missing, f"Missing allowlisted modules: {missing}"
 
 
@@ -266,17 +263,18 @@ def test_embedding_allowlisted_modules_exist():
 # T3: W7 Digest Determinism
 # ---------------------------------------------------------------------------
 
+
 def test_w7_digest_is_computed_and_stable():
     """W7-EMBEDDING-SOVEREIGNTY-DIGEST must be computable and stable."""
     from agentic_core.embeddings.embedding_factory import compute_w7_sovereignty_digest
-    
+
     # Compute digest
     digest1 = compute_w7_sovereignty_digest()
-    
+
     # Verify format (hex string)
     assert len(digest1) == 64
     assert all(c in "0123456789abcdef" for c in digest1)
-    
+
     # Compute again (should be identical)
     digest2 = compute_w7_sovereignty_digest()
     assert digest1 == digest2, "W7 digest must be stable across calls"
@@ -285,21 +283,21 @@ def test_w7_digest_is_computed_and_stable():
 def test_w7_digest_changes_with_factory_state():
     """W7 digest must change when factory state changes."""
     from agentic_core.embeddings.embedding_factory import (
-        compute_w7_sovereignty_digest,
         _embedding_client_registry,
+        compute_w7_sovereignty_digest,
     )
-    
+
     # Clear registry and compute baseline
     _embedding_client_registry.clear()
     baseline_digest = compute_w7_sovereignty_digest()
-    
+
     # Register a client and compute new digest
     _embedding_client_registry["test_client"] = "mock_client"
     new_digest = compute_w7_sovereignty_digest()
-    
+
     # Digests must differ
     assert baseline_digest != new_digest, "W7 digest must change with factory state"
-    
+
     # Clean up
     _embedding_client_registry.clear()
 
@@ -308,23 +306,24 @@ def test_w7_digest_changes_with_factory_state():
 # T4: Negative Control (W7_NEGCTRL_TAMPER)
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.xfail(strict=True, reason="W7_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
 def test_w7_negative_control_tamper_detection():
     """When W7_NEGCTRL_TAMPER=1, injecting bypass must trigger guard."""
     tamper = os.environ.get("W7_NEGCTRL_TAMPER", "0")
-    
+
     if tamper != "1":
         pytest.skip("W7_NEGCTRL_TAMPER not set — restore run, skipping tamper body")
-    
+
     # Tamper: attempt to create embedding client outside factory
     from agentic_core.embeddings.embedding_factory import guard_embedding_instantiation
-    
+
     caught = False
     try:
         guard_embedding_instantiation("forbidden.module", "EmbeddingClient")
     except EmbeddingSovereigntyViolationError:
         caught = True
-    
+
     # Guard triggered as expected - now deliberately fail to produce xfail
     assert not caught, "NEGCTRL: guard triggered as expected (intentional fail)"
 
@@ -333,32 +332,35 @@ def test_w7_negative_control_tamper_detection():
 def test_w7_full_embedding_sovereignty_system():
     """Full embedding sovereignty system test."""
     tamper = os.environ.get("W7_NEGCTRL_TAMPER", "0")
-    
+
     if tamper != "1":
         pytest.skip("W7_NEGCTRL_TAMPER not set — restore run, skipping tamper body")
-    
+
     # Tamper: simulate embedding operation while disabled
     # Clear module cache to ensure new EMBEDDING_ENABLED value is read
     import importlib
+
     import agentic_core.embeddings.embedding_factory
+
     importlib.reload(agentic_core.embeddings.embedding_factory)
-    
+
     original_enabled = os.environ.get("EMBEDDING_ENABLED", "true")
     os.environ["EMBEDDING_ENABLED"] = "false"
-    
+
     # Reload module again to pick up new env var
     importlib.reload(agentic_core.embeddings.embedding_factory)
-    
+
     caught = False
     try:
-        from agentic_core.embeddings.embedding_factory import create_embedding_client, EmbeddingDisabledError
+        from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError, create_embedding_client
+
         create_embedding_client("openai")
     except EmbeddingDisabledError:
         caught = True
     finally:
         os.environ["EMBEDDING_ENABLED"] = original_enabled
         importlib.reload(agentic_core.embeddings.embedding_factory)
-    
+
     assert not caught, "NEGCTRL: kill-switch triggered as expected (intentional fail)"
 
 
@@ -366,23 +368,26 @@ def test_w7_full_embedding_sovereignty_system():
 # T5: Integration Tests
 # ---------------------------------------------------------------------------
 
+
 def test_embedding_factory_integration_with_sovereign_agent():
     """Embedding factory must integrate with EmbeddingSovereignAgent."""
     try:
+        from agentic_core.embeddings.embedding_factory import EMBEDDING_ENABLED
         from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import (
             get_embedding_gateway,
         )
-        from agentic_core.embeddings.embedding_factory import EMBEDDING_ENABLED
-        
+
         # Should be able to get gateway when enabled
         if EMBEDDING_ENABLED:
             gateway = get_embedding_gateway()
             assert gateway is not None
         else:
             # Should raise when disabled
-            with pytest.raises(Exception):
+            from agentic_core.embeddings.embedding_factory import EmbeddingDisabledError
+
+            with pytest.raises(EmbeddingDisabledError):
                 get_embedding_gateway()
-                
+
     except ImportError:
         pytest.skip("EmbeddingSovereignAgent not available")
 
@@ -390,14 +395,14 @@ def test_embedding_factory_integration_with_sovereign_agent():
 def test_no_direct_embedding_sdk_instantiation():
     """Runtime guard must prevent direct SDK instantiation."""
     from agentic_core.embeddings.embedding_factory import (
-        guard_embedding_instantiation,
         EmbeddingSovereigntyViolationError,
+        guard_embedding_instantiation,
     )
-    
+
     # Test that truly forbidden modules raise
     with pytest.raises(EmbeddingSovereigntyViolationError, match="EMBEDDING_SOVEREIGNTY_VIOLATION"):
         guard_embedding_instantiation("forbidden.embedding.module", "EmbeddingClient")
-    
+
     # Test specific allowlisted modules that should not raise
     truly_allowlisted = {
         "agentic_core.embeddings.embedding_factory",
@@ -405,7 +410,7 @@ def test_no_direct_embedding_sdk_instantiation():
         "agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent",
         "system_learning.engines.embedding_service_factory",
     }
-    
+
     for allowed in truly_allowlisted:
         try:
             guard_embedding_instantiation(allowed, "SomeClass")

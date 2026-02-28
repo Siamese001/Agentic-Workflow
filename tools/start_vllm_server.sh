@@ -9,9 +9,9 @@ MODEL_DIR="$HOME/models/Qwen2.5-14B-Instruct-AWQ"
 VENV="$HOME/.vllm_env"
 PORT=8000
 HOST="0.0.0.0"
-GPU_UTIL=0.88        # 0.88 * 31.84GB = 28.0GB — stable headroom for WSL2 overhead
-MAX_MODEL_LEN=16384  # AWQ 4-bit weights ~9.4GB, plenty of KV headroom
-DTYPE="bfloat16"     # Best for Blackwell sm_120
+GPU_UTIL=0.90        # 0.90 * 31.84GB = 28.7GB — optimized for RTX 5090
+MAX_MODEL_LEN=32768  # AWQ 4-bit: expand context window, still fits in VRAM
+DTYPE="bfloat16"     # Best for Blackwell sm_120 (native TF32/FP16)
 
 if [ ! -d "$MODEL_DIR" ]; then
     echo "ERROR: Model not found at $MODEL_DIR"
@@ -42,7 +42,10 @@ $VENV/bin/python -m vllm.entrypoints.openai.api_server \
     --host "$HOST" \
     --port "$PORT" \
     --quantization awq \
+    --dtype "$DTYPE" \
     --gpu-memory-utilization "$GPU_UTIL" \
     --max-model-len "$MAX_MODEL_LEN" \
-    --enforce-eager \
-    --max-num-seqs 16
+    --max-num-seqs 32 \
+    --enable-chunked-prefill \
+    --max-num-batched-tokens 8192 \
+    --disable-log-requests

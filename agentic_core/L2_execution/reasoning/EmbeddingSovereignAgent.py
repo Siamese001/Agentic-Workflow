@@ -26,7 +26,6 @@ from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
 from data.sdks_mcps.client_wrappers import (
-    create_openai_client,
     create_vertex_client,
 )
 
@@ -49,7 +48,7 @@ except ImportError:
             pass
 
 
-EmbeddingProvider = Literal["gemini", "openai"]
+EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
 
 
 @dataclass
@@ -76,6 +75,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         default_factory=lambda: {
             "gemini": 0,
             "openai": 0,
+            "bge-m3": 0,
             "cache_hits": 0,
             "cache_misses": 0,
             "total": 0,
@@ -88,6 +88,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         """Initialize the EmbeddingSovereignAgent."""
         if hasattr(super(), "__post_init__"):
             super().__post_init__()
+        self._bge_m3_model = None  # lazy-loaded local model
 
     def __new__(cls, *args, **kwargs):
         """Singleton constructor."""
@@ -111,6 +112,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         return {
             "gemini": self.config.EMBEDDING_DIM_GEMINI,
             "openai": self.config.EMBEDDING_DIM_OPENAI,
+            "bge-m3": 1024,
         }
 
     def _audit(self, provider: str, success: bool, cached: bool, latency_ms: float) -> None:
@@ -179,6 +181,8 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
                 embedding = await self._get_gemini_embedding(content)
             elif provider == "openai":
                 embedding = await self._get_openai_embedding(content)
+            elif provider == "bge-m3":
+                embedding = await self._get_bge_m3_embedding(content)
             else:
                 raise ValueError(f"Unknown provider: {provider}")
 
@@ -235,10 +239,26 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
         return result["embedding"]
 
     async def _get_openai_embedding(self, content: str) -> list[float]:
-        """Get embedding from OpenAI."""
-        client = create_openai_client()
-        response = client.embeddings.create(model="text-embedding-3-small", input=content)
-        return response.data[0].embedding
+        """Get embedding from OpenAI via factory seam."""
+        from agentic_core.embeddings.embedding_factory import create_embedding_client
+        from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard
+
+        client = create_embedding_client("openai", "text-embedding-3-small")
+        guarded = EmbeddingInputGuard.guard(content, "u0_user_prompt")
+        return await client.get_embedding(guarded)
+
+    async def _get_bge_m3_embedding(self, content: str) -> list[float]:
+        """Get embedding from local BGE-M3 model via SentenceTransformer."""
+        import asyncio
+
+        from sentence_transformers import SentenceTransformer
+
+        if self._bge_m3_model is None:
+            self._bge_m3_model = SentenceTransformer("BAAI/bge-m3")
+        model = self._bge_m3_model
+        loop = asyncio.get_event_loop()
+        embedding = await loop.run_in_executor(None, lambda: model.encode(content, normalize_embeddings=True))
+        return embedding.tolist()
 
     @timeout(300)
     @standard_heal

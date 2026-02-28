@@ -17,6 +17,13 @@ from agentic_core.replay.replay_envelope import ReplayEnvelope, create_determini
 from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
 from system_learning.engines.retrieval_profile import RetrievalProfile
 
+# Provider-agnostic test constants — the envelope tests hash opaque strings;
+# the specific provider values do not affect what the tests prove.
+_TEST_EMBEDDER_PROVIDER = "bge-m3"
+_TEST_EMBEDDER_MODEL = "BAAI/bge-m3"
+_TEST_EMBEDDER_DIM = 1024
+_TEST_EMBEDDER_DIM_ALT = 768  # distinct dim for digest-sensitivity assertions
+
 
 # Mock types for testing without full dependency chain
 class GenerationRequest:
@@ -43,9 +50,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -58,9 +65,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -85,9 +92,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -103,9 +110,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -120,9 +127,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=1536,  # Changed
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM_ALT,  # Changed from canonical dim
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -137,9 +144,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="2.0",  # Changed
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -149,9 +156,9 @@ class TestW11UniversalReplayLock:
         """Deterministic cache keys are stable across runs."""
         text = "test input text"
         embedder_identity = {
-            "provider": "openai",
-            "model": "text-embedding-3-large",
-            "dimensions": 3072,
+            "provider": _TEST_EMBEDDER_PROVIDER,
+            "model": _TEST_EMBEDDER_MODEL,
+            "dimensions": _TEST_EMBEDDER_DIM,
             "normalization_policy": "l2",
             "chunking_policy": "none",
         }
@@ -168,7 +175,7 @@ class TestW11UniversalReplayLock:
 
         # Different embedder identity should produce different key
         different_identity = embedder_identity.copy()
-        different_identity["model"] = "text-embedding-ada-002"
+        different_identity["model"] = "nomic-embed-text-v1"
         key4 = create_deterministic_cache_key(text, different_identity)
         assert key4 != key1
 
@@ -211,9 +218,9 @@ class TestW11UniversalReplayLock:
             temperature=0.7,
             policy_version="1.0",
             gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
+            embedder_provider=_TEST_EMBEDDER_PROVIDER,
+            embedder_model=_TEST_EMBEDDER_MODEL,
+            embedder_dim=_TEST_EMBEDDER_DIM,
             agent_registry_hash="registry_hash_123",
             deterministic_engine_version="1.0.0",
         )
@@ -226,36 +233,17 @@ class TestW11UniversalReplayLock:
         assert "EMBEDDING-HIGH-SIGNAL" not in json_str
         assert "SIGNATURE-INTEGRITY" not in json_str
 
-    @pytest.mark.skipif(os.getenv("W11_NEGCTRL_TAMPER") != "1", reason="Negative control")
-    def test_negative_control_tamper_policy_version(self):
-        """Negative control: Inject altered policy_version in-memory."""
-        # Create legitimate envelope
-        envelope = ReplayEnvelope.from_generation_context(
-            routing_hash="abc123",
-            manifest_hash="def456",
-            model_id="gpt-4",
-            model_version="1.0",
-            temperature=0.7,
-            policy_version="1.0",
-            gateway_version="1.0",
-            embedder_provider="openai",
-            embedder_model="text-embedding-3-large",
-            embedder_dim=3072,
-            agent_registry_hash="registry_hash_123",
-            deterministic_engine_version="1.0.0",
-        )
+    original_digest = envelope.get_digest()
 
-        original_digest = envelope.get_digest()
+    # Tamper with policy_version in-memory (simulate corruption)
+    with patch.object(envelope, "policy_version", "999.0"):
+        tampered_digest = envelope.get_digest()
 
-        # Tamper with policy_version in-memory (simulate corruption)
-        with patch.object(envelope, "policy_version", "999.0"):
-            tampered_digest = envelope.get_digest()
+        # Should detect the tampering
+        assert tampered_digest != original_digest
 
-            # Should detect the tampering
-            assert tampered_digest != original_digest
-
-        print(f"W11_NEGCTRL_TAMPER: Original digest: {original_digest}")
-        print(f"W11_NEGCTRL_TAMPER: Tampered digest: {tampered_digest}")
+    print(f"W11_NEGCTRL_TAMPER: Original digest: {original_digest}")
+    print(f"W11_NEGCTRL_TAMPER: Tampered digest: {tampered_digest}")
 
 
 def test_negative_control_tamper_policy_version():
@@ -269,9 +257,9 @@ def test_negative_control_tamper_policy_version():
         temperature=0.7,
         policy_version="1.0",
         gateway_version="1.0",
-        embedder_provider="openai",
-        embedder_model="text-embedding-3-large",
-        embedder_dim=3072,
+        embedder_provider=_TEST_EMBEDDER_PROVIDER,
+        embedder_model=_TEST_EMBEDDER_MODEL,
+        embedder_dim=_TEST_EMBEDDER_DIM,
         agent_registry_hash="registry_hash_123",
         deterministic_engine_version="1.0.0",
     )
@@ -302,9 +290,9 @@ def test_w11_acceptance_ssot():
         temperature=0.7,
         policy_version="1.0",
         gateway_version="1.0",
-        embedder_provider="openai",
-        embedder_model="text-embedding-3-large",
-        embedder_dim=3072,
+        embedder_provider=_TEST_EMBEDDER_PROVIDER,
+        embedder_model=_TEST_EMBEDDER_MODEL,
+        embedder_dim=_TEST_EMBEDDER_DIM,
         agent_registry_hash="test_registry_hash",
         deterministic_engine_version="1.0.0",
     )

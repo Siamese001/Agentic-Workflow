@@ -1,10 +1,11 @@
-"""Phase 10: High-Signal OpenAI Embedding Activation — HS-1..HS-6
+"""Phase 10: High-Signal Embedding Activation — HS-1..HS-6
 
 Tests for:
-- OpenAI embeddings active at HS-1..HS-6 injection points
+- Embedding clients active at HS-1..HS-6 injection points
 - No routing/tier/safety mutation from embeddings
 - No direct SDK imports outside embedding_factory
 - Kill-switch enforced fail-closed
+- EmbeddingClient protocol contract (provider-agnostic)
 - W10-EMBEDDING-HS-DIGEST stability
 - W10_NEGCTRL_TAMPER negative control
 """
@@ -101,12 +102,15 @@ def _ast_scan_for_embedding_bypass(source: str, filepath: str) -> list[str]:
                 if not _is_in_allowed_context(filepath):
                     violations.append(f"line {node.lineno}: forbidden from import '{node.module}'")
         elif isinstance(node, ast.Call) and isinstance(node.func, ast.Attribute):
+            _DIRECT_PROVIDER_IDS = {"openai", "anthropic", "cohere", "voyageai"}
             if (
                 isinstance(node.func.value, ast.Name)
-                and node.func.value.id == "openai"
-                and node.func.attr in {"Embedding", "embeddings"}
+                and node.func.value.id in _DIRECT_PROVIDER_IDS
+                and node.func.attr in {"Embedding", "embeddings", "embed"}
             ):
-                violations.append(f"line {node.lineno}: direct OpenAI embedding client instantiation")
+                violations.append(
+                    f"line {node.lineno}: direct {node.func.value.id} embedding client instantiation"
+                )
             if (
                 node.func.attr in ["post", "get"]
                 and isinstance(node.func.value, ast.Name)
@@ -153,6 +157,23 @@ def test_openai_embedding_provider_registration():
     assert metadata["model"] == "text-embedding-3-large"
     assert isinstance(metadata["embedding_dimension"], int)
     assert metadata["distance_metric"] == "cosine"
+
+
+# T1b: Provider-agnostic EmbeddingClient protocol contract
+def test_embedding_client_protocol_contract():
+    """Any class satisfying get_embedding + get_embeddings_batch fulfils EmbeddingClient protocol."""
+    from agentic_core.embeddings.embedding_factory import EmbeddingClient
+
+    class StubClient:
+        async def get_embedding(self, guarded_text):
+            return [0.0]
+
+        async def get_embeddings_batch(self, guarded_texts):
+            return [[0.0]]
+
+    assert isinstance(StubClient(), EmbeddingClient), (
+        "Any class implementing get_embedding and get_embeddings_batch satisfies EmbeddingClient protocol"
+    )
 
 
 # T2: Kill-switch enforcement
