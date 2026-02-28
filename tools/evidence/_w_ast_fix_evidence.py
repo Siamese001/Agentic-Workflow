@@ -18,7 +18,7 @@ PY = sys.executable
 
 
 # guardian: allow-magic-config
-def run(argv, cwd=None, timeout=300):
+def run(argv, cwd=None, timeout=900):
     """Run a command, return (stdout, stderr, returncode)."""
     try:
         r = subprocess.run(
@@ -103,7 +103,7 @@ for dirpath, dirnames, filenames in os.walk(repo):
                 pass
 digest = hashlib.sha256("\\n".join(sorted(entries)).encode()).hexdigest()
 print(f"FILE_COUNT: {len(entries)}")
-print(f"DETERMINISM_DIGEST: {digest}")
+print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
 """
     det_script.write_text(det_code.strip(), encoding="utf-8")
 
@@ -132,8 +132,8 @@ print(f"DETERMINISM_DIGEST: {digest}")
     # Extract and compare digests
     import re
 
-    d1 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", stdout1)
-    d2 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", stdout2)
+    d1 = re.search(r"W-AST-FIX-DETERMINISM-DIGEST: ([a-f0-9]+)", stdout1)
+    d2 = re.search(r"W-AST-FIX-DETERMINISM-DIGEST: ([a-f0-9]+)", stdout2)
     dig1 = d1.group(1) if d1 else "NOT_FOUND"
     dig2 = d2.group(1) if d2 else "NOT_FOUND"
     match = dig1 == dig2 and dig1 != "NOT_FOUND"

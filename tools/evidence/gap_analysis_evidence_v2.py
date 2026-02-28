@@ -850,39 +850,21 @@ def classify(req, cmd_desc, raw_lines, match_count, matched_files, ast_index=Non
 
     summary = f"{match_count} matches in {len(prod_files)} files"
 
-    # ── Special case: test-domain requirements ──
-    TEST_DOMAINS = {"Negative Control", "Test Integrity", "Guardian Meta"}
-    test_keywords = ("negative control", "xfail", "test coverage", "guardian test")
-    is_test_req = domain in TEST_DOMAINS or any(kw in req_text.lower() for kw in test_keywords)
-    if is_test_req and has_test:
-        return "PASS", "", summary, prov
-
     # ── No production code at all ──
     if not has_core and not has_test:
         return "FAIL", "No production or test evidence", summary, prov
 
-    # ── Get AST records for matched files ──
+    # ── Get AST records for matched files (always computed for provenance) ──
     ast_records = ast_index.records_for(prod_files) if ast_index else []
     prov["ast_records_count"] = len(ast_records)
 
-    # ── STRUCTURAL eclass: production code = PASS ──
-    if eclass == "STRUCTURAL":
-        if has_core:
-            return "PASS", "", summary, prov
-        elif has_test:
-            return "PARTIAL", "Test/doc only; no production code", summary, prov
-        else:
-            return "FAIL", "No structural evidence", summary, prov
-
-    # ── EXECUTION_PATH eclass: AST-derived layer validation ──
-    # Compute layers_present from AST explain functions
+    # ── Populate layers_present / ast_predicates (always, for provenance) ──
     enf_hit, enf_reasons = ast_explain_enforcement(ast_records) if ast_records else (False, [])
     scan_hit, scan_reasons = ast_explain_scanner(ast_records) if ast_records else (False, [])
     schema_hit, schema_reasons = ast_explain_schema(ast_records) if ast_records else (False, [])
     replay_hit, replay_reasons = ast_explain_replay(ast_records) if ast_records else (False, [])
     sig_hit, sig_reasons = ast_explain_signature(ast_records) if ast_records else (False, [])
 
-    # CI layer: YAML-parsed CI runs pytest covering tests, or runs scanners
     ci_hit = False
     ci_reasons = []
     if ci_index:
@@ -915,7 +897,23 @@ def classify(req, cmd_desc, raw_lines, match_count, matched_files, ast_index=Non
         "CI": ci_reasons,
     }
 
-    # Determine which required layers are missing
+    # ── Special case: test-domain requirements (after provenance is populated) ──
+    TEST_DOMAINS = {"Negative Control", "Test Integrity", "Guardian Meta"}
+    test_keywords = ("negative control", "xfail", "test coverage", "guardian test")
+    is_test_req = domain in TEST_DOMAINS or any(kw in req_text.lower() for kw in test_keywords)
+    if is_test_req and has_test:
+        return "PASS", "", summary, prov
+
+    # ── STRUCTURAL eclass: production code = PASS ──
+    if eclass == "STRUCTURAL":
+        if has_core:
+            return "PASS", "", summary, prov
+        elif has_test:
+            return "PARTIAL", "Test/doc only; no production code", summary, prov
+        else:
+            return "FAIL", "No structural evidence", summary, prov
+
+    # ── EXECUTION_PATH eclass: determine which required layers are missing ──
     required = [l.strip() for l in layers.split(",")]
     missing = []
     for layer in required:
