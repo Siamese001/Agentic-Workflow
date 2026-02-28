@@ -7,12 +7,12 @@ Explicit activation gate that applies approved proposals with deterministic chec
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Optional, Dict, Any
+from typing import Any
 
+from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine
 from system_learning.engines.l4_state_writer import L4StateWriter
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.retrieval_profile_invariant_checker import RetrievalProfileInvariantChecker
-from system_learning.engines.deterministic_replay_engine import DeterministicReplayEngine, ReplayResult
 
 
 @dataclass(frozen=True, slots=True)
@@ -21,11 +21,11 @@ class ActivationResult:
     activated: bool
     base_profile_id: str
     proposal_digest: str
-    new_profile_id: Optional[str]
+    new_profile_id: str | None
     activation_digest: str
-    replay_digest: Optional[str]
+    replay_digest: str | None
     reason: str
-    
+
     def emit_digest(self) -> None:
         """Print the activation digest for verification."""
         print(f"W4F-ACTIVATION-DIGEST: {self.activation_digest}")
@@ -33,12 +33,12 @@ class ActivationResult:
 
 class RetrievalProfileActivationGate:
     """Explicit activation gate for RetrievalProfile proposals."""
-    
+
     def __init__(self):
         """Initialize activation gate with required components."""
         self.invariant_checker = RetrievalProfileInvariantChecker()
         self.replay_engine = DeterministicReplayEngine()
-    
+
     def activate_if_approved(
         self,
         *,
@@ -48,19 +48,19 @@ class RetrievalProfileActivationGate:
         l4_writer: L4StateWriter,
     ) -> ActivationResult:
         """Activate proposal if approved and all checks pass.
-        
+
         Args:
             base_profile_id: ID of the base profile
             proposal_digest: Digest of the proposal to activate
             now_utc: Current timestamp
             l4_writer: L4 state writer
-            
+
         Returns:
             ActivationResult with deterministic digest
         """
         # In a real implementation, this would load from L4 state
         # For testing, we'll simulate the process
-        
+
         # Step 1: Load proposal and check approval (simulated)
         proposal = self._load_proposal_from_l4(proposal_digest)
         if proposal is None:
@@ -70,7 +70,7 @@ class RetrievalProfileActivationGate:
                 reason="Proposal not found in L4",
                 now_utc=now_utc,
             )
-        
+
         if not proposal.approved:
             return self._create_failure_result(
                 base_profile_id=base_profile_id,
@@ -78,7 +78,7 @@ class RetrievalProfileActivationGate:
                 reason="Proposal not approved",
                 now_utc=now_utc,
             )
-        
+
         # Step 2: Load base profile
         base_profile = self._load_profile_from_l4(base_profile_id)
         if base_profile is None:
@@ -88,7 +88,7 @@ class RetrievalProfileActivationGate:
                 reason="Base profile not found in L4",
                 now_utc=now_utc,
             )
-        
+
         # Step 3: Run deterministic replay check
         try:
             replay_result = self.replay_engine.replay(
@@ -103,7 +103,7 @@ class RetrievalProfileActivationGate:
                 reason=f"Replay determinism check failed: {str(e)}",
                 now_utc=now_utc,
             )
-        
+
         # Step 4: Run invariant verification
         try:
             self.invariant_checker.validate(
@@ -117,21 +117,21 @@ class RetrievalProfileActivationGate:
                 reason=f"Invariant violation: {str(e)}",
                 now_utc=now_utc,
             )
-        
+
         # Step 5: Write new profile to L4
         new_profile_id = self._write_new_profile_to_l4(
             profile=proposal.proposed_profile,
             l4_writer=l4_writer,
             now_utc=now_utc,
         )
-        
+
         # Step 6: Update ACTIVE_RETRIEVAL_PROFILE_ID
         self._update_active_profile_id(
             new_profile_id=new_profile_id,
             l4_writer=l4_writer,
             now_utc=now_utc,
         )
-        
+
         # Step 7: Create success result
         activation_digest = self._compute_activation_digest(
             base_profile_id=base_profile_id,
@@ -140,7 +140,7 @@ class RetrievalProfileActivationGate:
             replay_digest=replay_result.replay_digest,
             now_utc=now_utc,
         )
-        
+
         result = ActivationResult(
             activated=True,
             base_profile_id=base_profile_id,
@@ -150,12 +150,12 @@ class RetrievalProfileActivationGate:
             replay_digest=replay_result.replay_digest,
             reason="Activation successful: all checks passed",
         )
-        
+
         # Emit digest for verification
         result.emit_digest()
-        
+
         return result
-    
+
     def _create_failure_result(
         self,
         *,
@@ -165,13 +165,13 @@ class RetrievalProfileActivationGate:
         now_utc: int,
     ) -> ActivationResult:
         """Create a failure activation result.
-        
+
         Args:
             base_profile_id: Base profile ID
             proposal_digest: Proposal digest
             reason: Failure reason
             now_utc: Current timestamp
-            
+
         Returns:
             ActivationResult with activated=False
         """
@@ -182,7 +182,7 @@ class RetrievalProfileActivationGate:
             replay_digest=None,
             now_utc=now_utc,
         )
-        
+
         return ActivationResult(
             activated=False,
             base_profile_id=base_profile_id,
@@ -192,20 +192,20 @@ class RetrievalProfileActivationGate:
             replay_digest=None,
             reason=reason,
         )
-    
-    def _load_proposal_from_l4(self, proposal_digest: str) -> Optional[Any]:
+
+    def _load_proposal_from_l4(self, proposal_digest: str) -> Any | None:
         """Load proposal from L4 state.
-        
+
         Args:
             proposal_digest: Digest of proposal to load
-            
+
         Returns:
             Proposal object if found, None otherwise
         """
         # In a real implementation, this would read from L4 state
         # For testing, we simulate based on the digest
         # This is a placeholder that would be implemented with actual L4 reads
-        
+
         # Create a simple proposal object for testing
         class MockProposal:
             def __init__(self, base_profile_id: str, proposed_profile: RetrievalProfile, approved: bool, proposed_at_utc: int):
@@ -213,7 +213,7 @@ class RetrievalProfileActivationGate:
                 self.proposed_profile = proposed_profile
                 self.approved = approved
                 self.proposed_at_utc = proposed_at_utc
-        
+
         # Simulate finding an approved proposal for testing
         if proposal_digest == "test-proposal-digest-approved":
             proposed_profile = RetrievalProfile(
@@ -223,6 +223,7 @@ class RetrievalProfileActivationGate:
                 similarity_cutoff=0.8425,
                 top_k=10,
                 influence_cap=0.503,
+                normalization_policy="l2",
                 shadow_embedder_id="test-shadow",
             )
             return MockProposal(
@@ -239,6 +240,7 @@ class RetrievalProfileActivationGate:
                 similarity_cutoff=0.8425,
                 top_k=10,
                 influence_cap=0.503,
+                normalization_policy="l2",
                 shadow_embedder_id="test-shadow",
             )
             return MockProposal(
@@ -247,15 +249,15 @@ class RetrievalProfileActivationGate:
                 approved=False,
                 proposed_at_utc=1234567890,
             )
-        
+
         return None
-    
-    def _load_profile_from_l4(self, profile_id: str) -> Optional[RetrievalProfile]:
+
+    def _load_profile_from_l4(self, profile_id: str) -> RetrievalProfile | None:
         """Load profile from L4 state.
-        
+
         Args:
             profile_id: ID of profile to load
-            
+
         Returns:
             RetrievalProfile if found, None otherwise
         """
@@ -270,18 +272,19 @@ class RetrievalProfileActivationGate:
                 top_k=10,
                 similarity_cutoff=0.85,
                 influence_cap=0.5,
+                normalization_policy="l2",
             )
-        
+
         return None
-    
+
     def _write_new_profile_to_l4(self, *, profile: RetrievalProfile, l4_writer: L4StateWriter, now_utc: int) -> str:
         """Write new profile to L4 state.
-        
+
         Args:
             profile: Profile to write
             l4_writer: L4 state writer
             now_utc: Current timestamp
-            
+
         Returns:
             New profile ID
         """
@@ -298,10 +301,10 @@ class RetrievalProfileActivationGate:
         except Exception:
             # L4 write failure should not break activation
             return profile.profile_id
-    
+
     def _update_active_profile_id(self, *, new_profile_id: str, l4_writer: L4StateWriter, now_utc: int) -> None:
         """Update ACTIVE_RETRIEVAL_PROFILE_ID in L4 state.
-        
+
         Args:
             new_profile_id: New active profile ID
             l4_writer: L4 state writer
@@ -314,7 +317,7 @@ class RetrievalProfileActivationGate:
                 "active_profile_id": new_profile_id,
                 "updated_at_utc": now_utc,
             }, sort_keys=True, separators=(",", ":")).encode('utf-8')
-            
+
             l4_writer.write_l4a_detection_signal(
                 payload_bytes=active_profile_data,
                 component_name="activation-gate",
@@ -323,25 +326,25 @@ class RetrievalProfileActivationGate:
         except Exception:
             # L4 write failure should not break activation
             pass
-    
+
     def _compute_activation_digest(
         self,
         *,
         base_profile_id: str,
         proposal_digest: str,
-        new_profile_id: Optional[str],
-        replay_digest: Optional[str],
+        new_profile_id: str | None,
+        replay_digest: str | None,
         now_utc: int,
     ) -> str:
         """Compute deterministic SHA-256 digest for activation.
-        
+
         Args:
             base_profile_id: Base profile ID
             proposal_digest: Proposal digest
             new_profile_id: New profile ID (if activated)
             replay_digest: Replay check digest
             now_utc: Current timestamp
-            
+
         Returns:
             SHA-256 digest string
         """
@@ -354,10 +357,10 @@ class RetrievalProfileActivationGate:
             "activated_at_utc": now_utc,
             "activation_version": "W4-F-v1.0",
         }
-        
+
         # Serialize to canonical JSON
         canonical = json.dumps(data, sort_keys=True, separators=(",", ":"))
-        
+
         # Compute SHA-256 digest
         return hashlib.sha256(canonical.encode('utf-8')).hexdigest()
 

@@ -13,20 +13,18 @@ import numpy as np
 import pytest
 
 from system_learning.engines.embedding_service_factory import (
-    EmbeddingServiceFactory,
-    EmbeddingResult,
-    EmbeddingDisabledError,
     EmbeddingForkViolationError,
     EmbeddingIntegrityError,
+    EmbeddingServiceFactory,
     _DisabledEmbeddingService,
 )
-
 
 pytest.importorskip("numpy")
 pytest.importorskip("psutil")
 
 
 @pytest.mark.unit_min_deps
+@patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"})
 class TestEmbeddingServiceFactory:
     """Test suite for EmbeddingServiceFactory W1 implementation."""
 

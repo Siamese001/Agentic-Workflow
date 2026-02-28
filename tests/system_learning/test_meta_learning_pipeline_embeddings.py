@@ -83,6 +83,7 @@ class TestMetaLearningPipelineEmbeddings:
                 "embedding_artifact_hash": None,
                 "embedding_topk_hashes": [],
                 "embedding_topk_scores_round6": [],
+                "retrieval_profile_id": "retrieval-profile-v2",
             }
 
     def test_retrieve_semantic_context_enabled(

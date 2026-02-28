@@ -319,8 +319,11 @@ class PatternAnalysisEngine:
         if not historical_embeddings:
             return PatternSummary(clusters=[], pattern_digest=self._empty_digest())
 
-        # Deterministic preprocessing
-        processed_embeddings = [self._round_vector(emb) for emb in historical_embeddings]
+        # Deterministic preprocessing: round then L2-normalize
+        processed_embeddings = [
+            self._l2_normalize(self._round_vector(emb))
+            for emb in historical_embeddings
+        ]
 
         # Deterministic clustering
         clusters = self._deterministic_cluster(processed_embeddings, metadata, min_cluster_size)
@@ -377,7 +380,7 @@ class PatternAnalysisEngine:
 
             for other_idx, other_embedding in indexed_embeddings:
                 if other_idx != idx and other_idx not in assigned:
-                    distance = self._euclidean_distance(embedding, other_embedding)
+                    distance = self._cosine_distance(embedding, other_embedding)
                     if distance <= distance_threshold:
                         cluster_indices.append(other_idx)
                         cluster_vectors.append(other_embedding)

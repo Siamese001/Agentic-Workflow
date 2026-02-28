@@ -5,12 +5,14 @@ Tests for deterministic policy recommendation generation from drift analysis.
 """
 
 import os
-import pytest
-from typing import Any, Dict
 
-from system_learning.engines.policy_recommendation_engine import PolicyRecommendationEngine, PolicyRecommendation
-from system_learning.engines.shadow_drift_analyzer import DriftSummary
+import pytest
+
+from system_learning.engines.policy_recommendation_engine import (
+    PolicyRecommendationEngine,
+)
 from system_learning.engines.retrieval_profile import RetrievalProfile
+from system_learning.engines.shadow_drift_analyzer import DriftSummary
 
 
 @pytest.mark.unit_min_deps
@@ -29,7 +31,7 @@ class TestPolicyRecommendationW4D:
             drift_score=0.053,
             deterministic_digest="test-digest-123",
         )
-        
+
         # Create active profile
         active_profile = RetrievalProfile(
             profile_id="test-profile",
@@ -39,31 +41,32 @@ class TestPolicyRecommendationW4D:
             top_k=10,
             similarity_cutoff=0.85,
             influence_cap=0.5,
+            normalization_policy="l2",
         )
-        
+
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         # Run recommendation twice independently
         rec1 = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         rec2 = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Verify deterministic digest
         assert rec1.deterministic_digest == rec2.deterministic_digest, \
             "Policy recommendation must be deterministic"
-        
+
         # Emit digest for test verification
         rec1.emit_digest()
-        
+
         # Verify no drift case
         assert rec1.profile_id == "test-profile"
         assert rec1.recommended_changes == {}, "No changes should be recommended when no drift"
@@ -82,7 +85,7 @@ class TestPolicyRecommendationW4D:
             drift_score=0.15,  # High drift
             deterministic_digest="test-digest-456",
         )
-        
+
         # Create active profile
         active_profile = RetrievalProfile(
             profile_id="test-profile",
@@ -92,21 +95,22 @@ class TestPolicyRecommendationW4D:
             top_k=10,
             similarity_cutoff=0.90,
             influence_cap=0.80,
+            normalization_policy="l2",
         )
-        
+
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         recommendation = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Verify drift detected
         assert recommendation.recommended_changes != {}, "Changes should be recommended when drift detected"
         assert "Drift detected" in recommendation.rationale
-        
+
         # Verify bounded similarity_cutoff reduction
         if "similarity_cutoff" in recommendation.recommended_changes:
             new_cutoff = recommendation.recommended_changes["similarity_cutoff"]
@@ -116,7 +120,7 @@ class TestPolicyRecommendationW4D:
             assert actual_reduction <= expected_max_reduction + 0.000001, \
                 f"Cutoff reduction {actual_reduction} exceeds max {expected_max_reduction}"
             assert new_cutoff >= 0.1, "Cutoff should not go below minimum safe value"
-        
+
         # Verify bounded influence_cap increase
         if "influence_cap" in recommendation.recommended_changes:
             new_cap = recommendation.recommended_changes["influence_cap"]
@@ -126,7 +130,7 @@ class TestPolicyRecommendationW4D:
             assert actual_increase <= expected_max_increase + 0.000001, \
                 f"Cap increase {actual_increase} exceeds max {expected_max_increase}"
             assert new_cap <= 1.0, "Cap should not exceed maximum safe value"
-        
+
         # Verify confidence is bounded
         assert 0.0 <= recommendation.confidence_score <= 1.0, \
             "Confidence score must be bounded between 0 and 1"
@@ -143,7 +147,7 @@ class TestPolicyRecommendationW4D:
             drift_score=0.04,
             deterministic_digest="test-digest-789",
         )
-        
+
         # Create active profile
         active_profile = RetrievalProfile(
             profile_id="test-profile",
@@ -153,17 +157,18 @@ class TestPolicyRecommendationW4D:
             top_k=10,
             similarity_cutoff=0.85,
             influence_cap=0.5,
+            normalization_policy="l2",
         )
-        
+
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         recommendation = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Verify no changes recommended
         assert recommendation.recommended_changes == {}, \
             "No changes should be recommended when drift_flag is False"
@@ -175,10 +180,10 @@ class TestPolicyRecommendationW4D:
         """Test that recommendation engine does not influence retrieval behavior."""
         # This test verifies that the recommendation engine is purely advisory
         # by checking that it doesn't modify input data or active profile
-        
+
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         # Create drift summary
         drift_summary = DriftSummary(
             profile_id="test-profile",
@@ -189,7 +194,7 @@ class TestPolicyRecommendationW4D:
             drift_score=0.15,
             deterministic_digest="test-digest-noninf",
         )
-        
+
         # Create active profile
         active_profile = RetrievalProfile(
             profile_id="test-profile",
@@ -199,26 +204,27 @@ class TestPolicyRecommendationW4D:
             top_k=10,
             similarity_cutoff=0.90,
             influence_cap=0.80,
+            normalization_policy="l2",
         )
-        
+
         # Make copies for comparison
         import copy
         drift_summary_copy = copy.deepcopy(drift_summary)
         active_profile_copy = copy.deepcopy(active_profile)
-        
+
         # Run recommendation
         recommendation = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Verify inputs are unchanged
         assert drift_summary == drift_summary_copy, \
             "Drift summary must not be modified"
         assert active_profile == active_profile_copy, \
             "Active profile must not be modified"
-        
+
         # Verify recommendation is computed correctly
         assert recommendation.profile_id == "test-profile"
         assert recommendation.recommended_changes != {}, "Changes should be recommended"
@@ -227,7 +233,7 @@ class TestPolicyRecommendationW4D:
         """Test edge cases for recommendation generation."""
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         # Test with minimal drift score
         drift_summary_minimal = DriftSummary(
             profile_id="test-profile",
@@ -238,7 +244,7 @@ class TestPolicyRecommendationW4D:
             drift_score=0.080001,  # Very minimal drift
             deterministic_digest="test-digest-minimal",
         )
-        
+
         active_profile = RetrievalProfile(
             profile_id="test-profile",
             primary_embedder_id="test-embedder",
@@ -247,14 +253,15 @@ class TestPolicyRecommendationW4D:
             top_k=10,
             similarity_cutoff=0.85,
             influence_cap=0.5,
+            normalization_policy="l2",
         )
-        
+
         recommendation = engine.generate_recommendation(
             drift_summary=drift_summary_minimal,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Should still recommend changes but very small
         if "similarity_cutoff" in recommendation.recommended_changes:
             reduction = active_profile.similarity_cutoff - recommendation.recommended_changes["similarity_cutoff"]
@@ -271,22 +278,22 @@ class TestW4DNegativeControl:
         """Negative control: tamper with recommendation determinism."""
         # Set tamper flag to change rounding precision
         os.environ["W4D_NEGCTRL_TAMPER"] = "1"
-        
+
         # Monkey patch the rounding function to use different precision
         import system_learning.engines.policy_recommendation_engine as engine_module
         original_round = round
-        
+
         def tampered_round(x, ndigits=None):
             """Tampered rounding that uses 3 decimal places instead of 6."""
             if ndigits is not None and ndigits >= 6:
                 # Use 3 decimal places when 6+ is requested
                 ndigits = 3
             return original_round(x, ndigits)
-        
+
         try:
             # Apply tampering
             engine_module.round = tampered_round
-            
+
             # Create fixed inputs
             drift_summary = DriftSummary(
                 profile_id="test-profile",
@@ -297,7 +304,7 @@ class TestW4DNegativeControl:
                 drift_score=0.053,
                 deterministic_digest="test-digest-123",
             )
-            
+
             active_profile = RetrievalProfile(
                 profile_id="test-profile",
                 primary_embedder_id="test-embedder",
@@ -306,18 +313,19 @@ class TestW4DNegativeControl:
                 top_k=10,
                 similarity_cutoff=0.85,
                 influence_cap=0.5,
+                normalization_policy="l2",
             )
-            
+
             engine = PolicyRecommendationEngine()
             now_utc = 1234567890
-            
+
             # Run recommendation with tampering
             rec_tampered = engine.generate_recommendation(
                 drift_summary=drift_summary,
                 active_profile=active_profile,
                 now_utc=now_utc,
             )
-            
+
             # Restore original rounding for comparison
             engine_module.round = original_round
             rec_normal = engine.generate_recommendation(
@@ -325,18 +333,18 @@ class TestW4DNegativeControl:
                 active_profile=active_profile,
                 now_utc=now_utc,
             )
-            
+
             # Tampering should cause different results - this should FAIL the test
             if rec_tampered.deterministic_digest != rec_normal.deterministic_digest:
                 assert False, f"TAMPERING DETECTED: tampered digest {rec_tampered.deterministic_digest} != normal digest {rec_normal.deterministic_digest}"
-            
+
             # Also check for rounding differences
             if rec_tampered.confidence_score != rec_normal.confidence_score:
                 assert False, f"TAMPERING DETECTED: tampered confidence {rec_tampered.confidence_score} != normal confidence {rec_normal.confidence_score}"
-            
+
             # If we get here, tampering wasn't effective
             assert False, "Tampering was not effective - values are identical"
-            
+
         finally:
             # Restore original function
             engine_module.round = original_round
@@ -348,7 +356,7 @@ class TestW4DNegativeControl:
         # Ensure no tampering flag is set
         if "W4D_NEGCTRL_TAMPER" in os.environ:
             del os.environ["W4D_NEGCTRL_TAMPER"]
-        
+
         # Create fixed inputs
         drift_summary = DriftSummary(
             profile_id="test-profile",
@@ -359,7 +367,7 @@ class TestW4DNegativeControl:
             drift_score=0.053,
             deterministic_digest="test-digest-123",
         )
-        
+
         active_profile = RetrievalProfile(
             profile_id="test-profile",
             primary_embedder_id="test-embedder",
@@ -368,24 +376,25 @@ class TestW4DNegativeControl:
             top_k=10,
             similarity_cutoff=0.85,
             influence_cap=0.5,
+            normalization_policy="l2",
         )
-        
+
         engine = PolicyRecommendationEngine()
         now_utc = 1234567890
-        
+
         # Run recommendation twice without tampering
         rec1 = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         rec2 = engine.generate_recommendation(
             drift_summary=drift_summary,
             active_profile=active_profile,
             now_utc=now_utc,
         )
-        
+
         # Should be identical when not tampering
         assert rec1.deterministic_digest == rec2.deterministic_digest, \
             "Digest must be identical when not tampering"
