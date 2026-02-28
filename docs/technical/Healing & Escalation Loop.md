@@ -15,24 +15,33 @@
   [ THE EXTERNAL BOUND ]  |                                                                             ||
 +-------------------------|---------------------------------------------------------------+             ||
 | SOVEREIGN LLM GATEWAY   |                                                               |             ||
+| (SovereignLLMGateway.py)|                                                               |             ||
 |-------------------------|---------------------------------------------------------------|             ||
-| - HealingProviderInvoker requests resolution.                                           |             ||
-| - Gateway performs concrete binding to SDK.                                             |             ||
-| - Executes LLM repair logic.                                                            |             ||
-| - Returns `InvocationRecord` to sandbox.                                                |             ||
+| - Unified LLM provider operations (OpenAI, Anthropic, Google)                           |             ||
+| - HealingProviderInvoker requests resolution from tier router                           |             ||
+| - Provider health monitoring + centralized audit logging                                |             ||
+| - Tool Adapter Layer (Dict -> SDK Type Casting)                                         |             ||
+| - Returns `InvocationRecord` with deterministic audit trail                             |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           ^                      | (InvocationRecord)                                   ||
                           | (Request Repair)     v                                                      ||
 ==========================|=============================================================================||============================================================
   [ L2 / L2.3: UNIFIED EXECUTION CORE & HEALING SUBSYSTEM ]                                             ||
 +-----------------------------------------------------------------------------------------+             ||
-| [P2: PTC EXECUTION ENGINE] -> [UWG] UNIVERSAL WRITE GATEWAY                             |<============||
+| [P2: EXECUTION GATEWAY] -> [UWG] UNIVERSAL WRITE GATEWAY                             |<============||
+| (execution_gateway.py)    (UniversalWriteGateway.py)                                   |             ||
 |-----------------------------------------------------------------------------------------|             ||
-| - Intercepts ALL FS/DB/Vector writes. Any un-transcripted I/O -> HARD FAIL.             |             ||
-| - Non-UWG mutation -> SovereigntyError.                                                 |             ||
-| - [FREEZE] STRICT ZERO-LOSS ISOLATION: Execution halts immediately upon error.          |             ||
-| - UWG locks all pending state diffs. Prevents ghost mutations.                          |             ||
-| - FAILED status emitted to L2.3 Router.                                                 |             ||
+| EXECUTION GATEWAY:                                                                  |             ||
+| - Builds ExecutionTrace with deterministic replay key computation                     |             ||
+| - Enforces budget limits via BudgetEnforcer                                           |             ||
+| - SandboxEnvelope signature verification (fail-closed boundary)                      |             ||
+|                                                                                      |             ||
+| UNIVERSAL WRITE GATEWAY:                                                             |             ||
+| - Intercepts ALL FS/DB/Vector writes. Any un-transcripted I/O -> HARD FAIL.          |             ||
+| - Non-UWG mutation -> SovereigntyError.                                              |             ||
+| - [FREEZE] STRICT ZERO-LOSS ISOLATION: Execution halts immediately upon error.       |             ||
+| - UWG locks all pending state diffs. Prevents ghost mutations.                       |             ||
+| - FAILED status emitted to L2.3 Router.                                              |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           |                                                                             ||
                           v (SovereigntyError / Logic Violation)                                        ||
@@ -58,7 +67,25 @@
 |   * >= 0.40 : QWEN_VLLM      (Open-weights/Medium)                                      |             ||
 |   * < 0.40  : GEMINI_2_5_PRO (Heavy RCA / retry>=3)                                     |             ||
 | - [!] INVARIANT: Returns *symbolic* `model_id` only.                                    |             ||
+|                                                                                         |             ||
+| [HEALING TIER DISPATCHER] (healing_tier_dispatcher.py)                                 |             ||
+| - SINGLE production point: consumes HealingDecision.tier -> invokes provider           |             ||
+| - LOCAL_AGENT -> invoke_local() (no external LLM call)                                  |             ||
+| - QWEN_VLLM -> invoke_qwen_vllm() (Qwen vLLM provider)                                  |             ||
+| - GEMINI_2_5_PRO -> invoke_gemini() (Gemini 2.5 Pro provider)                          |             ||
+| - Injectable HealingProviderInvoker for test isolation                                 |             ||
 +-----------------------------------------------------------------------------------------+             ||
+======================================================================================================================================================================
+  L2 ENFORCEMENT LAYER ADDITIONAL COMPONENTS
+======================================================================================================================================================================
+| BOUNDARY VERIFIER      : Validates cross-layer boundaries and prevents architectural violations                    |
+| BUDGET ENFORCER        : Enforces resource budget limits and prevents resource exhaustion                          |
+| CAPABILITY CHOKEPOINT  : Central control point for all capability access and authorization                        |
+| NETWORK EGRESS GUARD   : Controls and monitors all outbound network communications                                |
+| PROVIDER BINDING DETERMINISM : Ensures consistent provider binding and prevents substitution attacks               |
+| RUNTIME INTERCEPTOR    : Intercepts runtime calls for audit and enforcement                                      |
+| TOOL POLICY ENFORCER   : Enforces tool usage policies and prevents unauthorized tool access                       |
+| WRITE SET ENFORCER     : Validates and controls write operations to prevent unauthorized mutations                 |
 ======================================================================================================================================================================
   CORE ZERO-LOSS & HEALING DATA CONTRACTS
 ======================================================================================================================================================================
