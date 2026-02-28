@@ -364,7 +364,6 @@ agentic_core/L5_safety/enforcement/process_guard.py:154:silent_swallower:Silent 
 agentic_core/L5_safety/enforcement/process_guard.py:206:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
 agentic_core/L5_safety/enforcement/process_guardrail.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/process_guardrail.py:206:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/enforcement/rag_guardrail.py:61:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/safe_subprocess_handler.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60.0
 agentic_core/L5_safety/enforcement/safe_subprocess_handler.py:158:magic_configuration:Magic configuration: Hardcoded max_output_chars=2000
 agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60.0
@@ -1593,6 +1592,11 @@ system_learning/ports/outcome_write_back_hook.py:110:silent_swallower:Silent exc
 system_learning/ports/outcome_write_back_hook.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/e2e_gemini_qwen_runner.py:138:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/evidence_contract_v2.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/gap_analysis_append_closure.py:488:magic_configuration:Magic configuration: Hardcoded max_lines=10 in function call
+tools/evidence/gap_analysis_append_closure.py:79:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/gap_analysis_evidence_v2.py:111:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/gap_analysis_evidence_v2.py:277:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/gap_analysis_evidence_v2.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 tools/evidence/harden_plan_evidence_runner.py:20:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/harden_plan_evidence_runner.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/phase02_consolidated_evidence_runner.py:13:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime

@@ -48,5 +48,42 @@ class SlotU0:
 SLOT_ORDER: tuple[str, ...] = ("S0", "D0", "I0", "C0", "U0")
 
 
+class SlotOrderViolation(Exception):
+    """Raised when assembled prompt slot tags violate the canonical SLOT_ORDER.
+
+    REQ-PT-011: Negative control — tampered slot order MUST be detected and
+    rejected at assembly time.  Fail-closed: missing or misordered slots
+    abort prompt assembly.
+    """
+
+
+def validate_slot_order(prompt_text: str) -> None:
+    """Enforce canonical SLOT_ORDER in an assembled prompt.
+
+    Scans *prompt_text* for ``<SLOT_XX>`` open-tags and verifies:
+    1. Every slot in ``SLOT_ORDER`` appears at least once.
+    2. Their first-occurrence positions are strictly ascending (S0 < D0 < I0 < C0 < U0).
+
+    Raises:
+        SlotOrderViolation: on missing or misordered slots.
+    """
+    positions: list[tuple[str, int]] = []
+    for slot_key in SLOT_ORDER:
+        tag = f"<SLOT_{slot_key}>"
+        idx = prompt_text.find(tag)
+        if idx == -1:
+            raise SlotOrderViolation(f"SLOT_MISSING: <SLOT_{slot_key}> not found in assembled prompt")
+        positions.append((slot_key, idx))
+
+    for i in range(1, len(positions)):
+        prev_key, prev_pos = positions[i - 1]
+        curr_key, curr_pos = positions[i]
+        if curr_pos <= prev_pos:
+            raise SlotOrderViolation(
+                f"SLOT_ORDER_VIOLATED: <SLOT_{curr_key}> (pos {curr_pos}) "
+                f"must appear after <SLOT_{prev_key}> (pos {prev_pos})"
+            )
+
+
 class AirlockViolationError(Exception):
     """Raised when a user prompt (U0) attempts to bypass the L1→L0 Airlock gate."""

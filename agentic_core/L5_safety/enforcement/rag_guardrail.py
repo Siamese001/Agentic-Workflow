@@ -10,7 +10,71 @@ lives outside the layer boundary. The shim result is injected here.
 import asyncio
 import math
 import re
+from dataclasses import dataclass
 from typing import Any
+
+# ---------------------------------------------------------------------------
+# REQ-RAGX-006: External Knowledge Access Violation
+# ---------------------------------------------------------------------------
+
+
+class ExternalKnowledgeAccessViolation(Exception):
+    """Raised when retrieved context is consumed without a valid CitationBundle.
+
+    REQ-RAGX-006: ExternalKnowledgeAccessViolation MUST be emitted and wave
+    aborted if context used without CitationBundle.  Fail-closed.
+    """
+
+
+@dataclass(frozen=True)
+class CitationBundle:
+    """Immutable citation binding for retrieved chunks.
+
+    Every chunk of external knowledge entering the execution pipeline MUST
+    carry a CitationBundle proving provenance.  Fields mirror REQ-RAGX-003.
+    """
+
+    chunk_id: str
+    source_ref: str
+    byte_sha256: str
+    byte_range: tuple[int, int]
+    score: float
+
+
+def validate_citation_custody(
+    context_chunks: list[dict[str, Any]],
+    citation_bundles: list[CitationBundle] | None,
+) -> None:
+    """Enforce that every external-knowledge chunk has a matching CitationBundle.
+
+    Args:
+        context_chunks: list of dicts representing retrieved context.  Each dict
+            MUST contain at least ``chunk_id``.
+        citation_bundles: corresponding CitationBundle objects.  ``None`` or
+            empty list when chunks are present triggers the violation.
+
+    Raises:
+        ExternalKnowledgeAccessViolation: when context is present but citations
+            are missing, empty, or do not cover every chunk_id.
+    """
+    if not context_chunks:
+        return  # no external context — nothing to enforce
+
+    if citation_bundles is None or len(citation_bundles) == 0:
+        raise ExternalKnowledgeAccessViolation(
+            f"CITATION_MISSING: {len(context_chunks)} context chunk(s) present "
+            f"but no CitationBundle provided — wave aborted"
+        )
+
+    cited_ids = {cb.chunk_id for cb in citation_bundles}
+    for chunk in context_chunks:
+        cid = chunk.get("chunk_id")
+        if cid is None:
+            raise ExternalKnowledgeAccessViolation("CHUNK_ID_MISSING: context chunk lacks 'chunk_id' field")
+        if cid not in cited_ids:
+            raise ExternalKnowledgeAccessViolation(
+                f"CITATION_GAP: chunk_id={cid!r} has no matching CitationBundle — wave aborted"
+            )
 
 
 class RagGuardrail:
@@ -58,6 +122,7 @@ class RagGuardrail:
             if not confident_docs:
                 print("   [!] SOVEREIGN ALERT: Zero documents passed confidence threshold.")
             return confident_docs[:top_k]
+        # guardian: allow-silent-swallow
         except Exception as e:
             print(f"   [!] BGE reranking failed: {e}")
             return documents

@@ -1,6 +1,6 @@
 # Evidence-Backed Full Gap Analysis — Certification Grade
 ## Repository: `C:\Git\Agentic-Workflow`
-## Generated: 2026-02-28 11:21:32 UTC
+## Generated: 2026-02-28 12:01:25 UTC
 ## Generator: `tools/evidence/gap_analysis_evidence_v2.py`
 
 ---
@@ -138,8 +138,8 @@ EXIT CODE: 0
 
 ## 2d. AST Index Summary
 ```
-Total .py files indexed: 5362
-Total symbols indexed: 31465
+Total .py files indexed: 5365
+Total symbols indexed: 31491
 ```
 
 ## 2e. CI Index Summary
@@ -248,11 +248,11 @@ Status classification rules:
 | REQ-013 | CRITICAL | PASS | — | 217 | 217 matches in 36 files |
 | REQ-014 | CRITICAL | PASS | — | 285 | 285 matches in 61 files |
 | REQ-015 | HIGH | PASS | — | 285 | 285 matches in 61 files |
-| REQ-016 | CRITICAL | PASS | — | 337 | 337 matches in 111 files |
+| REQ-016 | CRITICAL | PASS | — | 341 | 341 matches in 115 files |
 | REQ-017 | HIGH | PASS | — | 815 | 815 matches in 276 files |
 | REQ-018 | CRITICAL | PASS | — | 815 | 815 matches in 276 files |
-| REQ-019 | CRITICAL | PASS | — | 337 | 337 matches in 111 files |
-| REQ-020 | CRITICAL | PASS | — | 337 | 337 matches in 111 files |
+| REQ-019 | CRITICAL | PASS | — | 341 | 341 matches in 115 files |
+| REQ-020 | CRITICAL | PASS | — | 341 | 341 matches in 115 files |
 | REQ-021 | HIGH | PASS | — | 179 | 179 matches in 25 files |
 | REQ-022 | CRITICAL | PARTIAL | Schema | 9 | 9 matches in 4 files |
 | REQ-023 | CRITICAL | PASS | — | 203 | 203 matches in 47 files |
@@ -269,7 +269,7 @@ Status classification rules:
 | REQ-034 | CRITICAL | PASS | — | 165 | 165 matches in 33 files |
 | REQ-035 | CRITICAL | PASS | — | 34 | 34 matches in 14 files |
 | REQ-036 | CRITICAL | PASS | — | 34 | 34 matches in 14 files |
-| REQ-037 | CRITICAL | PASS | — | 136 | 136 matches in 47 files |
+| REQ-037 | CRITICAL | PASS | — | 140 | 140 matches in 50 files |
 | REQ-038 | CRITICAL | PASS | — | 112 | 112 matches in 16 files |
 | REQ-039 | CRITICAL | PASS | — | 111 | 111 matches in 36 files |
 | REQ-040 | HIGH | PASS | — | 111 | 111 matches in 36 files |
@@ -312,11 +312,11 @@ Status classification rules:
 | REQ-077 | CRITICAL | PASS | — | 1354 | 1354 matches in 189 files |
 | REQ-078 | CRITICAL | PASS | — | 1354 | 1354 matches in 189 files |
 | REQ-079 | CRITICAL | PASS | — | 1354 | 1354 matches in 189 files |
-| REQ-080 | CRITICAL | PASS | — | 1803 | 1803 matches in 361 files |
-| REQ-081 | CRITICAL | PASS | — | 1803 | 1803 matches in 361 files |
-| REQ-082 | CRITICAL | PASS | — | 1803 | 1803 matches in 361 files |
-| REQ-083 | CRITICAL | PASS | — | 1803 | 1803 matches in 361 files |
-| REQ-084 | CRITICAL | PASS | — | 1803 | 1803 matches in 361 files |
+| REQ-080 | CRITICAL | PASS | — | 1817 | 1817 matches in 363 files |
+| REQ-081 | CRITICAL | PASS | — | 1817 | 1817 matches in 363 files |
+| REQ-082 | CRITICAL | PASS | — | 1817 | 1817 matches in 363 files |
+| REQ-083 | CRITICAL | PASS | — | 1817 | 1817 matches in 363 files |
+| REQ-084 | CRITICAL | PASS | — | 1817 | 1817 matches in 363 files |
 | REQ-085 | CRITICAL | PASS | — | 115 | 115 matches in 13 files |
 | REQ-086 | CRITICAL | PASS | — | 115 | 115 matches in 13 files |
 | REQ-087 | CRITICAL | PASS | — | 115 | 115 matches in 13 files |
@@ -324,11 +324,11 @@ Status classification rules:
 | REQ-089 | CRITICAL | PASS | — | 68 | 68 matches in 12 files |
 | REQ-090 | HIGH | PASS | — | 16 | 16 matches in 6 files |
 | REQ-091 | CRITICAL | PASS | — | 16 | 16 matches in 6 files |
-| REQ-092 | CRITICAL | PASS | — | 544 | 544 matches in 146 files |
-| REQ-093 | CRITICAL | PASS | — | 544 | 544 matches in 146 files |
-| REQ-094 | CRITICAL | PASS | — | 544 | 544 matches in 146 files |
-| REQ-095 | CRITICAL | PASS | — | 544 | 544 matches in 146 files |
-| REQ-096 | HIGH | PASS | — | 544 | 544 matches in 146 files |
+| REQ-092 | CRITICAL | PASS | — | 553 | 553 matches in 148 files |
+| REQ-093 | CRITICAL | PASS | — | 553 | 553 matches in 148 files |
+| REQ-094 | CRITICAL | PASS | — | 553 | 553 matches in 148 files |
+| REQ-095 | CRITICAL | PASS | — | 553 | 553 matches in 148 files |
+| REQ-096 | HIGH | PASS | — | 553 | 553 matches in 148 files |
 | REQ-097 | CRITICAL | PASS | — | 187 | 187 matches in 30 files |
 | REQ-098 | CRITICAL | PASS | — | 187 | 187 matches in 30 files |
 | REQ-099 | CRITICAL | PASS | — | 187 | 187 matches in 30 files |
@@ -430,10 +430,10 @@ Status classification rules:
 | REQ-195 | CRITICAL | PASS | — | 14 | 14 matches in 7 files |
 | REQ-196 | HIGH | PASS | — | 14 | 14 matches in 7 files |
 | REQ-197 | CRITICAL | PASS | — | 14 | 14 matches in 7 files |
-| REQ-198 | HIGH | PASS | — | 84 | 84 matches in 9 files |
-| REQ-199 | CRITICAL | PASS | — | 84 | 84 matches in 9 files |
-| REQ-200 | CRITICAL | PASS | — | 84 | 84 matches in 9 files |
-| REQ-201 | CRITICAL | PARTIAL | Replay | 84 | 84 matches in 9 files |
+| REQ-198 | HIGH | PASS | — | 111 | 111 matches in 12 files |
+| REQ-199 | CRITICAL | PASS | — | 111 | 111 matches in 12 files |
+| REQ-200 | CRITICAL | PASS | — | 111 | 111 matches in 12 files |
+| REQ-201 | CRITICAL | PARTIAL | Replay | 111 | 111 matches in 12 files |
 | REQ-202 | CRITICAL | PASS | — | 188 | 188 matches in 75 files |
 | REQ-203 | CRITICAL | PASS | — | 188 | 188 matches in 75 files |
 | REQ-204 | CRITICAL | PASS | — | 188 | 188 matches in 75 files |
@@ -651,27 +651,27 @@ Status classification rules:
 | REQ-416 | CRITICAL | PARTIAL | Runtime | 3 | 3 matches in 1 files |
 | REQ-417 | CRITICAL | PASS | — | 31 | 31 matches in 6 files |
 | REQ-PT-001 | CRITICAL | PASS | — | 7 | 7 matches in 3 files |
-| REQ-PT-002 | CRITICAL | PASS | — | 56 | 56 matches in 6 files |
-| REQ-PT-003 | CRITICAL | PASS | — | 568 | 568 matches in 148 files |
-| REQ-PT-004 | CRITICAL | PASS | — | 568 | 568 matches in 148 files |
+| REQ-PT-002 | CRITICAL | PASS | — | 94 | 94 matches in 8 files |
+| REQ-PT-003 | CRITICAL | PASS | — | 608 | 608 matches in 150 files |
+| REQ-PT-004 | CRITICAL | PASS | — | 608 | 608 matches in 150 files |
 | REQ-PT-005 | CRITICAL | PARTIAL | Schema | 13 | 13 matches in 7 files |
-| REQ-PT-006 | HIGH | PASS | — | 568 | 568 matches in 148 files |
-| REQ-PT-007 | CRITICAL | PASS | — | 30 | 30 matches in 5 files |
-| REQ-PT-008 | HIGH | PASS | — | 568 | 568 matches in 148 files |
+| REQ-PT-006 | HIGH | PASS | — | 608 | 608 matches in 150 files |
+| REQ-PT-007 | CRITICAL | PASS | — | 61 | 61 matches in 7 files |
+| REQ-PT-008 | HIGH | PASS | — | 608 | 608 matches in 150 files |
 | REQ-PT-009 | CRITICAL | PASS | — | 7 | 7 matches in 6 files |
-| REQ-PT-010 | CRITICAL | PASS | — | 568 | 568 matches in 148 files |
-| REQ-PT-011 | CRITICAL | FAIL | No production or test evidence | 3 | 3 matches in 0 files |
+| REQ-PT-010 | CRITICAL | PASS | — | 608 | 608 matches in 150 files |
+| REQ-PT-011 | CRITICAL | PASS | — | 43 | 43 matches in 4 files |
 | REQ-PT-012 | CRITICAL | PARTIAL | Runtime | 2 | 2 matches in 1 files |
 | REQ-EM-001 | HIGH | PASS | — | 57 | 57 matches in 20 files |
 | REQ-EM-002 | HIGH | PASS | — | 57 | 57 matches in 20 files |
 | REQ-EM-003 | HIGH | PASS | — | 57 | 57 matches in 20 files |
 | REQ-EM-004 | CRITICAL | PASS | — | 5 | 5 matches in 3 files |
-| REQ-RAGX-001 | HIGH | PASS | — | 84 | 84 matches in 9 files |
-| REQ-RAGX-002 | HIGH | PASS | — | 84 | 84 matches in 9 files |
-| REQ-RAGX-003 | HIGH | PARTIAL | Replay | 84 | 84 matches in 9 files |
-| REQ-RAGX-004 | HIGH | PASS | — | 84 | 84 matches in 9 files |
-| REQ-RAGX-005 | CRITICAL | PASS | — | 15 | 15 matches in 7 files |
-| REQ-RAGX-006 | CRITICAL | FAIL | No production or test evidence | 1 | 1 matches in 0 files |
+| REQ-RAGX-001 | HIGH | PASS | — | 111 | 111 matches in 12 files |
+| REQ-RAGX-002 | HIGH | PASS | — | 111 | 111 matches in 12 files |
+| REQ-RAGX-003 | HIGH | PARTIAL | Replay | 111 | 111 matches in 12 files |
+| REQ-RAGX-004 | HIGH | PASS | — | 111 | 111 matches in 12 files |
+| REQ-RAGX-005 | CRITICAL | PASS | — | 22 | 22 matches in 8 files |
+| REQ-RAGX-006 | CRITICAL | PASS | — | 25 | 25 matches in 2 files |
 | REQ-CTX-001 | HIGH | PASS | — | 29 | 29 matches in 11 files |
 | REQ-CTX-002 | CRITICAL | PASS | — | 9 | 9 matches in 2 files |
 | REQ-APP-001 | CRITICAL | PASS | — | 15 | 15 matches in 8 files |
@@ -684,10 +684,10 @@ Status classification rules:
 | REQ-MEMX-003 | CRITICAL | PARTIAL | CI | 2 | 2 matches in 1 files |
 | REQ-MEMX-004 | HIGH | PARTIAL | Replay | 48 | 48 matches in 10 files |
 | REQ-MEMX-005 | HIGH | PASS | — | 48 | 48 matches in 10 files |
-| REQ-WLD-001 | CRITICAL | PASS | — | 85 | 85 matches in 11 files |
+| REQ-WLD-001 | CRITICAL | PASS | — | 92 | 92 matches in 12 files |
 | REQ-WLD-002 | CRITICAL | PASS | — | 53 | 53 matches in 18 files |
-| REQ-WLD-003 | CRITICAL | PARTIAL | Replay, Schema | 16 | 16 matches in 3 files |
-| REQ-WLD-004 | CRITICAL | PARTIAL | Replay | 16 | 16 matches in 3 files |
+| REQ-WLD-003 | CRITICAL | PARTIAL | Replay, Schema | 27 | 27 matches in 6 files |
+| REQ-WLD-004 | CRITICAL | PARTIAL | Replay | 27 | 27 matches in 6 files |
 | REQ-DPO-001 | HIGH | FAIL | No production or test evidence | 1 | 1 matches in 0 files |
 | REQ-DPO-002 | CRITICAL | PARTIAL | Schema | 69 | 69 matches in 9 files |
 | REQ-DPO-003 | HIGH | PASS | — | 59 | 59 matches in 9 files |
@@ -701,8 +701,9 @@ Status classification rules:
 
 ## REQ-037: Negative control XFAIL(strict=True)
 **Command:** `py_grep(r'xfail.*strict.*True', ext='.py') across C:\Git\Agentic-Workflow`
-**Matches:** 23 in 13 files
+**Matches:** 24 in 14 files
 ```
+tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py:4:   - A controlled violation is injected so the test yields xfail(strict=True) exit 0.
 tests/e2e/test_import_resolution.py:96:     These are NOT ignored — they are marked xfail(strict=True) so that:
 tests/governance/test_phase10_embedding_non_mutation.py:213: @pytest.mark.xfail(strict=True, reason="W10_DATA_LEAK_TAMPER=1 must xfail on policy violation.")
 tests/governance/test_phase12_write_gateway_bypass.py:150: @pytest.mark.xfail(strict=True, reason="W12_NEGCTRL_TAMPER=1 must xfail on rogue write.")
@@ -721,19 +722,19 @@ tools/evidence/gap_analysis_append_closure.py:253:         r"xfail.*strict.*True
 tools/evidence/gap_analysis_append_closure.py:393:     w("### C5. Negative Control: xfail(strict=True) presence")
 tools/evidence/gap_analysis_append_closure.py:518:     w(f"  - Negative control xfail(strict=True) present in {len(xfail_files)} test files")
 tools/evidence/gap_analysis_evidence_v2.py:605:         "REQ-037": [r"xfail.*strict.*True|negative.*control.*tamper"],
-tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"xfail.*strict.*True.*prompt|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
-tools/evidence/gap_analysis_evidence_v2.py:1245:         ("REQ-037", "Negative control XFAIL(strict=True)", [
-... (3 more)
+tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"validate_slot_order|SlotOrderViolation|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
+... (4 more)
 ```
 
 **Command:** `py_grep(r'negative.*control', ext='.py') across C:\Git\Agentic-Workflow`
-**Matches:** 341 in 81 files
+**Matches:** 346 in 84 files
 ```
 agentic_core/L2_execution/determinism.py:222:     # Add tampering if negative control is active
 agentic_core/L2_execution/types/commit_proof_invariant.py:6: or verify it has changed (negative control: tampered inputs → different hash).
 agentic_core/L2_execution/types/commit_proof_invariant.py:62:         Negative control: verifies that tampered inputs produce a different hash.
 agentic_core/L2_execution/types/commit_proof_invariant.py:68:                 f"[Phase {self.phase_id}] Negative control FAILED: "
 agentic_core/L3_orchestration/engines/deterministic_orchestrator.py:81:         # Negative control: intentionally reverse sort order to cause mismatch
+agentic_core/prompt_governance/contracts/slot_contracts.py:54:     REQ-PT-011: Negative control — tampered slot order MUST be detected and
 ops_scripts/ci/audit_agent_registry_enforcement.py:202:             "Synthetic violation for negative control testing"
 tests/agentic_core/test_sovereignty_proof_suite.py:10: Each phase emits a typed proof artifact and uses strict XFAIL for negative controls.
 tests/agentic_core/test_sovereignty_proof_suite.py:107:     def test_negative_control_raw_http_blocked(self):
@@ -748,7 +749,6 @@ tests/agentic_core/test_sovereignty_proof_suite.py:380:         assert found_mp,
 tests/agentic_core/test_sovereignty_proof_suite.py:390:         assert found_reload, "Negative control: importlib.reload must be detected"
 tests/agentic_core/test_sovereignty_proof_suite.py:399:         assert found_setattr, "Negative control: setattr must be detected"
 tests/agentic_core/test_sovereignty_proof_suite.py:481:         # This is the negative control from Phase 7
-tests/agentic_core/L0_routing/enforcement/test_re_clear_loop.py:111:         """Negative control: BLOCKED must require explicit escalation, not auto-clear."""
 ... (30 more)
 ```
 
@@ -789,7 +789,7 @@ agentic_core/L2_execution/enforcement/network_egress_guard.py:110:     """Check 
 
 ## REQ-016: Fail-closed no silent fallback
 **Command:** `py_grep(r'fail.closed', ext='.py') across C:\Git\Agentic-Workflow`
-**Matches:** 325 in 108 files
+**Matches:** 329 in 112 files
 ```
 agentic_core/embeddings/embedding_factory.py:5: - EMBEDDING_ENABLED kill-switch (fail-closed)
 agentic_core/embeddings/embedding_factory.py:281:     logger.warning("EmbeddingFactory: EMBEDDING_ENABLED=false - embeddings disabled (fail-closed)")
@@ -873,15 +873,15 @@ agentic_core/L0_routing/scripts/class_info.py:255:         "prompt_assembler.py"
 agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py:12: from agentic_core.prompt_governance.core.prompt_assembler import assemble_prompt
 agentic_core/L4_state/memory/runtime_models.py:1: """Minimal shim: re-exports types required by prompt_assembler.py.
 agentic_core/L4_state/memory/runtime_models.py:4:   prompt_assembler.py → from agentic_core.L4_state.memory.runtime_models import InjectionMatch
-agentic_core/prompt_governance/core/prompt_assembler.py:641: _prompt_assembler: PromptAssembler | None = None
-agentic_core/prompt_governance/core/prompt_assembler.py:644: def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
-agentic_core/prompt_governance/core/prompt_assembler.py:653:     global _prompt_assembler
-agentic_core/prompt_governance/core/prompt_assembler.py:655:     if _prompt_assembler is None:
-agentic_core/prompt_governance/core/prompt_assembler.py:656:         _prompt_assembler = PromptAssembler(legacy_mode=legacy_mode)
-agentic_core/prompt_governance/core/prompt_assembler.py:658:     return _prompt_assembler
-agentic_core/prompt_governance/core/prompt_assembler.py:681:     assembler = get_prompt_assembler()
-agentic_core/prompt_governance/core/prompt_assembler.py:703:     assembler = get_prompt_assembler()
-agentic_core/prompt_governance/core/prompt_assembler.py:724:     assembler = get_prompt_assembler()
+agentic_core/prompt_governance/core/prompt_assembler.py:646: _prompt_assembler: PromptAssembler | None = None
+agentic_core/prompt_governance/core/prompt_assembler.py:649: def get_prompt_assembler(legacy_mode: bool = False) -> PromptAssembler:
+agentic_core/prompt_governance/core/prompt_assembler.py:658:     global _prompt_assembler
+agentic_core/prompt_governance/core/prompt_assembler.py:660:     if _prompt_assembler is None:
+agentic_core/prompt_governance/core/prompt_assembler.py:661:         _prompt_assembler = PromptAssembler(legacy_mode=legacy_mode)
+agentic_core/prompt_governance/core/prompt_assembler.py:663:     return _prompt_assembler
+agentic_core/prompt_governance/core/prompt_assembler.py:686:     assembler = get_prompt_assembler()
+agentic_core/prompt_governance/core/prompt_assembler.py:708:     assembler = get_prompt_assembler()
+agentic_core/prompt_governance/core/prompt_assembler.py:729:     assembler = get_prompt_assembler()
 agentic_core/prompt_governance/core/__init__.py:4: from .prompt_assembler import *
 apps_shared/utils/prompt_enhancer_util.py:13: from .prompt_assembler import get_prompt_assembler
 apps_shared/utils/prompt_enhancer_util.py:43:         self.prompt_assembler = get_prompt_assembler(legacy_mode=self.config.legacy_mode)
@@ -898,7 +898,7 @@ tests/agentic_core/prompt_governance/test_assembler_slots.py:19:         "agenti
 agentic_core/L5_safety/config/structure_blueprint/classification.py:363:     # prompt_governance/validation aligns to validators treatment
 agentic_core/L5_safety/reasoning/RedTeamAgent.py:17: from agentic_core.prompt_governance.rendering.sovereign_prompt_renderer_validator import (
 agentic_core/prompt_governance/core/invariant_registry.py:40:     from agentic_core.prompt_governance.security.validators.output_schema_validator import (
-agentic_core/prompt_governance/core/prompt_assembler.py:30: from agentic_core.prompt_governance.security.validators.output_schema_validator import (
+agentic_core/prompt_governance/core/prompt_assembler.py:32: from agentic_core.prompt_governance.security.validators.output_schema_validator import (
 tests/agentic_core/prompt_governance/test_capability_contracts.py:45:     from agentic_core.prompt_governance.security.validators.output_schema_validator import (
 tests/agentic_core/prompt_governance/test_capability_contracts.py:174:     from agentic_core.prompt_governance.security.validators import output_schema_validator as osv
 tests/agentic_core/prompt_governance/test_capability_contracts.py:221:     import agentic_core.prompt_governance.security.validators.output_schema_validator as osv
@@ -1048,13 +1048,17 @@ tools/evidence/gap_analysis_evidence_v2.py:1270:             r"PolicyAlignmentCh
 **Command:** `py_grep(r'xfail.*strict.*True.*slot', ext='.py') across C:\Git\Agentic-Workflow`
 **Matches:** 2 in 1 files
 ```
-tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"xfail.*strict.*True.*prompt|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
+tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"validate_slot_order|SlotOrderViolation|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
 tools/evidence/gap_analysis_evidence_v2.py:1273:             r"xfail.*strict.*True.*slot", r"slot.*order.*tamper",
 ```
 
 **Command:** `py_grep(r'slot.*order.*tamper', ext='.py') across C:\Git\Agentic-Workflow`
-**Matches:** 2 in 1 files
+**Matches:** 6 in 3 files
 ```
+tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py:140:     err = SlotOrderViolation("tamper detected")
+tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py:27:     reason="W_AST_FIX_NEGCTRL_TAMPER=1: deliberate slot-order tamper",
+tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py:45:         validate_slot_order(tampered)  # raises SlotOrderViolation -> xfail
+tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"validate_slot_order|SlotOrderViolation|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
 tools/evidence/gap_analysis_evidence_v2.py:1272:         ("REQ-PT-011", "Negative control for slot order tamper", [
 tools/evidence/gap_analysis_evidence_v2.py:1273:             r"xfail.*strict.*True.*slot", r"slot.*order.*tamper",
 ```
@@ -1071,7 +1075,7 @@ agentic_core\L2_execution\enforcement\key_source.py:31
     class TestKeySource(KeySource):
 
 tests\agentic_core\L5_safety\validators\test_code_dedup_fuzzy.py:14
-  c:\Git\Agentic-Workflow\tests\agentic_core\L5_safety\validators\test_code_dedup_fuzzy.py:14: RuntimeWarning: NamingAgent not available � falling back to heuristic uniqueness resolution
+  C:\Git\Agentic-Workflow\tests\agentic_core\L5_safety\validators\test_code_dedup_fuzzy.py:14: RuntimeWarning: NamingAgent not available � falling back to heuristic uniqueness resolution
     from agentic_core.L5_safety.reasoning.CodeDeduplicationAgent import CodeDeduplicationAgent
 
 -- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
@@ -1084,7 +1088,7 @@ Errors: 0
 OK: GUARDIAN STATUS: PASS
 All architectural integrity checks passed.
 ======================================  =======================================
-======================= 11498 tests collected in 5.99s ========================
+======================= 11520 tests collected in 5.67s ========================
 EXIT CODE: 0
 ```
 
@@ -1187,8 +1191,9 @@ agentic_core/L2_execution/determinism/determinism_guard.py:27:             "uuid
 
 ## 5c. Negative control test search
 **Command:** `py_grep(r'xfail.*strict.*True', ext='.py') across C:\Git\Agentic-Workflow`
-**Matches:** 23 in 13 files
+**Matches:** 24 in 14 files
 ```
+tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py:4:   - A controlled violation is injected so the test yields xfail(strict=True) exit 0.
 tests/e2e/test_import_resolution.py:96:     These are NOT ignored — they are marked xfail(strict=True) so that:
 tests/governance/test_phase10_embedding_non_mutation.py:213: @pytest.mark.xfail(strict=True, reason="W10_DATA_LEAK_TAMPER=1 must xfail on policy violation.")
 tests/governance/test_phase12_write_gateway_bypass.py:150: @pytest.mark.xfail(strict=True, reason="W12_NEGCTRL_TAMPER=1 must xfail on rogue write.")
@@ -1207,7 +1212,7 @@ tools/evidence/gap_analysis_append_closure.py:253:         r"xfail.*strict.*True
 tools/evidence/gap_analysis_append_closure.py:393:     w("### C5. Negative Control: xfail(strict=True) presence")
 tools/evidence/gap_analysis_append_closure.py:518:     w(f"  - Negative control xfail(strict=True) present in {len(xfail_files)} test files")
 tools/evidence/gap_analysis_evidence_v2.py:605:         "REQ-037": [r"xfail.*strict.*True|negative.*control.*tamper"],
-tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"xfail.*strict.*True.*prompt|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
+tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"validate_slot_order|SlotOrderViolation|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
 tools/evidence/gap_analysis_evidence_v2.py:1245:         ("REQ-037", "Negative control XFAIL(strict=True)", [
 tools/evidence/gap_analysis_evidence_v2.py:1246:             r"xfail.*strict.*True", r"negative.*control", r"tamper.*vector",
 tools/evidence/gap_analysis_evidence_v2.py:1273:             r"xfail.*strict.*True.*slot", r"slot.*order.*tamper",
@@ -1247,17 +1252,16 @@ test_w5_runner.py:207:         print(f"\nW5-DETERMINISM-DIGEST: {deterministic_d
 ## Overall Status Distribution
 ```
 Total requirements evaluated: 462
-  FAIL: 7
+  FAIL: 5
   PARTIAL: 43
-  PASS: 412
+  PASS: 414
 ```
 
 ## CRITICAL Status Distribution
 ```
 Total CRITICAL: 375
-  CRITICAL FAIL: 2
   CRITICAL PARTIAL: 36
-  CRITICAL PASS: 337
+  CRITICAL PASS: 339
 ```
 
 ## Prefix-Level Breakdown
@@ -1270,8 +1274,8 @@ Total CRITICAL: 375
   REQ-HEALX (2): FAIL=1, PASS=1
   REQ-MEMX (5): PARTIAL=2, PASS=3
   REQ-PHJ (2): PASS=2
-  REQ-PT (12): FAIL=1, PARTIAL=2, PASS=9
-  REQ-RAGX (6): FAIL=1, PARTIAL=1, PASS=4
+  REQ-PT (12): PARTIAL=2, PASS=10
+  REQ-RAGX (6): PARTIAL=1, PASS=5
   REQ-TLM (1): PASS=1
   REQ-WLD (4): PARTIAL=2, PASS=2
   REQ-nnn (417): FAIL=2, PARTIAL=35, PASS=380
@@ -1321,25 +1325,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1376,25 +1380,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1431,25 +1435,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1486,25 +1490,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1541,25 +1545,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1596,25 +1600,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1729,25 +1733,25 @@ ci_test (101): ['tests/agentic_core/L0_routing/enforcement/test_ast_scanners_pha
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +99 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/class_info.py: decorators ['dataclass']
     # ... +49 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_negative_control_tampered_signature', 'inject_test_key_source', 'test_l5_certification_signature_verification']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1784,26 +1788,26 @@ ci_test (26): ['tests/agentic_core/L0_routing/enforcement/test_agent_profile_enf
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
     # tests/governance/test_req414_network_egress_guard.py: classes ['TestREQ414NetworkEgressGuard']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L2_execution/enforcement/provider_binding_determinism.py: defines ['verify_provider_binding_determinism']
     # ... +23 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_agent_registry_enforcement.py: imports ['ast'], calls ['ast.parse']
     # ... +16 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # apps_rg/reasoning/HardenedopenaiexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1840,8 +1844,8 @@ layers_present = {
   Runtime: True,
     # agentic_core/architecture/architectural_invariants.py: defines ['validate_hf_embedder_config', 'validate_replay_key_completeness']
   AST: True,
-    # tools/evidence/check_scanner_violations.py: imports ['ast'], calls ['ast.parse']
-    # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: imports ['ast'], calls ['ast.parse']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: classes ['SystemInvariantScanner']
     # ops_scripts/ci/audit_generation_routing_enforcement.py: imports ['ast'], calls ['ast.parse']
     # ... +6 more predicates
   Schema: False,
@@ -1883,25 +1887,25 @@ ci_test (7): ['tests/governance/conftest.py', 'tests/governance/test_embedding_a
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_phase8_signature_boundary.py: calls ['guard.enable', 'guard.disable', 'verify_instruction_packet']
-    # ops_scripts/ci/audit_qwen_sovereignty.py: raises ['RuntimeError']
-    # ops_scripts/ci/audit_qwen_sovereignty.py: defines ['check_enum_leakage', 'validate_threshold_immutability', 'validate_architectural_separation', 'validate_embedding_governance_lock']
+    # system_learning/engines/pattern_analysis_engine.py: raises ['ValueError', 'RuntimeError']
+    # ops_scripts/ci/audit_embedding_surface.py: defines ['verify_factory_implementation']
+    # ops_scripts/ci/audit_embedding_surface.py: calls ['verify_factory_implementation']
     # ... +15 more predicates
   AST: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/sovereign_hardening/test_invariant_scanner.py: imports ['ast'], calls ['ast.parse']
-    # tests/sovereign_hardening/test_invariant_scanner.py: classes ['TestSystemInvariantScanner']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: imports ['ast'], calls ['ast.parse']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: classes ['SystemInvariantScanner']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +10 more predicates
   Schema: True,
-    # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
     # system_learning/engines/pattern_analysis_engine.py: decorators ['dataclass']
+    # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -1937,26 +1941,26 @@ ci_test (26): ['tests/agentic_core/L0_routing/enforcement/test_agent_profile_enf
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
     # tests/governance/test_req414_network_egress_guard.py: classes ['TestREQ414NetworkEgressGuard']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L2_execution/enforcement/provider_binding_determinism.py: defines ['verify_provider_binding_determinism']
     # ... +23 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_agent_registry_enforcement.py: imports ['ast'], calls ['ast.parse']
     # ... +16 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # apps_rg/reasoning/HardenedopenaiexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -1993,26 +1997,26 @@ ci_test (26): ['tests/agentic_core/L0_routing/enforcement/test_agent_profile_enf
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
     # tests/governance/test_req414_network_egress_guard.py: classes ['TestREQ414NetworkEgressGuard']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L2_execution/enforcement/provider_binding_determinism.py: defines ['verify_provider_binding_determinism']
     # ... +23 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_agent_registry_enforcement.py: imports ['ast'], calls ['ast.parse']
     # ... +16 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # apps_rg/reasoning/HardenedopenaiexecutorStrategy.py: decorators ['dataclass']
+    # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2031,47 +2035,47 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 337 matches in 112 files
+- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 341 matches in 116 files
 
 #### HIT_FILES
 ```
-prod (75): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
-  ... +70 more
-test (35): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
-  ... +30 more
+prod (78): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
+  ... +73 more
+test (36): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
+  ... +31 more
 tool (1): ['ops_scripts/ci/gap_regenerate_p0.py']
-ci_test (15): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
+ci_test (16): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 111
+**ast_records_count:** 115
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_shared/utils/rank_data_components_plan_type_util.py: raises ['SecurityError', 'ValueError']
-    # apps_shared/utils/rank_data_components_plan_type_util.py: defines ['validate_safety']
-    # ops_scripts/ci/gap_regenerate_p0.py: raises ['LayerMutationError']
-    # ... +126 more predicates
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/guardian/test_circuit_breaker_gate.py: classes ['TestStructuralContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # ... +132 more predicates
   AST: True,
-    # ops_scripts/ci/gap_regenerate_p0.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_circuit_breaker_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # ... +15 more predicates
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py: decorators ['dataclass']
+    # ... +18 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +7 more predicates
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
+    # agentic_core/security/signature_verifier.py: imports ['hashlib'], defines ['add_trusted_signer', '_compute_signature', 'get_signature_verifier']
+    # agentic_core/runtime/execution_bound_token.py: imports ['hashlib'], defines ['verify_signature']
     # ... +14 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2108,29 +2112,29 @@ ci_test (55): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: defines ['check_schema_compatibility', 'validate_against_json_schema']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
     # ... +219 more predicates
   AST: True,
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: imports ['ast'], calls ['ast.parse']
-    # ops_scripts/ci/ast_canonical_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +24 more predicates
   Schema: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_shared/types/invocation_type_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
     # ... +44 more predicates
   Replay: True,
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: classes ['DeterminismVisitor']
-    # agentic_core/replay/replay_envelope.py: classes ['ReplayEnvelope']
-    # agentic_core/replay/replay_envelope.py: defines ['create_deterministic_cache_key']
+    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L3_orchestration/replay/deterministic_replay.py: classes ['ReplayMetrics', 'ReplayCommand', 'ReplayRecord', 'ReplayResult']
     # ... +26 more predicates
   Signature: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: calls ['hmac.new']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +71 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2167,29 +2171,29 @@ ci_test (55): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: defines ['check_schema_compatibility', 'validate_against_json_schema']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
     # ... +219 more predicates
   AST: True,
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: imports ['ast'], calls ['ast.parse']
-    # ops_scripts/ci/ast_canonical_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +24 more predicates
   Schema: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_shared/types/invocation_type_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
     # ... +44 more predicates
   Replay: True,
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: classes ['DeterminismVisitor']
-    # agentic_core/replay/replay_envelope.py: classes ['ReplayEnvelope']
-    # agentic_core/replay/replay_envelope.py: defines ['create_deterministic_cache_key']
+    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L3_orchestration/replay/deterministic_replay.py: classes ['ReplayMetrics', 'ReplayCommand', 'ReplayRecord', 'ReplayResult']
     # ... +26 more predicates
   Signature: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: calls ['hmac.new']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +71 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2208,47 +2212,47 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 337 matches in 112 files
+- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 341 matches in 116 files
 
 #### HIT_FILES
 ```
-prod (75): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
-  ... +70 more
-test (35): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
-  ... +30 more
+prod (78): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
+  ... +73 more
+test (36): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
+  ... +31 more
 tool (1): ['ops_scripts/ci/gap_regenerate_p0.py']
-ci_test (15): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
+ci_test (16): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 111
+**ast_records_count:** 115
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_shared/utils/rank_data_components_plan_type_util.py: raises ['SecurityError', 'ValueError']
-    # apps_shared/utils/rank_data_components_plan_type_util.py: defines ['validate_safety']
-    # ops_scripts/ci/gap_regenerate_p0.py: raises ['LayerMutationError']
-    # ... +126 more predicates
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/guardian/test_circuit_breaker_gate.py: classes ['TestStructuralContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # ... +132 more predicates
   AST: True,
-    # ops_scripts/ci/gap_regenerate_p0.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_circuit_breaker_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # ... +15 more predicates
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py: decorators ['dataclass']
+    # ... +18 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +7 more predicates
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
+    # agentic_core/security/signature_verifier.py: imports ['hashlib'], defines ['add_trusted_signer', '_compute_signature', 'get_signature_verifier']
+    # agentic_core/runtime/execution_bound_token.py: imports ['hashlib'], defines ['verify_signature']
     # ... +14 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2267,47 +2271,47 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 337 matches in 112 files
+- `py_grep(r'fail.closed|SovereigntyError|no.*silent.*fallback', ext='.py') across C:\Git\Agentic-Workflow` -> 341 matches in 116 files
 
 #### HIT_FILES
 ```
-prod (75): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
-  ... +70 more
-test (35): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
-  ... +30 more
+prod (78): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/enforcement/mutation_prohibition.py', 'agentic_core/L0_routing/enforcement/runtime_guard.py']
+  ... +73 more
+test (36): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/agentic_core/L7_meta_learning/test_app_signal_aggregation.py']
+  ... +31 more
 tool (1): ['ops_scripts/ci/gap_regenerate_p0.py']
-ci_test (15): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
+ci_test (16): ['tests/agentic_core/L0_routing/types/test_reasoning_intensity_types.py', 'tests/agentic_core/L2_execution/types/test_capability_tokens.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 111
+**ast_records_count:** 115
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_shared/utils/rank_data_components_plan_type_util.py: raises ['SecurityError', 'ValueError']
-    # apps_shared/utils/rank_data_components_plan_type_util.py: defines ['validate_safety']
-    # ops_scripts/ci/gap_regenerate_p0.py: raises ['LayerMutationError']
-    # ... +126 more predicates
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/guardian/test_circuit_breaker_gate.py: classes ['TestStructuralContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # ... +132 more predicates
   AST: True,
-    # ops_scripts/ci/gap_regenerate_p0.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_circuit_breaker_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # ... +15 more predicates
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py: decorators ['dataclass']
+    # ... +18 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +7 more predicates
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
+    # agentic_core/security/signature_verifier.py: imports ['hashlib'], defines ['add_trusted_signer', '_compute_signature', 'get_signature_verifier']
+    # agentic_core/runtime/execution_bound_token.py: imports ['hashlib'], defines ['verify_signature']
     # ... +14 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2344,25 +2348,25 @@ ci_test (7): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py: calls ['enforcer.pre_execute', 'enforcer.post_execute']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: classes ['TestBudgetEnforcerReturnContract']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: calls ['enforcer.run']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['ValueError', 'SignatureVerificationError']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: defines ['verify']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
     # ... +23 more predicates
   AST: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # ops_scripts/ci/check_object_dunder_setattr.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: True,
     # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
   Replay: True,
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
-    # tests/agentic_core/L2_execution/types/test_instruction_packet.py: imports ['hashlib'], defines ['test_is_signed_true_after_sign', 'test_sign_verify_pass', 'test_wrong_key_fails_verify', 'test_unsigned_packet_verify_raises', 'test_canonical_bytes_excludes_signature', 'test_tamper_signature_directly_fails_verify', 'test_sign_sets_signature', 'test_sign_returns_new_instance', 'test_sign_is_deterministic', '_make_unsigned_packet', 'test_is_signed_false_when_unsigned', 'test_sign_signature_is_lowercase_hex']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
-    # agentic_core/L2_execution/types/agent_output_contract.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # tests/agentic_core/L2_execution/types/test_instruction_packet.py: imports ['hashlib'], defines ['test_wrong_key_fails_verify', 'test_sign_sets_signature', 'test_tamper_signature_directly_fails_verify', 'test_sign_verify_pass', 'test_sign_signature_is_lowercase_hex', 'test_is_signed_true_after_sign', 'test_canonical_bytes_excludes_signature', 'test_sign_returns_new_instance', 'test_unsigned_packet_verify_raises', 'test_is_signed_false_when_unsigned', '_make_unsigned_packet', 'test_sign_is_deterministic']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +19 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2398,7 +2402,7 @@ ci_test (1): ['tests/agentic_core/L2_execution/types/test_instruction_packet.py'
 layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/types/instruction_packet.py: raises ['SignatureVerificationError']
-    # agentic_core/L2_execution/types/instruction_packet.py: defines ['verify', 'verify_l5_certification']
+    # agentic_core/L2_execution/types/instruction_packet.py: defines ['verify_l5_certification', 'verify']
     # agentic_core/L2_execution/enforcement/boundary_verifier.py: raises ['SignatureVerificationError', 'ValueError', 'TypeError']
     # ... +1 more predicates
   AST: True,
@@ -2406,9 +2410,9 @@ layers_present = {
   Schema: False,
   Replay: False,
   Signature: True,
+    # tests/agentic_core/L2_execution/types/test_instruction_packet.py: imports ['hashlib'], defines ['test_wrong_key_fails_verify', 'test_sign_sets_signature', 'test_tamper_signature_directly_fails_verify', 'test_sign_verify_pass', 'test_sign_signature_is_lowercase_hex', 'test_is_signed_true_after_sign', 'test_canonical_bytes_excludes_signature', 'test_sign_returns_new_instance', 'test_unsigned_packet_verify_raises', 'test_is_signed_false_when_unsigned', '_make_unsigned_packet', 'test_sign_is_deterministic']
     # agentic_core/L2_execution/types/instruction_packet.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # agentic_core/L2_execution/types/instruction_packet.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # agentic_core/L2_execution/types/instruction_packet.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2445,26 +2449,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2499,18 +2503,18 @@ ci_test (2): ['tests/agentic_core/L2_execution/tools/test_ptc_contract_enforceme
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['SignatureVerificationError', 'ValueError']
+    # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['ValueError', 'SignatureVerificationError']
     # agentic_core/L2_execution/types/sandbox_envelope.py: defines ['verify']
-    # tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py: calls ['enforcer.pre_execute', 'enforcer.post_execute']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
   Replay: True,
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # agentic_core/L2_execution/types/sandbox_envelope.py: calls ['hmac.new']
     # ... +1 more predicates
@@ -2547,18 +2551,18 @@ ci_test (6): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['SignatureVerificationError', 'ValueError']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: defines ['verify']
-    # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
+    # agentic_core/L2_execution/enforcement/deterministic_loop_detector.py: raises ['ToolBudgetExceededError']
+    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['ValueError', 'SignatureVerificationError']
     # ... +8 more predicates
   AST: True,
     # tests/guardian/test_deterministic_loop_detector.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # agentic_core/L2_execution/types/sandbox_envelope.py: calls ['hmac.new']
     # ... +1 more predicates
@@ -2597,17 +2601,17 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: raises ['ValueError', 'TypeError', 'ToolViolation']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +17 more predicates
   AST: True,
-    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/budget_types.py: decorators ['dataclass']
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # apps_lic/types/message_route_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
     # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
@@ -2647,17 +2651,17 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: raises ['ValueError', 'TypeError', 'ToolViolation']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +17 more predicates
   AST: True,
-    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/budget_types.py: decorators ['dataclass']
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # apps_lic/types/message_route_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
     # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
@@ -2697,17 +2701,17 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: raises ['ValueError', 'TypeError', 'ToolViolation']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +17 more predicates
   AST: True,
-    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/budget_types.py: decorators ['dataclass']
-    # agentic_core/L2_execution/engines/tool_intent_executor.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # apps_lic/types/message_route_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
     # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
@@ -2746,22 +2750,22 @@ ci_test (8): ['tests/agentic_core/L2_execution/enforcement/test_uwg_hard_block.p
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ptc_write_contract.py: classes ['TestPTCWriteContract']
+    # tests/governance/test_req071_stage8_uwg_routing.py: raises ['UWGRoutingViolation']
     # tests/guardian/test_l4_state_write_sovereignty.py: classes ['TestLayerBoundaryContract', 'TestRoleContract']
     # tests/guardian/test_l1_cognition_purity_contract.py: classes ['TestLayerBoundaryContract', 'TestWritePurityContract', 'TestGuardrailsContract']
     # ... +6 more predicates
   AST: True,
-    # tests/unit_min_deps/test_ptc_write_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_l4_state_write_sovereignty.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_l1_cognition_purity_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: imports ['ast'], calls ['ast.parse']
+    # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: classes ['SystemInvariantScanner']
+    # tests/governance/test_req071_stage8_uwg_routing.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +9 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/GravityStateAgent.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/reasoning/GravityStateAgent.py: decorators ['dataclass']
   Replay: True,
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
+    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
     # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
   CI: True,
@@ -2799,29 +2803,29 @@ ci_test (14): ['tests/agentic_core/L2_execution/enforcement/test_uwg_hard_block.
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: defines ['validate_research_output']
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['FileExistsError', 'ValueError']
-    # tests/unit_min_deps/test_protected_root_invariant_ast.py: classes ['TestProtectedRootEnforcementInvariant']
+    # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: classes ['PytestEnforcementGuard']
+    # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: defines ['validate_pytest_configuration']
+    # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: calls ['guard.validate_pytest_configuration']
     # ... +82 more predicates
   AST: True,
-    # tests/unit_min_deps/test_protected_root_invariant_ast.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req417_runtime_mutation_guard.py: imports ['ast'], calls ['ast.parse']
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/reasoning/RedSentinelAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: imports ['ast'], calls ['ast.get_source_segment', 'ast.parse', 'ast.walk']
     # ... +49 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/RedSentinelAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
     # ... +53 more predicates
   Replay: True,
-    # tests/unit_min_deps/test_formal_verification.py: calls ['replay_dir.exists']
+    # tests/governance/test_req_p0_runtime_write_interceptor.py: defines ['replay_mode']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
+    # tests/unit_min_deps/test_formal_verification.py: calls ['replay_dir.exists']
     # ... +2 more predicates
   Signature: True,
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
+    # tests/agentic_core/L2_execution/types/test_sandbox_envelope.py: imports ['hashlib'], defines ['test_envelope_sign_is_deterministic', 'test_envelope_wrong_key_fails_verify', 'test_envelope_unsigned_verify_raises', 'test_envelope_sign_returns_new_instance', 'test_boundary_verifier_rejects_unsigned_packet', 'test_envelope_sign_verify_pass', 'test_envelope_sign_sets_lowercase_hex_signature', 'test_envelope_is_signed_true_after_sign', 'test_envelope_is_signed_false_when_unsigned', 'test_boundary_verifier_accepts_signed_envelope', 'test_boundary_verifier_rejects_unsigned_envelope', 'test_envelope_tamper_signature_directly_fails', 'test_envelope_canonical_bytes_excludes_signature', 'test_boundary_verifier_accepts_signed_packet', '_make_unsigned_envelope']
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2884,23 +2888,23 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # apps_shared/types/sovereign_severity_types.py: raises ['ValueError', 'KeyError']
+    # apps_shared/types/sovereign_severity_types.py: defines ['validate_timeout', 'validate_paths', 'validate_path', 'validate_event_type', 'validate_severity', 'validate_cwd', 'validate_args']
     # ... +24 more predicates
   AST: True,
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/cognitive_types.py: decorators ['dataclass']
-    # agentic_core/L1_cognition/types/execution_phase_types.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_shared/types/sovereign_severity_types.py: imports ['pydantic']
+    # apps_shared/types/sovereign_severity_types.py: inherits ['BaseModel']
     # ... +9 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
     # ... +6 more predicates
   CI: True,
@@ -2938,23 +2942,23 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # apps_shared/types/sovereign_severity_types.py: raises ['ValueError', 'KeyError']
+    # apps_shared/types/sovereign_severity_types.py: defines ['validate_timeout', 'validate_paths', 'validate_path', 'validate_event_type', 'validate_severity', 'validate_cwd', 'validate_args']
     # ... +24 more predicates
   AST: True,
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/cognitive_types.py: decorators ['dataclass']
-    # agentic_core/L1_cognition/types/execution_phase_types.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_shared/types/sovereign_severity_types.py: imports ['pydantic']
+    # apps_shared/types/sovereign_severity_types.py: inherits ['BaseModel']
     # ... +9 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
     # ... +6 more predicates
   CI: True,
@@ -2992,23 +2996,23 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # apps_shared/types/sovereign_severity_types.py: raises ['ValueError', 'KeyError']
+    # apps_shared/types/sovereign_severity_types.py: defines ['validate_timeout', 'validate_paths', 'validate_path', 'validate_event_type', 'validate_severity', 'validate_cwd', 'validate_args']
     # ... +24 more predicates
   AST: True,
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L1_cognition/types/cognitive_types.py: decorators ['dataclass']
-    # agentic_core/L1_cognition/types/execution_phase_types.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/reasoning/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_shared/types/sovereign_severity_types.py: imports ['pydantic']
+    # apps_shared/types/sovereign_severity_types.py: inherits ['BaseModel']
     # ... +9 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
     # ... +6 more predicates
   CI: True,
@@ -3046,12 +3050,12 @@ ci_test (3): ['tests/governance/test_determinism_surface.py', 'tests/governance/
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/runtime/mathematical_determinism.py: raises ['RuntimeError', 'ValueError']
+    # agentic_core/runtime/mathematical_determinism.py: raises ['ValueError', 'RuntimeError']
     # agentic_core/runtime/mathematical_determinism.py: defines ['verify_replay']
   AST: True,
-    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_l7_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: True,
@@ -3093,12 +3097,12 @@ ci_test (3): ['tests/governance/test_determinism_surface.py', 'tests/governance/
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/runtime/mathematical_determinism.py: raises ['RuntimeError', 'ValueError']
+    # agentic_core/runtime/mathematical_determinism.py: raises ['ValueError', 'RuntimeError']
     # agentic_core/runtime/mathematical_determinism.py: defines ['verify_replay']
   AST: True,
-    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_l7_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: True,
@@ -3122,15 +3126,15 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 2
-- `py_grep(r'xfail.*strict.*True|negative.*control.*tamper', ext='.py') across C:\Git\Agentic-Workflow` -> 136 matches in 49 files
+- `py_grep(r'xfail.*strict.*True|negative.*control.*tamper', ext='.py') across C:\Git\Agentic-Workflow` -> 140 matches in 52 files
 
 #### HIT_FILES
 ```
-prod (1): ['agentic_core/L2_execution/types/commit_proof_invariant.py']
-test (44): ['tests/agentic_core/L2_execution/enforcement/test_commit_proof_invariant.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_instruction_packet.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py']
-  ... +39 more
+prod (2): ['agentic_core/L2_execution/types/commit_proof_invariant.py', 'agentic_core/prompt_governance/contracts/slot_contracts.py']
+test (46): ['tests/agentic_core/L2_execution/enforcement/test_commit_proof_invariant.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_instruction_packet.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py']
+  ... +41 more
 tool (2): ['tools/evidence/qwen_migration_phase6_evidence_runner.py', 'tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py']
-ci_test (27): ['tests/agentic_core/L2_execution/enforcement/test_commit_proof_invariant.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_instruction_packet.py']
+ci_test (29): ['tests/agentic_core/L2_execution/enforcement/test_commit_proof_invariant.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_instruction_packet.py']
 ```
 
 #### AST Classification Provenance
@@ -3190,14 +3194,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3238,14 +3242,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3286,14 +3290,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3334,14 +3338,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3382,14 +3386,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3430,14 +3434,14 @@ ci_test (18): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: defines ['validate_phase_names']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: calls ['guardian_data.get', 'guardian_aggregate.get', 'guardian_result_path.read_text']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: classes ['TestGeminiAdapterContract', 'TestLocalAgentAdapterContract', 'TestQwenAdapterContract']
+    # tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py: raises ['ImportError']
+    # tools/evidence/healing_tier_evidence_runner.py: defines ['validate_40hex']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_phase6_agent_fleet_conformance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_healer_direct_model.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: False,
   Replay: False,
@@ -3476,7 +3480,7 @@ ci_test (1): ['tests/governance/test_phase10_embedding_non_mutation.py']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/embeddings/embedding_factory.py: raises ['EmbeddingSovereigntyViolationError', 'ValueError', 'NotImplementedError', 'EmbeddingDisabledError']
+    # agentic_core/embeddings/embedding_factory.py: raises ['ValueError', 'NotImplementedError', 'EmbeddingDisabledError', 'EmbeddingSovereigntyViolationError']
     # agentic_core/embeddings/embedding_factory.py: defines ['guard_embedding_instantiation']
     # ops_scripts/ci/audit_qwen_sovereignty.py: raises ['RuntimeError']
     # ... +1 more predicates
@@ -3520,20 +3524,20 @@ ci_test (1): ['tests/governance/test_architectural_invariants.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_architectural_invariants.py: raises ['RuntimeError']
-    # system_learning/engines/seed_pack_build_cli.py: raises ['FileNotFoundError', 'ValueError']
-    # system_learning/engines/meta_learning_embedding_service.py: raises ['IntegrityError']
+    # tests/unit_min_deps/system_learning/test_seed_embedding_pack_b0.py: classes ['TestByteLengthInvariant', 'TestReadOnlyMtimeInvariant', 'TestAtomicWriteInvariant']
+    # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
+    # system_learning/engines/replay_validator.py: raises ['DeterminismViolationError']
     # ... +10 more predicates
   AST: True,
-    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ops_scripts/ci/audit_embedding_surface.py: classes ['EmbeddingUsageScanner']
+    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: False,
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
     # system_learning/engines/replay_validator.py: classes ['DeterminismViolationError']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
@@ -3571,20 +3575,20 @@ ci_test (1): ['tests/governance/test_architectural_invariants.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_architectural_invariants.py: raises ['RuntimeError']
-    # system_learning/engines/seed_pack_build_cli.py: raises ['FileNotFoundError', 'ValueError']
-    # system_learning/engines/meta_learning_embedding_service.py: raises ['IntegrityError']
+    # tests/unit_min_deps/system_learning/test_seed_embedding_pack_b0.py: classes ['TestByteLengthInvariant', 'TestReadOnlyMtimeInvariant', 'TestAtomicWriteInvariant']
+    # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
+    # system_learning/engines/replay_validator.py: raises ['DeterminismViolationError']
     # ... +10 more predicates
   AST: True,
-    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ops_scripts/ci/audit_embedding_surface.py: classes ['EmbeddingUsageScanner']
+    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: False,
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
     # system_learning/engines/replay_validator.py: classes ['DeterminismViolationError']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
@@ -3622,20 +3626,20 @@ ci_test (1): ['tests/governance/test_architectural_invariants.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_architectural_invariants.py: raises ['RuntimeError']
-    # system_learning/engines/seed_pack_build_cli.py: raises ['FileNotFoundError', 'ValueError']
-    # system_learning/engines/meta_learning_embedding_service.py: raises ['IntegrityError']
+    # tests/unit_min_deps/system_learning/test_seed_embedding_pack_b0.py: classes ['TestByteLengthInvariant', 'TestReadOnlyMtimeInvariant', 'TestAtomicWriteInvariant']
+    # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
+    # system_learning/engines/replay_validator.py: raises ['DeterminismViolationError']
     # ... +10 more predicates
   AST: True,
-    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ops_scripts/ci/audit_embedding_surface.py: classes ['EmbeddingUsageScanner']
+    # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: False,
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/engines/replay_validator.py: classes ['ReplayValidator']
     # system_learning/engines/replay_validator.py: classes ['DeterminismViolationError']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
@@ -3673,29 +3677,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -3732,29 +3736,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -3791,29 +3795,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -3850,29 +3854,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -3909,29 +3913,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -3968,29 +3972,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4053,29 +4057,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4112,29 +4116,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4171,29 +4175,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4230,29 +4234,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4289,29 +4293,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4348,29 +4352,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4407,29 +4411,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4466,29 +4470,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4525,29 +4529,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4584,29 +4588,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4643,29 +4647,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4702,29 +4706,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4761,29 +4765,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4820,29 +4824,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4879,29 +4883,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4938,29 +4942,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -4997,29 +5001,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5056,29 +5060,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5115,29 +5119,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5174,29 +5178,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5233,29 +5237,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5292,29 +5296,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5351,29 +5355,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5410,29 +5414,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: raises ['ValueError']
-    # tests/unit_min_deps/L2_execution/test_phase9_hardening.py: raises ['RuntimeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +86 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_change_package_activation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +7 more predicates
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixin_stack.py: decorators ['dataclass']
-    # agentic_core/L5_safety/validators/migration_helper_validator.py: decorators ['dataclass']
-    # apps_rg/utils/rg_agent_base_util.py: decorators ['dataclass']
+    # agentic_core/runtime/config/feature_flags_config.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/client_types.py: decorators ['dataclass']
     # ... +19 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/governance/test_req060_063_meta_learning_replay.py: defines ['replay_proposal_generation']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # ... +3 more predicates
   Signature: True,
-    # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/mixins/meta_learning_client_mixin.py: imports ['hashlib'], defines ['ml_get_violation_signature']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5451,44 +5455,44 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1803 matches in 362 files
+- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1817 matches in 364 files
 
 #### HIT_FILES
 ```
 prod (201): ['agentic_core/L0_routing/config/structure_blueprint_data.py', 'agentic_core/L0_routing/enforcement/boot_sequence.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/legacy_agent_name_allowlist.py']
   ... +196 more
-test (122): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
-  ... +117 more
+test (124): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
+  ... +119 more
 tool (38): ['ops_scripts/ci/ast_gap_deep.py', 'ops_scripts/ci/ast_gap_report.py', 'ops_scripts/ci/ast_gap_strict.py', 'ops_scripts/ci/enforcement_metadata_tagger.py', 'ops_scripts/ci/evidence_collect_phase1.py']
-ci_test (43): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
+ci_test (45): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 361
+**ast_records_count:** 363
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # ... +207 more predicates
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L0_routing/scripts/coverage.py: classes ['CoverageValidator']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: defines ['check_compliance']
+    # ... +209 more predicates
   AST: True,
-    # agentic_core/L0_routing/utils/find_misnamed_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
+    # tests/guardian/test_registry_completeness.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/StructureHealerAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py: decorators ['dataclass']
     # ... +100 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
   Signature: True,
-    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
-    # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
-    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +11 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5507,44 +5511,44 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1803 matches in 362 files
+- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1817 matches in 364 files
 
 #### HIT_FILES
 ```
 prod (201): ['agentic_core/L0_routing/config/structure_blueprint_data.py', 'agentic_core/L0_routing/enforcement/boot_sequence.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/legacy_agent_name_allowlist.py']
   ... +196 more
-test (122): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
-  ... +117 more
+test (124): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
+  ... +119 more
 tool (38): ['ops_scripts/ci/ast_gap_deep.py', 'ops_scripts/ci/ast_gap_report.py', 'ops_scripts/ci/ast_gap_strict.py', 'ops_scripts/ci/enforcement_metadata_tagger.py', 'ops_scripts/ci/evidence_collect_phase1.py']
-ci_test (43): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
+ci_test (45): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 361
+**ast_records_count:** 363
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # ... +207 more predicates
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L0_routing/scripts/coverage.py: classes ['CoverageValidator']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: defines ['check_compliance']
+    # ... +209 more predicates
   AST: True,
-    # agentic_core/L0_routing/utils/find_misnamed_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
+    # tests/guardian/test_registry_completeness.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/StructureHealerAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py: decorators ['dataclass']
     # ... +100 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
   Signature: True,
-    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
-    # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
-    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +11 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5563,44 +5567,44 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1803 matches in 362 files
+- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1817 matches in 364 files
 
 #### HIT_FILES
 ```
 prod (201): ['agentic_core/L0_routing/config/structure_blueprint_data.py', 'agentic_core/L0_routing/enforcement/boot_sequence.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/legacy_agent_name_allowlist.py']
   ... +196 more
-test (122): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
-  ... +117 more
+test (124): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
+  ... +119 more
 tool (38): ['ops_scripts/ci/ast_gap_deep.py', 'ops_scripts/ci/ast_gap_report.py', 'ops_scripts/ci/ast_gap_strict.py', 'ops_scripts/ci/enforcement_metadata_tagger.py', 'ops_scripts/ci/evidence_collect_phase1.py']
-ci_test (43): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
+ci_test (45): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 361
+**ast_records_count:** 363
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # ... +207 more predicates
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L0_routing/scripts/coverage.py: classes ['CoverageValidator']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: defines ['check_compliance']
+    # ... +209 more predicates
   AST: True,
-    # agentic_core/L0_routing/utils/find_misnamed_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
+    # tests/guardian/test_registry_completeness.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/StructureHealerAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py: decorators ['dataclass']
     # ... +100 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
   Signature: True,
-    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
-    # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
-    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +11 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5619,44 +5623,44 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1803 matches in 362 files
+- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1817 matches in 364 files
 
 #### HIT_FILES
 ```
 prod (201): ['agentic_core/L0_routing/config/structure_blueprint_data.py', 'agentic_core/L0_routing/enforcement/boot_sequence.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/legacy_agent_name_allowlist.py']
   ... +196 more
-test (122): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
-  ... +117 more
+test (124): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
+  ... +119 more
 tool (38): ['ops_scripts/ci/ast_gap_deep.py', 'ops_scripts/ci/ast_gap_report.py', 'ops_scripts/ci/ast_gap_strict.py', 'ops_scripts/ci/enforcement_metadata_tagger.py', 'ops_scripts/ci/evidence_collect_phase1.py']
-ci_test (43): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
+ci_test (45): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 361
+**ast_records_count:** 363
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # ... +207 more predicates
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L0_routing/scripts/coverage.py: classes ['CoverageValidator']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: defines ['check_compliance']
+    # ... +209 more predicates
   AST: True,
-    # agentic_core/L0_routing/utils/find_misnamed_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
+    # tests/guardian/test_registry_completeness.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/StructureHealerAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py: decorators ['dataclass']
     # ... +100 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
   Signature: True,
-    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
-    # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
-    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +11 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5675,44 +5679,44 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1803 matches in 362 files
+- `py_grep(r'guardrail|guardian.*guard|HARD.*STOP', ext='.py') across C:\Git\Agentic-Workflow` -> 1817 matches in 364 files
 
 #### HIT_FILES
 ```
 prod (201): ['agentic_core/L0_routing/config/structure_blueprint_data.py', 'agentic_core/L0_routing/enforcement/boot_sequence.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/legacy_agent_name_allowlist.py']
   ... +196 more
-test (122): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
-  ... +117 more
+test (124): ['ops_scripts/maintenance/test_validate_migration_guardian.py', 'ops_scripts/maintenance/test_verify_runtime_integrity.py', 'tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py', 'tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py']
+  ... +119 more
 tool (38): ['ops_scripts/ci/ast_gap_deep.py', 'ops_scripts/ci/ast_gap_report.py', 'ops_scripts/ci/ast_gap_strict.py', 'ops_scripts/ci/enforcement_metadata_tagger.py', 'ops_scripts/ci/evidence_collect_phase1.py']
-ci_test (43): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
+ci_test (45): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L0_routing/scripts/test_core_components.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 361
+**ast_records_count:** 363
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L3_orchestration/types/approval_contract_types.py: raises ['ValueError', 'TypeError']
-    # ... +207 more predicates
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L0_routing/scripts/coverage.py: classes ['CoverageValidator']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: defines ['check_compliance']
+    # ... +209 more predicates
   AST: True,
-    # agentic_core/L0_routing/utils/find_misnamed_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
+    # tests/guardian/test_registry_completeness.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/StructureHealerAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py: decorators ['dataclass']
     # ... +100 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
   Signature: True,
-    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
-    # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
-    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L1_cognition/engines/meta_client.py: imports ['hashlib'], defines ['_generate_error_signature']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +11 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5749,21 +5753,21 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # agentic_core/L3_orchestration/engines/handshake_state_machine.py: raises ['ValueError']
-    # tests/governance/test_req087_modify_diff_signature_invalidation.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5800,21 +5804,21 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # agentic_core/L3_orchestration/engines/handshake_state_machine.py: raises ['ValueError']
-    # tests/governance/test_req087_modify_diff_signature_invalidation.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5851,21 +5855,21 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # agentic_core/L3_orchestration/engines/handshake_state_machine.py: raises ['ValueError']
-    # tests/governance/test_req087_modify_diff_signature_invalidation.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5902,9 +5906,9 @@ ci_test (3): ['tests/agentic_core/L3_orchestration/types/test_cognitive_diff_bun
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: defines ['verify_manifest_hash', 'validate_retrieval_set', 'enforce_advisory_only', 'validate_citation_chain', 'verify_policy_config_unchanged']
     # ... +8 more predicates
   AST: True,
     # has_core=True (production code exists)
@@ -5912,9 +5916,9 @@ layers_present = {
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
+    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
   CI: True,
     # tests exist + CI runs pytest
     # governance/architecture tests in CI: ['tests/agentic_core/L3_orchestration/types/test_cognitive_diff_bundle.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/governance/test_req378_384_forensic_determinism.py']
@@ -5949,9 +5953,9 @@ ci_test (3): ['tests/agentic_core/L3_orchestration/types/test_cognitive_diff_bun
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: defines ['verify_manifest_hash', 'validate_retrieval_set', 'enforce_advisory_only', 'validate_citation_chain', 'verify_policy_config_unchanged']
     # ... +8 more predicates
   AST: True,
     # has_core=True (production code exists)
@@ -5959,9 +5963,9 @@ layers_present = {
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
+    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
   CI: True,
     # tests exist + CI runs pytest
     # governance/architecture tests in CI: ['tests/agentic_core/L3_orchestration/types/test_cognitive_diff_bundle.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/governance/test_req378_384_forensic_determinism.py']
@@ -5995,8 +5999,8 @@ ci_test (1): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_m
 layers_present = {
   Runtime: True,
     # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
-    # tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py: classes ['TestArtifactSchemaContract']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
+    # tests/guardian/test_v15_p1_compliance.py: raises ['ValueError', 'AssertionError']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -6039,8 +6043,8 @@ ci_test (1): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_m
 layers_present = {
   Runtime: True,
     # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
-    # tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py: classes ['TestArtifactSchemaContract']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
+    # tests/guardian/test_v15_p1_compliance.py: raises ['ValueError', 'AssertionError']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -6066,37 +6070,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 544 matches in 147 files
+- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 553 matches in 149 files
 
 #### HIT_FILES
 ```
 prod (72): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +67 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 146
+**ast_records_count:** 148
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
     # ... +71 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -6120,16 +6124,16 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 544 matches in 147 files
+- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 553 matches in 149 files
 
 #### HIT_FILES
 ```
 prod (72): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +67 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
@@ -6146,37 +6150,37 @@ ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 544 matches in 147 files
+- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 553 matches in 149 files
 
 #### HIT_FILES
 ```
 prod (72): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +67 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 146
+**ast_records_count:** 148
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
     # ... +71 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -6200,37 +6204,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 544 matches in 147 files
+- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 553 matches in 149 files
 
 #### HIT_FILES
 ```
 prod (72): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +67 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 146
+**ast_records_count:** 148
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
     # ... +71 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -6254,37 +6258,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 544 matches in 147 files
+- `py_grep(r'prompt_governance|prompt_assembler|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 553 matches in 149 files
 
 #### HIT_FILES
 ```
 prod (72): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +67 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 146
+**ast_records_count:** 148
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
     # ... +71 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -6326,28 +6330,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: raises ['PermissionError']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: calls ['enforcer.check']
     # ... +29 more predicates
   AST: True,
-    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req118_no_reflection_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +1 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6384,28 +6388,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: raises ['PermissionError']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: calls ['enforcer.check']
     # ... +29 more predicates
   AST: True,
-    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req118_no_reflection_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +1 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6442,28 +6446,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: raises ['PermissionError']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: calls ['enforcer.check']
     # ... +29 more predicates
   AST: True,
-    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req118_no_reflection_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +1 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6500,28 +6504,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: raises ['PermissionError']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: calls ['enforcer.check']
     # ... +29 more predicates
   AST: True,
-    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req118_no_reflection_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +1 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6558,28 +6562,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: raises ['PermissionError']
+    # agentic_core/L2_execution/enforcement/capability_chokepoint.py: calls ['enforcer.check']
     # ... +29 more predicates
   AST: True,
-    # tests/guardian/test_activation_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req118_no_reflection_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +5 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +1 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6617,21 +6621,21 @@ ci_test (10): ['tests/agentic_core/L2_execution/healers/test_healing_tier_e2e_in
 layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
-    # system_learning/engines/healing_config_optimizer.py: raises ['ValueError']
-    # tests/architecture/test_environment_independence.py: raises ['KeyError']
+    # agentic_core/L2_execution/healers/tiering_allowlist.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_embedding_surface.py: defines ['verify_factory_implementation']
     # ... +16 more predicates
   AST: True,
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase10_embedding_non_mutation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +7 more predicates
   Schema: False,
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
   Signature: True,
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -6668,21 +6672,21 @@ ci_test (10): ['tests/agentic_core/L2_execution/healers/test_healing_tier_e2e_in
 layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
-    # system_learning/engines/healing_config_optimizer.py: raises ['ValueError']
-    # tests/architecture/test_environment_independence.py: raises ['KeyError']
+    # agentic_core/L2_execution/healers/tiering_allowlist.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_embedding_surface.py: defines ['verify_factory_implementation']
     # ... +16 more predicates
   AST: True,
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase10_embedding_non_mutation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +7 more predicates
   Schema: False,
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
   Signature: True,
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -6719,21 +6723,21 @@ ci_test (10): ['tests/agentic_core/L2_execution/healers/test_healing_tier_e2e_in
 layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
-    # system_learning/engines/healing_config_optimizer.py: raises ['ValueError']
-    # tests/architecture/test_environment_independence.py: raises ['KeyError']
+    # agentic_core/L2_execution/healers/tiering_allowlist.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_embedding_surface.py: defines ['verify_factory_implementation']
     # ... +16 more predicates
   AST: True,
     # ops_scripts/ci/audit_healing_tier_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L2_execution/healers/test_healing_tier_router.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase10_embedding_non_mutation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_enforcement_proof.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +7 more predicates
   Schema: False,
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
   Signature: True,
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
+    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -6769,26 +6773,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6825,26 +6829,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6881,26 +6885,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6937,26 +6941,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6993,26 +6997,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7049,26 +7053,26 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # agentic_core/L2_execution/healers/healing_tier_router.py: raises ['SovereigntyViolation']
+    # tests/governance/test_replay_guard_expanded.py: raises ['ValueError']
+    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
     # ... +28 more predicates
   AST: True,
     # tests/governance/test_architectural_invariants.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
-    # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
     # ... +6 more predicates
   Replay: True,
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
     # ... +3 more predicates
   Signature: True,
-    # tests/architecture/test_mathematical_determinism.py: imports ['hashlib'], defines ['test_replay_key_determinism']
-    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_computation', 'test_replay_key_changes_with_inputs']
-    # agentic_core/architecture/architectural_invariants.py: imports ['hashlib'], defines ['validate_replay_key_completeness']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/guardian/test_v15_p5_compliance.py: imports ['hashlib'], defines ['test_valid_signature_passes', 'test_sign_different_bytes_different_sig', 'test_empty_key_id_rejected', 'test_sign_produces_envelope', 'test_key_record_fields', 'test_sign_revoked_key_fails', 'test_empty_signature_rejected', 'test_sign_unknown_key_raises', 'test_sign_deterministic', 'test_sign_revoked_key_raises', 'test_wrong_signature_fails', 'test_sign_unknown_key_fails', 'test_unknown_key_fails', 'test_key_record_frozen', 'test_revoked_key_fails', 'test_empty_public_key_rejected', 'test_get_key_record']
+    # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_deterministic', 'test_replay_key_changes_with_inputs', 'test_replay_key_computation']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7131,29 +7135,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7190,29 +7194,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7249,29 +7253,29 @@ ci_test (27): ['tests/agentic_core/L0_routing/scripts/test_core_components.py', 
 ```
 layers_present = {
   Runtime: True,
-    # ops_scripts/ci/check_spine_bypass.py: defines ['check_file_randomness', 'check_file_instantiation']
-    # agentic_core/L2_execution/tools/tool_chain_executor.py: raises ['ValueError']
-    # agentic_core/L2_execution/tools/tool_chain_executor.py: defines ['validate_module_config']
+    # apps_shared/validators/evidence_ranker_validator.py: defines ['validate_year']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # ops_scripts/maintenance/migrate_reports_to_ssot.py: raises ['ValueError']
     # ... +291 more predicates
   AST: True,
-    # ops_scripts/ci/check_spine_bypass.py: imports ['ast'], calls ['ast.parse']
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: imports ['ast'], calls ['ast.parse']
-    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +55 more predicates
   Schema: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/recursive_orchestration_types.py: decorators ['dataclass']
-    # agentic_core/L5_safety/types/shift_report.py: decorators ['dataclass']
+    # agentic_core/L4_state/utils/circuit_breaker_util.py: decorators ['dataclass']
+    # apps_shared/validators/evidence_ranker_validator.py: imports ['pydantic']
+    # apps_shared/validators/evidence_ranker_validator.py: inherits ['BaseModel']
     # ... +232 more predicates
   Replay: True,
     # agentic_core/L5_safety/static_checks/determinism_serialization_check.py: classes ['DeterminismVisitor']
-    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: classes ['DeterminismContext']
-    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # ... +8 more predicates
   Signature: True,
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: calls ['hmac.new']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/runtime/execution_bound_token.py: imports ['hashlib'], defines ['verify_signature']
+    # agentic_core/L5_safety/validators/context_validator.py: imports ['hashlib'], defines ['_compute_violation_signature']
     # ... +21 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7308,29 +7312,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7419,25 +7423,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7500,25 +7504,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7555,25 +7559,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7610,25 +7614,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7665,25 +7669,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7720,25 +7724,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7775,25 +7779,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7830,25 +7834,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7885,25 +7889,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7940,25 +7944,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -7995,25 +7999,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -8050,25 +8054,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -8105,25 +8109,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -8160,25 +8164,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -8241,25 +8245,25 @@ ci_test (8): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py',
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: classes ['TestPolicyContract']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: calls ['enforce_protected_root']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: raises ['RuntimeError', 'TypeError']
+    # agentic_core/L2_execution/tools/safe_subprocess.py: calls ['enforce_protected_root']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: defines ['validate_dangerous_builtins', 'validate_debugger', 'validate_all', 'validate_eval_exec', 'validate_bare_except', 'validate_empty_except']
     # ... +59 more predicates
   AST: True,
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/add_dataclass_to_agents_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +23 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/integration_contract.py: decorators ['dataclass']
-    # agentic_core/L0_routing/scripts/code_entity.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/safety_types.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py: decorators ['dataclass']
     # ... +25 more predicates
   Replay: False,
   Signature: True,
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -8296,15 +8300,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -8343,15 +8347,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -8390,15 +8394,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -8437,15 +8441,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -8484,15 +8488,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -8580,18 +8584,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -8629,18 +8633,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -9044,25 +9048,25 @@ ci_test (6): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L1_cognition/engines/meta_observability.py: defines ['check_health']
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/support/l2_execution/SovereignPineconeMcpClientAgent.py: raises ['RuntimeError']
+    # agentic_core/L2_execution/healers/vllm_process_manager.py: raises ['RuntimeError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # tests/apps_shared/utils/test_health_check.py: classes ['TestGetReadinessGate', 'TestReadinessGate']
     # ... +23 more predicates
   AST: True,
-    # apps_shared/scripts/fix_structural_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # ops_scripts/ci/check_structured_output_emission.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_structured_output_emission.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: True,
-    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/recursion_monitor_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
+    # apps_lic/reasoning/DispatchOutreachToolsAgent.py: decorators ['dataclass', 'dc_dataclass']
+    # agentic_core/L6_observability/dashboards/core/experiencein_config.py: imports ['pydantic']
     # ... +28 more predicates
   Replay: False,
   Signature: True,
-    # apps_shared/utils/unified_signal_pipeline_util.py: imports ['hashlib'], defines ['process_resume_signal', 'process_outreach_signal', '_get_augmented_signal']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9099,25 +9103,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -9153,25 +9157,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -9208,23 +9212,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -9264,23 +9268,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -9319,9 +9323,9 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # tools/evidence/phase3_path_router_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase8_execution_orchestrator_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase4_l5_d0_confcalib_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +17 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -9366,15 +9370,15 @@ ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_pro
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_policy_exception_tick', 'validate_evidence_pack', 'validate_proposal']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -9411,26 +9415,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9467,26 +9471,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9523,28 +9527,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # ... +31 more predicates
   AST: True,
-    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_capability_chokepoint.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_req_p0_capability_replay_binding.py: classes ['ReplayBoundCapabilityToken']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +2 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9581,28 +9585,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # ... +31 more predicates
   AST: True,
-    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_capability_chokepoint.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_req_p0_capability_replay_binding.py: classes ['ReplayBoundCapabilityToken']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +2 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9639,28 +9643,28 @@ ci_test (12): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_heal_policy_wiring.py: classes ['TestJudiciousGate', 'TestEnableLlmHardGate']
-    # tests/governance/test_heal_policy_wiring.py: raises ['RuntimeError']
-    # tests/governance/test_heal_policy_wiring.py: calls ['guarded_heal_llm_call']
+    # tests/guardian/test_sovereignty_runtime_contract.py: classes ['TestBootstrapSingleUseContract', 'TestStructuralContract']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # ... +31 more predicates
   AST: True,
-    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/guardian/test_sovereignty_runtime_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_capability_chokepoint.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/UniversalWriteGateway.py: decorators ['dataclass']
     # tests/governance/test_req270_273_seam_mutable_ref.py: decorators ['dataclass']
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
     # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_req_p0_capability_replay_binding.py: classes ['ReplayBoundCapabilityToken']
+    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # agentic_core/runtime/sovereignty_exceptions.py: classes ['DeterminismViolationError']
     # ... +2 more predicates
   Signature: True,
+    # agentic_core/L2_execution/UniversalWriteGateway.py: imports ['hashlib'], defines ['_verify_signature']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], defines ['verify_signature']
-    # tests/governance/test_req177_354_sig_before_effect.py: calls ['hmac.new']
     # ... +2 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9697,29 +9701,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9756,29 +9760,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9815,29 +9819,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -9873,19 +9877,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -9924,19 +9928,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -9975,19 +9979,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -10026,19 +10030,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -10077,7 +10081,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -10122,7 +10126,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -10168,14 +10172,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -10218,14 +10222,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -10268,14 +10272,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -10340,9 +10344,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -10388,26 +10392,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -10445,26 +10449,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -10501,21 +10505,21 @@ ci_test (6): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L0_routing/enforcement/trace_id_generator.py: defines ['validate_trace_id']
+    # ops_scripts/ci/evidence_collect_phase1.py: defines ['check_healing_transaction_boundary', 'check_policy_config_guard', 'check_guardian_signing', 'check_trace_id_generation', 'check_semantic_clock_usage', 'check_v15_gateway_in_heal']
+    # ops_scripts/ci/evidence_collect_phase1.py: calls ['guardian_file.exists']
+    # tests/guardian/test_v15_p7_bugfixes.py: classes ['TestGatewayInstantiationGuard']
     # ... +13 more predicates
   AST: True,
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_d.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10552,29 +10556,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10611,29 +10615,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10670,29 +10674,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10729,27 +10733,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10786,27 +10790,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10842,25 +10846,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10896,25 +10900,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10950,25 +10954,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -11005,29 +11009,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -11064,29 +11068,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -11123,29 +11127,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -11180,15 +11184,15 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
-    # system_learning/validators/dampening.py: raises ['SampleSizeViolation', 'CooldownViolation']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
+    # agentic_core/L0_routing/types/determinism_contracts.py: defines ['check_velocity_threshold', 'verify_rollback_integrity', 'enforce_episodic_query_before_planning', 'verify_ast_determinism', 'check_forbidden_input_type', 'validate_manifest_emission', 'validate_execution_input']
     # ... +5 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -11224,15 +11228,15 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
-    # system_learning/validators/dampening.py: raises ['SampleSizeViolation', 'CooldownViolation']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
+    # agentic_core/L0_routing/types/determinism_contracts.py: defines ['check_velocity_threshold', 'verify_rollback_integrity', 'enforce_episodic_query_before_planning', 'verify_ast_determinism', 'check_forbidden_input_type', 'validate_manifest_emission', 'validate_execution_input']
     # ... +5 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -11268,15 +11272,15 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
-    # system_learning/validators/dampening.py: raises ['SampleSizeViolation', 'CooldownViolation']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
+    # agentic_core/L0_routing/types/determinism_contracts.py: defines ['check_velocity_threshold', 'verify_rollback_integrity', 'enforce_episodic_query_before_planning', 'verify_ast_determinism', 'check_forbidden_input_type', 'validate_manifest_emission', 'validate_execution_input']
     # ... +5 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -11312,15 +11316,15 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
-    # system_learning/validators/dampening.py: raises ['SampleSizeViolation', 'CooldownViolation']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
+    # agentic_core/L0_routing/types/determinism_contracts.py: defines ['check_velocity_threshold', 'verify_rollback_integrity', 'enforce_episodic_query_before_planning', 'verify_ast_determinism', 'check_forbidden_input_type', 'validate_manifest_emission', 'validate_execution_input']
     # ... +5 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -11340,38 +11344,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -11385,38 +11390,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -11430,38 +11436,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -11475,38 +11482,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'CitationBundle|RetrievalQuery|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -11648,18 +11656,18 @@ ci_test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: defines ['enforce']
+    # tests/unit/file_classification_agent/test_phase1_enforcer_seam.py: calls ['enforcement.mkdir']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: defines ['validate_dual_enforcement']
     # ... +6 more predicates
   AST: True,
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -11697,9 +11705,9 @@ ci_test (3): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +11 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -11708,8 +11716,8 @@ layers_present = {
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
+    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -11745,9 +11753,9 @@ ci_test (3): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +11 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -11756,8 +11764,8 @@ layers_present = {
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
+    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -11793,9 +11801,9 @@ ci_test (3): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +11 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -11804,8 +11812,8 @@ layers_present = {
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
+    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -11842,11 +11850,11 @@ layers_present = {
   Runtime: True,
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
     # ... +11 more predicates
   AST: True,
-    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: True,
@@ -11890,11 +11898,11 @@ layers_present = {
   Runtime: True,
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
     # ... +11 more predicates
   AST: True,
-    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: True,
@@ -11938,11 +11946,11 @@ layers_present = {
   Runtime: True,
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
     # ... +11 more predicates
   AST: True,
-    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req111_no_uuid4_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req129_no_mutable_globals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: True,
@@ -11985,29 +11993,29 @@ ci_test (22): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # system_learning/engines/healing_outcome_aggregator.py: raises ['ValueError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
     # ... +127 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # tests/apps_rg/engines/hops/test_migration_simple.py: imports ['pydantic']
-    # tests/apps_rg/engines/hops/test_migration_simple.py: inherits ['BaseModel']
-    # apps_rg/types/state_transaction_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +37 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: classes ['DeterminismContext']
+    # tests/unit_min_deps/system_learning/test_replay_validator.py: calls ['replay_validate']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +6 more predicates
   Signature: True,
+    # tests/unit_min_deps/system_learning/test_meta_learning_pipeline_writes_l4b.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12044,29 +12052,29 @@ ci_test (22): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # system_learning/engines/healing_outcome_aggregator.py: raises ['ValueError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
     # ... +127 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # tests/apps_rg/engines/hops/test_migration_simple.py: imports ['pydantic']
-    # tests/apps_rg/engines/hops/test_migration_simple.py: inherits ['BaseModel']
-    # apps_rg/types/state_transaction_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +37 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: classes ['DeterminismContext']
+    # tests/unit_min_deps/system_learning/test_replay_validator.py: calls ['replay_validate']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +6 more predicates
   Signature: True,
+    # tests/unit_min_deps/system_learning/test_meta_learning_pipeline_writes_l4b.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12103,29 +12111,29 @@ ci_test (22): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # system_learning/engines/healing_outcome_aggregator.py: raises ['ValueError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
     # ... +127 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # tests/agentic_core/L5_safety/reasoning/test_service_classification_hardening.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # tests/apps_rg/engines/hops/test_migration_simple.py: imports ['pydantic']
-    # tests/apps_rg/engines/hops/test_migration_simple.py: inherits ['BaseModel']
-    # apps_rg/types/state_transaction_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +37 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
-    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: classes ['DeterminismContext']
+    # tests/unit_min_deps/system_learning/test_replay_validator.py: calls ['replay_validate']
+    # system_learning/validators/replay_validator.py: classes ['DeterminismViolation']
     # ... +6 more predicates
   Signature: True,
+    # tests/unit_min_deps/system_learning/test_meta_learning_pipeline_writes_l4b.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/unit_min_deps/L6_observability/test_phase7_hardening.py: imports ['hashlib'], defines ['write_l4a_detection_signal']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12161,9 +12169,9 @@ ci_test (4): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: classes ['TestBudgetEnforcerReturnContract']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: calls ['enforcer.run']
+    # tests/unit/file_classification_agent/test_phase1_enforcer_seam.py: calls ['enforcement.mkdir']
+    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +9 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -12206,9 +12214,9 @@ ci_test (4): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: classes ['TestBudgetEnforcerReturnContract']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: calls ['enforcer.run']
+    # tests/unit/file_classification_agent/test_phase1_enforcer_seam.py: calls ['enforcement.mkdir']
+    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +9 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -12251,9 +12259,9 @@ ci_test (4): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: classes ['TestBudgetEnforcerReturnContract']
-    # tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py: calls ['enforcer.run']
+    # tests/unit/file_classification_agent/test_phase1_enforcer_seam.py: calls ['enforcement.mkdir']
+    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +9 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -12295,15 +12303,15 @@ ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforceme
 ```
 layers_present = {
   Runtime: True,
+    # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['ValueError', 'TypeError']
-    # tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py: calls ['enforcer.enforce', 'enforcer.build_artifact', 'enforcer.register_rule', 'enforcer.resolve_slots']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -12341,15 +12349,15 @@ ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforceme
 ```
 layers_present = {
   Runtime: True,
+    # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['ValueError', 'TypeError']
-    # tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py: calls ['enforcer.enforce', 'enforcer.build_artifact', 'enforcer.register_rule', 'enforcer.resolve_slots']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -12411,15 +12419,15 @@ ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforceme
 ```
 layers_present = {
   Runtime: True,
+    # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['ValueError', 'TypeError']
-    # tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py: calls ['enforcer.enforce', 'enforcer.build_artifact', 'enforcer.register_rule', 'enforcer.resolve_slots']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -12459,26 +12467,26 @@ ci_test (87): ['tests/agentic_core/L0_routing/scripts/test_audit_all_agents_mro_
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_regression.py: calls ['guardian_dir.glob']
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: defines ['validate_agent_autonomy']
-    # tests/agentic_core/integration/test_migration_helper.py: defines ['verify_action']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: classes ['RuntimeMutationGuard']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: raises ['RuntimeMutationViolation']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: defines ['guard_metaclass_creation', 'guard_importlib_reload', 'guard_function_replacement', 'guard_setattr']
     # ... +62 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +26 more predicates
   Schema: True,
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # apps_rg/reasoning/DispatchResumeToolsAgent.py: decorators ['dataclass']
-    # agentic_core/mixins/metrics_mixin.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/mixins/atomic_execution_mixin.py: decorators ['dataclass']
+    # agentic_core/mixins/tracing_mixin.py: decorators ['dataclass']
     # ... +35 more predicates
   Replay: True,
     # agentic_core/mixins/replay_guard_mixin.py: classes ['ReplayGuardMixin']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12515,26 +12523,26 @@ ci_test (87): ['tests/agentic_core/L0_routing/scripts/test_audit_all_agents_mro_
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_regression.py: calls ['guardian_dir.glob']
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: defines ['validate_agent_autonomy']
-    # tests/agentic_core/integration/test_migration_helper.py: defines ['verify_action']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: classes ['RuntimeMutationGuard']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: raises ['RuntimeMutationViolation']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: defines ['guard_metaclass_creation', 'guard_importlib_reload', 'guard_function_replacement', 'guard_setattr']
     # ... +62 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +26 more predicates
   Schema: True,
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # apps_rg/reasoning/DispatchResumeToolsAgent.py: decorators ['dataclass']
-    # agentic_core/mixins/metrics_mixin.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/mixins/atomic_execution_mixin.py: decorators ['dataclass']
+    # agentic_core/mixins/tracing_mixin.py: decorators ['dataclass']
     # ... +35 more predicates
   Replay: True,
     # agentic_core/mixins/replay_guard_mixin.py: classes ['ReplayGuardMixin']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12571,26 +12579,26 @@ ci_test (87): ['tests/agentic_core/L0_routing/scripts/test_audit_all_agents_mro_
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_regression.py: calls ['guardian_dir.glob']
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: defines ['validate_agent_autonomy']
-    # tests/agentic_core/integration/test_migration_helper.py: defines ['verify_action']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: classes ['RuntimeMutationGuard']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: raises ['RuntimeMutationViolation']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: defines ['guard_metaclass_creation', 'guard_importlib_reload', 'guard_function_replacement', 'guard_setattr']
     # ... +62 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +26 more predicates
   Schema: True,
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # apps_rg/reasoning/DispatchResumeToolsAgent.py: decorators ['dataclass']
-    # agentic_core/mixins/metrics_mixin.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/mixins/atomic_execution_mixin.py: decorators ['dataclass']
+    # agentic_core/mixins/tracing_mixin.py: decorators ['dataclass']
     # ... +35 more predicates
   Replay: True,
     # agentic_core/mixins/replay_guard_mixin.py: classes ['ReplayGuardMixin']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12627,26 +12635,26 @@ ci_test (87): ['tests/agentic_core/L0_routing/scripts/test_audit_all_agents_mro_
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_regression.py: calls ['guardian_dir.glob']
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: defines ['validate_agent_autonomy']
-    # tests/agentic_core/integration/test_migration_helper.py: defines ['verify_action']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: classes ['RuntimeMutationGuard']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: raises ['RuntimeMutationViolation']
+    # agentic_core/L0_routing/enforcement/runtime_mutation_guard.py: defines ['guard_metaclass_creation', 'guard_importlib_reload', 'guard_function_replacement', 'guard_setattr']
     # ... +62 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_conftest_ignore_policy.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/active_set_ssot_check.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +26 more predicates
   Schema: True,
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # apps_rg/reasoning/DispatchResumeToolsAgent.py: decorators ['dataclass']
-    # agentic_core/mixins/metrics_mixin.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/three_tier_compliance.py: decorators ['dataclass']
+    # agentic_core/mixins/atomic_execution_mixin.py: decorators ['dataclass']
+    # agentic_core/mixins/tracing_mixin.py: decorators ['dataclass']
     # ... +35 more predicates
   Replay: True,
     # agentic_core/mixins/replay_guard_mixin.py: classes ['ReplayGuardMixin']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -12683,19 +12691,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # ... +94 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +41 more predicates
   Replay: False,
   Signature: True,
@@ -12737,19 +12745,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # ... +94 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +41 more predicates
   Replay: False,
   Signature: True,
@@ -12791,19 +12799,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # ... +94 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +41 more predicates
   Replay: False,
   Signature: True,
@@ -12845,19 +12853,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # ... +94 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +41 more predicates
   Replay: False,
   Signature: True,
@@ -12897,16 +12905,16 @@ ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py: classes ['TestSSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: defines ['validate_agent', 'validate_structure']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: defines ['validate_registry_coverage']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
   Signature: False,
@@ -12943,16 +12951,16 @@ ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py: classes ['TestSSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: defines ['validate_agent', 'validate_structure']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: defines ['validate_registry_coverage']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
   Signature: False,
@@ -12989,16 +12997,16 @@ ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py: classes ['TestSSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: defines ['validate_agent', 'validate_structure']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: defines ['validate_registry_coverage']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
+    # agentic_core/L6_observability/utils/integrity_report_generator_util.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
   Signature: False,
@@ -13037,19 +13045,19 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +40 more predicates
   Replay: False,
   Signature: True,
@@ -13117,19 +13125,19 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +40 more predicates
   Replay: False,
   Signature: True,
@@ -13171,19 +13179,19 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +40 more predicates
   Replay: False,
   Signature: True,
@@ -13225,19 +13233,19 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +40 more predicates
   Replay: False,
   Signature: True,
@@ -13353,25 +13361,25 @@ ci_test (10): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: defines ['validate_research_output']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['ResultEmissionViolation', 'PipeOrderViolation', 'RuntimeError', 'KeyError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
+    # ops_scripts/maintenance/migrate_reports_to_ssot.py: raises ['ValueError']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +93 more predicates
   AST: True,
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/L5_safety/enforcement/verification_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/reasoning/CodeHealerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: imports ['ast', 'inspect'], calls ['ast.get_source_segment', 'ast.parse', 'ast.walk']
     # ... +13 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py: decorators ['dataclass']
+    # apps_lic/reasoning/OutreachSignalRouterAgent.py: decorators ['dataclass']
+    # ops_scripts/maintenance/migrate_reports_to_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
     # ... +68 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
+    # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
     # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
     # ... +2 more predicates
@@ -13410,25 +13418,25 @@ ci_test (10): ['tests/agentic_core/L0_routing/meta_control/test_meta_apply.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: defines ['validate_research_output']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['ResultEmissionViolation', 'PipeOrderViolation', 'RuntimeError', 'KeyError']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: raises ['AssertionError']
+    # ops_scripts/maintenance/migrate_reports_to_ssot.py: raises ['ValueError']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +93 more predicates
   AST: True,
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/L5_safety/enforcement/verification_gate.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_learning_operator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/reasoning/CodeHealerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: imports ['ast', 'inspect'], calls ['ast.get_source_segment', 'ast.parse', 'ast.walk']
     # ... +13 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/IntegrityGateExecutorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/AutonomousThreatEvolutionAgent.py: decorators ['dataclass']
+    # apps_lic/reasoning/OutreachSignalRouterAgent.py: decorators ['dataclass']
+    # ops_scripts/maintenance/migrate_reports_to_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
     # ... +68 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
   Signature: True,
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
+    # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
     # agentic_core/L1_cognition/validators/spiffe_validator.py: imports ['hashlib'], defines ['_generate_key_pair']
     # ... +2 more predicates
@@ -13465,9 +13473,9 @@ ci_test (5): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
-    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # tests/governance/test_req327_331_360_365_side_effect_legality.py: raises ['ValueError', 'RuntimeError']
     # tests/governance/test_req177_354_sig_before_effect.py: raises ['ValueError', 'AssertionError']
+    # tests/governance/test_req177_354_sig_before_effect.py: defines ['verify_signature']
     # ... +4 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -13512,9 +13520,9 @@ ci_test (5): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
-    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
+    # tests/governance/test_req327_331_360_365_side_effect_legality.py: raises ['ValueError', 'RuntimeError']
     # tests/governance/test_req177_354_sig_before_effect.py: raises ['ValueError', 'AssertionError']
+    # tests/governance/test_req177_354_sig_before_effect.py: defines ['verify_signature']
     # ... +4 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -13559,20 +13567,20 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
     # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +5 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -13607,20 +13615,20 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
     # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +5 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -13655,9 +13663,9 @@ ci_test (1): ['tests/governance/test_req245_248_hil_ttl.py']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
     # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_policy_exception_tick', 'validate_evidence_pack', 'validate_proposal']
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -13695,9 +13703,9 @@ ci_test (1): ['tests/governance/test_req245_248_hil_ttl.py']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
     # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_policy_exception_tick', 'validate_evidence_pack', 'validate_proposal']
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -13735,14 +13743,14 @@ ci_test (1): ['tests/governance/test_req199_211_236_emission.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_v15_p0_compliance.py: classes ['TestP02AdapterProhibition', 'TestP0CDEvidenceDrivenGate']
     # tests/governance/test_req199_211_236_emission.py: raises ['ValueError']
+    # tests/guardian/test_v15_p0_compliance.py: classes ['TestP0CDEvidenceDrivenGate', 'TestP02AdapterProhibition']
   AST: True,
     # tests/guardian/test_v15_p0_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: True,
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -13776,14 +13784,14 @@ ci_test (1): ['tests/governance/test_req199_211_236_emission.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_v15_p0_compliance.py: classes ['TestP02AdapterProhibition', 'TestP0CDEvidenceDrivenGate']
     # tests/governance/test_req199_211_236_emission.py: raises ['ValueError']
+    # tests/guardian/test_v15_p0_compliance.py: classes ['TestP0CDEvidenceDrivenGate', 'TestP02AdapterProhibition']
   AST: True,
     # tests/guardian/test_v15_p0_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: True,
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -13865,9 +13873,9 @@ ci_test (3): ['tests/governance/test_req199_211_236_emission.py', 'tests/governa
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
-    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
     # tests/governance/test_req199_211_236_emission.py: raises ['ValueError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
   AST: False,
   Schema: False,
   Replay: False,
@@ -13904,9 +13912,9 @@ ci_test (3): ['tests/governance/test_req199_211_236_emission.py', 'tests/governa
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['RuntimeError', 'CapabilityScopeError', 'KeyError']
-    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
     # tests/governance/test_req199_211_236_emission.py: raises ['ValueError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: raises ['CapabilityScopeError', 'RuntimeError', 'KeyError']
+    # tests/governance/test_req243_244_247_audit_completeness.py: defines ['validate_capability_scope']
   AST: False,
   Schema: False,
   Replay: False,
@@ -13945,15 +13953,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -13992,15 +14000,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14039,15 +14047,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14086,15 +14094,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14133,15 +14141,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14180,15 +14188,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14227,15 +14235,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14274,15 +14282,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14321,15 +14329,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14368,15 +14376,15 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['BoundarySchemaError', 'ContextRetrievalError', 'MetaInvariantError', 'SSOTBindingError']
+    # agentic_core/L0_routing/enforcement/boundary_contracts.py: raises ['MetaInvariantError', 'BoundarySchemaError', 'ContextRetrievalError', 'SSOTBindingError']
     # agentic_core/L0_routing/enforcement/boundary_contracts.py: defines ['validate_boundary_schema', 'validate_context_retrieval_read_only']
-    # agentic_core/interfaces/IValidatorProtocol.py: classes ['BoundaryValidator', 'AdversarialValidator']
+    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
     # ... +6 more predicates
   AST: True,
     # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
@@ -14464,18 +14472,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14513,18 +14521,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14562,18 +14570,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14611,18 +14619,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14660,18 +14668,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14709,18 +14717,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14758,18 +14766,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -14807,18 +14815,18 @@ ci_test (4): ['tests/governance/test_healing_reentry.py', 'tests/governance/test
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # tests/governance/test_lazy_seam_allowlist.py: calls ['enforcer.enforce']
-    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: classes ['LazySeamEnforcer']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: raises ['NotImplementedError']
+    # agentic_core/L2_execution/engines/validation_orchestrator.py: defines ['check_cache']
+    # ops_scripts/ci/enforcement_metadata_tagger.py: raises ['ValueError']
     # ... +8 more predicates
   AST: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: classes ['LazySeamScanner']
     # agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +4 more predicates
   Schema: True,
-    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
     # agentic_core/L5_safety/governance/lazy_seam_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/governance/lazy_seam_scanner.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -15572,25 +15580,25 @@ ci_test (6): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L1_cognition/engines/meta_observability.py: defines ['check_health']
-    # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: raises ['StateValidationError', 'ValueError', 'RuntimeError']
-    # tests/support/l2_execution/SovereignPineconeMcpClientAgent.py: raises ['RuntimeError']
+    # agentic_core/L2_execution/healers/vllm_process_manager.py: raises ['RuntimeError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # tests/apps_shared/utils/test_health_check.py: classes ['TestGetReadinessGate', 'TestReadinessGate']
     # ... +23 more predicates
   AST: True,
-    # apps_shared/scripts/fix_structural_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # ops_scripts/ci/check_structured_output_emission.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/ci/check_structured_output_emission.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +1 more predicates
   Schema: True,
-    # agentic_core/L1_cognition/engines/meta_observability.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/types/recursion_monitor_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py: decorators ['dataclass']
+    # apps_lic/reasoning/DispatchOutreachToolsAgent.py: decorators ['dataclass', 'dc_dataclass']
+    # agentic_core/L6_observability/dashboards/core/experiencein_config.py: imports ['pydantic']
     # ... +28 more predicates
   Replay: False,
   Signature: True,
-    # apps_shared/utils/unified_signal_pipeline_util.py: imports ['hashlib'], defines ['process_resume_signal', 'process_outreach_signal', '_get_augmented_signal']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +4 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -15627,25 +15635,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -15681,25 +15689,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -15735,25 +15743,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -15841,25 +15849,25 @@ ci_test (7): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/data.py: classes ['DataValidator']
-    # agentic_core/L5_safety/enforcement/data.py: defines ['check_layer_consistency', 'check_naming_conventions', 'validate_all', 'check_inheritance_patterns', 'check_metric_sanity', 'check_path_integrity', 'check_data_completeness', 'check_base_agent_uniqueness']
-    # agentic_core/L5_safety/enforcement/data_enforcer.py: classes ['DataValidator']
+    # agentic_core/L0_routing/types/boundary_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py: calls ['guard.unregister_pid', 'guard.validate_command', 'guard.register_pid']
+    # agentic_core/L5_safety/utils/verify_no_mock_data_util.py: defines ['verify_no_mock_data']
     # ... +75 more predicates
   AST: True,
-    # tests/unit/core/test_discovery_registry_consistency.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/add_subatomic_safe_util.py: imports ['ast'], calls ['ast.parse']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/L0_routing/scripts/verify_agent_status_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/reasoning/RootCustomsAgent.py: decorators ['dataclass']
-    # agentic_core/L3_orchestration/engines/decomposition_orchestrator.py: decorators ['dataclass']
     # ... +20 more predicates
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
+    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_result_sign_produces_signed_artifact', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_guardian_result_sign_requires_trace_id']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['hashlib'], defines ['extract_mro_signature']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
@@ -15896,23 +15904,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -15952,23 +15960,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -16008,23 +16016,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -16064,23 +16072,23 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 layers_present = {
   Runtime: True,
     # agentic_core/runtime/execution_trace.py: raises ['RuntimeError']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: raises ['HashChainTamperError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: raises ['CognitiveDiffError']
+    # tests/governance/test_req_p2_cognitive_diff_trusted.py: defines ['verify']
     # ... +10 more predicates
   AST: True,
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
-    # tests/governance/test_req158_303_hash_chain_tamper.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
     # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # tests/governance/test_req_p2_cognitive_diff_trusted.py: calls ['hmac.new']
     # ... +2 more predicates
@@ -16119,9 +16127,9 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # tools/evidence/phase3_path_router_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase8_execution_orchestrator_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase4_l5_d0_confcalib_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +17 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -16168,9 +16176,9 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # tools/evidence/phase3_path_router_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase8_execution_orchestrator_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase4_l5_d0_confcalib_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +17 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -16217,9 +16225,9 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # tools/evidence/phase3_path_router_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase8_execution_orchestrator_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase4_l5_d0_confcalib_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +17 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -16266,9 +16274,9 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_e
 ```
 layers_present = {
   Runtime: True,
-    # tools/evidence/phase3_path_router_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase8_execution_orchestrator_evidence.py: raises ['RuntimeError']
-    # tools/evidence/phase4_l5_d0_confcalib_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase2_assembly_stage_evidence.py: raises ['RuntimeError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +17 more predicates
   AST: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -16313,15 +16321,15 @@ ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_pro
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py: raises ['TypeError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_policy_exception_tick', 'validate_evidence_pack', 'validate_proposal']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: True,
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -16358,26 +16366,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -16414,26 +16422,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -16470,26 +16478,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -16526,26 +16534,26 @@ ci_test (14): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fai
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: raises ['SovereignDependencyError']
-    # tests/guardian/test_v15_integration_wiring.py: raises ['RuntimeError']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: raises ['ValueError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: classes ['ASTCodeQualityValidator', 'NonInteractiveGuard', 'PreFlightValidator']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: raises ['ValueError', 'RuntimeError', 'RecursionError']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: defines ['check_file_quality', 'validate_territory_input', 'validate_agent_integrity']
     # ... +39 more predicates
   AST: True,
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: imports ['ast'], calls ['ast.parse']
-    # tests/guardian/test_v15_p8_2b_hard_fail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +14 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/SubatomicHopAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: decorators ['dataclass']
+    # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/SubatomicHopAgent.py: decorators ['dataclass']
     # ... +8 more predicates
   Replay: True,
     # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
   Signature: True,
-    # tests/governance/test_req313_320_surgical_ssot_replay.py: imports ['hashlib'], defines ['test_manifest_signature_binding']
     # agentic_core/L5_safety/reasoning/SovereignActionPlaneAgent.py: imports ['hashlib'], defines ['_log_to_signal_ledger']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # tests/governance/test_req177_354_sig_before_effect.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
     # ... +8 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -16582,19 +16590,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16636,19 +16644,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16690,19 +16698,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16744,19 +16752,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16798,19 +16806,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16852,19 +16860,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16906,19 +16914,19 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: defines ['verify_registry']
-    # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: raises ['ValueError']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: defines ['validate_agent_count', 'check_proper_base', 'check_compliance_gate']
     # ... +93 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: imports ['ast'], calls ['ast.parse']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/reasoning/GospelSyncAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/registry_verification.py: decorators ['dataclass']
-    # tests/support/l6_observability/ReportingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/report_location_validator.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/system_enforcer.py: decorators ['dataclass']
     # ... +42 more predicates
   Replay: False,
   Signature: True,
@@ -16986,29 +16994,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17045,29 +17053,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17104,29 +17112,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17163,29 +17171,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17222,29 +17230,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17281,29 +17289,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17340,29 +17348,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17399,29 +17407,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17458,29 +17466,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17517,29 +17525,29 @@ ci_test (40): ['tests/agentic_core/L0_routing/scripts/test_execute_ssot_contract
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
-    # tests/guardian/test_location_alignment.py: classes ['TestLocationAlignmentGuardianContract']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L2_execution/tools/ptc_contract.py: classes ['PTCContractEnforcer']
+    # agentic_core/L2_execution/tools/ptc_contract.py: raises ['ValueError', 'PTCUnsignedEnvelopeError', 'TypeError', 'PTCContractViolation']
     # ... +108 more predicates
   AST: True,
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py: classes ['TestPhase4DeduplicationAudit']
-    # agentic_core/L1_cognition/validators/truth_keeper_validator.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_ssot_mutation_fence.py: imports ['inspect'], calls ['inspect.getsource']
+    # tests/agentic_core/test_phase6_end_to_end_readonly_retrieval.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
     # tests/fixtures/test_testing_utils.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/enforcement/mutation_prohibition.py: decorators ['dataclass']
+    # agentic_core/L2_execution/tools/ptc_contract.py: decorators ['dataclass']
+    # agentic_core/L1_cognition/types/execution_intent.py: decorators ['dataclass']
     # ... +21 more predicates
   Replay: True,
-    # apps_shared/scripts/meta_learning_operator.py: calls ['replay_aggregate_to_rollout']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # agentic_core/L2_execution/enforcement/sovereign_sandbox_isolation.py: classes ['ReplayNondeterminismViolation']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
     # ... +2 more predicates
   Signature: True,
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17575,19 +17583,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17626,19 +17634,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17677,19 +17685,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17728,19 +17736,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17779,19 +17787,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17830,19 +17838,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17881,19 +17889,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17932,19 +17940,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -17983,19 +17991,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -18034,19 +18042,19 @@ ci_test (8): ['tests/governance/test_global_sovereignty_invariant.py', 'tests/go
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/enforcement/activation_flags.py: classes ['ActivationGate']
-    # agentic_core/L4_state/enforcement/activation_flags.py: raises ['RuntimeError']
-    # agentic_core/L4_state/enforcement/activation_flags.py: defines ['check_p1_ready', 'verify_activation_chain', 'check_p2_ready', 'check_meta_learning_allowed', 'verify_replay_binding', 'check_p0_ready']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: classes ['TestActivationGate']
+    # tests/governance/test_req_p2_activation_flags_persistence.py: calls ['verify_replay_binding', 'verify_activation_chain']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
     # ... +13 more predicates
   AST: True,
-    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_global_sovereignty_invariant.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req411_413_provider_binding.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: True,
-    # tests/governance/test_req_p2_promotion_gateway_authority.py: calls ['replay_gateway.get_mutation_ledger']
-    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
     # ... +1 more predicates
   Signature: True,
     # tests/governance/test_global_sovereignty_invariant.py: imports ['hashlib'], defines ['verify_signature']
@@ -18085,7 +18093,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18130,7 +18138,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18175,7 +18183,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18220,7 +18228,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18265,7 +18273,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18310,7 +18318,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18355,7 +18363,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18400,7 +18408,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18445,7 +18453,7 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
-    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_routing', 'allow_meta_learning', 'allow_promotion', 'validate_token']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
     # ... +6 more predicates
   AST: True,
@@ -18491,14 +18499,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18541,14 +18549,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18591,14 +18599,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18641,14 +18649,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18691,14 +18699,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18741,14 +18749,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18791,14 +18799,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18841,14 +18849,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18891,14 +18899,14 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # tests/governance/test_req_p2_metrics_single_emission.py: raises ['DuplicateEmissionError']
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
-    # agentic_core/L2_execution/types/mcp_tool_types.py: raises ['PermissionError', 'ValueError']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: classes ['ToolPolicyEnforcer']
+    # agentic_core/L2_execution/enforcement/tool_policy_enforcer.py: defines ['enforce']
+    # agentic_core/L3_orchestration/types/route_decision_artifact_types.py: raises ['ValueError']
     # ... +16 more predicates
   AST: True,
-    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/_scanner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_artifact_emission.py: imports ['ast'], calls ['ast.walk']
+    # tests/contracts/_discover_debt.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: decorators ['dataclass']
@@ -18963,9 +18971,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19009,9 +19017,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19055,9 +19063,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19101,9 +19109,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19171,9 +19179,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19241,9 +19249,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19287,9 +19295,9 @@ ci_test (2): ['tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: classes ['LayerEmissionValidator']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/seams/layer_emission_seam.py: defines ['validate_emission']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +10 more predicates
   AST: True,
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -19335,26 +19343,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -19392,26 +19400,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -19449,26 +19457,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -19506,26 +19514,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -19563,26 +19571,26 @@ ci_test (9): ['tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: raises ['NotImplementedError']
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: defines ['check_imports']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: classes ['PhaseLockValidator']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: raises ['RuntimeError']
+    # agentic_core/L4_state/enforcement/phase_lock_store.py: defines ['validate_phase_sequence', 'verify_phase_sequence', 'verify_phase_dependencies', 'verify_replay_integrity', 'validate_dependencies', 'validate_unlock_permissions']
     # ... +38 more predicates
   AST: True,
-    # tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/contracts/test_agent_guard_integration.py: imports ['ast'], calls ['ast.walk']
+    # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +20 more predicates
   Schema: True,
-    # agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py: decorators ['dataclass']
-    # tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py: decorators ['dataclass']
-    # agentic_core/L5_safety/reasoning/HierarchyAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__HOP7GateDecisionAgent.py: decorators ['dataclass']
+    # artifacts/consolidation/backups/apps_lic__engines__Hop4RoutingAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
-    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
+    # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
-    # tests/guardian/test_v15_p0_compliance.py: imports ['hashlib'], defines ['test_guardian_result_sign_requires_trace_id', 'test_guardian_result_signed_can_serialize_in_v15_mode', 'test_guardian_runner_cannot_exit_unsigned_in_v15_mode', 'test_route_decision_is_alias_assignment_ast', 'test_guardian_result_sign_produces_signed_artifact']
+    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
     # tests/governance/test_req018_hmac_artifact_coverage.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +4 more predicates
   CI: True,
@@ -19619,21 +19627,21 @@ ci_test (6): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L0_routing/enforcement/trace_id_generator.py: defines ['validate_trace_id']
+    # ops_scripts/ci/evidence_collect_phase1.py: defines ['check_healing_transaction_boundary', 'check_policy_config_guard', 'check_guardian_signing', 'check_trace_id_generation', 'check_semantic_clock_usage', 'check_v15_gateway_in_heal']
+    # ops_scripts/ci/evidence_collect_phase1.py: calls ['guardian_file.exists']
+    # tests/guardian/test_v15_p7_bugfixes.py: classes ['TestGatewayInstantiationGuard']
     # ... +13 more predicates
   AST: True,
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_d.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19669,21 +19677,21 @@ ci_test (6): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L0_routing/enforcement/trace_id_generator.py: defines ['validate_trace_id']
+    # ops_scripts/ci/evidence_collect_phase1.py: defines ['check_healing_transaction_boundary', 'check_policy_config_guard', 'check_guardian_signing', 'check_trace_id_generation', 'check_semantic_clock_usage', 'check_v15_gateway_in_heal']
+    # ops_scripts/ci/evidence_collect_phase1.py: calls ['guardian_file.exists']
+    # tests/guardian/test_v15_p7_bugfixes.py: classes ['TestGatewayInstantiationGuard']
     # ... +13 more predicates
   AST: True,
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_d.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19719,21 +19727,21 @@ ci_test (6): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L0_routing/enforcement/trace_id_generator.py: defines ['validate_trace_id']
+    # ops_scripts/ci/evidence_collect_phase1.py: defines ['check_healing_transaction_boundary', 'check_policy_config_guard', 'check_guardian_signing', 'check_trace_id_generation', 'check_semantic_clock_usage', 'check_v15_gateway_in_heal']
+    # ops_scripts/ci/evidence_collect_phase1.py: calls ['guardian_file.exists']
+    # tests/guardian/test_v15_p7_bugfixes.py: classes ['TestGatewayInstantiationGuard']
     # ... +13 more predicates
   AST: True,
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_d.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19769,21 +19777,21 @@ ci_test (6): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L0_routing/enforcement/trace_id_generator.py: defines ['validate_trace_id']
+    # ops_scripts/ci/evidence_collect_phase1.py: defines ['check_healing_transaction_boundary', 'check_policy_config_guard', 'check_guardian_signing', 'check_trace_id_generation', 'check_semantic_clock_usage', 'check_v15_gateway_in_heal']
+    # ops_scripts/ci/evidence_collect_phase1.py: calls ['guardian_file.exists']
+    # tests/guardian/test_v15_p7_bugfixes.py: classes ['TestGatewayInstantiationGuard']
     # ... +13 more predicates
   AST: True,
+    # tests/guardian/test_v15_p8_cat_c.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/guardian/test_v15_p8_cat_e.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_v15_p8_cat_d.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +3 more predicates
   Schema: False,
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +3 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19820,29 +19828,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19879,29 +19887,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19938,29 +19946,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -19997,29 +20005,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20056,29 +20064,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20115,29 +20123,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20174,29 +20182,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20233,29 +20241,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20292,29 +20300,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20351,29 +20359,29 @@ ci_test (18): ['tests/agentic_core/L0_routing/scripts/test_security_compliance_m
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/config/core/injection_layer_config.py: raises ['AttributeError']
-    # agentic_core/L4_state/memory/prompt_version_store.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # system_learning/enforcement/determinism.py: raises ['PermissionError']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['ValueError', 'TypeError']
     # ... +134 more predicates
   AST: True,
+    # agentic_core/L5_safety/enforcement/agent_info.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
-    # apps_shared/utils/file_io_util.py: imports ['ast'], calls ['ast.parse']
-    # agentic_core/utils/structural_healing_engine_util.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/evidence_collect_phase2.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +11 more predicates
   Schema: True,
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # tests/apps_rg/test_input.py: imports ['pydantic']
-    # tests/apps_rg/test_input.py: inherits ['BaseModel']
+    # agentic_core/L5_safety/enforcement/agent_info.py: decorators ['dataclass']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
+    # apps_rg/scripts/test_input.py: imports ['pydantic']
     # ... +16 more predicates
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
-    # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
+    # agentic_core/determinism/digest_authority.py: defines ['compute_digest']
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
+    # system_learning/engines/deterministic_replay_engine.py: classes ['ReplayResult']
     # ... +11 more predicates
   Signature: True,
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
-    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_policy', 'test_replay_key_differs_on_different_action']
+    # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: imports ['hashlib'], defines ['test_replay_key_stable', 'test_replay_key_differs_on_different_action', 'test_replay_key_differs_on_different_policy']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
     # ... +24 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20410,27 +20418,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20467,27 +20475,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20524,27 +20532,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20581,27 +20589,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20638,27 +20646,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20695,27 +20703,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20752,27 +20760,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20809,27 +20817,27 @@ ci_test (13): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: raises ['ValueError', 'V15EnforcementError']
-    # agentic_core/L0_routing/types/guardian_contract.py: defines ['guard_scan_budget', 'check_schema_compatibility', 'validate_against_json_schema', 'validate_no_absolute_paths']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: raises ['HMACKeyError']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: raises ['HumanDecisionViolation']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: defines ['verify']
     # ... +50 more predicates
   AST: True,
-    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: decorators ['dataclass']
-    # apps_shared/utils/security_config_util.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
+    # apps_rg/utils/authenticity_patterns_util.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
-    # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission', 'replay_gateway.check_write_permission', 'replay_gateway.simulate_write']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +3 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # tests/governance/test_req186_390_392_393_395_396_hmac_lifecycle.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: calls ['hmac.new']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['hashlib', 'hmac'], defines ['test_signature_tamper_detection']
     # ... +54 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20865,25 +20873,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20919,25 +20927,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -20973,25 +20981,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21027,25 +21035,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21081,25 +21089,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21135,25 +21143,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21189,25 +21197,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21243,25 +21251,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21297,25 +21305,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21351,25 +21359,25 @@ ci_test (2): ['tests/governance/test_phase8_signature_boundary.py', 'tests/gover
 ```
 layers_present = {
   Runtime: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # tests/guardian/test_v15_p5_compliance.py: classes ['TestP5_72_ReplayGuard']
-    # tests/guardian/test_v15_p5_compliance.py: calls ['verify_signature']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: raises ['ValueError', 'PermissionError', 'KeyError', 'TypeError']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: defines ['verify']
+    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: raises ['SignedGuardianError', 'VerificationError', 'SigningError', 'EscalationRequiredError', 'ReplayDetectedError']
     # ... +16 more predicates
   AST: True,
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayDetectedError']
-    # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: calls ['replay_store.check_and_record']
     # ... +1 more predicates
   Signature: True,
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['hmac.new']
-    # tests/unit_min_deps/test_replay_harness_crypto_clock.py: imports ['hashlib', 'hmac'], defines ['test_req399_signature_enclave_real_round_trip', 'test_req395_hmac_deterministic']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: calls ['hmac.new']
     # ... +12 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21406,29 +21414,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21465,29 +21473,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21524,29 +21532,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21583,29 +21591,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21642,29 +21650,29 @@ ci_test (38): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: raises ['PermissionError']
-    # agentic_core/L2_execution/enforcement/capability_chokepoint_gate.py: calls ['enforcer.check']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
+    # tests/governance/test_req346_347_tier3_authority.py: raises ['RuntimeError']
+    # tests/governance/test_req346_347_tier3_authority.py: defines ['allow_promotion', 'allow_routing', 'validate_token', 'allow_meta_learning']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
     # ... +98 more predicates
   AST: True,
-    # tests/governance/test_req192_409_semantic_clock_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_req_p2_evacuation_discipline.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/apps_shared/scripts/test_meta_control_config_bridge.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req114_no_wallclock_determinism.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_req298_337_discovery_promotion.py: classes ['MockDiscoveryScanner']
     # ... +13 more predicates
   Schema: True,
+    # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
     # agentic_core/L4_state/types/detection_signal_store.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
-    # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
     # agentic_core/L0_routing/types/crypto_trust_types.py: classes ['ReplayGuardRecord']
+    # tests/governance/test_global_sovereignty_invariant.py: defines ['replay_hash']
+    # tests/agentic_core/L7_meta_learning/test_offline_replay_golden.py: calls ['replay_aggregate_to_rollout', 'replay_app_signals_to_aggregate']
     # ... +9 more predicates
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
-    # tests/guardian/test_v15_final_baseline_pins.py: imports ['hashlib'], defines ['test_revoked_key_rejected']
-    # tests/guardian/test_v15_p9_3_daemon_soak.py: imports ['hashlib'], defines ['test_seen_signals_caps_at_k', 'test_seen_signals_stable_after_first_k']
+    # tests/governance/test_req_p0_canonical_digest_stability.py: imports ['hashlib'], defines ['test_canonical_digest_key_order_invariant']
+    # tests/guardian/test_v15_p9_2_hotpath.py: imports ['hashlib'], defines ['test_seen_signals_grows_at_most_one_per_call', 'test_seen_signals_total_equals_unique_manifests', 'test_repeated_same_manifest_no_signal_growth']
+    # agentic_core/L0_routing/types/crypto_trust_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new']
     # ... +15 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -21777,7 +21785,7 @@ layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/enforcement/provider_substitution_prohibition.py: classes ['ProviderSubstitutionGuard']
     # agentic_core/L2_execution/enforcement/provider_substitution_prohibition.py: raises ['ProviderSubstitutionViolation']
-    # agentic_core/L2_execution/enforcement/provider_substitution_prohibition.py: defines ['validate_response', 'validate_provider_request', 'enforce_fail_closed_on_failure']
+    # agentic_core/L2_execution/enforcement/provider_substitution_prohibition.py: defines ['enforce_fail_closed_on_failure', 'validate_provider_request', 'validate_response']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
@@ -21854,11 +21862,11 @@ layers_present = {
   Runtime: True,
     # tests/governance/test_req417_runtime_mutation_prohibition.py: classes ['TestREQ417RuntimeMutationProhibition']
     # tests/governance/test_req417_runtime_mutation_prohibition.py: raises ['AssertionError']
-    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.install', 'guard.is_installed', 'guard_importlib_reload', 'guard.uninstall', 'guard_setattr', 'guard_function_replacement', 'guard_metaclass_creation']
+    # tests/governance/test_req417_runtime_mutation_prohibition.py: calls ['guard.uninstall', 'guard_function_replacement', 'guard.is_installed', 'guard_importlib_reload', 'guard.install', 'guard_metaclass_creation', 'guard_setattr']
     # ... +4 more predicates
   AST: True,
-    # ops_scripts/ci/check_object_dunder_setattr.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_req417_runtime_mutation_guard.py: imports ['ast'], calls ['ast.parse']
+    # ops_scripts/ci/check_object_dunder_setattr.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: False,
   Replay: False,
   Signature: False,
@@ -21896,6 +21904,8 @@ ci_test (1): ['tests/agentic_core/prompt_governance/test_slot_contracts.py']
 layers_present = {
   Runtime: True,
     # tests/agentic_core/prompt_governance/test_slot_contracts.py: raises ['AirlockViolationError']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: raises ['SlotOrderViolation']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: defines ['validate_slot_order']
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -21917,25 +21927,26 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'slot.*S0|S0.*L5|prompt.*slot.*own|slot_order', ext='.py') across C:\Git\Agentic-Workflow` -> 56 matches in 7 files
+- `py_grep(r'slot.*S0|S0.*L5|prompt.*slot.*own|slot_order', ext='.py') across C:\Git\Agentic-Workflow` -> 94 matches in 9 files
 
 #### HIT_FILES
 ```
 prod (4): ['agentic_core/L0_routing/engines/assembly_stage.py', 'agentic_core/prompt_governance/contracts/__init__.py', 'agentic_core/prompt_governance/contracts/slot_contracts.py', 'agentic_core/prompt_governance/core/prompt_assembler.py']
-test (2): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+test (4): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 tool (0): []
-ci_test (2): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+ci_test (4): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 6
+**ast_records_count:** 8
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/prompt_governance/test_slot_contracts.py: raises ['AirlockViolationError']
-    # agentic_core/prompt_governance/core/prompt_assembler.py: raises ['SecurityIntegrityError', 'ValueError', 'AirlockViolationError']
-    # agentic_core/prompt_governance/core/prompt_assembler.py: defines ['validate_injection_safety', 'validate_xml_structure', 'validate_template_integrity', 'validate_structure']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: raises ['SlotOrderViolation']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: defines ['validate_slot_order']
+    # ... +2 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: True,
@@ -21946,7 +21957,7 @@ layers_present = {
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
-    # governance/architecture tests in CI: ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
 }
 ```
 
@@ -21960,37 +21971,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 568 matches in 149 files
+- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 608 matches in 151 files
 
 #### HIT_FILES
 ```
 prod (74): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +69 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 148
+**ast_records_count:** 150
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
-    # ... +71 more predicates
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
+    # ... +73 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -22014,37 +22025,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 568 matches in 149 files
+- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 608 matches in 151 files
 
 #### HIT_FILES
 ```
 prod (74): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +69 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 148
+**ast_records_count:** 150
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
-    # ... +71 more predicates
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
+    # ... +73 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -22084,15 +22095,15 @@ ci_test (1): ['tests/agentic_core/L3_orchestration/reasoning/test_token_budget_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/llm_replay_types.py: raises ['ValueError', 'NotImplementedError']
-    # agentic_core/L2_execution/types/llm_replay_types.py: defines ['verify_checksum', 'verify_replay_integrity', 'validate_production_mode']
-    # tools/evidence/qwen_migration_phase1_evidence_runner.py: raises ['RuntimeError', 'ValueError']
+    # agentic_core/L2_execution/types/vllm_replay_validator.py: classes ['VLLMReplayValidator']
+    # agentic_core/L2_execution/types/vllm_replay_validator.py: defines ['validate_and_report', 'verify']
+    # tools/evidence/qwen_migration_phase1_evidence_runner.py: raises ['ValueError', 'RuntimeError']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
   Replay: True,
-    # agentic_core/L2_execution/types/llm_replay_types.py: classes ['ReplayBundle', 'ReplayMode']
+    # agentic_core/L2_execution/types/llm_replay_types.py: classes ['ReplayMode', 'ReplayBundle']
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
@@ -22110,37 +22121,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 568 matches in 149 files
+- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 608 matches in 151 files
 
 #### HIT_FILES
 ```
 prod (74): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +69 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 148
+**ast_records_count:** 150
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
-    # ... +71 more predicates
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
+    # ... +73 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -22164,25 +22175,26 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'U0.*override|slot.*ownership|user.*slot.*restrict|slot_order', ext='.py') across C:\Git\Agentic-Workflow` -> 30 matches in 6 files
+- `py_grep(r'U0.*override|slot.*ownership|user.*slot.*restrict|slot_order', ext='.py') across C:\Git\Agentic-Workflow` -> 61 matches in 8 files
 
 #### HIT_FILES
 ```
 prod (3): ['agentic_core/prompt_governance/contracts/__init__.py', 'agentic_core/prompt_governance/contracts/slot_contracts.py', 'agentic_core/prompt_governance/core/prompt_assembler.py']
-test (2): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+test (4): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 tool (0): []
-ci_test (2): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+ci_test (4): ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 5
+**ast_records_count:** 7
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/prompt_governance/test_slot_contracts.py: raises ['AirlockViolationError']
-    # agentic_core/prompt_governance/core/prompt_assembler.py: raises ['SecurityIntegrityError', 'ValueError', 'AirlockViolationError']
-    # agentic_core/prompt_governance/core/prompt_assembler.py: defines ['validate_injection_safety', 'validate_xml_structure', 'validate_template_integrity', 'validate_structure']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: raises ['SlotOrderViolation']
+    # agentic_core/prompt_governance/contracts/slot_contracts.py: defines ['validate_slot_order']
+    # ... +2 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: True,
@@ -22193,7 +22205,7 @@ layers_present = {
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
-    # governance/architecture tests in CI: ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/prompt_governance/test_assembler_slots.py', 'tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_slot_contracts.py']
 }
 ```
 
@@ -22207,37 +22219,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 568 matches in 149 files
+- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 608 matches in 151 files
 
 #### HIT_FILES
 ```
 prod (74): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +69 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 148
+**ast_records_count:** 150
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
-    # ... +71 more predicates
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
+    # ... +73 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -22277,9 +22289,9 @@ ci_test (2): ['tests/agentic_core/L2_execution/types/test_token_budget_preflight
 ```
 layers_present = {
   Runtime: True,
-    # tests/integration_e2e/test_gemini_qwen_e2e.py: raises ['ValueError', '_NetworkBlockedError']
-    # tests/integration_e2e/test_gemini_qwen_e2e.py: calls ['verify_gateway_invariants']
     # agentic_core/prompt_governance/security/detectors/injection_detector.py: raises ['SecurityViolationError']
+    # agentic_core/prompt_governance/security/detectors/injection_detector.py: defines ['check_regression_compliance']
+    # tests/integration_e2e/test_gemini_qwen_e2e.py: raises ['ValueError', '_NetworkBlockedError']
     # ... +2 more predicates
   AST: True,
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
@@ -22303,37 +22315,37 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 568 matches in 149 files
+- `py_grep(r'prompt_governance|prompt_assembler|slot_order|PromptBundleArtifact', ext='.py') across C:\Git\Agentic-Workflow` -> 608 matches in 151 files
 
 #### HIT_FILES
 ```
 prod (74): ['agentic_core/L0_routing/enforcement/apps_taxonomy_guard.py', 'agentic_core/L0_routing/scripts/class_info.py', 'agentic_core/L0_routing/scripts/demo_cli_functionality_util.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/scripts/populate_ssot_folders_util.py']
   ... +69 more
-test (64): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
-  ... +59 more
+test (66): ['tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py', 'tests/_quarantine/integration/test_repo_scan_no_nested_lcd.py']
+  ... +61 more
 tool (10): ['ops_scripts/dev_tools/l0_scripts/ast_layer_stats_util.py', 'ops_scripts/dev_tools/l0_scripts/audit_status.py', 'ops_scripts/dev_tools/l0_scripts/generate_hooks_util.py', 'ops_scripts/dev_tools/l0_scripts/regenerate_dashboard_full_util.py', 'ops_scripts/dev_tools/l0_scripts/tooling_add_docstrings_util.py']
-ci_test (38): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
+ci_test (40): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py', 'tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py', 'tests/agentic_core/L0_routing/scripts/test_consolidated_migration.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 148
+**ast_records_count:** 150
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
-    # apps_lic/enforcement/ExecutiveStrategyAgent.py: raises ['NotImplementedError']
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: raises ['AssertionError']
-    # agentic_core/prompt_governance/scripts/file_intent.py: defines ['validate_naming_compliance']
-    # ... +71 more predicates
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: defines ['enforce_layer_boundaries']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: calls ['enforce_layer_boundaries']
+    # tests/agentic_core/L0_routing/core/test_execute_ssot_enhancements.py: classes ['TestASTValidator', 'TestNonInteractiveGuard']
+    # ... +73 more predicates
   AST: True,
-    # tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # agentic_core/prompt_governance/scripts/file_intent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/e2e/test_phase5_invariants_fixture_repo.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: classes ['SSOTScanner']
+    # agentic_core/prompt_governance/scripts/import_violation_visitor.py: imports ['ast'], calls ['ast.parse']
     # ... +26 more predicates
   Schema: True,
-    # agentic_core/prompt_governance/scripts/file_intent.py: decorators ['dataclass']
-    # agentic_core/config/core/injection_layer_config.py: decorators ['dataclass']
-    # agentic_core/config/core/yaml_injection_loader.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
+    # tests/support/l3_orchestration/NervousSystemAgent.py: decorators ['dataclass']
+    # agentic_core/L4_state/memory/runtime_models.py: decorators ['dataclass']
     # ... +29 more predicates
   Replay: True,
     # system_learning/pipelines/meta_learning_pipeline.py: calls ['replay_validate']
@@ -22349,7 +22361,7 @@ layers_present = {
 
 **Classification:** PASS | Missing: none
 
-### REQ-PT-011 (CRITICAL) — FAIL
+### REQ-PT-011 (CRITICAL) — PASS
 **Domain:** Prompt Taxonomy
 **Requirement:** Negative control required: tamper slot order must yield XFAIL(strict=True) (exit 0) and restore must PASS
 **Required Layers:** CI
@@ -22357,21 +22369,21 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'xfail.*strict.*True.*prompt|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper', ext='.py') across C:\Git\Agentic-Workflow` -> 3 matches in 1 files
+- `py_grep(r'validate_slot_order|SlotOrderViolation|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper', ext='.py') across C:\Git\Agentic-Workflow` -> 43 matches in 5 files
 
 #### HIT_FILES
 ```
-prod (0): []
-test (0): []
+prod (2): ['agentic_core/prompt_governance/contracts/slot_contracts.py', 'agentic_core/prompt_governance/core/prompt_assembler.py']
+test (2): ['tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 tool (0): []
-ci_test (0): []
+ci_test (2): ['tests/agentic_core/prompt_governance/test_req_pt011_slot_order_enforcement.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 ```
 
 #### AST Classification Provenance
 **ast_records_count:** 0
 **AST_SIGNALS_HIT:** (not computed — early exit)
 
-**Classification:** FAIL | Missing: No production or test evidence
+**Classification:** PASS | Missing: none
 
 ### REQ-PT-012 (CRITICAL) — PARTIAL
 **Domain:** Prompt Taxonomy
@@ -22435,13 +22447,13 @@ ci_test (6): ['tests/governance/conftest.py', 'tests/governance/test_embedding_a
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/embeddings/embedding_factory.py: raises ['EmbeddingSovereigntyViolationError', 'ValueError', 'NotImplementedError', 'EmbeddingDisabledError']
-    # agentic_core/embeddings/embedding_factory.py: defines ['guard_embedding_instantiation']
-    # system_learning/engines/openai_embedder.py: raises ['ImportError', 'ValueError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: defines ['validate_architectural_separation', 'validate_threshold_immutability', 'check_enum_leakage', 'validate_embedding_governance_lock']
+    # agentic_core/embeddings/embedding_factory.py: raises ['ValueError', 'NotImplementedError', 'EmbeddingDisabledError', 'EmbeddingSovereigntyViolationError']
     # ... +11 more predicates
   AST: True,
-    # ops_scripts/ci/check_embedding_instantiation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_phase7_embedding_sovereignty.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +5 more predicates
   Schema: True,
@@ -22450,7 +22462,7 @@ layers_present = {
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
@@ -22487,13 +22499,13 @@ ci_test (6): ['tests/governance/conftest.py', 'tests/governance/test_embedding_a
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/embeddings/embedding_factory.py: raises ['EmbeddingSovereigntyViolationError', 'ValueError', 'NotImplementedError', 'EmbeddingDisabledError']
-    # agentic_core/embeddings/embedding_factory.py: defines ['guard_embedding_instantiation']
-    # system_learning/engines/openai_embedder.py: raises ['ImportError', 'ValueError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: defines ['validate_architectural_separation', 'validate_threshold_immutability', 'check_enum_leakage', 'validate_embedding_governance_lock']
+    # agentic_core/embeddings/embedding_factory.py: raises ['ValueError', 'NotImplementedError', 'EmbeddingDisabledError', 'EmbeddingSovereigntyViolationError']
     # ... +11 more predicates
   AST: True,
-    # ops_scripts/ci/check_embedding_instantiation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_phase7_embedding_sovereignty.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +5 more predicates
   Schema: True,
@@ -22502,7 +22514,7 @@ layers_present = {
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
@@ -22539,13 +22551,13 @@ ci_test (6): ['tests/governance/conftest.py', 'tests/governance/test_embedding_a
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/embeddings/embedding_factory.py: raises ['EmbeddingSovereigntyViolationError', 'ValueError', 'NotImplementedError', 'EmbeddingDisabledError']
-    # agentic_core/embeddings/embedding_factory.py: defines ['guard_embedding_instantiation']
-    # system_learning/engines/openai_embedder.py: raises ['ImportError', 'ValueError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: raises ['RuntimeError']
+    # ops_scripts/ci/audit_qwen_sovereignty.py: defines ['validate_architectural_separation', 'validate_threshold_immutability', 'check_enum_leakage', 'validate_embedding_governance_lock']
+    # agentic_core/embeddings/embedding_factory.py: raises ['ValueError', 'NotImplementedError', 'EmbeddingDisabledError', 'EmbeddingSovereigntyViolationError']
     # ... +11 more predicates
   AST: True,
-    # ops_scripts/ci/check_embedding_instantiation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_phase7_embedding_sovereignty.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/ci/audit_embedding_surface.py: imports ['ast'], calls ['ast.parse']
     # ... +5 more predicates
   Schema: True,
@@ -22554,7 +22566,7 @@ layers_present = {
   Replay: True,
     # system_learning/engines/embedding_service_factory.py: defines ['replay_key']
   Signature: True,
-    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_accepts_valid', '_ast_has_unsigned_side_effects']
+    # tests/governance/test_phase8_signature_boundary.py: imports ['hashlib'], defines ['test_signature_verifier_accepts_valid', 'test_w8_full_signature_boundary_system', 'test_signature_verifier_fail_closed', 'test_ast_unsigned_ingress_scanner_finds_known_debt', '_ast_has_unsigned_side_effects', 'test_signature_verifier_integration_with_guard', 'test_signature_verifier_exists_and_is_importable']
     # tests/system_learning/test_embedding_sovereignty.py: imports ['hashlib'], defines ['test_replay_key_completeness']
   CI: True,
     # tests exist + CI runs pytest
@@ -22589,7 +22601,7 @@ ci_test (1): ['tests/governance/test_phase7_embedding_sovereignty.py']
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/embeddings/embedding_factory.py: raises ['EmbeddingSovereigntyViolationError', 'ValueError', 'NotImplementedError', 'EmbeddingDisabledError']
+    # agentic_core/embeddings/embedding_factory.py: raises ['ValueError', 'NotImplementedError', 'EmbeddingDisabledError', 'EmbeddingSovereigntyViolationError']
     # agentic_core/embeddings/embedding_factory.py: defines ['guard_embedding_instantiation']
     # tests/governance/test_phase7_embedding_sovereignty.py: calls ['guard_embedding_instantiation']
   AST: True,
@@ -22615,38 +22627,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -22660,38 +22673,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -22705,38 +22719,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -22750,38 +22765,39 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 84 matches in 10 files
+- `py_grep(r'RetrievalQuery|CitationBundle|citation_enforcement', ext='.py') across C:\Git\Agentic-Workflow` -> 111 matches in 13 files
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py']
-test (5): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/governance/test_req199_211_236_emission.py', 'tests/guardian/test_v15_p4_compliance.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+  ... +2 more
 tool (0): []
-ci_test (4): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 9
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # ... +9 more predicates
+    # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py']
 }
 ```
 
@@ -22795,25 +22811,25 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'chunk.*hash|chunk.*sha256|chunk.*integrit|retriev.*verify', ext='.py') across C:\Git\Agentic-Workflow` -> 15 matches in 8 files
+- `py_grep(r'chunk.*hash|chunk.*sha256|chunk.*integrit|retriev.*verify', ext='.py') across C:\Git\Agentic-Workflow` -> 22 matches in 9 files
 
 #### HIT_FILES
 ```
 prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/scripts/chunk_type.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/types/retrieval_boundary_snapshot.py']
-test (3): ['tests/_quarantine/integration/core_dir/test_meta_learning_full_integration.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py', 'tests/guardian/test_v15_p4_compliance.py']
+test (4): ['tests/_quarantine/integration/core_dir/test_meta_learning_full_integration.py', 'tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py', 'tests/guardian/test_v15_p4_compliance.py']
 tool (0): []
-ci_test (1): ['tests/agentic_core/test_phase6_retrieval_snapshot.py']
+ci_test (2): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 7
+**ast_records_count:** 8
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Signature', 'CI']
 ```
 layers_present = {
   Runtime: True,
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: raises ['AdvisoryViolationError', 'ManifestHashError', 'PlanProvenanceError', 'PolicyConfigPinError', 'ErrorSignatureError', 'RAGChainError', 'CognitiveDiffError', 'TraceIDFormatError']
+    # agentic_core/L0_routing/enforcement/traceability_contracts.py: defines ['verify_manifest_hash', 'validate_retrieval_set', 'enforce_advisory_only', 'validate_citation_chain', 'verify_policy_config_unchanged']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # tests/guardian/test_v15_p4_compliance.py: calls ['verify_policy_config_unchanged', 'verify_manifest_hash', 'enforce_advisory_only']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/scripts/chunk_type.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -22822,18 +22838,18 @@ layers_present = {
     # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
+    # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase6_retrieval_snapshot.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py']
 }
 ```
 
 **Classification:** PASS | Missing: none
 
-### REQ-RAGX-006 (CRITICAL) — FAIL
+### REQ-RAGX-006 (CRITICAL) — PASS
 **Domain:** Agentic RAG Schema
 **Requirement:** ExternalKnowledgeAccessViolation MUST be emitted and wave aborted if context used without CitationBundle
 **Required Layers:** Runtime, CI
@@ -22841,21 +22857,36 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'ExternalKnowledge|knowledge.*access.*viol|external.*retriev.*guard', ext='.py') across C:\Git\Agentic-Workflow` -> 1 matches in 1 files
+- `py_grep(r'ExternalKnowledge|knowledge.*access.*viol|external.*retriev.*guard', ext='.py') across C:\Git\Agentic-Workflow` -> 25 matches in 3 files
 
 #### HIT_FILES
 ```
-prod (0): []
-test (0): []
+prod (1): ['agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (1): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py']
 tool (0): []
-ci_test (0): []
+ci_test (1): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 0
-**AST_SIGNALS_HIT:** (not computed — early exit)
+**ast_records_count:** 2
+**AST_SIGNALS_HIT:** ['Runtime', 'AST', 'CI']
+```
+layers_present = {
+  Runtime: True,
+    # agentic_core/L5_safety/enforcement/rag_guardrail.py: raises ['ExternalKnowledgeAccessViolation']
+    # agentic_core/L5_safety/enforcement/rag_guardrail.py: defines ['validate_citation_custody']
+  AST: True,
+    # has_core=True (production code exists)
+  Schema: False,
+  Replay: False,
+  Signature: False,
+  CI: True,
+    # tests exist + CI runs pytest
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py']
+}
+```
 
-**Classification:** FAIL | Missing: No production or test evidence
+**Classification:** PASS | Missing: none
 
 ### REQ-CTX-001 (HIGH) — PASS
 **Domain:** Context Control
@@ -22882,16 +22913,16 @@ ci_test (1): ['tests/agentic_core/L3_orchestration/engines/test_context_curator_
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/types/heal_llm_seam.py: raises ['HealSeamBypassError', 'ValueError', 'HealBudgetExceededError']
-    # apps_shared/types/hardened_gemini_executor_types.py: raises ['ImportError', 'ValueError', 'ContextOverflowError', 'CircuitBreakerOpenError']
+    # apps_shared/types/hardened_gemini_executor_types.py: raises ['ValueError', 'CircuitBreakerOpenError', 'ImportError', 'ContextOverflowError']
     # apps_shared/types/hardened_gemini_executor_types.py: defines ['validate_context_budget']
+    # agentic_core/L5_safety/types/heal_llm_seam.py: raises ['ValueError', 'HealSeamBypassError', 'HealBudgetExceededError']
     # ... +2 more predicates
   AST: True,
     # agentic_core/L0_routing/utils/add_test_coverage_util.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L5_safety/types/heal_llm_seam.py: decorators ['dataclass']
-    # tests/support/l1_cognition/ContextCuratorAgent.py: decorators ['dataclass']
     # apps_shared/types/hardened_gemini_executor_types.py: decorators ['dataclass']
+    # tests/support/l1_cognition/ContextCuratorAgent.py: decorators ['dataclass']
+    # agentic_core/L5_safety/types/heal_llm_seam.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: False,
   Signature: False,
@@ -22966,14 +22997,14 @@ ci_test (1): ['tests/agentic_core/test_sovereignty_proof_suite.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_import_safety.py: raises ['AssertionError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
+    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_sovereign_roots', 'validate_file_location', 'enforce_void_compliance']
     # ... +4 more predicates
   AST: True,
-    # tests/guardian/test_import_safety.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_ssot_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_ssot_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +2 more predicates
   Schema: True,
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
@@ -23015,14 +23046,14 @@ ci_test (1): ['tests/agentic_core/test_sovereignty_proof_suite.py']
 ```
 layers_present = {
   Runtime: True,
-    # tests/guardian/test_import_safety.py: raises ['AssertionError']
+    # tools/evidence/phase10_apps_taxonomy_guard_evidence.py: raises ['RuntimeError']
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: raises ['NotImplementedError']
-    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_file_location', 'enforce_void_compliance', 'validate_sovereign_roots']
+    # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: defines ['validate_sovereign_roots', 'validate_file_location', 'enforce_void_compliance']
     # ... +4 more predicates
   AST: True,
-    # tests/guardian/test_import_safety.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/guardian/test_ssot_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_ssot_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +2 more predicates
   Schema: True,
     # agentic_core/L5_safety/reasoning/LocationValidatorAgent.py: decorators ['dataclass']
@@ -23065,8 +23096,8 @@ ci_test (1): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.p
 layers_present = {
   Runtime: True,
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
-    # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['ValueError', 'TypeError']
+    # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -23111,20 +23142,20 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -23161,20 +23192,20 @@ ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.p
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: raises ['ValueError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['EvidencePackError', 'PolicyUpdateError', 'PolicyExceptionError']
-    # agentic_core/L0_routing/enforcement/governance_contracts.py: defines ['validate_proposal', 'validate_policy_exception_tick', 'validate_evidence_pack']
+    # agentic_core/L0_routing/types/governance_types.py: raises ['ValueError', 'TypeError']
+    # tests/architecture/test_invariants.py: classes ['TestTierChokeInvariant', 'TestUnregisteredAgentInvariant', 'TestModifyDiffInvariant', 'TestProposalOnlyInvariant', 'TestC0Invariant']
+    # agentic_core/L0_routing/enforcement/governance_contracts.py: raises ['PolicyExceptionError', 'EvidencePackError', 'PolicyUpdateError']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
-    # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -23210,16 +23241,16 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: defines ['check_sufficiency']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L1_cognition/engines/episodic_manager.py: decorators ['dataclass']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # ops_scripts/general/architecture_gap_analyzer.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -23258,16 +23289,16 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: defines ['check_sufficiency']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L1_cognition/engines/episodic_manager.py: decorators ['dataclass']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # ops_scripts/general/architecture_gap_analyzer.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -23343,16 +23374,16 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: defines ['check_sufficiency']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L1_cognition/engines/episodic_manager.py: decorators ['dataclass']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # ops_scripts/general/architecture_gap_analyzer.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -23391,16 +23422,16 @@ ci_test (0): []
 ```
 layers_present = {
   Runtime: True,
+    # tests/guardian/test_v15_p2_compliance.py: calls ['enforce_episodic_query_before_planning', 'verify_rollback_integrity', 'verify_ast_determinism']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: defines ['check_sufficiency']
-    # agentic_core/L0_routing/types/determinism_types.py: raises ['ValueError', 'TypeError']
-    # agentic_core/L0_routing/types/determinism_types.py: defines ['validate_semantic_clock', 'verify', 'verify_hash']
+    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['ValueError', 'ForbiddenInputError', 'TypeError']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
+    # agentic_core/L1_cognition/engines/episodic_manager.py: decorators ['dataclass']
     # agentic_core/L4_state/utils/rag_enhancement_util.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # ops_scripts/general/architecture_gap_analyzer.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -23422,42 +23453,42 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'citation.*byte|CitationBundle.*verify|byte.*hash.*citation|citation_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 85 matches in 12 files
+- `py_grep(r'citation.*byte|CitationBundle.*verify|byte.*hash.*citation|citation_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 92 matches in 13 files
 
 #### HIT_FILES
 ```
 prod (4): ['agentic_core/L4_state/enforcement/replay_bundle_store.py', 'agentic_core/L4_state/engines/replay_bundle_emitter.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L4_state/types/replay_bundle.py']
-test (7): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/agentic_core/test_phase9_end_to_end_gateway_replay.py', 'tests/agentic_core/test_phase9_replay_bundle_model.py']
-  ... +2 more
+test (8): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/agentic_core/test_phase9_end_to_end_gateway_replay.py']
+  ... +3 more
 tool (0): []
-ci_test (6): ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+ci_test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 11
+**ast_records_count:** 12
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'Schema', 'Replay', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: calls ['enforce_citations_for_retrieval']
     # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['ValueError', 'TypeError']
+    # agentic_core/L4_state/enforcement/replay_bundle_store.py: raises ['ReplayVerificationError', 'RuntimeError']
     # ... +3 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/agentic_core/test_phase9_end_to_end_gateway_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
-    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
     # agentic_core/L4_state/enforcement/replay_bundle_store.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
   Replay: True,
+    # agentic_core/L4_state/enforcement/replay_bundle_store.py: classes ['ReplayVerificationError', 'ReplayBundleStore', 'ReplayVerifier']
     # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
-    # agentic_core/L4_state/enforcement/replay_bundle_store.py: classes ['ReplayVerifier', 'ReplayVerificationError', 'ReplayBundleStore']
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
     # scanner detected + CI runs scanners
-    # governance/architecture tests in CI: ['tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py']
 }
 ```
 
@@ -23489,19 +23520,19 @@ ci_test (5): ['tests/agentic_core/L0_routing/enforcement/test_re_clear_loop.py',
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['ResultEmissionViolation', 'PipeOrderViolation', 'RuntimeError', 'KeyError']
-    # agentic_core/L0_routing/types/routing_contracts.py: defines ['check_boundary_tokens', 'validate_result_emission', 'check_safety_markers', 'check_budget', 'enforce_artifact_presence', 'enforce_all', 'enforce_route_decision_presence', 'check_payload_integrity']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: classes ['TestDynamicRuntimeMutationGuard']
+    # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
+    # tests/guardian/test_agent_capability_limits.py: calls ['enforced_violations.append', 'enforced_violations.sort']
     # ... +11 more predicates
   AST: True,
-    # agentic_core/L5_safety/validators/global_mutation_validator.py: imports ['ast'], calls ['ast.walk']
-    # tests/governance/test_phase13_structural_non_mutation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
-    # tests/governance/test_seam_dynamic_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/governance/test_upward_import_enforcement.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # tests/guardian/test_agent_capability_limits.py: imports ['ast'], calls ['ast.parse']
     # ... +6 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
-    # tests/governance/test_seam_dynamic_enforcement.py: decorators ['dataclass']
     # tests/governance/test_upward_import_enforcement.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: False,
   Signature: True,
@@ -23526,24 +23557,26 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'byte_sha256|ghost.*mutation|context_set_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 16 matches in 4 files
+- `py_grep(r'byte_sha256|ghost.*mutation|context_set_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 27 matches in 7 files
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py']
-test (1): ['tests/unit/L4_state/test_telemetry_recorder.py']
+prod (3): ['agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (3): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/unit/L4_state/test_telemetry_recorder.py']
 tool (0): []
-ci_test (0): []
+ci_test (2): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 3
+**ast_records_count:** 6
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
     # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
+    # agentic_core/L5_safety/enforcement/rag_guardrail.py: raises ['ExternalKnowledgeAccessViolation']
+    # ... +1 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -23551,6 +23584,7 @@ layers_present = {
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 }
 ```
 
@@ -23564,24 +23598,26 @@ layers_present = {
 
 #### File Discovery (grep-based)
 **FILTERED_SELF_REFS:** 1
-- `py_grep(r'byte_sha256|ghost.*mutation|context_set_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 16 matches in 4 files
+- `py_grep(r'byte_sha256|ghost.*mutation|context_set_hash', ext='.py') across C:\Git\Agentic-Workflow` -> 27 matches in 7 files
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py']
-test (1): ['tests/unit/L4_state/test_telemetry_recorder.py']
+prod (3): ['agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+test (3): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/unit/L4_state/test_telemetry_recorder.py']
 tool (0): []
-ci_test (0): []
+ci_test (2): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 ```
 
 #### AST Classification Provenance
-**ast_records_count:** 3
+**ast_records_count:** 6
 **AST_SIGNALS_HIT:** ['Runtime', 'AST', 'CI']
 ```
 layers_present = {
   Runtime: True,
     # agentic_core/L4_state/enforcement/telemetry_recorder.py: raises ['ValueError']
     # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
+    # agentic_core/L5_safety/enforcement/rag_guardrail.py: raises ['ExternalKnowledgeAccessViolation']
+    # ... +1 more predicates
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -23589,6 +23625,7 @@ layers_present = {
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
+    # governance/architecture tests in CI: ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py']
 }
 ```
 
@@ -23642,9 +23679,9 @@ ci_test (1): ['tests/governance/test_phase14_path_d_closure.py']
 ```
 layers_present = {
   Runtime: True,
+    # L6_observability/engines/dpo_pair_generator.py: raises ['ValueError']
     # system_learning/pipelines/meta_learning_pipeline.py: classes ['ApprovalGate']
     # system_learning/pipelines/meta_learning_pipeline.py: raises ['ValidationError', 'PipelineError']
-    # L6_observability/engines/dpo_pair_generator.py: raises ['ValueError']
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -23683,9 +23720,9 @@ ci_test (1): ['tests/governance/test_phase14_path_d_closure.py']
 ```
 layers_present = {
   Runtime: True,
+    # L6_observability/engines/dpo_pair_generator.py: raises ['ValueError']
     # system_learning/pipelines/meta_learning_pipeline.py: classes ['ApprovalGate']
     # system_learning/pipelines/meta_learning_pipeline.py: raises ['ValidationError', 'PipelineError']
-    # L6_observability/engines/dpo_pair_generator.py: raises ['ValueError']
   AST: True,
     # has_core=True (production code exists)
   Schema: False,
@@ -23724,9 +23761,9 @@ ci_test (1): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 ```
 layers_present = {
   Runtime: True,
-    # tests/agentic_core/L7_meta_learning/test_meta_learning_contract.py: classes ['TestDecisionGate']
-    # system_learning/types/meta_learning_types.py: raises ['RuntimeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PipeOrderEnforcer', 'GuardrailGuard', 'PolicyConfigGuard']
+    # system_learning/types/meta_learning_types.py: raises ['ValueError', 'RuntimeError']
+    # tests/guardian/test_v15_p1_compliance.py: classes ['TestP1M07GuardrailGuard', 'TestP1M03M04PolicyConfigGuard', 'TestP1M10AggregateGate']
+    # tests/guardian/test_v15_p1_compliance.py: raises ['ValueError', 'AssertionError']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -23793,9 +23830,9 @@ ci_test (5): ['tests/agentic_core/L2_execution/healers/test_healing_outcome_wiri
 ```
 layers_present = {
   Runtime: True,
+    # tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py: raises ['RuntimeError']
     # tests/agentic_core/L2_execution/scripts/test_remediation_dispatcher.py: classes ['TestDispatcherMutationGuard']
-    # agentic_core/L2_execution/healers/healing_provider_adapters.py: raises ['ImportError', 'NotImplementedError']
-    # agentic_core/L2_execution/scripts/remediation_dispatcher.py: raises ['ValueError', 'MutationGuardError', 'ApprovalGatingError']
+    # tests/agentic_core/L2_execution/healers/test_healing_tier_e2e_invocation.py: classes ['TestNoExternalCallsGuard']
     # ... +5 more predicates
   AST: True,
     # agentic_core/L5_safety/static_checks/system_invariant_scanner.py: imports ['ast'], calls ['ast.parse']
@@ -23837,268 +23874,3 @@ ci_test (0): []
 **AST_SIGNALS_HIT:** (not computed — early exit)
 
 **Classification:** FAIL | Missing: No production or test evidence
-
-
----
----
-# CERTIFICATION CLOSURE BLOCKS (generated 2026-02-28 11:28:10 UTC)
-
----
-## BLOCK A -- CANONICAL BASELINE DECLARATION
-
-### A1. Programmatic Baseline Evidence
-```
-SOURCE: docs/reports/plans/Agentic Master Requirements.md
-METHOD: Python Counter on lines matching '| REQ-' + integrity block regex
-
-INTEGRITY_BLOCK_TOTAL_ROWS = 486
-INTEGRITY_BLOCK_CORPUS_ROWS = 417
-INTEGRITY_BLOCK_EXT_ROWS = 69
-
-ACTUAL_TABLE_ROWS = 462
-ACTUAL_CORPUS_ROWS = 417
-ACTUAL_EXT_ROWS = 45
-
-EXTENSION_BREAKDOWN: REQ-APP: 2  |  REQ-COG: 2  |  REQ-CTX: 2  |  REQ-DPO: 3  |  REQ-EM: 4  |  REQ-HEALX: 2  |  REQ-MEMX: 5  |  REQ-PHJ: 2  |  REQ-PT: 12  |  REQ-RAGX: 6  |  REQ-TLM: 1  |  REQ-WLD: 4
-
-DISCREPANCY = 24
-  Integrity block claims 69 extension rows;
-  table contains 45 extension rows.
-  24 extension rows are declared but never written to the table.
-```
-
-### A2. Baseline Resolution
-```
-AUDIT_BASELINE = 462
-  CORPUS_ROWS_AUDITED = 417  (REQ-001..REQ-417, no gaps, no duplicates)
-  EXTENSION_ROWS_AUDITED = 45
-  INTEGRITY_BLOCK_CLAIM = 486  (STALE -- 24 ext rows missing from table)
-
-GAP_ANALYSIS_SCOPE: All 462 rows present in the table were evaluated.
-                    The 24 missing extension rows cannot be audited (no table content).
-```
-
----
-## BLOCK B -- COMPUTED TOTALS (PROGRAMMATIC, FROM LEDGER)
-
-### B1. Source and Method
-```
-SOURCE: Ledger table in requirements-gap-analysis-evidence.md
-METHOD: Python parse of '| REQ-*' rows, Counter by severity x status
-```
-
-### B2. Deterministic Totals Block
-```
-TOTAL_REQUIREMENTS_AUDITED = 462
-
-CRITICAL_TOTAL = 375
-  CRITICAL_PASS = 337
-  CRITICAL_PARTIAL = 36
-  CRITICAL_FAIL = 2
-  CRITICAL_STRUCTURAL_ONLY = 0
-
-HIGH_TOTAL = 86
-  HIGH_PASS = 75
-  HIGH_PARTIAL = 6
-  HIGH_FAIL = 5
-
-MEDIUM_TOTAL = 1
-  MEDIUM_PASS = 0
-  MEDIUM_PARTIAL = 1
-
-ALL_PASS = 412
-ALL_PARTIAL = 43
-ALL_FAIL = 7
-ALL_STRUCTURAL_ONLY = 0
-
-ARITHMETIC_CHECK: 412 + 43 + 7 + 0 = 462 (== TOTAL OK)
-```
-
----
-## BLOCK C -- DETERMINISM DUAL-RUN PROOF
-
-### C1. Method
-Probe script walks repo (excluding vendor dirs), builds canonical sorted JSON
-of {path: sha256_prefix} entries, SHA-256s the JSON. Two independent runs must
-produce identical digest.
-
-### C2. Run 1
-```
-$ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe C:\Git\Agentic-Workflow\tools\evidence\_det_probe.py C:\Git\Agentic-Workflow
-WAVE_ID: audit-2026-02-28
-FILE_COUNT: 5366
-DETERMINISM_DIGEST: 73369905bd3b9278b882c8122f5912b19579ddea04fa5fdabb03f5a91d127361
-EXIT CODE: 0
-```
-
-### C3. Run 2 (independent invocation)
-```
-$ C:\Users\amita\AppData\Local\Programs\Python\Python312\python.exe C:\Git\Agentic-Workflow\tools\evidence\_det_probe.py C:\Git\Agentic-Workflow
-WAVE_ID: audit-2026-02-28
-FILE_COUNT: 5366
-DETERMINISM_DIGEST: 73369905bd3b9278b882c8122f5912b19579ddea04fa5fdabb03f5a91d127361
-EXIT CODE: 0
-```
-
-### C4. Digest Comparison
-```
-RUN_1_DIGEST = 73369905bd3b9278b882c8122f5912b19579ddea04fa5fdabb03f5a91d127361
-RUN_2_DIGEST = 73369905bd3b9278b882c8122f5912b19579ddea04fa5fdabb03f5a91d127361
-DIGESTS_MATCH = True
-DETERMINISM_RESULT = PASS
-```
-
-### C5. Negative Control: xfail(strict=True) presence
-**Command:** `py_grep(r'xfail.*strict.*True', root=., ext='.py')`
-**Result:** 23 matches in 13 files
-```
-tests/e2e/test_import_resolution.py:96:     These are NOT ignored — they are marked xfail(strict=True) so that:
-tests/governance/test_phase10_embedding_non_mutation.py:213: @pytest.mark.xfail(strict=True, reason="W10_DATA_LEAK_TAMPER=1 must xfail on policy violation.")
-tests/governance/test_phase12_write_gateway_bypass.py:150: @pytest.mark.xfail(strict=True, reason="W12_NEGCTRL_TAMPER=1 must xfail on rogue write.")
-tests/governance/test_phase13_structural_non_mutation.py:91: @pytest.mark.xfail(strict=True, reason="W13_NEGCTRL_TAMPER=1 must xfail on structural non-mutation test.")
-tests/governance/test_phase14_path_d_closure.py:56: @pytest.mark.xfail(strict=True, reason="W14_NEGCTRL_TAMPER=1 must xfail on ordering shuffle.")
-tests/governance/test_phase5_gateway_enforcement.py:150: @pytest.mark.xfail(strict=True, reason="Negative control: This test should fail due to policy violation")
-tests/governance/test_phase6_agent_fleet_conformance.py:529: @pytest.mark.xfail(strict=True, reason="W6_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase6_agent_fleet_conformance.py:562: @pytest.mark.xfail(strict=True, reason="W6_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase7_embedding_sovereignty.py:318: @pytest.mark.xfail(strict=True, reason="W7_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase7_embedding_sovereignty.py:339: @pytest.mark.xfail(strict=True, reason="W7_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase8_signature_boundary.py:505: @pytest.mark.xfail(strict=True, reason="W8_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase8_signature_boundary.py:536: @pytest.mark.xfail(strict=True, reason="W8_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/governance/test_phase9_apps_generation_routing_sovereignty.py:462: @pytest.mark.xfail(strict=True, reason="W9_NEGCTRL_TAMPER=1 must xfail; restore run must pass")
-tests/unit_min_deps/test_w5_determinism_digest.py:207:     @pytest.mark.xfail(strict=True, reason="Negative control: tampered digest differs from canonical")
-tools/evidence/gap_analysis_append_closure.py:253:         r"xfail.*strict.*True", max_lines=20
-tools/evidence/gap_analysis_append_closure.py:393:     w("### C5. Negative Control: xfail(strict=True) presence")
-tools/evidence/gap_analysis_append_closure.py:518:     w(f"  - Negative control xfail(strict=True) present in {len(xfail_files)} test files")
-tools/evidence/gap_analysis_evidence_v2.py:605:         "REQ-037": [r"xfail.*strict.*True|negative.*control.*tamper"],
-tools/evidence/gap_analysis_evidence_v2.py:621:         "REQ-PT-011": [r"xfail.*strict.*True.*prompt|xfail.*strict.*True.*slot|negative.*control.*prompt|slot.*tamper"],
-tools/evidence/gap_analysis_evidence_v2.py:1245:         ("REQ-037", "Negative control XFAIL(strict=True)", [
-```
-
-### C6. REQ-035 compliance: one digest per wave
-```
-RUN_1_DIGEST_LINE_COUNT = 1  (OK)
-RUN_2_DIGEST_LINE_COUNT = 1  (OK)
-```
-
----
-## BLOCK D -- CRITICAL PARTIAL ISOLATION STATEMENT
-
-### D1. Total CRITICAL PARTIAL: 36
-
-### D2. Breakdown by Missing Layer
-
-| Missing Layer | Count |
-|--------------|-------|
-| Schema | 17 |
-| Replay | 14 |
-| Runtime | 2 |
-| Signature | 1 |
-| CI | 1 |
-| Replay, Schema | 1 |
-
-### D3. Classification by Enforcement Class
-```
-CRITICAL_PARTIAL_STRUCTURAL_ONLY = 0
-
-CRITICAL_PARTIAL_EXECUTION_PATH_GAP = 36
-  IDs: REQ-022, REQ-024, REQ-025, REQ-047, REQ-142, REQ-171, REQ-201, REQ-210, REQ-212, REQ-222, REQ-239, REQ-240, REQ-243, REQ-247, REQ-253, REQ-254, REQ-262, REQ-267, REQ-273, REQ-289, REQ-294, REQ-298, REQ-307, REQ-308, REQ-320, REQ-335, REQ-338, REQ-378, REQ-413, REQ-416
-  ... +6 more
-```
-
-### D4. Spot-Check Evidence for Key CRITICAL Items
-
-#### REQ-036 -- Replay binding
-**Command:** `py_grep(r'replay_envelope|ReplayGuard|replay_validator', root=., ext='.py')`
-**Matches:** 160 total | 24 production files
-```
-agentic_core/embeddings/embedding_factory.py:19: from agentic_core.replay.replay_envelope import create_deterministic_cache_key
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:17:     ReplayGuardRecord,
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:137: class ReplayGuardStore:
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:144:         self._records: dict[str, ReplayGuardRecord] = {}
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:150:     ) -> ReplayGuardRecord:
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:161:         record = ReplayGuardRecord(
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:175:     replay_store: ReplayGuardStore,
-agentic_core/L0_routing/enforcement/crypto_trust_contracts.py:250:     "ReplayGuardStore",
-agentic_core/L0_routing/types/crypto_trust_types.py:219: class ReplayGuardRecord:
-agentic_core/L0_routing/types/crypto_trust_types.py:231:             raise ValueError("ReplayGuardRecord: artifact_hash must be non-empty")
-```
-
-#### REQ-045 -- Embedding guard
-**Command:** `py_grep(r'embedding_input_guard|embedding_sovereignty_guard', root=., ext='.py')`
-**Matches:** 8 total | 1 production files
-```
-agentic_core/embeddings/embedding_factory.py:18: from agentic_core.embeddings.embedding_input_guard import GuardedText
-ops_scripts/ci/audit_qwen_sovereignty.py:53:         "agentic_core/embeddings/embedding_input_guard.py",
-tests/governance/test_phase10_embedding_non_mutation.py:18: from agentic_core.embeddings.embedding_input_guard import EmbeddingInputGuard, EmbeddingInputViolation
-tests/governance/test_phase10_embedding_non_mutation.py:45:     "agentic_core.embeddings.embedding_input_guard",
-tools/evidence/gap_analysis_append_closure.py:444:         ("REQ-045", "embedding_input_guard|embedding_sovereignty_guard", "Embedding guard"),
-tools/evidence/gap_analysis_evidence_v2.py:607:         "REQ-045": [r"embedding_input_guard|embedding_sovereignty_guard"],
-tools/evidence/gap_analysis_evidence_v2.py:657:         "Embeddings": [r"embedding_factory|embedding_input_guard|embedding_sovereignty"],
-tools/evidence/gap_analysis_evidence_v2.py:1255:             r"embedding_input_guard", r"embedding_sovereignty_guard",
-```
-
-#### REQ-011 -- Gateway enforcement
-**Command:** `py_grep(r'SovereignLLMGateway', root=., ext='.py')`
-**Matches:** 266 total | 22 production files
-```
-agentic_core/agents/agent_registry.py:24:     "SovereignLLMGateway": AgentExecutionProfile(
-agentic_core/agents/agent_registry.py:25:         agent_id="SovereignLLMGateway",
-agentic_core/agents/agent_registry.py:344:         profile = get_execution_profile("SovereignLLMGateway")
-agentic_core/agents/agent_registry.py:345:         print(f"\nSovereignLLMGateway Profile: {profile}")
-agentic_core/architecture/architectural_invariants.py:37:     "description": "SovereignLLMGateway is the sole outbound LLM seam",
-agentic_core/architecture/architectural_invariants.py:39:         "SovereignLLMGateway is the sole outbound LLM seam",
-agentic_core/config/core/gateway_config.py:70:                 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
-agentic_core/interfaces/gateway.py:6: Re-exports SovereignLLMGateway and GenerationRequest so apps_* tools that
-agentic_core/interfaces/gateway.py:18:         SovereignLLMGateway,
-agentic_core/interfaces/gateway.py:25: from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-```
-
-#### REQ-413 -- Provider binding determinism
-**Command:** `py_grep(r'provider_binding_determinism', root=., ext='.py')`
-**Matches:** 14 total | 2 production files
-```
-agentic_core/L2_execution/determinism.py:20: from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
-agentic_core/L2_execution/determinism.py:45: def compute_provider_binding_determinism_digest(
-agentic_core/L2_execution/determinism.py:255:     "compute_provider_binding_determinism_digest",
-agentic_core/L2_execution/enforcement/provider_binding_determinism.py:70: def verify_provider_binding_determinism(
-tests/governance/test_req413_provider_binding_determinism.py:13: from agentic_core.L2_execution.enforcement.provider_binding_determinism import (
-tests/governance/test_req413_provider_binding_determinism.py:17:     verify_provider_binding_determinism,
-tests/governance/test_req413_provider_binding_determinism.py:91:     def test_verify_provider_binding_determinism_success(self):
-tests/governance/test_req413_provider_binding_determinism.py:107:         result = verify_provider_binding_determinism(
-tests/governance/test_req413_provider_binding_determinism.py:118:     def test_verify_provider_binding_determinism_failure(self):
-tests/governance/test_req413_provider_binding_determinism.py:128:         result = verify_provider_binding_determinism(
-```
-
-### D5. Certification Verdict
-```
-CERTIFICATION_STATUS = BLOCKED
-
-Rationale:
-  CRITICAL_FAIL = 2 (hard blockers exist)
-  CRITICAL_FAIL = 2
-  CRITICAL_PARTIAL = 36
-    - EXECUTION_PATH_GAP subset: 36 requirements
-      Require runtime/CI/replay/schema closure before PASS.
-  CRITICAL_PASS = 337
-  PASS_RATE = 337/375 = 89.9%
-
-  DETERMINISM_PROOF = PASS
-  NEGATIVE_CONTROL_XFAIL = PRESENT (23 instances)
-  BASELINE_DISCREPANCY = 24 rows (integrity block vs actual table)
-
-Conditions for upgrade to PASS:
-  1. Resolve 2 CRITICAL FAIL items (zero-match requirements)
-  2. Close 36 CRITICAL EXECUTION_PATH_GAP items
-     Breakdown: Schema=17, Replay=14, Runtime=2, Signature=1, CI=1, Replay, Schema=1
-  3. Write 24 missing extension rows to requirements table
-  FINAL. Re-run analysis to verify zero CRITICAL FAIL / zero EXECUTION_PATH_GAP
-
-Conditions already satisfied:
-  - All 462 present rows individually evaluated
-  - CRITICAL_PASS = 337 (89.9% of CRITICAL requirements)
-  - DETERMINISM dual-run digest match = True
-  - Negative control xfail(strict=True) present in 13 test files
-  - Arithmetic check: 462 == 462 (OK)
-```
-
-**END OF CERTIFICATION CLOSURE BLOCKS**

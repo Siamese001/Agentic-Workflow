@@ -26,6 +26,7 @@ from agentic_core.prompt_governance.contracts.slot_contracts import (
     SlotI0,
     SlotS0,
     SlotU0,
+    validate_slot_order,
 )
 from agentic_core.prompt_governance.security.validators.output_schema_validator import (
     validate_against_schema,
@@ -418,6 +419,9 @@ You are {role}. Your objective is {objective}.
         except SecurityIntegrityError as e:
             Logger.error(f"XML validation failed: {e}")
             raise SecurityIntegrityError(f"Generated XML is malformed: {e}")
+
+        # REQ-PT-011: Enforce canonical slot ordering (fail-closed)
+        validate_slot_order(prompt)
 
         # Add metadata if provided (with sanitization)
         if metadata:
