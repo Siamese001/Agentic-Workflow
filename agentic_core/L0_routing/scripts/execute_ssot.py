@@ -824,18 +824,21 @@ class AutonomousDecisionEngine:
                 self.decisions_made.append(decision_data)
                 return True, reason
             else:
-                reason = f"BLOCK: Confidence {confidence.value:.2f} requires LLM arbitration (Disabled)"
-                decision_data["decision"] = False
-                decision_data["reason"] = reason
+                approved, hitl_reason = self._hitl_gate(agent_name, confidence, "MEDIUM")
+                decision_data["decision"] = approved
+                decision_data["reason"] = hitl_reason
                 self.decisions_made.append(decision_data)
-                return False, reason
+                if approved:
+                    self._healing_count += 1
+                    self._call_path.add(agent_name)
+                return approved, hitl_reason
 
         # [PHASE 4 FIX] Low Confidence: Advanced Reasoning Recovery (Pro via .env)
         else:
             if self.enable_llm:
                 target_model = os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")
                 logger.warning(
-                    f"🚨 CRITICAL AMBIGUITY: Invoking Reasoning Model {target_model} for {agent_name}...",
+                    f"CRITICAL AMBIGUITY: Invoking Reasoning Model {target_model} for {agent_name}...",
                 )
                 self._healing_count += 1
                 self._call_path.add(agent_name)
@@ -846,11 +849,63 @@ class AutonomousDecisionEngine:
                 self.decisions_made.append(decision_data)
                 return True, reason
             else:
-                reason = f"BLOCK: Confidence {confidence.value:.2f} requires advanced reasoning (Disabled)"
-                decision_data["decision"] = False
-                decision_data["reason"] = reason
+                approved, hitl_reason = self._hitl_gate(agent_name, confidence, "LOW")
+                decision_data["decision"] = approved
+                decision_data["reason"] = hitl_reason
                 self.decisions_made.append(decision_data)
-                return False, reason
+                if approved:
+                    self._healing_count += 1
+                    self._call_path.add(agent_name)
+                return approved, hitl_reason
+
+    def _hitl_gate(
+        self,
+        agent_name: str,
+        confidence: "ConfidenceScore",
+        tier: str,
+    ) -> tuple[bool, str]:
+        """
+        HITL terminal gate for medium/low confidence healing decisions.
+
+        Prints a structured prompt showing the agent, confidence score, and
+        reasoning, then reads Y/N/D from stdin. Non-interactive environments
+        (no tty) default to DEFER (reject).
+
+        Returns:
+            (approved: bool, reason: str)
+        """
+        import sys
+
+        border = "=" * 56
+        print(f"\n{border}")
+        print(f"  HITL GATE  [{tier} CONFIDENCE]")
+        print(border)
+        print(f"  Agent     : {agent_name}")
+        print(f"  Confidence: {confidence.value:.2f}  ({tier})")
+        print(f"  Reasoning : {confidence.reasoning}")
+        print(border)
+        print("  [Y] Approve healing    [N] Reject    [D] Defer to report")
+        print(border)
+
+        if not sys.stdin.isatty():
+            reason = f"HITL-DEFER (non-interactive, {confidence.value:.2f})"
+            print(f"  Non-interactive environment — auto-DEFER: {agent_name}")
+            print(border + "\n")
+            return False, reason
+
+        try:
+            raw = input("  Choice [Y/N/D]: ").strip().upper()
+        except (EOFError, KeyboardInterrupt):
+            raw = "D"
+
+        print(border + "\n")
+
+        if raw == "Y":
+            return True, f"HITL-APPROVED ({confidence.value:.2f})"
+        elif raw == "N":
+            return False, f"HITL-REJECTED ({confidence.value:.2f})"
+        else:
+            return False, f"HITL-DEFER ({confidence.value:.2f})"
 
 
 # ============================================================================
@@ -1334,6 +1389,7 @@ class RuntimeStateManager:
             "current_layer": None,
             "agents_order": [],
             "completed_agents": [],
+            "skipped_agents": [],
             "events": [],
             # [INTEGRATION] Ported from Canon Validator
             "meta_learning": {
@@ -1368,6 +1424,18 @@ class RuntimeStateManager:
         self.add_event("agent_start", f"→ Executing {agent_name} ({layer})")
         self.save()
 
+    def skip_agent(self, agent_name: str, reason: str):
+        """Records agent as skipped — confidence gate or HITL rejected execution."""
+        self.state["skipped_agents"].append(
+            {
+                "agent": agent_name,
+                "time": datetime.now().isoformat(),
+                "reason": reason,
+            },
+        )
+        self.add_event("agent_skip", f"SKIPPED {agent_name}: {reason}")
+        self.save()
+
     def complete_agent(self, agent_name: str, success: bool, details: str = ""):
         """
         [HARDENED] Silent Aggregation.
@@ -1395,7 +1463,7 @@ class RuntimeStateManager:
             logger.error(message)
         elif event_type == "warning":
             logger.warning(message)
-        elif event_type in ["agent_start", "agent_end"]:
+        elif event_type in ["agent_start", "agent_end", "agent_skip"]:
             # Keep minimal agent progress indicators
             logger.info(message)
         else:
@@ -2115,7 +2183,7 @@ def execute_phase4_healing_impl(
             )
             return res
         else:
-            state_mgr.add_event("warning", "Healing skipped - Low confidence")
+            state_mgr.skip_agent("ArchitectureGovernorAgent", reason)
 
     return None
 
@@ -2325,8 +2393,11 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # [DYNAMIC] Track actual agents executed from state manager
     completed_agents = state_mgr.state.get("completed_agents", [])
+    skipped_agents = state_mgr.state.get("skipped_agents", [])
     # Extract unique agent names from completion history
     agents_executed = list({agent["agent"] for agent in completed_agents})
+    # [PHANTOM-RUN FIX] Agents blocked by confidence gate or HITL — NOT counted as executed
+    agents_skipped = [{"agent": a["agent"], "reason": a["reason"]} for a in skipped_agents]
 
     detailed_cert = {
         "meta": {
@@ -2341,10 +2412,13 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             "drift_count": drift_count,
             "errors": compliance_report.get("stats", {}).get("errors", 0),
             "violations_fixed": compliance_report.get("stats", {}).get("violations_fixed", 0),
+            "agents_run": len(agents_executed),
+            "agents_skipped": len(agents_skipped),
         },
         "governance_log": {"decisions": decisions_made, "files_processed": []},
         "unified_violations": all_violations,  # Use all_violations instead of just arch violations
         "agents_executed": agents_executed,
+        "agents_skipped": agents_skipped,
     }
 
     # Add comprehensive file statistics
@@ -3574,11 +3648,9 @@ Examples:
                                     "No heal_repository method",
                                 )
                         elif not pascal_proceed:
-                            state_mgr.add_event("warning", f"Sovereignty healing skipped - {pascal_reason}")
+                            state_mgr.skip_agent("FileClassificationAgent", pascal_reason)
                         elif not effective_ctx.heal:
-                            state_mgr.add_event(
-                                "info", "Sovereignty healing skipped - scan-only mode (no --heal)"
-                            )
+                            state_mgr.skip_agent("FileClassificationAgent", "scan-only mode (no --heal)")
 
                         # Phase 3: Validation (Legacy)
                         gov, arch = execute_phase3_architectural_validation(
