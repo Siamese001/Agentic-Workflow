@@ -7,7 +7,7 @@ Coordinates PII Vault, Constitutional Overseer, and Cost Governor.
 import logging
 from typing import TYPE_CHECKING, Any
 
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+from agentic_core.L1_cognition.types.action_request_types import ActionRequest
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

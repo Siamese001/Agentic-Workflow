@@ -32,7 +32,7 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from agentic_core.L1_cognition.P1_interfaces import ActionRequest
+from agentic_core.L1_cognition.types.action_request_types import ActionRequest
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 

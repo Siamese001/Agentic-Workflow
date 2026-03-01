@@ -6,7 +6,7 @@ Only cognitive interfaces, reasoning engines, and telemetry are exported.
 """
 
 # Cognitive interfaces and reasoning
-from .P1_interfaces import *  # Primary interfaces only
+from .types.action_request_types import ActionRequest, ActionResult, PlanningRequest, PlanningResult  # noqa: F401
 from .engines import *  # Cognitive engines only
 from .reasoning import *  # Reasoning utilities only
 from .types import *  # Cognitive types only
