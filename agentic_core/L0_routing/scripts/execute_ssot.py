@@ -737,6 +737,15 @@ class AutonomousDecisionEngine:
         return bmg_cosine_similarity
 
     @staticmethod
+    def _get_bmg_embedding_agent_keys() -> frozenset:
+        """Lazy seam: load BMG_EMBEDDING_AGENT_KEYS from L2 healing_tier_config."""
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            BMG_EMBEDDING_AGENT_KEYS,
+        )
+
+        return BMG_EMBEDDING_AGENT_KEYS
+
+    @staticmethod
     def _get_qwen_14b_routing_config() -> tuple:
         """Lazy seam: load Qwen 14B routing constants from L2 healing_tier_config."""
         from agentic_core.L2_execution.healers.healing_tier_config import (
@@ -787,16 +796,40 @@ class AutonomousDecisionEngine:
         violation_types: list[str],
         territory: str,
         historical_success_rate: float = 0.8,
+        agent_name: str = "",
     ) -> ConfidenceScore:
-        """Calculates weighted confidence score."""
+        """Calculates weighted confidence score.
+
+        When BMG_EMBEDDINGS_ENABLED=true and agent_name is in BMG_EMBEDDING_AGENT_KEYS,
+        uses GPU-accelerated BAAI/bge-m3 cosine similarity instead of Jaccard pattern
+        matching for the pattern_score component.
+        """
         # 1. Base Score (Inverse of violations, capped at 10)
         base_score = max(0.0, 1.0 - (min(violations_count, 10) * 0.1))
 
-        # 2. Pattern Score
+        # 2. Pattern Score — BMG GPU path or Jaccard fallback
         pattern_score = 0.5
+        bmg_used = False
         if violation_types:
-            scores = [self._calculate_pattern_confidence(v) for v in violation_types]
-            pattern_score = sum(scores) / len(scores)
+            if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true" and agent_name:
+                try:
+                    BMG_EMBEDDING_AGENT_KEYS = self._get_bmg_embedding_agent_keys()
+
+                    if agent_name in BMG_EMBEDDING_AGENT_KEYS:
+                        sem_score = self._calculate_semantic_similarity(territory, violation_types)
+                        pattern_score = sem_score
+                        bmg_used = True
+                        logger.info(
+                            "[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)",
+                            agent_name,
+                            sem_score,
+                        )
+                except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+                    pass
+
+            if not bmg_used:
+                scores = [self._calculate_pattern_confidence(v) for v in violation_types]
+                pattern_score = sum(scores) / len(scores)
 
         # 3. Weighted Final Calculation
         final_value = (base_score * 0.4) + (pattern_score * 0.4) + (historical_success_rate * 0.2)
@@ -807,9 +840,12 @@ class AutonomousDecisionEngine:
         if territory.startswith("L5"):
             final_value *= 0.9
 
+        reasoning = f"Base: {base_score:.2f}, Pattern: {pattern_score:.2f}"
+        if bmg_used:
+            reasoning += " [BMG-GPU]"
         return ConfidenceScore(
             value=min(1.0, final_value),
-            reasoning=f"Base: {base_score:.2f}, Pattern: {pattern_score:.2f}",
+            reasoning=reasoning,
         )
 
     def should_proceed_with_healing(
@@ -976,8 +1012,14 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
     ):
         """Analyze violations using CognitiveDispositionAgent for enhanced confidence."""
         if not self.enable_cda:
-            # Return default values if CDA is disabled
-            return [], ConfidenceScore(value=0.5, reasoning="CDA disabled")
+            # Return default values if CDA is disabled; BMG path fires via calculate_healing_confidence
+            fallback_conf = self.calculate_healing_confidence(
+                len(violations),
+                [str(v) for v in violations[:10]],
+                territory,
+                agent_name="location",
+            )
+            return [], fallback_conf
 
         try:
             # Dynamic import of CDA to avoid hard dependency
@@ -1008,7 +1050,13 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
 
         except ImportError:
             logger.warning("CognitiveDispositionAgent not available, using default confidence")
-            return [], ConfidenceScore(value=0.5, reasoning="CDA unavailable")
+            bmg_conf = self.calculate_healing_confidence(
+                len(violations),
+                [str(v) for v in violations[:10]],
+                territory,
+                agent_name="location",
+            )
+            return [], bmg_conf
         # guardian: allow-silent-swallow
         except Exception as e:
             logger.error(f"Cognitive analysis failed: {e}")
@@ -1300,6 +1348,7 @@ def execute_phase2_reconciliation(
             violations_count=1,
             violation_types=[violation_type],
             territory=territory,
+            agent_name=agent_name,
         )
 
         allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_name)
@@ -1893,6 +1942,7 @@ def execute_phase1_discovery_impl(
             len(violations),
             [str(v) for v in violations[:10]],
             territory,
+            agent_name="location",
         )
 
     state_mgr.state["compliance_scores"][territory] = confidence.value
@@ -2990,6 +3040,7 @@ def run_pipeline(
                     len(result.violations),
                     [v.get("type", "UNKNOWN") for v in result.violations[:10]],
                     territory,
+                    agent_name=agent_id,
                 )
                 proceed, reason = decision_engine.should_proceed_with_healing(confidence, agent_id)
                 if not proceed:

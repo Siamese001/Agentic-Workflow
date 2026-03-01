@@ -21,7 +21,7 @@ AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / "agentic_core"
 LAYER_PATTERN = re.compile(r"^L(\d+)_")
 IMPORT_LAYER_PATTERN = re.compile(r"agentic_core\.L(\d+)_")
 
-LAZY_SEAM_BUDGET_BASELINE = 79
+LAZY_SEAM_BUDGET_BASELINE = 80
 
 
 @dataclass

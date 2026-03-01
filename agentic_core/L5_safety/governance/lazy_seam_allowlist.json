@@ -790,7 +790,17 @@
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
       "justification": "L0 decision engine lazy seam to L2 healing tier config constants; model routing config must live in L2 per tier architecture"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_bmg_embedding_agent_keys",
+      "imported_modules": [
+        "agentic_core.L2_execution.healers.healing_tier_config"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 decision engine lazy seam to L2 BMG embedding agent key set; keeps L2 healing config optional at module load"
     }
   ],
-  "total_seams": 79
+  "total_seams": 80
 }
