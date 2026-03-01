@@ -31,15 +31,15 @@ def parse_env_file(env_path: Path) -> dict[str, str]:
     if not env_path.exists():
         return secrets
 
-    with open(env_path, encoding='utf-8') as f:
+    with open(env_path, encoding="utf-8") as f:
         for line in f:
             line = line.strip()
             # Skip comments and blank lines
-            if not line or line.startswith('#'):
+            if not line or line.startswith("#"):
                 continue
             # Parse KEY=VALUE format
-            if '=' in line:
-                key, value = line.split('=', 1)
+            if "=" in line:
+                key, value = line.split("=", 1)
                 secrets[key.strip()] = value.strip()
 
     return secrets
@@ -55,8 +55,8 @@ def store_secrets(secrets: dict[str, str]) -> None:
     fernet = Fernet(key)
 
     # Encrypt the secrets JSON
-    secrets_json = json.dumps(secrets, separators=(',', ':'))
-    encrypted_data = fernet.encrypt(secrets_json.encode('utf-8'))
+    secrets_json = json.dumps(secrets, separators=(",", ":"))
+    encrypted_data = fernet.encrypt(secrets_json.encode("utf-8"))
 
     # Write encrypted data
     SECRETS_FILE.write_bytes(encrypted_data)

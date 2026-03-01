@@ -641,9 +641,9 @@ agentic_core/L5_safety/reasoning/LocationHealerAgent.py:690:silent_swallower:Sil
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:707:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:740:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:765:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:114:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:116:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py:115:type_erasure:Type erasure: PredictiveCostAuditorAgent.execute returns Any instead of structured type
 agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py:381:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/PredictiveCostAuditorAgent.py:411:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

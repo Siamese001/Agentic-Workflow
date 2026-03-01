@@ -39,11 +39,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTValidator
-from scripts.purge_cache import purge_repository_cache  # Integrated Maintenance Hook
 
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from ops_scripts.maintenance.purge_cache import (
+    purge_all_cache as purge_repository_cache,  # Integrated Maintenance Hook
+)
 
 
 @dataclass
