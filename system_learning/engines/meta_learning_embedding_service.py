@@ -13,7 +13,6 @@ import struct
 from pathlib import Path
 from typing import Any, Protocol
 
-from agentic_core.embeddings.embedding_factory import create_embedding_client
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.types.embedding_artifact import EmbeddingArtifact
@@ -59,9 +58,9 @@ class MetaLearningEmbeddingService:
         if embedder:
             self.embedder = embedder
         else:
-            profile = RetrievalProfile.create_default()
-            self.embedder = create_embedding_client(
-                provider="openai", model=profile.primary_embedder_id, dimensions=profile.embedding_dim
+            raise RuntimeError(
+                "MetaLearningEmbeddingService requires an explicit embedder injection. "
+                "No live embedding client factory is available."
             )
         # Initialize factory (will return disabled sentinel if kill-switch is off)
         # When embedder is explicitly injected, factory is not used for kill-switch

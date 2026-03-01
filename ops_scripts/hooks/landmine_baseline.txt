@@ -1740,7 +1740,7 @@ system_learning/engines/healing_config_optimizer.py:34:magic_configuration:Magic
 system_learning/engines/healing_config_optimizer.py:35:magic_configuration:Magic configuration: Hardcoded max_delta=0.2
 system_learning/engines/pattern_analysis_engine.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/engines/pattern_analysis_engine.py:273:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/engines/pattern_analysis_engine.py:374:magic_configuration:Magic configuration: Hardcoded distance_threshold=0.25
+system_learning/engines/pattern_analysis_engine.py:371:magic_configuration:Magic configuration: Hardcoded distance_threshold=0.25
 system_learning/engines/retrieval_profile_activation_gate.py:301:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/engines/retrieval_profile_activation_gate.py:326:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/engines/retrieval_profile_invariant_checker.py:25:magic_configuration:Magic configuration: Hardcoded max_top_k=200

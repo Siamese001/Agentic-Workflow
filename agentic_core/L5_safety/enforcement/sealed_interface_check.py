@@ -60,7 +60,10 @@ def check_file(path: Path) -> list[str]:
         return [f"SYNTAX_ERROR: {path}: {exc}"]
 
     violations: list[str] = []
-    rel = path.relative_to(REPO_ROOT)
+    try:
+        rel = path.relative_to(REPO_ROOT)
+    except ValueError:
+        rel = path
 
     for module in _get_import_modules(tree):
         for pat in FORBIDDEN_IMPORT_PATTERNS:

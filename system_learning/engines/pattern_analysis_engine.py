@@ -13,9 +13,14 @@ import hashlib
 import json
 import math
 from dataclasses import asdict, dataclass, field
-from typing import Any
+from typing import Any, Protocol, runtime_checkable
 
-from agentic_core.embeddings.embedding_factory import EmbeddingClient
+
+@runtime_checkable
+class EmbeddingClient(Protocol):
+    """Minimal protocol for embedding clients (informational-only, C0 influence)."""
+
+    async def get_embeddings_batch(self, texts: list[str]) -> list[list[float]]: ...
 
 
 @dataclass
@@ -320,10 +325,7 @@ class PatternAnalysisEngine:
             return PatternSummary(clusters=[], pattern_digest=self._empty_digest())
 
         # Deterministic preprocessing: round then L2-normalize
-        processed_embeddings = [
-            self._l2_normalize(self._round_vector(emb))
-            for emb in historical_embeddings
-        ]
+        processed_embeddings = [self._l2_normalize(self._round_vector(emb)) for emb in historical_embeddings]
 
         # Deterministic clustering
         clusters = self._deterministic_cluster(processed_embeddings, metadata, min_cluster_size)

@@ -1,14 +1,12 @@
 """Agent Registry - Single Source of Truth for Agent Execution Profiles."""
 
-from typing import Dict
-
 from agentic_core.agents.types.agent_execution_profile import (
     AgentExecutionProfile,
     ExecutionMode,
     ReasoningIntensity,
 )
 
-AGENT_REGISTRY: Dict[str, AgentExecutionProfile] = {
+AGENT_REGISTRY: dict[str, AgentExecutionProfile] = {
     "reconciler": AgentExecutionProfile(
         agent_id="reconciler",
         reasoning_intensity=ReasoningIntensity.HIGH,
@@ -72,18 +70,22 @@ AGENT_REGISTRY: Dict[str, AgentExecutionProfile] = {
 }
 
 
+def get_execution_profile(agent_id: str) -> AgentExecutionProfile:
+    """Get agent execution profile by ID (canonical name for L2 dispatcher)."""
+    return get_profile(agent_id)
+
+
 def get_profile(agent_id: str) -> AgentExecutionProfile:
     """Get agent execution profile by ID."""
     try:
         return AGENT_REGISTRY[agent_id]
     except KeyError as exc:
         raise KeyError(
-            f"Agent '{agent_id}' not found in registry. "
-            f"Available: {list(AGENT_REGISTRY.keys())}"
+            f"Agent '{agent_id}' not found in registry. Available: {list(AGENT_REGISTRY.keys())}"
         ) from exc
 
 
-def registry_digest() -> Dict[str, str]:
+def registry_digest() -> dict[str, str]:
     """Generate a digest of the agent registry for validation."""
     return {
         agent_id: f"{p.agent_id}:{p.reasoning_intensity.value}:{p.execution_mode.value}"
