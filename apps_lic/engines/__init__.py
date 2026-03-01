@@ -7,7 +7,7 @@ importable directly from their modules, e.g.:
 """
 
 try:
-    from apps_lic.enforcement.ExecutiveStrategyAgent import (
+    from apps_lic.reasoning.ExecutiveStrategyAgent import (
         ExecutiveStrategyAgent,
         get_exec_interviewer_profile,
         get_exec_shadow_audit,

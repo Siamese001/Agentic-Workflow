@@ -2111,8 +2111,7 @@ def execute_phase4_healing_impl(
             found = res.get("violations_found", 0)
             success = status not in ("BLOCKED", "ERROR", "UNKNOWN") or fixed > 0 or found >= 0
             state_mgr.complete_agent(
-                "ArchitectureGovernorAgent", success,
-                f"status={status} found={found} fixed={fixed}"
+                "ArchitectureGovernorAgent", success, f"status={status} found={found} fixed={fixed}"
             )
             return res
         else:
@@ -2949,6 +2948,7 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     """
     try:
         from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_TERRITORIES
+
         all_keys = list(SOVEREIGN_TERRITORIES.keys())
     except ImportError:
         # Fallback to previous hardcoded list if SSOT import unavailable
@@ -3438,17 +3438,38 @@ Examples:
                     logger.info("🎉 L3 MISSION COMPLETED")
                     return l3_results
 
+            # Territories outside agentic_core that are included in the sweep for
+            # scan/report but must NEVER receive autonomous mutations.
+            # Heal on these requires --territory <name> (single-territory, user-deliberate).
+            _NON_AC_TERRITORIES = set(_SCAN_ONLY_TERRITORIES)
+
             # [HARDENED] Universal Compliance Persistence
             results = []
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
-                logger.info(f"🚀 PROCESSING TERRITORY: {territory}")
+                logger.info(f"PROCESSING TERRITORY: {territory}")
                 logger.info(f"{'=' * 60}")
 
                 # Update State with Target
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
+
+                # [HITL-GUARD] Non-agentic_core territories: scan-only in multi-domain
+                # sweep. Mutations require explicit single-territory invocation so the
+                # user has reviewed the plan before changes are applied.
+                from dataclasses import replace as _dc_replace
+
+                if territory in _NON_AC_TERRITORIES and not args.territory:
+                    if ctx.heal:
+                        logger.warning(
+                            f"[HITL-GUARD] '{territory}' is outside agentic_core — "
+                            "forcing scan-only (no mutations) in multi-domain sweep. "
+                            f"To heal, run: --territory {territory} --heal"
+                        )
+                    effective_ctx = _dc_replace(ctx, heal=False)
+                else:
+                    effective_ctx = ctx
 
                 # [FIX] Reset per-territory decision engine state so cycle detection
                 # does not bleed across territories (agent_name="Unknown" accumulates).
@@ -3463,7 +3484,7 @@ Examples:
                         territory,
                         decision_engine,
                         state_mgr,
-                        ctx,
+                        effective_ctx,
                     )
 
                     if p1_drift is not None:
@@ -3478,7 +3499,7 @@ Examples:
                             decision_engine,
                             state_mgr,
                             plan,
-                            ctx,
+                            effective_ctx,
                         )
 
                         # Log Phase 2 results
@@ -3494,7 +3515,7 @@ Examples:
                             agents,
                             territory,
                             p1_drift.get("violations", []),
-                            ctx.dry_run,
+                            effective_ctx.dry_run,
                         )
 
                         if phase3_result["status"] == "clean":
@@ -3510,7 +3531,7 @@ Examples:
                             territory,
                             decision_engine,
                             state_mgr,
-                            ctx,
+                            effective_ctx,
                         )
 
                         # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
@@ -3534,15 +3555,15 @@ Examples:
                         state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
                         logger.info(f"Sovereignty Decision: {pascal_reason}")
 
-                        if pascal_proceed and ctx.heal:
+                        if pascal_proceed and effective_ctx.heal:
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
                             pascal = agents["file_classification"](project_root=REPO_ROOT)
                             if hasattr(pascal, "heal_repository"):
                                 res = pascal.heal_repository(
                                     target_territory=territory,
-                                    dry_run=ctx.dry_run,
-                                    auto_approve=ctx.auto_approve,
+                                    dry_run=effective_ctx.dry_run,
+                                    auto_approve=effective_ctx.auto_approve,
                                 )
                                 healed = res.get("files_healed", 0) if isinstance(res, dict) else 0
                                 state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
@@ -3554,14 +3575,14 @@ Examples:
                                 )
                         elif not pascal_proceed:
                             state_mgr.add_event("warning", f"Sovereignty healing skipped - {pascal_reason}")
-                        elif not ctx.heal:
+                        elif not effective_ctx.heal:
                             state_mgr.add_event(
                                 "info", "Sovereignty healing skipped - scan-only mode (no --heal)"
                             )
 
                         # Phase 3: Validation (Legacy)
                         gov, arch = execute_phase3_architectural_validation(
-                            agents, territory, state_mgr, ctx=ctx
+                            agents, territory, state_mgr, ctx=effective_ctx
                         )
 
                         # Persist full work to state
@@ -3575,7 +3596,7 @@ Examples:
                             gov,
                             decision_engine,
                             state_mgr,
-                            ctx,
+                            effective_ctx,
                         )
 
                         # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
@@ -3623,7 +3644,9 @@ Examples:
                                     f"Analytics keys: {list(cog_results.keys())[:4]}",
                                 )
                             else:
-                                state_mgr.complete_agent("CognitiveDispositionAgent", False, "No get_analytics method")
+                                state_mgr.complete_agent(
+                                    "CognitiveDispositionAgent", False, "No get_analytics method"
+                                )
                         # guardian: allow-silent-swallow
                         except Exception as e:  # guardian: allow-silent-swallower
                             logger.warning(f"CognitiveDispositionAgent failed: {e}")
@@ -3646,7 +3669,9 @@ Examples:
                                     state_mgr.state["hygiene_violations"] = []
                                 state_mgr.state["hygiene_violations"].extend(hygiene_violations)
                             else:
-                                state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
+                                state_mgr.complete_agent(
+                                    "RootHygieneAgent", False, "No scan_root_violations method"
+                                )
                         # guardian: allow-silent-swallow
                         except Exception as e:  # guardian: allow-silent-swallower
                             logger.warning(f"RootHygieneAgent failed: {e}")

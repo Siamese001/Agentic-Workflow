@@ -1,5 +1,3 @@
-from agentic_core.L2_execution.tools import write_gateway as _wg
-
 #!/usr/bin/env python3
 """
 Module Collision Guard - Architectural Integrity Enforcement

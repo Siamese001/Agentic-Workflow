@@ -556,7 +556,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "purpose": "Agent execution profiles and registry. SSOT for agent identity, execution mode, and reasoning intensity.",
             "notes": "Contains agent_registry.py (AGENT_REGISTRY, get_profile, registry_digest) and types/ subfolder.",
             "subfolders": {
-                "types": {"purpose": "Agent execution profile type definitions (AgentExecutionProfile, ExecutionMode, etc.)."},
+                "types": {
+                    "purpose": "Agent execution profile type definitions (AgentExecutionProfile, ExecutionMode, etc.)."
+                },
             },
         },
         "base_agents": {
@@ -795,6 +797,10 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "purpose": "Processing engines and pipelines (flat .py files, no nested subdirs)",
             "subfolders": [],
         },
+        "enforcement": {
+            "purpose": "Constraint execution, guardrails, governors, and strategy gates",
+            "subfolders": [],
+        },
         "utils": {"purpose": "Utility functions", "subfolders": []},
         "scripts": {"purpose": "CLI entrypoints and one-off scripts", "subfolders": []},
         # NOTE: domain, shared, system_flow, asset_library, validation, logic_nodes
@@ -804,10 +810,24 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "validators": {"purpose": "Input/output validators", "subfolders": []},
     }
 
+    # Canonical routing rules shared by all apps_* territories.
+    # Agents (files ending *Agent.py) MUST live under reasoning/.
+    # Strategy objects (*Strategy.py) live under enforcement/.
+    apps_routing_rules = {
+        "*Agent.py": "reasoning",
+        "*Strategy.py": "enforcement",
+        "*Engine.py": "engines",
+        "*_config.py": "config",
+        "*_types.py": "types",
+        "*_util.py": "utils",
+        "*_validator.py": "validators",
+    }
+
     territories["apps_rg"] = {
         "depth": 3,
         "purpose": "Resume Generation Application domain.",
         "subfolders": apps_lcd_subfolders.copy(),
+        "routing_rules": apps_routing_rules,
         "ast_signals": {"apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}},
     }
 
@@ -819,6 +839,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 3,
         "purpose": "LinkedIn Canonical application domain.",
         "subfolders": apps_lic_subfolders,
+        "routing_rules": apps_routing_rules,
         "ast_signals": {
             "apps_lic/engines": {"keyword_signals": ["linkedin", "connection", "messaging"], "weight": 90},
         },
@@ -831,11 +852,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "optional_subfolders": [
             "agents",
             "core_components",
+            "enforcement",
             "tools",
             "common_utils",
             "mixins",
             "integration",
             "llm",
+            "spine",
         ],
         "subfolders": {
             "config": {"purpose": "Shared configuration loaders and environment setup"},
@@ -849,10 +872,14 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "validators": {"purpose": "Shared input/output validation logic"},
             "agents": {"purpose": "Shared base agent implementations (optional, migrate to core)"},
             "core_components": {"purpose": "Shared base nodes, engines, flows (optional)"},
+            "enforcement": {
+                "purpose": "Shared constraint execution, guardrails, and strategy gates (optional)"
+            },
             "tools": {"purpose": "Shared tool implementations and wrappers (optional)"},
             "common_utils": {"purpose": "Legacy common utilities (optional, consolidate into utils/)"},
             "mixins": {"purpose": "Shared capability mixins (optional)"},
             "integration": {"purpose": "Integration adapters for external services (optional)"},
+            "spine": {"purpose": "Shared spine adapters bridging app domains to core services (optional)"},
             "llm": {"purpose": "LLM interaction utilities (optional)"},
         },
         "forbidden_imports": ["apps_rg", "apps_lic"],
