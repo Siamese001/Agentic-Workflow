@@ -552,6 +552,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
 
     # Build agentic_core with all layers
     agentic_core_subfolders: dict[str, Any] = {
+        "agents": {
+            "purpose": "Agent execution profiles and registry. SSOT for agent identity, execution mode, and reasoning intensity.",
+            "notes": "Contains agent_registry.py (AGENT_REGISTRY, get_profile, registry_digest) and types/ subfolder.",
+            "subfolders": {
+                "types": {"purpose": "Agent execution profile type definitions (AgentExecutionProfile, ExecutionMode, etc.)."},
+            },
+        },
         "base_agents": {
             "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
             "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",

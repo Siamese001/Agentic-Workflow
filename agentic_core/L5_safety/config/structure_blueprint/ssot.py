@@ -60,6 +60,7 @@ REQUIRED_LCD_SUBFOLDERS: Final[frozenset[str]] = frozenset(
 
 LEAF_DOMAINS_NO_LCD: Final[frozenset[str]] = frozenset(
     {
+        "agents",
         "prompt_governance",
         "knowledge",
         "mixins",
@@ -251,6 +252,7 @@ def safe_path_join(project_root, *parts) -> Path:
 VARIABLE_DEPTH_SUBFOLDERS: frozenset[str] = frozenset(
     {
         "base_agents",
+        "agents",
         "utils",
         "config",
         "reasoning",
