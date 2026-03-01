@@ -2101,8 +2101,8 @@ def execute_phase4_healing_impl(
         if proceed:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
             # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
-            res = arch_gov.execute_healing_plan(
-                plan, dry_run=not ctx.heal if ctx else True, auto_approve=ctx.auto_approve if ctx else True
+            res = arch_gov.heal_repository(
+                dry_run=not ctx.heal if ctx else True, auto_approve=ctx.auto_approve if ctx else True
             )
             success = res.get("success", False)
             state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"Healed: {success}")
