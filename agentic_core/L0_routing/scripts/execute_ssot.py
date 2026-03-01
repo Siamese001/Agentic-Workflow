@@ -696,10 +696,26 @@ class AutonomousDecisionEngine:
         self._call_path: set[str] = set()
 
     def _calculate_semantic_similarity(self, unknown: str, existing: list[str]) -> float:
-        """Calculate Jaccard similarity for unknown items (Ported from LocationHealer)."""
+        """Calculate semantic similarity for unknown items against a candidate list.
+
+        When BMG_EMBEDDINGS_ENABLED=true and sentence-transformers is installed,
+        uses BAAI/bge-m3 cosine similarity (GPU-accelerated on RTX 5090).
+        Falls back to Jaccard word-overlap when embeddings are unavailable.
+        """
         if not existing:
             return 0.0
 
+        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
+            try:
+                from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+                    bmg_cosine_similarity,
+                )
+
+                return bmg_cosine_similarity(unknown, existing)
+            except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+                pass
+
+        # Jaccard word-overlap fallback (original implementation)
         unknown_words = set(unknown.lower().replace("_", " ").replace("-", " ").split())
         max_similarity = 0.0
 
@@ -811,13 +827,23 @@ class AutonomousDecisionEngine:
             self.decisions_made.append(decision_data)
             return True, reason
 
-        # [PHASE 4 FIX] Medium Confidence: Standard Arbitration (Flash via .env)
+        # Medium Confidence: Qwen 14B (local RTX 5090) for designated agents;
+        # Gemini Flash for all others. Both require enable_llm=True.
         elif confidence.is_medium_confidence:
             if self.enable_llm:
-                target_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                    QWEN_14B_AGENT_KEYS,
+                    QWEN_14B_MODEL_ID,
+                )
+
+                if agent_name in QWEN_14B_AGENT_KEYS:
+                    target_model = os.getenv("QWEN_14B_MODEL", QWEN_14B_MODEL_ID)
+                    reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f})"
+                else:
+                    target_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+                    reason = f"LLM-ARBITRATED-FLASH ({confidence.value:.2f})"
                 self._healing_count += 1
                 self._call_path.add(agent_name)
-                reason = f"LLM-ARBITRATED-FLASH ({confidence.value:.2f})"
                 decision_data["decision"] = True
                 decision_data["reason"] = reason
                 decision_data["model"] = target_model
@@ -833,7 +859,8 @@ class AutonomousDecisionEngine:
                     self._call_path.add(agent_name)
                 return approved, hitl_reason
 
-        # [PHASE 4 FIX] Low Confidence: Advanced Reasoning Recovery (Pro via .env)
+        # Low Confidence: Gemini Pro (cloud) as final reasoning recovery.
+        # Qwen 14B is insufficient for sub-Y ambiguity — keep cloud model.
         else:
             if self.enable_llm:
                 target_model = os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")

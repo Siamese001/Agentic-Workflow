@@ -238,10 +238,10 @@ def save_baseline(collisions: dict[str, list[tuple[str, list[Path]]]]) -> None:
     )
 
     baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
-    _wg.ensure_dir(baseline_path.parent)
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
 
     content = json.dumps(baseline, indent=2, sort_keys=True) + "\n"
-    _wg.open_write(baseline_path, content)
+    baseline_path.write_text(content, encoding="utf-8")
 
 
 def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], baseline: dict) -> list[str]:

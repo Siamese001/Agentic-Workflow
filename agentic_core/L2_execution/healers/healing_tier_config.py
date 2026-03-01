@@ -23,6 +23,30 @@ QWEN_VLLM_VERSION = "0.4.2"
 QWEN_CUDA_VERSION = "12.1"
 QWEN_TORCH_VERSION = "2.1.0"
 
+# Qwen 14B — targets RTX 5090 (32 GB VRAM, CUDA >= 12.0, compute >= 8.9)
+QWEN_14B_MODEL_ID = "Qwen/Qwen2.5-14B-Instruct-GPTQ-Int4"
+QWEN_14B_MIN_VRAM_GB: float = 16.0  # Int4-quantized 14B fits in 16 GB
+QWEN_14B_MIN_CUDA = "12.0"
+QWEN_14B_MIN_COMPUTE: float = 8.0  # Ada Lovelace baseline (RTX 4090/5090)
+
+# Agents that must be routed through the Qwen 14B tier (medium confidence)
+# when local-GPU inference is available.  The resolver checks this set at
+# dispatch time; agents absent from this set keep their existing routing.
+QWEN_14B_AGENT_KEYS: frozenset[str] = frozenset(
+    {
+        "arch_governor",
+        "file_classification",
+        "cognitive_disposition",
+        "observability_probe",
+    }
+)
+
+# BMG embedding model tag — used by the cosine-similarity fallback in the
+# decision engine.  The actual model is loaded lazily by the embedding helper.
+BMG_EMBEDDING_MODEL_ID = "BAAI/bge-m3"
+# Agents whose similarity scoring uses BMG embeddings instead of Jaccard.
+BMG_EMBEDDING_AGENT_KEYS: frozenset[str] = frozenset({"location", "root_hygiene"})
+
 
 @dataclass(frozen=True, slots=True)
 class HealingTierConfig:
@@ -33,8 +57,11 @@ class HealingTierConfig:
         heal_confidence_y: Lower threshold. Y <= heal_confidence < X → QWEN_VLLM.
                            heal_confidence < Y → GEMINI_2_5_PRO.
         max_heal_retries: Maximum heal attempts before forcing GEMINI_2_5_PRO.
-        model_qwen_vllm_id: Model identifier for the Qwen vLLM backend.
+        model_qwen_vllm_id: Model identifier for the Qwen 7B vLLM backend.
+        model_qwen_14b_vllm_id: Model identifier for the Qwen 14B vLLM backend (RTX 5090).
         model_gemini_2_5_pro_id: Model identifier for the Gemini 2.5 Pro backend.
+        enable_bmg_embeddings: When True the decision engine uses BMG cosine
+            similarity instead of Jaccard for semantic scoring.
     """
 
     heal_confidence_x: float
@@ -42,6 +69,8 @@ class HealingTierConfig:
     max_heal_retries: int
     model_qwen_vllm_id: str
     model_gemini_2_5_pro_id: str
+    model_qwen_14b_vllm_id: str = QWEN_14B_MODEL_ID
+    enable_bmg_embeddings: bool = False
 
     def __post_init__(self) -> None:
         if not (0.0 < self.heal_confidence_x <= 1.0):
@@ -59,6 +88,8 @@ class HealingTierConfig:
             raise ValueError("model_qwen_vllm_id must not be empty")
         if not self.model_gemini_2_5_pro_id:
             raise ValueError("model_gemini_2_5_pro_id must not be empty")
+        if not self.model_qwen_14b_vllm_id:
+            raise ValueError("model_qwen_14b_vllm_id must not be empty")
 
 
 def load_default_healing_tier_config() -> HealingTierConfig:
@@ -70,13 +101,15 @@ def load_default_healing_tier_config() -> HealingTierConfig:
     Returns:
         Validated HealingTierConfig instance.
     """
-    # Use immutable thresholds
+    bmg_available = os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
     return HealingTierConfig(
         heal_confidence_x=HEALING_CONFIDENCE_X,
         heal_confidence_y=HEALING_CONFIDENCE_Y,
         max_heal_retries=3,
         model_qwen_vllm_id="Qwen/Qwen2.5-7B-Instruct",
+        model_qwen_14b_vllm_id=QWEN_14B_MODEL_ID,
         model_gemini_2_5_pro_id="gemini-2.5-pro",
+        enable_bmg_embeddings=bmg_available,
     )
 
 
@@ -132,6 +165,13 @@ __all__ = [
     "QWEN_VLLM_VERSION",
     "QWEN_CUDA_VERSION",
     "QWEN_TORCH_VERSION",
+    "QWEN_14B_MODEL_ID",
+    "QWEN_14B_MIN_VRAM_GB",
+    "QWEN_14B_MIN_CUDA",
+    "QWEN_14B_MIN_COMPUTE",
+    "QWEN_14B_AGENT_KEYS",
+    "BMG_EMBEDDING_MODEL_ID",
+    "BMG_EMBEDDING_AGENT_KEYS",
     "HealingTierConfig",
     "load_default_healing_tier_config",
     "validate_qwen_startup_state",
