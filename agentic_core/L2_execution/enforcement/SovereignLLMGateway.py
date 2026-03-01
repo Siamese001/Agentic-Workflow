@@ -26,7 +26,7 @@ from agentic_core.config.core.sovereign_config import get_sovereign_config
 from agentic_core.L2_execution.audit.hash_chain_audit_log import HashChainAuditLog
 from agentic_core.L2_execution.types.gateway_types import GenerationRequest, GenerationResponse
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
-from agentic_core.replay.replay_envelope import ReplayEnvelope
+from agentic_core.L2_execution.types.replay_envelope_types import ReplayEnvelope
 from data.sdks_mcps.client_wrappers import (
     create_anthropic_client,
     create_openai_client,

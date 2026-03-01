@@ -17,7 +17,7 @@ import asyncio
 import logging
 from typing import Any
 
-from agentic_core.core.orchestrator_main import OrchestratorConfig, create_orchestrator
+from agentic_core.L3_orchestration.config.orchestrator_config import OrchestratorConfig, create_orchestrator
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 

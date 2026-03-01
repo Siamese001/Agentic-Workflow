@@ -563,13 +563,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "purpose": "STRICT IDENTITY ONLY. Sovereign base classes, layer bases, and decorators.",
             "notes": "No mixins, types, utils, or exceptions. Mixins are in agentic_core/mixins/.",
         },
-        "core": {
-            "purpose": "Zero-dependency foundation modules. MUST use ONLY Python stdlib.",
-            "notes": "Classification kernel and other foundational utilities. Safe to import from any layer.",
-            "subfolders": {},
-            "flat": True,
-            "naming_convention": r"^[a-z][a-z0-9_]*_(kernel|foundation|primitives)?\.py$",
-        },
     }
 
     # Add L0-L6 layers
