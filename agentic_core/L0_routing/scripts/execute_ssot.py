@@ -3515,6 +3515,12 @@ Examples:
             # Territories outside agentic_core that are included in the sweep for
             # scan/report but must NEVER receive autonomous mutations.
             # Heal on these requires --territory <name> (single-territory, user-deliberate).
+            _agentic_core_sublayer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+            _SCAN_ONLY_TERRITORIES = [
+                t
+                for t in targets
+                if t != "agentic_core" and not any(t.startswith(p) for p in _agentic_core_sublayer_prefixes)
+            ]
             _NON_AC_TERRITORIES = set(_SCAN_ONLY_TERRITORIES)
 
             # [HARDENED] Universal Compliance Persistence

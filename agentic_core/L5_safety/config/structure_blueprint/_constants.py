@@ -1061,15 +1061,47 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         },
     }
 
-    territories["dev_tools"] = {
+    territories["system_learning"] = {
         "depth": 2,
-        "purpose": "Developer utility scripts for L0 maintenance and analysis.",
+        "purpose": "Adaptive learning subsystem: runtime snapshots, training pipelines, and SSOT enforcement.",
         "subfolders": {
-            "l0_scripts": {"purpose": "L0-level utility scripts for discovery, analysis, and maintenance"},
+            "config": {"purpose": "Learning system configuration"},
+            "constraints": {"purpose": "Learning constraints and guardrails"},
+            "enforcement": {"purpose": "Policy enforcement for learning outputs"},
+            "engines": {"purpose": "Learning engine implementations"},
+            "pipelines": {"purpose": "Training and inference pipelines"},
+            "ports": {"purpose": "Integration ports for external learning systems"},
+            "runtime": {"purpose": "Runtime state for active learning loops"},
+            "snapshots": {"purpose": "Periodic state snapshots for rollback and replay"},
+            "types": {"purpose": "Domain types and data contracts"},
+            "validators": {"purpose": "Validation logic for learning artifacts"},
+        },
+        "allowed_extensions": [".py", ".json", ".jsonl", ".md"],
+        "no_cross_layer_imports": False,
+    }
+
+    territories["tools"] = {
+        "depth": 2,
+        "purpose": "Developer tooling: evidence runners, canonical hash utilities, VRAM checks.",
+        "subfolders": {
+            "evidence": {"purpose": "Evidence capture and runner scripts for phase verification"},
+        },
+        "allowed_extensions": [".py"],
+        "allow_root_py": True,
+        "no_cross_layer_imports": True,
+    }
+
+    territories["logs"] = {
+        "depth": 2,
+        "purpose": "Runtime and audit log outputs from agents and governance pipeline.",
+        "subfolders": {
+            "compliance_reports": {"purpose": "Structured compliance report outputs"},
+            "sovereign_audit": {"purpose": "Sovereign execution audit trail logs"},
         },
         "volatile": True,
         "no_cross_layer_imports": True,
-        "allowed_extensions": [".py"],
+        "allowed_extensions": [".log", ".jsonl", ".json", ".txt"],
+        "allow_root_py": False,
     }
 
     territories["archives"] = {
