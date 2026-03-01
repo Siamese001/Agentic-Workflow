@@ -23,8 +23,12 @@ class ObservabilityProbeExecutor(SovereignBaseAgent):
         probe = ObservabilityProbeExecutor(probe_type="cost_tracker")
     """
 
+    project_root: Any = field(default=None)
     probe_type: str = "generic"
     _results: dict = field(init=False, default_factory=dict)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
 
     def execute(self, context: dict | None = None) -> dict:
         """Dispatch to probe-specific execution."""

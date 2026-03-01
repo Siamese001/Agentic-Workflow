@@ -13,7 +13,7 @@ PROJECT_ROOT = Path(__file__).resolve().parent
 # guardian: allow-global_mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.determinism.digest_authority import digest_authority
+from .healing_backups.location_violations.digest_authority import digest_authority
 
 
 def run_replay_harness() -> str:

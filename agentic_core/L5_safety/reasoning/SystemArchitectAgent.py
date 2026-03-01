@@ -3,7 +3,7 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
 
-from dataclasses import dataclass
+from dataclasses import dataclass, field
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
@@ -40,6 +40,11 @@ class SystemArchitectAgent(SovereignBaseAgent):
     - No large files (>1000 lines)
     - Import structure, dependencies, architecture
     """
+
+    project_root: Path = field(default=None)
+
+    def __post_init__(self) -> None:
+        super().__post_init__()
 
     def heal(self, violation: dict) -> dict:
         """

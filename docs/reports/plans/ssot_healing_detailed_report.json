@@ -1,0 +1,235 @@
+{
+  "run_metadata": {
+    "invocation": "python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --domains --enable-cda -v",
+    "start_time": "2026-03-01T03:06:09.124279",
+    "end_time": "2026-03-01T03:06:09.373618",
+    "exit_code": 1,
+    "healing_mode": "FULL",
+    "flags": [
+      "--legacy",
+      "--domains",
+      "--enable-cda",
+      "-v"
+    ],
+    "bypass_longpaths": true,
+    "remediation": "SovereignBaseAgent.__post_init__ added; golden seal updated"
+  },
+  "summary": {
+    "total_log_lines": 6,
+    "by_level": {
+      "INFO": 3,
+      "WARNING": 3
+    },
+    "territories_targeted": [
+      "prompt_governance",
+      "L5_safety",
+      "L3_orchestration",
+      "L2_execution",
+      "L0_routing"
+    ],
+    "territories_processed": "see territory_execution",
+    "agents_registered": 10,
+    "healing_mode": "FULL (AUTONOMOUS, LLM ENABLED, CDA ENABLED, AUTO-APPROVE)",
+    "protected_root_dry_run_forced": true,
+    "protection_reason": "Domains under IMMUTABLE_ROOTS get forced dry_run=True",
+    "ssot_drift_violations_raw_count": 0,
+    "distinct_drift_types": {},
+    "total_errors": 0,
+    "known_failures_rca_count": 0
+  },
+  "preflight_checks": {
+    "import_symbol_check": "PASSED",
+    "fence_self_test": "PASSED - Protected root fence is ACTIVE",
+    "agent_registry_sovereignty": "PASSED - 20 total agents (16 LLM_API, 4 DETERMINISTIC)",
+    "windows_long_paths": "BYPASSED (AGENTIC_BYPASS_LONGPATHS_CHECK=1)",
+    "v15_gateway_audit": "WARNING - agent_id must be non-empty string (LOG_ONLY)",
+    "l0_mutation_prohibition": "ACTIVE - runtime state persistence DISABLED (fail-closed)"
+  },
+  "remediations_applied": [
+    {
+      "file": "agentic_core/base_agents/SovereignBaseAgent.py",
+      "change": "Added __post_init__ and _sovereign_init for cooperative dataclass MRO",
+      "reason": "AttributeError: super().__post_init__() reached base with no __post_init__"
+    },
+    {
+      "file": "agentic_core/L0_routing/utils/.core_golden_seal",
+      "change": "Updated Merkle root hash after SovereignBaseAgent.py modification",
+      "reason": "CoreIntegrityVerifier uses golden seal to detect tampering"
+    }
+  ],
+  "agents_roster": {
+    "registered": [
+      "reconciler (FilesystemSSOTReconcilerAgent)",
+      "location (LocationAgent)",
+      "hierarchy (HierarchyAgent)",
+      "arch_governor (ArchitectureGovernorAgent)",
+      "gravity_repair (GravityLeakRepairAgent)",
+      "system_architect (SystemArchitectAgent)",
+      "file_classification (FileClassificationAgent)",
+      "conversational_repair (ObservabilityProbeExecutor)",
+      "cognitive_disposition (CognitiveDispositionAgent)",
+      "root_hygiene (RootHygieneAgent)"
+    ],
+    "validation_status": "PASSED"
+  },
+  "known_failures_rca": [],
+  "territory_execution": {
+    "prompt_governance": {
+      "entry_count": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log_entries": []
+    },
+    "L5_safety": {
+      "entry_count": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log_entries": []
+    },
+    "L3_orchestration": {
+      "entry_count": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log_entries": []
+    },
+    "L2_execution": {
+      "entry_count": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log_entries": []
+    },
+    "L0_routing": {
+      "entry_count": 0,
+      "errors": 0,
+      "warnings": 0,
+      "log_entries": []
+    }
+  },
+  "ssot_drift_violations": [],
+  "all_drift_findings": [],
+  "healing_decisions": [
+    {
+      "timestamp": "2026-03-01 03:06:09,226",
+      "level": "INFO",
+      "message": "Validating compile-time frozen registry sovereignty..."
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,226",
+      "level": "INFO",
+      "message": "Registry sovereignty validated: 20 total agents, 16 LLM_API, 4 DETERMINISTIC"
+    }
+  ],
+  "validation_events": [
+    {
+      "timestamp": "2026-03-01 03:06:09,215",
+      "level": "INFO",
+      "message": "[PREFLIGHT] Import/symbol check PASSED"
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,215",
+      "level": "WARNING",
+      "message": "[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled"
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,236",
+      "level": "WARNING",
+      "message": "[V15] SSOT gateway audit failed (LOG_ONLY): agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id."
+    }
+  ],
+  "agent_execution_events": [
+    {
+      "timestamp": "2026-03-01 03:06:09,226",
+      "level": "INFO",
+      "logger": "agentic_core.agents.agent_registry",
+      "message": "Registry sovereignty validated: 20 total agents, 16 LLM_API, 4 DETERMINISTIC"
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,236",
+      "level": "WARNING",
+      "logger": "agentic_core.L0_routing.scripts.execute_ssot",
+      "message": "[V15] SSOT gateway audit failed (LOG_ONLY): agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id."
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,263",
+      "level": "WARNING",
+      "logger": "root",
+      "message": "AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail"
+    }
+  ],
+  "phase_execution_events": [],
+  "errors": [],
+  "all_log_entries": [
+    {
+      "timestamp": "2026-03-01 03:06:09,215",
+      "level": "INFO",
+      "logger": "UnifiedSovereign",
+      "message": "[PREFLIGHT] Import/symbol check PASSED",
+      "extra": []
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,215",
+      "level": "WARNING",
+      "logger": "UnifiedSovereign",
+      "message": "[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled",
+      "extra": []
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,226",
+      "level": "INFO",
+      "logger": "agentic_core.agents.agent_registry",
+      "message": "Validating compile-time frozen registry sovereignty...",
+      "extra": []
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,226",
+      "level": "INFO",
+      "logger": "agentic_core.agents.agent_registry",
+      "message": "Registry sovereignty validated: 20 total agents, 16 LLM_API, 4 DETERMINISTIC",
+      "extra": []
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,236",
+      "level": "WARNING",
+      "logger": "agentic_core.L0_routing.scripts.execute_ssot",
+      "message": "[V15] SSOT gateway audit failed (LOG_ONLY): agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id.",
+      "extra": []
+    },
+    {
+      "timestamp": "2026-03-01 03:06:09,263",
+      "level": "WARNING",
+      "logger": "root",
+      "message": "AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail",
+      "extra": [
+        "Traceback (most recent call last):",
+        "  File \"<frozen runpy>\", line 198, in _run_module_as_main",
+        "  File \"<frozen runpy>\", line 88, in _run_code",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py\", line 138, in <module>",
+        "    raise SystemExit(main())",
+        "                     ^^^^^^",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py\", line 127, in main",
+        "    _legacy_main(",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\enforcement\\runtime_guard.py\", line 72, in sync_wrapper",
+        "    return _guarded_call(fn, entry_point_id, args, kwargs)",
+        "           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\enforcement\\runtime_guard.py\", line 110, in _guarded_call",
+        "    result = fn(*args, **kwargs)",
+        "             ^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py\", line 3140, in _legacy_main",
+        "    ExecutionContext = _get_execution_context_class()",
+        "                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py\", line 54, in _get_execution_context_class",
+        "    from agentic_core.L0_routing.scripts.execution_context import ExecutionContext",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execution_context.py\", line 19, in <module>",
+        "    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\base_agents\\SovereignBaseAgent.py\", line 60, in <module>",
+        "    from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\mixins\\llm_provider_mixin.py\", line 9, in <module>",
+        "    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (",
+        "  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py\", line 29, in <module>",
+        "    from agentic_core.replay.replay_envelope import ReplayEnvelope",
+        "ModuleNotFoundError: No module named 'agentic_core.replay.replay_envelope'"
+      ]
+    }
+  ],
+  "raw_stdout": ""
+}

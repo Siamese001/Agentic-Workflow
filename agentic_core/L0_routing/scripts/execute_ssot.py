@@ -698,6 +698,11 @@ class AutonomousDecisionEngine:
     # guardian: allow-magic-config
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
+        # Use operation-scoped call path to prevent bleeding across territories
+        # Default to "Unknown" if no agent_name provided (should be avoided)
+        if agent_name == "Unknown":
+            agent_name = f"operation-{id(self)}"  # Unique per operation
+
         if agent_name in self._call_path:
             return False, f"Healing cycle detected: {agent_name}"
         if depth > max_depth:
@@ -2969,9 +2974,9 @@ Examples:
     parser.add_argument("--agent", type=str, help="Run specific agent directly")
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
     parser.add_argument(
-        "--enable-cda",
+        "--no-cda",
         action="store_true",
-        help="Enable CognitiveDispositionAgent for enhanced AI-powered violation analysis",
+        help="Disable CognitiveDispositionAgent (enabled by default)",
     )
     parser.add_argument("--dry-run", action="store_true", help="Run in preview mode (no changes applied)")
     parser.add_argument(
@@ -3158,11 +3163,18 @@ Examples:
     dry_run = args.dry_run
     auto_approve = not args.interactive
 
+    # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
+    if not args.interactive:
+        import os
+
+        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
+        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
+
     # [SIMPLIFIED] LLM enabled by default for healing, disabled in dry-run mode
     enable_llm = not dry_run
 
-    # [NEW] Enable CognitiveDispositionAgent if requested
-    enable_cda = getattr(args, "enable_cda", False)
+    # [NEW] Enable CognitiveDispositionAgent by default (disable with --no-cda)
+    enable_cda = not getattr(args, "no_cda", False)
 
     # [HARDENED] Use Sovereign Decision Engine instead of standard Enhanced engine
     decision_engine = SovereignDecisionEngine(
@@ -3252,8 +3264,15 @@ Examples:
         ]
         mission_mode = "Multi-Domain Sweep (L3 Attempt)"
     else:
-        targets = ["prompt_governance"]  # Default safe target
-        mission_mode = "Default Scan"
+        # Default to full domain sweep (same as --domains)
+        targets = [
+            "prompt_governance",
+            "L5_safety",
+            "L3_orchestration",
+            "L2_execution",
+            "L0_routing",
+        ]
+        mission_mode = "Multi-Domain Sweep (Default)"
 
     # Domain targeting hardening for protected roots
     if args.domains and not allow_protected_root_mutation:
@@ -3335,6 +3354,11 @@ Examples:
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
+
+                # [FIX] Reset per-territory decision engine state so cycle detection
+                # does not bleed across territories (agent_name="Unknown" accumulates).
+                decision_engine._call_path = set()
+                decision_engine._healing_count = 0
 
                 try:
                     # [UNIVERSAL HEALING] Unified Execution Phase

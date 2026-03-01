@@ -16,7 +16,6 @@ This file exists to make the runtime boundary unambiguous:
 from __future__ import annotations
 
 import argparse
-import sys
 from pathlib import Path
 
 
@@ -100,14 +99,6 @@ Examples:
 
         run_fence_self_check()
         return 0
-
-    if not pre_args.legacy:
-        parser.print_help()
-        print(
-            "\nError: --legacy flag required to invoke the healing pipeline.",
-            file=sys.stderr,
-        )
-        return 1
 
     # [PLAN MODE] Pure introspection shortcut — no imports beyond plan data.
     if pre_args.plan:

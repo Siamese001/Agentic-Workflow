@@ -1,0 +1,19 @@
+{
+  "run_metadata": {
+    "invocation": "python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --domains --enable-cda -v",
+    "start_time": "2026-03-01T03:06:09.124279",
+    "end_time": "2026-03-01T03:06:09.373618",
+    "exit_code": 1,
+    "healing_mode": "FULL",
+    "flags": [
+      "--legacy",
+      "--domains",
+      "--enable-cda",
+      "-v"
+    ],
+    "bypass_longpaths": true,
+    "remediation": "SovereignBaseAgent.__post_init__ added; golden seal updated"
+  },
+  "stdout": "",
+  "stderr": "2026-03-01 03:06:09,215 INFO UnifiedSovereign [PREFLIGHT] Import/symbol check PASSED\n2026-03-01 03:06:09,215 WARNING UnifiedSovereign [FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled\n2026-03-01 03:06:09,226 INFO agentic_core.agents.agent_registry Validating compile-time frozen registry sovereignty...\n2026-03-01 03:06:09,226 INFO agentic_core.agents.agent_registry Registry sovereignty validated: 20 total agents, 16 LLM_API, 4 DETERMINISTIC\n2026-03-01 03:06:09,236 WARNING agentic_core.L0_routing.scripts.execute_ssot [V15] SSOT gateway audit failed (LOG_ONLY): agent_id must be a non-empty string. All V15ExecutionGateway.execute() callers must supply a registered agent_id.\n2026-03-01 03:06:09,263 WARNING root AGENTIC_BYPASS_LONGPATHS_CHECK=1: skipping LongPathsEnabled hard-fail\nTraceback (most recent call last):\n  File \"<frozen runpy>\", line 198, in _run_module_as_main\n  File \"<frozen runpy>\", line 88, in _run_code\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py\", line 138, in <module>\n    raise SystemExit(main())\n                     ^^^^^^\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot_entrypoint.py\", line 127, in main\n    _legacy_main(\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\enforcement\\runtime_guard.py\", line 72, in sync_wrapper\n    return _guarded_call(fn, entry_point_id, args, kwargs)\n           ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\enforcement\\runtime_guard.py\", line 110, in _guarded_call\n    result = fn(*args, **kwargs)\n             ^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py\", line 3140, in _legacy_main\n    ExecutionContext = _get_execution_context_class()\n                       ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py\", line 54, in _get_execution_context_class\n    from agentic_core.L0_routing.scripts.execution_context import ExecutionContext\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execution_context.py\", line 19, in <module>\n    from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\base_agents\\SovereignBaseAgent.py\", line 60, in <module>\n    from agentic_core.mixins.llm_provider_mixin import LLMProviderMixin\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\mixins\\llm_provider_mixin.py\", line 9, in <module>\n    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (\n  File \"C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\enforcement\\SovereignLLMGateway.py\", line 29, in <module>\n    from agentic_core.replay.replay_envelope import ReplayEnvelope\nModuleNotFoundError: No module named 'agentic_core.replay.replay_envelope'\n"
+}

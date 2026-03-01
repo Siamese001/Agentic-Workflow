@@ -89,8 +89,30 @@ class SovereignBaseAgent(
         Initialize sovereign capabilities with Hardening AND Integrity Lock.
         """
         super().__init__(**kwargs)
+        self._sovereign_init(project_root=project_root)
 
-        self.project_root = project_root or Path.cwd()
+    def __post_init__(self) -> None:
+        """Cooperative MRO post-init for dataclass subclasses.
+
+        Dataclass agents call super().__post_init__() instead of __init__.
+        This method bridges the dataclass protocol into sovereign initialization,
+        then propagates cooperative __post_init__ up the MRO chain.
+        """
+        if hasattr(super(), "__post_init__"):
+            super().__post_init__()
+        project_root = getattr(self, "project_root", None)
+        self._sovereign_init(project_root=project_root)
+
+    def _sovereign_init(self, project_root: Path = None) -> None:
+        """Shared initialization body called by both __init__ and __post_init__."""
+        if getattr(self, "_initialized", False):
+            return
+
+        if project_root is not None:
+            self.project_root = project_root
+        elif not hasattr(self, "project_root") or self.project_root is None:
+            self.project_root = Path.cwd()
+
         self._initialized: bool = False
         self._security_validator: Any = None
 
