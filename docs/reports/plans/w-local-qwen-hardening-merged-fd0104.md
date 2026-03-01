@@ -108,7 +108,7 @@ QWEN_DETERMINISTIC_PARAMS = {
 def validate_gpu_capabilities(model_size: str) -> None:
     """Hard fail on GPU capability mismatch BEFORE model load."""
     # 1. VRAM threshold validation
-    # 2. CUDA version validation  
+    # 2. CUDA version validation
     # 3. Compute capability validation
     # 4. Driver version validation
     # FAIL FAST - abort before any memory allocation
@@ -136,45 +136,45 @@ def start_qwen_safely() -> None:
 ```python
 class QwenCircuitBreaker:
     """Deterministic circuit breaker for Qwen tier."""
-    
+
     def __init__(self):
         self.failure_count = 0
         self.last_failure_time = None
         self.circuit_open = False
         self.circuit_open_time = None
-    
+
     def record_failure(self) -> bool:
         """Record failure and check circuit breaker rules."""
         now = time.time()
-        
+
         # Reset if outside window
         if self.last_failure_time and (now - self.last_failure_time) > 60:
             self.failure_count = 0
-        
+
         self.failure_count += 1
         self.last_failure_time = now
-        
+
         # 3 consecutive failures within 60 seconds → disable for 5 minutes
         if self.failure_count >= 3:
             self.circuit_open = True
             self.circuit_open_time = now
             logger.warning("Qwen circuit breaker OPEN - disabling for 5 minutes")
             return True
-        
+
         return False
-    
+
     def is_circuit_open(self) -> bool:
         """Check if circuit is currently open."""
         if not self.circuit_open:
             return False
-        
+
         # Auto-close after 5 minutes
         if time.time() - self.circuit_open_time > 300:
             self.circuit_open = False
             self.failure_count = 0
             logger.info("Qwen circuit breaker CLOSED - re-enabling tier")
             return False
-        
+
         return True
 ```
 
@@ -228,7 +228,7 @@ def check_enum_leakage():
         "healing_provider_adapters.py",
         "test_*.py"
     ])
-    
+
     for file in forbidden_files:
         if "HealingTier.QWEN_VLLM" in file_content:
             raise BuildError(f"Enum leakage detected in {file}")
@@ -247,7 +247,7 @@ def handle_oom_with_escalation(retry_count: int) -> HealingDecision:
             tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=("oom_retry_exhausted", "forced_gemini_escalation")
         )
-    
+
     # Increment retry and attempt local recovery
     raise OOMRecoverableError(f"OOM attempt {retry_count + 1}/3")
 ```
@@ -311,18 +311,18 @@ def test_qwen_replay_determinism():
     """Verify exact replay consistency across invocations."""
     # Setup identical healing input
     healing_input = create_test_healing_input()
-    
+
     # Invoke Qwen twice with identical parameters
     record1 = invoke_qwen_deterministic(healing_input)
     record2 = invoke_qwen_deterministic(healing_input)
-    
+
     # Compare all determinism artifacts
     assert record1.provider_metadata["determinism_digest"] == \
            record2.provider_metadata["determinism_digest"]
-    
+
     assert record1.provider_metadata["output_hash"] == \
            record2.provider_metadata["output_hash"]
-    
+
     # Compare canonical JSON serialization
     json1 = json.dumps(asdict(record1), separators=(",", ":"), sort_keys=True)
     json2 = json.dumps(asdict(record2), separators=(",", ":"), sort_keys=True)

@@ -20,9 +20,7 @@ import subprocess
 import sys
 from pathlib import Path
 
-EVIDENCE_PATH = Path(
-    "docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md"
-)
+EVIDENCE_PATH = Path("docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md")
 
 SCOPE_FILES = [
     "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
@@ -141,10 +139,16 @@ def main() -> None:
 
     # Infrastructure Fingerprint Tests
     h("## Infrastructure Fingerprint Tests (WAVE 2)")
-    out, rc = run([
-        sys.executable, "-m", "pytest", "-q", "--color=no",
-        "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
-    ])
+    out, rc = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--color=no",
+            "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
+        ]
+    )
     fence(out)
     if rc != 0:
         print("FAIL: test_vllm_infrastructure_fingerprint.py")
@@ -153,10 +157,16 @@ def main() -> None:
 
     # Replay Validator Tests
     h("## Replay Validator Tests (WAVE 3)")
-    out, rc = run([
-        sys.executable, "-m", "pytest", "-q", "--color=no",
-        "tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py",
-    ])
+    out, rc = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--color=no",
+            "tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py",
+        ]
+    )
     fence(out)
     if rc != 0:
         print("FAIL: test_vllm_replay_validator.py")
@@ -165,10 +175,16 @@ def main() -> None:
 
     # Phase 3 Integration Tests (ensure no regressions)
     h("## Phase 3 Integration Tests (No Regressions)")
-    out, rc = run([
-        sys.executable, "-m", "pytest", "-q", "--color=no",
-        "tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py",
-    ])
+    out, rc = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--color=no",
+            "tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py",
+        ]
+    )
     fence(out)
     if rc != 0:
         print("FAIL: test_vllm_gateway_adapter.py (Phase 3 regression)")
@@ -177,10 +193,17 @@ def main() -> None:
 
     # Governance Tests (Pre-existing Violations Exception)
     h("## Governance Tests (Pre-existing Violations)")
-    out, rc = run([
-        sys.executable, "-m", "pytest", "-q", "--color=no",
-        "tests/governance",
-    ], required=False)
+    out, rc = run(
+        [
+            sys.executable,
+            "-m",
+            "pytest",
+            "-q",
+            "--color=no",
+            "tests/governance",
+        ],
+        required=False,
+    )
     fence(out)
     h("")
 
@@ -189,7 +212,7 @@ def main() -> None:
     h("PHASE_TOUCHED_FILES:")
     phase_files = [
         "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
-        "agentic_core/L2_execution/types/vllm_gateway_integration.py", 
+        "agentic_core/L2_execution/types/vllm_gateway_integration.py",
         "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
         "agentic_core/L2_execution/types/vllm_replay_validator.py",
         "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
@@ -198,26 +221,27 @@ def main() -> None:
     for f in phase_files:
         h(f"  {f}")
     h("")
-    
+
     # Extract violation files from governance output
     import re
+
     violation_files = set()
-    
+
     # Parse lazy seam violations from test output
     # Look for patterns like: 'file_path': 'agentic_core\\L0_routing\\...'
     for match in re.finditer(r"'file_path':\s*'([^']+)'", out):
-        file_path = match.group(1).replace('\\\\', '/').replace('\\', '/')
+        file_path = match.group(1).replace("\\\\", "/").replace("\\", "/")
         violation_files.add(file_path)
-    
+
     # Also parse LAZY_SEAM_VIOLATION patterns
     # LAZY_SEAM_VIOLATION: L0->L2 in mutation_prohibition.py:233
-    for match in re.finditer(r'LAZY_SEAM_VIOLATION:.*?in\s+(\S+\.py):', out):
+    for match in re.finditer(r"LAZY_SEAM_VIOLATION:.*?in\s+(\S+\.py):", out):
         filename = match.group(1)
         # Find full path by searching for this filename in the output
         for path_match in re.finditer(rf"agentic_core[^'\"\\s]*{re.escape(filename)}", out):
-            full_path = path_match.group().replace('\\\\', '/').replace('\\', '/')
+            full_path = path_match.group().replace("\\\\", "/").replace("\\", "/")
             violation_files.add(full_path)
-    
+
     h("GOVERNANCE_VIOLATION_FILES:")
     if violation_files:
         for f in sorted(violation_files):
@@ -225,9 +249,9 @@ def main() -> None:
     else:
         h("  (none detected in output)")
     h("")
-    
+
     # Check intersection
-    phase_files_normalized = {f.replace('\\', '/') for f in phase_files}
+    phase_files_normalized = {f.replace("\\", "/") for f in phase_files}
     intersection = phase_files_normalized & violation_files
     if intersection:
         h("INTERSECTION (NON-EMPTY - VIOLATION):")
@@ -347,14 +371,14 @@ print('OK: replay_hash changes on fingerprint change confirmed')
 
     # ASCII byte scan
     raw = EVIDENCE_PATH.read_bytes()
-    bad = [(i, b, raw[i:i+10]) for i, b in enumerate(raw) if b > 0x7F]
+    bad = [(i, b, raw[i : i + 10]) for i, b in enumerate(raw) if b > 0x7F]
     if bad:
         print(f"ERROR: Non-ASCII bytes at positions {bad[:5]}")
         # Show context around first bad byte
         pos, byte_val, context = bad[0]
         start = max(0, pos - 20)
         end = min(len(raw), pos + 20)
-        context_str = raw[start:end].decode('utf-8', errors='replace')
+        context_str = raw[start:end].decode("utf-8", errors="replace")
         print(f"Context: {repr(context_str)}")
         sys.exit(1)
 

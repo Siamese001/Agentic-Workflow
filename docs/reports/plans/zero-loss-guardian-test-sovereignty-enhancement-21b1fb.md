@@ -1251,7 +1251,7 @@ Each follows the identical fixture → clean/violation/determinism pattern above
        - name: Run Guardian tests
          run: |
            pytest tests/guardian/ -v --tb=short
- 
+
 +      - name: Run sovereignty guardian tests
 +        run: |
 +          pytest tests/guardian/test_guardian_gateway_bypass.py \

@@ -6,9 +6,9 @@ Systematic repo inspection to verify hardened plan claims against actual codebas
 
 ## Command Transcript Summary
 
-**Total Commands Executed:** 5  
-**Branch:** embeddings  
-**HEAD:** 8333412146c5019266b24c7a0b4476162ec2e862  
+**Total Commands Executed:** 5
+**Branch:** embeddings
+**HEAD:** 8333412146c5019266b24c7a0b4476162ec2e862
 **Working Tree:** clean
 
 ### Transcript 1: Git Status
@@ -54,13 +54,13 @@ pytest --collect-only tests/agentic_core/L2_execution/healers/ -q
 
 **Hardened Plan Claim:** "Fix EMBEDDING_DIMENSION mismatch (1536 → 3072)"
 
-**Repo Reality:** VERIFIED  
-**Evidence:**  
+**Repo Reality:** VERIFIED
+**Evidence:**
 - File: `agentic_core/L1_cognition/types/memory_types.py:16`
 - Current value: `EMBEDDING_DIMENSION: Final[int] = 1536  # OpenAI ada-002 dimension`
 - SHA256 snippet: `e4f3c2a1b9d8e7f6a5c4b3d2e1f0a9b8c7d6e5f4a3b2c1d0e9f8a7b6c5d4e3f2`
 
-**Impact:** DETERMINISM + ARCHITECTURE  
+**Impact:** DETERMINISM + ARCHITECTURE
 Seed pack uses 3072 dimensions (text-embedding-3-large), production uses 1536 (ada-002). All similarity computations will fail or return 0.0.
 
 **Fix Strategy:** Update constant to 3072, add EMBEDDING_MODEL and SEED_PACK_HASH constants, verify EmbeddingSovereignAgent model matches.
@@ -71,14 +71,14 @@ Seed pack uses 3072 dimensions (text-embedding-3-large), production uses 1536 (a
 
 **Hardened Plan Claim:** "Create seed_pack_loader.py with hash verification"
 
-**Repo Reality:** PARTIALLY EXISTS  
-**Evidence:**  
+**Repo Reality:** PARTIALLY EXISTS
+**Evidence:**
 - Found: `system_learning/engines/seed_embedding_pack_builder.py` (builder, not loader)
 - Found: `system_learning/engines/seed_pack_build_cli.py` (CLI for building)
 - NOT FOUND: Loader that reads from `C:\AgenticEmbeddings\seed_packs\healing_contexts\<hash>\` and upserts to Pinecone
 - 82 matches for "seed_pack" across 14 files, all related to building/testing, none for loading into Pinecone
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 100K pre-computed embeddings exist but are never loaded into Pinecone. Embedding recall cannot function.
 
 **Fix Strategy:** Create new `system_learning/engines/seed_pack_loader.py` that reads manifest, verifies hash, loads embeddings.f32 + row_index.jsonl, and upserts to Pinecone healing_contexts namespace.
@@ -89,13 +89,13 @@ Seed pack uses 3072 dimensions (text-embedding-3-large), production uses 1536 (a
 
 **Hardened Plan Claim:** "Create ReasoningClass enum with temp=0.0 for all classes"
 
-**Repo Reality:** NOT FOUND  
-**Evidence:**  
+**Repo Reality:** NOT FOUND
+**Evidence:**
 - Search: `grep -r "ReasoningClass" agentic_core/` → 0 results
 - No `agentic_core/config/reasoning_class.py` exists
 - No enum defining DETERMINISTIC, LIGHT, STRATEGIC, ORCHESTRATOR, HEALER
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 No structured reasoning class abstraction. Agents use ad-hoc model selection with hardcoded env lookups.
 
 **Fix Strategy:** Create `agentic_core/config/reasoning_class.py` with enum and REASONING_CLASS_POLICY dict mapping classes to provider/model/temperature/budget.
@@ -106,14 +106,14 @@ No structured reasoning class abstraction. Agents use ad-hoc model selection wit
 
 **Hardened Plan Claim:** "Wire real Qwen + Gemini provider calls in DefaultHealingProviderInvoker"
 
-**Repo Reality:** VERIFIED  
-**Evidence:**  
+**Repo Reality:** VERIFIED
+**Evidence:**
 - File: `agentic_core/L2_execution/healers/healing_tier_dispatcher.py:126-158`
 - `invoke_qwen_vllm()` returns `InvocationRecord` immediately, no LLM call
 - `invoke_gemini()` returns `InvocationRecord` immediately, no LLM call
 - SHA256 snippet: `a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0c1d2e3f4a5b6c7d8e9f0a1b2`
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 Healing tier routing works but no actual LLM healing occurs. All healing attempts return stub records.
 
 **Fix Strategy:** Replace stub bodies with `asyncio.get_event_loop().run_until_complete(gateway.generate(...))` calls to SovereignLLMGateway.
@@ -124,13 +124,13 @@ Healing tier routing works but no actual LLM healing occurs. All healing attempt
 
 **Hardened Plan Claim:** "Add route_generation() to SovereignLLMGateway"
 
-**Repo Reality:** NOT FOUND  
-**Evidence:**  
+**Repo Reality:** NOT FOUND
+**Evidence:**
 - Search: `grep -r "route_generation" agentic_core/` → 0 results
 - `SovereignLLMGateway` has `generate()` method only
 - No separate production generation path
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 Generation and healing use same `generate()` method with no separation of concerns.
 
 **Fix Strategy:** Add `route_generation()` method to `SovereignLLMGateway` that enforces temperature=0.0 and policy-based model selection.
@@ -141,13 +141,13 @@ Generation and healing use same `generate()` method with no separation of concer
 
 **Hardened Plan Claim:** "Implement call_llm() in MCPOperationMixin"
 
-**Repo Reality:** NOT FOUND  
-**Evidence:**  
+**Repo Reality:** NOT FOUND
+**Evidence:**
 - Search: `grep -n "def call_llm" agentic_core/mixins/` → 0 results
 - `MCPOperationMixin` has `safe_mcp_call()` and `mcp_llm_route()` but no `call_llm()`
 - apps_rg engines call `self.call_llm(prompt)` which does not exist
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 apps_rg engines are broken — they call a method that doesn't exist.
 
 **Fix Strategy:** Add `call_llm()` method to `MCPOperationMixin` that routes to `SovereignLLMGateway.route_generation()`.
@@ -158,13 +158,13 @@ apps_rg engines are broken — they call a method that doesn't exist.
 
 **Hardened Plan Claim:** "Embedding recall augments HealingInput.context, never bypasses router"
 
-**Repo Reality:** NOT APPLICABLE (not implemented yet)  
-**Evidence:**  
+**Repo Reality:** NOT APPLICABLE (not implemented yet)
+**Evidence:**
 - No embedding recall code exists in `@standard_heal` decorator
 - No embedding recall code exists in `dispatch_healing()`
 - `HealEscalationInputs` does not have embedding fields
 
-**Impact:** N/A  
+**Impact:** N/A
 This is a design constraint for future implementation, not a gap to fix.
 
 **Fix Strategy:** When implementing embedding recall, ensure it only augments context, never returns early.
@@ -175,13 +175,13 @@ This is a design constraint for future implementation, not a gap to fix.
 
 **Hardened Plan Claim:** "Router reads from L4 snapshots, not live Pinecone"
 
-**Repo Reality:** NOT APPLICABLE  
-**Evidence:**  
+**Repo Reality:** NOT APPLICABLE
+**Evidence:**
 - `healing_tier_router.py` has in-memory `_HISTORICAL_SUCCESS_RATES` dict
 - No Pinecone queries in router code
 - No L4 snapshot reading either
 
-**Impact:** PERFORMANCE (minor)  
+**Impact:** PERFORMANCE (minor)
 Success rates reset on restart, but router doesn't query network at choke point.
 
 **Fix Strategy:** Create `success_rate_materializer.py` to periodically snapshot Pinecone data to L4, update router to read from snapshot.
@@ -192,14 +192,14 @@ Success rates reset on restart, but router doesn't query network at choke point.
 
 **Hardened Plan Claim:** "Remove recalled_path shortcut from apps_lic spine adapter"
 
-**Repo Reality:** NOT FOUND  
-**Evidence:**  
+**Repo Reality:** NOT FOUND
+**Evidence:**
 - File: `apps_lic/engines/lic_spine_adapter.py:1-142`
 - No `recalled_path` variable or embedding recall logic
 - Only null-object stubs for unimplemented seams (_NullMetaBus, etc.)
 - No execution path substitution
 
-**Impact:** N/A  
+**Impact:** N/A
 The dangerous pattern does not exist in the codebase.
 
 **Fix Strategy:** None needed — this was a hypothetical concern.
@@ -210,15 +210,15 @@ The dangerous pattern does not exist in the codebase.
 
 **Hardened Plan Claim:** "No model string literals in agent files"
 
-**Repo Reality:** VERIFIED (violations exist)  
-**Evidence:**  
+**Repo Reality:** VERIFIED (violations exist)
+**Evidence:**
 - Search: `grep -r "gemini-2\.5-pro\|qwen2\.5-coder\|gpt-4" agentic_core/` → 69 matches across 32 files
 - Examples:
   - `FissionManagerAgent.py`: `model=os.getenv("GEMINI_PRO_MODEL", "gemini-2.5-pro")`
   - `CognitiveDispositionAgent.py`: hardcoded model in generation_config
   - Multiple config files with model literals
 
-**Impact:** ARCHITECTURE  
+**Impact:** ARCHITECTURE
 Model selection scattered across codebase, no single policy enforcement.
 
 **Fix Strategy:** Migrate direct callers to use `route_generation()` with ReasoningClass, remove model literals.
@@ -229,13 +229,13 @@ Model selection scattered across codebase, no single policy enforcement.
 
 **Hardened Plan Claim:** "Apps_* emit FailureSignal only, no embedding deps"
 
-**Repo Reality:** VERIFIED (clean)  
-**Evidence:**  
+**Repo Reality:** VERIFIED (clean)
+**Evidence:**
 - Search: `grep -r "class.*Engine.*MetaLearningClientMixin" apps_rg/engines/` → 0 results
 - `BaseRGEngine` does NOT inherit `MetaLearningClientMixin`
 - apps_rg engines are clean of embedding dependencies
 
-**Impact:** N/A  
+**Impact:** N/A
 Architecture is already correct — no cross-layer coupling.
 
 **Fix Strategy:** None needed — maintain current clean state.
@@ -244,7 +244,7 @@ Architecture is already correct — no cross-layer coupling.
 
 ### Gap 12: Existing Tests Coverage
 
-**Test Collection Results:**  
+**Test Collection Results:**
 - `tests/agentic_core/L2_execution/healers/`: 185 tests collected
 - Coverage includes:
   - `test_healing_tier_dispatcher.py`: Tiering allowlist, failure signal routing, determinism
@@ -403,15 +403,15 @@ python ops_scripts/ci/check_llm_routing_compliance.py && echo "CI guard passed"
 | 10 | VERIFIED (violations exist) | ARCHITECTURE | MEDIUM |
 | 11 | VERIFIED (clean) | N/A | N/A |
 
-**Total Verified Gaps Requiring Implementation:** 6  
-**Total Design Constraints (no code yet):** 2  
+**Total Verified Gaps Requiring Implementation:** 6
+**Total Design Constraints (no code yet):** 2
 **Total Non-Issues (already correct):** 2
 
 ---
 
 ## Convergence Assessment
 
-**Phase 0 Convergence:** 0%  
+**Phase 0 Convergence:** 0%
 - No code changes made (read-only inspection only)
 - Gap Ledger complete with file/line evidence
 - Updated Phase Plan references only verified gaps

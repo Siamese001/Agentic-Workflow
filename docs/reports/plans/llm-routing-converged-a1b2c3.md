@@ -54,16 +54,16 @@ class LLMRoutingPolicy:
     # Generation routing
     generation_models: dict[ReasoningClass, str]
     generation_budgets: dict[ReasoningClass, int]  # Enforced in gateway
-    
+
     # Healing routing (dynamic from L4)
     healing_confidence_x: float  # Read from L4 state
     healing_confidence_y: float  # Read from L4 state
     healing_max_retries: int
-    
+
     # Model registry
     model_qwen_id: str = "qwen2.5-coder-32b-instruct"
     model_gemini_pro_id: str = "gemini-2.5-pro"
-    
+
     @property
     def policy_hash(self) -> str:
         """SHA256 hash for L4 Merkle root anchoring."""
@@ -92,7 +92,7 @@ generation_params = {
 ```python
 class SovereignBaseAgent:
     ALLOW_STOCHASTIC: bool = False  # Default deterministic
-    
+
     def _get_generation_params(self) -> dict:
         if not self.ALLOW_STOCHASTIC:
             return {"temperature": 0.0, "top_p": 0.0, "replay_mode": True}
@@ -103,11 +103,11 @@ class SovereignBaseAgent:
 ### Canonical replay_key
 ```python
 replay_key = sha256(
-    trace_id + 
-    prompt_hash + 
-    model_id + 
-    str(temperature) + 
-    str(top_p) + 
+    trace_id +
+    prompt_hash +
+    model_id +
+    str(temperature) +
+    str(top_p) +
     response_hash +
     provider_version +
     system_prompt_hash
@@ -127,11 +127,11 @@ replay_key = sha256(
 **Step 1.2**: Split gateway with authority enforcement
 ```python
 class SovereignLLMGateway:
-    async def route_generation(self, prompt: str, reasoning_class: ReasoningClass, 
+    async def route_generation(self, prompt: str, reasoning_class: ReasoningClass,
                              trace_id: str, replay_mode: bool = True) -> str:
         # Enforce budget, deterministic defaults, no healing path
-        
-    async def route_healing(self, failure_context: HealingInput, 
+
+    async def route_healing(self, failure_context: HealingInput,
                            trace_id: str) -> str:
         # Check caller authority, allow stochastic, retry escalation
 ```
@@ -147,8 +147,8 @@ class SovereignLLMGateway:
 class MCPOperationMixin:
     def __init__(self, gateway: SovereignLLMGateway | None = None):
         self.gateway = gateway or SovereignLLMGateway()
-    
-    async def call_llm(self, prompt: str, *, 
+
+    async def call_llm(self, prompt: str, *,
                       reasoning_class: ReasoningClass | None = None,
                       trace_id: str | None = None) -> str:
         cls = reasoning_class or getattr(self, "AGENT_REASONING_CLASS", ReasoningClass.LIGHT)
@@ -236,7 +236,7 @@ This enables L6 meta-learning to adjust thresholds based on success rates.
 ## 7. Migration Sequencing
 
 1. **Deploy infrastructure** (policy, gateway, CI)
-2. **Activate CI enforcement** 
+2. **Activate CI enforcement**
 3. **Migrate agents** (apps_rg first, then agentic_core)
 4. **Decompose old configs** (HealingTierConfig, RoutingTier)
 

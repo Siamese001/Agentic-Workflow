@@ -85,9 +85,7 @@ class L4StateWriter(Protocol):
         """
         ...
 
-    def write_l4c_shadow_drift(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
-    ) -> str:
+    def write_l4c_shadow_drift(self, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
         """Write L4C shadow drift summary to L4 state (informational only).
 
         Args:
@@ -233,9 +231,7 @@ class DefaultL4StateWriter:
         )
         return version_id
 
-    def write_l4c_shadow_drift(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
-    ) -> str:
+    def write_l4c_shadow_drift(self, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
         """Write L4C shadow drift summary to L4 state (informational only)."""
         # Create a change package for the shadow drift summary
         package = SimpleChangePackage(
@@ -311,14 +307,15 @@ class DefaultL4StateWriter:
         """Write L4C retrieval profile proposal approval to L4 state (append-only)."""
         # Create approval record as JSON
         import json
+
         approval_data = {
             "proposal_digest": proposal_digest,
             "approved": approved,
             "approved_at_utc": approved_at_utc,
             "component_name": component_name,
         }
-        payload_bytes = json.dumps(approval_data, sort_keys=True, separators=(",", ":")).encode('utf-8')
-        
+        payload_bytes = json.dumps(approval_data, sort_keys=True, separators=(",", ":")).encode("utf-8")
+
         # Create a change package for the approval record
         package = SimpleChangePackage(
             component=f"l4c_retrieval_profile_proposal_approval_{component_name}",
@@ -367,9 +364,7 @@ class NoOpL4StateWriter:
         """No-op write that returns a placeholder version ID."""
         return f"noop_l4c_{created_utc}"
 
-    def write_l4c_shadow_drift(
-        self, *, payload_bytes: bytes, component_name: str, created_utc: int
-    ) -> str:
+    def write_l4c_shadow_drift(self, *, payload_bytes: bytes, component_name: str, created_utc: int) -> str:
         """No-op write that returns a placeholder version ID."""
         return f"noop_shadow_drift_{created_utc}"
 

@@ -28,20 +28,20 @@ def test_replay_hash_identical_with_same_violations():
     from agentic_core.L2_execution.types.vllm_replay_validator import (
         compute_replay_hash,
     )
-    
+
     # Create mock result with violations
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    
+
     violation = InvariantViolation(
         invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
         severity=InvariantSeverity.FAIL.value,
         message="Test violation",
         context={"test": True},
     )
-    
+
     # Create two identical results
     from dataclasses import dataclass
-    
+
     @dataclass
     class MockPreflight:
         prompt_tokens_estimated: int = 1
@@ -51,7 +51,7 @@ def test_replay_hash_identical_with_same_violations():
         budget_margin_tokens: int = 7000
         failure_type: str | None = None
         route_to_gemini: bool = False
-    
+
     @dataclass
     class MockBackpressure:
         escalate_to_gemini: bool = False
@@ -60,7 +60,7 @@ def test_replay_hash_identical_with_same_violations():
         model_id: str = ""
         queue_depth: int = 0
         circuit_breaker_open: bool = False
-    
+
     telemetry = VLLMGatewayTelemetry(
         provider_selected="gemini-2.5-pro",
         model_tier="remote",
@@ -84,7 +84,7 @@ def test_replay_hash_identical_with_same_violations():
         driver_version=fp.driver_version,
         fingerprint_hash=fp.fingerprint_hash(),
     )
-    
+
     result1 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -93,7 +93,7 @@ def test_replay_hash_identical_with_same_violations():
         backpressure=MockBackpressure(),
         invariant_violations=[violation],
     )
-    
+
     result2 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -102,11 +102,11 @@ def test_replay_hash_identical_with_same_violations():
         backpressure=MockBackpressure(),
         invariant_violations=[violation],
     )
-    
+
     # Compute replay hashes
     hash1 = compute_replay_hash("hello", None, fp, result1)
     hash2 = compute_replay_hash("hello", None, fp, result2)
-    
+
     # Identical inputs should produce identical hashes
     assert hash1 == hash2
     assert len(hash1) == 64
@@ -115,6 +115,8 @@ def test_replay_hash_identical_with_same_violations():
 
 def test_replay_hash_changes_when_violation_id_changes():
     """Test that changing invariant_id changes replay_hash."""
+    from dataclasses import dataclass
+
     from agentic_core.L2_execution.types.vllm_gateway_integration import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
@@ -125,8 +127,7 @@ def test_replay_hash_changes_when_violation_id_changes():
     from agentic_core.L2_execution.types.vllm_replay_validator import (
         compute_replay_hash,
     )
-    from dataclasses import dataclass
-    
+
     @dataclass
     class MockPreflight:
         prompt_tokens_estimated: int = 1
@@ -136,7 +137,7 @@ def test_replay_hash_changes_when_violation_id_changes():
         budget_margin_tokens: int = 7000
         failure_type: str | None = None
         route_to_gemini: bool = False
-    
+
     @dataclass
     class MockBackpressure:
         escalate_to_gemini: bool = False
@@ -145,23 +146,23 @@ def test_replay_hash_changes_when_violation_id_changes():
         model_id: str = ""
         queue_depth: int = 0
         circuit_breaker_open: bool = False
-    
+
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    
+
     violation1 = InvariantViolation(
         invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
         severity=InvariantSeverity.FAIL.value,
         message="Test violation",
         context={"test": True},
     )
-    
+
     violation2 = InvariantViolation(
         invariant_id=InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value,
         severity=InvariantSeverity.FAIL.value,
         message="Test violation",
         context={"test": True},
     )
-    
+
     telemetry = VLLMGatewayTelemetry(
         provider_selected="gemini-2.5-pro",
         model_tier="remote",
@@ -185,7 +186,7 @@ def test_replay_hash_changes_when_violation_id_changes():
         driver_version=fp.driver_version,
         fingerprint_hash=fp.fingerprint_hash(),
     )
-    
+
     result1 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -194,7 +195,7 @@ def test_replay_hash_changes_when_violation_id_changes():
         backpressure=MockBackpressure(),
         invariant_violations=[violation1],
     )
-    
+
     result2 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -203,16 +204,18 @@ def test_replay_hash_changes_when_violation_id_changes():
         backpressure=MockBackpressure(),
         invariant_violations=[violation2],
     )
-    
+
     hash1 = compute_replay_hash("hello", None, fp, result1)
     hash2 = compute_replay_hash("hello", None, fp, result2)
-    
+
     # Different violation IDs should produce different hashes
     assert hash1 != hash2
 
 
 def test_replay_hash_changes_when_violation_hash_changes():
     """Test that changing violation content changes replay_hash."""
+    from dataclasses import dataclass
+
     from agentic_core.L2_execution.types.vllm_gateway_integration import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
@@ -223,8 +226,7 @@ def test_replay_hash_changes_when_violation_hash_changes():
     from agentic_core.L2_execution.types.vllm_replay_validator import (
         compute_replay_hash,
     )
-    from dataclasses import dataclass
-    
+
     @dataclass
     class MockPreflight:
         prompt_tokens_estimated: int = 1
@@ -234,7 +236,7 @@ def test_replay_hash_changes_when_violation_hash_changes():
         budget_margin_tokens: int = 7000
         failure_type: str | None = None
         route_to_gemini: bool = False
-    
+
     @dataclass
     class MockBackpressure:
         escalate_to_gemini: bool = False
@@ -243,23 +245,23 @@ def test_replay_hash_changes_when_violation_hash_changes():
         model_id: str = ""
         queue_depth: int = 0
         circuit_breaker_open: bool = False
-    
+
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    
+
     violation1 = InvariantViolation(
         invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
         severity=InvariantSeverity.FAIL.value,
         message="Test violation 1",
         context={"test": True},
     )
-    
+
     violation2 = InvariantViolation(
         invariant_id=InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value,
         severity=InvariantSeverity.FAIL.value,
         message="Test violation 2",  # Different message
         context={"test": True},
     )
-    
+
     telemetry = VLLMGatewayTelemetry(
         provider_selected="gemini-2.5-pro",
         model_tier="remote",
@@ -283,7 +285,7 @@ def test_replay_hash_changes_when_violation_hash_changes():
         driver_version=fp.driver_version,
         fingerprint_hash=fp.fingerprint_hash(),
     )
-    
+
     result1 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -292,7 +294,7 @@ def test_replay_hash_changes_when_violation_hash_changes():
         backpressure=MockBackpressure(),
         invariant_violations=[violation1],
     )
-    
+
     result2 = VLLMGatewayCallResult(
         route_to_gemini=True,
         local_request=None,
@@ -301,10 +303,10 @@ def test_replay_hash_changes_when_violation_hash_changes():
         backpressure=MockBackpressure(),
         invariant_violations=[violation2],
     )
-    
+
     hash1 = compute_replay_hash("hello", None, fp, result1)
     hash2 = compute_replay_hash("hello", None, fp, result2)
-    
+
     # Different violation content should produce different hashes
     assert hash1 != hash2
     # But both violations should have different hashes themselves
@@ -313,6 +315,8 @@ def test_replay_hash_changes_when_violation_hash_changes():
 
 def test_replay_hash_deterministic_without_violations():
     """Test that PASS scenario (no violations) produces deterministic replay_hash."""
+    from dataclasses import dataclass
+
     from agentic_core.L2_execution.types.vllm_gateway_integration import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
@@ -323,8 +327,7 @@ def test_replay_hash_deterministic_without_violations():
     from agentic_core.L2_execution.types.vllm_replay_validator import (
         compute_replay_hash,
     )
-    from dataclasses import dataclass
-    
+
     @dataclass
     class MockPreflight:
         prompt_tokens_estimated: int = 1
@@ -334,7 +337,7 @@ def test_replay_hash_deterministic_without_violations():
         budget_margin_tokens: int = 7000
         failure_type: str | None = None
         route_to_gemini: bool = False
-    
+
     @dataclass
     class MockBackpressure:
         escalate_to_gemini: bool = False
@@ -343,9 +346,9 @@ def test_replay_hash_deterministic_without_violations():
         model_id: str = ""
         queue_depth: int = 0
         circuit_breaker_open: bool = False
-    
+
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
-    
+
     telemetry = VLLMGatewayTelemetry(
         provider_selected="Qwen2.5-7B-Instruct",
         model_tier="fast",
@@ -369,7 +372,7 @@ def test_replay_hash_deterministic_without_violations():
         driver_version=fp.driver_version,
         fingerprint_hash=fp.fingerprint_hash(),
     )
-    
+
     result1 = VLLMGatewayCallResult(
         route_to_gemini=False,
         local_request=None,
@@ -378,7 +381,7 @@ def test_replay_hash_deterministic_without_violations():
         backpressure=MockBackpressure(),
         invariant_violations=[],  # No violations
     )
-    
+
     result2 = VLLMGatewayCallResult(
         route_to_gemini=False,
         local_request=None,
@@ -387,10 +390,10 @@ def test_replay_hash_deterministic_without_violations():
         backpressure=MockBackpressure(),
         invariant_violations=[],  # No violations
     )
-    
+
     hash1 = compute_replay_hash("hello", None, fp, result1)
     hash2 = compute_replay_hash("hello", None, fp, result2)
-    
+
     # Identical inputs with no violations should produce identical hashes
     assert hash1 == hash2
     assert len(hash1) == 64

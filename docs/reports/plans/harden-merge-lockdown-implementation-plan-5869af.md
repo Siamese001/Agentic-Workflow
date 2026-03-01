@@ -237,7 +237,7 @@ class ExecutionGateway:
         except SignatureVerificationError:
             # No logging, no state changes, immediate exit
             raise SignatureBoundaryError("Invalid envelope signature")
-        
+
         # Only proceed if signature valid
         # ... rest of implementation
 ```
@@ -248,13 +248,13 @@ class UniversalWriteGateway:
     def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
         self.mutation_ledger: List[MutationRecord] = []
-    
+
     def check_write_permission(self, path: str, operation: str) -> bool:
         """Check if write operation is permitted"""
-        
+
     def record_mutation(self, path: str, operation: str, data: Any) -> None:
         """Record mutation for audit trail"""
-        
+
     def simulate_write(self, path: str, operation: str, data: Any) -> SimulationResult:
         """Simulate write in replay_mode"""
 ```

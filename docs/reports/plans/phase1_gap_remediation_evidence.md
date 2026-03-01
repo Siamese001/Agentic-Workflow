@@ -82,7 +82,7 @@ plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
 asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
 collected 7 items
 
-tests/governance/test_req414_egress_guard.py::test_gateway_has_egress_audit_log 
+tests/governance/test_req414_egress_guard.py::test_gateway_has_egress_audit_log
 -------------------------------- live log call --------------------------------
 2026-02-27 12:08:41 [    INFO] agentic_core.agents.agent_registry: Validating compile-time frozen registry sovereignty...
 2026-02-27 12:08:41 [    INFO] agentic_core.agents.agent_registry: Registry sovereignty validated: 20 total agents, 16 LLM_API, 4 DETERMINISTIC
@@ -166,4 +166,3 @@ Phase 1 changes do NOT touch any system_learning module.
 Counts: 3442 passed, 175 failed (deferred), 19 skipped, 10 xfailed.
 Full-suite deferral rationale: system_learning failures pre-date Phase 1
   and are tracked separately. Phase 1 acceptance gate is governance tests only.
-

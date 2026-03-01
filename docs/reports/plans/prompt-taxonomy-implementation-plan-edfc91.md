@@ -55,7 +55,7 @@ The current architecture has foundational prompt governance components but lacks
 #### Wave 1.1: L5 Safety Integration
 **Files to Create/Modify:**
 - `agentic_core/L5_safety/core/safety_evaluator.py` - NEW
-- `agentic_core/L5_safety/core/risk_classifier.py` - NEW  
+- `agentic_core/L5_safety/core/risk_classifier.py` - NEW
 - `agentic_core/L5_safety/adapters/llamaguard_adapter.py` - NEW
 - `agentic_core/L0_routing/seams/elevator_shaft_seam.py` - MODIFY
 - `agentic_core/prompt_governance/core/prompt_assembler.py` - MODIFY
@@ -180,10 +180,10 @@ def load_context_jit(intent_id: str) -> dict[str, Any]:
     """Load context with real-time safety evaluation."""
     evaluator = SafetyEvaluator()
     risk_tier = evaluator.evaluate_intent(intent_id)
-    
+
     # Generate D0 fences based on risk assessment
     d0_fences = evaluator.generate_fences(risk_tier)
-    
+
     return {
         "context_data": _load_rag_context(intent_id),
         "risk_tier": risk_tier,
@@ -195,27 +195,27 @@ def load_context_jit(intent_id: str) -> dict[str, Any]:
 #### 2. `agentic_core/prompt_governance/core/prompt_assembler.py`
 ```python
 # ENHANCED: Integrated safety validation
-def assemble(self, *, 
+def assemble(self, *,
              s0_system: str,
-             i0_instructional: str, 
+             i0_instructional: str,
              c0_context: dict,
              u0_user_prompt: str,
              d0_injections: str = "",
              risk_tier: int = 1) -> AssembledPrompt:
     """Assemble with integrated safety validation."""
-    
+
     # Airlock validation
     self._validate_airlock_integrity(u0_user_prompt)
-    
+
     # Risk-aware assembly
     if risk_tier >= 4:
         d0_injections += self._generate_high_risk_fences()
-    
+
     # Deterministic slot ordering with validation
     slot_map = self._build_validated_slot_map(
         s0_system, d0_injections, i0_instructional, c0_context, u0_user_prompt
     )
-    
+
     return self._assemble_with_governance(slot_map)
 ```
 
@@ -223,16 +223,16 @@ def assemble(self, *,
 ```python
 class ExecutionOrchestrator:
     """Coordinates validator → executor → healer pipeline."""
-    
+
     def execute(self, payload: GovernedPayload) -> ExecutionResult:
         """Execute with full governance pipeline."""
-        
+
         # L2.1: Pre-flight validation
         validator = PreflightValidator()
         validation_result = validator.validate(payload)
         if not validation_result.is_valid:
             return ExecutionResult(success=False, errors=validation_result.errors)
-        
+
         # L2.2: Execute with rollback capability
         executor = SingularMutationPoint()
         try:

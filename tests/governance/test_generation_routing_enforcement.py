@@ -7,14 +7,13 @@ Tests for:
 - Deterministic governance behavior
 """
 
-import ast
 import hashlib
 import os
-import pytest
 import subprocess
 import sys
 from pathlib import Path
-from unittest.mock import patch
+
+import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -22,6 +21,7 @@ pytestmark = pytest.mark.unit_min_deps
 # ---------------------------------------------------------------------------
 # Test Infrastructure
 # ---------------------------------------------------------------------------
+
 
 def compute_w4_determinism_digest() -> str:
     """Compute deterministic digest over generation routing test vectors."""
@@ -33,16 +33,17 @@ def compute_w4_determinism_digest() -> str:
 # SovereignLLMGateway Tests
 # ---------------------------------------------------------------------------
 
+
 def test_sovereign_llm_gateway_exists():
     """Test that SovereignLLMGateway exists and is the generation choke point."""
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    
+
     # Verify gateway exists
     assert SovereignLLMGateway is not None
-    
+
     # Verify it has generate method (the choke point)
-    assert hasattr(SovereignLLMGateway, 'generate')
-    
+    assert hasattr(SovereignLLMGateway, "generate")
+
     # Verify singleton pattern
     gateway1 = SovereignLLMGateway()
     gateway2 = SovereignLLMGateway()
@@ -51,13 +52,12 @@ def test_sovereign_llm_gateway_exists():
 
 def test_gateway_uses_client_wrappers():
     """Test that gateway uses allowed client wrappers, not direct SDK imports."""
-    from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    
+
     # Check imports in gateway file
     gateway_path = Path("agentic_core/L2_execution/enforcement/SovereignLLMGateway.py")
-    with open(gateway_path, 'r') as f:
+    with open(gateway_path) as f:
         content = f.read()
-    
+
     # Should import from client wrappers, not direct SDK
     assert "from data.sdks_mcps.client_wrappers import" in content
     assert "from openai import" not in content
@@ -68,26 +68,28 @@ def test_gateway_uses_client_wrappers():
 def test_gateway_deterministic_defaults():
     """Test that gateway has deterministic defaults."""
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    
+
     gateway = SovereignLLMGateway()
-    
+
     # Check that default temperature is configurable
     # (The actual default is set in config, but we verify the parameter exists)
     import inspect
+
     sig = inspect.signature(gateway.generate)
-    assert 'temperature' in sig.parameters
-    assert sig.parameters['temperature'].default != inspect.Parameter.empty
+    assert "temperature" in sig.parameters
+    assert sig.parameters["temperature"].default != inspect.Parameter.empty
 
 
 # ---------------------------------------------------------------------------
 # AST Scanner Tests
 # ---------------------------------------------------------------------------
 
+
 def test_ast_scanner_exists():
     """Test that AST enforcement scanner exists."""
     scanner_path = Path("ops_scripts/ci/audit_generation_routing_enforcement.py")
     assert scanner_path.exists(), "AST scanner not found at expected location"
-    
+
     # Verify it's executable
     assert os.access(scanner_path, os.X_OK) or sys.platform == "win32"  # Windows doesn't use execute bit
 
@@ -96,7 +98,7 @@ def test_ast_scanner_detects_violations():
     """Test that AST scanner correctly detects violations."""
     # Create temporary test file with violations
     test_file = Path("test_violations.py")
-    test_content = '''
+    test_content = """
 # This file contains violations for testing
 from openai import OpenAI  # Forbidden import
 from anthropic import Anthropic  # Forbidden import
@@ -106,25 +108,25 @@ model = "gpt-4"  # Model literal outside config
 
 def generate_with_bypass():
     return client.chat.completions.create(...)  # Direct API usage
-'''
-    
+"""
+
     try:
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             f.write(test_content)
-        
+
         # Run scanner
         result = subprocess.run(
             [sys.executable, "ops_scripts/ci/audit_generation_routing_enforcement.py", str(test_file)],
             capture_output=True,
-            text=True
+            text=True,
         )
-        
+
         # Should detect violations
         assert result.returncode != 0, "Scanner should detect violations"
         assert "FORBIDDEN_IMPORT" in result.stdout
         assert "DIRECT_CLIENT_INSTANTIATION" in result.stdout
         assert "MODEL_LITERAL" in result.stdout
-        
+
     finally:
         if test_file.exists():
             test_file.unlink()
@@ -134,7 +136,7 @@ def test_ast_scanner_allows_clean_code():
     """Test that AST scanner allows clean code."""
     # Create temporary test file without violations
     test_file = Path("test_clean.py")
-    test_content = '''
+    test_content = """
 # This file contains no violations
 from data.sdks_mcps.client_wrappers import create_openai_client
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
@@ -142,23 +144,23 @@ from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignL
 def generate_properly():
     gateway = SovereignLLMGateway()
     return gateway.generate(prompt="test")
-'''
-    
+"""
+
     try:
-        with open(test_file, 'w') as f:
+        with open(test_file, "w") as f:
             f.write(test_content)
-        
+
         # Run scanner
         result = subprocess.run(
             [sys.executable, "ops_scripts/ci/audit_generation_routing_enforcement.py", str(test_file)],
             capture_output=True,
-            text=True
+            text=True,
         )
-        
+
         # Should pass without violations
         assert result.returncode == 0, f"Clean code should pass: {result.stdout}"
         assert "No routing violations found" in result.stdout
-        
+
     finally:
         if test_file.exists():
             test_file.unlink()
@@ -168,36 +170,35 @@ def generate_properly():
 # Bypass Detection Tests
 # ---------------------------------------------------------------------------
 
+
 def test_no_direct_sdk_imports_in_agents():
     """Test that agent files don't have direct SDK imports."""
-    agent_dirs = [
-        "apps_lic",
-        "apps_rg", 
-        "apps_shared",
-        "agentic_core"
-    ]
-    
+    agent_dirs = ["apps_lic", "apps_rg", "apps_shared", "agentic_core"]
+
     violations = []
-    
+
     for agent_dir in agent_dirs:
         agent_path = Path(agent_dir)
         if not agent_path.exists():
             continue
-            
+
         for py_file in agent_path.rglob("*.py"):
             # Skip allowlist modules and known exceptions
-            if any(allowed in str(py_file) for allowed in [
-                "data/sdks_mcps",
-                "tests",
-                "ops_scripts",
-                "system_learning/engines/openai_embedder.py",  # Known exception
-            ]):
+            if any(
+                allowed in str(py_file)
+                for allowed in [
+                    "data/sdks_mcps",
+                    "tests",
+                    "ops_scripts",
+                    "system_learning/engines/openai_embedder.py",  # Known exception
+                ]
+            ):
                 continue
-            
+
             try:
-                with open(py_file, 'r') as f:
+                with open(py_file) as f:
                     content = f.read()
-                
+
                 # Check for forbidden imports
                 if "from openai import" in content and "client_wrappers" not in str(py_file):
                     violations.append(f"{py_file}: Direct OpenAI import")
@@ -205,10 +206,10 @@ def test_no_direct_sdk_imports_in_agents():
                     violations.append(f"{py_file}: Direct Anthropic import")
                 if "from vertexai import" in content and "client_wrappers" not in str(py_file):
                     violations.append(f"{py_file}: Direct VertexAI import")
-                    
+
             except Exception:
                 pass  # Skip files that can't be read
-    
+
     # Log violations but don't fail - this is an audit, not enforcement yet
     if violations:
         print(f"\nFound {len(violations)} direct SDK imports (known debt):")
@@ -221,15 +222,15 @@ def test_no_direct_sdk_imports_in_agents():
 def test_openai_embedder_is_exception():
     """Test that openai_embedder.py is a known exception with proper justification."""
     embedder_path = Path("system_learning/engines/openai_embedder.py")
-    
+
     if embedder_path.exists():
-        with open(embedder_path, 'r') as f:
+        with open(embedder_path) as f:
             content = f.read()
-        
+
         # Should have justification comment
         assert "OpenAI Embedder for Plan B Phase 5" in content
         assert "text-embedding-3-large" in content
-        
+
         # Should be properly isolated (not in agent code)
         assert "system_learning" in str(embedder_path)
 
@@ -238,11 +239,12 @@ def test_openai_embedder_is_exception():
 # Determinism Tests
 # ---------------------------------------------------------------------------
 
+
 def test_w4_determinism_digest_printed():
     """Print the W4-DETERMINISM-DIGEST marker exactly once per run."""
     digest = compute_w4_determinism_digest()
     print(f"W4-DETERMINISM-DIGEST: {digest}")
-    
+
     # Verify digest is stable
     expected = hashlib.sha256(b"w4-generation-routing-test-vectors").hexdigest()
     assert digest == expected, f"Determinism digest unstable: {digest}"
@@ -252,49 +254,51 @@ def test_w4_determinism_digest_printed():
 # Negative Control Tests
 # ---------------------------------------------------------------------------
 
+
 def test_negative_control_tamper_detection():
     """Negative control: detect tampering when W4_NEGCTRL_TAMPER=1."""
     if os.environ.get("W4_NEGCTRL_TAMPER") == "1":
         # This should XFAIL - simulate tampering attempt
         # Tamper with the AST scanner to simulate a violation
-        
+
         scanner_path = Path("ops_scripts/ci/audit_generation_routing_enforcement.py")
         if scanner_path.exists():
             # Read original scanner
-            with open(scanner_path, 'r') as f:
+            with open(scanner_path) as f:
                 original_content = f.read()
-            
+
             # Temporarily modify to always detect a violation
-            tampered_content = original_content + "\n# TAMPERED: Always detect violation\ndef tamper_scan():\n    return True\n"
-            
+            tampered_content = (
+                original_content
+                + "\n# TAMPERED: Always detect violation\ndef tamper_scan():\n    return True\n"
+            )
+
             try:
-                with open(scanner_path, 'w') as f:
+                with open(scanner_path, "w") as f:
                     f.write(tampered_content)
-                
+
                 # Run scanner on clean code - should still detect violation due to tampering
                 test_file = Path("test_clean_negative.py")
                 test_content = "print('clean code')"
-                
-                with open(test_file, 'w') as f:
+
+                with open(test_file, "w") as f:
                     f.write(test_content)
-                
+
                 result = subprocess.run(
-                    [sys.executable, str(scanner_path), str(test_file)],
-                    capture_output=True,
-                    text=True
+                    [sys.executable, str(scanner_path), str(test_file)], capture_output=True, text=True
                 )
-                
+
                 # Should detect tampering
                 if result.returncode == 0:
                     pytest.xfail("Negative control: tampering not detected")
                 else:
                     pytest.xfail("Negative control: tampering correctly detected")
-                    
+
             finally:
                 # Restore original
-                with open(scanner_path, 'w') as f:
+                with open(scanner_path, "w") as f:
                     f.write(original_content)
-                
+
                 if test_file.exists():
                     test_file.unlink()
     else:
@@ -307,26 +311,27 @@ def test_negative_control_tamper_detection():
 # Integration Tests
 # ---------------------------------------------------------------------------
 
+
 def test_full_repo_scan():
     """Run full repository scan with AST scanner."""
     scanner_path = Path("ops_scripts/ci/audit_generation_routing_enforcement.py")
-    
+
     if not scanner_path.exists():
         pytest.skip("AST scanner not available")
-    
+
     # Run scanner on entire repo
     result = subprocess.run(
         [sys.executable, str(scanner_path)],
         capture_output=True,
         text=True,
-        timeout=60  # Limit scan time
+        timeout=60,  # Limit scan time
     )
-    
+
     # Print output for debugging
     if result.stdout:
         print("Scanner output:")
         print(result.stdout)
-    
+
     # The scanner should detect violations - that's expected for now
     # We're testing that the scanner works, not that the repo is clean
     assert "Scan complete" in result.stdout
@@ -337,15 +342,15 @@ def test_gateway_choke_point_enforced():
     """Test that all generation flows through gateway."""
     # This is a structural test - we verify the gateway has the right interface
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
-    
+
     gateway = SovereignLLMGateway()
-    
+
     # Verify gateway has required methods
-    assert hasattr(gateway, 'generate')
-    assert callable(getattr(gateway, 'generate'))
-    
+    assert hasattr(gateway, "generate")
+    assert callable(gateway.generate)
+
     # Verify it tracks operations (for audit)
-    assert hasattr(gateway, 'operation_stats')
-    assert hasattr(gateway, 'audit_log')
-    
+    assert hasattr(gateway, "operation_stats")
+    assert hasattr(gateway, "audit_log")
+
     # Verify it uses client wrappers (checked in detail in other tests)

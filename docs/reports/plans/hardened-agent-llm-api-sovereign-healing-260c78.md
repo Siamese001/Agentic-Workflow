@@ -39,7 +39,7 @@ This plan implements a sovereign, zero-loss architecture for agent LLM API integ
     },
     {
       "agent_id": "ClassificationComplianceHealer",
-      "execution_mode": "DETERMINISTIC", 
+      "execution_mode": "DETERMINISTIC",
       "tiering_class": "NO_TIERING",
       "allowed_models": []
     }
@@ -78,7 +78,7 @@ def route_healing_tier(
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
     """Sovereign tier router - ONLY place that selects healing tiers."""
-    
+
     # Existing agent execution profile enforcement (already hardened)
     profile = get_profile(healing_input.agent_id)
     if not profile.is_llm_allowed():
@@ -88,13 +88,13 @@ def route_healing_tier(
             tier=HealingTier.LOCAL_AGENT,
             reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
         )
-    
+
     # Existing deterministic confidence calculation (no semantic influence)
     heal_confidence, reason_codes = compute_heal_confidence(
         healing_input,
         meta_prior_provider=meta_prior_provider,
     )
-    
+
     # Existing retry escalation invariant
     if healing_input.retry_count >= config.max_heal_retries:
         if not profile.can_use_model("gemini-2.5-pro"):
@@ -104,7 +104,7 @@ def route_healing_tier(
             tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=(*reason_codes, f"retry_count>={config.max_heal_retries}:FORCED_GEMINI"),
         )
-    
+
     # Existing X/Y band routing with model validation
     if heal_confidence >= config.heal_confidence_x:
         return HealingDecision(heal_confidence=heal_confidence, tier=HealingTier.LOCAL_AGENT, reason_codes=(*reason_codes, f"heal_confidence>={config.heal_confidence_x}:LOCAL_AGENT"))
@@ -131,11 +131,11 @@ def route_healing_tier(
 # In healing_provider_adapters.py - following existing pattern
 class QwenVLLMAdapter:
     """Qwen/vLLM provider adapter implementing HealingProviderInvoker protocol."""
-    
+
     def __init__(self, max_tokens: int = DEFAULT_MAX_TOKENS):
         self.max_tokens = max_tokens
         self._client = None
-    
+
     def invoke(self, request: GenerationRequest) -> GenerationResponse:
         """Invoke Qwen model via SovereignLLMGateway."""
         gateway = get_llm_gateway()
@@ -201,7 +201,7 @@ def can_escalate_to_llm(self, agent_id: str, check_id: str) -> bool:
     # Existing escalation allowlist guard
     if check_id not in HEALER_ESCALATION_ALLOWLIST:
         return False
-    
+
     # Existing agent execution mode guard
     try:
         profile = get_profile(agent_id)
@@ -295,11 +295,11 @@ class InvocationRecord:
 # In healing_provider_adapters.py
 + class QwenVLLMAdapter:
 +     """Qwen/vLLM provider adapter implementing HealingProviderInvoker protocol."""
-+     
++
 +     def __init__(self, max_tokens: int = DEFAULT_MAX_TOKENS):
 +         self.max_tokens = max_tokens
 +         self._client = None
-+     
++
 +     def invoke(self, request: GenerationRequest) -> GenerationResponse:
 +         """Invoke Qwen model via SovereignLLMGateway."""
 +         gateway = get_llm_gateway()
@@ -312,7 +312,7 @@ class InvocationRecord:
 
 # In SovereignLLMGateway.py
 + Provider = Literal["openai", "anthropic", "google", "qwen"]
-  
+
   def _get_provider_client(self, provider: Provider):
       if provider == "qwen":
           if self._qwen_client is None:

@@ -35,7 +35,7 @@ guardian_id="runtime_contract"
 entrypoint="agentic_core.L5_safety.scripts.run_runtime_contract_guardian"
 check_ids=("method_signature_drift", "interface_contract_violations", "return_type_mismatch")
 
-# Performance Boundary Guardian  
+# Performance Boundary Guardian
 guardian_id="performance_boundary"
 entrypoint="agentic_core.L5_safety.scripts.run_performance_boundary_guardian"
 check_ids=("execution_time_exceeded", "memory_limit_breach", "cpu_threshold_violation")
@@ -125,10 +125,10 @@ check_ids=("resource_exhaustion", "memory_leak", "file_descriptor_leak")
 class TestLayerBoundaryInvariants:
     def test_no_upward_imports_from_lower_layers(self):
         """AST-based validation that lower layers never import higher layers."""
-        
+
     def test_layer_gravity_compliance(self):
         """Validate gravity leak prevention across all layer boundaries."""
-        
+
     def test_sovereign_territory_isolation(self):
         """Ensure sovereign territories maintain strict isolation."""
 ```
@@ -139,10 +139,10 @@ class TestLayerBoundaryInvariants:
 class TestRuntimeContractCompliance:
     def test_method_signature_stability(self):
         """Verify method signatures don't drift across versions."""
-        
+
     def test_interface_contract_enforcement(self):
         """Validate interface contracts are honored at runtime."""
-        
+
     def test_return_type_consistency(self):
         """Ensure return types match declared signatures."""
 ```
@@ -153,10 +153,10 @@ class TestRuntimeContractCompliance:
 class TestDataPipelineIntegrity:
     def test_pipeline_completeness(self):
         """Validate data pipelines have no breaks or missing stages."""
-        
+
     def test_data_transformation_invariants(self):
         """Ensure data transformations preserve required invariants."""
-        
+
     def test_schema_evolution_compatibility(self):
         """Test schema changes maintain backward compatibility."""
 ```
@@ -167,10 +167,10 @@ class TestDataPipelineIntegrity:
 class TestSecurityBoundaryEnforcement:
     def test_privilege_escalation_prevention(self):
         """Verify no code paths allow privilege escalation."""
-        
+
     def test_sensitive_data_access_control(self):
         """Ensure sensitive data access follows strict controls."""
-        
+
     def test_network_isolation_compliance(self):
         """Validate network access follows allowed patterns only."""
 ```
@@ -181,10 +181,10 @@ class TestSecurityBoundaryEnforcement:
 class TestPerformanceBoundaryCompliance:
     def test_execution_time_limits(self):
         """Verify all operations stay within defined time limits."""
-        
+
     def test_memory_usage_boundaries(self):
         """Ensure memory usage stays within allocated budgets."""
-        
+
     def test_resource_cleanup_verification(self):
         """Validate proper cleanup of all allocated resources."""
 ```
@@ -195,10 +195,10 @@ class TestPerformanceBoundaryCompliance:
 class TestAgentLifecycleCompliance:
     def test_agent_initialization_contracts(self):
         """Validate agents follow proper initialization protocols."""
-        
+
     def test_state_machine_compliance(self):
         """Ensure agent state transitions follow defined state machines."""
-        
+
     def test_cleanup_protocol_enforcement(self):
         """Verify agents properly clean up resources on termination."""
 ```
@@ -260,7 +260,7 @@ class TestAgentLifecycleCompliance:
 - **False positives**: Use configurable thresholds and exception handling
 - **Integration complexity**: Phase rollout with backward compatibility
 
-### Operational Risks  
+### Operational Risks
 - **CI pipeline impact**: Stagger guardian rollout to prevent pipeline failures
 - **Development friction**: Provide clear documentation and debugging tools
 - **Maintenance burden**: Automate guardian maintenance where possible

@@ -122,7 +122,7 @@ The L3 `try_summon_orchestrator` shim used in `--domains` mode immediately falls
 
 ### 🟠 GAP 5: L1 Cognition — `episodic_manager` for Evidence-Based Confidence
 
-`AutonomousDecisionEngine.calculate_healing_confidence()` uses hardcoded weights and `historical_success_rate=0.8`. 
+`AutonomousDecisionEngine.calculate_healing_confidence()` uses hardcoded weights and `historical_success_rate=0.8`.
 
 `agentic_core.L1_cognition.engines.episodic_manager` (9.5KB) is built to record and retrieve episodic healing outcomes per agent × violation type. Wiring it would replace the hardcoded `0.8` with actual evidence.
 

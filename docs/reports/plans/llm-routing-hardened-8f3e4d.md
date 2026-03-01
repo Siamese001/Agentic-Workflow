@@ -62,12 +62,12 @@ class LLMRoutingPolicy:
     # Generation routing
     generation_models: dict[ReasoningClass, str]
     generation_budgets: dict[ReasoningClass, int]
-    
+
     # Healing routing
     healing_confidence_x: float  # LOCAL_AGENT threshold
     healing_confidence_y: float  # QWEN threshold
     healing_max_retries: int
-    
+
     # Model registry
     model_qwen_id: str = "qwen2.5-coder-32b-instruct"
     model_gemini_pro_id: str = "gemini-2.5-pro"

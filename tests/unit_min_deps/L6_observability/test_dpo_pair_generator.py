@@ -2,10 +2,10 @@
 
 import pytest
 
-from L6_observability.engines.dpo_pair_generator import (
+from agentic_core.L6_observability.engines.hitl_dpo_pair_generator import (
     DefaultDeterministicDPOPairGenerator,
 )
-from L6_observability.types.dpo_types import DPOExampleId
+from agentic_core.L6_observability.types.dpo_types import DPOExampleId
 
 pytestmark = pytest.mark.unit_min_deps
 

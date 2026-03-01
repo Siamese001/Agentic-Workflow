@@ -153,7 +153,7 @@ agentic_core/L0_routing/scripts/execute_ssot.py:3281:global_mutation:Global muta
 agentic_core/L0_routing/scripts/execute_ssot.py:3282:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-agentic_core/L0_routing/seam/seam_audit.py:146:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/seam/seam_audit.py:149:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/utils/subprocess_runner.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:152:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 agentic_core/L0_routing/utils/subprocess_runner.py:198:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
@@ -1773,7 +1773,7 @@ tools/evidence/_run_ssot_healing.py:72:silent_swallower:Silent exception swallow
 tools/evidence/_w_ast_fix_evidence.py:156:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/_w_ast_fix_evidence.py:180:magic_configuration:Magic configuration: Hardcoded timeout=60 in function call
 tools/evidence/e2e_gemini_qwen_runner.py:138:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-tools/evidence/evidence_contract_v2.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/evidence/evidence_contract_v2.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/gap_analysis_append_closure.py:488:magic_configuration:Magic configuration: Hardcoded max_lines=10 in function call
 tools/evidence/gap_analysis_append_closure.py:79:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 tools/evidence/gap_analysis_evidence_v2.py:111:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -1787,25 +1787,25 @@ tools/evidence/phase05_06_consolidated_evidence_runner.py:16:global_mutation:Glo
 tools/evidence/phase07_08_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_09_10_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-tools/evidence/qwen_migration_phase6_evidence_runner.py:203:magic_configuration:Magic configuration: Hardcoded budget_margin_tokens=7000 in function call
-tools/evidence/qwen_migration_phase6_evidence_runner.py:203:magic_configuration:Magic configuration: Hardcoded max_model_len_configured=8192 in function call
-tools/evidence/qwen_migration_phase6_evidence_runner.py:203:magic_configuration:Magic configuration: Hardcoded max_output_tokens_requested=100 in function call
-tools/evidence/qwen_migration_phase6_evidence_runner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase6_evidence_runner.py:91:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
-tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:190:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:198:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
-tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:31:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:53:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:275:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:283:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
-tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:31:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:65:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:102:magic_configuration:Magic configuration: Hardcoded budget_est=100.0 in function call
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:140:magic_configuration:Magic configuration: Hardcoded budget_est=200.0 in function call
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:199:magic_configuration:Magic configuration: Hardcoded budget_est=50.0 in function call
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:46:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:62:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-tools/evidence/qwen_migration_phase9_shadow_router_runner.py:85:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/qwen_migration_phase6_evidence_runner.py:217:magic_configuration:Magic configuration: Hardcoded budget_margin_tokens=7000 in function call
+tools/evidence/qwen_migration_phase6_evidence_runner.py:217:magic_configuration:Magic configuration: Hardcoded max_model_len_configured=8192 in function call
+tools/evidence/qwen_migration_phase6_evidence_runner.py:217:magic_configuration:Magic configuration: Hardcoded max_output_tokens_requested=100 in function call
+tools/evidence/qwen_migration_phase6_evidence_runner.py:86:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase6_evidence_runner.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:194:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:202:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:30:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py:54:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:289:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:297:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:30:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py:68:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:103:magic_configuration:Magic configuration: Hardcoded budget_est=100.0 in function call
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:143:magic_configuration:Magic configuration: Hardcoded budget_est=200.0 in function call
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:202:magic_configuration:Magic configuration: Hardcoded budget_est=50.0 in function call
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:45:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:61:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+tools/evidence/qwen_migration_phase9_shadow_router_runner.py:86:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/w6_scan_runner.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/run_phase11_ptc_evidence.py:107:magic_configuration:Magic configuration: Hardcoded limit=100 in function call
 tools/run_phase11_ptc_evidence.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

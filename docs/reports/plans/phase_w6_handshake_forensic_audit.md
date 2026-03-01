@@ -1,10 +1,10 @@
 # W6 — HANDSHAKE FORENSIC REVIEW (MAX-DETAIL)
 # docs/reports/plans/phase_w6_handshake_forensic_audit.md
 
-**Source:** `docs/technical/agentic_process_mapping.md` lines 1–340  
-**Scan tool:** `tools/evidence/w6_scan_runner.py` (AST + grep; 1988 py files; exit 0 for data, Unicode truncation at S12)  
-**Scan raw output:** `docs/reports/plans/w6_scan_raw.txt`  
-**Severity scale:** GREEN (sovereign + deterministic + crypto-enforced) / YELLOW (enforcement proof gap) / ORANGE (determinism/crypto gap) / RED (missing/fragmented/bypass) / BLACK (sovereignty violation — auto FAIL)  
+**Source:** `docs/technical/agentic_process_mapping.md` lines 1–340
+**Scan tool:** `tools/evidence/w6_scan_runner.py` (AST + grep; 1988 py files; exit 0 for data, Unicode truncation at S12)
+**Scan raw output:** `docs/reports/plans/w6_scan_raw.txt`
+**Severity scale:** GREEN (sovereign + deterministic + crypto-enforced) / YELLOW (enforcement proof gap) / ORANGE (determinism/crypto gap) / RED (missing/fragmented/bypass) / BLACK (sovereignty violation — auto FAIL)
 
 ---
 
@@ -1293,9 +1293,9 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 | A-48 | GOVERNANCE_BOUNDARY | L5 Elevator response: consumer-side route_mode constraint not code-confirmed | YELLOW | POTENTIAL |
 | A-34 | GOVERNANCE_BOUNDARY | Old-signature invalidation on re-route not confirmed | YELLOW | POTENTIAL |
 
-**BLACK violations: 0**  
-**RED: 5 (A-05, A-41, healing_provider_adapters bypass, apps_rg bypass, apps_shared embedding bypass)**  
-**ORANGE: 2 (A-06, A-42)**  
+**BLACK violations: 0**
+**RED: 5 (A-05, A-41, healing_provider_adapters bypass, apps_rg bypass, apps_shared embedding bypass)**
+**ORANGE: 2 (A-06, A-42)**
 **YELLOW: 5**
 
 ---
@@ -1368,7 +1368,7 @@ def verify_instruction_packet(self, packet: InstructionPacket) -> None:
 ### CP-5: SovereignLLMGateway — Sole Outbound LLM Seam (A-35)
 
 **Method:** AST scan (S1) + S8/S11 bypass scans
-**Confirmed call sites:** 
+**Confirmed call sites:**
 - `apps_lic/tools/GeminiLLMClient.py:18,28` — imports and calls `route_generation()` through gateway (CONFIRMED)
 - `apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:98` — references SovereignLLMGateway
 - `agentic_core/runtime/utils/sovereign_scan_util.py:83` — `get_instance()`
@@ -1952,13 +1952,13 @@ No oscillation violations detected. All oscillation control classified YELLOW (H
 
 ## AUDIT COMPLETE
 
-**Phase W6 Forensic Audit Status: PASS** (no BLACK violations)  
-**Total arrows audited: 48 / 48** (independent recount: 48 — matches plan inventory)  
-**Sections completed: 12 / 12**  
-**Diagram annotations audited: J.1–J.10 + all 25 Dissemination Guarantees**  
-**Required scans executed: 17 scan categories (S1–S17)**  
-**GREEN: 5 | YELLOW: 39 | ORANGE: 2 | RED: 7 (including bypass findings) | BLACK: 0**  
-**Scan tool:** `tools/evidence/w6_scan_runner.py` | 1988 files | `docs/reports/plans/w6_scan_raw.txt`  
+**Phase W6 Forensic Audit Status: PASS** (no BLACK violations)
+**Total arrows audited: 48 / 48** (independent recount: 48 — matches plan inventory)
+**Sections completed: 12 / 12**
+**Diagram annotations audited: J.1–J.10 + all 25 Dissemination Guarantees**
+**Required scans executed: 17 scan categories (S1–S17)**
+**GREEN: 5 | YELLOW: 39 | ORANGE: 2 | RED: 7 (including bypass findings) | BLACK: 0**
+**Scan tool:** `tools/evidence/w6_scan_runner.py` | 1988 files | `docs/reports/plans/w6_scan_raw.txt`
 **Deliverable:** `docs/reports/plans/phase_w6_handshake_forensic_audit.md`
 
 ---
@@ -3317,6 +3317,6 @@ ZERO LOSS MERGE: COMPLETE
 =======================================================
 ```
 
-**Deliverable:** `docs/reports/plans/phase_w6_handshake_forensic_audit.md`  
-**Sections:** 12 (original) + 9 (N1–N9) + 1 (W6+ Revalidation) = **22 total sections**  
+**Deliverable:** `docs/reports/plans/phase_w6_handshake_forensic_audit.md`
+**Sections:** 12 (original) + 9 (N1–N9) + 1 (W6+ Revalidation) = **22 total sections**
 **Total lines:** ~3,100

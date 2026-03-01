@@ -8,7 +8,7 @@ from __future__ import annotations
 import hashlib
 from typing import Protocol
 
-from L6_observability.types.dpo_types import DPOExampleId, DPOPair
+from agentic_core.L6_observability.types.dpo_types import DPOExampleId, DPOPair
 
 
 class DPOPairGenerator(Protocol):

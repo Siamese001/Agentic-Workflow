@@ -99,21 +99,21 @@ QWEN_METADATA_FIELDS = {
 def test_qwen_replay_determinism():
     """Verify exact replay consistency across invocations."""
     healing_input = create_deterministic_healing_input()
-    
+
     # Invoke Qwen twice with identical parameters
     record1 = invoke_qwen_via_healing_tier(healing_input)
     record2 = invoke_qwen_via_healing_tier(healing_input)
-    
+
     # Verify determinism digest matches
     digest1 = record1.provider_metadata["determinism_digest"]
     digest2 = record2.provider_metadata["determinism_digest"]
     assert digest1 == digest2, f"Determinism drift: {digest1} != {digest2}"
-    
+
     # Verify output hash matches
     output1 = record1.provider_metadata["output_hash"]
     output2 = record2.provider_metadata["output_hash"]
     assert output1 == output2, f"Output drift: {output1} != {output2}"
-    
+
     # Verify canonical JSON serialization matches
     json1 = json.dumps(asdict(record1), separators=(",", ":"), sort_keys=True)
     json2 = json.dumps(asdict(record2), separators=(",", ":"), sort_keys=True)
@@ -128,46 +128,46 @@ SECTION B — CIRCUIT BREAKER REPLAY SAFETY
 ```python
 class QwenCircuitBreaker:
     """Deterministic circuit breaker with replay safety."""
-    
+
     def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
         self.failure_count = 0
         self.failure_timestamps: list[int] = []
         self.circuit_open = False
         self.circuit_open_timestamp: int | None = None
-    
+
     def record_failure(self, timestamp: int | None = None) -> bool:
         """Record failure with deterministic replay behavior."""
         if self.replay_mode:
             # In replay mode, circuit breaker state transitions are disabled
             return False
-        
+
         now = timestamp or int(time.time())
-        
+
         # Clean old failures outside 60-second window
         self.failure_timestamps = [t for t in self.failure_timestamps if now - t <= 60]
         self.failure_timestamps.append(now)
         self.failure_count = len(self.failure_timestamps)
-        
+
         # 3 consecutive failures within 60 seconds → disable for 5 minutes
         if self.failure_count >= 3:
             self.circuit_open = True
             self.circuit_open_timestamp = now
             logger.warning("Qwen circuit breaker OPEN - disabling for 5 minutes")
             return True
-        
+
         return False
-    
+
     def is_circuit_open(self, timestamp: int | None = None) -> bool:
         """Check circuit state with deterministic replay behavior."""
         if self.replay_mode:
             return False  # Always closed in replay mode
-        
+
         if not self.circuit_open:
             return False
-        
+
         now = timestamp or int(time.time())
-        
+
         # Auto-close after 5 minutes
         if now - self.circuit_open_timestamp > 300:
             self.circuit_open = False
@@ -175,7 +175,7 @@ class QwenCircuitBreaker:
             self.failure_timestamps.clear()
             logger.info("Qwen circuit breaker CLOSED - re-enabling tier")
             return False
-        
+
         return True
 ```
 
@@ -187,7 +187,7 @@ SECTION C — GPU VALIDATION (FAIL-FAST)
 ```python
 class QwenGPUCapabilityError(RuntimeError):
     """Raised when GPU capabilities are insufficient for Qwen model."""
-    
+
     def __init__(self, requirement: str, current: str, model: str):
         self.requirement = requirement
         self.current = current
@@ -209,7 +209,7 @@ def validate_qwen_gpu_capabilities(model_size: str) -> None:
         raise QwenGPUCapabilityError(
             f"VRAM >= {required_vram}GB", f"{available_vram}GB", f"Qwen2.5-{model_size}"
         )
-    
+
     # 2. CUDA version validation
     min_cuda = "11.8" if model_size == "7B" else "12.0"
     current_cuda = get_cuda_version()
@@ -217,7 +217,7 @@ def validate_qwen_gpu_capabilities(model_size: str) -> None:
         raise QwenGPUCapabilityError(
             f"CUDA >= {min_cuda}", current_cuda, f"Qwen2.5-{model_size}"
         )
-    
+
     # 3. Compute capability validation
     min_compute = 7.0
     current_compute = get_compute_capability()
@@ -225,7 +225,7 @@ def validate_qwen_gpu_capabilities(model_size: str) -> None:
         raise QwenGPUCapabilityError(
             f"Compute >= {min_compute}", str(current_compute), f"Qwen2.5-{model_size}"
         )
-    
+
     # 4. Driver version validation
     min_driver = "525.60.13"
     current_driver = get_nvidia_driver_version()
@@ -253,7 +253,7 @@ def handle_qwen_oom_via_router(
     """Handle OOM by routing through single choke point."""
     # Increment retry count
     new_retry_count = healing_input.retry_count + 1
-    
+
     # Create FailureSignal for L2.3 consumption
     failure_signal = FailureSignal(
         source_agent=healing_input.agent_id,
@@ -264,13 +264,13 @@ def handle_qwen_oom_via_router(
         retry_count=new_retry_count,
         blast_radius_estimate=0.1
     )
-    
+
     # Convert to HealingInput and route through choke point
     escalated_input = failure_signal.to_healing_input(
         required_tools=healing_input.required_tools,
         violation_metadata_refs=healing_input.violation_metadata_refs
     )
-    
+
     # Return router decision directly (no exceptions, no manual tier selection)
     return route_healing_tier(escalated_input, config)
 
@@ -288,8 +288,8 @@ def invoke_qwen_with_oom_protection(
             escalated_decision = handle_qwen_oom_via_router(healing_input, config)
             # Retry with escalated tier
             return dispatch_healing(
-                healing_input, 
-                config, 
+                healing_input,
+                config,
                 agent_name=healing_input.agent_id
             )[1]  # Return InvocationRecord from escalated call
         raise
@@ -308,7 +308,7 @@ from pathlib import Path
 
 ALLOWED_FILES = {
     "healing_tier_router.py",
-    "healing_provider_adapters.py", 
+    "healing_provider_adapters.py",
     "healing_tier_dispatcher.py",
     "healing_tier_types.py"
 }
@@ -322,28 +322,28 @@ ALLOWED_TEST_PATTERNS = {
 def check_enum_leakage() -> None:
     """Prevent direct enum usage outside choke points."""
     violations = []
-    
+
     for py_file in Path(".").rglob("*.py"):
         if any(py_file.name.startswith(pattern.rstrip("*")) for pattern in ALLOWED_TEST_PATTERNS):
             continue  # Skip test files
-        
+
         if py_file.name in ALLOWED_FILES:
             continue  # Skip allowed implementation files
-        
+
         try:
             content = py_file.read_text(encoding="utf-8")
             if "HealingTier.QWEN_VLLM" in content:
                 violations.append(str(py_file))
         except (UnicodeDecodeError, OSError):
             continue
-    
+
     if violations:
         print("ERROR: HealingTier.QWEN_VLLM enum leakage detected:")
         for file in violations:
             print(f"  - {file}")
         print("\nEnum usage only allowed in:", sorted(ALLOWED_FILES))
         sys.exit(1)
-    
+
     print("OK: No enum leakage detected")
 
 if __name__ == "__main__":
@@ -375,7 +375,7 @@ import psutil
 def validate_qwen_startup_state() -> None:
     """Hard validate kill switch at startup."""
     qwen_enabled = os.environ.get("QWEN_VLLM_ENABLED", "true").lower() == "true"
-    
+
     if not qwen_enabled:
         # Assert no Qwen processes are running (cross-platform)
         if is_vllm_process_running():
@@ -383,10 +383,10 @@ def validate_qwen_startup_state() -> None:
                 "QWEN_VLLM_ENABLED=False but vLLM process detected. "
                 "Terminate all vLLM processes before starting."
             )
-        
+
         logger.info("QWEN_VLLM_ENABLED=False - Qwen tier disabled at startup")
         return
-    
+
     # If enabled, validate GPU capabilities before allowing startup
     try:
         validate_qwen_gpu_capabilities(model_size="7B")  # Default to 7B for validation
@@ -415,12 +415,12 @@ def route_healing_tier_with_kill_switch(
 ) -> HealingDecision:
     """Route healing with kill switch enforcement."""
     qwen_enabled = os.environ.get("QWEN_VLLM_ENABLED", "true").lower() == "true"
-    
+
     if not qwen_enabled:
         # Skip QWEN_VLLM tier entirely
         heal_confidence, reason_codes = compute_heal_confidence(healing_input)
         reason_codes.append("QWEN_VLLM_ENABLED=DISABLED:SKIPPED")
-        
+
         if heal_confidence >= config.heal_confidence_x:
             return HealingDecision(
                 heal_confidence=heal_confidence,
@@ -434,7 +434,7 @@ def route_healing_tier_with_kill_switch(
                 tier=HealingTier.GEMINI_2_5_PRO,
                 reason_codes=tuple(reason_codes + ["FORCED_GEMINI_ESCALATION"])
             )
-    
+
     # Normal routing logic
     return route_healing_tier(healing_input, config)
 ```
@@ -452,12 +452,12 @@ HEALING_CONFIDENCE_Y = 0.40  # Lower threshold - CANNOT BE MODIFIED
 def update_qwen_confidence_prior(error_signature: str, success: bool) -> None:
     """
     Qwen metrics may update healer confidence priors ONLY.
-    
+
     ALLOWED:
     - Historical success rate updates
     - Failure class prior adjustments
     - Tool readiness certainty updates
-    
+
     FORBIDDEN:
     - HEALING_CONFIDENCE_X modification
     - HEALING_CONFIDENCE_Y modification
@@ -473,7 +473,7 @@ def update_qwen_confidence_prior(error_signature: str, success: bool) -> None:
     else:
         new_rate = max(0.0, current_rate - 0.1)
     set_historical_success_rate(error_signature, new_rate)
-    
+
     # THRESHOLDS REMAIN IMMUTABLE
     assert HEALING_CONFIDENCE_X == 0.75, "X threshold is immutable"
     assert HEALING_CONFIDENCE_Y == 0.40, "Y threshold is immutable"
@@ -485,14 +485,14 @@ def update_qwen_confidence_prior(error_signature: str, success: bool) -> None:
 def validate_threshold_immutability() -> None:
     """Ensure healing thresholds cannot be modified."""
     import agentic_core.L2_execution.healers.healing_tier_router as router
-    
+
     # These values must never change
     assert hasattr(router, 'HEALING_CONFIDENCE_X'), "HEALING_CONFIDENCE_X not found"
     assert hasattr(router, 'HEALING_CONFIDENCE_Y'), "HEALING_CONFIDENCE_Y not found"
-    
+
     assert router.HEALING_CONFIDENCE_X == 0.75, f"X threshold modified: {router.HEALING_CONFIDENCE_X}"
     assert router.HEALING_CONFIDENCE_Y == 0.40, f"Y threshold modified: {router.HEALING_CONFIDENCE_Y}"
-    
+
     print("OK: Threshold immutability validated")
 ```
 
@@ -555,26 +555,26 @@ def validate_embedding_governance_lock() -> None:
         "agentic_core/embeddings/embedding_input_guard.py",
         "system_learning/engines/embedding_service_factory.py"
     ]
-    
+
     forbidden_patterns = ["qwen", "vllm", "Qwen", "VLLM"]
     violations = []
-    
+
     for file_path in embedding_files:
         if not Path(file_path).exists():
             continue
-            
+
         content = Path(file_path).read_text(encoding="utf-8")
         for pattern in forbidden_patterns:
             if pattern in content:
                 violations.append(f"{file_path}:{pattern}")
-    
+
     if violations:
         print("ERROR: Embedding governance violations detected:")
         for violation in violations:
             print(f"  - {violation}")
         print("\nQwen/vLLM references forbidden in embedding architecture")
         sys.exit(1)
-    
+
     print("OK: Embedding governance lock validated")
 ```
 
@@ -584,17 +584,17 @@ def validate_architectural_separation() -> None:
     """Ensure Qwen logic stays within healing tier boundaries."""
     forbidden_directories = [
         "agentic_core/L0_routing",
-        "agentic_core/L4_state", 
+        "agentic_core/L4_state",
         "agentic_core/embeddings",
         "system_learning/engines/embedding_service_factory.py"
     ]
-    
+
     qwen_patterns = ["qwen", "Qwen", "vllm", "VLLM"]
-    
+
     for directory in forbidden_directories:
         if not Path(directory).exists():
             continue
-            
+
         for py_file in Path(directory).rglob("*.py"):
             content = py_file.read_text(encoding="utf-8")
             for pattern in qwen_patterns:

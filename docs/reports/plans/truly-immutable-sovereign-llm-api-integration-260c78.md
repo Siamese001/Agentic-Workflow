@@ -67,7 +67,7 @@ def _validate_registry_sovereignty() -> None:
                 raise RuntimeError(
                     f"LLM_API agent '{agent_id}' must allow 'gemini-2.5-pro' for retry escalation"
                 )
-    
+
     # Verify no duplicate agent IDs
     if len(EXECUTION_PROFILES) != len(set(EXECUTION_PROFILES.keys())):
         raise RuntimeError("Duplicate agent IDs detected in registry")
@@ -88,7 +88,7 @@ from __future__ import annotations
 # Compile-time frozen allowlist - no CSV loading, no runtime mutation
 TIERING_ALLOWLIST_AGENT_NAMES: frozenset[str] = frozenset({
     "CodeHealerAgent",
-    "GravityLeakRepairAgent", 
+    "GravityLeakRepairAgent",
     "IntegrityGateExecutorAgent",
     "LocationHealerAgent",
     "SafetyExecutorAgent",
@@ -185,17 +185,17 @@ def route_healing_tier(
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
     """Mathematically deterministic tier router - zero nondeterminism."""
-    
+
     # Structural NO_TIERING guard - compile-time frozen allowlist
     if healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
         raise SovereigntyViolation(
             f"Agent '{healing_input.agent_id}' not in compile-time frozen TIERING_ALLOWLIST. "
             "NO_TIERING agents must emit FailureSignal only."
         )
-    
+
     # Frozen profile lookup
     profile = get_execution_profile(healing_input.agent_id)
-    
+
     # Deterministic agent isolation
     if not profile.is_llm_allowed():
         return HealingDecision(
@@ -203,10 +203,10 @@ def route_healing_tier(
             tier=HealingTier.LOCAL_AGENT,
             reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
         )
-    
+
     # Mathematical confidence calculation - no external dependencies
     heal_confidence = _compute_deterministic_confidence(healing_input)
-    
+
     # Retry escalation with GEMINI mandate (validated at compile time)
     if healing_input.retry_count >= 3:  # Fixed constant, no config loading
         return HealingDecision(
@@ -214,7 +214,7 @@ def route_healing_tier(
             tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=(*reason_codes, "retry_count>=3:FORCED_GEMINI"),
         )
-    
+
     # X/Y band routing with fixed constants
     if heal_confidence >= 0.75:  # Fixed constant
         tier = HealingTier.LOCAL_AGENT
@@ -225,7 +225,7 @@ def route_healing_tier(
     else:
         tier = HealingTier.GEMINI_2_5_PRO
         reason_codes = (*reason_codes, "heal_confidence<0.40:GEMINI_2_5_PRO")
-    
+
     return HealingDecision(
         heal_confidence=heal_confidence,
         tier=tier,
@@ -234,32 +234,32 @@ def route_healing_tier(
 
 def _compute_deterministic_confidence(healing_input: HealingInput) -> float:
     """Mathematically deterministic confidence calculation - zero external dependencies."""
-    
+
     # Fixed weights - no config loading
     WEIGHT_FAILURE_PRIOR = 0.30
     WEIGHT_BLAST_RADIUS = 0.25
     WEIGHT_HISTORICAL_SUCCESS = 0.20
     WEIGHT_TOOL_READINESS = 0.15
     WEIGHT_RETRY_DECAY = 0.10
-    
+
     # Failure class prior - compile-time frozen
     failure_prior = HISTORICAL_SUCCESS_RATES.get(healing_input.failure_type, 0.40)
-    
+
     # Blast radius penalty - deterministic calculation
     blast_radius_penalty = healing_input.blast_radius_estimate * WEIGHT_BLAST_RADIUS
-    
+
     # Historical success - versioned data, no external lookup
     historical_success = HISTORICAL_SUCCESS_RATES.get(
         healing_input.error_signature.split(':')[0],  # Use failure type as key
         0.50  # Neutral prior
     ) * WEIGHT_HISTORICAL_SUCCESS
-    
+
     # Tool readiness - fixed value for determinism
     tool_readiness = 0.8 * WEIGHT_TOOL_READINESS
-    
+
     # Retry decay - deterministic calculation
     retry_decay = max(0.0, 1.0 - (healing_input.retry_count * 0.1)) * WEIGHT_RETRY_DECAY
-    
+
     # Fixed precision arithmetic - no floating point drift
     raw_confidence = (
         failure_prior * WEIGHT_FAILURE_PRIOR +
@@ -268,7 +268,7 @@ def _compute_deterministic_confidence(healing_input: HealingInput) -> float:
         tool_readiness * WEIGHT_TOOL_READINESS +
         retry_decay * WEIGHT_RETRY_DECAY
     )
-    
+
     # Fixed precision for mathematical determinism
     return round(max(0.0, min(1.0, raw_confidence)), 6)
 
@@ -310,9 +310,9 @@ logger = logging.getLogger(__name__)
 
 class QwenVLLMAdapter:
     """Qwen/vLLM provider adapter with explicit configuration - no environment access."""
-    
+
     def __init__(
-        self, 
+        self,
         max_tokens: int = 2048,
         endpoint_url: str = "http://localhost:8000",  # Explicit, no environment access
         api_key: str | None = None,  # Explicit injection
@@ -322,13 +322,13 @@ class QwenVLLMAdapter:
         self.endpoint_url = endpoint_url
         self.api_key = api_key
         self.model_name = model_name
-        
+
         # Deterministic config hash - no environment variables
         config_string = f"qwen-vllm:{max_tokens}:{endpoint_url}:{model_name}"
         self.config_hash = hashlib.sha256(config_string.encode()).hexdigest()[:16]
-        
+
         logger.info(f"Qwen adapter initialized with explicit config: endpoint={endpoint_url}, model={model_name}")
-    
+
     def invoke(self, request: GenerationRequest) -> GenerationResponse:
         """Invoke Qwen model with explicit configuration."""
         gateway = get_llm_gateway()
@@ -340,7 +340,7 @@ class QwenVLLMAdapter:
             endpoint_url=self.endpoint_url,  # Explicit parameter
             api_key=self.api_key,  # Explicit parameter
         )
-        
+
         # Include config hash in response metadata
         response.provider_config_hash = self.config_hash
         return response
@@ -364,7 +364,7 @@ class SovereignLLMGateway:
         # ... existing initialization
         self._qwen_client: Any = None
         self._qwen_config_hash: str | None = None
-    
+
     def _get_provider_client(self, provider: Provider, config_hash: str | None = None):
         """Get provider client with explicit configuration tracking."""
         if provider == "qwen":
@@ -376,11 +376,11 @@ class SovereignLLMGateway:
                     f"qwen:{endpoint_url}".encode()
                 ).hexdigest()[:16]
                 logger.info(f"Qwen client initialized with explicit endpoint: {endpoint_url}")
-            
+
             # Verify config hash matches for replay determinism
             if config_hash and config_hash != self._qwen_config_hash:
                 logger.warning(f"Config hash mismatch: expected {self._qwen_config_hash}, got {config_hash}")
-            
+
             return self._qwen_client
         # ... existing provider logic
 ```
@@ -469,9 +469,9 @@ def test_mathematical_replay_determinism():
         violation_metadata_refs=(),
         replay_mode=True,
     )
-    
+
     input2 = HealingInput(
-        agent_id="test_agent", 
+        agent_id="test_agent",
         failure_type="syntax_error",
         error_signature="syntax_error:test_file:42",
         trace_id="test-trace-123",
@@ -481,16 +481,16 @@ def test_mathematical_replay_determinism():
         violation_metadata_refs=(),
         replay_mode=True,
     )
-    
+
     # Route both inputs
     decision1 = route_healing_tier(input1)
     decision2 = route_healing_tier(input2)
-    
+
     # Mathematical determinism required
     assert decision1.heal_confidence == decision2.heal_confidence
     assert decision1.tier == decision2.tier
     assert decision1.reason_codes == decision2.reason_codes
-    
+
     # Replay keys must be identical
     key1 = _compute_replay_key(input1, decision1)
     key2 = _compute_replay_key(input2, decision2)
@@ -509,14 +509,14 @@ def test_timestamp_excluded_from_replay():
         violation_metadata_refs=(),
         replay_mode=True,
     )
-    
+
     decision = route_healing_tier(base_input)
     original_key = _compute_replay_key(base_input, decision)
-    
+
     # Wait and recompute (timestamp would change if included)
     time.sleep(0.01)
     new_key = _compute_replay_key(base_input, decision)
-    
+
     # Keys must be identical - timestamp excluded
     assert original_key == new_key
 
@@ -528,7 +528,7 @@ def test_compile_time_frozen_registry():
         assert isinstance(profile.allowed_models, frozenset)
         with pytest.raises(AttributeError):
             profile.allowed_models.add("new_model")  # Should fail
-    
+
     # Verify GEMINI mandate
     for agent_id, profile in EXECUTION_PROFILES.items():
         if profile.execution_mode == ExecutionMode.LLM_API:
@@ -540,7 +540,7 @@ def test_compile_time_frozen_allowlist():
     assert isinstance(TIERING_ALLOWLIST_AGENT_NAMES, frozenset)
     with pytest.raises(AttributeError):
         TIERING_ALLOWLIST_AGENT_NAMES.add("new_agent")  # Should fail
-    
+
     # Verify no external data loading
     assert "CodeHealerAgent" in TIERING_ALLOWLIST_AGENT_NAMES
     assert len(TIERING_ALLOWLIST_AGENT_NAMES) == 11  # Fixed count
@@ -553,13 +553,13 @@ def test_no_environment_access():
         max_tokens=1024,
         endpoint_url="http://test:8000",  # Explicit, no getenv
     )
-    
+
     # Config hash should be deterministic
     expected_hash = hashlib.sha256(
         "qwen-vllm:1024:http://test:8000:qwen-vllm".encode()
     ).hexdigest()[:16]
     assert adapter.config_hash == expected_hash
-    
+
     # No environment access should occur
     with patch.dict(os.environ, {"QWEN_VLLM_ENDPOINT": "http://env:8000"}):
         # Adapter should still use explicit config
@@ -589,7 +589,7 @@ def test_no_environment_access():
 +                 raise RuntimeError(
 +                     f"LLM_API agent '{agent_id}' must allow 'gemini-2.5-pro'"
 +                 )
-+ 
++
 + # Validation runs at module import
 + _validate_registry_sovereignty()
 ```

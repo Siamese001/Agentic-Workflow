@@ -105,21 +105,21 @@ This plan integrates embeddings throughout the agentic architecture to accelerat
 ```python
 class MetaLearningEmbeddingService:
     """Centralized embedding service for meta-learning components."""
-    
+
     def __init__(self):
         self.embedder = EmbeddingSovereignAgent()
         self.vector_store = PineconeSovereignAgent()
         self.cache = SemanticCacheManager()
-    
+
     async def embed_rca_context(self, failure_context: dict) -> list[float]:
         """Embed failure context for pattern matching."""
-        
+
     async def find_similar_failures(self, embedding: list[float], top_k: int = 5) -> list[dict]:
         """Find semantically similar historical failures."""
-        
+
     async def embed_telemetry_event(self, event: dict) -> list[float]:
         """Embed telemetry event for clustering."""
-        
+
     async def embed_healing_context(self, violation: dict, strategy: dict, outcome: dict) -> list[float]:
         """Embed complete healing context for pattern matching."""
 ```
@@ -128,26 +128,26 @@ class MetaLearningEmbeddingService:
 ```python
 class EmbeddingEnhancedRCAEngine:
     """RCA engine with semantic pattern recognition."""
-    
+
     def __init__(self, embedding_service: MetaLearningEmbeddingService):
         self.embedding_service = embedding_service
         self.pattern_threshold = 0.85  # Semantic similarity threshold
-        
+
     async def analyze_failures_with_embeddings(
-        self, 
-        snapshot_id: str, 
-        audit_slice: bytes, 
-        window_start_utc: int, 
+        self,
+        snapshot_id: str,
+        audit_slice: bytes,
+        window_start_utc: int,
         window_end_utc: int
     ) -> RCAReport:
         """Enhanced RCA with semantic pattern matching."""
-        
+
         # Traditional regex classification
         traditional_findings = analyze_failures(snapshot_id, audit_slice, window_start_utc, window_end_utc)
-        
+
         # Semantic pattern matching
         semantic_findings = await self._semantic_pattern_classification(audit_slice)
-        
+
         # Combine and enhance findings
         return self._merge_findings(traditional_findings, semantic_findings)
 ```
@@ -156,37 +156,37 @@ class EmbeddingEnhancedRCAEngine:
 ```python
 class EmbeddingAwareProposer:
     """Base class for embedding-informed proposers."""
-    
+
     def __init__(self, embedding_service: MetaLearningEmbeddingService):
         self.embedding_service = embedding_service
-        
+
     async def get_similar_historical_contexts(self, current_context: dict) -> list[dict]:
         """Find similar historical contexts for learning transfer."""
-        
+
     async def predict_outcome(self, proposal: dict, context: dict) -> float:
         """Predict proposal outcome using embedding similarity."""
 
 class EmbeddingEnhancedL0Proposer(EmbeddingAwareProposer):
     """L0 threshold proposer with embedding guidance."""
-    
+
     async def propose_thresholds(
-        self, 
-        snapshot: MetaLearningSnapshot, 
-        metrics: dict, 
+        self,
+        snapshot: MetaLearningSnapshot,
+        metrics: dict,
         config: dict
     ) -> L0ThresholdChangePackage:
         """Propose thresholds based on semantic similarity to historical contexts."""
-        
+
         # Find similar escalation contexts
         similar_contexts = await self.get_similar_historical_contexts({
             "escalation_rate": metrics.get("escalation_rate"),
             "system_load": metrics.get("system_load"),
             "error_patterns": metrics.get("error_patterns")
         })
-        
+
         # Learn from successful thresholds in similar contexts
         optimal_thresholds = self._extract_optimal_thresholds(similar_contexts)
-        
+
         # Generate proposal with embedding-informed justification
         return self._create_proposal(optimal_thresholds, similar_contexts)
 ```

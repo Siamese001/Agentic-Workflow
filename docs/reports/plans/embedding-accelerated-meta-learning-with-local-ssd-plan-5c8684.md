@@ -16,13 +16,13 @@ This plan integrates embeddings throughout the existing L0-L6 agentic architectu
 ```python
 class LocalSSDVectorStore:
     """High-performance local vector store leveraging 4TB SSD."""
-    
+
     def __init__(self, base_path: Path = Path("/data/embeddings")):
         self.base_path = base_path
         self.index_path = base_path / "faiss_indexes"
         self.cache_path = base_path / "embedding_cache"
         self.raw_path = base_path / "raw_data"
-        
+
         # Initialize FAISS indexes for different pattern types
         self.healing_index = faiss.IndexIVFPQ(
             faiss.IndexFlatL2(768),  # 768-dim embeddings
@@ -31,7 +31,7 @@ class LocalSSDVectorStore:
             64,    # M (number of subquantizers)
             8      # nbits (bits per subquantizer)
         )
-        
+
         self.telemetry_index = faiss.IndexIVFPQ(
             faiss.IndexFlatL2(384),  # 384-dim embeddings
             384,  # dimension
@@ -46,24 +46,24 @@ class LocalSSDVectorStore:
 ```python
 class LocalEmbeddingPopulationService:
     """Efficient embedding population leveraging local SSD storage."""
-    
+
     def __init__(self, batch_size: int = 1000, max_workers: int = 8):
         self.batch_size = batch_size
         self.max_workers = max_workers
         self.embedder = EmbeddingSovereignAgent()
         self.local_store = LocalSSDVectorStore()
-        
+
     async def populate_historical_patterns(self, source_path: Path):
         """Populate local embeddings from historical data."""
-        
+
         # Phase 1: Process healing outcomes (~50GB raw data)
         healing_files = list(source_path.glob("**/healing_outcomes/*.json"))
         await self._process_files_in_batches(
-            healing_files, 
+            healing_files,
             processor=self._embed_healing_context,
             output_path=self.local_store.cache_path / "healing_embeddings"
         )
-        
+
         # Phase 2: Process telemetry events (~200GB raw data)
         telemetry_files = list(source_path.glob("**/telemetry/*.jsonl"))
         await self._process_files_in_batches(
@@ -71,7 +71,7 @@ class LocalEmbeddingPopulationService:
             processor=self._embed_telemetry_event,
             output_path=self.local_store.cache_path / "telemetry_embeddings"
         )
-        
+
         # Phase 3: Build FAISS indexes from cached embeddings
         await self._build_faiss_indexes()
 ```
@@ -80,7 +80,7 @@ class LocalEmbeddingPopulationService:
 
 ### Existing Embedding Infrastructure (Latest)
 - **EmbeddingSovereignAgent**: Unified gateway for Gemini/OpenAI embeddings with Redis caching
-- **PineconeSovereignAgent**: Vector storage with hybrid search capabilities  
+- **PineconeSovereignAgent**: Vector storage with hybrid search capabilities
 - **EmbeddingMixin**: Unified embedding access for agents
 - **InMemoryVectorCache**: ChromaDB-based hot cache for 10-50x speedup
 - **TieredVectorStore**: Hot in-memory + warm disk storage architecture
@@ -99,28 +99,28 @@ class LocalEmbeddingPopulationService:
 ```python
 class HybridVectorArchitecture:
     """Hybrid local SSD + cloud vector storage architecture."""
-    
+
     def __init__(self):
         # Local SSD for high-performance access
         self.local_faiss = LocalSSDVectorStore()
         self.local_chroma = ChromaDB(persist_directory="/data/chroma")
-        
+
         # Cloud for backup and collaboration
         self.pinecone = PineconeSovereignAgent()
-        
+
         # Cache hierarchy
         self.hot_cache = InMemoryVectorCache()  # RAM
         self.warm_cache = self.local_chroma     # SSD
         self.cold_storage = self.pinecone       # Cloud
-    
+
     async def search(self, query_embedding: list[float], top_k: int = 10):
         """Multi-tier search with local SSD优先."""
-        
+
         # Try hot cache first (RAM)
         hot_results = await self.hot_cache.search([query_embedding], top_k)
         if len(hot_results['ids'][0]) >= top_k:
             return hot_results
-            
+
         # Try warm cache (SSD)
         warm_results = self.local_chroma.query(
             query_embeddings=[query_embedding],
@@ -135,7 +135,7 @@ class HybridVectorArchitecture:
                 embeddings=warm_results['embeddings'][0]
             )
             return warm_results
-            
+
         # Fallback to cold storage (Cloud)
         return await self.pinecone.semantic_search(query_embedding, top_k)
 ```
@@ -144,10 +144,10 @@ class HybridVectorArchitecture:
 ```python
 class SSDOptimizedEmbeddingPipeline:
     """SSD-optimized pipeline for embedding population and updates."""
-    
+
     async def populate_from_sources(self, data_sources: list[Path]):
         """Populate embeddings from various data sources."""
-        
+
         for source in data_sources:
             if source.name == "healing_outcomes":
                 await self._populate_healing_embeddings(source)
@@ -157,27 +157,27 @@ class SSDOptimizedEmbeddingPipeline:
                 await self._populate_dpo_embeddings(source)
             elif source.name == "config_history":
                 await self._populate_config_embeddings(source)
-    
+
     async def _populate_healing_embeddings(self, source_path: Path):
         """Populate healing context embeddings with SSD optimization."""
-        
+
         # Process in chunks optimized for SSD I/O
         chunk_size = 10000  # Optimize for SSD sequential reads
-        
+
         for chunk_file in source_path.glob("*.json"):
             chunk_data = json.loads(chunk_file.read_text())
-            
+
             # Batch embedding generation
             texts = [self._format_healing_context(item) for item in chunk_data]
             embeddings = await self.embedder.get_embeddings_batch(texts)
-            
+
             # Store locally with SSD-optimized layout
             await self._store_embeddings_locally(
                 embeddings=embeddings,
                 metadata=chunk_data,
                 index_type="healing"
             )
-            
+
             # Periodic FAISS index rebuild
             if self._should_rebuild_index():
                 await self._rebuild_faiss_index("healing")
@@ -236,20 +236,20 @@ class SSDOptimizedEmbeddingPipeline:
 ```python
 class SSDOptimizationConfig:
     """Configuration optimized for 4TB SSD performance."""
-    
+
     # FAISS index parameters for SSD
     FAISS_NLIST = 4096      # Optimized for SSD random access
     FAISS_M = 64            # Balance compression and accuracy
     FAISS_NBITS = 8         # 8-bit quantization for storage efficiency
-    
+
     # Batch processing optimized for SSD I/O
     BATCH_SIZE = 5000       # Large batches for SSD sequential reads
     MAX_WORKERS = 8         # Parallel processing for multi-core SSD
-    
+
     # Cache management
     HOT_CACHE_SIZE = 10000  # RAM cache for most frequent patterns
     WARM_CACHE_SIZE = 1000000  # SSD cache for recent patterns
-    
+
     # Storage layout optimization
     EMBEDDING_CHUNK_SIZE = 100000  # 100K embeddings per file
     COMPRESSION_ENABLED = True     # LZ4 compression for SSD storage

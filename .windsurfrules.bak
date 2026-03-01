@@ -24,7 +24,7 @@ All requested execution MUST include raw evidence capture and executed test outc
 Per response, Windsurf MUST:
 - Capture ALL command outputs via a Python-only evidence runner that:
   - uses subprocess argv arrays (shell=False)
-  - writes outputs into the single canonical evidence file under `docs/reports/plans/` 
+  - writes outputs into the single canonical evidence file under `docs/reports/plans/`
   - FAILS if argv0 contains "pwsh" or "powershell" (case-insensitive)
 - Store evidence in EXACTLY ONE file under `docs/reports/plans/` (no `docs/reports/sub/` for response-final evidence)
 - Authoritative pytest commands MUST show test pass/fail outcomes.
@@ -37,7 +37,7 @@ Hard violation cases (IMMEDIATE FAIL):
 ## -2A. ASCII-Only Evidence Output Lock (NO ANSI / NO NON-ASCII)
 Evidence runners and contract gates MUST produce ASCII-only embedded command outputs.
 Required:
-- pytest MUST be invoked with: `python -m pytest -q --color=no` 
+- pytest MUST be invoked with: `python -m pytest -q --color=no`
 - Evidence runner MUST strip ANSI escape sequences from captured output (hard-fail if any remain).
 - Evidence runner MUST hard-fail if any non-ASCII bytes remain in the final evidence file.
 
@@ -72,10 +72,10 @@ Hard violation cases (IMMEDIATE FAIL):
 When evidence includes CODE_COMMIT and FILES_CHANGED_CODE:
 - CODE_COMMIT MUST be a 40-hex commit that exists.
 - FILES_CHANGED_CODE MUST be derived ONLY from:
-  `git show --name-only --pretty=format: <CODE_COMMIT>` 
+  `git show --name-only --pretty=format: <CODE_COMMIT>`
   and MUST be verbatim (no hand-maintained lists).
 - Evidence commit (EVIDENCE_COMMIT) and FILES_CHANGED_EVIDENCE (if present) MUST be derived ONLY from:
-  `git show --name-only --pretty=format: <EVIDENCE_COMMIT>` 
+  `git show --name-only --pretty=format: <EVIDENCE_COMMIT>`
 
 Hard violation cases (IMMEDIATE FAIL):
 - "Parent commit" or other workaround used to dodge hash-loop prevention if it breaks FILES_CHANGED_CODE fidelity.

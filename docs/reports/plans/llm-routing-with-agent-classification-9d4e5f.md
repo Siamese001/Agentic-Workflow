@@ -12,7 +12,7 @@ Before any implementation, scan all agents to determine LLM healing requirements
 ```python
 # Scan scope:
 - agentic_core/*Agent.py (97 agents)
-- apps_rg/engines/*.py (48 engines) 
+- apps_rg/engines/*.py (48 engines)
 - apps_lic/*Agent.py (44 agents)
 - apps_shared/*Agent.py (11 agents)
 
@@ -69,10 +69,10 @@ Based on scan results, add appropriate `AGENT_REASONING_CLASS`:
 # Example classifications
 class FissionManagerAgent(SovereignBaseAgent):
     AGENT_REASONING_CLASS = ReasoningClass.ORCHESTRATOR  # Complex orchestration
-    
+
 class NamingAgent(SovereignBaseAgent):
     AGENT_REASONING_CLASS = ReasoningClass.DETERMINISTIC  # Simple rules
-    
+
 class BulletGenerationTask(BaseRGEngine):
     AGENT_REASONING_CLASS = ReasoningClass.LIGHT  # Fast generation
 ```
@@ -110,24 +110,24 @@ class BulletGenerationTask(BaseRGEngine):
 ## Detailed Classification Criteria
 
 ### LLM Healing Indicators:
-✅ Has complex conditional logic in heal methods  
-✅ Handles ambiguous or context-dependent fixes  
-✅ Requires understanding of code semantics  
-✅ Deals with architectural decisions  
-✅ Has @standard_heal + complex implementation  
+✅ Has complex conditional logic in heal methods
+✅ Handles ambiguous or context-dependent fixes
+✅ Requires understanding of code semantics
+✅ Deals with architectural decisions
+✅ Has @standard_heal + complex implementation
 
 ### Deterministic Healing Indicators:
-✅ Simple pattern matching/replacement  
-✅ Fixed rule applications  
-✅ File moves/renames  
-✅ Syntax corrections  
-✅ Validation only  
+✅ Simple pattern matching/replacement
+✅ Fixed rule applications
+✅ File moves/renames
+✅ Syntax corrections
+✅ Validation only
 
 ### Production Generation (apps_rg):
-✅ Content creation (bullets, messages)  
-✅ Template filling  
-✅ Data transformation with reasoning  
-✅ Strategic planning  
+✅ Content creation (bullets, messages)
+✅ Template filling
+✅ Data transformation with reasoning
+✅ Strategic planning
 
 ---
 

@@ -53,12 +53,12 @@ class LLMRoutingPolicy:
     # Generation routing
     generation_models: dict[ReasoningClass, str]
     generation_budgets: dict[ReasoningClass, int]
-    
+
     # Healing routing (dynamic from L4)
     healing_confidence_x: float  # Read from L4 state
     healing_confidence_y: float  # Read from L4 state
     healing_max_retries: int
-    
+
     @property
     def policy_hash(self) -> str:
         """SHA256 for L4 Merkle root anchoring"""
@@ -71,7 +71,7 @@ class SovereignLLMGateway:
     async def route_generation(self, prompt: str, reasoning_class: ReasoningClass,
                              trace_id: str, replay_mode: bool = True) -> str:
         # Production inference: deterministic, budget enforced
-        
+
     async def route_healing(self, failure_context: HealingInput,
                            trace_id: str) -> str:
         # Failure recovery: stochastic allowed, retry escalation
@@ -109,8 +109,8 @@ class SovereignBaseAgent:
 ### 2.3 Canonical Replay Key
 ```python
 replay_key = sha256(
-    trace_id + prompt_hash + model_id + str(temperature) + 
-    str(top_p) + response_hash + provider_version + 
+    trace_id + prompt_hash + model_id + str(temperature) +
+    str(top_p) + response_hash + provider_version +
     system_prompt_hash
 )
 ```
@@ -124,7 +124,7 @@ replay_key = sha256(
 class MCPOperationMixin:
     def __init__(self, gateway: SovereignLLMGateway | None = None):
         self.gateway = gateway or SovereignLLMGateway()
-    
+
     async def call_llm(self, prompt: str, *,
                       reasoning_class: ReasoningClass | None = None,
                       trace_id: str | None = None) -> str:
@@ -148,10 +148,10 @@ Based on scan results from Phase 0:
 # Examples
 class FissionManagerAgent(SovereignBaseAgent):
     AGENT_REASONING_CLASS = ReasoningClass.ORCHESTRATOR  # Complex orchestration
-    
+
 class NamingAgent(SovereignBaseAgent):
     AGENT_REASONING_CLASS = ReasoningClass.DETERMINISTIC  # Simple rules
-    
+
 class BulletGenerationTask(BaseRGEngine):
     AGENT_REASONING_CLASS = ReasoningClass.LIGHT  # Fast generation
 ```

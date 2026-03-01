@@ -47,7 +47,7 @@ class LocalFAISSStore:
     def open(self, index_id: str) -> tuple[Any, str, IndexBuildMetadata]:
         """Returns (index_handle, index_version_hash, build_metadata)."""
         ...
-    
+
     def search(
         self, index_id: str, query_vector: list[float], top_k: int, cutoff: float
     ) -> list[tuple[str, str, float]]:

@@ -112,7 +112,7 @@ This plan implements a comprehensive system to wire agents in apps_*, agentic_co
       "reasoning_intensity": "HIGH"
     },
     {
-      "agent_id": "ClassificationComplianceHealer", 
+      "agent_id": "ClassificationComplianceHealer",
       "execution_mode": "DETERMINISTIC",
       "confidence_threshold": null,
       "healing_strategy": "rule_based"
@@ -138,7 +138,7 @@ def calculate_heal_confidence(
 ) -> float:
     """Calculate confidence score with agent-specific adjustments."""
     base_score = calculate_base_confidence(healing_input)
-    
+
     if agent_execution_profile:
         if agent_execution_profile.execution_mode == ExecutionMode.DETERMINISTIC:
             # Deterministic agents get lower confidence for LLM healing
@@ -146,7 +146,7 @@ def calculate_heal_confidence(
         elif agent_execution_profile.reasoning_intensity == "HIGH":
             # High reasoning agents get higher confidence for complex tasks
             base_score *= 1.2
-    
+
     return min(1.0, base_score)
 ```
 
@@ -167,7 +167,7 @@ def _get_provider_client(self, provider: Provider):
 ```python
 class DeterministicHealingPath:
     """Pure deterministic healing for non-LLM agents."""
-    
+
     def should_use_llm_healing(self, agent_id: str, failure_type: str) -> bool:
         """Deterministic agents should never use LLM healing."""
         profile = get_profile(agent_id)

@@ -10,7 +10,7 @@ This plan integrates critical runtime sovereignty enforcement with static import
 
 **Critical Issues Found**:
 - 15+ agentic_core files with illegal apps_* imports
-- Missing runtime sovereignty guardrails  
+- Missing runtime sovereignty guardrails
 - No gateway bypass detection
 - Unhardened dependency injection registry
 - Missing write isolation in system_learning
@@ -24,7 +24,7 @@ This plan integrates critical runtime sovereignty enforcement with static import
 **Risk Level**: HIGH
 
 #### Wave 1.1: L3_orchestration & L4_state Remediation
-**Files**: 
+**Files**:
 - `agentic_core/L3_orchestration/engines/AgentFactory.py`
 - `agentic_core/L4_state/utils/layer_gravity_util.py`
 
@@ -46,7 +46,7 @@ class AgentFactory:
         # Registry must be immutable after initialization
         self._registry.seal()
         validate_adapter_registry_hash(self._registry.hash)
-    
+
     def create_agent(self, agent_type: str, config: dict):
         # Use injected adapters instead of direct imports
         adapter = self._registry.get_adapter(agent_type)
@@ -74,7 +74,7 @@ from agentic_core.sovereignty import assert_no_downstream_imports
 def validate_structure_blueprint(path: Path) -> ValidationResult:
     # Runtime sovereignty check
     assert_no_downstream_imports()
-    
+
     # Use core classification instead of domain-specific types
     domain_type = classify_domain_plan(path)
     return validate_by_domain_type(domain_type)
@@ -100,7 +100,7 @@ from agentic_core.sovereignty import validate_layer_sovereignty_matrix
 def validate_apps_taxonomy(config_path: Path) -> bool:
     # Runtime sovereignty matrix validation
     validate_layer_sovereignty_matrix()
-    
+
     schema = AppConfigSchema.load_for_domain(config_path.parent.name)
     return validate_config_schema(config_path, schema)
 ```
@@ -133,7 +133,7 @@ def assert_no_downstream_imports():
         if module_name.startswith(tuple(FORBIDDEN_UPSTREAM_MUTATIONS)):
             # Check if any agentic_core module imported this
             for caller_module in sys.modules.keys():
-                if (caller_module.startswith('agentic_core.L') and 
+                if (caller_module.startswith('agentic_core.L') and
                     sys.modules.get(caller_module) is not None):
                     raise SovereigntyViolationError(
                         f"Upstream mutation detected: {caller_module} imported {module_name}"
@@ -142,10 +142,10 @@ def assert_no_downstream_imports():
 def assert_no_gateway_bypass():
     """Boot-time invariant: no direct LLM provider imports."""
     forbidden_providers = {
-        'openai', 'anthropic', 'google.generativeai', 
+        'openai', 'anthropic', 'google.generativeai',
         'transformers', 'torch', 'tensorflow'
     }
-    
+
     for module_name in sys.modules.keys():
         if any(provider in module_name for provider in forbidden_providers):
             # Allow only in sovereign gateway context
@@ -196,7 +196,7 @@ class AdapterRegistryHash:
     algorithm: str = "sha256"
     hex_digest: str = ""
     manifest: Dict[str, Any] = None
-    
+
     def __post_init__(self):
         if not self.hex_digest and self.manifest:
             # Compute deterministic hash
@@ -206,30 +206,30 @@ class AdapterRegistryHash:
 
 class ImmutableAdapterRegistry:
     """Immutable adapter registry with cryptographic integrity."""
-    
+
     def __init__(self, adapters: Dict[str, Any]):
         self._adapters = dict(adapters)
         self._sealed = False
         self._hash: Optional[AdapterRegistryHash] = None
-    
+
     def seal(self):
         """Seal registry and compute hash."""
         if self._sealed:
             return
-        
+
         self._sealed = True
         manifest = {
             'adapters': sorted(self._adapters.keys()),
             'types': [type(adapter).__name__ for adapter in self._adapters.values()]
         }
         self._hash = AdapterRegistryHash(manifest=manifest)
-    
+
     @property
     def hash(self) -> AdapterRegistryHash:
         if not self._sealed:
             raise RuntimeError("Registry must be sealed before accessing hash")
         return self._hash
-    
+
     def get_adapter(self, adapter_type: str):
         if not self._sealed:
             raise RuntimeError("Registry must be sealed before use")
@@ -261,23 +261,23 @@ from agentic_core.exceptions import IsolationViolationError
 
 class WriteIsolationGuard:
     """Enforces system_learning write isolation at runtime."""
-    
+
     FORBIDDEN_MUTATION_CONTEXTS: Set[str] = {
         'L2_execution', 'L3_orchestration', 'L5_safety'
     }
-    
+
     def __init__(self):
         self._active = True
-    
+
     def assert_no_state_mutation(self, operation: str):
         """Check if current call stack violates write isolation."""
         if not self._active:
             return
-        
+
         call_stack = inspect.stack()
-        caller_modules = [frame.frame.f_globals.get('__name__', '') 
+        caller_modules = [frame.frame.f_globals.get('__name__', '')
                          for frame in call_stack]
-        
+
         # Check if system_learning is being called from forbidden context
         if any('system_learning' in module for module in caller_modules):
             for module in caller_modules:
@@ -285,15 +285,15 @@ class WriteIsolationGuard:
                     raise IsolationViolationError(
                         f"Write isolation violation: {operation} called from {module}"
                     )
-    
+
     def assert_proposal_only(self):
         """Ensure meta-learning operations are proposal-only."""
         call_stack = inspect.stack()
-        caller_modules = [frame.frame.f_globals.get('__name__', '') 
+        caller_modules = [frame.frame.f_globals.get('__name__', '')
                          for frame in call_stack]
-        
+
         for module in caller_modules:
-            if ('system_learning' in module and 
+            if ('system_learning' in module and
                 ('activator' in module or 'version_store' in module)):
                 raise IsolationViolationError(
                     f"Meta-learning activation detected: {module}"
@@ -326,14 +326,14 @@ FORBIDDEN_IMPORT_PATTERNS: Final[Set[str]] = frozenset({
 
 ALLOWED_READ_ONLY_PATTERNS: Final[Set[str]] = frozenset({
     "agentic_core.types",
-    "agentic_core.interfaces", 
+    "agentic_core.interfaces",
     "agentic_core.classification",
     "agentic_core.runtime.sovereignty_guard",  # For validation only
 })
 
 FORBIDDEN_MUTATION_MODULES: Final[Set[str]] = frozenset({
     "agentic_core.L2_execution",
-    "agentic_core.L3_orchestration", 
+    "agentic_core.L3_orchestration",
     "agentic_core.L5_safety",
 })
 ```
@@ -353,15 +353,15 @@ FORBIDDEN_MUTATION_MODULES: Final[Set[str]] = frozenset({
 # agentic_core/enforcement/import_boundary_check.py
 class GatewayBypassVisitor(ast.NodeVisitor):
     """AST visitor to detect gateway bypass attempts."""
-    
+
     FORBIDDEN_PROVIDERS = {
         'openai', 'anthropic', 'google.generativeai',
         'transformers', 'torch', 'tensorflow', 'huggingface'
     }
-    
+
     def __init__(self):
         self.violations: List[str] = []
-    
+
     def visit_Import(self, node):
         for alias in node.names:
             if any(provider in alias.name for provider in self.FORBIDDEN_PROVIDERS):
@@ -370,7 +370,7 @@ class GatewayBypassVisitor(ast.NodeVisitor):
                         f"Line {node.lineno}: Gateway bypass import '{alias.name}'"
                     )
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node):
         if node.module and any(provider in node.module for provider in self.FORBIDDEN_PROVIDERS):
             if not self._is_in_gateway_context(node):
@@ -378,14 +378,14 @@ class GatewayBypassVisitor(ast.NodeVisitor):
                     f"Line {node.lineno}: Gateway bypass from-import '{node.module}'"
                 )
         self.generic_visit(node)
-    
+
     def _is_in_gateway_context(self, node) -> bool:
         """Check if import is within sovereign gateway context."""
         # Walk up AST to find enclosing module
         parent = node
         while hasattr(parent, 'parent'):
             parent = parent.parent
-            if (isinstance(parent, ast.Module) and 
+            if (isinstance(parent, ast.Module) and
                 'sovereign_llm_gateway' in getattr(parent, '__file__', '')):
                 return True
         return False
@@ -396,12 +396,12 @@ def check_gateway_bypass_violations(file_path: Path) -> List[str]:
         content = file_path.read_text()
         tree = ast.parse(content)
         visitor = GatewayBypassVisitor()
-        
+
         # Set parent references for context checking
         for node in ast.walk(tree):
             for child in ast.iter_child_nodes(node):
                 child.parent = node
-        
+
         visitor.visit(tree)
         return visitor.violations
     except SyntaxError as e:
@@ -421,21 +421,21 @@ from agentic_core.exceptions import SovereigntyViolationError
 
 class GatewayMonitor:
     """Runtime monitor for gateway compliance."""
-    
+
     FORBIDDEN_MODULES = {
         'openai', 'anthropic', 'google.generativeai',
         'transformers', 'torch', 'tensorflow'
     }
-    
+
     def __init__(self):
         self._original_import = __builtins__['__import__']
         self._active = True
-    
+
     def install_hook(self):
         """Install import hook for runtime monitoring."""
         if not self._active:
             return
-        
+
         def monitored_import(name, globals=None, locals=None, fromlist=(), level=0):
             # Check for forbidden provider imports
             if any(forbidden in name for forbidden in self.FORBIDDEN_MODULES):
@@ -444,7 +444,7 @@ class GatewayMonitor:
                     raise SovereigntyViolationError(
                         f"Gateway bypass detected: {name} imported from {caller_module}"
                     )
-            
+
             # Check fromlist for forbidden imports
             if fromlist:
                 for item in fromlist:
@@ -454,11 +454,11 @@ class GatewayMonitor:
                             raise SovereigntyViolationError(
                                 f"Gateway bypass detected: {item} imported from {caller_module}"
                             )
-            
+
             return self._original_import(name, globals, locals, fromlist, level)
-        
+
         __builtins__['__import__'] = monitored_import
-    
+
     def uninstall_hook(self):
         """Remove import hook."""
         __builtins__['__import__'] = self._original_import
@@ -492,22 +492,22 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Check agentic_core import boundaries
         run: python -m agentic_core.enforcement.import_boundary_check
-      
+
       - name: Check gateway bypass violations
         run: python -m agentic_core.enforcement.gateway_bypass_check
-      
-      - name: Validate system_learning isolation  
+
+      - name: Validate system_learning isolation
         run: python -m system_learning.enforcement.boundary_guard
-      
+
       - name: Run sovereignty matrix tests
         run: python -m pytest tests/architecture/test_sovereignty_matrix.py -xvv
-      
+
       - name: Validate determinism artifacts
         run: python -m agentic_core.runtime.validate_determinism_digest
-      
+
       - name: Check adapter registry integrity
         run: python -m agentic_core.dependency_injection.validate_registry
 ```
@@ -527,7 +527,7 @@ from pathlib import Path
 def test_no_upward_mutation():
     """Verify no upstream modules import downstream modules."""
     from agentic_core.runtime.sovereignty_guard import assert_no_downstream_imports
-    
+
     # Should not raise any exceptions
     assert_no_downstream_imports()
 
@@ -535,7 +535,7 @@ def test_no_upward_mutation():
 def test_no_gateway_bypass():
     """Verify no direct LLM provider imports outside gateway."""
     from agentic_core.runtime.sovereignty_guard import assert_no_gateway_bypass
-    
+
     # Should not raise any exceptions
     assert_no_gateway_bypass()
 
@@ -543,7 +543,7 @@ def test_no_gateway_bypass():
 def test_embedding_non_authority():
     """Verify embeddings are C0 informational only."""
     from agentic_core.runtime.sovereignty_guard import assert_embedding_non_authority
-    
+
     # Should not raise any exceptions
     assert_embedding_non_authority()
 
@@ -551,7 +551,7 @@ def test_embedding_non_authority():
 def test_proposal_only_meta_learning():
     """Verify meta-learning remains proposal-only."""
     from agentic_core.runtime.sovereignty_guard import assert_proposal_only_meta_learning
-    
+
     # Should not raise any exceptions
     assert_proposal_only_meta_learning()
 
@@ -559,7 +559,7 @@ def test_proposal_only_meta_learning():
 def test_layer_sovereignty_matrix():
     """Complete sovereignty matrix validation."""
     from agentic_core.runtime.sovereignty_guard import validate_layer_sovereignty_matrix
-    
+
     # Should not raise any exceptions
     validate_layer_sovereignty_matrix()
 
@@ -568,10 +568,10 @@ def test_adapter_registry_integrity():
     """Verify adapter registry cryptographic integrity."""
     from agentic_core.dependency_injection import ImmutableAdapterRegistry
     from agentic_core.dependency_injection import validate_adapter_registry_hash
-    
+
     registry = ImmutableAdapterRegistry({'test': 'adapter'})
     registry.seal()
-    
+
     # Should validate successfully
     validate_adapter_registry_hash(registry.hash)
 
@@ -579,7 +579,7 @@ def test_adapter_registry_integrity():
 def test_system_learning_write_isolation():
     """Verify system_learning write isolation."""
     from system_learning.enforcement.write_isolation_guard import assert_write_isolation
-    
+
     # Should not raise any exceptions
     assert_write_isolation("test_operation")
 ```
@@ -595,20 +595,20 @@ from typing import Dict, Any
 
 class DeterminismDigest:
     """Cryptographic digest of system state for determinism verification."""
-    
+
     def __init__(self):
         self._artifacts: Dict[str, str] = {}
-    
+
     def add_artifact(self, name: str, hash_value: str):
         """Add artifact hash to digest."""
         self._artifacts[name] = hash_value
-    
+
     def compute_digest(self) -> str:
         """Compute final determinism digest."""
         # Sort artifacts for deterministic ordering
         sorted_artifacts = json.dumps(self._artifacts, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(sorted_artifacts.encode('utf-8')).hexdigest()
-    
+
     def verify_digest(self, expected: str) -> bool:
         """Verify digest matches expected value."""
         return self.compute_digest() == expected
@@ -632,10 +632,10 @@ def initialize_sovereignty():
     """Initialize sovereignty guards at module import."""
     from agentic_core.runtime.sovereignty_guard import validate_layer_sovereignty_matrix
     from agentic_core.runtime.gateway_monitor import install_gateway_monitor
-    
+
     # Validate sovereignty matrix
     validate_layer_sovereignty_matrix()
-    
+
     # Install runtime monitoring
     install_gateway_monitor()
 
@@ -647,13 +647,13 @@ initialize_sovereignty()
 
 ### 1. Quantitative Metrics
 - Zero apps_* imports in agentic_core layers
-- Zero system_learning isolation violations  
+- Zero system_learning isolation violations
 - Zero gateway bypass attempts
 - 100% CI/CD sovereignty check pass rate
 - Determinism digest consistency across runs
 - <5% performance impact from sovereignty enforcement
 
-### 2. Qualitative Metrics  
+### 2. Qualitative Metrics
 - Runtime sovereignty guardrails active
 - Cryptographic adapter registry integrity
 - Write isolation enforced in system_learning

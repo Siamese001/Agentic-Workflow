@@ -34,7 +34,7 @@ This enables offline testing, deterministic mock search for replay tests, and fu
 
 class EmbeddingSearchProvider(Protocol):
     """Read-only search interface. Plan B's sole dependency on Plan A's infrastructure.
-    
+
     INVARIANT: Implementors may not expose train(), add(), prune(), or save().
     INVARIANT: search() enforces caller_namespace vs target index_id isolation (I9).
     """
@@ -91,7 +91,7 @@ I9. DPO namespace isolation applies at index_id level — cross-index search (e.
 @dataclass(frozen=True, slots=True)
 class EmbeddingArtifact:
     """Replay-compatible wrapper for every embedding-influenced decision.
-    
+
     Required on all ChangePackages produced by embedding-aware components.
     Without this, ReplayValidator cannot reconstruct the decision.
     """
@@ -128,7 +128,7 @@ class EmbeddingArtifact:
 
 class MetaLearningEmbeddingService:
     """Informational-only embedding signal service.
-    
+
     INVARIANT: Produces signals only. Never mutates state.
     INVARIANT: All outputs paired with EmbeddingArtifact for replay.
     INVARIANT: Degrades gracefully when index unavailable (returns None, None).
@@ -243,7 +243,7 @@ class AbsoluteMutationViolation(RuntimeError):
 
 def assert_delta_only(change_package: ChangePackage) -> None:
     """Hard structural guard enforcing I1.
-    
+
     Called by every embedding-aware proposer before returning.
     Raises AbsoluteMutationViolation — never swallowed.
     """
@@ -300,10 +300,10 @@ The existing `ChangePackage.canonical_bytes()` serializes `reason` — so the ar
 ```python
 class DPOEmbeddingNamespace:
     """Namespace key for DPO embedding isolation."""
-    
+
     def __init__(self, domain: str, task_class: str, policy_version: str):
         self.namespace_id = f"dpo/{domain}/{task_class}/{policy_version}"
-    
+
     def validate_cross_namespace_query(
         self, target_namespace: str, whitelist: frozenset[str]
     ) -> None:

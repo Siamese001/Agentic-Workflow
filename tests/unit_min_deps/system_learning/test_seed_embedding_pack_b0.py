@@ -9,7 +9,6 @@ from __future__ import annotations
 import hashlib
 import json
 import shutil
-import struct
 import tempfile
 from pathlib import Path
 
@@ -21,9 +20,7 @@ from system_learning.engines.seed_embedding_pack_builder import (
 )
 from system_learning.types.seed_embedding_pack_types import (
     SeedEmbeddingPackConfig,
-    SeedEmbeddingPackManifest,
 )
-
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -36,7 +33,7 @@ class TestDeterministicMinimalSeed:
         # Setup
         base_path1 = Path(tempfile.mkdtemp())
         base_path2 = Path(tempfile.mkdtemp())
-        
+
         corpus_rows = [
             {
                 "content_hash": "a" * 64,
@@ -210,10 +207,10 @@ class TestCanonicalSortValidation:
             / "row_index.jsonl"
         )
         lines = row_index_path.read_text().splitlines()
-        
+
         # Parse and check order
         parsed_rows = [json.loads(line) for line in lines]
-        
+
         # Expected order: (a,t2), (a,t3), (z,t1)
         assert parsed_rows[0]["content_hash"] == "a" * 64
         assert parsed_rows[0]["trace_id"] == "t2"
@@ -275,7 +272,7 @@ class TestByteLengthInvariant:
         )
         file_size = embeddings_path.stat().st_size
         expected_size = manifest.vector_count * manifest.dimensions * 4
-        
+
         assert file_size == expected_size
 
         # Cleanup
@@ -324,7 +321,7 @@ class TestHashVerification:
         )
         file_bytes = row_index_path.read_bytes()
         computed_hash = hashlib.sha256(file_bytes).hexdigest()
-        
+
         assert manifest.row_index_hash == computed_hash
 
         # Cleanup
@@ -369,7 +366,7 @@ class TestHashVerification:
         )
         file_bytes = embeddings_path.read_bytes()
         computed_hash = hashlib.sha256(file_bytes).hexdigest()
-        
+
         assert manifest.matrix_hash == computed_hash
 
         # Cleanup
@@ -540,12 +537,7 @@ class TestReadOnlyMtimeInvariant:
         )
 
         # Check files exist and are readable
-        pack_dir = (
-            base_path
-            / "seed_packs"
-            / "healing_contexts"
-            / manifest.seed_index_version_hash
-        )
+        pack_dir = base_path / "seed_packs" / "healing_contexts" / manifest.seed_index_version_hash
         assert (pack_dir / "row_index.jsonl").exists()
         assert (pack_dir / "embeddings.f32").exists()
         assert (pack_dir / "seed_manifest.json").exists()
@@ -563,28 +555,28 @@ class TestDeterministicHashEmbedder:
     def test_deterministic_hash_embedder_same_input(self):
         """Same content_hash produces same vector."""
         embedder = DeterministicHashEmbedder(dimensions=4)
-        
+
         vectors1 = embedder.embed_batch(["test"], 4)
         vectors2 = embedder.embed_batch(["test"], 4)
-        
+
         assert vectors1 == vectors2
 
     def test_deterministic_hash_embedder_different_input(self):
         """Different content_hash produces different vectors."""
         embedder = DeterministicHashEmbedder(dimensions=4)
-        
+
         vectors1 = embedder.embed_batch(["test1"], 4)
         vectors2 = embedder.embed_batch(["test2"], 4)
-        
+
         assert vectors1 != vectors2
 
     def test_deterministic_hash_embedder_dimensions(self):
         """Vector dimensions match requested dimensions."""
         dimensions = 8
         embedder = DeterministicHashEmbedder(dimensions=dimensions)
-        
+
         vectors = embedder.embed_batch(["test"], dimensions)
-        
+
         assert len(vectors) == 1
         assert len(vectors[0]) == dimensions
         assert all(isinstance(v, float) for v in vectors[0])

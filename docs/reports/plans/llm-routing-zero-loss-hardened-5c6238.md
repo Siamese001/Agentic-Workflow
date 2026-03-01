@@ -100,14 +100,14 @@ In `compute_heal_confidence()`:
 def compute_heal_confidence(healing_input: HealingInput) -> tuple[float, list[str]]:
     """Embedding recall boosts confidence but never bypasses routing."""
     base_score = FAILURE_CLASS_PRIORS.get(healing_input.failure_type, _NEUTRAL_PRIOR)
-    
+
     # Embedding confidence augmentation
     if hasattr(healing_input, "embedding_recall_score") and healing_input.embedding_recall_score > 0:
         # Boost confidence proportionally, but cap at 0.1 increase
         boost = min(healing_input.embedding_recall_score * 0.1, 0.1)
         base_score = min(base_score + boost, 1.0)
         reason_codes.append("embedding_boost")
-    
+
     # Continue with normal blast radius, retry decay, etc.
     # NO early return — always proceed to tier selection
 ```
@@ -181,7 +181,7 @@ async def call_llm(
     """PURE generation path — NO embedding recall."""
     from agentic_core.config.reasoning_class import ReasoningClass
     from agentic_core.L2_execution.enforcement.SovereignLLMGateway import get_llm_gateway
-    
+
     # REMOVED: embedding recall — generation must be pure
     cls = reasoning_class or getattr(self, "AGENT_REASONING_CLASS", ReasoningClass.LIGHT)
     result = await get_llm_gateway().route_generation(
@@ -200,7 +200,7 @@ Instead, ensure apps_rg emits proper `FailureSignal`:
 ```python
 # In BaseRGEngine error handling:
 failure_signal = FailureSignal.from_exception(
-    e, 
+    e,
     failure_type="RUNTIME",  # Semantic failure type
     domain="apps_rg"
 )
@@ -225,7 +225,7 @@ def should_embed(self, failure_type: str, retry_count: int) -> bool:
         "test_failure", "permission_denied", "network_timeout"
     }
     return (
-        retry_count >= 1 and 
+        retry_count >= 1 and
         failure_type not in NON_SEMANTIC_FAILURES
     )
 ```
@@ -350,9 +350,9 @@ Allowed modules for embedding:
 
 ## Zero-Loss Architecture Compliance
 
-✅ **Single choke point preserved** — `route_healing_tier()` remains sole decision maker  
-✅ **Deterministic replay** — embedding keys stored, scores rounded  
-✅ **Authority separation** — L1/L2.3 own embeddings, Apps_* clean  
-✅ **No cross-layer coupling** — generation path pure, healing augmented  
-✅ **Frozen dependencies** — seed pack hash pinned, model verified  
+✅ **Single choke point preserved** — `route_healing_tier()` remains sole decision maker
+✅ **Deterministic replay** — embedding keys stored, scores rounded
+✅ **Authority separation** — L1/L2.3 own embeddings, Apps_* clean
+✅ **No cross-layer coupling** — generation path pure, healing augmented
+✅ **Frozen dependencies** — seed pack hash pinned, model verified
 ✅ **Performance bounded** — semantic gating, no generation embedding

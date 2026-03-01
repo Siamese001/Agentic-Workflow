@@ -87,7 +87,7 @@ EMBEDDINGS_FILE = SEED_PACK_PATH / "embeddings.f32"
 
 def load_seed_pack_to_pinecone(pinecone_index, *, batch_size=100, dry_run=False):
     """Load seed embeddings into Pinecone healing_contexts namespace.
-    
+
     - Reads embeddings.f32 as float32 matrix (100000 x 3072)
     - Reads row_index.jsonl for metadata per row
     - Verifies matrix_hash before loading

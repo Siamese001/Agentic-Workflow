@@ -79,7 +79,7 @@ def compute_qwen_determinism_digest(
 def validate_gpu_capabilities(model_size: str) -> None:
     """Hard fail on GPU capability mismatch."""
     # VRAM threshold validation
-    # CUDA version validation  
+    # CUDA version validation
     # Compute capability validation
     # Driver version validation
 ```
@@ -242,13 +242,13 @@ Replace latency-focused criteria with sovereignty-focused criteria:
 ```python
 def test_qwen_determinism_digest():
     """Verify identical digest across invocations."""
-    
+
 def test_qwen_tier_enforcement():
     """Verify no tier bypass possible."""
-    
+
 def test_qwen_embedding_governance():
     """Verify embedding factory unchanged."""
-    
+
 def test_qwen_oom_escalation():
     """Verify proper OOM handling."""
 ```

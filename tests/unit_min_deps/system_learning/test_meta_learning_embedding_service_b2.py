@@ -6,7 +6,6 @@ deterministic retrieval, and tie-breaking behavior.
 
 from __future__ import annotations
 
-import json
 import shutil
 import tempfile
 from pathlib import Path
@@ -14,7 +13,6 @@ from pathlib import Path
 import pytest
 
 from system_learning.engines.meta_learning_embedding_service import (
-    Embedder,
     IntegrityError,
     MetaLearningEmbeddingService,
 )
@@ -23,7 +21,6 @@ from system_learning.engines.seed_embedding_pack_builder import (
     build_seed_embedding_pack,
 )
 from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
-
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -34,11 +31,11 @@ class TestMetaLearningEmbeddingService:
     def test_missing_pack_returns_neutral_none(self):
         """Nonexistent pack path => retrieve returns None and does not create files."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             embedder = DeterministicHashEmbedder(dimensions=4)
             service = MetaLearningEmbeddingService(str(base_path), embedder)
-            
+
             # Try to retrieve from nonexistent pack
             result = service.retrieve(
                 namespace="nonexistent_ns",
@@ -46,21 +43,21 @@ class TestMetaLearningEmbeddingService:
                 query_text="test query",
                 k=3,
             )
-            
+
             # Should return None (neutral behavior)
             assert result is None
-            
+
             # Should not create any files
             pack_dir = base_path / "seed_packs" / "nonexistent_ns" / "nonexistent_hash"
             assert not pack_dir.exists()
-            
+
         finally:
             shutil.rmtree(base_path)
 
     def test_load_validates_hashes_and_dimensions(self):
         """Build a real seed pack and verify stable retrieval."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -89,7 +86,7 @@ class TestMetaLearningEmbeddingService:
                     "created_utc": 1234567892,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -97,10 +94,10 @@ class TestMetaLearningEmbeddingService:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Create service
             service = MetaLearningEmbeddingService(str(base_path), embedder)
-            
+
             # Retrieve k=3
             result1 = service.retrieve(
                 namespace="test_ns",
@@ -108,7 +105,7 @@ class TestMetaLearningEmbeddingService:
                 query_text="hello world",
                 k=3,
             )
-            
+
             # Should get valid result
             assert result1 is not None
             assert result1.namespace == "test_ns"
@@ -118,7 +115,7 @@ class TestMetaLearningEmbeddingService:
             assert result1.embedding_model_version == manifest.embedding_model_version
             assert len(result1.supporting_trace_ids) == 3
             assert len(result1.supporting_content_hashes) == 3
-            
+
             # Retrieve again - should be stable
             result2 = service.retrieve(
                 namespace="test_ns",
@@ -126,31 +123,31 @@ class TestMetaLearningEmbeddingService:
                 query_text="hello world",
                 k=3,
             )
-            
+
             # Assert stable supporting_trace_ids across two calls
             assert result1.supporting_trace_ids == result2.supporting_trace_ids
             assert result1.supporting_content_hashes == result2.supporting_content_hashes
             assert result1.artifact_hash() == result2.artifact_hash()
-            
+
         finally:
             shutil.rmtree(base_path)
 
     def test_tie_break_is_deterministic(self):
         """Construct pack with identical cosine scores and verify deterministic ordering."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Use a special embedder that creates identical vectors for tie-breaking
             class TieBreakEmbedder:
                 def __init__(self, dimensions: int):
                     self.dimensions = dimensions
-                
+
                 def embed_batch(self, texts: list[str], dimensions: int) -> list[list[float]]:
                     # Create identical vectors for all texts to force ties
                     return [[1.0, 0.0, 0.0, 0.0] for _ in texts]
-            
+
             embedder = TieBreakEmbedder(dimensions=4)
-            
+
             # Build seed pack with content that will create ties
             config = SeedEmbeddingPackConfig(
                 namespace="tie_test_ns",
@@ -160,13 +157,13 @@ class TestMetaLearningEmbeddingService:
             corpus_rows = [
                 {
                     "content_hash": "z_hash",  # Will sort last alphabetically
-                    "trace_id": "z_trace",     # Will sort last alphabetically
+                    "trace_id": "z_trace",  # Will sort last alphabetically
                     "namespace": "tie_test_ns",
                     "created_utc": 1234567892,
                 },
                 {
                     "content_hash": "a_hash",  # Will sort first alphabetically
-                    "trace_id": "a_trace",     # Will sort first alphabetically
+                    "trace_id": "a_trace",  # Will sort first alphabetically
                     "namespace": "tie_test_ns",
                     "created_utc": 1234567890,
                 },
@@ -177,7 +174,7 @@ class TestMetaLearningEmbeddingService:
                     "created_utc": 1234567891,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -185,10 +182,10 @@ class TestMetaLearningEmbeddingService:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Create service with same embedder
             service = MetaLearningEmbeddingService(str(base_path), embedder)
-            
+
             # Retrieve all 3 - should have identical scores
             result = service.retrieve(
                 namespace="tie_test_ns",
@@ -196,22 +193,22 @@ class TestMetaLearningEmbeddingService:
                 query_text="test",
                 k=3,
             )
-            
+
             # Verify deterministic ordering: (content_hash ASC, trace_id ASC)
             assert result is not None
             assert result.supporting_trace_ids == ["a_trace", "m_trace", "z_trace"]
             assert result.supporting_content_hashes == ["a_hash", "m_hash", "z_hash"]
-            
+
             # All scores should be identical (cosine similarity of identical vectors)
             # This confirms tie-breaking is working
-            
+
         finally:
             shutil.rmtree(base_path)
 
     def test_tampered_matrix_rejected_negative_control(self):
         """Tampered embeddings.f32 should cause integrity failure."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a valid seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -234,7 +231,7 @@ class TestMetaLearningEmbeddingService:
                     "created_utc": 1234567891,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -242,7 +239,7 @@ class TestMetaLearningEmbeddingService:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Tamper with embeddings.f32
             pack_dir = base_path / "seed_packs" / "test_ns" / manifest.seed_index_version_hash
             embeddings_path = pack_dir / "embeddings.f32"
@@ -250,10 +247,10 @@ class TestMetaLearningEmbeddingService:
                 # Flip one byte to corrupt the matrix
                 f.seek(10)
                 f.write(b"X")
-            
+
             # Create service
             service = MetaLearningEmbeddingService(str(base_path), embedder)
-            
+
             # Should raise IntegrityError due to hash mismatch
             with pytest.raises(IntegrityError, match="Embeddings hash mismatch"):
                 service.retrieve(
@@ -262,14 +259,14 @@ class TestMetaLearningEmbeddingService:
                     query_text="test query",
                     k=2,
                 )
-            
+
         finally:
             shutil.rmtree(base_path)
 
     def test_k_larger_than_available(self):
         """Request more results than available should return all available."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack with only 2 items
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -292,7 +289,7 @@ class TestMetaLearningEmbeddingService:
                     "created_utc": 1234567891,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -300,10 +297,10 @@ class TestMetaLearningEmbeddingService:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Create service
             service = MetaLearningEmbeddingService(str(base_path), embedder)
-            
+
             # Request k=5 but only 2 available
             result = service.retrieve(
                 namespace="test_ns",
@@ -311,20 +308,20 @@ class TestMetaLearningEmbeddingService:
                 query_text="test query",
                 k=5,
             )
-            
+
             # Should return only 2 results
             assert result is not None
             assert result.k == 2
             assert len(result.supporting_trace_ids) == 2
             assert len(result.supporting_content_hashes) == 2
-            
+
         finally:
             shutil.rmtree(base_path)
 
     def test_empty_query_vector_handling(self):
         """Handle edge case of zero-length query vector."""
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -347,7 +344,7 @@ class TestMetaLearningEmbeddingService:
                     "created_utc": 1234567891,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -355,14 +352,14 @@ class TestMetaLearningEmbeddingService:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Create service with embedder that returns zero vector
             class ZeroVectorEmbedder:
                 def embed_batch(self, texts: list[str], dimensions: int) -> list[list[float]]:
                     return [[0.0] * dimensions for _ in texts]
-            
+
             service = MetaLearningEmbeddingService(str(base_path), ZeroVectorEmbedder())
-            
+
             # Query with zero vector should return empty results
             result = service.retrieve(
                 namespace="test_ns",
@@ -370,12 +367,12 @@ class TestMetaLearningEmbeddingService:
                 query_text="test",
                 k=3,
             )
-            
+
             # Should return empty result
             assert result is not None
             assert result.k == 0
             assert len(result.supporting_trace_ids) == 0
             assert len(result.supporting_content_hashes) == 0
-            
+
         finally:
             shutil.rmtree(base_path)

@@ -384,16 +384,16 @@ The following violations are confirmed and MUST be remediated before the archite
 
 | ID | Violation | Severity | Source Evidence | Canonical Rule Violated | Fail-Closed Proof (Yes/No + evidence pointer) |
 |----|-----------|----------|-----------------|------------------------|---------------------------------------------|
-| VIO-01 | apps_rg direct LLM SDK calls (4 files) | RED | AST scan S8/S11 | SPINE 1: apps_* zero authority + sole Gateway seam | No | 
-| VIO-02 | apps_shared SentenceTransformer bypass (2 files) | RED | AST scan S10 | SPINE 1: EmbeddingServiceFactory sole instantiation | No | 
-| VIO-03 | healing_provider_adapters Gateway bypass | RED | AST scan S8 | SPINE 1: SovereignLLMGateway sole LLM seam | No | 
-| VIO-04 | External weight pull: no sig, no L5 cert, no kill-switch (A-05) | RED | Code analysis A-05 | SPINE 3: external boundary requires signed ingress | No | 
-| VIO-05 | LocalFAISSStore skeleton: writes not UWG-gated (A-41) | RED | Code analysis A-41 | SPINE 3: UWG sole mutation authority | No | 
-| VIO-06 | ChangePackage SHA-256-only (no HMAC key) (A-06) | ORANGE | Code analysis A-06 | SPINE 5: HMAC-SHA256 required for auth | No | 
-| VIO-07 | L4B IntakeRecord no HMAC; UWG unconfirmed (A-42) | ORANGE | Code analysis A-42 | SPINE 3: L4 writes must be HMAC-signed + UWG-routed | No | 
-| VIO-08 | GovernedPayload not frozen=True | YELLOW | Code analysis W6-29 | SPINE 6: determinism requires immutable post-assembly | No | 
-| VIO-09 | ChangePackage scope not payload-enforced | YELLOW | Code analysis W6-20 | SPINE 8: kind-scope validator required | No | 
-| VIO-10 | L1 ingress: no Pydantic schema validation for apps_* payload | YELLOW | Code analysis W6-24 | SPINE 1: typed APIs at all boundaries | No | 
+| VIO-01 | apps_rg direct LLM SDK calls (4 files) | RED | AST scan S8/S11 | SPINE 1: apps_* zero authority + sole Gateway seam | No |
+| VIO-02 | apps_shared SentenceTransformer bypass (2 files) | RED | AST scan S10 | SPINE 1: EmbeddingServiceFactory sole instantiation | No |
+| VIO-03 | healing_provider_adapters Gateway bypass | RED | AST scan S8 | SPINE 1: SovereignLLMGateway sole LLM seam | No |
+| VIO-04 | External weight pull: no sig, no L5 cert, no kill-switch (A-05) | RED | Code analysis A-05 | SPINE 3: external boundary requires signed ingress | No |
+| VIO-05 | LocalFAISSStore skeleton: writes not UWG-gated (A-41) | RED | Code analysis A-41 | SPINE 3: UWG sole mutation authority | No |
+| VIO-06 | ChangePackage SHA-256-only (no HMAC key) (A-06) | ORANGE | Code analysis A-06 | SPINE 5: HMAC-SHA256 required for auth | No |
+| VIO-07 | L4B IntakeRecord no HMAC; UWG unconfirmed (A-42) | ORANGE | Code analysis A-42 | SPINE 3: L4 writes must be HMAC-signed + UWG-routed | No |
+| VIO-08 | GovernedPayload not frozen=True | YELLOW | Code analysis W6-29 | SPINE 6: determinism requires immutable post-assembly | No |
+| VIO-09 | ChangePackage scope not payload-enforced | YELLOW | Code analysis W6-20 | SPINE 8: kind-scope validator required | No |
+| VIO-10 | L1 ingress: no Pydantic schema validation for apps_* payload | YELLOW | Code analysis W6-24 | SPINE 1: typed APIs at all boundaries | No |
 | VIO-11 | Elevator shaft call-site crypto not confirmed | YELLOW | Code analysis W6-16 | SPINE 5: explicit sign+verify at every boundary | No |
 
 ---

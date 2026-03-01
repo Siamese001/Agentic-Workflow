@@ -11,19 +11,19 @@ import logging
 from typing import Any
 
 from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
-from agentic_core.L0_routing.types.shadow_routing_types import ShadowRoutingTelemetry
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
+from agentic_core.L0_routing.types.shadow_routing_types import ShadowRoutingTelemetry
 
 logger = logging.getLogger(__name__)
 
 
 class ShadowRoutingWiring:
     """Wires shadow routing into L0 as a non-invasive side-channel.
-    
+
     This class ensures that shadow classification cannot affect actual routing
     decisions and only provides observational capabilities.
     """
-    
+
     def __init__(
         self,
         shadow_classifier: ShadowRouterClassifier | None = None,
@@ -31,7 +31,7 @@ class ShadowRoutingWiring:
         enable_l4_storage: bool = False,
     ):
         """Initialize shadow routing wiring.
-        
+
         Args:
             shadow_classifier: Shadow classifier instance (created if None)
             enable_telemetry: Whether to emit telemetry to L6
@@ -40,21 +40,21 @@ class ShadowRoutingWiring:
         self.shadow_classifier = shadow_classifier or ShadowRouterClassifier()
         self.enable_telemetry = enable_telemetry
         self.enable_l4_storage = enable_l4_storage
-    
+
     def observe_and_classify(
         self,
         route_decision: RouteDecisionArtifact,
         additional_context: dict[str, Any] | None = None,
     ) -> ShadowRoutingTelemetry | None:
         """Observe routing decision and produce shadow classification.
-        
+
         This is called AFTER the actual routing decision is made and
         cannot affect the routing outcome. It's strictly observational.
-        
+
         Args:
             route_decision: The actual routing decision (already made)
             additional_context: Optional additional context
-            
+
         Returns:
             Shadow telemetry if enabled, None otherwise
         """
@@ -63,11 +63,11 @@ class ShadowRoutingWiring:
             route_decision=route_decision,
             additional_context=additional_context,
         )
-        
+
         # Emit telemetry if enabled
         if self.enable_telemetry:
             telemetry = self.shadow_classifier.emit_telemetry(shadow_decision)
-            
+
             # In a real implementation, this would emit to L6 bus
             # For Phase 9, we just log and return the telemetry
             logger.info(
@@ -77,26 +77,26 @@ class ShadowRoutingWiring:
                 f"shadow={shadow_decision.shadow_route.value}, "
                 f"drift={shadow_decision.drift_score}"
             )
-            
+
             # Optionally store to L4 (bounded store)
             if self.enable_l4_storage:
                 # In a real implementation, this would store to L4
                 logger.debug(f"Shadow telemetry stored to L4 for {telemetry.trace_id}")
-            
+
             return telemetry
-        
+
         return None
-    
+
     def validate_non_invasiveness(self, route_decision: RouteDecisionArtifact) -> bool:
         """Validate that shadow routing cannot affect the actual route.
-        
+
         This is a safety check to ensure the shadow classifier is truly
         non-invasive. It verifies that the original route decision is
         unchanged.
-        
+
         Args:
             route_decision: The original routing decision
-            
+
         Returns:
             True if non-invasiveness is guaranteed
         """
@@ -111,7 +111,7 @@ _shadow_wiring: ShadowRoutingWiring | None = None
 
 def get_shadow_wiring() -> ShadowRoutingWiring:
     """Get the global shadow routing wiring instance.
-    
+
     Returns:
         Global shadow routing wiring instance
     """
@@ -126,13 +126,13 @@ def observe_routing_decision(
     additional_context: dict[str, Any] | None = None,
 ) -> ShadowRoutingTelemetry | None:
     """Convenience function to observe a routing decision.
-    
+
     This is the main entry point called from L0 routing pipeline.
-    
+
     Args:
         route_decision: The routing decision to observe
         additional_context: Optional additional context
-        
+
     Returns:
         Shadow telemetry if enabled, None otherwise
     """

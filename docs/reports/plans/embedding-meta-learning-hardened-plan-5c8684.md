@@ -165,23 +165,23 @@ All five learning surfaces must be staged. No cross-layer activation until prior
 ```python
 class MetaLearningEmbeddingService:
     """Informational-only embedding service for meta-learning.
-    
+
     INVARIANT: This service produces signals; it never mutates state.
     All outputs are EmbeddingArtifact-wrapped for replay compatibility.
     """
-    
+
     def __init__(self, base_ssd_path: Path):
         self.embedder = EmbeddingSovereignAgent()   # existing
         self.hot_cache = InMemoryVectorCache()       # existing Tier 0
         self.faiss_store = LocalFAISSStore(base_ssd_path / "faiss_indexes")  # new Tier 1
         self.pinecone = PineconeSovereignAgent()     # existing Tier 2
-    
+
     async def find_similar_healing_contexts(
         self, context: dict, top_k: int, similarity_cutoff: float
     ) -> tuple[list[dict], EmbeddingArtifact]:
         """Returns similar contexts AND replay artifact. Always paired."""
         ...
-    
+
     async def emit_telemetry_anomaly_signal(
         self, events: list[dict], l4_writer: L4StateWriter, created_utc: int
     ) -> str:
@@ -193,20 +193,20 @@ class MetaLearningEmbeddingService:
 ```python
 class EmbeddingAwareL0Proposer:
     """L0 proposer with embedding guidance.
-    
+
     INVARIANT: propose() returns delta only — never absolute threshold.
     INVARIANT: ChangePackage.reason includes EmbeddingArtifact fields.
     """
-    
+
     def propose(self, snapshot, metrics, config, now_utc, history, cooldown, sample):
         similar, artifact = await self.embedding_service.find_similar_healing_contexts(...)
-        
+
         # Compute delta from similar contexts — not absolute value
         suggested_delta = self._compute_delta_from_similar(similar, config)
-        
+
         # Clamp through existing constraint enforcement (unchanged)
         validated = validate_surface_change(surface_name, current_value, current_value + suggested_delta)
-        
+
         return ChangePackage(
             source="embedding_aware_l0_proposer",
             target="escalation_threshold",
@@ -226,7 +226,7 @@ class EmbeddingAwareL0Proposer:
 ```python
 class LocalEmbeddingPopulationService:
     """SSD-optimized batch embedding population. Read-only source access."""
-    
+
     BATCH_SIZE = 5000          # Optimal for SSD sequential I/O
     MAX_WORKERS = 8            # Match available CPU cores
     FAISS_SEED = 42            # Fixed for determinism (D1)
@@ -234,18 +234,18 @@ class LocalEmbeddingPopulationService:
     FAISS_M = 64               # PQ subquantizers
     FAISS_NBITS = 8            # Bits per subquantizer
     COMPRESSION = "lz4"        # SSD storage compression
-    
+
     async def populate(self, source_path: Path, index_type: str):
         """Populate FAISS index from source. Deterministic insertion order."""
         files = sorted(source_path.glob("*.json"))  # Sorted = deterministic (D3)
-        
+
         for chunk in self._chunked(files, self.BATCH_SIZE):
             texts = self._extract_texts(chunk)
             embeddings = await self.embedder.get_embeddings_batch(texts)
             normalized = [self._l2_normalize(e) for e in embeddings]  # D2
-            
+
             await self.faiss_store.add(normalized, metadata=chunk, index=index_type)
-        
+
         # Rebuild index with fixed seed
         self.faiss_store.train(index_type, seed=self.FAISS_SEED)  # D1
         self.faiss_store.save_with_hash(index_type)               # For I5

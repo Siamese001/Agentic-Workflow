@@ -134,9 +134,7 @@ def _write_embeddings_f32(vectors: list[list[float]], output_path: Path) -> str:
     return hashlib.sha256(byte_data).hexdigest()
 
 
-def _compute_seed_index_version_hash(
-    row_index_hash: str, matrix_hash: str, canonical_manifest: bytes
-) -> str:
+def _compute_seed_index_version_hash(row_index_hash: str, matrix_hash: str, canonical_manifest: bytes) -> str:
     """Compute seed_index_version_hash as SHA256(R || M || C).
 
     Args:
@@ -178,10 +176,8 @@ def build_seed_embedding_pack(
     if config.bootstrap_mode == "minimal_seed":
         if config.minimal_seed_count is None:
             raise RuntimeError("minimal_seed_count required for minimal_seed mode")
-        # Filter by namespace 
-        filtered = [
-            row for row in corpus_rows if row.get("namespace") == config.namespace
-        ]
+        # Filter by namespace
+        filtered = [row for row in corpus_rows if row.get("namespace") == config.namespace]
         # Sort by (content_hash, trace_id) for selection, then add row_id and sort again
         filtered_sorted = sorted(filtered, key=lambda r: (r["content_hash"], r["trace_id"]))
         selected = filtered_sorted[: config.minimal_seed_count]
@@ -231,7 +227,7 @@ def build_seed_embedding_pack(
         texts = [row["content_hash"] for row in rows]  # Use content_hash as text input
         # For DeterministicHashEmbedder, use its configured dimensions
         # For production embedders, we'll need to get dimensions from the model
-        if hasattr(embedder, 'dimensions'):
+        if hasattr(embedder, "dimensions"):
             dimensions = embedder.dimensions
         else:
             # For OpenAI embedder, we need to get dimensions from model info

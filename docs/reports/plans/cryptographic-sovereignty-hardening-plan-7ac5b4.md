@@ -46,7 +46,7 @@ class ImportViolation:
 
 class ImportGraphAnalyzer:
     """Static analysis of import dependencies with cryptographic validation."""
-    
+
     LAYER_HIERARCHY = {
         'system_learning': 0,
         'agentic_core.L6_observability': 1,
@@ -60,25 +60,25 @@ class ImportGraphAnalyzer:
         'apps_rg': 8,
         'apps_shared': 8,
     }
-    
+
     def __init__(self, repo_root: Path):
         self.repo_root = repo_root
         self.import_graph = nx.DiGraph()
         self.violations: List[ImportViolation] = []
-    
+
     def analyze_repository(self) -> List[ImportViolation]:
         """Perform comprehensive import graph analysis."""
         # Build dependency graph
         self._build_import_graph()
-        
+
         # Validate hierarchy constraints
         self._validate_layer_hierarchy()
-        
+
         # Check for circular dependencies
         self._detect_cycles()
-        
+
         return self.violations
-    
+
     def _build_import_graph(self):
         """Build complete import dependency graph."""
         for py_file in self.repo_root.rglob("*.py"):
@@ -92,32 +92,32 @@ class ImportGraphAnalyzer:
                     file_path=py_file,
                     line_number=e.lineno or 0
                 ))
-    
+
     def _analyze_file_imports(self, file_path: Path):
         """Analyze imports in a single Python file."""
         content = file_path.read_text()
         tree = ast.parse(content)
-        
+
         module_name = self._get_module_name(file_path)
-        
+
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
                     target_module = alias.name
                     self.import_graph.add_edge(module_name, target_module)
                     self._check_import_violation(module_name, target_module, file_path, node.lineno)
-            
+
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     target_module = node.module
                     self.import_graph.add_edge(module_name, target_module)
                     self._check_import_violation(module_name, target_module, file_path, node.lineno)
-    
+
     def _check_import_violation(self, source: str, target: str, file_path: Path, line: int):
         """Check if import violates layer hierarchy."""
         source_layer = self._get_layer_level(source)
         target_layer = self._get_layer_level(target)
-        
+
         if source_layer is not None and target_layer is not None:
             if source_layer < target_layer:  # Upstream importing downstream
                 self.violations.append(ImportViolation(
@@ -127,20 +127,20 @@ class ImportGraphAnalyzer:
                     file_path=file_path,
                     line_number=line
                 ))
-    
+
     def _get_layer_level(self, module_name: str) -> int:
         """Get hierarchy level for a module."""
         for pattern, level in self.LAYER_HIERARCHY.items():
             if module_name.startswith(pattern):
                 return level
         return -1  # Unknown/external
-    
+
     def _validate_layer_hierarchy(self):
         """Validate all imports follow layer hierarchy."""
         for source, target in self.import_graph.edges():
             source_level = self._get_layer_level(source)
             target_level = self._get_layer_level(target)
-            
+
             if source_level >= 0 and target_level >= 0:
                 if source_level < target_level:
                     self.violations.append(ImportViolation(
@@ -150,7 +150,7 @@ class ImportGraphAnalyzer:
                         file_path=Path("unknown"),
                         line_number=0
                     ))
-    
+
     def _detect_cycles(self):
         """Detect circular dependencies using NetworkX."""
         try:
@@ -168,7 +168,7 @@ class ImportGraphAnalyzer:
                     ))
         except nx.NetworkXError:
             pass  # No cycles detected
-    
+
     def _get_module_name(self, file_path: Path) -> str:
         """Convert file path to module name."""
         relative_path = file_path.relative_to(self.repo_root)
@@ -181,13 +181,13 @@ def validate_static_boundaries(repo_root: Path) -> bool:
     """Validate static import boundaries across repository."""
     analyzer = ImportGraphAnalyzer(repo_root)
     violations = analyzer.analyze_repository()
-    
+
     if violations:
         print("Static boundary violations found:")
         for violation in violations:
             print(f"  {violation.source_module} -> {violation.target_module}: {violation.violation_type}")
         return False
-    
+
     print("All static boundaries validated")
     return True
 ```
@@ -207,7 +207,7 @@ from pathlib import Path
 
 class NamespaceFence:
     """Enforces namespace separation at import time using MetaPathFinder."""
-    
+
     def __init__(self):
         self.forbidden_cross_namespace_imports: Set[Tuple[str, str]] = set()
         self.allowed_namespace_mappings = {
@@ -215,22 +215,22 @@ class NamespaceFence:
             'agentic_core.L*': ['system_learning.types', 'system_learning.interfaces'],
             'system_learning': ['agentic_core.types', 'agentic_core.interfaces'],
         }
-    
+
     def find_spec(self, fullname, path, target=None):
         """MetaPathFinder implementation for namespace enforcement."""
         # Check if this is a cross-namespace import
         if self._is_cross_namespace_import(fullname, path):
             caller_namespace = self._get_caller_namespace()
-            
+
             if not self._is_namespace_import_allowed(caller_namespace, fullname):
                 raise ImportError(f"Cross-namespace import forbidden: {caller_namespace} -> {fullname}")
-        
+
         return None  # Let default importer handle it
-    
+
     def _is_cross_namespace_import(self, fullname: str, path) -> bool:
         """Check if import crosses namespace boundaries."""
         return any(namespace in fullname for namespace in ['apps_', 'agentic_core.', 'system_learning.'])
-    
+
     def _get_caller_namespace(self) -> str:
         """Get namespace of calling module."""
         import inspect
@@ -245,14 +245,14 @@ class NamespaceFence:
         finally:
             del frame
         return 'unknown'
-    
+
     def _is_namespace_import_allowed(self, caller: str, target: str) -> bool:
         """Check if cross-namespace import is allowed."""
         for caller_pattern, allowed_targets in self.allowed_namespace_mappings.items():
             if self._matches_pattern(caller, caller_pattern):
                 return any(target.startswith(allowed) for allowed in allowed_targets)
         return False
-    
+
     def _matches_pattern(self, module: str, pattern: str) -> bool:
         """Check if module name matches pattern."""
         if pattern.endswith('*'):
@@ -268,7 +268,7 @@ def install_namespace_fence():
 
 def uninstall_namespace_fence():
     """Remove namespace fence from import system."""
-    sys.meta_path = [finder for finder in sys.meta_path 
+    sys.meta_path = [finder for finder in sys.meta_path
                      if not isinstance(finder, NamespaceFence)]
 ```
 
@@ -293,26 +293,26 @@ from agentic_core.exceptions import SovereigntyViolationError
 
 class ScopedGatewayFinder(importlib.abc.MetaPathFinder):
     """Scoped import finder that only affects agentic_core modules."""
-    
+
     FORBIDDEN_PROVIDERS = {
         'openai', 'anthropic', 'google.generativeai',
         'transformers', 'torch', 'tensorflow', 'huggingface'
     }
-    
+
     def __init__(self, scope_modules: Set[str]):
         self.scope_modules = scope_modules
         self.gateway_module = 'agentic_core.runtime.sovereign_llm_gateway'
-    
+
     def find_spec(self, fullname, path, target=None):
         """Intercept imports only within scoped modules."""
         # Check if caller is within our scope
         caller_module = self._get_caller_module()
-        
+
         if caller_module and self._is_in_scope(caller_module):
             return self._check_gateway_import(fullname, caller_module)
-        
+
         return None  # Let default importer handle it
-    
+
     def _get_caller_module(self) -> Optional[str]:
         """Get the module requesting the import."""
         import inspect
@@ -325,11 +325,11 @@ class ScopedGatewayFinder(importlib.abc.MetaPathFinder):
         finally:
             del frame
         return None
-    
+
     def _is_in_scope(self, module_name: str) -> bool:
         """Check if module is within our enforcement scope."""
         return any(module_name.startswith(scope) for scope in self.scope_modules)
-    
+
     def _check_gateway_import(self, fullname: str, caller: str):
         """Check if import violates gateway policy."""
         if any(provider in fullname for provider in self.FORBIDDEN_PROVIDERS):
@@ -341,25 +341,25 @@ class ScopedGatewayFinder(importlib.abc.MetaPathFinder):
 
 class ScopedGatewayMonitor:
     """Manages scoped gateway enforcement without global side effects."""
-    
+
     def __init__(self):
         self.finder: Optional[ScopedGatewayFinder] = None
         self.scope_modules = {
             'agentic_core.L0_routing',
-            'agentic_core.L1_cognition', 
+            'agentic_core.L1_cognition',
             'agentic_core.L2_execution',
             'agentic_core.L3_orchestration',
             'agentic_core.L4_state',
             'agentic_core.L5_safety',
             'agentic_core.L6_observability',
         }
-    
+
     def install(self):
         """Install scoped gateway monitor."""
         if self.finder is None:
             self.finder = ScopedGatewayFinder(self.scope_modules)
             sys.meta_path.insert(0, self.finder)
-    
+
     def uninstall(self):
         """Remove scoped gateway monitor."""
         if self.finder and self.finder in sys.meta_path:
@@ -418,41 +418,41 @@ class DeterminismProof:
 
 class DeterminismEngine:
     """Single-writer determinism engine with replay verification."""
-    
+
     def __init__(self):
         self._artifacts: Dict[str, DeterminismArtifact] = {}
         self._sealed = False
         self._run_id = self._generate_run_id()
         self._lock = threading.RLock()
         self._proof: Optional[DeterminismProof] = None
-    
+
     def add_artifact(self, name: str, hash_value: str, metadata: Optional[Dict[str, Any]] = None):
         """Add artifact to determinism digest (single-writer pattern)."""
         with self._lock:
             if self._sealed:
                 raise RuntimeError("Determinism engine is sealed - no more artifacts allowed")
-            
+
             if name in self._artifacts:
                 raise ValueError(f"Artifact '{name}' already exists")
-            
+
             artifact = DeterminismArtifact(
                 name=name,
                 hash_value=hash_value,
                 timestamp=time.time(),
                 metadata=metadata or {}
             )
-            
+
             self._artifacts[name] = artifact
-    
+
     def seal(self) -> DeterminismProof:
         """Seal determinism engine and generate proof."""
         with self._lock:
             if self._sealed:
                 return self._proof
-            
+
             # Sort artifacts for deterministic ordering
             sorted_artifacts = dict(sorted(self._artifacts.items()))
-            
+
             # Create artifacts hash
             artifacts_json = json.dumps(
                 [asdict(artifact) for artifact in sorted_artifacts.values()],
@@ -460,7 +460,7 @@ class DeterminismEngine:
                 separators=(',', ':')
             )
             artifacts_hash = hashlib.sha256(artifacts_json.encode('utf-8')).hexdigest()
-            
+
             # Create final digest
             digest_payload = {
                 'run_id': self._run_id,
@@ -468,55 +468,55 @@ class DeterminismEngine:
                 'timestamp': time.time(),
                 'artifact_count': len(self._artifacts)
             }
-            
+
             digest_json = json.dumps(digest_payload, sort_keys=True, separators=(',', ':'))
             final_digest = hashlib.sha256(digest_json.encode('utf-8')).hexdigest()
-            
+
             self._proof = DeterminismProof(
                 digest=final_digest,
                 artifacts_hash=artifacts_hash,
                 timestamp=time.time(),
                 run_id=self._run_id
             )
-            
+
             self._sealed = True
             return self._proof
-    
+
     def get_proof(self) -> Optional[DeterminismProof]:
         """Get current determinism proof."""
         return self._proof
-    
+
     def verify_replay(self, expected_proof: DeterminismProof) -> bool:
         """Verify current state matches expected replay proof."""
         if not self._sealed:
             raise RuntimeError("Engine must be sealed before verification")
-        
+
         current_proof = self._proof
         if not current_proof:
             return False
-        
+
         # Verify all critical fields match
         return (
             current_proof.digest == expected_proof.digest and
             current_proof.artifacts_hash == expected_proof.artifacts_hash and
             current_proof.run_id == expected_proof.run_id
         )
-    
+
     def export_proof(self, file_path: Path):
         """Export determinism proof to file."""
         if not self._sealed:
             raise RuntimeError("Engine must be sealed before export")
-        
+
         proof_data = asdict(self._proof)
-        proof_data['artifacts'] = {name: asdict(artifact) 
+        proof_data['artifacts'] = {name: asdict(artifact)
                                   for name, artifact in self._artifacts.items()}
-        
+
         file_path.write_text(json.dumps(proof_data, indent=2, sort_keys=True))
-    
+
     def import_proof(self, file_path: Path) -> DeterminismProof:
         """Import determinism proof from file."""
         proof_data = json.loads(file_path.read_text())
-        
+
         # Reconstruct proof
         proof = DeterminismProof(
             digest=proof_data['digest'],
@@ -525,9 +525,9 @@ class DeterminismEngine:
             run_id=proof_data['run_id'],
             signature=proof_data.get('signature')
         )
-        
+
         return proof
-    
+
     def _generate_run_id(self) -> str:
         """Generate unique run ID."""
         import uuid
@@ -569,62 +569,62 @@ from typing import Optional
 
 class DoubleRunVerifier:
     """Verifies determinism across two separate runs."""
-    
+
     def __init__(self, script_path: Path):
         self.script_path = script_path
         self.temp_dir = Path(tempfile.mkdtemp())
-    
+
     def verify_deterministic_execution(self, args: list = None) -> bool:
         """Run script twice and verify determinism proofs match."""
         if args is None:
             args = []
-        
+
         # First run
         proof1 = self._run_and_capture_proof(args)
-        
-        # Second run  
+
+        # Second run
         proof2 = self._run_and_capture_proof(args)
-        
+
         # Verify proofs match
         return self._compare_proofs(proof1, proof2)
-    
+
     def _run_and_capture_proof(self, args: list) -> Path:
         """Run script and capture determinism proof."""
         proof_file = self.temp_dir / f"determinism_proof_{id(args)}.json"
-        
+
         # Run with determinism proof export
         cmd = [
             sys.executable, str(self.script_path),
             '--export-determinism-proof', str(proof_file)
         ] + args
-        
+
         result = subprocess.run(cmd, capture_output=True, text=True)
-        
+
         if result.returncode != 0:
             raise RuntimeError(f"Script execution failed: {result.stderr}")
-        
+
         if not proof_file.exists():
             raise RuntimeError("Determinism proof not generated")
-        
+
         return proof_file
-    
+
     def _compare_proofs(self, proof1: Path, proof2: Path) -> bool:
         """Compare two determinism proofs."""
         from agentic_core.runtime.replay_verified_determinism import get_determinism_engine
-        
+
         engine = get_determinism_engine()
-        
+
         # Load proofs
         p1 = engine.import_proof(proof1)
         p2 = engine.import_proof(proof2)
-        
+
         # Compare critical fields
         return (
             p1.digest == p2.digest and
             p1.artifacts_hash == p2.artifacts_hash and
             p1.run_id != p2.run_id  # Different runs, same determinism
         )
-    
+
     def cleanup(self):
         """Clean up temporary files."""
         import shutil
@@ -676,7 +676,7 @@ class CapabilityToken:
     timestamp: float
     signature_hash: str
     metadata: Dict[str, Any]
-    
+
     def verify(self, expected_caller: str, expected_target: str) -> bool:
         """Verify token is valid for expected caller/target."""
         return (
@@ -684,7 +684,7 @@ class CapabilityToken:
             self.target_context == expected_target and
             self._is_valid_timestamp()
         )
-    
+
     def _is_valid_timestamp(self) -> bool:
         """Check if token is within valid time window."""
         # Tokens valid for 1 hour
@@ -692,11 +692,11 @@ class CapabilityToken:
 
 class CapabilityAuthority:
     """Issues and verifies capability tokens."""
-    
+
     def __init__(self, authority_secret: str):
         self.authority_secret = authority_secret
-    
-    def issue_token(self, 
+
+    def issue_token(self,
                    capability_type: CapabilityType,
                    caller_context: str,
                    target_context: str,
@@ -704,7 +704,7 @@ class CapabilityAuthority:
         """Issue a new capability token."""
         token_id = self._generate_token_id()
         timestamp = time.time()
-        
+
         # Create token data
         token_data = {
             'token_id': token_id,
@@ -714,10 +714,10 @@ class CapabilityAuthority:
             'timestamp': timestamp,
             'metadata': metadata or {}
         }
-        
+
         # Create signature
         signature_hash = self._sign_token(token_data)
-        
+
         return CapabilityToken(
             token_id=token_id,
             capability_type=capability_type,
@@ -727,7 +727,7 @@ class CapabilityAuthority:
             signature_hash=signature_hash,
             metadata=metadata or {}
         )
-    
+
     def verify_token(self, token: CapabilityToken) -> bool:
         """Verify token signature."""
         token_data = {
@@ -738,15 +738,15 @@ class CapabilityAuthority:
             'timestamp': token.timestamp,
             'metadata': token.metadata
         }
-        
+
         expected_signature = self._sign_token(token_data)
         return token.signature_hash == expected_signature
-    
+
     def _generate_token_id(self) -> str:
         """Generate unique token ID."""
         import uuid
         return str(uuid.uuid4())
-    
+
     def _sign_token(self, token_data: Dict[str, Any]) -> str:
         """Create cryptographic signature for token."""
         token_json = json.dumps(token_data, sort_keys=True, separators=(',', ':'))
@@ -778,41 +778,41 @@ from agentic_core.exceptions import IsolationViolationError
 
 class CapabilityBoundGuard:
     """Enforces write isolation using capability tokens."""
-    
+
     def __init__(self):
         self.authority = get_capability_authority()
         self._active_token: Optional[CapabilityToken] = None
-    
+
     def set_execution_context(self, token: CapabilityToken):
         """Set active execution context token."""
         if not self.authority.verify_token(token):
             raise IsolationViolationError("Invalid capability token")
-        
+
         self._active_token = token
-    
+
     def clear_execution_context(self):
         """Clear active execution context."""
         self._active_token = None
-    
+
     def assert_write_capability(self, target_context: str):
         """Assert current context has write capability."""
         if not self._active_token:
             raise IsolationViolationError("No active execution context")
-        
+
         if self._active_token.capability_type != CapabilityType.WRITE_STATE:
             raise IsolationViolationError("Context lacks write capability")
-        
+
         if not self._active_token.verify(self._active_token.caller_context, target_context):
             raise IsolationViolationError("Invalid context for write operation")
-    
+
     def assert_learning_capability(self, target_context: str):
         """Assert current context has learning activation capability."""
         if not self._active_token:
             raise IsolationViolationError("No active execution context")
-        
+
         if self._active_token.capability_type != CapabilityType.ACTIVATE_LEARNING:
             raise IsolationViolationError("Context lacks learning activation capability")
-        
+
         if not self._active_token.verify(self._active_token.caller_context, target_context):
             raise IsolationViolationError("Invalid context for learning activation")
 
@@ -834,15 +834,15 @@ def require_learning_capability(target_context: str):
 # Context manager for capability-bound execution
 class CapabilityContext:
     """Context manager for capability-bound execution."""
-    
+
     def __init__(self, token: CapabilityToken):
         self.token = token
         self.guard = get_capability_guard()
-    
+
     def __enter__(self):
         self.guard.set_execution_context(self.token)
         return self
-    
+
     def __exit__(self, exc_type, exc_val, exc_tb):
         self.guard.clear_execution_context()
 ```
@@ -864,17 +864,17 @@ jobs:
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Static import graph analysis
         run: python -m agentic_core.enforcement.import_graph_analyzer ${{ github.workspace }}
-      
+
       - name: Validate namespace separation
         run: python -m agentic_core.enforcement.namespace_fence validate
-      
+
       - name: AST gateway bypass detection
         run: python -m agentic_core.enforcement.gateway_bypass_check
-      
-      - name: Validate system_learning isolation  
+
+      - name: Validate system_learning isolation
         run: python -m system_learning.enforcement.boundary_guard
 
   deterministic-execution:
@@ -882,18 +882,18 @@ jobs:
     needs: static-boundary-analysis
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Setup Python environment
         uses: actions/setup-python@v4
         with:
           python-version: '3.9'
-      
+
       - name: Install dependencies
         run: pip install -e .
-      
+
       - name: Double-run determinism verification
         run: python -m agentic_core.runtime.double_run_verifier scripts/main.py
-      
+
       - name: Verify determinism proofs
         run: python -m agentic_core.runtime.verify_determinism_proofs
 
@@ -902,13 +902,13 @@ jobs:
     needs: static-boundary-analysis
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Test capability-bound execution
         run: python -m pytest tests/architecture/test_capability_tokens.py -xvv
-      
+
       - name: Verify system_learning write isolation
         run: python -m pytest tests/architecture/test_capability_bound_isolation.py -xvv
-      
+
       - name: Test cryptographic sovereignty
         run: python -m pytest tests/architecture/test_cryptographic_sovereignty.py -xvv
 
@@ -917,10 +917,10 @@ jobs:
     needs: [deterministic-execution, capability-bound-execution]
     steps:
       - uses: actions/checkout@v3
-      
+
       - name: Replay verification test
         run: python -m agentic_core.runtime.replay_verification_test
-      
+
       - name: Validate cryptographic proofs
         run: python -m agentic_core.runtime.validate_cryptographic_proofs
 ```
@@ -935,7 +935,7 @@ jobs:
 - Double-run determinism: identical proofs
 - Gateway bypass detection: 0 false negatives
 
-### 2. Runtime Sovereignty Metrics  
+### 2. Runtime Sovereignty Metrics
 - Scoped import enforcement: no global side effects
 - Capability-bound mutations: cryptographically verified
 - Replay verification: mathematically proven
@@ -968,7 +968,7 @@ This hardened plan transforms architectural sovereignty from enforced policy to 
 
 The four critical gaps identified in the review are now addressed:
 - **Static package boundaries** replace insufficient boot-time scanning
-- **Scoped import enforcement** eliminates global side effects  
+- **Scoped import enforcement** eliminates global side effects
 - **Replay-verified determinism** provides mathematical proof
 - **Capability-bound execution** offers cryptographically-strong isolation
 

@@ -85,7 +85,7 @@ class DefaultHealingProviderInvoker:
         # Wire to SovereignLLMGateway with provider="qwen_vllm"
         # Enforce HealSeamBypassError if called outside @standard_heal
         # Log InvocationRecord to L4 outcome_sink
-        
+
     def invoke_gemini(self, healing_input, decision, config, *, agent_name=""):
         # Wire to SovereignLLMGateway with provider="google"
         # model=config.model_gemini_2_5_pro_id
@@ -153,7 +153,7 @@ Add `route_generation()` to `SovereignLLMGateway` as a **separate path** from `d
 
 ```
 Generation path (apps_rg, orchestrators):
-  agent.call_llm(prompt) 
+  agent.call_llm(prompt)
     → MCPOperationMixin.call_llm()
     → SovereignLLMGateway.route_generation(ReasoningClass)
     → provider invoke (Qwen or Gemini, temp=0)
@@ -211,22 +211,22 @@ AST-based (not grep) checks:
 checks = [
     # Agents must declare AGENT_REASONING_CLASS
     "all_agents_have_reasoning_class",
-    
+
     # Ban model string literals in agent files
     "no_model_literals_in_agents",      # "gemini-*", "qwen*", "gpt-*"
-    
+
     # Ban direct llm_generate() outside LLMProviderMixin
     "no_direct_llm_generate_in_agents",
-    
+
     # Ban temperature= keyword args outside gateway
     "no_temperature_kwarg_outside_gateway",
-    
+
     # Ban provider imports (openai, anthropic, google.generativeai) in agents
     "no_provider_imports_in_agents",
-    
+
     # Ban httpx/aiohttp in agent files
     "no_raw_http_clients_in_agents",
-    
+
     # All dispatch_healing() calls must have trace_id
     "dispatch_healing_requires_trace_id",
 ]

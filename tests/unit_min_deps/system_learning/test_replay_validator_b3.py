@@ -21,7 +21,6 @@ from system_learning.engines.seed_embedding_pack_builder import (
 from system_learning.types.embedding_artifact import EmbeddingArtifact
 from system_learning.types.seed_embedding_pack_types import SeedEmbeddingPackConfig
 
-
 pytestmark = pytest.mark.unit_min_deps
 
 
@@ -31,9 +30,9 @@ class TestReplayValidatorSeedPack:
     def test_validate_seed_pack_success(self):
         """Successful validation of intact seed pack."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -56,7 +55,7 @@ class TestReplayValidatorSeedPack:
                     "created_utc": 1234567891,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -64,7 +63,7 @@ class TestReplayValidatorSeedPack:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Should validate successfully
             validator.validate_seed_pack(
                 base_path=str(base_path),
@@ -77,14 +76,14 @@ class TestReplayValidatorSeedPack:
     def test_validate_seed_pack_missing_files(self):
         """Failure when required files are missing."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Create incomplete pack directory
             pack_dir = base_path / "seed_packs" / "test_ns" / "test_hash_123"
             pack_dir.mkdir(parents=True)
-            
+
             # Only create manifest, missing other files
             manifest = {
                 "seed_index_version_hash": "test_hash_123",
@@ -93,7 +92,7 @@ class TestReplayValidatorSeedPack:
             }
             with open(pack_dir / "seed_manifest.json", "w") as f:
                 json.dump(manifest, f)
-            
+
             with pytest.raises(DeterminismViolationError, match="Missing required files"):
                 validator.validate_seed_pack(
                     base_path=str(base_path),
@@ -106,9 +105,9 @@ class TestReplayValidatorSeedPack:
     def test_validate_seed_pack_hash_mismatch_negative_control(self):
         """Negative control: validator fails when row_index.jsonl is tampered."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -125,7 +124,7 @@ class TestReplayValidatorSeedPack:
                     "created_utc": 1234567890,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -133,7 +132,7 @@ class TestReplayValidatorSeedPack:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Tamper with row_index.jsonl
             pack_dir = base_path / "seed_packs" / "test_ns" / manifest.seed_index_version_hash
             row_index_path = pack_dir / "row_index.jsonl"
@@ -141,7 +140,7 @@ class TestReplayValidatorSeedPack:
                 # Flip one byte
                 f.seek(10)
                 f.write(b"X")
-            
+
             with pytest.raises(DeterminismViolationError, match="Row index hash mismatch"):
                 validator.validate_seed_pack(
                     base_path=str(base_path),
@@ -154,9 +153,9 @@ class TestReplayValidatorSeedPack:
     def test_validate_seed_pack_embeddings_tampered_negative_control(self):
         """Negative control: validator fails when embeddings.f32 is tampered."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -173,7 +172,7 @@ class TestReplayValidatorSeedPack:
                     "created_utc": 1234567890,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -181,7 +180,7 @@ class TestReplayValidatorSeedPack:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Tamper with embeddings.f32
             pack_dir = base_path / "seed_packs" / "test_ns" / manifest.seed_index_version_hash
             embeddings_path = pack_dir / "embeddings.f32"
@@ -189,7 +188,7 @@ class TestReplayValidatorSeedPack:
                 # Flip one byte
                 f.seek(5)
                 f.write(b"X")
-            
+
             with pytest.raises(DeterminismViolationError, match="Embeddings hash mismatch"):
                 validator.validate_seed_pack(
                     base_path=str(base_path),
@@ -202,9 +201,9 @@ class TestReplayValidatorSeedPack:
     def test_validate_seed_pack_version_hash_mismatch(self):
         """Failure when seed index version hash doesn't match."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build a seed pack
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -221,7 +220,7 @@ class TestReplayValidatorSeedPack:
                     "created_utc": 1234567890,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -229,7 +228,7 @@ class TestReplayValidatorSeedPack:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Try to validate with wrong hash - directory doesn't exist
             with pytest.raises(DeterminismViolationError, match="Seed pack directory does not exist"):
                 validator.validate_seed_pack(
@@ -247,7 +246,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_success(self):
         """Successful validation of valid artifact."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -257,7 +256,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         # Should validate successfully
         validator.validate_embedding_artifact(
             artifact=artifact,
@@ -267,7 +266,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_with_reference_hash(self):
         """Successful validation with reference hash."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -277,9 +276,9 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         reference_hash = artifact.artifact_hash()
-        
+
         # Should validate successfully
         validator.validate_embedding_artifact(
             artifact=artifact,
@@ -290,7 +289,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_wrong_type(self):
         """Failure when artifact is not EmbeddingArtifact type."""
         validator = ReplayValidator()
-        
+
         with pytest.raises(DeterminismViolationError, match="Expected EmbeddingArtifact"):
             validator.validate_embedding_artifact(
                 artifact="not_an_artifact",
@@ -300,7 +299,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_seed_hash_mismatch_negative_control(self):
         """Negative control: failure with mismatched seed index version hash."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -310,7 +309,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         with pytest.raises(DeterminismViolationError, match="Seed index version hash mismatch"):
             validator.validate_embedding_artifact(
                 artifact=artifact,
@@ -320,7 +319,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_reference_hash_mismatch(self):
         """Failure when reference hash doesn't match."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -330,7 +329,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         with pytest.raises(DeterminismViolationError, match="Artifact hash mismatch"):
             validator.validate_embedding_artifact(
                 artifact=artifact,
@@ -341,7 +340,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_empty_trace_ids(self):
         """Failure when supporting_trace_ids is empty."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -351,7 +350,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         with pytest.raises(DeterminismViolationError, match="supporting_trace_ids cannot be empty"):
             validator.validate_embedding_artifact(
                 artifact=artifact,
@@ -361,7 +360,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_duplicate_trace_ids(self):
         """Failure when supporting_trace_ids contains duplicates."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -371,7 +370,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         with pytest.raises(DeterminismViolationError, match="supporting_trace_ids contains duplicates"):
             validator.validate_embedding_artifact(
                 artifact=artifact,
@@ -381,7 +380,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_empty_strings_negative_control(self):
         """Negative control: failure with empty strings in IDs."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -391,7 +390,7 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         with pytest.raises(DeterminismViolationError, match="supporting_trace_ids contains empty strings"):
             validator.validate_embedding_artifact(
                 artifact=artifact,
@@ -401,7 +400,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_k_mismatch(self):
         """Failure when k doesn't match trace count."""
         validator = ReplayValidator()
-        
+
         artifact = EmbeddingArtifact(
             namespace="test_ns",
             seed_index_version_hash="hash123",
@@ -411,8 +410,10 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
-        with pytest.raises(DeterminismViolationError, match="k \\(5\\) does not match number of trace IDs \\(2\\)"):
+
+        with pytest.raises(
+            DeterminismViolationError, match="k \\(5\\) does not match number of trace IDs \\(2\\)"
+        ):
             validator.validate_embedding_artifact(
                 artifact=artifact,
                 expected_seed_index_version_hash="hash123",
@@ -421,7 +422,7 @@ class TestReplayValidatorEmbeddingArtifact:
     def test_validate_embedding_artifact_wrong_order_negative_control(self):
         """Negative control: failure when trace IDs are not in canonical order."""
         validator = ReplayValidator()
-        
+
         # Create artifact with unsorted trace IDs (will be auto-sorted by EmbeddingArtifact)
         # So we need to manually create one that violates the order
         artifact = EmbeddingArtifact(
@@ -433,13 +434,13 @@ class TestReplayValidatorEmbeddingArtifact:
             similarity_metric="cosine",
             embedding_model_version="v1.0",
         )
-        
+
         # This should actually pass since EmbeddingArtifact auto-sorts
         validator.validate_embedding_artifact(
             artifact=artifact,
             expected_seed_index_version_hash="hash123",
         )
-        
+
         # But if we manually create an artifact with wrong order (bypassing __post_init__)
         # This would require direct manipulation, which is prevented by frozen dataclass
 
@@ -450,9 +451,9 @@ class TestDeterminismStability:
     def test_seed_pack_artifact_hash_stability(self):
         """Mandatory: Test artifact hash stability across retrievals."""
         validator = ReplayValidator()
-        
+
         base_path = Path(tempfile.mkdtemp())
-        
+
         try:
             # Build seed pack via B0 builder
             embedder = DeterministicHashEmbedder(dimensions=4)
@@ -481,7 +482,7 @@ class TestDeterminismStability:
                     "created_utc": 1234567892,
                 },
             ]
-            
+
             manifest = build_seed_embedding_pack(
                 base_path=base_path,
                 config=config,
@@ -489,7 +490,7 @@ class TestDeterminismStability:
                 embedder=embedder,
                 built_at_utc=1234567890,
             )
-            
+
             # Create embedding artifact
             artifact1 = EmbeddingArtifact(
                 namespace="test_ns",
@@ -500,10 +501,10 @@ class TestDeterminismStability:
                 similarity_metric="cosine",
                 embedding_model_version="v1.0",
             )
-            
+
             # Capture artifact hash
             artifact_hash1 = artifact1.artifact_hash()
-            
+
             # Re-create same artifact (simulating retrieval)
             artifact2 = EmbeddingArtifact(
                 namespace="test_ns",
@@ -514,24 +515,24 @@ class TestDeterminismStability:
                 similarity_metric="cosine",
                 embedding_model_version="v1.0",
             )
-            
+
             # Validate hash stability
             artifact_hash2 = artifact2.artifact_hash()
             assert artifact_hash1 == artifact_hash2, "Artifact hash should be stable"
-            
+
             # Validate both artifacts
             validator.validate_embedding_artifact(
                 artifact=artifact1,
                 expected_seed_index_version_hash=manifest.seed_index_version_hash,
                 reference_artifact_hash=artifact_hash1,
             )
-            
+
             validator.validate_embedding_artifact(
                 artifact=artifact2,
                 expected_seed_index_version_hash=manifest.seed_index_version_hash,
                 reference_artifact_hash=artifact_hash1,
             )
-            
+
             # Validate seed pack
             validator.validate_seed_pack(
                 base_path=str(base_path),

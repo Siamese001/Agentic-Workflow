@@ -67,8 +67,8 @@ On embedder upgrade: all `@<old_embedder_id>` namespaces auto-pruned.
 
 ## W1 — Embedding Service Factory + Performance + Singleton
 
-**New file:** `system_learning/engines/embedding_service_factory.py`  
-**Edit:** `system_learning/engines/meta_learning_embedding_service.py`  
+**New file:** `system_learning/engines/embedding_service_factory.py`
+**Edit:** `system_learning/engines/meta_learning_embedding_service.py`
 **Edit:** `system_learning/constraints/config_surfaces.py`
 
 **What:**
@@ -108,7 +108,7 @@ On embedder upgrade: all `@<old_embedder_id>` namespaces auto-pruned.
 
 ## W2 — Healing Pipeline Semantic Retrieval (Informational Only)
 
-**Edit:** `system_learning/pipelines/meta_learning_pipeline.py`  
+**Edit:** `system_learning/pipelines/meta_learning_pipeline.py`
 **Edit:** `system_learning/engines/healing_config_optimizer.py`
 
 **What:**
@@ -129,7 +129,7 @@ On embedder upgrade: all `@<old_embedder_id>` namespaces auto-pruned.
 
 ## W3 — L1 Episodic Memory Semantic Upgrade (Namespace-Versioned)
 
-**Edit:** `agentic_core/L1_cognition/engines/episodic_manager.py`  
+**Edit:** `agentic_core/L1_cognition/engines/episodic_manager.py`
 **Edit:** `agentic_core/L1_cognition/engines/semantic_manager.py`
 
 **What:**

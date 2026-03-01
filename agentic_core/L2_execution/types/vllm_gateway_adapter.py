@@ -20,11 +20,10 @@ from __future__ import annotations
 
 from dataclasses import dataclass, field
 
-
 # Singleton-style shared state (one queue + one breaker registry per process).
 # Replaced in tests via VLLMGatewayAdapter(queue=..., registry=...).
-_DEFAULT_QUEUE: "VLLMQueueController" | None = None
-_DEFAULT_REGISTRY: "VLLMCircuitBreakerRegistry" | None = None
+_DEFAULT_QUEUE: VLLMQueueController | None = None
+_DEFAULT_REGISTRY: VLLMCircuitBreakerRegistry | None = None
 
 
 def _get_default_queue() -> VLLMQueueController:
@@ -34,6 +33,7 @@ def _get_default_queue() -> VLLMQueueController:
         from agentic_core.L2_execution.types.vllm_gateway_integration import (
             VLLMQueueController,
         )
+
         _DEFAULT_QUEUE = VLLMQueueController()
     return _DEFAULT_QUEUE
 
@@ -45,6 +45,7 @@ def _get_default_registry() -> VLLMCircuitBreakerRegistry:
         from agentic_core.L2_execution.types.vllm_gateway_integration import (
             VLLMCircuitBreakerRegistry,
         )
+
         _DEFAULT_REGISTRY = VLLMCircuitBreakerRegistry()
     return _DEFAULT_REGISTRY
 
@@ -96,21 +97,16 @@ class VLLMGatewayAdapter:
         """
         # Function-scoped imports to avoid lazy seam violations
         from agentic_core.L2_execution.types.vllm_gateway_integration import (
-            VLLMCircuitBreakerRegistry,
             VLLMGatewayCallResult,
-            VLLMQueueController,
             evaluate_gateway_call,
-        )
-        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
-            VLLMInfrastructureFingerprint,
         )
         from agentic_core.L2_execution.types.vllm_invariant_verifier import (
             verify_gateway_invariants,
         )
-        
+
         q = self.queue if self.queue is not None else _get_default_queue()
         r = self.registry if self.registry is not None else _get_default_registry()
-        
+
         result = evaluate_gateway_call(
             prompt=prompt,
             task_class=task_class,
@@ -120,7 +116,7 @@ class VLLMGatewayAdapter:
             oldest_wait_seconds=oldest_wait_seconds,
             fingerprint=fingerprint,
         )
-        
+
         # PHASE 5: Verify invariants at execution boundary
         telemetry_dict = result.telemetry.as_dict()
         violations = verify_gateway_invariants(
@@ -131,15 +127,15 @@ class VLLMGatewayAdapter:
             replay_hash_enabled=False,  # Phase 5: replay hash not yet implemented in telemetry
             gpu_import_policy_ok=True,  # Phase 5: GPU imports properly isolated in L2
         )
-        
+
         # Check for FAIL violations
         fail_violations = [v for v in violations if v.severity == "FAIL"]
-        
+
         if fail_violations:
             # FAIL violations trigger Gemini fallback
             # Create new telemetry with failure_type set
             from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMGatewayTelemetry
-            
+
             telemetry_with_failure = VLLMGatewayTelemetry(
                 provider_selected=result.telemetry.provider_selected,
                 model_tier=result.telemetry.model_tier,
@@ -163,7 +159,7 @@ class VLLMGatewayAdapter:
                 driver_version=result.telemetry.driver_version,
                 fingerprint_hash=result.telemetry.fingerprint_hash,
             )
-            
+
             # Attach violations to result for telemetry
             result = VLLMGatewayCallResult(
                 route_to_gemini=True,
@@ -183,7 +179,7 @@ class VLLMGatewayAdapter:
                 backpressure=result.backpressure,
                 invariant_violations=violations,
             )
-        
+
         return result
 
     def record_local_failure(self, severity: str) -> None:

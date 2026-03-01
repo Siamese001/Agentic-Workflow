@@ -10,7 +10,7 @@ This plan identifies critical scope separation violations across apps_*, agentic
 
 **Critical Issues Found**:
 - 15+ agentic_core files with illegal apps_* imports
-- Layer inversion violations in L3_orchestration and L5_safety  
+- Layer inversion violations in L3_orchestration and L5_safety
 - Missing boundary enforcement in system_learning
 - Tooling boundary violations requiring hardening
 - **NEW**: Determinism engine includes nondeterministic fields in digest
@@ -25,7 +25,7 @@ This plan identifies critical scope separation violations across apps_*, agentic
 **Files Requiring Remediation**:
 ```
 agentic_core/L3_orchestration/engines/AgentFactory.py
-agentic_core/L5_safety/utils/gravity_visitor_util.py  
+agentic_core/L5_safety/utils/gravity_visitor_util.py
 agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 agentic_core/L5_safety/reasoning/LocationValidatorAgent.py
 agentic_core/L5_safety/enforcement/circular_import_fixer.py
@@ -87,7 +87,7 @@ agentic_core/runtime/sovereignty_exceptions.py (NEW)
 **Risk Level**: HIGH
 
 #### Wave 1.1: L3_orchestration & L4_state Remediation
-**Files**: 
+**Files**:
 - `agentic_core/L3_orchestration/engines/AgentFactory.py`
 - `agentic_core/L4_state/utils/layer_gravity_util.py`
 
@@ -105,7 +105,7 @@ from agentic_core.dependency_injection import inject_agent_adapter
 class AgentFactory:
     def __init__(self, adapter_registry: IAdapterRegistry):
         self._registry = adapter_registry
-    
+
     @inject_agent_adapter
     def create_agent(self, agent_type: str, config: dict):
         # Use injected adapters instead of direct imports
@@ -176,14 +176,14 @@ from pathlib import Path
 
 FORBIDDEN_IMPORT_PATTERNS: Final[frozenset[str]] = frozenset({
     "apps_lic",
-    "apps_rg", 
+    "apps_rg",
     "apps_shared",
     "agentic_core.L",
 })
 
 ALLOWED_READ_ONLY_PATHS: Final[frozenset[str]] = frozenset({
     "agentic_core.types",
-    "agentic_core.interfaces", 
+    "agentic_core.interfaces",
     "agentic_core.classification",
 })
 ```
@@ -210,15 +210,15 @@ ALLOWED_READ_ONLY_PATHS: Final[frozenset[str]] = frozenset({
 def detect_indirect_import_violations(file_path: Path) -> List[str]:
     content = file_path.read_text()
     violations = []
-    
+
     # Check for dynamic imports
     if re.search(r'importlib\.import_module.*apps_', content):
         violations.append("Dynamic apps_* import detected")
-    
-    # Check for eval/exec with apps_* references  
+
+    # Check for eval/exec with apps_* references
     if re.search(r'eval\(|exec\([^)]*apps_', content):
         violations.append("Dynamic code execution with apps_* reference")
-    
+
     return violations
 ```
 
@@ -241,7 +241,7 @@ jobs:
       - uses: actions/checkout@v3
       - name: Check agentic_core imports
         run: python -m agentic_core.enforcement.import_boundary_check
-      - name: Check system_learning isolation  
+      - name: Check system_learning isolation
         run: python -m system_learning.enforcement.boundary_guard
       - name: Validate tooling boundaries
         run: python tests/unit_min_deps/test_tooling_apps_boundary.py
@@ -284,7 +284,7 @@ jobs:
 +     L4_APPROVED_FOLDERS,
 +     L4_SUBFOLDER_MAP,
 + )
-+ 
++
 + # Scope separation validation
 + def validate_no_downstream_imports(file_path: Path) -> bool:
 +     """Validate file contains no apps_* imports."""
@@ -315,20 +315,20 @@ from typing import List, Set
 
 FORBIDDEN_IMPORT_PREFIXES = {
     'apps_lic',
-    'apps_rg', 
+    'apps_rg',
     'apps_shared',
 }
 
 class ImportBoundaryVisitor(ast.NodeVisitor):
     def __init__(self):
         self.violations: List[str] = []
-    
+
     def visit_Import(self, node):
         for alias in node.names:
             if any(alias.name.startswith(prefix) for prefix in FORBIDDEN_IMPORT_PREFIXES):
                 self.violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}'")
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node):
         if node.module and any(node.module.startswith(prefix) for prefix in FORBIDDEN_IMPORT_PREFIXES):
             self.violations.append(f"Line {node.lineno}: Forbidden from-import '{node.module}'")
@@ -349,18 +349,18 @@ def check_agentic_core_boundaries() -> bool:
     """Check all agentic_core files for boundary compliance."""
     core_path = Path(__file__).parent.parent.parent
     violations = []
-    
+
     for py_file in core_path.rglob("*.py"):
         file_violations = check_file_import_boundaries(py_file)
         if file_violations:
             violations.extend([f"{py_file}: {v}" for v in file_violations])
-    
+
     if violations:
         print("Import boundary violations found:")
         for violation in violations:
             print(f"  {violation}")
         return False
-    
+
     print("All agentic_core files comply with import boundaries")
     return True
 ```
@@ -384,14 +384,14 @@ ALLOWED_IMPORT_PREFIXES = {
 class SystemLearningBoundaryVisitor(ast.NodeVisitor):
     def __init__(self):
         self.violations: List[str] = []
-    
+
     def visit_Import(self, node):
         for alias in node.names:
             if not any(alias.name.startswith(prefix) for prefix in ALLOWED_IMPORT_PREFIXES):
                 if not alias.name.startswith(('typing', 'pathlib', 'sys', 'os', 'json')):
                     self.violations.append(f"Line {node.lineno}: Forbidden import '{alias.name}'")
         self.generic_visit(node)
-    
+
     def visit_ImportFrom(self, node):
         if node.module and not any(node.module.startswith(prefix) for prefix in ALLOWED_IMPORT_PREFIXES):
             if not node.module.startswith(('typing', 'pathlib', 'sys', 'os', 'json')):
@@ -402,7 +402,7 @@ def check_system_learning_isolation() -> bool:
     """Check system_learning directory maintains isolation."""
     sl_path = Path(__file__).parent.parent.parent
     violations = []
-    
+
     for py_file in sl_path.rglob("*.py"):
         content = py_file.read_text()
         tree = ast.parse(content)
@@ -410,13 +410,13 @@ def check_system_learning_isolation() -> bool:
         visitor.visit(tree)
         if visitor.violations:
             violations.extend([f"{py_file}: {v}" for v in visitor.violations])
-    
+
     if violations:
         print("System learning isolation violations found:")
         for violation in violations:
             print(f"  {violation}")
         return False
-    
+
     print("System learning maintains proper isolation")
     return True
 ```
@@ -434,26 +434,26 @@ def test_agentic_core_no_apps_imports():
     """Verify agentic_core contains no apps_* imports."""
     core_path = Path(__file__).parent.parent.parent / "agentic_core"
     violations = []
-    
+
     for py_file in core_path.rglob("*.py"):
         content = py_file.read_text()
         if 'import apps_' in content or 'from apps_' in content:
             violations.append(str(py_file))
-    
+
     assert len(violations) == 0, f"Found apps_* imports in: {violations}"
 
-@pytest.mark.unit  
+@pytest.mark.unit
 def test_system_learning_isolation():
     """Verify system_learning maintains isolation."""
     sl_path = Path(__file__).parent.parent.parent / "system_learning"
     violations = []
-    
+
     for py_file in sl_path.rglob("*.py"):
         content = py_file.read_text()
         # Check for forbidden patterns
         if any(pattern in content for pattern in ['apps_', 'agentic_core.L']):
             violations.append(str(py_file))
-    
+
     assert len(violations) == 0, f"Found isolation violations in: {violations}"
 ```
 
@@ -470,7 +470,7 @@ def test_complete_dependency_flow():
     # apps_* can import agentic_core (allowed)
     # agentic_core cannot import apps_* (enforced)
     assert check_agentic_core_boundaries()
-    
+
     # system_learning maintains isolation
     assert check_system_learning_isolation()
 ```
@@ -496,11 +496,11 @@ def test_complete_dependency_flow():
 
 ### 1. Quantitative Metrics
 - Zero apps_* imports in agentic_core layers
-- Zero system_learning isolation violations  
+- Zero system_learning isolation violations
 - 100% CI/CD boundary check pass rate
 - <5% performance impact from dependency injection
 
-### 2. Qualitative Metrics  
+### 2. Qualitative Metrics
 - Clear architectural boundaries documented
 - Unidirectional dependency flow established
 - Maintainable cross-layer communication patterns
@@ -619,7 +619,7 @@ class ExecutionBoundToken:
 ### Phase 5.5: Sovereignty Initialization Sequence
 **Bootstrap Order** (must not be reordered):
 1. Hash policy file → policy_hash
-2. Load hierarchy config → hierarchy_hash  
+2. Load hierarchy config → hierarchy_hash
 3. Load capability authority → authority_hash
 4. Initialize determinism engine with all three hashes
 5. Start execution trace
@@ -652,13 +652,13 @@ class ExecutionBoundToken:
 
 ### 1. Quantitative Metrics
 - Zero apps_* imports in agentic_core layers
-- Zero system_learning isolation violations  
+- Zero system_learning isolation violations
 - 100% CI/CD boundary check pass rate
 - <5% performance impact from dependency injection
 - **NEW**: Identical determinism digests across separate runs
 - **NEW**: 100% capability token verification pass rate
 
-### 2. Qualitative Metrics  
+### 2. Qualitative Metrics
 - Clear architectural boundaries documented
 - Unidirectional dependency flow established
 - Maintainable cross-layer communication patterns

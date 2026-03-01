@@ -188,18 +188,18 @@ The HARDEN-MERGE phase will cryptographically seal all four L2 buckets (Pre-comm
 ```python
 class UniversalWriteGateway:
     """Single mutation authority for all writes"""
-    
+
     def __init__(self, replay_mode: bool = False):
         self.replay_mode = replay_mode
         self.write_permissions: Dict[str, bool] = {}
         self.mutation_ledger: List[MutationRecord] = []
-    
+
     def check_write_permission(self, path: str, operation: str) -> bool:
         """Check if write operation is permitted"""
-        
+
     def record_mutation(self, path: str, operation: str, data: Any) -> None:
         """Record mutation for audit trail"""
-        
+
     def simulate_write(self, path: str, operation: str, data: Any) -> SimulationResult:
         """Simulate write without actual mutation in replay_mode"""
 ```

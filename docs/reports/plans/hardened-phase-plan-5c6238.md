@@ -104,7 +104,7 @@ AGENT_EXECUTION_REGISTRY: Final[dict[str, AgentExecutionPolicy]] = {
     "FissionManagerAgent":        AgentExecutionPolicy(ReasoningClass.ORCHESTRATOR, ExecutionMode.TIER_ROUTED, "Multi-step coordination"),
     "CognitiveDispositionAgent":  AgentExecutionPolicy(ReasoningClass.STRATEGIC,    ExecutionMode.TIER_ROUTED, "Strategic reasoning"),
     "StructuredEngineAgent":      AgentExecutionPolicy(ReasoningClass.LIGHT,        ExecutionMode.TIER_ROUTED, "Structured output generation"),
-    
+
     # Lower reasoning intensity → RULE_ONLY (deterministic healing)
     "ArchitectureGovernanceHealer": AgentExecutionPolicy(ReasoningClass.DETERMINISTIC, ExecutionMode.RULE_ONLY, "Rule-based healing"),
     "DriftDetectionHealer":         AgentExecutionPolicy(ReasoningClass.DETERMINISTIC, ExecutionMode.RULE_ONLY, "Deterministic drift detection"),
@@ -200,16 +200,16 @@ python -m pytest tests/ops_scripts/test_scan_agent_reasoning_inventory.py -xvv &
 async def call_llm(self, prompt: str, *, trace_id: str | None = None) -> str:
     from agentic_core.config.agent_execution_registry import get_agent_execution_policy
     from agentic_core.config.execution_mode import ExecutionMode
-    
+
     agent_class_name = self.__class__.__name__
     policy = get_agent_execution_policy(agent_class_name)
-    
+
     if policy.execution_mode == ExecutionMode.RULE_ONLY:
         raise ExecutionModeViolationError(
             f"{agent_class_name} is RULE_ONLY but attempted call_llm(). "
             f"Use deterministic healing only."
         )
-    
+
     # ... existing route_generation() call
 ```
 
@@ -291,7 +291,7 @@ python -m pytest tests/ops_scripts/test_check_execution_mode_compliance.py -xvv 
 
 ### A.1 `SovereignLLMGateway.route_generation()`
 
-**Target:** `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py`  
+**Target:** `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py`
 **Insert after:** `generate()` (~line 155). Local import of `ReasoningClass` inside method body to avoid circular dep.
 
 ```python
@@ -321,13 +321,13 @@ Audit fingerprint stored in returned dict: `sha256(provider + model + "0.0" + pr
 
 ### A.2 `MCPOperationMixin.call_llm()`
 
-**Target:** `agentic_core/mixins/mcp_operation_mixin.py`  
+**Target:** `agentic_core/mixins/mcp_operation_mixin.py`
 **Insert after:** `mcp_llm_route()` (line 118)
 
 ```python
 async def call_llm(self, prompt: str, *, trace_id: str | None = None) -> str:
     """Sole production generation seam. No provider SDK. No embedding. No bypass.
-    
+
     Note: Phase 0c will add ExecutionMode.RULE_ONLY enforcement here.
     """
     from agentic_core.config.reasoning_class import DEFAULT_REASONING_CLASS
@@ -348,7 +348,7 @@ python -m pytest tests/agentic_core/L2_execution/enforcement/test_sovereign_llm_
 
 ## Phase B — AST CI Guard (G10)
 
-**Target:** NEW `ops_scripts/ci/check_llm_routing_compliance.py`  
+**Target:** NEW `ops_scripts/ci/check_llm_routing_compliance.py`
 Follows `check_anti_patterns.py` + `check_tooling_apps_boundary.py` (both use `ast.parse`, verified in `ops_scripts/ci/`).
 
 **5 checks — all `ast.parse`, zero regex:**

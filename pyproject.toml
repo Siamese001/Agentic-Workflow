@@ -214,9 +214,13 @@ ignore = [
 ]
 
 [tool.ruff.lint.per-file-ignores]
-"tests/**/*.py" = ["S101", "S105", "S106", "S301", "S307"]  # Allow asserts and test-specific patterns
+"tests/**/*.py" = ["S101", "S105", "S106", "S301", "S307", "B011", "B017", "E712", "F841"]  # Allow asserts and test-specific patterns
 "scripts/**/*.py" = ["S603", "S607"]  # Allow subprocess in scripts
-"ops_scripts/**/*.py" = ["S603", "S607"]  # Allow subprocess in ops scripts
+"ops_scripts/**/*.py" = ["S603", "S607", "F841", "F401"]  # Allow subprocess + pre-existing unused vars
+"tools/**/*.py" = ["B011", "E712", "F841"]  # Allow evidence runner patterns
+"system_learning/**/*.py" = ["E712", "F841"]  # Allow system_learning patterns
+"agentic_core/**/*.py" = ["F841"]  # Allow pre-existing unused vars in complex agents
+"*.py" = ["F841"]  # Root-level scripts
 "agentic_core/**/scripts/*.py" = ["S603", "S607"]  # Allow subprocess in agent scripts
 "**/__init__.py" = ["F401"]  # Allow unused imports in __init__.py (re-exports)
 

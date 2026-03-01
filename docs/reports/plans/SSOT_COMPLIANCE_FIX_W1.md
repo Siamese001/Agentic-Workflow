@@ -11,7 +11,7 @@ Files were incorrectly placed in the project root, violating constitutional rule
 - **Rule**: "ALL plans, evidence, reports → `docs/reports/plans/`"
 
 ### 2. Test File Locations
-- **Before**: 
+- **Before**:
   - `c:\Git\Agentic-Workflow\w1_determinism_test.py`
   - `c:\Git\Agentic-Workflow\w1_negative_control.py`
 - **After**:
@@ -21,7 +21,7 @@ Files were incorrectly placed in the project root, violating constitutional rule
 ### 3. Temporary File Cleanup
 Removed 20+ temporary files from project root:
 - `_temp_*.txt` files
-- `_out_*.txt` files  
+- `_out_*.txt` files
 - `_typed_*.txt` files
 - Various analysis scripts and reports
 

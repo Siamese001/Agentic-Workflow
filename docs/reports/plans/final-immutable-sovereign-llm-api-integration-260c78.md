@@ -85,19 +85,19 @@ def route_healing_tier(
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
     """Sovereign tier router - ABSOLUTE choke point with structural guards."""
-    
+
     # Structural NO_TIERING guard - prevent direct router access
     if healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
         raise SovereigntyViolation(
             f"Agent '{healing_input.agent_id}' not in TIERING_ALLOWLIST. "
             f"NO_TIERING agents must emit FailureSignal only."
         )
-    
+
     # Frozen profile lookup
     profile = EXECUTION_PROFILES.get(healing_input.agent_id)
     if profile is None:
         raise V15HardFailAbort(f"Agent '{healing_input.agent_id}' not in frozen registry")
-    
+
     # Deterministic agent isolation - structurally enforced
     if not profile.is_llm_allowed():
         return HealingDecision(
@@ -105,14 +105,14 @@ def route_healing_tier(
             tier=HealingTier.LOCAL_AGENT,
             reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
         )
-    
+
     # Deterministic confidence calculation with fixed precision
     heal_confidence_raw = compute_heal_confidence(
         healing_input,
         meta_prior_provider=meta_prior_provider,
     )
     heal_confidence = round(heal_confidence_raw, 6)  # Fixed precision for replay
-    
+
     # Retry escalation with GEMINI mandate (already validated at startup)
     if healing_input.retry_count >= config.max_heal_retries:
         return HealingDecision(
@@ -120,24 +120,24 @@ def route_healing_tier(
             tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=(*reason_codes, f"retry_count>={config.max_heal_retries}:FORCED_GEMINI"),
         )
-    
+
     # X/Y band routing with model validation
     if heal_confidence >= config.heal_confidence_x:
         return HealingDecision(
-            heal_confidence=heal_confidence, 
-            tier=HealingTier.LOCAL_AGENT, 
+            heal_confidence=heal_confidence,
+            tier=HealingTier.LOCAL_AGENT,
             reason_codes=(*reason_codes, f"heal_confidence>={config.heal_confidence_x}:LOCAL_AGENT")
         )
     elif heal_confidence >= config.heal_confidence_y:
         return HealingDecision(
-            heal_confidence=heal_confidence, 
-            tier=HealingTier.QWEN_VLLM, 
+            heal_confidence=heal_confidence,
+            tier=HealingTier.QWEN_VLLM,
             reason_codes=(*reason_codes, f"heal_confidence>={config.heal_confidence_y}:QWEN_VLLM")
         )
     else:
         return HealingDecision(
-            heal_confidence=heal_confidence, 
-            tier=HealingTier.GEMINI_2_5_PRO, 
+            heal_confidence=heal_confidence,
+            tier=HealingTier.GEMINI_2_5_PRO,
             reason_codes=(*reason_codes, f"heal_confidence<{config.heal_confidence_y}:GEMINI_2_5_PRO")
         )
 
@@ -148,7 +148,7 @@ def compute_heal_confidence(
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> float:
     """Deterministic confidence calculation with fixed precision math."""
-    
+
     # Use existing deterministic scoring components
     failure_prior = FAILURE_CLASS_PRIORS.get(healing_input.failure_type, _DEFAULT_FAILURE_PRIOR)
     blast_radius_penalty = healing_input.blast_radius_estimate * WEIGHT_BLAST_RADIUS
@@ -158,7 +158,7 @@ def compute_heal_confidence(
     ) * WEIGHT_HISTORICAL_SUCCESS
     tool_readiness = 0.8 * WEIGHT_TOOL_READINESS  # Fixed value for determinism
     retry_decay = max(0.0, 1.0 - (healing_input.retry_count * 0.1)) * WEIGHT_RETRY_DECAY
-    
+
     # Fixed precision arithmetic
     raw_confidence = (
         failure_prior * WEIGHT_FAILURE_PRIOR +
@@ -167,7 +167,7 @@ def compute_heal_confidence(
         tool_readiness * WEIGHT_TOOL_READINESS +
         retry_decay * WEIGHT_RETRY_DECAY
     )
-    
+
     # Fixed precision for replay determinism
     return round(max(0.0, min(1.0, raw_confidence)), 6)
 ```
@@ -199,7 +199,7 @@ class InvocationRecord:
 # Qwen adapter with explicit config
 class QwenVLLMAdapter:
     """Qwen/vLLM provider adapter with deterministic configuration."""
-    
+
     def __init__(self, max_tokens: int = DEFAULT_MAX_TOKENS, endpoint_url: str | None = None):
         self.max_tokens = max_tokens
         self.endpoint_url = endpoint_url or os.getenv("QWEN_VLLM_ENDPOINT", "http://localhost:8000")
@@ -207,7 +207,7 @@ class QwenVLLMAdapter:
         self.config_hash = hashlib.sha256(
             f"qwen-vllm:{max_tokens}:{self.endpoint_url}".encode()
         ).hexdigest()[:16]
-    
+
     def invoke(self, request: GenerationRequest) -> GenerationResponse:
         """Invoke Qwen model via SovereignLLMGateway with config tracking."""
         gateway = get_llm_gateway()
@@ -218,7 +218,7 @@ class QwenVLLMAdapter:
             max_tokens=request.max_tokens or self.max_tokens,
             endpoint_url=self.endpoint_url,  # Explicit parameter
         )
-        
+
         # Include config hash in response metadata
         response.provider_config_hash = self.config_hash
         return response
@@ -298,14 +298,14 @@ def route_healing_tier(
     meta_prior_provider: MetaPriorProvider | None = None,
 ) -> HealingDecision:
     """Sovereign tier router with structural NO_TIERING enforcement."""
-    
+
     # Structural guard - NO_TIERING agents cannot call router directly
     if healing_input.agent_id not in TIERING_ALLOWLIST_AGENT_NAMES:
         raise SovereigntyViolation(
             f"Agent '{healing_input.agent_id}' not in TIERING_ALLOWLIST. "
             "NO_TIERING agents must emit FailureSignal only."
         )
-    
+
     # ... rest of router logic
 
 # FailureSignal emission for NO_TIERING agents
@@ -416,13 +416,13 @@ def route_healing_tier(
 +           f"Agent '{healing_input.agent_id}' not in TIERING_ALLOWLIST. "
 +           "NO_TIERING agents must emit FailureSignal only."
 +       )
-    
+
     # Frozen profile lookup
 -   profile = get_profile(healing_input.agent_id)
 +   profile = EXECUTION_PROFILES.get(healing_input.agent_id)
 +   if profile is None:
 +       raise V15HardFailAbort(f"Agent '{healing_input.agent_id}' not in frozen registry")
-    
+
     # Fixed precision confidence
 -   heal_confidence, reason_codes = compute_heal_confidence(...)
 +   heal_confidence_raw = compute_heal_confidence(...)

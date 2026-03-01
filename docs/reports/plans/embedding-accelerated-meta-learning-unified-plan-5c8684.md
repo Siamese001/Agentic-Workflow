@@ -6,7 +6,7 @@ This plan integrates embeddings throughout the existing L0-L6 agentic architectu
 
 ### Existing Embedding Infrastructure (Latest)
 - **EmbeddingSovereignAgent**: Unified gateway for Gemini/OpenAI embeddings with Redis caching
-- **PineconeSovereignAgent**: Vector storage with hybrid search capabilities  
+- **PineconeSovereignAgent**: Vector storage with hybrid search capabilities
 - **EmbeddingMixin**: Unified embedding access for agents
 - **InMemoryVectorCache**: ChromaDB-based hot cache for 10-50x speedup
 - **TieredVectorStore**: Hot in-memory + warm disk storage architecture
@@ -44,13 +44,13 @@ This plan integrates embeddings throughout the existing L0-L6 agentic architectu
 ```python
 class LocalSSDVectorStore:
     """High-performance local vector store leveraging 4TB SSD."""
-    
+
     def __init__(self, base_path: Path = Path("/data/embeddings")):
         self.base_path = base_path
         self.index_path = base_path / "faiss_indexes"
         self.cache_path = base_path / "embedding_cache"
         self.raw_path = base_path / "raw_data"
-        
+
         # Initialize FAISS indexes for different pattern types
         self.healing_index = faiss.IndexIVFPQ(
             faiss.IndexFlatL2(768),  # 768-dim embeddings
@@ -59,7 +59,7 @@ class LocalSSDVectorStore:
             64,   # M (number of subquantizers)
             8     # nbits (bits per subquantizer)
         )
-        
+
         self.telemetry_index = faiss.IndexIVFPQ(
             faiss.IndexFlatL2(384),  # 384-dim embeddings
             384,  # dimension
@@ -74,24 +74,24 @@ class LocalSSDVectorStore:
 ```python
 class LocalEmbeddingPopulationService:
     """Efficient embedding population leveraging local SSD storage."""
-    
+
     def __init__(self, batch_size: int = 1000, max_workers: int = 8):
         self.batch_size = batch_size
         self.max_workers = max_workers
         self.embedder = EmbeddingSovereignAgent()
         self.local_store = LocalSSDVectorStore()
-        
+
     async def populate_historical_patterns(self, source_path: Path):
         """Populate local embeddings from historical data."""
-        
+
         # Phase 1: Process healing outcomes (~50GB raw data)
         healing_files = list(source_path.glob("**/healing_outcomes/*.json"))
         await self._process_files_in_batches(
-            healing_files, 
+            healing_files,
             processor=self._embed_healing_context,
             output_path=self.local_store.cache_path / "healing_embeddings"
         )
-        
+
         # Phase 2: Process telemetry events (~200GB raw data)
         telemetry_files = list(source_path.glob("**/telemetry/*.jsonl"))
         await self._process_files_in_batches(
@@ -99,7 +99,7 @@ class LocalEmbeddingPopulationService:
             processor=self._embed_telemetry_event,
             output_path=self.local_store.cache_path / "telemetry_embeddings"
         )
-        
+
         # Phase 3: Build FAISS indexes from cached embeddings
         await self._build_faiss_indexes()
 ```
@@ -130,10 +130,10 @@ class LocalEmbeddingPopulationService:
 ```python
 class EmbeddingAwareL0Proposer(L0Proposer):
     """L0 proposer with embedding-guided threshold optimization."""
-    
+
     def __init__(self, embedding_service: MetaLearningEmbeddingService):
         self.embedding_service = embedding_service
-        
+
     async def propose(self, snapshot, metrics, config, now_utc, history, cooldown, sample):
         # Find similar historical contexts through local SSD search
         similar_contexts = await self.embedding_service.find_similar_contexts_local(
@@ -144,7 +144,7 @@ class EmbeddingAwareL0Proposer(L0Proposer):
             },
             top_k=5
         )
-        
+
         # Learn optimal thresholds from similar contexts
         optimal_thresholds = self._extract_thresholds_from_similar(similar_contexts)
         return self._create_proposal(optimal_thresholds, similar_contexts)
@@ -210,7 +210,7 @@ class EmbeddingAwareL0Proposer(L0Proposer):
 ```python
 class MetaLearningEmbeddingService:
     """Centralized embedding service with local SSD optimization."""
-    
+
     def __init__(self):
         self.embedder = EmbeddingSovereignAgent()
         self.local_faiss = LocalSSDVectorStore()
@@ -218,16 +218,16 @@ class MetaLearningEmbeddingService:
         self.pinecone = PineconeSovereignAgent()  # Backup/collaboration
         self.hot_cache = InMemoryVectorCache("meta_learning_hot")
         self.semantic_cache = SemanticCacheManager.get_instance()
-    
+
     async def embed_healing_context(self, violation: dict, strategy: dict, outcome: dict) -> list[float]:
         """Embed complete healing context for pattern matching."""
-        
+
     async def find_similar_contexts_local(self, context: dict, top_k: int = 5) -> list[dict]:
         """Find semantically similar contexts using local SSD."""
-        
+
     async def embed_telemetry_event(self, event: dict) -> list[float]:
         """Embed telemetry event for clustering."""
-        
+
     async def embed_dpo_pair(self, control_output: str, candidate_output: str) -> tuple[list[float], list[float]]:
         """Embed DPO pair outputs for similarity analysis."""
 ```
@@ -236,28 +236,28 @@ class MetaLearningEmbeddingService:
 ```python
 class HybridVectorArchitecture:
     """Hybrid local SSD + cloud vector storage architecture."""
-    
+
     def __init__(self):
         # Local SSD for high-performance access
         self.local_faiss = LocalSSDVectorStore()
         self.local_chroma = ChromaDB(persist_directory="/data/chroma")
-        
+
         # Cloud for backup and collaboration
         self.pinecone = PineconeSovereignAgent()
-        
+
         # Cache hierarchy
         self.hot_cache = InMemoryVectorCache()  # RAM
         self.warm_cache = self.local_chroma     # SSD
         self.cold_storage = self.pinecone       # Cloud
-    
+
     async def search(self, query_embedding: list[float], top_k: int = 10):
         """Multi-tier search with local SSD priority."""
-        
+
         # Try hot cache first (RAM)
         hot_results = await self.hot_cache.search([query_embedding], top_k)
         if len(hot_results['ids'][0]) >= top_k:
             return hot_results
-            
+
         # Try warm cache (SSD)
         warm_results = self.local_chroma.query(
             query_embeddings=[query_embedding],
@@ -272,7 +272,7 @@ class HybridVectorArchitecture:
                 embeddings=warm_results['embeddings'][0]
             )
             return warm_results
-            
+
         # Fallback to cold storage (Cloud)
         return await self.pinecone.semantic_search(query_embedding, top_k)
 ```
@@ -298,7 +298,7 @@ Local SSD Storage:
 
 Pinecone Cloud (Backup/Collaboration):
 - meta-learning-patterns: Healing context patterns and outcomes
-- meta-learning-telemetry: Semantic telemetry event clusters  
+- meta-learning-telemetry: Semantic telemetry event clusters
 - meta-learning-dpo: DPO pair embeddings for preference learning
 - meta-learning-configs: Configuration optimization patterns
 ```
@@ -363,20 +363,20 @@ Pinecone Cloud (Backup/Collaboration):
 ```python
 class SSDOptimizationConfig:
     """Configuration optimized for 4TB SSD performance."""
-    
+
     # FAISS index parameters for SSD
     FAISS_NLIST = 4096      # Optimized for SSD random access
     FAISS_M = 64            # Balance compression and accuracy
     FAISS_NBITS = 8         # 8-bit quantization for storage efficiency
-    
+
     # Batch processing optimized for SSD I/O
     BATCH_SIZE = 5000       # Large batches for SSD sequential reads
     MAX_WORKERS = 8         # Parallel processing for multi-core SSD
-    
+
     # Cache management
     HOT_CACHE_SIZE = 10000  # RAM cache for most frequent patterns
     WARM_CACHE_SIZE = 1000000  # SSD cache for recent patterns
-    
+
     # Storage layout optimization
     EMBEDDING_CHUNK_SIZE = 100000  # 100K embeddings per file
     COMPRESSION_ENABLED = True     # LZ4 compression for SSD storage
@@ -392,7 +392,7 @@ class SSDOptimizationConfig:
 
 ### Embedding Quality Assurance
 1. **Dimension validation** for all embedding vectors
-2. **Similarity thresholds** to prevent false positives  
+2. **Similarity thresholds** to prevent false positives
 3. **Quality metrics** tracking (variance, norm, coverage)
 4. **Fallback mechanisms** when local storage unavailable
 
@@ -418,7 +418,7 @@ class SSDOptimizationConfig:
 
 ### Quantitative Metrics
 - **Pattern Classification Accuracy**: Target >90% vs baseline >70%
-- **Healing Success Prediction**: Target >85% accuracy  
+- **Healing Success Prediction**: Target >85% accuracy
 - **Configuration Optimization Speed**: Target 50% faster convergence
 - **DPO Learning Efficiency**: Target 40% less feedback required
 - **Search Performance**: <10ms local vs 100-200ms cloud
@@ -440,7 +440,7 @@ class SSDOptimizationConfig:
 3. **Storage Scalability**: Tiered storage with intelligent pruning
 4. **Performance Degradation**: Monitor SSD health, implement maintenance schedules
 
-### Operational Risks  
+### Operational Risks
 1. **Data Corruption**: Implement checksums and validation
 2. **Storage Exhaustion**: Automated cleanup and monitoring
 3. **Model Dependency**: Multiple embedding providers, fallback mechanisms

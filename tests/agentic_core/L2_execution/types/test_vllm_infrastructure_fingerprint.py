@@ -8,6 +8,7 @@ No GPU imports. Pure L2.
 from __future__ import annotations
 
 import json
+
 import pytest
 
 pytestmark = pytest.mark.unit_min_deps
@@ -37,7 +38,7 @@ def test_fingerprint_hash_changes_on_field_change():
     """Fingerprint hash changes when any field changes."""
     fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
     original_hash = fp.fingerprint_hash()
-    
+
     # Change each field and verify hash changes
     fields_to_change = {
         "model_name": "DifferentModel",
@@ -48,7 +49,7 @@ def test_fingerprint_hash_changes_on_field_change():
         "cuda_version": "12.5",
         "driver_version": "550.54.15",
     }
-    
+
     for field, new_value in fields_to_change.items():
         kwargs = fp.as_dict()
         kwargs[field] = new_value

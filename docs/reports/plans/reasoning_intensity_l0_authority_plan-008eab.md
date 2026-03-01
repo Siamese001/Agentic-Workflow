@@ -15,7 +15,7 @@ This plan establishes L0 as the authoritative policy engine for deterministic re
 
 **Inputs (deterministic & capturable):**
 - Request structure features (size, tool count, risk tier)
-- L4 active config/budgets (token caps, rate limits) 
+- L4 active config/budgets (token caps, rate limits)
 - Aggregated L6/L4 outcome metrics (windowed, versioned)
 
 **Output (sealed + versioned):**
@@ -93,7 +93,7 @@ This plan establishes L0 as the authoritative policy engine for deterministic re
    - Update `HOPPipelineExecutor` to accept injected profile
    - Remove environment-based factory patterns
 
-2. **Refactor apps_rg reasoning toggles** 
+2. **Refactor apps_rg reasoning toggles**
    - Similar consume-only pattern
    - Update `ResumeOrchestratorEngine` to use profile constraints
    - Preserve existing validation logic
@@ -120,7 +120,7 @@ This plan establishes L0 as the authoritative policy engine for deterministic re
 ## Governance Compliance
 
 **L0 Authority:** Pure-function policy computation with cryptographic signing
-**L3 Operational:** Fail-closed enforcement with non-authoritative telemetry  
+**L3 Operational:** Fail-closed enforcement with non-authoritative telemetry
 **Apps Separation:** Read-only consumption, no authority or mutation capability
 **C0 Boundary:** Explicit prohibition of embedding-driven policy decisions
 **Policy Sovereignty:** No upward mutation across layers, L3 may only reduce execution
@@ -131,7 +131,7 @@ This plan establishes L0 as the authoritative policy engine for deterministic re
 1. Run identical request twice with same L4 state
 2. Capture and compare byte-for-byte:
    - `reasoning_profile_hash`
-   - `route_hash` 
+   - `route_hash`
    - `enforcement_trace_hash`
 3. All hashes must match exactly or calibration logic is leaking non-determinism
 

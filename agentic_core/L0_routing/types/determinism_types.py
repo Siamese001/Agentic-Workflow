@@ -378,11 +378,11 @@ class ForensicTraceBuffer:
 @dataclass(frozen=True)
 class SemanticClockAdvancementArtifact:
     """Wave 19: Semantic clock advancement artifact for replay verification.
-    
+
     Captures semantic clock advancement events with L4 version binding
     and provider identification for deterministic replay.
     """
-    
+
     advancement_id: str
     previous_tick: int
     new_tick: int
@@ -391,7 +391,7 @@ class SemanticClockAdvancementArtifact:
     provider_id: str
     timestamp: float
     artifact_hash: str = ""
-    
+
     def __post_init__(self):
         if not self.artifact_hash:
             # Compute hash from advancement data
@@ -402,12 +402,13 @@ class SemanticClockAdvancementArtifact:
                 "advancement_reason": self.advancement_reason,
                 "l4_version_binding": self.l4_version_binding,
                 "provider_id": self.provider_id,
-                "timestamp": self.timestamp
+                "timestamp": self.timestamp,
             }
             import json
+
             advancement_json = json.dumps(advancement_data, sort_keys=True)
             artifact_hash = hashlib.sha256(advancement_json.encode()).hexdigest()
-            object.__setattr__(self, 'artifact_hash', artifact_hash)
+            object.__setattr__(self, "artifact_hash", artifact_hash)
 
 
 # =============================================================================

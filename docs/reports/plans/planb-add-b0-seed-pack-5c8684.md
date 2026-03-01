@@ -31,7 +31,7 @@ class SeedEmbeddingPackManifest:
     matrix_hash: str               # SHA-256 of embeddings.f32 bytes
     built_at_utc: int
     bootstrap_mode: str            # "minimal_seed" | "curated_seed"
-    
+
     def to_canonical_json_bytes() -> bytes: ...
 ```
 

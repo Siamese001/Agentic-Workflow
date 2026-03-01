@@ -46,12 +46,12 @@ class DeterminismProof:
     """Mathematically-sealed determinism proof."""
     # CORE DETERMINISTIC DIGEST (excludes nondeterministic fields)
     core_digest: str
-    
+
     # METADATA (outside digest envelope)
     run_id: str
     creation_timestamp: float
     artifact_count: int
-    
+
     # CRYPTOGRAPHIC BINDINGS
     policy_hash: str
     hierarchy_hash: str
@@ -59,49 +59,49 @@ class DeterminismProof:
 
 class MathematicalDeterminismEngine:
     """Determinism engine with mathematically correct replay verification."""
-    
+
     def __init__(self, policy_hash: str, hierarchy_hash: str, authority_hash: str):
         self._artifacts: Dict[str, DeterministicArtifact] = {}
         self._sealed = False
         self._run_id = self._generate_run_id()
         self._lock = threading.RLock()
         self._proof: Optional[DeterminismProof] = None
-        
+
         # Cryptographic bindings (outside digest)
         self._policy_hash = policy_hash
         self._hierarchy_hash = hierarchy_hash
         self._authority_hash = authority_hash
-    
+
     def add_artifact(self, name: str, hash_value: str, metadata: Optional[Dict[str, Any]] = None):
         """Add deterministic artifact (no timestamps)."""
         with self._lock:
             if self._sealed:
                 raise RuntimeError("Determinism engine is sealed")
-            
+
             if name in self._artifacts:
                 raise ValueError(f"Artifact '{name}' already exists")
-            
+
             # Validate metadata is deterministic
             if metadata and not self._is_deterministic_metadata(metadata):
                 raise ValueError("Metadata contains nondeterministic fields")
-            
+
             artifact = DeterministicArtifact(
                 name=name,
                 hash_value=hash_value,
                 metadata=metadata or {}
             )
-            
+
             self._artifacts[name] = artifact
-    
+
     def seal(self) -> DeterminismProof:
         """Seal engine with mathematically correct deterministic digest."""
         with self._lock:
             if self._sealed:
                 return self._proof
-            
+
             # Sort artifacts for deterministic ordering
             sorted_artifacts = dict(sorted(self._artifacts.items()))
-            
+
             # Create CORE deterministic digest (only deterministic fields)
             core_payload = {
                 'artifacts': {
@@ -115,10 +115,10 @@ class MathematicalDeterminismEngine:
                 'hierarchy_hash': self._hierarchy_hash,
                 'authority_hash': self._authority_hash
             }
-            
+
             core_json = json.dumps(core_payload, sort_keys=True, separators=(',', ':'))
             core_digest = hashlib.sha256(core_json.encode('utf-8')).hexdigest()
-            
+
             # Create proof with metadata outside digest envelope
             self._proof = DeterminismProof(
                 core_digest=core_digest,
@@ -129,19 +129,19 @@ class MathematicalDeterminismEngine:
                 hierarchy_hash=self._hierarchy_hash,
                 authority_hash=self._authority_hash
             )
-            
+
             self._sealed = True
             return self._proof
-    
+
     def verify_replay(self, expected_proof: DeterminismProof) -> bool:
         """Verify replay with mathematical correctness."""
         if not self._sealed:
             raise RuntimeError("Engine must be sealed before verification")
-        
+
         current_proof = self._proof
         if not current_proof:
             return False
-        
+
         # Verify only core digest matches (metadata excluded)
         return (
             current_proof.core_digest == expected_proof.core_digest and
@@ -150,11 +150,11 @@ class MathematicalDeterminismEngine:
             current_proof.authority_hash == expected_proof.authority_hash and
             current_proof.artifact_count == expected_proof.artifact_count
         )
-    
+
     def _is_deterministic_metadata(self, metadata: Dict[str, Any]) -> bool:
         """Validate metadata contains only deterministic values."""
         forbidden_keys = {'timestamp', 'time', 'date', 'random', 'uuid'}
-        
+
         def check_value(value):
             if isinstance(value, dict):
                 return all(check_value(k) and check_value(v) for k, v in value.items())
@@ -166,9 +166,9 @@ class MathematicalDeterminismEngine:
                 return True
             else:
                 return False
-        
+
         return check_value(metadata)
-    
+
     def _generate_run_id(self) -> str:
         """Generate unique run ID (not used in digest)."""
         import uuid
@@ -232,29 +232,29 @@ from typing import Dict, Any
 
 class HierarchyValidator:
     """Validates layer hierarchy configuration and computes hash."""
-    
+
     def __init__(self, config_path: Path):
         self.config_path = config_path
         self.config_hash = self._compute_config_hash()
         self.hierarchy = self._load_hierarchy()
-    
+
     def _compute_config_hash(self) -> str:
         """Compute SHA-256 hash of hierarchy configuration."""
         config_content = self.config_path.read_text()
         return hashlib.sha256(config_content.encode('utf-8')).hexdigest()
-    
+
     def _load_hierarchy(self) -> Dict[str, Any]:
         """Load and validate hierarchy configuration."""
         config = json.loads(self.config_path.read_text())
-        
+
         # Validate required fields
         required_fields = ['version', 'layers', 'forbidden_cross_imports', 'allowed_cross_imports']
         for field in required_fields:
             if field not in config:
                 raise ValueError(f"Missing required field: {field}")
-        
+
         return config
-    
+
     def get_layer_level(self, module_name: str) -> int:
         """Get hierarchy level for module."""
         for pattern, level in self.hierarchy['layers'].items():
@@ -264,32 +264,32 @@ class HierarchyValidator:
             elif module_name == pattern:
                 return level
         return -1  # Unknown/external
-    
+
     def is_import_allowed(self, source: str, target: str) -> bool:
         """Check if import is allowed according to hierarchy."""
         source_level = self.get_layer_level(source)
         target_level = self.get_layer_level(target)
-        
+
         if source_level < 0 or target_level < 0:
             return True  # External modules allowed
-        
+
         # Check forbidden imports
         for source_pattern, forbidden_targets in self.hierarchy['forbidden_cross_imports'].items():
             if self._matches_pattern(source, source_pattern):
                 for target_pattern in forbidden_targets:
                     if self._matches_pattern(target, target_pattern):
                         return False
-        
+
         # Check allowed imports
         for source_pattern, allowed_targets in self.hierarchy['allowed_cross_imports'].items():
             if self._matches_pattern(source, source_pattern):
                 for target_pattern in allowed_targets:
                     if self._matches_pattern(target, target_pattern):
                         return True
-        
+
         # Default: allow same level or upstream importing downstream
         return source_level >= target_level
-    
+
     def _matches_pattern(self, module: str, pattern: str) -> bool:
         """Check if module matches pattern."""
         if pattern.endswith('*'):
@@ -342,21 +342,21 @@ class ExecutionBoundToken:
     capability_type: CapabilityType
     caller_context: str
     target_context: str
-    
+
     # Execution bindings
     execution_trace_id: str
     policy_hash: str
     determinism_digest: str
     hierarchy_hash: str
-    
+
     # Cryptographic proof
     signature_hash: str
     authority_hash: str
-    
+
     # Metadata (outside signature)
     metadata: Dict[str, Any]
-    
-    def verify_execution_binding(self, 
+
+    def verify_execution_binding(self,
                                expected_trace_id: str,
                                expected_policy_hash: str,
                                expected_determinism_digest: str,
@@ -368,14 +368,14 @@ class ExecutionBoundToken:
             self.determinism_digest == expected_determinism_digest and
             self.hierarchy_hash == expected_hierarchy_hash
         )
-    
+
     def verify_signature(self, authority_public_hash: str) -> bool:
         """Verify token signature against authority."""
         return (
             self.authority_hash == authority_public_hash and
             self.signature_hash == self._compute_signature()
         )
-    
+
     def _compute_signature(self) -> str:
         """Compute token signature (deterministic)."""
         signature_payload = {
@@ -388,28 +388,28 @@ class ExecutionBoundToken:
             'determinism_digest': self.determinism_digest,
             'hierarchy_hash': self.hierarchy_hash
         }
-        
+
         payload_json = json.dumps(signature_payload, sort_keys=True, separators=(',', ':'))
         return hashlib.sha256(payload_json.encode('utf-8')).hexdigest()
 
 class SecureCapabilityAuthority:
     """Secure authority with environment-bound secrets."""
-    
+
     def __init__(self):
         self.authority_secret = self._load_authority_secret()
         self.authority_public_hash = self._compute_authority_hash()
-    
+
     def _load_authority_secret(self) -> str:
         """Load authority secret from environment."""
         secret = os.environ.get('AGENTIC_AUTHORITY_SECRET')
         if not secret:
             raise RuntimeError("AGENTIC_AUTHORITY_SECRET environment variable required")
         return secret
-    
+
     def _compute_authority_hash(self) -> str:
         """Compute public hash of authority secret."""
         return hashlib.sha256(self.authority_secret.encode('utf-8')).hexdigest()
-    
+
     def issue_execution_bound_token(self,
                                   capability_type: CapabilityType,
                                   caller_context: str,
@@ -421,9 +421,9 @@ class SecureCapabilityAuthority:
                                   metadata: Optional[Dict[str, Any]] = None) -> ExecutionBoundToken:
         """Issue execution-bound capability token."""
         import uuid
-        
+
         token_id = str(uuid.uuid4())
-        
+
         # Create token
         token = ExecutionBoundToken(
             token_id=token_id,
@@ -438,10 +438,10 @@ class SecureCapabilityAuthority:
             authority_hash=self.authority_public_hash,
             metadata=metadata or {}
         )
-        
+
         # Compute signature
         signature_hash = self._sign_token(token)
-        
+
         # Return token with signature
         return ExecutionBoundToken(
             token_id=token.token_id,
@@ -456,7 +456,7 @@ class SecureCapabilityAuthority:
             authority_hash=token.authority_public_hash,
             metadata=token.metadata
         )
-    
+
     def _sign_token(self, token: ExecutionBoundToken) -> str:
         """Sign token with authority secret."""
         signature_payload = f"{token.token_id}:{token.capability_type.value}:{token.caller_context}:{token.target_context}:{token.execution_trace_id}:{token.policy_hash}:{token.determinism_digest}:{token.hierarchy_hash}"
@@ -499,12 +499,12 @@ class ExecutionTrace:
 
 class ExecutionTraceManager:
     """Manages execution traces for capability binding."""
-    
+
     def __init__(self):
         self._active_trace: Optional[ExecutionTrace] = None
         self._lock = threading.RLock()
-    
-    def start_trace(self, 
+
+    def start_trace(self,
                    plan_hash: str,
                    policy_hash: str,
                    hierarchy_hash: str,
@@ -512,7 +512,7 @@ class ExecutionTraceManager:
         """Start new execution trace."""
         with self._lock:
             trace_id = str(uuid.uuid4())
-            
+
             # Determinism digest will be set when engine is sealed
             self._active_trace = ExecutionTrace(
                 trace_id=trace_id,
@@ -522,15 +522,15 @@ class ExecutionTraceManager:
                 hierarchy_hash=hierarchy_hash,
                 metadata=metadata or {}
             )
-            
+
             return trace_id
-    
+
     def bind_determinism_digest(self, determinism_digest: str):
         """Bind determinism digest to active trace."""
         with self._lock:
             if not self._active_trace:
                 raise RuntimeError("No active execution trace")
-            
+
             self._active_trace = ExecutionTrace(
                 trace_id=self._active_trace.trace_id,
                 plan_hash=self._active_trace.plan_hash,
@@ -539,11 +539,11 @@ class ExecutionTraceManager:
                 hierarchy_hash=self._active_trace.hierarchy_hash,
                 metadata=self._active_trace.metadata
             )
-    
+
     def get_active_trace(self) -> Optional[ExecutionTrace]:
         """Get current execution trace."""
         return self._active_trace
-    
+
     def end_trace(self):
         """End current execution trace."""
         with self._lock:
@@ -590,25 +590,25 @@ from pathlib import Path
 
 class ProvenanceTracker:
     """Tracks module provenance at load time."""
-    
+
     def __init__(self):
         self._module_provenance: Dict[str, str] = {}
         self._namespace_mappings: Dict[str, Set[str]] = {}
-    
+
     def register_module(self, module_name: str, file_path: Path):
         """Register module provenance at load time."""
         namespace = self._extract_namespace(file_path)
         self._module_provenance[module_name] = namespace
-        
+
         # Update namespace mappings
         if namespace not in self._namespace_mappings:
             self._namespace_mappings[namespace] = set()
         self._namespace_mappings[namespace].add(module_name)
-    
+
     def _extract_namespace(self, file_path: Path) -> str:
         """Extract namespace from file path."""
         parts = file_path.parts
-        
+
         for i, part in enumerate(parts):
             if part in ['apps_lic', 'apps_rg', 'apps_shared', 'agentic_core', 'system_learning']:
                 if part == 'agentic_core' and i + 1 < len(parts):
@@ -617,23 +617,23 @@ class ProvenanceTracker:
                     if layer_part.startswith('L') and '_' in layer_part:
                         return f"agentic_core.{layer_part}"
                 return part
-        
+
         return 'external'
-    
+
     def get_module_namespace(self, module_name: str) -> str:
         """Get namespace for a module."""
         return self._module_provenance.get(module_name, 'unknown')
-    
+
     def is_cross_namespace_import(self, caller: str, target: str) -> bool:
         """Check if import crosses namespace boundaries."""
         caller_namespace = self.get_module_namespace(caller)
         target_namespace = self.get_module_namespace(target)
-        
+
         return caller_namespace != target_namespace and caller_namespace != 'external'
 
 class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
     """Structural namespace enforcement using ModuleSpec provenance."""
-    
+
     def __init__(self, provenance_tracker: ProvenanceTracker):
         self.provenance_tracker = provenance_tracker
         self.allowed_mappings = {
@@ -641,26 +641,26 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
             'agentic_core.L*': {'system_learning.types', 'system_learning.interfaces'},
             'system_learning': {'agentic_core.types', 'agentic_core.interfaces'},
         }
-    
+
     def find_spec(self, fullname, path, target=None):
         """Enforce namespace boundaries at import time."""
         # Get caller module from provenance tracker
         caller_module = self._get_caller_from_provenance()
-        
+
         if caller_module and self.provenance_tracker.is_cross_namespace_import(caller_module, fullname):
             caller_namespace = self.provenance_tracker.get_module_namespace(caller_module)
             target_namespace = self.provenance_tracker.get_module_namespace(fullname)
-            
+
             if not self._is_namespace_import_allowed(caller_namespace, target_namespace):
                 raise ImportError(f"Cross-namespace import forbidden: {caller_namespace} -> {target_namespace}")
-        
+
         return None  # Let default importer handle it
-    
+
     def _get_caller_from_provenance(self) -> Optional[str]:
         """Get caller module from provenance tracking."""
         import inspect
         frame = inspect.currentframe()
-        
+
         try:
             # Walk up stack to find module with provenance
             while frame:
@@ -670,16 +670,16 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
                 frame = frame.f_back
         finally:
             del frame
-        
+
         return None
-    
+
     def _is_namespace_import_allowed(self, caller: str, target: str) -> bool:
         """Check if cross-namespace import is allowed."""
         for caller_pattern, allowed_targets in self.allowed_mappings.items():
             if self._matches_pattern(caller, caller_pattern):
                 return any(target.startswith(allowed) for allowed in allowed_targets)
         return False
-    
+
     def _matches_pattern(self, namespace: str, pattern: str) -> bool:
         """Check if namespace matches pattern."""
         if pattern.endswith('*'):
@@ -688,21 +688,21 @@ class StructuralNamespaceFinder(importlib.abc.MetaPathFinder):
 
 class ProvenanceImportLoader(importlib.abc.Loader):
     """Custom loader that tracks module provenance."""
-    
+
     def __init__(self, original_loader, provenance_tracker: ProvenanceTracker):
         self.original_loader = original_loader
         self.provenance_tracker = provenance_tracker
-    
+
     def create_module(self, spec):
         """Create module and track provenance."""
         module = self.original_loader.create_module(spec)
-        
+
         if module and spec.origin:
             file_path = Path(spec.origin)
             self.provenance_tracker.register_module(spec.name, file_path)
-        
+
         return module
-    
+
     def exec_module(self, module):
         """Execute module using original loader."""
         return self.original_loader.exec_module(module)
@@ -714,19 +714,19 @@ _structural_finder: Optional[StructuralNamespaceFinder] = None
 def install_structural_namespace_fence():
     """Install structural namespace fence."""
     global _structural_finder
-    
+
     if _structural_finder is None:
         _structural_finder = StructuralNamespaceFinder(_provenance_tracker)
-        
+
         # Insert at beginning of meta_path
         sys.meta_path.insert(0, _structural_finder)
-    
+
     return _structural_finder
 
 def uninstall_structural_namespace_fence():
     """Remove structural namespace fence."""
     global _structural_finder
-    
+
     if _structural_finder and _structural_finder in sys.meta_path:
         sys.meta_path.remove(_structural_finder)
         _structural_finder = None
@@ -760,70 +760,70 @@ from agentic_core.runtime.execution_bound_token import get_capability_authority
 
 class SovereigntyBootstrap:
     """Bootstrap sequence for cryptographic sovereignty."""
-    
+
     def __init__(self):
         self.initialized = False
         self.policy_hash: Optional[str] = None
         self.hierarchy_hash: Optional[str] = None
         self.authority_hash: Optional[str] = None
-    
+
     def bootstrap_sovereignty(self, policy_file: Path) -> str:
         """Bootstrap complete sovereignty system."""
         if self.initialized:
             raise RuntimeError("Sovereignty already initialized")
-        
+
         # Step 1: Load and hash policy
         self.policy_hash = self._compute_policy_hash(policy_file)
-        
+
         # Step 2: Initialize hierarchy validator and get hash
         hierarchy_validator = get_hierarchy_validator()
         self.hierarchy_hash = hierarchy_validator.config_hash
-        
+
         # Step 3: Initialize capability authority and get hash
         authority = get_capability_authority()
         self.authority_hash = authority.authority_public_hash
-        
+
         # Step 4: Initialize determinism engine with cryptographic bindings
         initialize_determinism_engine(
             self.policy_hash,
             self.hierarchy_hash,
             self.authority_hash
         )
-        
+
         # Step 5: Start execution trace
         trace_id = start_execution_trace(
             self.policy_hash,
             self.policy_hash,  # Same as policy_hash for now
             self.hierarchy_hash
         )
-        
+
         self.initialized = True
         return trace_id
-    
+
     def seal_determinism_and_finalize(self):
         """Seal determinism engine and finalize sovereignty."""
         if not self.initialized:
             raise RuntimeError("Sovereignty not initialized")
-        
+
         from agentic_core.runtime.mathematical_determinism import get_determinism_engine
         from agentic_core.runtime.execution_trace import get_active_execution_trace
-        
+
         # Seal determinism engine
         engine = get_determinism_engine()
         proof = engine.seal()
-        
+
         # Bind determinism digest to execution trace
         bind_determinism_to_trace(proof.core_digest)
-        
+
         return proof
-    
+
     def _compute_policy_hash(self, policy_file: Path) -> str:
         """Compute SHA-256 hash of policy file."""
         import hashlib
-        
+
         if not policy_file.exists():
             raise FileNotFoundError(f"Policy file not found: {policy_file}")
-        
+
         content = policy_file.read_text()
         return hashlib.sha256(content.encode('utf-8')).hexdigest()
 
@@ -842,7 +842,7 @@ def get_sovereignty_hashes() -> tuple:
     """Get all sovereignty hashes."""
     if not _sovereignty_bootstrap.initialized:
         raise RuntimeError("Sovereignty not initialized")
-    
+
     return (
         _sovereignty_bootstrap.policy_hash,
         _sovereignty_bootstrap.hierarchy_hash,

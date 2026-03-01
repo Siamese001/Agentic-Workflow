@@ -11,34 +11,33 @@ Deterministic, pure read-only, exits nonzero on violations.
 import ast
 import sys
 from pathlib import Path
-from typing import List, Set
 
 
 class ToolingAppsBoundaryChecker:
     """Checker for tooling/apps_* boundary violations."""
-    
+
     # Tooling directories that must not import apps_*
     TOOLING_DIRS = [
         "tools/evidence",
         "ops_scripts/ci",
         "ops_scripts/hooks",
     ]
-    
+
     # Forbidden import prefixes
     FORBIDDEN_IMPORTS = ["apps_lic", "apps_rg", "apps_shared"]
-    
+
     def __init__(self, repo_root: Path):
         """Initialize checker.
-        
+
         Args:
             repo_root: Repository root path
         """
         self.repo_root = repo_root
         self.violations = []
-    
+
     def check_file(self, filepath: Path) -> None:
         """Check a single Python file for apps_* imports.
-        
+
         Args:
             filepath: Path to Python file to check
         """
@@ -51,7 +50,7 @@ class ToolingAppsBoundaryChecker:
         except Exception as e:
             self.violations.append(f"{filepath}: Could not parse: {e}")
             return
-        
+
         # Check all import statements
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -65,10 +64,10 @@ class ToolingAppsBoundaryChecker:
                     self.violations.append(
                         f"{filepath}:{node.lineno}: Forbidden import: from {node.module} import ..."
                     )
-    
-    def check(self) -> List[str]:
+
+    def check(self) -> list[str]:
         """Check all tooling files for boundary violations.
-        
+
         Returns:
             List of violation messages
         """
@@ -76,30 +75,30 @@ class ToolingAppsBoundaryChecker:
             tooling_path = self.repo_root / tooling_dir
             if not tooling_path.exists():
                 continue
-            
+
             # Find all Python files in tooling directory
             for py_file in tooling_path.rglob("*.py"):
                 if py_file.name.startswith("_"):
                     continue  # Skip private/test files
                 self.check_file(py_file)
-        
+
         return self.violations
 
 
 def main():
     """Main entry point."""
     repo_root = Path(__file__).parent.parent.parent
-    
+
     checker = ToolingAppsBoundaryChecker(repo_root)
     violations = checker.check()
-    
+
     if violations:
         print(f"\nERROR: Tooling/apps_* boundary violations found: {len(violations)}")
         for violation in violations:
             print(f"  - {violation}")
         return 1
     else:
-        print(f"\nOK: All tooling modules respect apps_* boundary")
+        print("\nOK: All tooling modules respect apps_* boundary")
         return 0
 
 
