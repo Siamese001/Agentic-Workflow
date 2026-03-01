@@ -755,6 +755,61 @@ class AutonomousDecisionEngine:
 
         return QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID
 
+    @staticmethod
+    def _get_qwen_vllm_arbiter():
+        """Lazy seam: return callable that invokes Qwen 14B via WSL vLLM subprocess."""
+        import json
+        import subprocess
+        from pathlib import Path
+
+        WSL_PYTHON = "/home/amita/venvs/vllm/bin/python"
+        INFERENCE_SCRIPT = str(
+            Path(__file__).parent.parent.parent / "L2_execution" / "healers" / "qwen_vllm_inference.py"
+        )
+        MODEL_PATH = "/home/amita/models/Qwen2.5-14B-Instruct-AWQ"
+
+        def _arbiter(
+            agent_name: str,
+            confidence: float,
+            violation_types: list,
+            territory: str,
+        ) -> dict:
+            # Convert Windows path to WSL mount path
+            script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
+            cmd = [
+                "wsl",
+                "bash",
+                "-c",
+                (
+                    f"{WSL_PYTHON} {script_wsl}"
+                    f" --agent_name {agent_name}"
+                    f" --confidence {confidence:.4f}"
+                    f" --territory {territory}"
+                    f" --model_path {MODEL_PATH}"
+                    + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
+                ),
+            ]
+            result = subprocess.run(
+                cmd,
+                capture_output=True,
+                text=True,
+                encoding="utf-8",
+                errors="replace",
+                timeout=300,
+            )
+            if result.returncode != 0:
+                raise RuntimeError(f"vLLM subprocess failed: {result.stderr[-500:]}")
+            # Last non-empty line is the JSON output
+            lines = [l.strip() for l in result.stdout.splitlines() if l.strip()]
+            for line in reversed(lines):
+                try:
+                    return json.loads(line)
+                except json.JSONDecodeError:
+                    continue
+            raise RuntimeError(f"No JSON in vLLM output: {result.stdout[-300:]}")
+
+        return _arbiter
+
     def _calculate_pattern_confidence(self, violation_type: str) -> float:
         """Regex-based pattern matching for known violation types."""
         high_confidence_patterns = [
@@ -852,6 +907,7 @@ class AutonomousDecisionEngine:
         self,
         confidence: ConfidenceScore,
         agent_name: str = "Unknown",
+        territory: str = "unknown",
     ) -> tuple[bool, str]:
         """Determines if healing should proceed with mandatory safety checks."""
         # [SAFETY] Hard Gate: Check Budget/Cycles first
@@ -886,17 +942,39 @@ class AutonomousDecisionEngine:
                 QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID = self._get_qwen_14b_routing_config()
                 if agent_name in QWEN_14B_AGENT_KEYS:
                     target_model = os.getenv("QWEN_14B_MODEL", QWEN_14B_MODEL_ID)
-                    reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f})"
+                    # Invoke real Qwen 14B AWQ inference via WSL vLLM subprocess
+                    vllm_decision = True
+                    vllm_reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f})"
+                    try:
+                        arbiter = self._get_qwen_vllm_arbiter()
+                        vllm_result = arbiter(
+                            agent_name=agent_name,
+                            confidence=confidence.value,
+                            violation_types=list(
+                                confidence.reasoning.split(", ") if confidence.reasoning else []
+                            ),
+                            territory=territory,
+                        )
+                        vllm_decision = vllm_result.get("decision", True)
+                        raw_reason = vllm_result.get("reason", "")[:120]
+                        vllm_reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}): {raw_reason}"
+                        logger.info(
+                            "[QWEN14B] %s → decision=%s reason=%s", agent_name, vllm_decision, raw_reason
+                        )
+                    except Exception as _qwen_err:  # guardian: allow-silent-swallow
+                        logger.warning("[QWEN14B] vLLM call failed, defaulting to proceed: %s", _qwen_err)
+                    reason = vllm_reason
+                    decision_data["decision"] = vllm_decision
                 else:
                     target_model = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
                     reason = f"LLM-ARBITRATED-FLASH ({confidence.value:.2f})"
+                    decision_data["decision"] = True
                 self._healing_count += 1
                 self._call_path.add(agent_name)
-                decision_data["decision"] = True
                 decision_data["reason"] = reason
                 decision_data["model"] = target_model
                 self.decisions_made.append(decision_data)
-                return True, reason
+                return decision_data["decision"], reason
             else:
                 approved, hitl_reason = self._hitl_gate(agent_name, confidence, "MEDIUM")
                 decision_data["decision"] = approved
@@ -1351,7 +1429,9 @@ def execute_phase2_reconciliation(
             agent_name=agent_name,
         )
 
-        allowed, reason = decision_engine.should_proceed_with_healing(confidence, agent_name)
+        allowed, reason = decision_engine.should_proceed_with_healing(
+            confidence, agent_name, territory=territory
+        )
         if not allowed:
             logging.warning(f"Skipping fix for {file_path}: {reason}")
             failed_fixes.append({"violation": violation, "reason": reason, "status": "blocked"})
@@ -1953,7 +2033,9 @@ def execute_phase1_discovery_impl(
 
     # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
     if len(violations) > 0:
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "LocationAgent")
+        proceed, reason = decision_engine.should_proceed_with_healing(
+            confidence, "LocationAgent", territory=territory
+        )
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
 
@@ -2252,7 +2334,9 @@ def execute_phase4_healing_impl(
     if plan.get("requires_healing", False):
         fixes = len(plan.get("naming_fixes", []))
         confidence = decision_engine.calculate_healing_confidence(fixes, ["NAMING"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "ArchitectureGovernorAgent")
+        proceed, reason = decision_engine.should_proceed_with_healing(
+            confidence, "ArchitectureGovernorAgent", territory=territory
+        )
 
         state_mgr.add_event("decision", f"Arch Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -3042,7 +3126,9 @@ def run_pipeline(
                     territory,
                     agent_name=agent_id,
                 )
-                proceed, reason = decision_engine.should_proceed_with_healing(confidence, agent_id)
+                proceed, reason = decision_engine.should_proceed_with_healing(
+                    confidence, agent_id, territory=territory
+                )
                 if not proceed:
                     run_result.gated = True
                     run_result.gate_reason = reason

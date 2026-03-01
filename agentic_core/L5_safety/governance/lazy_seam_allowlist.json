@@ -800,7 +800,19 @@
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
       "justification": "L0 decision engine lazy seam to L2 BMG embedding agent key set; keeps L2 healing config optional at module load"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_qwen_vllm_arbiter",
+      "imported_modules": [
+        "json",
+        "subprocess",
+        "pathlib"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 decision engine lazy seam for WSL vLLM subprocess arbiter; stdlib-only imports deferred so vLLM WSL env is never imported at module load time"
     }
   ],
-  "total_seams": 80
+  "total_seams": 81
 }
