@@ -1020,7 +1020,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
             try:
                 _wg.remove_dir(path)
-            except OSError:
+            except (OSError, RuntimeError):
                 pass
 
     # ========================================================================
