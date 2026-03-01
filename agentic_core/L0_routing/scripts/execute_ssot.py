@@ -1736,10 +1736,12 @@ def execute_phase1_discovery_impl(
     state_mgr.update_agent("LocationAgent", "L5 - Safety")
     location_validator = agents["location"](project_root=REPO_ROOT)
 
-    # [ULTRA-HARDENED] Explicit path traversal protection for user-supplied territory string
-    agentic_core_base = (REPO_ROOT / "agentic_core").resolve()
-    territory_path = (agentic_core_base / territory).resolve()
-    if not territory_path.is_relative_to(agentic_core_base):
+    # [ULTRA-HARDENED] Explicit path traversal protection for user-supplied territory string.
+    # Territory may live anywhere under REPO_ROOT (e.g. apps_rg, docs, tests) — not only
+    # under agentic_core. Resolve against REPO_ROOT and ensure no escape above it.
+    repo_root_resolved = REPO_ROOT.resolve()
+    territory_path = (repo_root_resolved / territory).resolve()
+    if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
         state_mgr.add_event("security", "Path traversal blocked")
         state_mgr.complete_agent("LocationAgent", False, "Traversal blocked")
@@ -2937,6 +2939,60 @@ def main() -> int:
     return 0
 
 
+def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
+    """Derive the canonical territory target list from SOVEREIGN_TERRITORIES SSOT.
+
+    Returns only keys whose corresponding directory exists under project_root,
+    sorted with agentic_core sub-layers first (L0 → L6), then alphabetical.
+    Dotfile dirs (.backup, .github, .gravity_state) are excluded — they do not
+    need the full agent pipeline.
+    """
+    try:
+        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_TERRITORIES
+        all_keys = list(SOVEREIGN_TERRITORIES.keys())
+    except ImportError:
+        # Fallback to previous hardcoded list if SSOT import unavailable
+        logger.warning("[territory-build] SSOT import failed — using legacy hardcoded list")
+        return [
+            "prompt_governance",
+            "L5_safety",
+            "L3_orchestration",
+            "L2_execution",
+            "L0_routing",
+        ]
+
+    # Exclude dotfile dirs — not meaningful territory targets for agent pipeline
+    excluded = {".backup", ".github", ".gravity_state"}
+    # agentic_core itself is a top-level territory; keep it but also expand to sub-layers
+    # that the agents know how to scope (L0_routing, L2_execution, L3_orchestration,
+    # L5_safety are the canonical sub-territories inside agentic_core).
+    agentic_core_sublayers = [
+        "L0_routing",
+        "L2_execution",
+        "L3_orchestration",
+        "L5_safety",
+    ]
+
+    targets = []
+    # Add agentic_core sub-layers first (they have specialised agent scoping)
+    for sub in agentic_core_sublayers:
+        sub_path = project_root / "agentic_core" / sub
+        if sub_path.exists():
+            targets.append(sub)
+
+    # Add all other SOVEREIGN_TERRITORIES keys that exist and are not excluded/already added
+    skip = set(agentic_core_sublayers) | excluded | {"agentic_core"}
+    for key in sorted(all_keys):
+        if key in skip:
+            continue
+        territory_path = project_root / key
+        if territory_path.exists():
+            targets.append(key)
+
+    logger.info(f"[territory-build] SSOT-derived targets ({len(targets)}): {targets}")
+    return targets
+
+
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(
     extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
@@ -3303,24 +3359,12 @@ Examples:
         targets = [args.territory]
         mission_mode = f"Territory Scan: {args.territory}"
     elif args.domains:
-        # Multi-domain sweep
-        targets = [
-            "prompt_governance",
-            "L5_safety",
-            "L3_orchestration",
-            "L2_execution",
-            "L0_routing",
-        ]
+        # Multi-domain sweep — derive from SSOT to avoid stale hardcode
+        targets = _build_ssot_territory_targets(project_root)
         mission_mode = "Multi-Domain Sweep (L3 Attempt)"
     else:
-        # Default to full domain sweep (same as --domains)
-        targets = [
-            "prompt_governance",
-            "L5_safety",
-            "L3_orchestration",
-            "L2_execution",
-            "L0_routing",
-        ]
+        # Default to full domain sweep derived from SSOT SOVEREIGN_TERRITORIES
+        targets = _build_ssot_territory_targets(project_root)
         mission_mode = "Multi-Domain Sweep (Default)"
 
     # Domain targeting hardening for protected roots
