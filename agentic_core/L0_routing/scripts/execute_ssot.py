@@ -1794,7 +1794,7 @@ def execute_phase1_discovery_impl(
 
     # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
     if len(violations) > 0:
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence)
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "LocationAgent")
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
 
@@ -1910,7 +1910,7 @@ def execute_phase2_alignment_impl(
 
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence)
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "HierarchyAgent")
 
         state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -2093,7 +2093,7 @@ def execute_phase4_healing_impl(
     if plan.get("requires_healing", False):
         fixes = len(plan.get("naming_fixes", []))
         confidence = decision_engine.calculate_healing_confidence(fixes, ["NAMING"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence)
+        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "ArchitectureGovernorAgent")
 
         state_mgr.add_event("decision", f"Arch Healing: {reason}")
         logger.info(f"Decision: {reason}")
@@ -3478,7 +3478,7 @@ Examples:
                             territory=territory,
                         )
                         pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(
-                            pascal_confidence,
+                            pascal_confidence, "FileClassificationAgent"
                         )
 
                         state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
