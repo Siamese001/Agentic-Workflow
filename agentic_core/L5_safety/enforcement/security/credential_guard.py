@@ -14,13 +14,19 @@ import re
 from pathlib import Path
 from typing import Any
 
-# Deterministic credential patterns - EXACTLY 5 patterns as specified
+# Deterministic credential patterns covering all providers used in this repo
 PATTERNS = [
-    {"name": "OPENAI_API_KEY", "regex": re.compile(r"OPENAI_API_KEY\s*=\s*sk-[A-Za-z0-9]{20,}")},
-    {"name": "ANTHROPIC_API_KEY", "regex": re.compile(r"ANTHROPIC_API_KEY\s*=\s*sk-ant-[A-Za-z0-9_-]{20,}")},
-    {"name": "GOOGLE_API_KEY", "regex": re.compile(r"GOOGLE_API_KEY\s*=\s*[A-Za-z0-9_-]{20,}")},
-    {"name": "sk-[A-Za-z0-9]{20,}", "regex": re.compile(r"sk-[A-Za-z0-9]{20,}")},
-    {"name": "xox[baprs]-[A-Za-z0-9-]{10,}", "regex": re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}")},
+    {"name": "OPENAI_KEY_PROJ", "regex": re.compile(r"sk-proj-[A-Za-z0-9_-]{20,}")},
+    {"name": "OPENAI_KEY_ADMIN", "regex": re.compile(r"sk-admin-[A-Za-z0-9_-]{20,}")},
+    {"name": "OPENAI_KEY_GENERIC", "regex": re.compile(r"sk-[A-Za-z0-9]{48}")},
+    {"name": "ANTHROPIC_API_KEY", "regex": re.compile(r"sk-ant-api[0-9]+-[A-Za-z0-9_-]{20,}")},
+    {"name": "GOOGLE_GEMINI_KEY", "regex": re.compile(r"AIzaSy[A-Za-z0-9_-]{33}")},
+    {"name": "PINECONE_API_KEY", "regex": re.compile(r"pcsk_[A-Za-z0-9_]{30,}")},
+    {"name": "GITHUB_PAT", "regex": re.compile(r"github_pat_[A-Za-z0-9_]{20,}")},
+    {"name": "GITHUB_TOKEN_GHP", "regex": re.compile(r"ghp_[A-Za-z0-9]{36}")},
+    {"name": "FIGMA_TOKEN", "regex": re.compile(r"figd_[A-Za-z0-9_-]{20,}")},
+    {"name": "BRAVE_API_KEY", "regex": re.compile(r"BSA[A-Za-z0-9]{20,}")},
+    {"name": "SLACK_TOKEN", "regex": re.compile(r"xox[baprs]-[A-Za-z0-9-]{10,}")},
 ]
 
 # Directories to exclude from scanning

@@ -26,20 +26,6 @@ tools/_patch_evidence.py
 .env.*
 !.env.example
 
-# Additional API key and secret patterns (defense in depth)
-*api_key*
-*apikey*
-*api-key*
-*secret*
-*token*
-*password*
-*credential*
-*private_key*
-*private-key*
-*access_token*
-*access-token*
-*auth_token*
-*auth-token*
 
 # Python artifacts
 __pycache__/
