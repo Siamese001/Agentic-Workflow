@@ -740,7 +740,57 @@
       "imported_symbols": [],
       "reason_code": "D2_ENTRYPOINT_SCRIPT",
       "justification": "L0 entrypoint script lazy import for execution plan display"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_emit_pipeline_digest",
+      "imported_modules": [
+        "agentic_core.L2_execution.protocol"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 pipeline entrypoint lazy import of L2 digest emitter; avoids circular import at module level"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "run_pipeline",
+      "imported_modules": [
+        "agentic_core.L2_execution.protocol"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D2_ENTRYPOINT_SCRIPT",
+      "justification": "L0 pipeline entrypoint lazy import of L2 result types; avoids circular import and keeps L2 dependency optional at module load"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_build_ssot_territory_targets",
+      "imported_modules": [
+        "agentic_core.L5_safety.config.structure_blueprint.ssot"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 territory builder lazy import of L5 SSOT constants; fallback to hardcoded list on ImportError"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_bmg_cosine_similarity",
+      "imported_modules": [
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 decision engine lazy seam to L2 BMG embedding helper; avoids circular import and keeps GPU dependency optional"
+    },
+    {
+      "file_path": "agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+      "function_name": "_get_qwen_14b_routing_config",
+      "imported_modules": [
+        "agentic_core.L2_execution.healers.healing_tier_config"
+      ],
+      "imported_symbols": [],
+      "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
+      "justification": "L0 decision engine lazy seam to L2 healing tier config constants; model routing config must live in L2 per tier architecture"
     }
   ],
-  "total_seams": 74
+  "total_seams": 79
 }

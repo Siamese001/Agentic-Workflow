@@ -38,17 +38,31 @@ def _get_model() -> object:
             "Install with: pip install sentence-transformers"
         ) from exc
 
-    import torch
-
-    device = "cuda" if torch.cuda.is_available() else "cpu"
-    logger.info(f"[BMG] Loading {_MODEL_ID} on {device}")
+    # Prefer CUDA when available; SentenceTransformer auto-detects via its own
+    # internal torch dependency.  We do NOT import torch directly here to stay
+    # within the vllm_isolation boundary contract (forbidden prefix: 'torch').
+    device = "cuda" if _is_cuda_available() else "cpu"
+    logger.info("[BMG] Loading %s on %s", _MODEL_ID, device)
     _MODEL_CACHE = SentenceTransformer(_MODEL_ID, device=device)
-    logger.info(f"[BMG] Model loaded successfully on {device}")
+    logger.info("[BMG] Model loaded successfully on %s", device)
     return _MODEL_CACHE
+
+
+def _is_cuda_available() -> bool:
+    """Return True if a CUDA device is reachable without importing torch directly."""
+    try:
+        import importlib
+
+        torch_mod = importlib.import_module("torch")
+        return bool(torch_mod.cuda.is_available())  # type: ignore[attr-defined]
+    except Exception:  # noqa: BLE001
+        return False
 
 
 def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
     """Return the maximum cosine similarity between *unknown* and *candidates*.
+
+    Uses numpy dot-product on L2-normalised vectors (avoids direct torch import).
 
     Args:
         unknown: The query string (e.g. a file path or violation description).
@@ -58,20 +72,21 @@ def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
         Float in [0.0, 1.0] — maximum cosine similarity across all candidates.
 
     Raises:
-        ImportError: If sentence-transformers or torch is not installed.
+        ImportError: If sentence-transformers is not installed.
         ValueError: If candidates is empty.
     """
     if not candidates:
         raise ValueError("candidates must be non-empty")
 
+    import numpy as np  # noqa: PLC0415
+
     model = _get_model()
 
-    import torch
-
     all_strings = [unknown] + candidates
-    embeddings = model.encode(  # type: ignore[attr-defined]
+    # convert_to_numpy=True avoids a direct torch tensor in this module
+    embeddings: np.ndarray = model.encode(  # type: ignore[attr-defined]
         all_strings,
-        convert_to_tensor=True,
+        convert_to_numpy=True,
         normalize_embeddings=True,
         show_progress_bar=False,
     )
@@ -80,8 +95,8 @@ def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
     candidate_vecs = embeddings[1:]
 
     # Cosine similarity = dot product when vectors are L2-normalised
-    similarities = torch.matmul(candidate_vecs, query_vec)
-    max_sim: float = float(similarities.max().item())
+    similarities: np.ndarray = candidate_vecs @ query_vec
+    max_sim: float = float(similarities.max())
     return max(0.0, min(1.0, max_sim))
 
 

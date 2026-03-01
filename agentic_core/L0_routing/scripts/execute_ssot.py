@@ -707,11 +707,8 @@ class AutonomousDecisionEngine:
 
         if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
             try:
-                from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
-                    bmg_cosine_similarity,
-                )
-
-                return bmg_cosine_similarity(unknown, existing)
+                bmg_fn = self._get_bmg_cosine_similarity()
+                return bmg_fn(unknown, existing)
             except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
                 pass
 
@@ -729,6 +726,25 @@ class AutonomousDecisionEngine:
                 max_similarity = max(max_similarity, similarity)
 
         return max_similarity
+
+    @staticmethod
+    def _get_bmg_cosine_similarity() -> object:
+        """Lazy seam: load bmg_cosine_similarity from L2 healers without module-level import."""
+        from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+            bmg_cosine_similarity,
+        )
+
+        return bmg_cosine_similarity
+
+    @staticmethod
+    def _get_qwen_14b_routing_config() -> tuple:
+        """Lazy seam: load Qwen 14B routing constants from L2 healing_tier_config."""
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            QWEN_14B_AGENT_KEYS,
+            QWEN_14B_MODEL_ID,
+        )
+
+        return QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID
 
     def _calculate_pattern_confidence(self, violation_type: str) -> float:
         """Regex-based pattern matching for known violation types."""
@@ -831,11 +847,7 @@ class AutonomousDecisionEngine:
         # Gemini Flash for all others. Both require enable_llm=True.
         elif confidence.is_medium_confidence:
             if self.enable_llm:
-                from agentic_core.L2_execution.healers.healing_tier_config import (
-                    QWEN_14B_AGENT_KEYS,
-                    QWEN_14B_MODEL_ID,
-                )
-
+                QWEN_14B_AGENT_KEYS, QWEN_14B_MODEL_ID = self._get_qwen_14b_routing_config()
                 if agent_name in QWEN_14B_AGENT_KEYS:
                     target_model = os.getenv("QWEN_14B_MODEL", QWEN_14B_MODEL_ID)
                     reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f})"
