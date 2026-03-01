@@ -1012,7 +1012,10 @@ class HierarchyAgent(SovereignBaseAgent):
 
             pycache = path / "__pycache__"
             if pycache.exists():
-                _wg.remove_tree(pycache, ignore_errors=True)  # Keep shutil for __pycache__ (not tracked)
+                try:
+                    _wg.remove_tree(pycache)  # Keep shutil for __pycache__ (not tracked)
+                except (OSError, RuntimeError):
+                    pass
 
             gitkeep = path / ".gitkeep"
             if gitkeep.exists():
