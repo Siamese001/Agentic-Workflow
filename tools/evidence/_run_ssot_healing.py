@@ -402,9 +402,8 @@ def main() -> int:
         sys.executable,
         "-m",
         "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
-        "--enable-cda",
+        "--heal",
         "-v",
-        "--allow-protected-root-mutation",
     ]
 
     proc = subprocess.run(

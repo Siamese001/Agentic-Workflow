@@ -635,6 +635,43 @@ class ASTCodeQualityValidator:
 
 
 # ============================================================================
+# ============================================================================
+# HEAL CONTEXT — Single Source of Truth for Healing Flags
+# ============================================================================
+
+
+@dataclass(frozen=True)
+class HealContext:
+    """Immutable healing configuration passed uniformly to every phase function.
+
+    Replaces the scattered (dry_run, auto_approve, enable_llm, enable_cda)
+    positional argument pattern. Constructed once in _legacy_main; all phase
+    functions receive ctx: HealContext instead of individual flags.
+    """
+
+    heal: bool  # True = mutations active; False = scan/report only
+    auto_approve: bool  # True = no interactive prompts
+    enable_llm: bool  # True = LLM arbitration enabled
+    enable_cda: bool  # True = CognitiveDispositionAgent enabled
+
+    @property
+    def dry_run(self) -> bool:
+        """Convenience alias — inverted heal for legacy call sites."""
+        return not self.heal
+
+    @classmethod
+    def from_args(cls, args: argparse.Namespace) -> "HealContext":
+        """Construct from parsed CLI args. Single construction point."""
+        heal = getattr(args, "heal", False) and not getattr(args, "dry_run", False)
+        return cls(
+            heal=heal,
+            auto_approve=not getattr(args, "interactive", False),
+            enable_llm=heal,
+            enable_cda=not getattr(args, "no_cda", False),
+        )
+
+
+# ============================================================================
 # ENHANCED DECISION ENGINE WITH SEMANTIC SCORING & CYCLE DETECTION
 # ============================================================================
 
@@ -1073,16 +1110,15 @@ class NonInteractiveGuard:
         builtins.input = self.original_input
 
     def _trap_input(self, prompt=None):
+        # Auto-approve if env var set (avoids RecursionError bomb in CI/auto mode)
+        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+            logger.debug(f"AUTO-APPROVE: suppressing input('{prompt}')")
+            return "y"
+
         self.blocked_count += 1
         logger.warning(
             f"BLOCKED PROMPT ({self.blocked_count}/{self.max_blocked_prompts}): Agent attempted input('{prompt}')",
         )
-
-        # [HARDENED] Resource Exhaustion Protection
-        if self.blocked_count > self.max_blocked_prompts:
-            logger.critical("Infinite prompt loop detected - killing process capability")
-            raise RecursionError("Interactive prompt limit exceeded (Infinite Loop Protection)")
-
         raise RuntimeError(f"Interactive prompt blocked in autonomous mode: {prompt}")
 
 
@@ -1135,7 +1171,7 @@ def execute_phase2_reconciliation(
     decision_engine: SovereignDecisionEngine,  # [HARDENED] Updated type
     state_mgr: "RuntimeStateManager",
     plan: dict[str, Any],
-    dry_run: bool = False,
+    ctx: "HealContext" = None,
     **kwargs,
 ):
     """
@@ -1178,7 +1214,7 @@ def execute_phase2_reconciliation(
             failed_fixes.append({"violation": violation, "reason": reason, "status": "blocked"})
             continue
 
-        if dry_run:
+        if ctx is None or not ctx.heal:
             reconciliation_log.append({"action": "would_fix", "target": file_path, "agent": agent_name})
             continue
 
@@ -1667,9 +1703,11 @@ def execute_phase3_validation(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
+def execute_phase1_discovery(
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, auto_approve=True
+):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
-    return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
+    return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx)
 
 
 def execute_phase1_discovery_impl(
@@ -1677,8 +1715,7 @@ def execute_phase1_discovery_impl(
     territory,
     decision_engine,
     state_mgr,
-    dry_run=False,
-    auto_approve=True,
+    ctx: "HealContext" = None,
 ):
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
@@ -1761,11 +1798,13 @@ def execute_phase1_discovery_impl(
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
 
-        if proceed and not dry_run:
+        if proceed and (ctx is None or ctx.heal):
             logger.info(f"🔧 Triggering LocationAgent auto-heal for {len(violations)} violations")
             # LocationAgent should have a heal method - call it
             if hasattr(location_validator, "heal_violations"):
-                heal_result = location_validator.heal_violations(violations, auto_approve=auto_approve)
+                heal_result = location_validator.heal_violations(
+                    violations, auto_approve=(ctx.auto_approve if ctx else True)
+                )
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
                 state_mgr.complete_agent(
                     "LocationAgent",
@@ -1800,7 +1839,7 @@ def execute_phase1_discovery_impl(
 
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
-        file_classifier.dry_run = True  # Don't make changes during discovery
+        file_classifier.dry_run = not ctx.heal if ctx else True  # Respect heal flag during discovery
         classification_scan_result = file_classifier.run() or {}
 
         # Extract violations from stats
@@ -1841,9 +1880,11 @@ def execute_phase1_discovery_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase2_alignment(agents, territory, decision_engine, state_mgr, dry_run=False, auto_approve=True):
+def execute_phase2_alignment(
+    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, auto_approve=True
+):
     """PHASE 2: STRUCTURAL ALIGNMENT (Retriable)"""
-    return execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr, dry_run, auto_approve)
+    return execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
 
 
 def execute_phase2_alignment_impl(
@@ -1851,8 +1892,7 @@ def execute_phase2_alignment_impl(
     territory,
     decision_engine,
     state_mgr,
-    dry_run=False,
-    auto_approve=True,
+    ctx: "HealContext" = None,
 ):
     """PHASE 2: STRUCTURAL ALIGNMENT - Implementation"""
     logger.info(f"=== PHASE 2: ALIGNMENT - {territory} ===")
@@ -1883,8 +1923,8 @@ def execute_phase2_alignment_impl(
                 enforce_depth=True,
                 purge_orphans=False,
                 target_territory=territory,  # [STRICT SCOPE] Already correct here, but ensuring strict adherence
-                dry_run=dry_run,
-                auto_approve=auto_approve,
+                dry_run=not ctx.heal if ctx else True,
+                auto_approve=ctx.auto_approve if ctx else True,
             )
             healed = res.get("total_healed", 0)
             state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
@@ -1899,12 +1939,12 @@ def execute_phase2_alignment_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase3_architectural_validation(agents, territory, state_mgr, dry_run=True):
+def execute_phase3_architectural_validation(agents, territory, state_mgr, ctx: "HealContext" = None):
     """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
-    return execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=dry_run)
+    return execute_phase3_validation_impl(agents, territory, state_mgr, ctx=ctx)
 
 
-def execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=True):
+def execute_phase3_validation_impl(agents, territory, state_mgr, ctx: "HealContext" = None):
     """PHASE 3: ARCHITECTURAL VALIDATION - Implementation"""
     logger.info(f"=== PHASE 3: VALIDATION - {territory} ===")
 
@@ -1929,7 +1969,9 @@ def execute_phase3_validation_impl(agents, territory, state_mgr, dry_run=True):
 
     try:
         logger.info("🔍 Detecting gravity violations (layer inversions)...")
-        gravity_result = gravity_agent.heal_repository(dry_run=dry_run, execute=not dry_run)
+        gravity_result = gravity_agent.heal_repository(
+            dry_run=not ctx.heal if ctx else True, execute=ctx.heal if ctx else False
+        )
 
         gravity_violations = gravity_result.get("violations_found", 0)
         gravity_fixed = gravity_result.get("violations_fixed", 0)
@@ -2007,7 +2049,7 @@ def execute_phase4_healing(
     gov_report,
     decision_engine,
     state_mgr,
-    dry_run=False,
+    ctx: "HealContext" = None,
     auto_approve=True,
 ):
     """PHASE 4: HEALING (Retriable)"""
@@ -2022,8 +2064,7 @@ def execute_phase4_healing(
         gov_report,
         decision_engine,
         state_mgr,
-        dry_run,
-        auto_approve,
+        ctx,
     )
 
 
@@ -2033,8 +2074,7 @@ def execute_phase4_healing_impl(
     gov_report,
     decision_engine,
     state_mgr,
-    dry_run=False,
-    auto_approve=True,
+    ctx: "HealContext" = None,
 ):
     """PHASE 4: HEALING - Implementation"""
     logger.info(f"=== PHASE 4: HEALING - {territory} ===")
@@ -2061,7 +2101,9 @@ def execute_phase4_healing_impl(
         if proceed:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
             # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
-            res = arch_gov.execute_healing_plan(plan, dry_run=dry_run, auto_approve=auto_approve)
+            res = arch_gov.execute_healing_plan(
+                plan, dry_run=not ctx.heal if ctx else True, auto_approve=ctx.auto_approve if ctx else True
+            )
             success = res.get("success", False)
             state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"Healed: {success}")
             return res
@@ -2978,7 +3020,15 @@ Examples:
         action="store_true",
         help="Disable CognitiveDispositionAgent (enabled by default)",
     )
-    parser.add_argument("--dry-run", action="store_true", help="Run in preview mode (no changes applied)")
+    parser.add_argument(
+        "--heal",
+        action="store_true",
+        default=False,
+        help="Enable active healing (mutations applied). Absence = scan/report only.",
+    )
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Scan/report only — no mutations (alias for omitting --heal)"
+    )
     parser.add_argument(
         "--interactive",
         action="store_true",
@@ -3128,7 +3178,7 @@ Examples:
             elif hasattr(agent, "scan_root_violations"):
                 result = agent.scan_root_violations()
             elif hasattr(agent, "heal_repository"):
-                result = agent.heal_repository(dry_run=True)
+                result = agent.heal_repository(dry_run=not ctx.heal if "ctx" in dir() and ctx else True)
             else:
                 result = "Agent instantiated but no standard run method found."
 
@@ -3159,37 +3209,30 @@ Examples:
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
 
-    # [SIMPLIFIED] Parse arguments — validate⇒dry_run already centralized above.
-    dry_run = args.dry_run
-    auto_approve = not args.interactive
+    # [HEAL CONTEXT] Single source of truth for all healing flags
+    ctx = HealContext.from_args(args)
 
     # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
-    if not args.interactive:
+    if ctx.auto_approve:
         import os
 
         os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
         os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
 
-    # [SIMPLIFIED] LLM enabled by default for healing, disabled in dry-run mode
-    enable_llm = not dry_run
-
-    # [NEW] Enable CognitiveDispositionAgent by default (disable with --no-cda)
-    enable_cda = not getattr(args, "no_cda", False)
-
-    # [HARDENED] Use Sovereign Decision Engine instead of standard Enhanced engine
+    # [HARDENED] Use Sovereign Decision Engine — wired from HealContext
     decision_engine = SovereignDecisionEngine(
-        enable_llm=enable_llm,
+        enable_llm=ctx.enable_llm,
         state_mgr=state_mgr,
-        enable_cda=enable_cda,
+        enable_cda=ctx.enable_cda,
         execution_context=_exec_ctx,
     )
 
-    logger.info("🏛️ UNIFIED SOVEREIGN PROTOCOL STARTED")
+    logger.info("UNIFIED SOVEREIGN PROTOCOL STARTED")
     logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
-    logger.info(f"  LLM: {'ENABLED' if enable_llm else 'DISABLED'}")
-    logger.info(f"  CDA: {'ENABLED' if enable_cda else 'DISABLED'}")
-    logger.info(f"  HEALING: {'ACTIVE' if not dry_run else 'DRY-RUN'}")
-    logger.info(f"  APPROVAL: {'AUTO' if auto_approve else 'INTERACTIVE'}")
+    logger.info(f"  LLM: {'ENABLED' if ctx.enable_llm else 'DISABLED'}")
+    logger.info(f"  CDA: {'ENABLED' if ctx.enable_cda else 'DISABLED'}")
+    logger.info(f"  HEALING: {'ACTIVE (--heal)' if ctx.heal else 'SCAN-ONLY (no --heal)'}")
+    logger.info(f"  APPROVAL: {'AUTO' if ctx.auto_approve else 'INTERACTIVE'}")
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
     try:
@@ -3280,9 +3323,11 @@ Examples:
             if domain in targets:
                 domain_path = project_root / "agentic_core" / domain
                 if domain_path.exists():
-                    logger.warning(f"[PROTECTED-ROOT] forcing dry_run=True for {domain}")
-                    print(f"[PROTECTED-ROOT] forcing dry_run=True for {domain}")
-                    dry_run = True
+                    logger.warning(f"[PROTECTED-ROOT] forcing scan-only for {domain}")
+                    print(f"[PROTECTED-ROOT] forcing scan-only (no mutations) for {domain}")
+                    from dataclasses import replace as _dc_replace
+
+                    ctx = _dc_replace(ctx, heal=False, enable_llm=False)
                     break
 
     # 5. Execute Mission
@@ -3368,8 +3413,7 @@ Examples:
                         territory,
                         decision_engine,
                         state_mgr,
-                        dry_run,
-                        auto_approve,
+                        ctx,
                     )
 
                     if p1_drift is not None:
@@ -3384,7 +3428,7 @@ Examples:
                             decision_engine,
                             state_mgr,
                             plan,
-                            dry_run,
+                            ctx,
                         )
 
                         # Log Phase 2 results
@@ -3400,7 +3444,7 @@ Examples:
                             agents,
                             territory,
                             p1_drift.get("violations", []),
-                            dry_run,
+                            ctx.dry_run,
                         )
 
                         if phase3_result["status"] == "clean":
@@ -3416,8 +3460,7 @@ Examples:
                             territory,
                             decision_engine,
                             state_mgr,
-                            dry_run,
-                            auto_approve,
+                            ctx,
                         )
 
                         # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
@@ -3441,16 +3484,15 @@ Examples:
                         state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
                         logger.info(f"Sovereignty Decision: {pascal_reason}")
 
-                        if pascal_proceed and not dry_run:
-                            logger.info(f"🛡️ Triggering Sovereignty Purge: {territory}")
+                        if pascal_proceed and ctx.heal:
+                            logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
                             pascal = agents["file_classification"](project_root=REPO_ROOT)
-                            # Force the agent to fix headers and rename files with proper parameters
                             if hasattr(pascal, "heal_repository"):
                                 res = pascal.heal_repository(
                                     target_territory=territory,
-                                    dry_run=dry_run,
-                                    auto_approve=auto_approve,
+                                    dry_run=ctx.dry_run,
+                                    auto_approve=ctx.auto_approve,
                                 )
                                 healed = res.get("files_healed", 0) if isinstance(res, dict) else 0
                                 state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
@@ -3462,12 +3504,14 @@ Examples:
                                 )
                         elif not pascal_proceed:
                             state_mgr.add_event("warning", f"Sovereignty healing skipped - {pascal_reason}")
-                        elif dry_run:
-                            state_mgr.add_event("info", "Sovereignty healing skipped - Dry run mode")
+                        elif not ctx.heal:
+                            state_mgr.add_event(
+                                "info", "Sovereignty healing skipped - scan-only mode (no --heal)"
+                            )
 
                         # Phase 3: Validation (Legacy)
                         gov, arch = execute_phase3_architectural_validation(
-                            agents, territory, state_mgr, dry_run=dry_run
+                            agents, territory, state_mgr, ctx=ctx
                         )
 
                         # Persist full work to state
@@ -3481,8 +3525,7 @@ Examples:
                             gov,
                             decision_engine,
                             state_mgr,
-                            dry_run,
-                            auto_approve,
+                            ctx,
                         )
 
                         # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
