@@ -1845,7 +1845,7 @@ def execute_phase1_discovery_impl(
         # Extract violations from stats
         if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
             for vtype, count in file_classifier.stats["violations"].items():
-                if count > 0:
+                if isinstance(count, int) and count > 0:
                     classification_violations.append(
                         {
                             "type": "CLASSIFICATION",
@@ -3561,30 +3561,42 @@ Examples:
                             logger.warning(f"DebateSynthesisAgent failed: {e}")
                             state_mgr.complete_agent("DebateSynthesisAgent", False, str(e))
 
-                        # Execute RootHygieneAgent
+                        # Execute CognitiveDispositionAgent
+                        try:
+                            state_mgr.update_agent("CognitiveDispositionAgent", "L1 - Cognition")
+                            cog_agent = agents["cognitive_disposition"](project_root=REPO_ROOT)
+                            if hasattr(cog_agent, "get_analytics"):
+                                cog_results = cog_agent.get_analytics()
+                                state_mgr.complete_agent(
+                                    "CognitiveDispositionAgent",
+                                    True,
+                                    f"Analytics keys: {list(cog_results.keys())[:4]}",
+                                )
+                            else:
+                                state_mgr.complete_agent("CognitiveDispositionAgent", False, "No get_analytics method")
+                        # guardian: allow-silent-swallow
+                        except Exception as e:  # guardian: allow-silent-swallower
+                            logger.warning(f"CognitiveDispositionAgent failed: {e}")
+                            state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
+
+                        # Execute RootHygieneAgent — full project root SSOT scan
                         try:
                             state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
                             hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
                             if hasattr(hygiene_agent, "scan_root_violations"):
-                                hygiene_results = hygiene_agent.scan_root_violations(
-                                    target_territory=territory,
-                                )
+                                hygiene_results = hygiene_agent.scan_root_violations()
                                 hygiene_violations = hygiene_results.get("violations", [])
+                                high = [v for v in hygiene_violations if v.get("severity") == "high"]
                                 state_mgr.complete_agent(
                                     "RootHygieneAgent",
                                     True,
-                                    f"Violations: {len(hygiene_violations)}",
+                                    f"Violations: {len(hygiene_violations)} (high: {len(high)})",
                                 )
-                                # Store violations for aggregation
                                 if not state_mgr.state.get("hygiene_violations"):
                                     state_mgr.state["hygiene_violations"] = []
                                 state_mgr.state["hygiene_violations"].extend(hygiene_violations)
                             else:
-                                state_mgr.complete_agent(
-                                    "RootHygieneAgent",
-                                    False,
-                                    "No scan_root_violations method",
-                                )
+                                state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
                         # guardian: allow-silent-swallow
                         except Exception as e:  # guardian: allow-silent-swallower
                             logger.warning(f"RootHygieneAgent failed: {e}")
