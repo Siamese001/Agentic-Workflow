@@ -1,8 +1,6 @@
-# Qwen vLLM 14B Healing — Unified Plan (Routing Scorecard Hardening Merged)
+# Qwen vLLM 14B Healing — Unified Plan v2 (L2 Four-Phase Decomposition Added)
 
-Complete plan for (1) per-agent classification + diff report [DONE], and
-(2) hardened deterministic->Qwen->Gemini routing with gateway monopoly,
-anti-flap, audit logging, replay protection, and kill-switch enforcement.
+Extends the routing scorecard hardening plan with a mandatory four-phase (pre-commit / validation / execution / healing) refactor for every L2 execution agent, mirroring the pattern already established in `execute_ssot.py` for its 10 L5 agents.
 
 ---
 
@@ -27,6 +25,7 @@ anti-flap, audit logging, replay protection, and kill-switch enforcement.
 | **Tier kill-switches (`QWEN_ENABLED` / `GEMINI_ENABLED`)** | **PARTIAL** — `QWEN_VLLM_ENABLED` startup check exists; `GEMINI_ENABLED` missing; no post-routing gate |
 | **Hard overrides B.4** (trivial-det; det-cov preferred) | **MISSING** |
 | **Routing acceptance tests H.1-H.8** | **MISSING** |
+| **L2 agent four-phase decomposition** | **MISSING** — all 7 L2 agents lack explicit phase structure |
 
 ---
 

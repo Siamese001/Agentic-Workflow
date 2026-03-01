@@ -116,7 +116,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
     from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
     # Domain-specific exclude directories for safety scanning
-    exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env"]
+    exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env", ".healing_backups"]
 
     return list(canonical_get_python_files(root, exclude_dirs=exclude_dirs))
 
