@@ -2747,9 +2747,9 @@ EXECUTION_PLAN = [
         "name": "Additional Agents",
         "agents": [
             {
-                "key": "conversational_repair",
+                "key": "observability_probe",
                 "method": "scan_violations",
-                "description": "conversational repair scan",
+                "description": "observability probe scan (renamed from conversational_repair)",
             },
             {
                 "key": "root_hygiene",
@@ -2774,7 +2774,8 @@ AGENT_DEPENDENCIES: dict[str, list[str]] = {
     "file_classification": ["reconciler", "location"],
     "arch_governor": ["reconciler", "location", "hierarchy"],
     "system_architect": ["reconciler", "location"],
-    "conversational_repair": [],
+    "observability_probe": [],
+    "conversational_repair": [],  # DEPRECATED alias — kept for backward compat
     "root_hygiene": [],
     "reconciler": [],
     "location": ["reconciler"],
@@ -2791,7 +2792,8 @@ CANONICAL_ROSTER_KEYS = frozenset(
         "arch_governor",
         "system_architect",
         "file_classification",
-        "conversational_repair",
+        "observability_probe",
+        "conversational_repair",  # DEPRECATED alias — kept for backward compat
         "cognitive_disposition",
         "root_hygiene",
     },
@@ -2804,6 +2806,170 @@ def get_execution_plan() -> list[dict]:
     Pure introspection — no side effects, no file mutations.
     """
     return EXECUTION_PLAN
+
+
+# ---------------------------------------------------------------------------
+# Unified pipeline: AGENT_PIPELINE + run_pipeline
+# ---------------------------------------------------------------------------
+
+#: Ordered execution sequence for run_pipeline. cognitive_disposition is
+#: intentionally excluded — it acts as a pre-loop advisor, not a subphase agent.
+AGENT_PIPELINE: list[str] = [
+    "reconciler",
+    "location",
+    "file_classification",
+    "hierarchy",
+    "arch_governor",
+    "gravity_repair",
+    "system_architect",
+    "observability_probe",
+    "root_hygiene",
+]
+
+#: The four subphase names, in fixed execution order.
+PIPELINE_SUBPHASES: tuple[str, ...] = ("pre_commit", "validate", "execute", "heal")
+
+
+def _emit_pipeline_digest(
+    adapters: "dict[str, object]",
+    territory: str,
+    ctx: "HealContext",
+) -> str:
+    """Compute and print the deterministic pipeline digest (once per run).
+
+    Returns the 64-char hex digest string.
+    When SSOT_ORCH_NEGCTRL_TAMPER=1 the digest payload is perturbed so the
+    output differs from a clean run — used by the negative-control test.
+    """
+    from agentic_core.L2_execution.protocol import emit_pipeline_digest as _emit
+
+    return _emit(
+        pipeline_order=AGENT_PIPELINE,
+        adapter_keys=list(adapters.keys()),
+        territory=territory,
+        heal=getattr(ctx, "heal", False),
+        enable_llm=getattr(ctx, "enable_llm", False),
+    )
+
+
+def run_pipeline(
+    adapters: "dict[str, object]",
+    territory: str,
+    decision_engine: "SovereignDecisionEngine",
+    state_mgr: "RuntimeStateManager",
+    ctx: "HealContext",
+) -> "dict[str, object]":
+    """Unified pipeline loop replacing the five bespoke execute_phase*_impl functions.
+
+    Governance invariants enforced:
+    - Digest emitted exactly once per call via _emit_pipeline_digest.
+    - pre_commit and validate receive scan_ctx (heal=False) structurally.
+    - update_agent is never called for execute/heal when gated or fatal.
+    - All four subphase slots are always present in AgentRunResult.subphases.
+    - Exception in any subphase → fatal=True → remaining subphases skipped.
+    - Confidence gate fires immediately after validate, before any execute call.
+
+    Returns dict mapping agent_id -> AgentRunResult.
+    """
+    from agentic_core.L2_execution.protocol import AgentRunResult, SubphaseResult
+
+    _emit_pipeline_digest(adapters, territory, ctx)
+
+    # scan_ctx: structurally enforces read-only for pre_commit + validate.
+    # Use dataclasses.replace when ctx is a frozen dataclass (HealContext);
+    # fall back to a simple namespace copy for test mocks or other objects.
+    import dataclasses as _dc2
+
+    if _dc2.is_dataclass(ctx) and not isinstance(ctx, type):
+        scan_ctx = _dc2.replace(ctx, heal=False)
+    else:
+
+        class _ScanCtx:
+            pass
+
+        scan_ctx = _ScanCtx()
+        for _attr in ("heal", "enable_llm", "auto_approve", "enable_cda"):
+            setattr(scan_ctx, _attr, getattr(ctx, _attr, False))
+        scan_ctx.heal = False
+
+    results: dict[str, AgentRunResult] = {}
+
+    for agent_id in AGENT_PIPELINE:
+        adapter = adapters.get(agent_id)
+        if adapter is None:
+            continue
+
+        run_result = AgentRunResult()
+        # Pre-populate all 4 slots as skipped; overwritten as each runs
+        for sp in PIPELINE_SUBPHASES:
+            run_result.subphases[sp] = SubphaseResult(skipped=True, skip_reason="not reached")
+
+        fatal = False
+
+        for subphase_name in PIPELINE_SUBPHASES:
+            is_mutating = subphase_name in ("execute", "heal")
+
+            # Skip mutating subphases when healing is disabled
+            if is_mutating and not getattr(ctx, "heal", False):
+                run_result.subphases[subphase_name] = SubphaseResult(skipped=True, skip_reason="heal=False")
+                continue
+
+            # Skip execute/heal when confidence gate blocked or prior fatal error
+            if is_mutating and (run_result.gated or fatal):
+                run_result.subphases[subphase_name] = SubphaseResult(
+                    skipped=True,
+                    skip_reason=run_result.gate_reason if run_result.gated else "prior error",
+                )
+                continue
+
+            # Only call update_agent when the subphase will actually run
+            state_mgr.update_agent(agent_id, subphase_name)
+            effective_ctx = scan_ctx if not is_mutating else ctx
+
+            try:
+                method = getattr(adapter, subphase_name)
+                result: SubphaseResult = method(territory, effective_ctx)
+            except Exception as exc:  # guardian: allow-silent-swallower
+                result = SubphaseResult(
+                    error=str(exc),
+                    skipped=True,
+                    skip_reason=f"exception: {exc}",
+                )
+                run_result.error = str(exc)
+                fatal = True
+                state_mgr.skip_agent(agent_id, f"{subphase_name} exception: {exc}")
+                run_result.subphases[subphase_name] = result
+                break  # stop subphase loop for this agent (fail-closed)
+
+            run_result.subphases[subphase_name] = result
+            run_result.violations_total += len(result.violations)
+            run_result.mutations_applied += len(result.fixed)
+
+            # Confidence gate fires immediately after validate
+            if subphase_name == "validate" and result.violations:
+                confidence = decision_engine.calculate_healing_confidence(
+                    len(result.violations),
+                    [v.get("type", "UNKNOWN") for v in result.violations[:10]],
+                    territory,
+                )
+                proceed, reason = decision_engine.should_proceed_with_healing(confidence, agent_id)
+                if not proceed:
+                    run_result.gated = True
+                    run_result.gate_reason = reason
+                    state_mgr.skip_agent(agent_id, reason)
+                    state_mgr.complete_agent(agent_id, True, f"gated: {reason}")
+                    continue  # execute/heal will be filled as skipped in next iterations
+
+            state_mgr.complete_agent(agent_id, result.error is None, result.error or "")
+
+        results[agent_id] = run_result
+
+    return results
+
+
+# DEPRECATED: The five execute_phase*_impl functions below are replaced by
+# run_pipeline above. They are kept as dead code until the new loop has been
+# validated in production. Do not add new call sites.
 
 
 def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -> None:
@@ -3421,7 +3587,8 @@ Examples:
         "gravity_repair": GravityLeakRepairAgent,
         "system_architect": SystemArchitectAgent,
         "file_classification": FileClassificationAgent,
-        "conversational_repair": ObservabilityProbeExecutor,
+        "observability_probe": ObservabilityProbeExecutor,
+        "conversational_repair": ObservabilityProbeExecutor,  # DEPRECATED alias
         "cognitive_disposition": CognitiveDispositionAgent,
         "root_hygiene": RootHygieneAgent,
     }
@@ -3684,7 +3851,9 @@ Examples:
                         logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
                         state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
                         try:
-                            conversational_agent = agents["conversational_repair"](project_root=REPO_ROOT)
+                            conversational_agent = agents.get(
+                                "observability_probe", agents.get("conversational_repair", lambda **_: None)
+                            )(project_root=REPO_ROOT, probe_type="debate")
                             if hasattr(conversational_agent, "scan_violations"):
                                 conv_results = conversational_agent.scan_violations(
                                     target_territory=territory,
