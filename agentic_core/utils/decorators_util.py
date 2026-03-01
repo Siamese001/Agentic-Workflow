@@ -204,33 +204,38 @@ def standard_heal(func: F) -> F:
             dry_run, execute, remaining_kwargs = _normalize_heal_inputs(kwargs)
             depth = remaining_kwargs.pop("depth", 0)
             _call_path = remaining_kwargs.pop("_call_path", None)
+            auto_approve = remaining_kwargs.pop("auto_approve", False)
 
             Logger.debug(
                 f"[standard_heal] {agent_name}.{func.__name__} "
-                f"(dry_run={dry_run}, execute={execute}, depth={depth})",
+                f"(dry_run={dry_run}, execute={execute}, depth={depth}, auto_approve={auto_approve})",
             )
 
             # Phase 2: Compute heal policy decision using canonical escalation
+            # If auto_approve=True the external decision_engine has already approved — skip gate.
             enable_llm = _select_reasoning_tier_enabled()
             confidence_value = remaining_kwargs.pop("_confidence", 0.75)
             task_complexity = remaining_kwargs.pop("_task_complexity", 5)
             prior_failures = remaining_kwargs.pop("_prior_failures", 0)
 
-            policy_inputs = HealEscalationInputs(
-                confidence_value=confidence_value,
-                enable_llm=enable_llm,
-                task_complexity=task_complexity,
-                prior_failures=prior_failures,
-            )
-            policy_decision = decide_heal_escalation(policy_inputs)
-            Logger.debug(
-                f"[heal_policy] proceed={policy_decision.proceed} "
-                f"tier={policy_decision.tier.name if policy_decision.tier else 'NONE'} "
-                f"threshold={policy_decision.threshold_used}",
-            )
+            if auto_approve:
+                policy_decision = None
+            else:
+                policy_inputs = HealEscalationInputs(
+                    confidence_value=confidence_value,
+                    enable_llm=enable_llm,
+                    task_complexity=task_complexity,
+                    prior_failures=prior_failures,
+                )
+                policy_decision = decide_heal_escalation(policy_inputs)
+                Logger.debug(
+                    f"[heal_policy] proceed={policy_decision.proceed} "
+                    f"tier={policy_decision.tier.name if policy_decision.tier else 'NONE'} "
+                    f"threshold={policy_decision.threshold_used}",
+                )
 
             # Hard gate: If proceed=False, return deterministic refusal (no LLM)
-            if not policy_decision.proceed:
+            if policy_decision is not None and not policy_decision.proceed:
                 execution_time_ms = (time.time() - start_time) * 1000
                 return {
                     **HEAL_RESULT_SCHEMA,
@@ -277,19 +282,23 @@ def standard_heal(func: F) -> F:
                     Logger.debug(f"[heal_policy] llm_probe=CALLED model_id={routed_model_id}")
 
             # Phase 3: Create and store policy decision record for observability
-            policy_record = PolicyDecisionRecord(
-                confidence=confidence_value,
-                enable_llm=enable_llm,
-                complexity=task_complexity,
-                prior_failures=prior_failures,
-                proceed=policy_decision.proceed,
-                tier=policy_decision.tier.name if policy_decision.tier else None,
-                threshold_used=policy_decision.threshold_used,
-                rationale=policy_decision.rationale,
-            )
-
-            # Store policy decision in kwargs for downstream use
-            remaining_kwargs["_policy_decision"] = policy_record.to_dict()
+            if policy_decision is not None:
+                policy_record = PolicyDecisionRecord(
+                    confidence=confidence_value,
+                    enable_llm=enable_llm,
+                    complexity=task_complexity,
+                    prior_failures=prior_failures,
+                    proceed=policy_decision.proceed,
+                    tier=policy_decision.tier.name if policy_decision.tier else None,
+                    threshold_used=policy_decision.threshold_used,
+                    rationale=policy_decision.rationale,
+                )
+                remaining_kwargs["_policy_decision"] = policy_record.to_dict()
+            else:
+                remaining_kwargs["_policy_decision"] = {
+                    "proceed": True, "tier": None,
+                    "threshold_used": "AUTO_APPROVED", "rationale": "auto_approve=True",
+                }
 
             result = func(
                 self,

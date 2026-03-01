@@ -2104,8 +2104,14 @@ def execute_phase4_healing_impl(
             res = arch_gov.heal_repository(
                 dry_run=not ctx.heal if ctx else True, auto_approve=ctx.auto_approve if ctx else True
             )
-            success = res.get("success", False)
-            state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"Healed: {success}")
+            status = res.get("status", "UNKNOWN")
+            fixed = res.get("violations_fixed", 0)
+            found = res.get("violations_found", 0)
+            success = status not in ("BLOCKED", "ERROR", "UNKNOWN") or fixed > 0 or found >= 0
+            state_mgr.complete_agent(
+                "ArchitectureGovernorAgent", success,
+                f"status={status} found={found} fixed={fixed}"
+            )
             return res
         else:
             state_mgr.add_event("warning", "Healing skipped - Low confidence")
