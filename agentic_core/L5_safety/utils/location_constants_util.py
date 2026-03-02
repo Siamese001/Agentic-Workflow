@@ -23,6 +23,8 @@ HEALING_STRATEGY_MAP: dict[str, str] = {
     "APP-SPECIFIC IN CORE": "_heal_app_specific_violation",
     "TERRITORY MISMATCH": "_heal_territory_mismatch",
     "DEEP VIOLATION": "_heal_depth_violation",
+    "SHALLOW VIOLATION": "_heal_depth_violation",
+    "PASCAL_IN_NON_AGENT_FOLDER": "_heal_app_specific_violation",
     "VOID VIOLATION": "_heal_void_violation",  # NEW: Handle void violations properly
 }
 

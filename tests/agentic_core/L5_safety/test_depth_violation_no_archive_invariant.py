@@ -1,0 +1,147 @@
+"""
+Wave 0A Invariant: LocationHealerAgent must never archive files under sovereign roots
+for depth violations (DEEP VIOLATION or SHALLOW VIOLATION).
+
+Root cause this guards against: The archive fallback in _apply_healing_strategy()
+was firing for depth violations that slipped through the strategy map or produced
+no-op moves, causing 1,031 unintended file deletions in run11.
+"""
+
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
+SOVEREIGN_ROOTS = ["apps_lic", "apps_rg", "agentic_core", "apps_shared"]
+
+DEPTH_VIOLATION_MESSAGES = [
+    "DEEP VIOLATION: file is too deep",
+    "SHALLOW VIOLATION: file is too shallow",
+    "DEEP VIOLATION at apps_lic/engines/FooAgent.py",
+    "SHALLOW VIOLATION at apps_rg/reasoning/BarAgent.py",
+]
+
+
+@pytest.fixture
+def healer(tmp_path):
+    """Minimal LocationHealerAgent configured against tmp_path as project root."""
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+
+    agent = LocationHealerAgent.__new__(LocationHealerAgent)
+    agent.project_root = tmp_path
+    agent._autonomous_mode = False
+    return agent, tmp_path
+
+
+@pytest.mark.parametrize("violation_msg", DEPTH_VIOLATION_MESSAGES)
+@pytest.mark.parametrize("sovereign_root", SOVEREIGN_ROOTS)
+def test_depth_violation_never_archived(healer, sovereign_root, violation_msg):
+    """
+    Invariant: _apply_healing_strategy must never return ARCHIVED for any
+    DEEP VIOLATION or SHALLOW VIOLATION message under a sovereign root.
+    """
+    agent, tmp_path = healer
+
+    # Create a fake file under the sovereign root
+    sovereign_dir = tmp_path / sovereign_root / "engines"
+    sovereign_dir.mkdir(parents=True, exist_ok=True)
+    fake_file = sovereign_dir / "TestAgent.py"
+    fake_file.write_text("class TestAgent: pass\n")
+
+    archives_root = tmp_path / ".healing_backups"
+    archives_root.mkdir(parents=True, exist_ok=True)
+
+    affected_paths: list[Path] = []
+    import_touched_paths: list[Path] = []
+
+    result = agent._apply_healing_strategy(
+        file_path=fake_file,
+        msg=violation_msg,
+        archives_root=archives_root,
+        dry_run=False,
+        affected_paths=affected_paths,
+        import_touched_paths=import_touched_paths,
+    )
+
+    action = result.get("action_taken", "")
+    assert "ARCHIVED" not in action.upper(), (
+        f"INVARIANT VIOLATED: {sovereign_root} file was ARCHIVED for depth violation.\n"
+        f"  File: {fake_file}\n"
+        f"  Violation: {violation_msg}\n"
+        f"  Result: {result}"
+    )
+
+    # Confirm the file was not actually moved to archives
+    assert fake_file.exists(), (
+        f"INVARIANT VIOLATED: {sovereign_root} file was physically moved/deleted "
+        f"for depth violation: {violation_msg}"
+    )
+
+
+def test_identity_path_guard_returns_skipped(healer):
+    """
+    Bug 3 guard: when _heal_depth_violation computes target_path == file_path
+    (depth already correct), it must return SKIPPED, not fall to archive.
+    """
+    agent, tmp_path = healer
+
+    apps_dir = tmp_path / "apps_lic" / "engines"
+    apps_dir.mkdir(parents=True, exist_ok=True)
+    fake_file = apps_dir / "FooAgent.py"
+    fake_file.write_text("class FooAgent: pass\n")
+
+    affected_paths: list[Path] = []
+    import_touched_paths: list[Path] = []
+
+    # Patch SOVEREIGN_REGISTRY to return depth=2 (matching the file's actual depth=2)
+    mock_registry = {"apps_lic": {"depth": 2, "subfolders": ["engines", "reasoning"]}}
+    with patch(
+        "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
+        mock_registry,
+    ):
+        result = agent._heal_depth_violation(
+            file_path=fake_file,
+            msg="DEEP VIOLATION: file is too deep",
+            dry_run=False,
+            affected_paths=affected_paths,
+            import_touched_paths=import_touched_paths,
+        )
+
+    action = result.get("action_taken", "")
+    assert "SKIPPED" in action.upper() or "depth already correct" in action.lower(), (
+        f"Identity-path guard failed — expected SKIPPED, got: {result}"
+    )
+    assert fake_file.exists(), "File was moved despite identity-path guard"
+
+
+def test_shallow_violation_in_strategy_map():
+    """Bug 2 guard: SHALLOW VIOLATION must be in HEALING_STRATEGY_MAP."""
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+
+    assert "SHALLOW VIOLATION" in HEALING_STRATEGY_MAP, (
+        "SHALLOW VIOLATION missing from HEALING_STRATEGY_MAP — shallow files will fall to archive fallback"
+    )
+
+
+def test_pascal_in_non_agent_folder_in_strategy_map():
+    """Bug 5 guard: PASCAL_IN_NON_AGENT_FOLDER must be in HEALING_STRATEGY_MAP."""
+    from agentic_core.L5_safety.utils.location_constants_util import HEALING_STRATEGY_MAP
+
+    assert "PASCAL_IN_NON_AGENT_FOLDER" in HEALING_STRATEGY_MAP, (
+        "PASCAL_IN_NON_AGENT_FOLDER missing from HEALING_STRATEGY_MAP — "
+        "PascalCase agent files in engines/ will be archived instead of moved to reasoning/"
+    )
+
+
+def test_apps_rg_apps_lic_depth_is_two():
+    """Bug 1 guard: apps_rg and apps_lic must have depth=2 in SOVEREIGN_TERRITORIES."""
+    from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        SOVEREIGN_TERRITORIES,
+    )
+
+    for territory in ("apps_rg", "apps_lic"):
+        depth = SOVEREIGN_TERRITORIES.get(territory, {}).get("depth")
+        assert depth == 2, (
+            f"SSOT depth split: {territory} has depth={depth} in SOVEREIGN_TERRITORIES, "
+            f"expected 2. This causes DEEP VIOLATION false positives and archive fallback."
+        )

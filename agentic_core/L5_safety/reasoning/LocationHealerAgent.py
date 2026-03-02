@@ -791,6 +791,13 @@ class LocationHealerAgent(SovereignBaseAgent):
                     return method(file_path, dry_run, affected_paths)
                 return method(file_path, msg, dry_run, affected_paths, import_touched_paths)
 
+        # Block archiving for depth violations — these must never fall through to archive
+        if "DEEP VIOLATION" in msg or "SHALLOW VIOLATION" in msg:
+            return {
+                "action_taken": "BLOCKED: depth violations must not be archived",
+                "applied": False,
+            }
+
         # Fallback to archiving
         return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
@@ -1505,6 +1512,13 @@ class LocationHealerAgent(SovereignBaseAgent):
                 target_path = self.project_root.joinpath(*new_parts)
                 action_type = "NESTED"
 
+            # Identity-path guard: target == source means depth is already correct
+            if target_path.resolve() == file_path.resolve():
+                return {
+                    "action_taken": "SKIPPED: depth already correct",
+                    "applied": False,
+                }
+
             move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
             if move_result.get("applied"):
                 move_result["action_taken"] = (
@@ -1893,7 +1907,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             return full_report
 
         try:
-            import_violations = self.import_agent.run(valid_files)
+            import_violations = [
+                (p, [str(a) for a in self.import_agent.heal_imports(p)]) for p in valid_files if p.exists()
+            ]
 
             convention_issues = []
             gravity_issues = []
@@ -1928,7 +1944,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                         f" | Gravity auto-heal: {len(gravity_heal_actions)} actions"
                     )
 
-            final_violations = self.import_agent.run(valid_files)
+            final_violations = [
+                (p, [str(a) for a in self.import_agent.heal_imports(p)]) for p in valid_files if p.exists()
+            ]
             final_convention = 0
             final_gravity = 0
             for _, msgs in final_violations:
@@ -2095,7 +2113,9 @@ class LocationHealerAgent(SovereignBaseAgent):
             return deep_report
 
         try:
-            import_violations = self.import_agent.run(valid_files)
+            import_violations = [
+                (p, [str(a) for a in self.import_agent.heal_imports(p)]) for p in valid_files if p.exists()
+            ]
 
             convention_actions = []
             gravity_actions = []
@@ -2184,7 +2204,11 @@ class LocationHealerAgent(SovereignBaseAgent):
                     )
 
             final_valid = [p for p in valid_files if p.exists()]
-            final_violations = self.import_agent.run(final_valid) if final_valid else []
+            final_violations = (
+                [(p, [str(a) for a in self.import_agent.heal_imports(p)]) for p in final_valid if p.exists()]
+                if final_valid
+                else []
+            )
             final_convention = 0
             final_gravity = 0
             for _, msgs in final_violations:

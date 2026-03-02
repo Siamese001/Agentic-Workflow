@@ -824,7 +824,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
 
     territories["apps_rg"] = {
-        "depth": 3,
+        "depth": 2,
         "purpose": "Resume Generation Application domain.",
         "subfolders": apps_lcd_subfolders.copy(),
         "routing_rules": apps_routing_rules,
@@ -836,7 +836,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     apps_lic_subfolders["tools"] = {"purpose": "Tool implementations", "subfolders": []}
 
     territories["apps_lic"] = {
-        "depth": 3,
+        "depth": 2,
         "purpose": "LinkedIn Canonical application domain.",
         "subfolders": apps_lic_subfolders,
         "routing_rules": apps_routing_rules,
