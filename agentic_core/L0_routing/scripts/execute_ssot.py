@@ -510,6 +510,7 @@ def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
                 _hl.sha256(b"mem_ssot").hexdigest(),
             ),
             trace_id=trace_id,
+            agent_id="ssot_audit",
         )
     # guardian: allow-silent-swallow
     except Exception as exc:

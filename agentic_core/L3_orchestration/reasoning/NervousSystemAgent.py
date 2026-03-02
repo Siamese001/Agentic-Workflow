@@ -353,6 +353,7 @@ class NervousSystemAgent(SovereignBaseAgent):
                         heal_fn=_noop_heal,
                         state_hash_fn=_state_hash,
                         trace_id=manifest.correlation_id,
+                        agent_id="orchestrator_engine",
                     )
                 # guardian: allow-silent-swallow
                 except Exception as exc:

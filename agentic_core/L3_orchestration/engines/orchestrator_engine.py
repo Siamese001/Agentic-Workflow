@@ -754,6 +754,7 @@ class Orchestrator(SovereignBaseAgent):
                         heal_fn=_heal_body,
                         state_hash_fn=_state_hash,
                         trace_id=manifest.correlation_id,
+                        agent_id="orchestrator_engine",
                     )
                     if gw_result.success:
                         _call_path.discard(agent_name)

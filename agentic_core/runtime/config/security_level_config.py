@@ -986,6 +986,7 @@ class Orchestrator(MCPHardenedMixin, HealerMixin, L3SubatomicTestingMixin):
                     heal_fn=_heal_body,
                     state_hash_fn=_state_hash,
                     trace_id=manifest.correlation_id,
+                    agent_id="agent_engine",
                 )
                 if gw_result.success:
                     return gw_result.healing_output

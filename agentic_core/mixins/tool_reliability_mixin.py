@@ -415,6 +415,7 @@ class ToolReliabilityMixin:
                     _hl.sha256(b"mem_retry").hexdigest(),
                 ),
                 trace_id=trace_id,
+                agent_id="tool_reliability_mixin",
             )
         # guardian: allow-silent-swallow
         except Exception as exc:

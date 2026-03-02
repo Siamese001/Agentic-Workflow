@@ -67,6 +67,43 @@ AGENT_REGISTRY: dict[str, AgentExecutionProfile] = {
         execution_mode=ExecutionMode.LLM_API,
         allowed_models=("gpt-4", "claude-3-opus"),
     ),
+    # Wave 4: audit-only entries for V15ExecutionGateway.execute() callers
+    "sovereign_base": AgentExecutionProfile(
+        agent_id="sovereign_base",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
+    "tool_reliability_mixin": AgentExecutionProfile(
+        agent_id="tool_reliability_mixin",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
+    "ssot_audit": AgentExecutionProfile(
+        agent_id="ssot_audit",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
+    "mission_runner": AgentExecutionProfile(
+        agent_id="mission_runner",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
+    "orchestrator_engine": AgentExecutionProfile(
+        agent_id="orchestrator_engine",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
+    "agent_engine": AgentExecutionProfile(
+        agent_id="agent_engine",
+        reasoning_intensity=ReasoningIntensity.HIGH,
+        execution_mode=ExecutionMode.DETERMINISTIC,
+        allowed_models=(),
+    ),
 }
 
 

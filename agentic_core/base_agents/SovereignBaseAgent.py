@@ -369,6 +369,7 @@ class SovereignBaseAgent(
             heal_fn=heal_fn,
             state_hash_fn=state_hash_fn,
             trace_id=trace_id,
+            agent_id="sovereign_base",
         )
 
         # Return gateway result in expected format

@@ -184,6 +184,7 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
                 _hl.sha256(b"mem_mission").hexdigest(),
             ),
             trace_id=trace_id,
+            agent_id="mission_runner",
         )
     # guardian: allow-silent-swallow
     except Exception as exc:
