@@ -114,6 +114,12 @@ UNREACHABLE_ALLOWLIST = {
     # --- Agents in non-standard filenames ---
     "AutonomousRagDaemon": "Secondary class in TerritoryChangeHandlerAgent.py",
     "TerritoryChangeHandlerAgent": "TEST-ONLY: primary class in file, blocked by test refs",
+    # --- Wave 0A additions: agents present in reasoning/ but not yet wired to entrypoints ---
+    "BenchmarkingAgent": "TEST-ONLY: measures performance metrics, exercised in test suite only",
+    "BootstrapAgent": "BOOT-ONLY: autonomous boot integrity agent, not wired to production entrypoints",
+    "DocstringComplianceAgent": "TEST-ONLY: enforces docstring presence, exercised in test suite only",
+    "GospelSyncAgent": "SSOT-GUARDIAN: invoked via execute_ssot script path, not strict entrypoint list",
+    "IntegrityGateExecutorAgent": "TEST-ONLY: validates research outputs, exercised in test suite only",
 }
 
 # Budget: the maximum allowed count of *Agent.py files in reasoning/

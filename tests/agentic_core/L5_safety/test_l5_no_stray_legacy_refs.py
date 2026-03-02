@@ -7,7 +7,16 @@ re-inflation of agent counts via orphaned string references.
 """
 
 import os
+import sys
 from pathlib import Path
+
+# Under --import-mode=importlib, pytest collects this file as package
+# tests/agentic_core, so 'from agentic_core.L0_routing...' would resolve
+# into tests/ rather than the project root.  Insert the project root first
+# so absolute imports always find the production agentic_core package.
+_PROJECT_ROOT = str(Path(__file__).parent.parent.parent.parent)
+if _PROJECT_ROOT not in sys.path:
+    sys.path.insert(0, _PROJECT_ROOT)
 
 
 class TestNoStrayLegacyStringRefs:
@@ -17,12 +26,23 @@ class TestNoStrayLegacyStringRefs:
         os.path.normpath("agentic_core/L0_routing/legacy_agent_name_allowlist.py"),
         os.path.normpath("tests/agentic_core/L5_safety/test_l5_agent_inventory_contract.py"),
         os.path.normpath("tests/agentic_core/L5_safety/test_l5_no_stray_legacy_refs.py"),
+        # Report generator references legacy names as historical data entries, not live imports
+        os.path.normpath("ops_scripts/general/generate_qwen_healing_report.py"),
     }
 
     def test_no_stray_string_refs_for_legacy_agents(self):
-        from agentic_core.L0_routing.legacy_agent_name_allowlist import (
-            LEGACY_AGENT_NAME_ALLOWLIST,
+        import importlib.util
+
+        _allowlist_path = (
+            Path(__file__).parent.parent.parent.parent
+            / "agentic_core" / "L0_routing" / "legacy_agent_name_allowlist.py"
         )
+        _spec = importlib.util.spec_from_file_location(
+            "legacy_agent_name_allowlist_prod", _allowlist_path
+        )
+        _mod = importlib.util.module_from_spec(_spec)
+        _spec.loader.exec_module(_mod)
+        LEGACY_AGENT_NAME_ALLOWLIST = _mod.LEGACY_AGENT_NAME_ALLOWLIST
 
         project_root = Path(__file__).parent.parent.parent.parent
         failures = []
