@@ -28,7 +28,7 @@ so they execute under the default pytest suite.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+aabfe42e210255fb0f528995544498b478afdb72
 
 ## FILES_CHANGED_CODE
 
@@ -42,7 +42,7 @@ tests/agentic_core/test_wave6_hitl_gates.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/healing_waves_0C_0B_6_evidence.md
 
 ## INSPECTED_FILES
 
