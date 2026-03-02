@@ -19,6 +19,7 @@ Backward-compat shim: agentic_core/L5_safety/utils/decorators_util.py
 from __future__ import annotations
 
 import functools
+import inspect
 import logging
 import os
 import time
@@ -211,21 +212,23 @@ def standard_heal(func: F) -> F:
                 f"(dry_run={dry_run}, execute={execute}, depth={depth}, auto_approve={auto_approve})",
             )
 
-            # Phase 2: Compute heal policy decision using canonical escalation
-            # If auto_approve=True the external decision_engine has already approved — skip gate.
+            # Phase 2: Compute heal policy decision using score-based routing.
+            # Score S determines tier: S<=13 agent-native, S14-26 Qwen, S>26 Gemini.
+            # proceed is always True — routing by score never blocks healing.
+            # If auto_approve=True the external decision_engine has already approved.
             enable_llm = _select_reasoning_tier_enabled()
-            confidence_value = remaining_kwargs.pop("_confidence", 0.75)
-            task_complexity = remaining_kwargs.pop("_task_complexity", 5)
-            prior_failures = remaining_kwargs.pop("_prior_failures", 0)
+            score = remaining_kwargs.pop("_score", 0)
+            # Backward-compat: pop legacy kwargs so they don't leak into func signature
+            remaining_kwargs.pop("_confidence", None)
+            remaining_kwargs.pop("_task_complexity", None)
+            remaining_kwargs.pop("_prior_failures", None)
 
             if auto_approve:
                 policy_decision = None
             else:
                 policy_inputs = HealEscalationInputs(
-                    confidence_value=confidence_value,
+                    score=score,
                     enable_llm=enable_llm,
-                    task_complexity=task_complexity,
-                    prior_failures=prior_failures,
                 )
                 policy_decision = decide_heal_escalation(policy_inputs)
                 Logger.debug(
@@ -234,27 +237,9 @@ def standard_heal(func: F) -> F:
                     f"threshold={policy_decision.threshold_used}",
                 )
 
-            # Hard gate: If proceed=False, return deterministic refusal (no LLM)
-            if policy_decision is not None and not policy_decision.proceed:
-                execution_time_ms = (time.time() - start_time) * 1000
-                return {
-                    **HEAL_RESULT_SCHEMA,
-                    "status": "BLOCKED",
-                    "violations_found": 0,
-                    "violations_fixed": 0,
-                    "execution_time_ms": execution_time_ms,
-                    "error_message": policy_decision.rationale,
-                    "_policy_decision": {
-                        "proceed": False,
-                        "tier": None,
-                        "threshold_used": policy_decision.threshold_used,
-                        "rationale": policy_decision.rationale,
-                    },
-                }
-
-            # Phase 4: LLM escalation (only if proceed=True AND tier is set)
+            # Phase 4: LLM escalation (only if tier is set)
             routed_model_id: str | None = None
-            if policy_decision.tier is not None and enable_llm:
+            if policy_decision is not None and policy_decision.tier is not None and enable_llm:
                 Logger.debug(
                     f"[heal_policy] escalation_enabled=1 selected_tier={policy_decision.tier.name}",
                 )
@@ -284,31 +269,61 @@ def standard_heal(func: F) -> F:
             # Phase 3: Create and store policy decision record for observability
             if policy_decision is not None:
                 policy_record = PolicyDecisionRecord(
-                    confidence=confidence_value,
+                    confidence=float(score),
                     enable_llm=enable_llm,
-                    complexity=task_complexity,
-                    prior_failures=prior_failures,
+                    complexity=score,
+                    prior_failures=0,
                     proceed=policy_decision.proceed,
                     tier=policy_decision.tier.name if policy_decision.tier else None,
                     threshold_used=policy_decision.threshold_used,
                     rationale=policy_decision.rationale,
                 )
-                remaining_kwargs["_policy_decision"] = policy_record.to_dict()
+                _policy_for_result = policy_record.to_dict()
             else:
-                remaining_kwargs["_policy_decision"] = {
+                _policy_for_result = {
                     "proceed": True, "tier": None,
                     "threshold_used": "AUTO_APPROVED", "rationale": "auto_approve=True",
                 }
 
-            result = func(
-                self,
-                *args,
-                dry_run=dry_run,
-                execute=execute,
-                depth=depth,
-                _call_path=_call_path,
-                **remaining_kwargs,
-            )
+            # Map *args to named parameters using signature introspection.
+            # This handles module-level @standard_heal functions (e.g. execute_phase3_validation)
+            # where positional args like territory/original_violations live in *args.
+            try:
+                _sig = inspect.signature(func)
+                _param_names = list(_sig.parameters.keys())
+                _has_var_kw = any(
+                    p.kind == inspect.Parameter.VAR_KEYWORD
+                    for p in _sig.parameters.values()
+                )
+            except (ValueError, TypeError):
+                _param_names = []
+                _has_var_kw = True
+
+            _positional_kwargs: dict[str, Any] = {}
+            for _i, _val in enumerate(args):
+                _pidx = _i + 1  # skip 'self' at index 0
+                if _pidx < len(_param_names):
+                    _pname = _param_names[_pidx]
+                    if _pname not in ("dry_run", "execute"):
+                        _positional_kwargs[_pname] = _val
+
+            _call_kwargs: dict[str, Any] = {**_positional_kwargs, **remaining_kwargs}
+            _call_kwargs["dry_run"] = dry_run
+            _call_kwargs["execute"] = execute
+            _call_kwargs["depth"] = depth
+            _call_kwargs["_call_path"] = _call_path
+
+            # Strip kwargs the function does not accept (only when no **kwargs)
+            if not _has_var_kw:
+                _call_kwargs = {k: v for k, v in _call_kwargs.items() if k in _param_names}
+
+            raw_result = func(self, **_call_kwargs)
+
+            # Inject policy decision into raw result for observability (never passed to func)
+            if isinstance(raw_result, dict):
+                raw_result["_policy_from_kwargs"] = _policy_for_result
+
+            result = raw_result
 
             execution_time_ms = (time.time() - start_time) * 1000
             normalized = _normalize_heal_result(result, execution_time_ms, agent_name)

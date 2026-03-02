@@ -325,15 +325,13 @@ class CodeHealerAgent(
                 if isinstance(node.value, ast.Name):
                     used_names.add(node.value.id)
 
-        # Find unused imports and create surgical contexts
+        # Find unused imports
         unused_imports = []
-        surgical_contexts = []
 
         for node, name, lineno in imports:
             if name not in used_names and name not in ("*", "__future__"):
                 unused_imports.append((name, lineno))
 
-                # Create HealingAction for tracking
                 action = HealingAction(
                     healing_type="IMPORT",
                     file_path=file_path,
@@ -343,44 +341,6 @@ class CodeHealerAgent(
                     new_code="REMOVED",
                 )
                 actions.append(action)
-
-                # Create SurgicalContext for CST healing
-                violation = ViolationConstraint(
-                    constraint_type="unused_import",
-                    severity="warning",
-                    message=f"Unused import: {name}",
-                    fix_type="delete",
-                    target_coordinate=ASTCoordinate(line=lineno, column=0),
-                    target_node_type="Import" if isinstance(node, ast.Import) else "ImportFrom",
-                )
-
-                context = SurgicalContext(
-                    file_path=file_path,
-                    file_content=content,
-                    ast_tree=tree,
-                    violations=[violation],
-                    detector_agent="CodeHealerAgent",
-                    detection_method="heal_imports",
-                    violation_id=f"unused_import_{name}_{lineno}",
-                )
-                surgical_contexts.append(context)
-
-        # Apply CST-based surgical healing
-        if not self._agent_config.dry_run and surgical_contexts:
-            for context in surgical_contexts:
-                result = self.heal_surgical_cst(context)
-                if result["status"] == "success" and result["violations_fixed"] > 0:
-                    # Mark corresponding actions as applied
-                    for action in actions:
-                        if action.line_number == context.violations[
-                            0
-                        ].target_coordinate.line and action.description.startswith("Remove unused import"):
-                            action.applied = True
-                            break
-                else:
-                    Logger.error(
-                        f"CST healing failed for {file_path}: {result.get('details', 'Unknown error')}",
-                    )
 
         self._actions.extend(actions)
         return actions
@@ -762,7 +722,7 @@ def create_legacy_canon_healer() -> CodeHealerAgent:
         enable_import=False,
         enable_structural=False,
     )
-    return CodeHealerAgent(config=config)
+    return CodeHealerAgent(agent_config=config)
 
 
 def create_legacy_import_healer() -> CodeHealerAgent:
@@ -772,4 +732,4 @@ def create_legacy_import_healer() -> CodeHealerAgent:
         enable_import=True,
         enable_structural=False,
     )
-    return CodeHealerAgent(config=config)
+    return CodeHealerAgent(agent_config=config)

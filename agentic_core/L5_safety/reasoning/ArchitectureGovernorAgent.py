@@ -305,11 +305,11 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             all_violations = []
 
             # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
-            from agentic_core.L5_safety.validators import (
-                structure_blueprint as _structure_blueprint,
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                get_sovereign_territories as _get_sovereign_territories,
             )
 
-            sovereign_territories = _structure_blueprint.SOVEREIGN_TERRITORIES
+            sovereign_territories = _get_sovereign_territories()
 
             if target_territory:
                 if target_territory in sovereign_territories and target_territory != "agentic_core":

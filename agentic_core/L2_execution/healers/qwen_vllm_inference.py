@@ -22,25 +22,36 @@ import argparse
 import json
 
 
-def _build_prompt(agent_name: str, confidence: float, violation_types: list[str], territory: str) -> str:
+def _build_prompt(
+    agent_name: str,
+    violation_types: list[str],
+    territory: str,
+    score: int,
+    gate: str,
+) -> str:
     violations_str = ", ".join(violation_types) if violation_types else "UNKNOWN"
+    band = "low (agent-native)" if score <= 13 else ("medium (Qwen-advised)" if score <= 26 else "high (Gemini)")
     return (
-        f"You are a governance arbitration engine for an agentic codebase healing pipeline.\n"
+        f"You are a healing-plan advisor for an agentic codebase pipeline.\n"
+        f"Score-based routing has already dispatched this to you: score={score} ({band}), gate={gate}.\n"
+        f"Healing WILL proceed. Your role is to describe what the agent should do and confirm it is safe.\n\n"
         f"Agent: {agent_name}\n"
         f"Territory: {territory}\n"
-        f"Confidence score: {confidence:.2f} (medium confidence band 0.40-0.75)\n"
-        f"Violation types: {violations_str}\n\n"
-        f"Should this agent proceed with healing? "
-        f"Reply with exactly one word: YES or NO, followed by a single sentence of reasoning."
+        f"Violations detected: {violations_str}\n\n"
+        f"In one sentence, describe the specific healing action {agent_name} should take for these violations.\n"
+        f"Then reply YES to confirm it is safe.\n"
+        f"Only reply NO if the action would cause irreversible data loss or break a production invariant.\n"
+        f"Format: YES <healing action description> OR NO <specific reason>."
     )
 
 
 def main() -> None:
     parser = argparse.ArgumentParser(description="Qwen 14B vLLM governance arbiter")
     parser.add_argument("--agent_name", required=True)
-    parser.add_argument("--confidence", type=float, required=True)
     parser.add_argument("--violation_types", nargs="*", default=[])
     parser.add_argument("--territory", required=True)
+    parser.add_argument("--score", type=int, default=0)
+    parser.add_argument("--gate", default="")
     parser.add_argument("--model_path", default="/home/amita/models/Qwen2.5-14B-Instruct-AWQ")
     args = parser.parse_args()
 
@@ -54,7 +65,7 @@ def main() -> None:
         gpu_memory_utilization=0.7,
     )
 
-    prompt = _build_prompt(args.agent_name, args.confidence, args.violation_types, args.territory)
+    prompt = _build_prompt(args.agent_name, args.violation_types, args.territory, args.score, args.gate)
     sampling_params = SamplingParams(temperature=0.0, max_tokens=80)
     outputs = llm.generate([prompt], sampling_params)
     response = outputs[0].outputs[0].text.strip()
@@ -65,7 +76,8 @@ def main() -> None:
         "reason": response,
         "model": "Qwen2.5-14B-Instruct-AWQ",
         "agent_name": args.agent_name,
-        "confidence_in": args.confidence,
+        "score": args.score,
+        "gate": args.gate,
     }
     print(json.dumps(result))
 

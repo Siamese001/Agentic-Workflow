@@ -5,54 +5,58 @@ Heal Escalation Policy Types and Decision Logic
 Pure types and decision functions for agent healing escalation policy.
 This module contains only stdlib dependencies and deterministic logic.
 
-Canonical reference: execute_ssot.py AutonomousDecisionEngine/SovereignDecisionEngine
-- High confidence (>0.75): proceed deterministically, no LLM
-- Medium confidence (0.50..0.75): LLM LOW tier only when enable_llm=True AND judicious gate
-- Low confidence (<0.50): LLM HIGH tier only when enable_llm=True AND judicious gate
+Score-based routing (replaces legacy confidence-based system):
+- S <= 13: DETERMINISTIC  — agent-native logic, no LLM
+- S 14-26: QWEN           — Qwen 2.5 14B advises the healing plan
+- S > 26:  GEMINI         — Gemini 2.5 Pro handles complex reasoning
+
+Healing always proceeds (proceed=True) once routing dispatches by score.
+Confidence is only an intermediate value that contributes factors C, A, F
+to the score S. It is never used as a hard gate.
 
 Enums:
-- ReasoningTier: LOW, HIGH
-- ConfidenceLevel: LOW, MEDIUM, HIGH
+- ReasoningTier: LOW (Qwen), HIGH (Gemini)
+- ScoreBand: DETERMINISTIC, QWEN, GEMINI
+- ConfidenceLevel: alias of ScoreBand for backward compat
 
 Dataclasses:
-- HealEscalationInputs: Input parameters for escalation decision (canonical)
+- HealEscalationInputs: Input parameters — score (canonical), legacy fields kept for compat
 - LegacyHealEscalationInputs: Legacy input parameters (backward compat)
 - HealEscalationDecision: Output decision with tier, proceed flag, and rationale
 
 Functions:
-- classify_confidence: Map confidence float to ConfidenceLevel
-- decide_heal_escalation: Canonical escalation decision matching execute_ssot semantics
-- decide_reasoning_tier: Legacy decision function (backward compat)
+- classify_score: Map routing score S to ScoreBand
+- classify_confidence: DEPRECATED — maps confidence float to ScoreBand (approximation)
+- decide_heal_escalation: Score-based escalation, always proceed=True
+- decide_reasoning_tier: DEPRECATED legacy function, always proceed=True
 """
 
 import os
 from dataclasses import dataclass
 from enum import Enum
 
-
-def _get_high_threshold() -> float:
-    """SOVEREIGN_HIGH_CONFIDENCE env var, default 0.75."""
-    return float(os.getenv("SOVEREIGN_HIGH_CONFIDENCE", "0.75"))
-
-
-def _get_medium_threshold() -> float:
-    """SOVEREIGN_MEDIUM_CONFIDENCE env var, default 0.50."""
-    return float(os.getenv("SOVEREIGN_MEDIUM_CONFIDENCE", "0.50"))
+# Score thresholds matching compute_routing_decision in execute_ssot.py
+SCORE_THRESHOLD_DET: int = 13   # S <= 13 → DETERMINISTIC (agent-native)
+SCORE_THRESHOLD_QWEN: int = 26  # S <= 26 → QWEN; S > 26 → GEMINI
 
 
 class ReasoningTier(Enum):
-    """Reasoning tier for agent healing escalation."""
+    """LLM reasoning tier for agent healing escalation."""
 
-    LOW = "LOW"
-    HIGH = "HIGH"
+    LOW = "LOW"   # Qwen 2.5 14B — medium-complexity routing
+    HIGH = "HIGH" # Gemini 2.5 Pro — high-complexity routing
 
 
-class ConfidenceLevel(Enum):
-    """Confidence level classification."""
+class ScoreBand(Enum):
+    """Score band classification (replaces ConfidenceLevel)."""
 
-    LOW = "LOW"
-    MEDIUM = "MEDIUM"
-    HIGH = "HIGH"
+    DETERMINISTIC = "DETERMINISTIC"  # S <= 13: agent-native, no LLM
+    QWEN = "QWEN"                    # 14 <= S <= 26: Qwen 2.5 advises
+    GEMINI = "GEMINI"                # S > 26: Gemini 2.5 Pro
+
+
+# Backward-compat alias — old code referencing ConfidenceLevel still works
+ConfidenceLevel = ScoreBand
 
 
 @dataclass(frozen=True)
@@ -60,22 +64,24 @@ class HealEscalationInputs:
     """Inputs for heal escalation decision (canonical).
 
     Attributes:
-        confidence_value: Confidence score 0.0..1.0
-        enable_llm: Whether LLM escalation is permitted
-        task_complexity: Task complexity 0..10
-        cost_budget: Cost budget (unused in decision logic)
-        latency_budget_ms: Latency budget in ms (unused in decision logic)
-        safety_risk: Safety risk 0..10
-        prior_failures: Number of prior healing failures (>=0)
+        score: Routing score S from _route_decision (C+A+F+B+N factors). Primary input.
+        enable_llm: Whether LLM escalation is permitted (controls tier activation).
+        confidence_value: DEPRECATED — kept for backward compat only, not used for gating.
+        task_complexity: DEPRECATED — kept for backward compat only.
+        cost_budget: Unused in decision logic.
+        latency_budget_ms: Unused in decision logic.
+        safety_risk: DEPRECATED — kept for backward compat only.
+        prior_failures: DEPRECATED — kept for backward compat only.
     """
 
-    confidence_value: float  # 0.0..1.0
-    enable_llm: bool
-    task_complexity: int  # 0..10
+    score: int = 0              # canonical routing score S
+    enable_llm: bool = False
+    confidence_value: float = 0.75  # kept for backward compat, not used for gating
+    task_complexity: int = 5    # kept for backward compat
     cost_budget: int = 100
     latency_budget_ms: int = 5000
-    safety_risk: int = 0  # 0..10
-    prior_failures: int = 0  # >=0
+    safety_risk: int = 0        # kept for backward compat
+    prior_failures: int = 0     # kept for backward compat
 
 
 @dataclass(frozen=True)
@@ -107,147 +113,81 @@ class HealEscalationDecision:
     threshold_used: str  # Short, deterministic token
 
 
-def classify_confidence(confidence: float) -> ConfidenceLevel:
-    """Classify confidence value into discrete levels.
-
-    Uses environment-sourced thresholds:
-    - HIGH: confidence > SOVEREIGN_HIGH_CONFIDENCE (default 0.75)
-    - MEDIUM: SOVEREIGN_MEDIUM_CONFIDENCE <= confidence <= SOVEREIGN_HIGH_CONFIDENCE
-    - LOW: confidence < SOVEREIGN_MEDIUM_CONFIDENCE (default 0.50)
+def classify_score(score: int) -> ScoreBand:
+    """Classify routing score S into score band.
 
     Args:
-        confidence: Confidence value between 0.0 and 1.0
+        score: Routing score S from _route_decision.
 
     Returns:
-        ConfidenceLevel classification
-
-    Raises:
-        ValueError: If confidence is not in [0.0, 1.0]
+        ScoreBand: DETERMINISTIC, QWEN, or GEMINI.
     """
-    if not 0.0 <= confidence <= 1.0:
-        raise ValueError(f"Confidence must be in [0.0, 1.0], got {confidence}")
-
-    high_threshold = _get_high_threshold()
-    medium_threshold = _get_medium_threshold()
-
-    if confidence > high_threshold:
-        return ConfidenceLevel.HIGH
-    elif confidence >= medium_threshold:
-        return ConfidenceLevel.MEDIUM
+    if score <= SCORE_THRESHOLD_DET:
+        return ScoreBand.DETERMINISTIC
+    elif score <= SCORE_THRESHOLD_QWEN:
+        return ScoreBand.QWEN
     else:
-        return ConfidenceLevel.LOW
+        return ScoreBand.GEMINI
+
+
+def classify_confidence(confidence: float) -> ScoreBand:
+    """DEPRECATED: approximate mapping from confidence float to ScoreBand.
+
+    Use classify_score(score) for new code.
+    High confidence → low score → DETERMINISTIC.
+    """
+    if confidence > 0.75:
+        return ScoreBand.DETERMINISTIC
+    elif confidence >= 0.50:
+        return ScoreBand.QWEN
+    else:
+        return ScoreBand.GEMINI
 
 
 def decide_heal_escalation(inputs: HealEscalationInputs) -> HealEscalationDecision:
-    """Canonical escalation decision matching execute_ssot.py semantics.
+    """Score-based escalation decision. Healing always proceeds (proceed=True).
 
-    Decision rules (deterministic, ordered):
-    1. Validate input ranges
-    2. High confidence (>0.75): proceed=True, tier=None (no LLM)
-    3. Medium confidence (0.50..0.75):
-       - proceed=True only if enable_llm AND task_complexity >= 5 (judicious gate)
-       - tier=LOW when proceeding
-    4. Low confidence (<0.50):
-       - proceed=True only if enable_llm AND (task_complexity >= 7 OR prior_failures >= 1)
-       - tier=HIGH when proceeding
-    5. Otherwise proceed=False with explicit rationale
+    Routing rules (by score S):
+    - S <= 13: DETERMINISTIC — agent-native logic, no LLM needed
+    - S 14-26: QWEN tier    — Qwen 2.5 14B advises the healing plan
+    - S > 26:  GEMINI tier  — Gemini 2.5 Pro handles complex reasoning
 
     Args:
-        inputs: Heal escalation inputs
+        inputs: Heal escalation inputs (score is the canonical field).
 
     Returns:
-        HealEscalationDecision with proceed, tier, and rationale
-
-    Raises:
-        ValueError: If any input validation fails
+        HealEscalationDecision with proceed=True and appropriate tier.
     """
-    if not 0.0 <= inputs.confidence_value <= 1.0:
-        raise ValueError(f"confidence_value must be in [0.0, 1.0], got {inputs.confidence_value}")
-    if not 0 <= inputs.task_complexity <= 10:
-        raise ValueError(f"task_complexity must be in 0..10, got {inputs.task_complexity}")
-    if not 0 <= inputs.safety_risk <= 10:
-        raise ValueError(f"safety_risk must be in 0..10, got {inputs.safety_risk}")
-    if inputs.prior_failures < 0:
-        raise ValueError(f"prior_failures must be >= 0, got {inputs.prior_failures}")
+    score = inputs.score
+    band = classify_score(score)
 
-    high_threshold = _get_high_threshold()
-    medium_threshold = _get_medium_threshold()
-    confidence = inputs.confidence_value
-
-    if confidence > high_threshold:
+    if band == ScoreBand.DETERMINISTIC:
         return HealEscalationDecision(
             proceed=True,
             tier=None,
-            rationale=f"High confidence ({confidence:.2f} > {high_threshold}): sovereign auto-proceed",
-            threshold_used="HIGH_CONF_AUTO",
+            rationale=f"Score S={score} <= {SCORE_THRESHOLD_DET}: agent-native logic governs, no LLM needed",
+            threshold_used="SCORE_DET",
         )
-
-    if confidence >= medium_threshold:
-        if inputs.enable_llm and inputs.task_complexity >= 5:
-            return HealEscalationDecision(
-                proceed=True,
-                tier=ReasoningTier.LOW,
-                rationale=f"Medium confidence ({confidence:.2f}): LLM LOW tier, complexity={inputs.task_complexity}",
-                threshold_used="MEDIUM_CONF_LLM_LOW",
-            )
-        elif not inputs.enable_llm:
-            return HealEscalationDecision(
-                proceed=False,
-                tier=None,
-                rationale=f"Medium confidence ({confidence:.2f}) requires LLM arbitration (disabled)",
-                threshold_used="MEDIUM_CONF_LLM_DISABLED",
-            )
-        else:
-            return HealEscalationDecision(
-                proceed=False,
-                tier=None,
-                rationale=f"Medium confidence ({confidence:.2f}): task_complexity={inputs.task_complexity} < 5 (judicious gate)",
-                threshold_used="MEDIUM_CONF_JUDICIOUS_BLOCK",
-            )
-
-    judicious_low_gate = inputs.task_complexity >= 7 or inputs.prior_failures >= 1
-    if inputs.enable_llm and judicious_low_gate:
+    elif band == ScoreBand.QWEN:
         return HealEscalationDecision(
             proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale=f"Low confidence ({confidence:.2f}): LLM HIGH tier, complexity={inputs.task_complexity}, failures={inputs.prior_failures}",
-            threshold_used="LOW_CONF_LLM_HIGH",
-        )
-    elif not inputs.enable_llm:
-        return HealEscalationDecision(
-            proceed=False,
-            tier=None,
-            rationale=f"Low confidence ({confidence:.2f}) requires advanced reasoning (LLM disabled)",
-            threshold_used="LOW_CONF_LLM_DISABLED",
+            tier=ReasoningTier.LOW,
+            rationale=f"Score S={score} in [{SCORE_THRESHOLD_DET + 1},{SCORE_THRESHOLD_QWEN}]: Qwen 2.5 14B advises healing plan",
+            threshold_used="SCORE_QWEN",
         )
     else:
         return HealEscalationDecision(
-            proceed=False,
-            tier=None,
-            rationale=f"Low confidence ({confidence:.2f}): judicious gate not met (complexity={inputs.task_complexity}, failures={inputs.prior_failures})",
-            threshold_used="LOW_CONF_JUDICIOUS_BLOCK",
+            proceed=True,
+            tier=ReasoningTier.HIGH,
+            rationale=f"Score S={score} > {SCORE_THRESHOLD_QWEN}: Gemini 2.5 Pro handles complex reasoning",
+            threshold_used="SCORE_GEMINI",
         )
 
 
 def decide_reasoning_tier(inputs: LegacyHealEscalationInputs) -> HealEscalationDecision:
-    """Legacy decision function for reasoning tier escalation.
+    """DEPRECATED legacy function. Always proceeds; routes by complexity.
 
-    DEPRECATED: Use decide_heal_escalation() for new code.
-
-    Decision rules (deterministic, ordered):
-    A) Validate input ranges
-    B) Trivial no-escalation rule
-    C) Escalate to HIGH if ANY condition met
-    D) Otherwise LOW
-
-    Args:
-        inputs: Legacy heal escalation inputs
-
-    Returns:
-        HealEscalationDecision with tier and rationale
-
-    Raises:
-        ValueError: If any input validation fails
+    Use decide_heal_escalation() with score for new code.
     """
     if not 0 <= inputs.task_complexity <= 10:
         raise ValueError(f"task_complexity must be in 0..10, got {inputs.task_complexity}")
@@ -255,8 +195,6 @@ def decide_reasoning_tier(inputs: LegacyHealEscalationInputs) -> HealEscalationD
         raise ValueError(f"safety_risk must be in 0..10, got {inputs.safety_risk}")
     if inputs.retry_count < 0:
         raise ValueError(f"retry_count must be >= 0, got {inputs.retry_count}")
-
-    high_threshold = _get_high_threshold()
 
     if inputs.task_complexity < 3 and inputs.safety_risk < 7 and inputs.retry_count <= 2:
         return HealEscalationDecision(
@@ -266,41 +204,17 @@ def decide_reasoning_tier(inputs: LegacyHealEscalationInputs) -> HealEscalationD
             threshold_used="TRIVIAL",
         )
 
-    if inputs.confidence < high_threshold:
+    if inputs.task_complexity >= 8 or inputs.safety_risk >= 7 or inputs.retry_count > 2:
         return HealEscalationDecision(
             proceed=True,
             tier=ReasoningTier.HIGH,
-            rationale=f"Low confidence ({inputs.confidence:.2f} < {high_threshold}) triggers escalation",
-            threshold_used=f"CONF_LT_{high_threshold}",
-        )
-
-    if inputs.task_complexity >= 8:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale="High task complexity triggers escalation",
-            threshold_used="COMPLEXITY_GE_8",
-        )
-
-    if inputs.safety_risk >= 7:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale="High safety risk triggers escalation",
-            threshold_used="SAFETY_GE_7",
-        )
-
-    if inputs.retry_count > 2:
-        return HealEscalationDecision(
-            proceed=True,
-            tier=ReasoningTier.HIGH,
-            rationale="Multiple retries trigger escalation",
-            threshold_used="RETRY_GT_2",
+            rationale="High complexity/risk/retries: Gemini escalation",
+            threshold_used="LEGACY_HIGH",
         )
 
     return HealEscalationDecision(
         proceed=True,
         tier=ReasoningTier.LOW,
-        rationale="No escalation triggers met; default to low tier",
-        threshold_used="DEFAULT_LOW",
+        rationale="No escalation triggers met; default to Qwen tier",
+        threshold_used="LEGACY_LOW",
     )

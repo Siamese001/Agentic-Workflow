@@ -11,7 +11,7 @@ GUARDIAN_TEST = Path(__file__).parent / "test_core_components.py"
 
 def test_all_critical_files_exist():
     """TC-CC-01: All critical files exist."""
-    from tests.guardian.test_core_components import CRITICAL_FILES
+    from .healing_backups.location_violations.test_core_components import CRITICAL_FILES
 
     # Check that all critical files actually exist in the repo
     missing = []

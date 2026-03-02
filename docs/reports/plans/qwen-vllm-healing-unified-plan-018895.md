@@ -343,17 +343,243 @@ H.8 Gateway Monopoly (static)
 
 ---
 
-## Implementation Phases
+## Implementation Phases (Updated)
 
 | Phase | Scope | Files | Deps |
 |---|---|---|---|
-| A | Complete — no action needed | — | — |
-| B | Router hardening (5 targeted edits) | `agentic_core/L0_routing/scripts/execute_ssot.py` | — |
-| C | Anti-flap module | `agentic_core/L2_execution/healers/routing_anti_flap.py` (new) | Phase B digest fields |
-| D | Gateway monopoly CI | `ops_scripts/ci/check_gateway_monopoly.py` + `.github/workflows/gateway-monopoly-check.yml` (new) | — |
-| E | Acceptance tests | `tests/agentic_core/L0_routing/test_routing_scorecard.py` (new) | Phases B + C |
+| A | Complete | — | — |
+| B | Router hardening | `execute_ssot.py` (1 edit) | — |
+| C | Anti-flap module | `routing_anti_flap.py` (new) | Phase B |
+| D | Gateway monopoly CI | `check_gateway_monopoly.py` + workflow (2 new) | — |
+| E | Routing acceptance tests | `test_routing_scorecard.py` (new) | Phases B + C |
+| F | L2 four-phase refactor | 7 agent edits | Phase B (`_route_decision`) |
+| G | L2 phase acceptance tests | `test_l2_agent_phases.py` (new) | Phase F |
 
-**Total**: 1 edit + 4 new files. No existing agent source files modified.
+**Total**: 8 edits + 5 new files. No L5/L0/apps_* agent source files modified.
+
+---
+
+## Part 3 — L2 Execution Agent Four-Phase Decomposition
+
+### Reference Pattern (from `execute_ssot.py` L5 agents)
+
+`execute_ssot.py` runs its 10 L5 agents across four named phases per territory:
+
+| Phase | Function | Role |
+|---|---|---|
+| 1 — Discovery | `execute_phase1_discovery()` | Scan / detect violations; no writes |
+| 2 — Reconciliation | `execute_phase2_reconciliation()` | Write / apply fixes; gated by decision engine |
+| 3 — Validation | `execute_phase3_validation()` / `execute_phase3_architectural_validation()` | Post-heal AST checks; produces remaining-violations |
+| 4 — Healing | `execute_phase4_healing()` | Governor + deeper repair on residual violations |
+
+The same four phases must be implemented in every L2 execution agent's `heal_repository()` as explicit, named internal methods. This makes the healing lifecycle uniform, testable, and routeable via the SSOT scorecard.
+
+---
+
+### Phase Contract per Agent
+
+Each L2 agent must expose (as methods or documented internal blocks):
+
+```
+pre_commit_checks(self) -> list[str]
+    - Pure read-only validation before any state change
+    - Checks: env keys, connectivity, config invariants, API key presence
+    - Returns: list of error strings (empty = pass)
+    - Routing: DETERMINISTIC always (no LLM)
+    - Must NOT write files, update indexes, or mutate state
+
+validate(self, dry_run=True) -> dict[str, int]
+    - Full scan: detect all violations/misconfigurations
+    - Returns: {violations: N, warnings: N}
+    - Routing: DETERMINISTIC (structural) or Qwen (semantic content check)
+    - Populates self._pending_violations for execution phase
+    - Must NOT apply fixes
+
+execute(self, ctx: HealContext) -> dict[str, int]
+    - Apply fixes for violations found in validate()
+    - Gated by AutonomousDecisionEngine.should_proceed_with_healing()
+    - Routing decision logged via _route_decision() -> RoutingDecision
+    - Returns: {fixed: N, errors: N, skipped: N}
+    - Writes only via UniversalWriteGateway / write_gateway seam
+
+heal(self, violation: dict) -> dict
+    - Handle a single residual violation post-execution
+    - Called by Phase 4 governor for any unfixed items from execute()
+    - Routing: per violation failure_type via compute_routing_decision()
+    - Returns canonical dict: {status, details, artifacts, errors}
+```
+
+`heal_repository()` becomes the orchestrator that calls these four methods in order,
+with the decision engine gating execution and healing phases.
+
+---
+
+### L2 Agent Breakdown
+
+#### `EmbeddingSovereignAgent`
+**Current state**: `heal_repository()` is a flat monolith; `heal()` returns `skipped`.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert `GOOGLE_API_KEY`, `OPENAI_API_KEY` present; assert Redis reachable (ping); assert `EXPECTED_DIMENSIONS` config valid |
+| **validation** | Scan each configured provider: dimension mismatch check, cache round-trip test; return `{violations: N}` |
+| **execution** | Fix cache key prefix collisions if detected; re-initialize `_bge_m3_model` if stale; log `RoutingDecision` (DETERMINISTIC for config fixes, QWEN for semantic embedding policy review) |
+| **healing** | Handle `EMBEDDING_DIM_MISMATCH`, `PROVIDER_UNREACHABLE`, `CACHE_MISS_RATE_EXCEEDED` violation types; route via `compute_routing_decision()` |
+
+**Routing tier**: DETERMINISTIC (config/env) / QWEN (embedding policy advice)
+
+---
+
+#### `PineconeSovereignAgent`
+**Current state**: Has rich scan logic; `heal_repository()` not shown — likely flat.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert `PINECONE_API_KEY`; assert index `canon-healing-patterns` exists and is ready (status=`Ready`); assert dimension=1536; assert cloud/region match env |
+| **validation** | Check index stats (vector count vs expected floor); verify namespace existence; validate metadata schema on sample vectors |
+| **execution** | Re-create index if missing (with gate: B=3 / high blast-radius → Gemini required); upsert missing namespace; fix metadata schema drift |
+| **healing** | Handle `INDEX_NOT_FOUND`, `DIMENSION_MISMATCH`, `NAMESPACE_MISSING`, `VECTOR_COUNT_BELOW_FLOOR`; structural index ops = DETERMINISTIC; semantic schema repair = Qwen |
+
+**Routing tier**: DETERMINISTIC (index ops) / QWEN (schema/metadata repair) / GEMINI (index recreation)
+
+---
+
+#### `RedisSovereignAgent`
+**Current state**: Singleton with `operation_stats`; `heal_repository()` via `@standard_heal`.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert Redis connection pool healthy (ping); assert `REDIS_URL` / `REDIS_PASSWORD` present; assert TTL policy config valid |
+| **validation** | Scan: connection pool exhaustion check; key expiry drift; memory ceiling check; `operation_stats` anomaly detection (hit-rate < threshold) |
+| **execution** | Flush stale keys (TTL policy); rebuild connection pool if exhausted; reset `operation_stats` counters with audit log entry |
+| **healing** | Handle `CONNECTION_POOL_EXHAUSTED`, `KEY_TTL_DRIFT`, `MEMORY_CEILING_EXCEEDED`; all DETERMINISTIC (numeric thresholds, no LLM value-add) |
+
+**Routing tier**: DETERMINISTIC throughout (structural/numeric only)
+
+> Note: `agentic_core/L2_execution/reasoning/RedisSovereignAgent.py` is a shim that delegates to `L4_state.reasoning.RedisSovereignAgent`. The four phases above apply to the canonical L4 version. The L2 shim must expose the same `pre_commit_checks()` / `validate()` / `execute()` / `heal()` interface and delegate.
+
+---
+
+#### `SovereignMCPGatewayAgent`
+**Current state**: Singleton; `heal_repository()` not implemented (raises or absent).
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert MCP servers reachable (llm_route, kg, archive); assert connection pool not exhausted; assert `audit_log` rotation working |
+| **validation** | Check `operation_stats["errors"]` rate; detect stale connections; validate LLM routing fallback chain integrity |
+| **execution** | Reset error counters; evict stale pool connections; re-validate fallback model availability |
+| **healing** | Handle `LLM_ROUTE_FAILURE`, `KG_QUERY_TIMEOUT`, `ARCHIVE_OP_FAILED`; DETERMINISTIC for connection resets; Qwen for LLM routing policy advice |
+
+**Routing tier**: DETERMINISTIC (ops) / QWEN (routing policy)
+
+---
+
+#### `StructuredEngineAgent`
+**Current state**: Only `generate_plan()` + stub `heal_repository()` that raises `NotImplementedError`.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert `GEMINI_MODEL` env var set; assert gateway seam (`SovereignLLMGateway`) importable; assert no direct provider import (AST self-check) |
+| **validation** | Validate that `generate_plan()` output conforms to `AgentPlan` schema; detect empty `tool_calls` from last N runs |
+| **execution** | Re-configure model if `GEMINI_MODEL` changed; purge invalid cached plans; log routing decision (QWEN for plan quality review) |
+| **healing** | Handle `PLAN_SCHEMA_INVALID`, `EMPTY_TOOL_CALLS`, `GATEWAY_IMPORT_VIOLATION`; plan schema = Qwen; import violation = DETERMINISTIC |
+
+**Routing tier**: QWEN (plan content) / DETERMINISTIC (config/import)
+
+---
+
+#### `SubAtomicRegistryAgent`
+**Current state**: Rich AST scanner and registry; `heal_repository()` via `@standard_heal`.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert all entries in `UNIFIED_AGENT_MAPPING` are importable; assert no circular imports in mapped agents (AST cycle check); assert registry index file exists |
+| **validation** | Scan: stale registry entries (class moved/renamed); missing `heal()` method on registered agents; duplicate canonical keys |
+| **execution** | Remove stale entries; update moved class paths; write updated registry JSON via `write_gateway` |
+| **healing** | Handle `STALE_REGISTRY_ENTRY`, `MISSING_HEAL_METHOD`, `DUPLICATE_KEY`, `CIRCULAR_IMPORT`; structural fixes = DETERMINISTIC; semantic dedup = Qwen |
+
+**Routing tier**: DETERMINISTIC (path/key fixes) / QWEN (semantic dedup of near-duplicate agents)
+
+---
+
+#### `ToolsmithAgent`
+**Current state**: `heal_repository()` partially wired; seeds territory content; has `save_tool()`.
+
+| Phase | What to implement |
+|---|---|
+| **pre-commit** | Assert `generated_tools/` directory writable; assert `write_gateway` importable; assert no `tool_spec` JSON schema violations in `tools/` |
+| **validation** | Scan all registered `ToolSpec` for schema compliance; detect orphaned tool Python files (no matching spec); detect specs without implementations |
+| **execution** | Write missing tool Python files via `save_tool()`; remove orphaned files; seed ghost territories via `seed_territory()` |
+| **healing** | Handle `TOOL_SCHEMA_INVALID`, `ORPHANED_TOOL_FILE`, `MISSING_IMPLEMENTATION`, `GHOST_TERRITORY`; QWEN for generating missing implementations; DETERMINISTIC for file cleanup |
+
+**Routing tier**: QWEN (tool code generation) / DETERMINISTIC (file ops, schema validation)
+
+---
+
+### Shared Implementation Pattern
+
+All seven agents must follow this `heal_repository()` skeleton:
+
+```python
+def heal_repository(self, dry_run=True, execute=False,
+                    depth=0, max_depth=3, _call_path=None) -> dict:
+    # --- Cycle / depth guard (unchanged) ---
+    ...
+
+    # PHASE 1: PRE-COMMIT
+    pre_errors = self.pre_commit_checks()
+    if pre_errors:
+        return {"errors": len(pre_errors), "pre_commit_failed": True,
+                "messages": pre_errors}
+
+    # PHASE 2: VALIDATION
+    scan = self.validate(dry_run=True)
+    if scan["violations"] == 0:
+        return {"violations": 0, "fixed": 0, "errors": 0}
+
+    if dry_run and not execute:
+        return scan  # scan-only mode
+
+    # PHASE 3: EXECUTION (gated by routing decision)
+    ctx = HealContext(heal=execute, dry_run=dry_run, ...)
+    result = self.execute(ctx)
+
+    # PHASE 4: HEALING (residual violations)
+    for v in self._pending_violations:
+        if v not in result["fixed_violations"]:
+            self.heal(v)
+
+    return {**scan, **result}
+```
+
+---
+
+### Routing Decision Integration per Phase
+
+| Phase | Routing | Rationale |
+|---|---|---|
+| pre-commit | Always DETERMINISTIC | Pure env/config assertions — no LLM value |
+| validation | DETERMINISTIC for structural; QWEN for semantic content checks | Schema presence is structural; content quality is semantic |
+| execution | Per `_route_decision()` using violation's `FailureType` | Scorecard decides; kill-switches enforced here |
+| healing | Per `compute_routing_decision(RoutingInputs(...))` for each violation | Each residual violation gets an independent scorecard decision |
+
+---
+
+### Acceptance Tests for L2 Phase Decomposition
+
+**New file**: `tests/agentic_core/L2_execution/test_l2_agent_phases.py`
+
+```
+P.1 pre_commit_checks() — missing env var returns non-empty error list (each agent)
+P.2 validate() — returns {violations: N} with no side effects (each agent, dry_run=True)
+P.3 execute() with dry_run=True — returns scan result, no writes (each agent)
+P.4 execute() with execute=True — applies exactly the fixes found in validate() (each agent)
+P.5 heal() — each documented violation type returns canonical {status, details, artifacts, errors}
+P.6 Routing decision logged — execute() emits RoutingDecision log line per violation
+P.7 Pre-commit gate blocks execution — if pre_commit_checks() fails, heal_repository()
+    returns early without calling validate() or execute()
+P.8 Phase isolation — validate() called independently does not mutate agent state
+```
 
 ---
 
@@ -361,8 +587,16 @@ H.8 Gateway Monopoly (static)
 
 | File | Action |
 |---|---|
-| `agentic_core/L0_routing/scripts/execute_ssot.py` | Edit — extend `RoutingDecision` with 6 audit fields; update `_decide()` digest formula; add B.4 overrides (OVERRIDE_TRIVIAL_DETERMINISTIC, OVERRIDE_DET_COV_PREFERRED); add replay guard in arbiter; add kill-switch post-gate |
-| `agentic_core/L2_execution/healers/routing_anti_flap.py` | New — `failure_signature_hash`, anti-flap TTL cache, `check_anti_flap()` |
+| `agentic_core/L0_routing/scripts/execute_ssot.py` | Edit — extend `RoutingDecision`; B.4 overrides; replay guard; kill-switch gate |
+| `agentic_core/L2_execution/healers/routing_anti_flap.py` | New — anti-flap TTL cache |
 | `ops_scripts/ci/check_gateway_monopoly.py` | New — AST provider import scanner |
-| `.github/workflows/gateway-monopoly-check.yml` | New — CI workflow (push/PR) |
-| `tests/agentic_core/L0_routing/test_routing_scorecard.py` | New — H.1-H.8 acceptance tests |
+| `.github/workflows/gateway-monopoly-check.yml` | New — CI workflow |
+| `tests/agentic_core/L0_routing/test_routing_scorecard.py` | New — H.1-H.8 routing tests |
+| `agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/PineconeSovereignAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/RedisSovereignAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/SovereignMCPGatewayAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/StructuredEngineAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py` | Edit — four phases |
+| `agentic_core/L2_execution/reasoning/ToolsmithAgent.py` | Edit — four phases |
+| `tests/agentic_core/L2_execution/test_l2_agent_phases.py` | New — P.1-P.8 phase tests |
