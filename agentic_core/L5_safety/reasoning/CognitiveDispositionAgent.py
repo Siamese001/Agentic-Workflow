@@ -140,6 +140,47 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
             Logger.error(f"CDA Analysis failed: {e}")
             return DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {e}")
 
+    def analyze_violation(
+        self,
+        file_path: Path,
+        violation_type: str,
+        context: dict = None,
+    ) -> DispositionDecision:
+        """Sync wrapper around analyze_violation_async.
+
+        Wave 1 fix: callers should use this instead of asyncio.run() directly.
+        """
+        import asyncio
+
+        return asyncio.run(self.analyze_violation_async(file_path, violation_type, context or {}))
+
+    async def analyze_violations(
+        self,
+        violations: list,
+        territory: str,
+    ) -> list[DispositionDecision]:
+        """Analyze a list of violations asynchronously.
+
+        Wave 1 fix: this method is called by EnhancedAutonomousDecisionEngine
+        but was missing from CognitiveDispositionAgent.
+        """
+        decisions = []
+        for v in violations:
+            path_str = v.get("file", v.get("path", ""))
+            vtype = v.get("type", "UNKNOWN")
+            ctx = {"territory": territory, **{k: v[k] for k in v if k not in ("file", "path", "type")}}
+            try:
+                decision = await self.analyze_violation_async(
+                    file_path=Path(path_str) if path_str else Path("."),
+                    violation_type=vtype,
+                    context=ctx,
+                )
+                decisions.append(decision)
+            except Exception as _e:  # guardian: allow-silent-swallower
+                Logger.warning("[CDA] analyze_violations: skipping %s: %s", path_str, _e)
+                decisions.append(DispositionDecision(action="MANUAL_REVIEW", reason=f"Error: {_e}"))
+        return decisions
+
     # guardian: allow-type-erasure
     def get_analytics(self) -> dict:
         """Get usage analytics for the CognitiveDispositionAgent.
