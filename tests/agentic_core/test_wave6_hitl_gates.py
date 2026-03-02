@@ -12,6 +12,8 @@ Checks (AST-based):
 import ast
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).parent.parent.parent
 
 LOGGER_PATH = ROOT / "system_learning" / "engines" / "hitl_decision_logger.py"
@@ -47,6 +49,7 @@ def _ast_func_args(path: Path, func_name: str, class_name: str | None = None) ->
 # Test 1: hitl_decision_logger exists and defines log_hitl_decision
 # ---------------------------------------------------------------------------
 
+@pytest.mark.unit_min_deps
 def test_hitl_decision_logger_exists():
     """Wave 6: system_learning/engines/hitl_decision_logger.py must exist."""
     assert LOGGER_PATH.exists(), (
@@ -55,6 +58,7 @@ def test_hitl_decision_logger_exists():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_hitl_decision_logger_exports_log_fn():
     """Wave 6: hitl_decision_logger must define log_hitl_decision function."""
     src = LOGGER_PATH.read_text(encoding="utf-8", errors="replace")
@@ -69,6 +73,7 @@ def test_hitl_decision_logger_exports_log_fn():
 # Test 2: LocationHealerAgent._heal_via_archiving has hitl_approval_fn
 # ---------------------------------------------------------------------------
 
+@pytest.mark.unit_min_deps
 def test_location_healer_hitl_approval_fn_param():
     """Wave 6: _heal_via_archiving must accept hitl_approval_fn kwarg."""
     args = _ast_func_args(LOCATION_HEALER_PATH, "_heal_via_archiving")
@@ -78,6 +83,7 @@ def test_location_healer_hitl_approval_fn_param():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_location_healer_reads_instance_hitl_fn():
     """Wave 6: _heal_via_archiving must fall back to self._hitl_approval_fn."""
     src = LOCATION_HEALER_PATH.read_text(encoding="utf-8", errors="replace")
@@ -91,6 +97,7 @@ def test_location_healer_reads_instance_hitl_fn():
 # Test 3: FileClassificationAgent logs HITL_FLAGGED on ambiguous delta
 # ---------------------------------------------------------------------------
 
+@pytest.mark.unit_min_deps
 def test_file_classification_hitl_flagged_delta():
     """Wave 6: classify_file_with_confidence must flag ambiguous classifications (delta < 0.15)."""
     src = FILE_CLASS_PATH.read_text(encoding="utf-8", errors="replace")
@@ -100,6 +107,7 @@ def test_file_classification_hitl_flagged_delta():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_file_classification_hitl_logs_decision():
     """Wave 6: classify_file_with_confidence must call log_hitl_decision for ambiguous cases."""
     src = FILE_CLASS_PATH.read_text(encoding="utf-8", errors="replace")
@@ -113,6 +121,7 @@ def test_file_classification_hitl_logs_decision():
 # Test 4: execute_ssot.py wires _hitl_approval_fn before heal_violations
 # ---------------------------------------------------------------------------
 
+@pytest.mark.unit_min_deps
 def test_execute_ssot_wires_hitl_approval_fn():
     """Wave 6: execute_ssot.py must set _hitl_approval_fn on location_validator."""
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
@@ -122,6 +131,7 @@ def test_execute_ssot_wires_hitl_approval_fn():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_execute_ssot_hitl_gate_before_heal_violations():
     """Wave 6: The HITL gate assignment must appear before heal_violations call in source."""
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")

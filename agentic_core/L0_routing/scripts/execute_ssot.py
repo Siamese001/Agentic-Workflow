@@ -1299,6 +1299,52 @@ class AutonomousDecisionEngine:
                 self._call_path.add(agent_name)
             return approved, hitl_reason
 
+        # Wave 6: HITL gate for tier escalation — fires before QWEN or GEMINI routing
+        # when enable_llm=True.  Operator may approve, skip, or force LOCAL_AGENT.
+        if tier in (RoutingTier.QWEN, RoutingTier.GEMINI):
+            _tier_name = "QWEN_VLLM" if tier == RoutingTier.QWEN else "GEMINI_2_5_PRO"
+            _is_interactive = sys.stdin.isatty() if hasattr(sys, "stdin") else False
+            _batch_tier = os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+            if _batch_tier or not _is_interactive:
+                _tier_hitl_decision = "HITL-TIER-AUTO-APPROVED (non-interactive)"
+            else:
+                print("\n  HITL GATE  [TIER ESCALATION]")
+                print(f"  Agent    : {agent_name}")
+                print(f"  Tier     : {_tier_name} (confidence={confidence.value:.2f}, S={routing.score})")
+                print(f"  Gate     : {routing.gate_applied}")
+                print("  Options  : [A] Approve escalation  [S] Skip  [L] Force LOCAL_AGENT")
+                try:
+                    _tier_raw = input("  Choice [A/S/L]: ").strip().upper()
+                except EOFError:
+                    _tier_raw = "A"
+                if _tier_raw == "S":
+                    _tier_hitl_decision = "HITL-TIER-SKIPPED"
+                    decision_data["decision"] = False
+                    decision_data["reason"] = _tier_hitl_decision
+                    self.decisions_made.append(decision_data)
+                    return False, _tier_hitl_decision
+                elif _tier_raw == "L":
+                    _tier_hitl_decision = "HITL-TIER-FORCED-LOCAL"
+                    self._healing_count += 1
+                    self._call_path.add(agent_name)
+                    decision_data["decision"] = True
+                    decision_data["reason"] = _tier_hitl_decision
+                    self.decisions_made.append(decision_data)
+                    return True, _tier_hitl_decision
+                else:
+                    _tier_hitl_decision = f"HITL-TIER-APPROVED ({_tier_name})"
+            try:
+                from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                log_hitl_decision(
+                    agent="SovereignDecisionEngine",
+                    file_path=agent_name,
+                    violation=f"TIER_ESCALATION:{_tier_name}",
+                    proposed=_tier_name,
+                    decision=_tier_hitl_decision,
+                )
+            except Exception:  # guardian: allow-silent-swallow
+                pass
+
         if tier == RoutingTier.QWEN:
             # Medium score: Qwen arbitrates. If Qwen says NO, fall through to
             # agent-native logic — healing is never blocked by a single NO.
@@ -3864,7 +3910,10 @@ def _legacy_main(
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
-        import os as _os; _os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"; _os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"; _os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
+        import os as _os  # noqa: E402
+        _os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
+        _os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"
+        _os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()

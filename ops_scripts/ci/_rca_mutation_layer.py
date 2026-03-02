@@ -1,0 +1,14 @@
+"""RCA: find where safe_shutil_mutate / assert_no_persistent_write are called with layer=L0."""
+import pathlib
+import re
+
+roots = ["agentic_core", "system_learning", "tools"]
+for root in roots:
+    for fp in pathlib.Path(root).rglob("*.py"):
+        try:
+            src = fp.read_text(encoding="utf-8", errors="replace")
+        except Exception:
+            continue
+        for i, line in enumerate(src.splitlines(), 1):
+            if re.search(r'safe_shutil_mutate|assert_no_persistent_write|layer=["\']L0', line):
+                print(f"{fp}:{i}: {line.strip()[:120]}")

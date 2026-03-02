@@ -24,7 +24,7 @@ TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
 
 @dataclass
-class Experience:
+class ExperienceRecord:
     """Represents a single state-action-outcome unit for learning."""
 
     state: dict[str, Any]
@@ -55,7 +55,7 @@ class MetaLearningAgent(SovereignBaseAgent):
                                Signature: callback(event_type: str, data: dict) -> None
         """
         self.logger = logging.getLogger(self.__class__.__name__)
-        self.replay_buffer: list[Experience] = []
+        self.replay_buffer: list[ExperienceRecord] = []
         self.replay_capacity = replay_capacity
         self.strategy_weights: dict[str, float] = {
             "cot": 1.0,
@@ -81,7 +81,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         reward: float,
     ) -> str:
         """Stores a new experience in the replay buffer with reward signal."""
-        exp = Experience(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
+        exp = ExperienceRecord(state=state, thought_type=thought_type, outcome=outcome, reward=reward)
 
         if len(self.replay_buffer) >= self.replay_capacity:
             self.replay_buffer.pop(0)

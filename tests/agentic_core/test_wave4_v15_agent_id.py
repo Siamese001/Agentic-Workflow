@@ -6,6 +6,8 @@ code must supply a non-empty agent_id kwarg.
 import ast
 from pathlib import Path
 
+import pytest
+
 ROOT = Path(__file__).parent.parent.parent
 
 SCAN_DIRS = [
@@ -52,6 +54,7 @@ def _collect_execute_calls() -> tuple[list[str], list[str]]:
     return missing, present
 
 
+@pytest.mark.unit_min_deps
 def test_no_execute_calls_missing_agent_id():
     """Wave 4: Every V15ExecutionGateway.execute() call must supply agent_id."""
     missing, present = _collect_execute_calls()
@@ -61,6 +64,7 @@ def test_no_execute_calls_missing_agent_id():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_wave4_registry_entries_exist():
     """Wave 4: All audit-only agent IDs added in Wave 4 must be in AGENT_REGISTRY source."""
     registry_path = ROOT / "agentic_core" / "agents" / "agent_registry.py"
@@ -80,6 +84,7 @@ def test_wave4_registry_entries_exist():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_execute_calls_count_at_least_eleven():
     """Wave 4: Regression — at least 11 call sites must be present and have agent_id."""
     _, present = _collect_execute_calls()

@@ -252,6 +252,44 @@ class LocationHealerAgent(SovereignBaseAgent):
             elif isinstance(v, dict):
                 file_path = v.get("file")
                 message = v.get("message", "Location violation")
+                # Wave 6: SSOT conflict HITL — fires when validator embeds a canonical_path
+                # that may differ from what the healer would independently compute.
+                canonical_path = v.get("canonical_path") or v.get("suggested_path")
+                if file_path and canonical_path:
+                    _fp = Path(file_path) if isinstance(file_path, str) else file_path
+                    _cp = Path(canonical_path) if isinstance(canonical_path, str) else canonical_path
+                    _hitl_fn = getattr(self, "_hitl_approval_fn", None)
+                    _is_interactive = __import__("sys").stdin.isatty() if hasattr(__import__("sys"), "stdin") else False
+                    _batch = __import__("os").environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
+                    if not _batch and _is_interactive and _hitl_fn is None:
+                        # Inline SSOT conflict prompt
+                        print("\n  HITL GATE  [SSOT CONFLICT]")
+                        print(f"  File          : {_fp}")
+                        print(f"  Validator says: {_cp}")
+                        print(f"  Violation msg : {message[:80]}")
+                        print("  Options  : [V] Use validator path  [H] Let healer decide  [S] Skip")
+                        try:
+                            _ssot_raw = __import__("builtins").input("  Choice [V/H/S]: ").strip().upper()
+                        except EOFError:
+                            _ssot_raw = "H"
+                        if _ssot_raw == "S":
+                            Logger.info(f"[SSOT-CONFLICT] Skipped by operator: {_fp}")
+                            continue
+                        elif _ssot_raw == "V":
+                            # Override message to steer healer toward validator canonical path
+                            message = f"{message} [SSOT-OVERRIDE canonical={_cp}]"
+                        # else "H" — fall through to normal healer logic
+                        try:
+                            from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                            log_hitl_decision(
+                                agent="LocationHealerAgent",
+                                file_path=str(_fp),
+                                violation="SSOT_CONFLICT",
+                                proposed=str(_cp),
+                                decision=f"HITL-SSOT-{_ssot_raw if '_ssot_raw' in dir() else 'AUTO'}",
+                            )
+                        except Exception:  # guardian: allow-silent-swallow
+                            pass
                 if file_path:
                     violation_list.append(
                         (Path(file_path) if isinstance(file_path, str) else file_path, message),

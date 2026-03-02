@@ -5,6 +5,8 @@ suppressed when AGENTIC_BYPASS_LONGPATHS_CHECK is set.
 
 from pathlib import Path
 
+import pytest
+
 EXECUTE_SSOT_PATH = (
     Path(__file__).parent.parent.parent
     / "agentic_core"
@@ -14,6 +16,7 @@ EXECUTE_SSOT_PATH = (
 )
 
 
+@pytest.mark.unit_min_deps
 def test_longpaths_bypass_guard_present():
     """Wave 5: execute_ssot.py must check AGENTIC_BYPASS_LONGPATHS_CHECK before emitting warning."""
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
@@ -23,6 +26,7 @@ def test_longpaths_bypass_guard_present():
     )
 
 
+@pytest.mark.unit_min_deps
 def test_longpaths_guard_wraps_advisory():
     """Wave 5: The bypass guard must appear in proximity to LongPathsEnabled check."""
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
