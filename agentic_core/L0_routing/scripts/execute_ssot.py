@@ -2414,7 +2414,37 @@ def execute_phase1_discovery_impl(
         logger.info(f"Location Decision: {reason}")
 
         if proceed and (ctx is None or ctx.heal):
-            logger.info(f"🔧 Triggering LocationAgent auto-heal for {len(violations)} violations")
+            logger.info(f"Triggering LocationAgent auto-heal for {len(violations)} violations")
+            # Wave 6: Attach HITL approval function so _heal_via_archiving can gate deletions.
+            # Non-interactive environments auto-defer (skip) the archive.
+            import sys as _sys
+
+            def _w6_hitl_archive_gate(file_path, msg):
+                if not _sys.stdin.isatty():
+                    return False, "HITL-DEFER (non-interactive)"
+                if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
+                    return True, "HITL-APPROVED (batch)"
+                border = "=" * 56
+                print(f"\n{border}")
+                print("  HITL GATE  [FILE DELETION / ARCHIVE]")
+                print(border)
+                print(f"  File  : {file_path}")
+                print(f"  Reason: {str(msg)[:100]}")
+                print(border)
+                print("  [A] Archive (reversible)  [S] Skip  [D] Delete permanently")
+                print(border)
+                try:
+                    raw = input("  Choice [A/S/D]: ").strip().upper()
+                except (EOFError, KeyboardInterrupt):
+                    raw = "S"
+                if raw == "A":
+                    return True, "HITL-APPROVED (archive)"
+                elif raw == "D":
+                    return True, "HITL-APPROVED (delete)"
+                else:
+                    return False, "HITL-SKIPPED"
+
+            location_validator._hitl_approval_fn = _w6_hitl_archive_gate
             # LocationAgent should have a heal method - call it
             if hasattr(location_validator, "heal_violations"):
                 heal_result = location_validator.heal_violations(

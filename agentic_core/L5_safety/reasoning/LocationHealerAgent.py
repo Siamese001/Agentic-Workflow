@@ -820,17 +820,46 @@ class LocationHealerAgent(SovereignBaseAgent):
         archives_root: Path,
         dry_run: bool,
         affected_paths: list[Path],
+        hitl_approval_fn=None,
     ) -> dict[str, Any]:
         """Heal violations by archiving to appropriate subfolder.
 
         CRITICAL: Archiving requires explicit user approval via terminal prompt.
         This prevents accidental data loss from aggressive archiving.
+
+        Wave 6: hitl_approval_fn(file_path, msg) -> (approved: bool, decision: str)
+        When provided, the function is called before any archive move.  If it
+        returns approved=False the archive is skipped and the decision is logged.
         """
         subfolder = next(
             (sf for pattern, sf in ARCHIVE_SUBFOLDERS.items() if pattern in msg),
             DEFAULT_ARCHIVE_SUBFOLDER,
         )
         target_path = archives_root / subfolder / file_path.name
+
+        # Wave 6: HITL gate before archive (fn can be injected via arg or instance attr)
+        if hitl_approval_fn is None:
+            hitl_approval_fn = getattr(self, "_hitl_approval_fn", None)
+        if hitl_approval_fn is not None:
+            approved, decision = hitl_approval_fn(file_path, msg)
+            if not approved:
+                try:
+                    from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                    log_hitl_decision(
+                        agent="LocationHealerAgent",
+                        file_path=str(file_path),
+                        violation=msg[:120],
+                        proposed="ARCHIVE",
+                        decision=decision,
+                    )
+                except Exception:
+                    pass
+                return {
+                    "action_taken": f"SKIPPED: HITL gate rejected archive ({decision})",
+                    "applied": False,
+                    "requires_approval": True,
+                    "hitl_decision": decision,
+                }
 
         # [PHASE 33j] Gatekeeper is Single Point of Approval
         move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
@@ -841,6 +870,17 @@ class LocationHealerAgent(SovereignBaseAgent):
             move_result["requires_approval"] = True
         if move_result.get("applied") and not dry_run:
             affected_paths.extend([file_path, target_path])
+            try:
+                from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                log_hitl_decision(
+                    agent="LocationHealerAgent",
+                    file_path=str(file_path),
+                    violation=msg[:120],
+                    proposed="ARCHIVE",
+                    decision="APPROVED",
+                )
+            except Exception:
+                pass
         return move_result
 
     # ========================================================================

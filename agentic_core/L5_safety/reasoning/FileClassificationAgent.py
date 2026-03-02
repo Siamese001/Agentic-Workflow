@@ -3221,13 +3221,40 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         signals = [f"{k}={v}" for k, v in scores.items() if v > 0]
 
+        sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
         warnings = []
         if confidence < 0.6:
-            sorted_scores = sorted(scores.items(), key=lambda x: x[1], reverse=True)
             if len(sorted_scores) > 1:
                 runner_up_name, runner_up_score = sorted_scores[1]
                 warnings.append(
                     f"Ambiguous: {winner} ({scores[winner]}) vs {runner_up_name} ({runner_up_score})",
+                )
+
+        # Wave 6: HITL gate for ambiguous classifications (top-2 confidence delta < 0.15)
+        if len(sorted_scores) >= 2 and total > 0:
+            top_conf = sorted_scores[0][1] / total
+            second_conf = sorted_scores[1][1] / total
+            delta = top_conf - second_conf
+            if delta < 0.15:
+                top3 = sorted_scores[:3]
+                try:
+                    from system_learning.engines.hitl_decision_logger import log_hitl_decision
+                    log_hitl_decision(
+                        agent="FileClassificationAgent",
+                        file_path=str(path),
+                        violation="AMBIGUOUS_CLASSIFICATION",
+                        proposed=winner,
+                        decision="FLAGGED_FOR_REVIEW",
+                        extra={
+                            "delta": f"{delta:.3f}",
+                            "top3": str([(n, round(s / total, 3)) for n, s in top3]),
+                        },
+                    )
+                except Exception:
+                    pass
+                warnings.append(
+                    f"HITL_FLAGGED: top-2 delta={delta:.3f}<0.15; "
+                    f"top3={[(n, round(s/total, 3)) for n, s in top3]}"
                 )
 
         return ClassificationResult(
@@ -5411,7 +5438,10 @@ class FileClassificationAgent(*BASE_CLASSES):
             exit_code = self._orchestrate_audit(scan_root)
 
             # UNIFIED HEALING RESULT CALCULATION
-            total_violations = sum(self.stats["violations"].values())
+            total_violations = sum(
+                v if isinstance(v, int) else sum(v.values())
+                for v in self.stats["violations"].values()
+            )
             violations_fixed = (
                 self.action_counters["renames"]
                 + self.action_counters["territory_moves"] * 2  # Move counts as find+fix
