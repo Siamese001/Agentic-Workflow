@@ -12,7 +12,7 @@ L0_routing contracts, L4_state contracts, namespace fix for --import-mode=import
 
 ## EVIDENCE_COMMIT
 
-PENDING
+f59b9dee7c7ff07ebd00cb9e965950e99c4211b3
 
 ## FILES_CHANGED_CODE
 
@@ -24,7 +24,7 @@ tests/agentic_core/L5_safety/test_depth_violation_no_archive_invariant.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/evidence/e2e_acceptance_evidence.md
 
 ## INSPECTED_FILES
 
