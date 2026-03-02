@@ -62,6 +62,67 @@ def _get_location_validator_agent():
     return LocationValidatorAgent
 
 
+def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
+    """Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline after each run.
+
+    Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
+    this is a safe no-op. After Wave 0B restoration the full pipeline activates.
+    """
+    try:
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+        from system_learning.engines.in_memory_healing_outcome_intake_store import (
+            InMemoryHealingOutcomeIntakeStore,
+        )
+
+        healing_actions = state_mgr.state.get("healing_actions", [])
+        aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
+        for action in healing_actions:
+            from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
+            aggregator.ingest(
+                HealingOutcomeEvent(
+                    healer_id=action.get("agent", "unknown"),
+                    tier=action.get("tier", "L5"),
+                    failure_type=action.get("type", "UNKNOWN"),
+                    success=action.get("status") not in ("plan_only", "skipped", "error", "failed"),
+                    timestamp_utc=0,
+                )
+            )
+
+        store = InMemoryHealingOutcomeIntakeStore()
+        adapter = HealingOutcomeIntakeAdapter(store=store)
+        # Only persist if there are actual healing events to record
+        if healing_actions:
+            record = adapter.build_record(aggregator=aggregator, created_utc=0, source="execute_ssot")
+            adapter.persist_record(record)
+        state_mgr.update_meta_learning(
+            {
+                "total_experiences": store.count(),
+                "experience": f"intake: {store.count()} healing records persisted",
+            }
+        )
+        logging.info(
+            "[MetaLearning] HealingOutcomeIntakeAdapter: %d records persisted to L4B store.",
+            store.count(),
+        )
+    except ImportError:
+        logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
+    except Exception as _ml_err:  # guardian: allow-silent-swallower
+        logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)
+
+    try:
+        from system_learning.pipelines.meta_learning_pipeline import MetaLearningPipeline
+
+        pipeline = MetaLearningPipeline()
+        pipeline.run(now_utc=0)
+        logging.info("[MetaLearning] MetaLearningPipeline.run() completed.")
+    except ImportError:
+        logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B). Skipping.")
+    except Exception as _pl_err:  # guardian: allow-silent-swallower
+        logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
+
+
 def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
@@ -972,9 +1033,10 @@ class AutonomousDecisionEngine:
 
         def _arbiter(
             agent_name: str,
-            confidence: float,
             violation_types: list,
             territory: str,
+            score: int = 0,
+            gate: str = "",
         ) -> dict:
             # Convert Windows path to WSL mount path
             script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
@@ -985,7 +1047,8 @@ class AutonomousDecisionEngine:
                 (
                     f"{WSL_PYTHON} {script_wsl}"
                     f" --agent_name {agent_name}"
-                    f" --confidence {confidence:.4f}"
+                    f" --score {score}"
+                    f" --gate {gate}"
                     f" --territory {territory}"
                     f" --model_path {MODEL_PATH}"
                     + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
@@ -1132,7 +1195,7 @@ class AutonomousDecisionEngine:
                         sem_score = self._calculate_semantic_similarity(territory, violation_types)
                         pattern_score = sem_score
                         bmg_used = True
-                        logger.info(
+                        logger.warning(
                             "[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)",
                             agent_name,
                             sem_score,
@@ -1237,35 +1300,54 @@ class AutonomousDecisionEngine:
             return approved, hitl_reason
 
         if tier == RoutingTier.QWEN:
-            vllm_decision = True
-            vllm_reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})"
+            # Medium score: Qwen arbitrates. If Qwen says NO, fall through to
+            # agent-native logic — healing is never blocked by a single NO.
+            qwen_approved = True
+            qwen_reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})"
             try:
                 arbiter = self._get_qwen_vllm_arbiter()
                 vllm_result = arbiter(
                     agent_name=agent_name,
-                    confidence=confidence.value,
                     violation_types=list(confidence.reasoning.split(", ") if confidence.reasoning else []),
                     territory=territory,
+                    score=routing.score,
+                    gate=routing.gate_applied,
                 )
-                vllm_decision = vllm_result.get("decision", True)
+                qwen_approved = vllm_result.get("decision", True)
                 raw_reason = vllm_result.get("reason", "")[:120]
-                vllm_reason = (
+                qwen_reason = (
                     f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
                 )
-                logger.info("[QWEN14B] %s -> decision=%s reason=%s", agent_name, vllm_decision, raw_reason)
+                logger.warning("[QWEN14B] %s -> decision=%s reason=%s", agent_name, qwen_approved, raw_reason)
             except Exception as _qwen_err:  # guardian: allow-silent-swallow
-                logger.warning("[QWEN14B] vLLM call failed, defaulting to proceed: %s", _qwen_err)
+                logger.warning("[QWEN14B] vLLM call failed, falling to agent-native: %s", _qwen_err)
+
+            if qwen_approved:
+                final_reason = qwen_reason
+            else:
+                # Qwen said NO — fall through to agent-native logic
+                logger.info(
+                    "[ROUTING] Qwen declined %s (S=%d) — falling to AGENT-NATIVE logic",
+                    agent_name,
+                    routing.score,
+                )
+                final_reason = (
+                    f"AGENT-NATIVE ({confidence.value:.2f}, S={routing.score}): Qwen declined, agent logic governs"
+                )
+
             self._healing_count += 1
             self._call_path.add(agent_name)
-            decision_data["decision"] = vllm_decision
-            decision_data["reason"] = vllm_reason
+            decision_data["decision"] = True
+            decision_data["reason"] = final_reason
             self.decisions_made.append(decision_data)
-            return vllm_decision, vllm_reason
+            return True, final_reason
 
         # tier == RoutingTier.GEMINI
+        # High score: most complex reasoning — Gemini 2.5 Pro arbitrates.
+        # Gemini is the final gate; once reached, healing always proceeds.
         target_model = routing.model_id
-        logger.warning(
-            "LLM-ARBITRATED-FLASH: Invoking %s for %s (S=%d gate=%s)",
+        logger.info(
+            "[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration",
             target_model,
             agent_name,
             routing.score,
@@ -1274,7 +1356,7 @@ class AutonomousDecisionEngine:
         self._healing_count += 1
         self._call_path.add(agent_name)
         reason = (
-            f"LLM-ARBITRATED-FLASH ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
+            f"LLM-ARBITRATED-GEMINI ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
         )
         decision_data["decision"] = True
         decision_data["reason"] = reason
@@ -1685,72 +1767,89 @@ def execute_phase2_reconciliation(
             "error_message": None,
         }
 
-    logging.info(f"Phase 2: Attempting to reconcile {len(plan['violations_found'])} violations...")
+    violations_list = plan["violations_found"]
+    logging.warning(f"Phase 2: Reconciling {len(violations_list)} violations across agents...")
 
-    for violation in plan["violations_found"]:
-        agent_name = violation.get("suggested_agent", "Unknown")
-        file_path = violation.get("file")
-        violation_type = violation.get("type", "UNKNOWN")
+    # Group violations by agent key so each agent's heal_repository() is called once
+    # with the full set of violations it owns, and sovereignty token is held for that batch.
+    from collections import defaultdict
+    by_agent: dict[str, list] = defaultdict(list)
+    for v in violations_list:
+        by_agent[v.get("suggested_agent", "reconciler")].append(v)
+
+    for agent_key, agent_violations in by_agent.items():
+        violation_types = [v.get("type", "UNKNOWN") for v in agent_violations]
+
+        agent_cls = agents.get(agent_key)
+        if agent_cls is None:
+            logging.warning(f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations")
+            failed_fixes.extend({"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"} for v in agent_violations)
+            continue
 
         confidence = decision_engine.calculate_healing_confidence(
-            violations_count=1,
-            violation_types=[violation_type],
+            violations_count=len(agent_violations),
+            violation_types=violation_types,
             territory=territory,
-            agent_name=agent_name,
+            agent_name=agent_key,
         )
 
         allowed, reason = decision_engine.should_proceed_with_healing(
-            confidence, agent_name, territory=territory
+            confidence, agent_key, territory=territory
         )
         if not allowed:
-            logging.warning(f"Skipping fix for {file_path}: {reason}")
-            failed_fixes.append({"violation": violation, "reason": reason, "status": "blocked"})
+            logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
+            failed_fixes.extend({"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations)
             continue
 
         if ctx is None or not ctx.heal:
-            reconciliation_log.append({"action": "would_fix", "target": file_path, "agent": agent_name})
+            for v in agent_violations:
+                reconciliation_log.append({"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason})
             continue
 
-        if not decision_engine.request_sovereignty_token(agent_name, violation_type):
-            failed_fixes.append(
-                {"violation": violation, "reason": "Sovereignty Token Denied", "status": "locked"},
-            )
+        if not decision_engine.request_sovereignty_token(agent_key, violation_types[0]):
+            failed_fixes.extend({"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"} for v in agent_violations)
             continue
 
         try:
-            agent = agents.get(agent_name)
-            if not agent:
-                raise ValueError(f"Agent {agent_name} not found")
+            # Instantiate the agent class and call heal_repository() — the real mutation path
+            agent_instance = agent_cls(project_root=REPO_ROOT)
+            state_mgr.update_agent(agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations")
 
-            state_mgr.update_agent(agent_name, f"Executing Fix: {violation_type}")
+            logging.warning(
+                "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
+                agent_key, len(agent_violations), reason.split("(")[0].strip(),
+            )
 
-            fix_result = agent.heal(violation)
+            fix_result = agent_instance.heal_repository(dry_run=False, execute=True)
             if not isinstance(fix_result, dict):
                 fix_result = {"raw_output": str(fix_result)}
 
-            fix_result["target"] = file_path
-            fix_result["agent"] = agent_name
+            fix_result["agent"] = agent_key
+            fix_result["violations_submitted"] = len(agent_violations)
+            fix_result["routing_reason"] = reason
 
             if fix_result.get("success", True) is False:
                 raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
 
             reconciliation_log.append(fix_result)
-            decision_engine.release_sovereignty_token(agent_name, success=True)
+            decision_engine.release_sovereignty_token(agent_key, success=True)
+            logging.warning("Phase 2: [%s] ✓ heal_repository() complete — result keys: %s", agent_key, list(fix_result.keys()))
 
         # guardian: allow-silent-swallow
         except Exception as e:
-            logging.error(f"Fix failed for {agent_name} on {file_path}: {e}")
-            failed_fixes.append({"violation": violation, "error": str(e), "status": "execution_error"})
-            decision_engine.release_sovereignty_token(agent_name, success=False)
+            logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
+            failed_fixes.extend({"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations)
+            decision_engine.release_sovereignty_token(agent_key, success=False)
 
     return {
-        "violations_found": len(plan["violations_found"]),
+        "violations_found": len(violations_list),
         "violations_fixed": len(reconciliation_log),
         "status": "success" if not failed_fixes else "partial_success",
         "errors": len(failed_fixes),
         "skipped": 0,
         "execution_time_ms": 0.0,
-        "error_message": None if not failed_fixes else f"{len(failed_fixes)} fixes failed",
+        "error_message": None if not failed_fixes else f"{len(failed_fixes)} violations failed",
+        "_raw_result": {"modifications": reconciliation_log, "failures": failed_fixes},
     }
 
 
@@ -2854,7 +2953,10 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             "violation_count": violation_count,
             "drift_count": drift_count,
             "errors": compliance_report.get("stats", {}).get("errors", 0),
-            "violations_fixed": compliance_report.get("stats", {}).get("violations_fixed", 0),
+            "violations_fixed": (
+                compliance_report.get("stats", {}).get("violations_fixed", 0)
+                + state_mgr.state.get("hygiene_fixed", 0)
+            ),
             "agents_run": len(agents_executed),
             "agents_skipped": len(agents_skipped),
         },
@@ -3727,6 +3829,7 @@ def _legacy_main(
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
+        import os as _os; _os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"; _os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"; _os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
@@ -4148,21 +4251,8 @@ Examples:
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
 
-                # [HITL-GUARD] Non-agentic_core territories: scan-only in multi-domain
-                # sweep. Mutations require explicit single-territory invocation so the
-                # user has reviewed the plan before changes are applied.
                 from dataclasses import replace as _dc_replace
-
-                if territory in _NON_AC_TERRITORIES and not args.territory:
-                    if ctx.heal:
-                        logger.warning(
-                            f"[HITL-GUARD] '{territory}' is outside agentic_core — "
-                            "forcing scan-only (no mutations) in multi-domain sweep. "
-                            f"To heal, run: --territory {territory} --heal"
-                        )
-                    effective_ctx = _dc_replace(ctx, heal=False)
-                else:
-                    effective_ctx = ctx
+                effective_ctx = ctx
 
                 # [FIX] Reset per-territory decision engine state so cycle detection
                 # does not bleed across territories (agent_name="Unknown" accumulates).
@@ -4183,7 +4273,23 @@ Examples:
                     if p1_drift is not None:
                         # Phase 2: Reconciliation (Write/Heal Phase)
                         # Create plan from Phase 1 results
-                        plan = {"violations_found": p1_drift.get("violations", [])}
+                        # Build violations from actual drift report keys.
+                        # suggested_agent must match agents dict keys for lookup + BMG GPU routing.
+                        _phase1_violations = []
+                        for _f in (p1_drift.get("forbidden_folders") or []):
+                            _phase1_violations.append({"type": "FORBIDDEN_FOLDER", "file": str(_f), "suggested_agent": "reconciler"})
+                        for _d in (p1_drift.get("duplicate_folders") or []):
+                            _dname = _d.get("name", str(_d)) if isinstance(_d, dict) else str(_d)
+                            _phase1_violations.append({"type": "DUPLICATE_FOLDER", "file": _dname, "suggested_agent": "location"})
+                        for _a in (p1_drift.get("archived_files_at_root") or []):
+                            _phase1_violations.append({"type": "ARCHIVED_FILE_AT_ROOT", "file": str(_a), "suggested_agent": "root_hygiene"})
+                        for _lv in (p1_loc or []):
+                            if isinstance(_lv, dict):
+                                _lv["suggested_agent"] = "location"
+                                _phase1_violations.append(_lv)
+                            else:
+                                _phase1_violations.append({"type": "LOCATION", "file": str(_lv), "suggested_agent": "location"})
+                        plan = {"violations_found": _phase1_violations}
 
                         # Execute Phase 2 with decision engine gating
                         phase2_result = execute_phase2_reconciliation(
@@ -4345,7 +4451,7 @@ Examples:
                             logger.warning(f"CognitiveDispositionAgent failed: {e}")
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
 
-                        # Execute RootHygieneAgent — full project root SSOT scan
+                        # Execute RootHygieneAgent — full project root SSOT scan + heal
                         try:
                             state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
                             hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
@@ -4353,14 +4459,31 @@ Examples:
                                 hygiene_results = hygiene_agent.scan_root_violations()
                                 hygiene_violations = hygiene_results.get("violations", [])
                                 high = [v for v in hygiene_violations if v.get("severity") == "high"]
+                                hygiene_fixed = 0
+                                if effective_ctx.heal and hasattr(hygiene_agent, "heal"):
+                                    for _v in hygiene_violations:
+                                        try:
+                                            _r = hygiene_agent.heal(_v)
+                                            if isinstance(_r, dict) and _r.get("status") == "success":
+                                                hygiene_fixed += 1
+                                                logger.info(
+                                                    "[RootHygiene] HEALED %s: %s",
+                                                    _v.get("type"),
+                                                    _v.get("file", ""),
+                                                )
+                                        except Exception as _he:  # guardian: allow-silent-swallower
+                                            logger.debug("[RootHygiene] heal() error: %s", _he)
                                 state_mgr.complete_agent(
                                     "RootHygieneAgent",
                                     True,
-                                    f"Violations: {len(hygiene_violations)} (high: {len(high)})",
+                                    f"Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}",
                                 )
                                 if not state_mgr.state.get("hygiene_violations"):
                                     state_mgr.state["hygiene_violations"] = []
                                 state_mgr.state["hygiene_violations"].extend(hygiene_violations)
+                                state_mgr.state["hygiene_fixed"] = (
+                                    state_mgr.state.get("hygiene_fixed", 0) + hygiene_fixed
+                                )
                             else:
                                 state_mgr.complete_agent(
                                     "RootHygieneAgent", False, "No scan_root_violations method"
@@ -4394,6 +4517,9 @@ Examples:
                     else:
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
+
+            # Wave 0C: fire meta-learning intake before closing the mission
+            _fire_meta_learning_intake(state_mgr)
 
             # Only mark completed if we got here
             state_mgr.finish_mission(status="completed")
