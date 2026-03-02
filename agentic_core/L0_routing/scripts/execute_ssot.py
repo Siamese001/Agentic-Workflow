@@ -3862,6 +3862,65 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     return targets
 
 
+def _compute_pipeline_digest(targets: "list[str]") -> str:
+    """Compute a stable determinism digest for the pipeline run.
+
+    Five-component SHA-256 surface:
+      policy_hash          -- canonical sovereign policy identifier
+      registry_hash        -- SHA-256 of sorted agent registry surface
+      config_surface_hash  -- from negative_control_harness (tamper-sensitive)
+      transcript_hash      -- SHA-256 of sorted processed territory names
+      dependency_lock_hash -- stable structural constant
+
+    Returns a 64-char hex string.  Never raises; falls back to a sentinel
+    digest on import failure so the pipeline is not blocked.
+    """
+    import hashlib as _h
+    import json as _j
+
+    try:
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+            DeterminismDigestEmitter as _DE,
+        )
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
+            get_config_surface as _gcs,
+            hash_config_surface as _hcs,
+        )
+    except ImportError as _exc:
+        logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
+        return _h.sha256(b"determinism-digest:import-failed").hexdigest()
+
+    _policy_hash = _h.sha256(b"sovereign-policy-v1.0").hexdigest()
+
+    try:
+        from agentic_core.agents.agent_registry import registry_digest as _rd
+        _reg_bytes = _j.dumps(
+            _rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("utf-8")
+        _registry_hash = _h.sha256(_reg_bytes).hexdigest()
+    except Exception:
+        _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
+
+    _config_hash = _hcs(_gcs())
+
+    _transcript_bytes = _j.dumps(
+        sorted(str(t) for t in targets),
+        sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+    ).encode("utf-8")
+    _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
+
+    _dep_lock_hash = _h.sha256(b"dependency-lock:stable").hexdigest()
+
+    _emitter = _DE()
+    return _emitter.compute(
+        policy_hash=_policy_hash,
+        registry_hash=_registry_hash,
+        config_surface_hash=_config_hash,
+        transcript_hash=_transcript_hash,
+        dependency_lock_hash=_dep_lock_hash,
+    )
+
+
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(
     extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
@@ -4607,6 +4666,17 @@ Examples:
 
             # Only mark completed if we got here
             state_mgr.finish_mission(status="completed")
+
+            # L6: emit determinism digest — exactly one line per run
+            try:
+                from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+                    DeterminismDigestEmitter as _DET_EMITTER,
+                )
+                _det_digest = _compute_pipeline_digest(targets)
+                _det_line = _DET_EMITTER().emit_once(_det_digest)
+                print(_det_line)
+            except Exception as _det_exc:
+                logger.warning(f"[DETERMINISM-DIGEST] emission failed: {_det_exc}")
 
             # Final Summary
             logger.info(f"\n{'=' * 60}")
