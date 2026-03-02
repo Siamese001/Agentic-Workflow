@@ -72,6 +72,7 @@ class StructureConfig:
     required_docstring: bool = True
     min_docstring_length: int = 10
     project_root: Path | None = None
+    excluded_paths: tuple[str, ...] = ()
     # Legacy flags for compatibility
     check_gravity: bool = True
     check_duplicates: bool = True

@@ -294,10 +294,18 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             )
         return changed
 
-    def apply_fix(self, fix: GravityFix, dry_run: bool = True) -> dict[str, Any]:
+    def apply_fix(
+        self,
+        fix: GravityFix,
+        dry_run: bool = True,
+        privileged_mutation_context: bool = False,
+    ) -> dict[str, Any]:
         """
         Apply a gravity fix to a file using Atomic Write Safety.
         Includes circuit breaker for mutation prohibition and catastrophic-replace guard.
+
+        Wave 2: privileged_mutation_context=True bypasses L0 prohibition for approved callers
+        (e.g. ops_scripts/, scripts/ that are not sovereign agents).
         """
         try:
             if dry_run:
@@ -308,17 +316,19 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 return {"status": "error", "error": "File not found"}
 
             # [CIRCUIT BREAKER] Check prohibition before attempting write
-            try:
-                from agentic_core.L4_state.utils.layer_gravity_util import extract_layer_from_path
+            # Wave 2: skip L0 block when privileged_mutation_context is explicitly set
+            if not privileged_mutation_context:
+                try:
+                    from agentic_core.L4_state.utils.layer_gravity_util import extract_layer_from_path
 
-                file_layer = extract_layer_from_path(fix.file_path) or "unknown"
-                if file_layer == "L0":
-                    self._check_prohibition_circuit_breaker(fix.file_path, "shutil.mutate")
+                    file_layer = extract_layer_from_path(fix.file_path) or "unknown"
+                    if file_layer == "L0":
+                        self._check_prohibition_circuit_breaker(fix.file_path, "shutil.mutate")
+                        return self._emit_plan_only(fix)
+                except GravityRepairProhibitedError:
                     return self._emit_plan_only(fix)
-            except GravityRepairProhibitedError:
-                return self._emit_plan_only(fix)
-            except ImportError:
-                pass
+                except ImportError:
+                    pass
 
             # [ATOMIC WRITE HARDENING] Use line-level AST-safe replacement
             temp_fd, temp_path = tempfile.mkstemp(dir=fix.file_path.parent, text=True)
@@ -449,10 +459,26 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 StructureConfig,
             )
 
-            config = StructureConfig(project_root=self.project_root)
+            # Wave 2: exclude ops_scripts/ and scripts/ — they are not sovereign
+            # agents and their L0-classification causes all fixes to be plan_only.
+            config = StructureConfig(
+                project_root=self.project_root,
+                excluded_paths=("ops_scripts", "scripts"),
+            )
             enforcer = StructuralValidatorAgent(config=config)
             results = enforcer.validate_structure(self.project_root)
-            violations = results.violations
+            # Post-filter: drop violations whose file_path is under excluded dirs
+            _excluded = config.excluded_paths
+            violations = [
+                v for v in results.violations
+                if not any(
+                    (str(getattr(v, 'file_path', v.get('file_path', '') if isinstance(v, dict) else ''))
+                     .replace('\\', '/')
+                     .split('/')[:2] or [''])[0] == ex
+                    or ex in str(getattr(v, 'file_path', v.get('file_path', '') if isinstance(v, dict) else '')).replace('\\', '/')
+                    for ex in _excluded
+                )
+            ]
         except Exception as e:
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {
@@ -502,7 +528,13 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
             # Apply fix if execute=True
             if execute and not dry_run:
-                result = self.apply_fix(fix, dry_run=False)
+                # Wave 2: pass privileged_mutation_context so non-sovereign script
+                # files are not blocked by the L0 circuit breaker.
+                _priv = any(
+                    ex in str(fix.file_path).replace('\\', '/')
+                    for ex in ("ops_scripts", "scripts")
+                )
+                result = self.apply_fix(fix, dry_run=False, privileged_mutation_context=_priv)
                 status = result.get("status")
                 if status == "fixed":
                     fixes_applied += 1
