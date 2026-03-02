@@ -7,10 +7,17 @@ was firing for depth violations that slipped through the strategy map or produce
 no-op moves, causing 1,031 unintended file deletions in run11.
 """
 
+import sys
 from pathlib import Path
 from unittest.mock import patch
 
 import pytest
+
+# Under --import-mode=importlib pytest collects this as package tests/agentic_core,
+# so bare 'from agentic_core...' resolves into tests/ not the project root.
+_PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+if str(_PROJECT_ROOT) not in sys.path:
+    sys.path.insert(0, str(_PROJECT_ROOT))
 
 SOVEREIGN_ROOTS = ["apps_lic", "apps_rg", "agentic_core", "apps_shared"]
 
