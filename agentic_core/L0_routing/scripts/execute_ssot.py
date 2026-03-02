@@ -2333,6 +2333,11 @@ def execute_phase1_discovery_impl(
         state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", False, "Returned None")
         return None, None
 
+    # Wave 3: when healing is active, pass force=True so the skip-gate is bypassed
+    # and forbidden root folders (logs/, scripts/, etc.) are actually reconciled.
+    if ctx is not None and getattr(ctx, "heal", False):
+        reconciler.heal_repository(force=True, dry_run=not getattr(ctx, "heal", False), execute=True)
+
     violations_count = len(drift_report.get("violations", []))
     state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", True, f"Drift violations: {violations_count}")
 

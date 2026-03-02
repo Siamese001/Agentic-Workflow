@@ -1384,8 +1384,15 @@ class FilesystemSSOTReconcilerAgent(
         # guardian: allow-magic-config
         max_depth: int = 3,
         _call_path: set | None = None,
+        force: bool = False,
     ) -> dict[str, int]:
-        """L0 maintenance agent - operational only."""
+        """L0 maintenance agent - operational only.
+
+        Wave 3 fix: when force=True, runs detect_root_drift() instead of
+        returning skipped immediately.  The skip-gate exists to prevent
+        accidental recursive invocations; force=True is the explicit
+        caller opt-in (passed by execute_ssot.py).
+        """
         if _call_path is None:
             _call_path = set()
         agent_name = self.__class__.__name__
@@ -1395,15 +1402,43 @@ class FilesystemSSOTReconcilerAgent(
             return {"errors": 1, "depth_limited": True}
         _call_path.add(agent_name)
         try:
-            print(f"[{agent_name}] L0 maintenance - operational only")
-            # Proper super() chain invocation
-            super().heal_repository(
-                dry_run=dry_run,
-                execute=execute,
-                depth=depth + 1,
-                max_depth=max_depth,
-                _call_path=_call_path,
-            )
-            return {"skipped": 1}
+            if not force:
+                print(f"[{agent_name}] L0 maintenance - operational only")
+                super().heal_repository(
+                    dry_run=dry_run,
+                    execute=execute,
+                    depth=depth + 1,
+                    max_depth=max_depth,
+                    _call_path=_call_path,
+                )
+                return {"skipped": 1}
+            # force=True: run root-drift detection + apply if execute
+            drift = self.detect_root_drift()
+            forbidden = drift.get("forbidden_folders", [])
+            if not drift.get("root_drift_detected") or not forbidden:
+                return {"skipped": 0, "drift_detected": False}
+            if dry_run or not execute:
+                Logger.info(
+                    "[FilesystemSSOTReconcilerAgent] Root drift detected (dry_run): %s",
+                    forbidden,
+                )
+                return {"drift_detected": True, "forbidden": len(forbidden), "applied": False}
+            # Execute: archive forbidden root folders
+            from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+
+            gk = ArchivalGatekeeper.get_instance(self.project_root)
+            archived = 0
+            errors = 0
+            for folder_name in forbidden:
+                src = self.project_root / folder_name
+                dst = self.project_root / self.ARCHIVE_ROOT / folder_name
+                if src.exists():
+                    result = gk.safe_move(src, dst, agent_name, f"root drift: {folder_name}")
+                    if result.success:
+                        archived += 1
+                    else:
+                        errors += 1
+                        Logger.error("[FilesystemSSOTReconcilerAgent] archive failed: %s", result.error)
+            return {"drift_detected": True, "forbidden": len(forbidden), "applied": archived, "errors": errors}
         finally:
             _call_path.discard(agent_name)
