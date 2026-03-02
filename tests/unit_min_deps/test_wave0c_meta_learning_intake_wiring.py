@@ -90,16 +90,17 @@ def test_intake_adapter_no_persist_when_empty():
 
 def test_fire_meta_learning_intake_noop_on_import_error():
     """_fire_meta_learning_intake must be a no-op when imports fail (pre-Wave 0B)."""
-    import importlib
     import sys
 
     # Temporarily hide the intake adapter to simulate pre-Wave 0B
     hidden = {}
     modules_to_hide = [
         "system_learning.engines.healing_outcome_aggregator",
+        "system_learning.pipelines.meta_learning_pipeline",
         "system_learning.engines.healing_outcome_intake_adapter",
         "system_learning.engines.in_memory_healing_outcome_intake_store",
     ]
+
     for mod in modules_to_hide:
         if mod in sys.modules:
             hidden[mod] = sys.modules.pop(mod)

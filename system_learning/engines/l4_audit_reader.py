@@ -54,7 +54,7 @@ class AuditStore(Protocol):
 
 
 # =============================================================================
-# pull_audit_data — enforced read-only entry point
+# pull_audit_data â€” enforced read-only entry point
 # =============================================================================
 
 
@@ -90,7 +90,7 @@ def pull_audit_data(
     AuthorityViolation
         If authority invariants are violated (fail-closed).
     """
-    # Authority guards — fail-closed.
+    # Authority guards â€” fail-closed.
     _ctx = AuthorityContext(
         caller_layer="system_learning.engines.l4_audit_reader",
         operation="read_audit_slice",
@@ -104,5 +104,5 @@ def pull_audit_data(
     if window_start_utc >= window_end_utc:
         raise ValueError(f"INVALID_AUDIT_WINDOW: start ({window_start_utc}) must be < end ({window_end_utc})")
 
-    # Delegate to store — return bytes exactly as provided (no mutation).
+    # Delegate to store â€” return bytes exactly as provided (no mutation).
     return store.read_audit_slice(window_start_utc, window_end_utc)

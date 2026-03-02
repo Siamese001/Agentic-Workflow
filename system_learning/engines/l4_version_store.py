@@ -107,21 +107,21 @@ class L4VersionStore:
     persistence layer.
 
     Two-Phase Commit Protocol:
-      Stage A: commit_change_package() → version_id
-      Stage B: update_activation_pointer() → None
+      Stage A: commit_change_package() â†’ version_id
+      Stage B: update_activation_pointer() â†’ None
 
     Invariants:
       - Write-once: version_id cannot be overwritten
-      - Content-addressed: same content → same version_id
+      - Content-addressed: same content â†’ same version_id
       - Parent existence: parent_version_id must exist (except genesis)
       - No deletion: historical versions never deleted
       - Atomic activation: pointer updates are single-write operations
     """
 
     def __init__(self) -> None:
-        # version_id → VersionedPackage
+        # version_id â†’ VersionedPackage
         self._versions: dict[str, VersionedPackage] = {}
-        # component → active_version_id
+        # component â†’ active_version_id
         self._activation_pointers: dict[str, str] = {}
 
     def commit_change_package(
@@ -184,7 +184,7 @@ class L4VersionStore:
             existing = self._versions[version_id]
             if existing.package_bytes == package_bytes:
                 return version_id
-            # Different content with same hash (SHA-256 collision) → fail
+            # Different content with same hash (SHA-256 collision) â†’ fail
             raise VersionAlreadyExists(
                 f"VERSION_ALREADY_EXISTS: {version_id!r} (collision or overwrite attempt)"
             )
@@ -318,25 +318,6 @@ class L4VersionStore:
         """
         # Rollback is just another activation pointer update
         self.update_activation_pointer(component, previous_version_id)
-
-    def _verify_package_hmac(self, package: object, version_pointer: object) -> bool:
-        """REQ-019/177/354: verify ChangePackage HMAC before commit.
-
-        Stub implementation — returns True unconditionally.
-        Override in subclasses or inject via test doubles for stricter verification.
-        """
-        return True
-
-    def commit(self, package: object, version_pointer: object) -> None:
-        """REQ-019/177/354: HMAC-before-side-effect commit gate.
-
-        Verifies the package HMAC BEFORE delegating to commit_change_package.
-        Raises PermissionError if verification fails — store is never mutated.
-        """
-        if not self._verify_package_hmac(package, version_pointer):
-            raise PermissionError(
-                "REQ-019: L4VersionStore commit blocked — HMAC verification failed before state mutation."
-            )
 
     def clear(self) -> None:
         """Clear all stored versions and activation pointers.

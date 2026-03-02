@@ -112,11 +112,10 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)
 
     try:
-        from system_learning.pipelines.meta_learning_pipeline import MetaLearningPipeline
+        from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
 
-        pipeline = MetaLearningPipeline()
-        pipeline.run(now_utc=0)
-        logging.info("[MetaLearning] MetaLearningPipeline.run() completed.")
+        _ml_run_pipeline(now_utc=0, window_start_utc=0, window_end_utc=0)
+        logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B). Skipping.")
     except Exception as _pl_err:  # guardian: allow-silent-swallower

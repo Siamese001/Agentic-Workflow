@@ -1,4 +1,4 @@
-"""G-16-18: L0 threshold tuner — proposal-only optimizer for routing thresholds.
+"""G-16-18: L0 threshold tuner â€” proposal-only optimizer for routing thresholds.
 
 Proposes changes to L0 routing thresholds based on metrics, enforcing:
   - Allowlist constraints (only allowed surfaces)
@@ -20,6 +20,7 @@ from system_learning.validators.dampening import (
     assert_cooldown_ok,
     assert_min_sample_size,
 )
+
 
 # =============================================================================
 # ChangePackage (Minimal Implementation for Phase 3)

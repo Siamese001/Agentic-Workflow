@@ -19,8 +19,3 @@ class FailureEvent:
 class FailureFingerprint:
     fingerprint_hex: str
     source_event: FailureEvent
-    canonical_bytes: bytes = b""
-
-    @property
-    def fingerprint_sha256(self) -> str:
-        return self.fingerprint_hex
