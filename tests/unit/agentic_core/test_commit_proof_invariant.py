@@ -1,0 +1,221 @@
+"""Tests for CommitProofInvariant determinism proof standard.
+
+Phase 8: Determinism proof standard + negative control.
+Spec: Determinism & Replayability, Guarantee #18.
+"""
+
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+from agentic_core.L2_execution.types.commit_proof_invariant import (
+    CommitProofInvariant,
+    DeterminismProofFailure,
+    canonical_digest,
+    make_proof,
+)
+
+# ---------------------------------------------------------------------------
+# canonical_digest
+# ---------------------------------------------------------------------------
+
+
+class TestCanonicalDigest:
+    def test_returns_64_hex_chars(self):
+        d = canonical_digest({"a": 1})
+        assert len(d) == 64
+        assert all(c in "0123456789abcdef" for c in d)
+
+    def test_same_inputs_produce_same_digest(self):
+        d1 = canonical_digest({"x": 1, "y": 2})
+        d2 = canonical_digest({"y": 2, "x": 1})
+        assert d1 == d2  # sort_keys normalizes order
+
+    def test_different_inputs_produce_different_digest(self):
+        d1 = canonical_digest({"x": 1})
+        d2 = canonical_digest({"x": 2})
+        assert d1 != d2
+
+    def test_empty_dict_is_deterministic(self):
+        d1 = canonical_digest({})
+        d2 = canonical_digest({})
+        assert d1 == d2
+
+
+# ---------------------------------------------------------------------------
+# CommitProofInvariant construction
+# ---------------------------------------------------------------------------
+
+
+class TestCommitProofInvariantConstruction:
+    def _valid_digest(self) -> str:
+        return "a" * 64
+
+    def test_valid_construction(self):
+        proof = CommitProofInvariant(
+            phase_id="P8",
+            digest="a" * 64,
+            inputs_summary="test surface",
+        )
+        assert proof.phase_id == "P8"
+        assert proof.digest == "a" * 64
+
+    def test_empty_phase_id_raises(self):
+        with pytest.raises(DeterminismProofFailure, match="phase_id must be non-empty"):
+            CommitProofInvariant(phase_id="", digest="a" * 64, inputs_summary="x")
+
+    def test_wrong_length_digest_raises(self):
+        with pytest.raises(DeterminismProofFailure, match="64-char"):
+            CommitProofInvariant(phase_id="P8", digest="abc", inputs_summary="x")
+
+    def test_non_hex_digest_raises(self):
+        with pytest.raises(DeterminismProofFailure, match="64-char"):
+            CommitProofInvariant(phase_id="P8", digest="z" * 64, inputs_summary="x")
+
+    def test_uppercase_hex_raises(self):
+        with pytest.raises(DeterminismProofFailure, match="64-char"):
+            CommitProofInvariant(phase_id="P8", digest="A" * 64, inputs_summary="x")
+
+
+# ---------------------------------------------------------------------------
+# verify_stable — positive control
+# ---------------------------------------------------------------------------
+
+
+class TestVerifyStable:
+    def test_stable_digest_passes(self):
+        inputs = {"registry": "v1", "policy": "v2"}
+        expected_digest = canonical_digest(inputs)
+        proof = CommitProofInvariant(
+            phase_id="P8-stable",
+            digest=expected_digest,
+            inputs_summary="registry+policy",
+        )
+        # Positive control: same inputs → same digest → no exception
+        proof.verify_stable(lambda: canonical_digest(inputs))
+
+    def test_changed_inputs_raises(self):
+        inputs = {"registry": "v1", "policy": "v2"}
+        original_digest = canonical_digest(inputs)
+        proof = CommitProofInvariant(
+            phase_id="P8-stable",
+            digest=original_digest,
+            inputs_summary="registry+policy",
+        )
+        tampered_inputs = {"registry": "v1", "policy": "v2", "extra": "injected"}
+        with pytest.raises(DeterminismProofFailure, match="Determinism proof FAILED"):
+            proof.verify_stable(lambda: canonical_digest(tampered_inputs))
+
+    def test_whitespace_change_is_detected(self):
+        d1 = canonical_digest("clean string")
+        d2 = canonical_digest("clean string ")
+        assert d1 != d2  # canonical_digest is sensitive to whitespace changes
+
+    def test_p5_digest_is_stable(self):
+        """Positive control: canonical_digest() of the same registry surface is stable."""
+        from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
+
+        surface = {
+            "registry_digest": registry_digest(),
+            "agent_ids": sorted(AGENT_REGISTRY.keys()),
+        }
+        d1 = canonical_digest(surface)
+        d2 = canonical_digest(surface)
+        assert d1 == d2, "Registry surface digest is non-deterministic across two calls"
+
+    def test_lockdown_digest_is_stable(self):
+        """Positive control: canonical_digest() of a multi-component surface is stable."""
+        from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
+
+        surface = {
+            "registry_digest": registry_digest(),
+            "execution_modes": sorted({p.execution_mode.value for p in AGENT_REGISTRY.values()}),
+            "reasoning_intensities": sorted({p.reasoning_intensity.value for p in AGENT_REGISTRY.values()}),
+        }
+        d1 = canonical_digest(surface)
+        d2 = canonical_digest(surface)
+        assert d1 == d2, "Multi-component lockdown surface digest is non-deterministic"
+
+
+# ---------------------------------------------------------------------------
+# verify_unstable — negative control
+# ---------------------------------------------------------------------------
+
+
+class TestVerifyUnstable:
+    def test_tampered_inputs_detected(self):
+        """Negative control: mutating inputs must change the digest."""
+        original_inputs = {"registry": "v1", "policy": "v2"}
+        original_digest = canonical_digest(original_inputs)
+        proof = CommitProofInvariant(
+            phase_id="P8-negctrl",
+            digest=original_digest,
+            inputs_summary="registry+policy",
+        )
+        tampered_inputs = {"registry": "TAMPERED", "policy": "v2"}
+        # verify_unstable should pass (tamper detected = digest changed)
+        proof.verify_unstable(lambda: canonical_digest(tampered_inputs))
+
+    def test_unchanged_inputs_fails_negative_control(self):
+        """Negative control integrity: if we claim tamper but digest is same, raise."""
+        inputs = {"registry": "v1"}
+        d = canonical_digest(inputs)
+        proof = CommitProofInvariant(phase_id="P8-negctrl", digest=d, inputs_summary="x")
+        with pytest.raises(DeterminismProofFailure, match="Negative control FAILED"):
+            proof.verify_unstable(lambda: canonical_digest(inputs))  # Same, not tampered
+
+    def test_registry_tamper_changes_p5_digest(self):
+        """Negative control: mutating a registry surface value changes the digest."""
+        from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
+
+        original_surface = {
+            "registry_digest": registry_digest(),
+            "agent_ids": sorted(AGENT_REGISTRY.keys()),
+        }
+        original_digest = canonical_digest(original_surface)
+
+        tampered_surface = {
+            "registry_digest": "tampered-000000000000000000000000000000000000000000000000000000000000",
+            "agent_ids": sorted(AGENT_REGISTRY.keys()),
+        }
+        tampered_digest = canonical_digest(tampered_surface)
+        assert tampered_digest != original_digest, "Tampered surface must produce different digest"
+
+
+# ---------------------------------------------------------------------------
+# make_proof factory
+# ---------------------------------------------------------------------------
+
+
+class TestMakeProof:
+    def test_make_proof_captures_current_digest(self):
+        inputs = {"key": "value"}
+        proof = make_proof(
+            phase_id="P8-factory",
+            inputs_summary="key=value",
+            recompute_fn=lambda: canonical_digest(inputs),
+        )
+        assert proof.phase_id == "P8-factory"
+        assert proof.digest == canonical_digest(inputs)
+
+    def test_make_proof_then_verify_stable(self):
+        inputs = {"a": 1, "b": 2}
+        proof = make_proof(
+            phase_id="P8-roundtrip",
+            inputs_summary="a+b",
+            recompute_fn=lambda: canonical_digest(inputs),
+        )
+        # Re-verify with same inputs — must pass
+        proof.verify_stable(lambda: canonical_digest(inputs))
+
+    def test_make_proof_then_verify_unstable_on_tamper(self):
+        inputs = {"a": 1}
+        proof = make_proof(
+            phase_id="P8-negctrl-factory",
+            inputs_summary="a=1",
+            recompute_fn=lambda: canonical_digest(inputs),
+        )
+        tampered = {"a": 999}
+        proof.verify_unstable(lambda: canonical_digest(tampered))

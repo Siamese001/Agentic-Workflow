@@ -266,6 +266,8 @@ class ImportDependencyValidator:
             ".tox",
             "_quarantine",
             "archives",
+            ".healing_backups",
+            ".backup",
         }
 
         python_files = [
@@ -312,7 +314,7 @@ def _normalize_baseline_key(entry: str, project_root: str = _PROJECT_ROOT_STR) -
     rest = entry[colon_idx:]
     path_norm = path_part.replace("\\", "/")
     root_norm = project_root.replace("\\", "/")
-    if path_norm.startswith(root_norm):
+    if path_norm.lower().startswith(root_norm.lower()):
         path_norm = path_norm[len(root_norm) :].lstrip("/")
     rest = _LINE_NUM_RE.sub(":", rest, count=1)
     return path_norm + rest
@@ -363,6 +365,8 @@ def main():
             ".tox",
             "_quarantine",
             "archives",
+            ".healing_backups",
+            ".backup",
         }
         python_files = [f for f in python_files if not any(d in f.parts for d in exclude_dirs)]
         for py_file in python_files:
@@ -397,6 +401,8 @@ def main():
             ".tox",
             "_quarantine",
             "archives",
+            ".healing_backups",
+            ".backup",
         }
         scan_files = [f for f in scan_files if not any(d in f.parts for d in exclude_dirs)]
 

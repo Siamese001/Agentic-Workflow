@@ -42,13 +42,6 @@ def _get_disk_test_subfolders() -> set[str]:
 # ---------------------------------------------------------------------------
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "Pre-migration: tests/agentic_core, tests/apps_* still exist at the wrong "
-        "level. Will pass after Phase D migration moves them under tests/unit/."
-    ),
-)
 def test_all_disk_subfolders_declared_in_ssot():
     """Every folder on disk under tests/ must be in _constants.py SSOT."""
     declared = _get_blueprint_test_subfolders()
@@ -62,13 +55,6 @@ def test_all_disk_subfolders_declared_in_ssot():
     )
 
 
-@pytest.mark.xfail(
-    strict=False,
-    reason=(
-        "Pre-migration: healing pipeline placed agentic_core/apps_* directly under "
-        "tests/ instead of tests/unit/. Will pass after Phase D migration."
-    ),
-)
 def test_no_source_mirror_at_tests_root():
     """Source-mirrored test folders must NOT appear directly under tests/.
 
