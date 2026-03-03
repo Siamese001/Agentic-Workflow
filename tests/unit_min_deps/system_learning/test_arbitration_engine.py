@@ -10,8 +10,8 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.system_learning.arbitration.engine import ArbitrationEngine
-from agentic_core.system_learning.arbitration.types import (
+from system_learning.arbitration.engine import ArbitrationEngine
+from system_learning.arbitration.types import (
     ArbitrationCandidate,
     ArbitrationDecision,
     ArbitrationPolicy,
@@ -190,8 +190,8 @@ import json
 import hashlib
 sys.path.insert(0, r"{sys.path[0]}")
 
-from agentic_core.system_learning.arbitration.engine import ArbitrationEngine
-from agentic_core.system_learning.arbitration.types import (
+from system_learning.arbitration.engine import ArbitrationEngine
+from system_learning.arbitration.types import (
     ArbitrationCandidate,
     ArbitrationPolicy,
 )

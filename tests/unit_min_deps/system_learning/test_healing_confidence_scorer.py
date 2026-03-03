@@ -10,8 +10,8 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.system_learning.confidence.engine import HealingConfidenceScorer
-from agentic_core.system_learning.confidence.types import (
+from system_learning.confidence.engine import HealingConfidenceScorer
+from system_learning.confidence.types import (
     HealingAttempt,
     HealingConfidenceReport,
 )
@@ -111,8 +111,8 @@ import sys
 import json
 sys.path.insert(0, r"{sys.path[0]}")
 
-from agentic_core.system_learning.confidence.engine import HealingConfidenceScorer
-from agentic_core.system_learning.confidence.types import HealingAttempt
+from system_learning.confidence.engine import HealingConfidenceScorer
+from system_learning.confidence.types import HealingAttempt
 
 attempts = [HealingAttempt(**a) for a in {attempts_data}]
 scorer = HealingConfidenceScorer()

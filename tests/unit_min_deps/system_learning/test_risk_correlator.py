@@ -10,8 +10,8 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.system_learning.correlation.engine import RiskCorrelator
-from agentic_core.system_learning.correlation.types import CorrelatedRiskReport
+from system_learning.correlation.engine import RiskCorrelator
+from system_learning.correlation.types import CorrelatedRiskReport
 
 
 # Mock DriftEvent for testing
@@ -78,7 +78,7 @@ import sys
 import json
 sys.path.insert(0, r"{sys.path[0]}")
 
-from agentic_core.system_learning.correlation.engine import RiskCorrelator
+from system_learning.correlation.engine import RiskCorrelator
 
 class MockDriftEvent:
     def __init__(self, policy_id, drift_type, severity):

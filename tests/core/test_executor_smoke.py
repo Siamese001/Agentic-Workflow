@@ -86,18 +86,18 @@ class TestHOPPipelineExecutor:
         assert inst.stage_id in expected_stages
 
 
-# ── ObservabilityProbeExecutor ─────────────────────────────────────
-class TestObservabilityProbeExecutor:
+# ── ObservabilityProbeExecutorAgent ─────────────────────────────────────
+class TestObservabilityProbeExecutorAgent:
     def test_import(self):
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+            ObservabilityProbeExecutorAgent,
         )
 
-        assert ObservabilityProbeExecutor.__name__ == "ObservabilityProbeExecutor"
+        assert ObservabilityProbeExecutorAgent.__name__ == "ObservabilityProbeExecutorAgent"
 
     def test_dispatch_keys(self):
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+            ObservabilityProbeExecutorAgent,
         )
 
         expected_keys = {
@@ -109,7 +109,7 @@ class TestObservabilityProbeExecutor:
             "cost_tracker",
             "generic",
         }
-        inst = ObservabilityProbeExecutor(probe_type="deadlock")
+        inst = ObservabilityProbeExecutorAgent(probe_type="deadlock")
         assert inst.probe_type in expected_keys
 
 

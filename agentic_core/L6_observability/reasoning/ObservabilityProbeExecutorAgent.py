@@ -1,4 +1,4 @@
-"""ObservabilityProbeExecutor — Canonical parameterized observability agent.
+"""ObservabilityProbeExecutorAgent — Canonical parameterized observability agent.
 
 Consolidates: TrackObservabilityCostAgent, CoordinateObservabilityOperationsAgent,
               StrategicObservationAgent, DeadlockDetectorAgent, DebateSynthesisAgent,
@@ -16,11 +16,11 @@ from agentic_core.utils.decorators_compat_util import standard_heal
 
 
 @dataclass
-class ObservabilityProbeExecutor(SovereignBaseAgent):
+class ObservabilityProbeExecutorAgent(SovereignBaseAgent):
     """Parameterized observability probe agent.
 
     Usage:
-        probe = ObservabilityProbeExecutor(probe_type="cost_tracker")
+        probe = ObservabilityProbeExecutorAgent(probe_type="cost_tracker")
     """
 
     project_root: Any = field(default=None)

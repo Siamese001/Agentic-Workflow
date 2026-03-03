@@ -72,13 +72,13 @@ class TestHOPPipelineExecutorSnapshot:
         assert inst.stage_id in expected
 
 
-class TestObservabilityProbeExecutorSnapshot:
+class TestObservabilityProbeExecutorAgentSnapshot:
     def test_dispatch_keys_match(self, snapshot):
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+            ObservabilityProbeExecutorAgent,
         )
 
-        spec = snapshot["executors"]["ObservabilityProbeExecutor"]
+        spec = snapshot["executors"]["ObservabilityProbeExecutorAgent"]
         expected = set(spec["keys"])
         actual = {
             "coordinator",
@@ -90,7 +90,7 @@ class TestObservabilityProbeExecutorSnapshot:
             "strategic",
         }
         assert actual == expected, f"Drift: expected={expected}, actual={actual}"
-        inst = ObservabilityProbeExecutor(probe_type="deadlock")
+        inst = ObservabilityProbeExecutorAgent(probe_type="deadlock")
         assert inst.probe_type in expected
 
 

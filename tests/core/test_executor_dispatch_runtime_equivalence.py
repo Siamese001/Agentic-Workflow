@@ -93,21 +93,21 @@ class TestHOPPipelineExecutorRuntime:
         assert hasattr(mod, "HOPPipelineExecutor")
 
 
-class TestObservabilityProbeExecutorRuntime:
+class TestObservabilityProbeExecutorAgentRuntime:
     def test_all_keys_instantiate(self, snapshot):
-        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import (
-            ObservabilityProbeExecutor,
+        from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+            ObservabilityProbeExecutorAgent,
         )
 
-        spec = snapshot["executors"]["ObservabilityProbeExecutor"]
+        spec = snapshot["executors"]["ObservabilityProbeExecutorAgent"]
         for key in spec["keys"]:
-            inst = ObservabilityProbeExecutor(**{spec["dispatch_field"]: key})
+            inst = ObservabilityProbeExecutorAgent(**{spec["dispatch_field"]: key})
             assert getattr(inst, spec["dispatch_field"]) == key
 
     def test_module_path_matches(self, snapshot):
-        spec = snapshot["executors"]["ObservabilityProbeExecutor"]
+        spec = snapshot["executors"]["ObservabilityProbeExecutorAgent"]
         mod = importlib.import_module(spec["module"])
-        assert hasattr(mod, "ObservabilityProbeExecutor")
+        assert hasattr(mod, "ObservabilityProbeExecutorAgent")
 
 
 class TestInspectorExecutorRuntime:

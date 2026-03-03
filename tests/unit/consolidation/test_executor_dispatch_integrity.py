@@ -83,10 +83,12 @@ class TestLICValidationExecutorDispatch:
         assert f'"{rule}"' in source, f"Rule '{rule}' not found in dispatch"
 
 
-class TestObservabilityProbeExecutorDispatch:
-    """ObservabilityProbeExecutor must map all 6 probe types."""
+class TestObservabilityProbeExecutorAgentDispatch:
+    """ObservabilityProbeExecutorAgent must map all 6 probe types."""
 
-    EXECUTOR_PATH = ROOT / "agentic_core" / "L6_observability" / "reasoning" / "ObservabilityProbeExecutor.py"
+    EXECUTOR_PATH = (
+        ROOT / "agentic_core" / "L6_observability" / "reasoning" / "ObservabilityProbeExecutorAgent.py"
+    )
 
     def test_executor_exists(self) -> None:
         assert self.EXECUTOR_PATH.exists()
@@ -272,10 +274,12 @@ class TestObservabilityProbeRegression:
 
     def test_cost_tracker_probe_structure(self) -> None:
         try:
-            mod = _import_module_direct("agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor")
+            mod = _import_module_direct(
+                "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent"
+            )
         except (ImportError, TypeError) as exc:
             pytest.skip(f"{_SKIP_IMPORT_MSG}: {exc}")
-        probe = mod.ObservabilityProbeExecutor(probe_type="cost_tracker")
+        probe = mod.ObservabilityProbeExecutorAgent(probe_type="cost_tracker")
         result = probe.execute({"cost_metrics": {"total": 42}})
         assert result["probe"] == "cost_tracker"
         assert result["metrics"]["total"] == 42

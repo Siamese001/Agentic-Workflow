@@ -362,7 +362,7 @@ def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
                 "gravity_repair (GravityLeakRepairAgent)",
                 "system_architect (SystemArchitectAgent)",
                 "file_classification (FileClassificationAgent)",
-                "conversational_repair (ObservabilityProbeExecutor)",
+                "conversational_repair (ObservabilityProbeExecutorAgent)",
                 "cognitive_disposition (CognitiveDispositionAgent)",
                 "root_hygiene (RootHygieneAgent)",
             ],

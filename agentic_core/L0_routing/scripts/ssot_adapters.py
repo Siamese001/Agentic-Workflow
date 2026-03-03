@@ -294,12 +294,12 @@ class SysArchAdapter:
 
 
 # ---------------------------------------------------------------------------
-# 8. ObsProbeAdapter  (ObservabilityProbeExecutor, roster key: 'observability_probe')
+# 8. ObsProbeAdapter  (ObservabilityProbeExecutorAgent, roster key: 'observability_probe')
 # ---------------------------------------------------------------------------
 
 
 class ObsProbeAdapter:
-    """Adapter for ObservabilityProbeExecutor (roster key: 'observability_probe').
+    """Adapter for ObservabilityProbeExecutorAgent (roster key: 'observability_probe').
 
     Observability is read-only; execute and heal are no-ops.
     """

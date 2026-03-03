@@ -11,8 +11,8 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.system_learning.fingerprinting.engine import FailureFingerprinter
-from agentic_core.system_learning.fingerprinting.types import FailureEvent
+from system_learning.fingerprinting.engine import FailureFingerprinter
+from system_learning.fingerprinting.types import FailureEvent
 
 
 class TestFailureFingerprinting:
@@ -84,8 +84,8 @@ import json
 import hashlib
 sys.path.insert(0, r"{sys.path[0]}")
 
-from agentic_core.system_learning.fingerprinting.engine import FailureFingerprinter
-from agentic_core.system_learning.fingerprinting.types import FailureEvent
+from system_learning.fingerprinting.engine import FailureFingerprinter
+from system_learning.fingerprinting.types import FailureEvent
 
 event = FailureEvent(**{event_data})
 fingerprinter = FailureFingerprinter()

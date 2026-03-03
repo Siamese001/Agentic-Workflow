@@ -132,7 +132,9 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
     from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
-    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor import ObservabilityProbeExecutor
+    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+        ObservabilityProbeExecutorAgent,
+    )
 
     return (
         ArchitectureGovernorAgent,
@@ -144,7 +146,7 @@ def _get_l5_agent_roster():
         LocationAgent,
         RootHygieneAgent,
         SystemArchitectAgent,
-        ObservabilityProbeExecutor,
+        ObservabilityProbeExecutorAgent,
     )
 
 
@@ -1335,6 +1337,7 @@ class AutonomousDecisionEngine:
                     _tier_hitl_decision = f"HITL-TIER-APPROVED ({_tier_name})"
             try:
                 from system_learning.engines.hitl_decision_logger import log_hitl_decision
+
                 log_hitl_decision(
                     agent="SovereignDecisionEngine",
                     file_path=agent_name,
@@ -1377,9 +1380,7 @@ class AutonomousDecisionEngine:
                     agent_name,
                     routing.score,
                 )
-                final_reason = (
-                    f"AGENT-NATIVE ({confidence.value:.2f}, S={routing.score}): Qwen declined, agent logic governs"
-                )
+                final_reason = f"AGENT-NATIVE ({confidence.value:.2f}, S={routing.score}): Qwen declined, agent logic governs"
 
             self._healing_count += 1
             self._call_path.add(agent_name)
@@ -1819,6 +1820,7 @@ def execute_phase2_reconciliation(
     # Group violations by agent key so each agent's heal_repository() is called once
     # with the full set of violations it owns, and sovereignty token is held for that batch.
     from collections import defaultdict
+
     by_agent: dict[str, list] = defaultdict(list)
     for v in violations_list:
         by_agent[v.get("suggested_agent", "reconciler")].append(v)
@@ -1828,8 +1830,13 @@ def execute_phase2_reconciliation(
 
         agent_cls = agents.get(agent_key)
         if agent_cls is None:
-            logging.warning(f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations")
-            failed_fixes.extend({"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"} for v in agent_violations)
+            logging.warning(
+                f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
+            )
+            failed_fixes.extend(
+                {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
+                for v in agent_violations
+            )
             continue
 
         confidence = decision_engine.calculate_healing_confidence(
@@ -1844,26 +1851,37 @@ def execute_phase2_reconciliation(
         )
         if not allowed:
             logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
-            failed_fixes.extend({"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations)
+            failed_fixes.extend(
+                {"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations
+            )
             continue
 
         if ctx is None or not ctx.heal:
             for v in agent_violations:
-                reconciliation_log.append({"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason})
+                reconciliation_log.append(
+                    {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason}
+                )
             continue
 
         if not decision_engine.request_sovereignty_token(agent_key, violation_types[0]):
-            failed_fixes.extend({"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"} for v in agent_violations)
+            failed_fixes.extend(
+                {"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"}
+                for v in agent_violations
+            )
             continue
 
         try:
             # Instantiate the agent class and call heal_repository() — the real mutation path
             agent_instance = agent_cls(project_root=REPO_ROOT)
-            state_mgr.update_agent(agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations")
+            state_mgr.update_agent(
+                agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"
+            )
 
             logging.warning(
                 "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
-                agent_key, len(agent_violations), reason.split("(")[0].strip(),
+                agent_key,
+                len(agent_violations),
+                reason.split("(")[0].strip(),
             )
 
             fix_result = agent_instance.heal_repository(dry_run=False, execute=True)
@@ -1879,12 +1897,18 @@ def execute_phase2_reconciliation(
 
             reconciliation_log.append(fix_result)
             decision_engine.release_sovereignty_token(agent_key, success=True)
-            logging.warning("Phase 2: [%s] ✓ heal_repository() complete — result keys: %s", agent_key, list(fix_result.keys()))
+            logging.warning(
+                "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
+                agent_key,
+                list(fix_result.keys()),
+            )
 
         # guardian: allow-silent-swallow
         except Exception as e:
             logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
-            failed_fixes.extend({"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations)
+            failed_fixes.extend(
+                {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
+            )
             decision_engine.release_sovereignty_token(agent_key, success=False)
 
     return {
@@ -3879,12 +3903,14 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
     import json as _j
 
     try:
-        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
-            DeterminismDigestEmitter as _DE,
-        )
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface as _gcs,
+        )
+        from agentic_core.L2_execution.determinism.negative_control_harness import (
             hash_config_surface as _hcs,
+        )
+        from agentic_core.L6_observability.engines.determinism_digest_emitter import (
+            DeterminismDigestEmitter as _DE,
         )
     except ImportError as _exc:
         logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
@@ -3894,9 +3920,8 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
 
     try:
         from agentic_core.agents.agent_registry import registry_digest as _rd
-        _reg_bytes = _j.dumps(
-            _rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True
-        ).encode("utf-8")
+
+        _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
         _registry_hash = _h.sha256(_reg_bytes).hexdigest()
     except Exception:
         _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
@@ -3905,7 +3930,9 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
 
     _transcript_bytes = _j.dumps(
         sorted(str(t) for t in targets),
-        sort_keys=True, separators=(",", ":"), ensure_ascii=True,
+        sort_keys=True,
+        separators=(",", ":"),
+        ensure_ascii=True,
     ).encode("utf-8")
     _transcript_hash = _h.sha256(_transcript_bytes).hexdigest()
 
@@ -3970,6 +3997,7 @@ def _legacy_main(
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
         import os as _os  # noqa: E402
+
         _os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
         _os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"
         _os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
@@ -4268,7 +4296,7 @@ Examples:
         LocationAgent,
         RootHygieneAgent,
         SystemArchitectAgent,
-        ObservabilityProbeExecutor,
+        ObservabilityProbeExecutorAgent,
     ) = _get_l5_agent_roster()
 
     agents = {
@@ -4279,8 +4307,8 @@ Examples:
         "gravity_repair": GravityLeakRepairAgent,
         "system_architect": SystemArchitectAgent,
         "file_classification": FileClassificationAgent,
-        "observability_probe": ObservabilityProbeExecutor,
-        "conversational_repair": ObservabilityProbeExecutor,  # DEPRECATED alias
+        "observability_probe": ObservabilityProbeExecutorAgent,
+        "conversational_repair": ObservabilityProbeExecutorAgent,  # DEPRECATED alias
         "cognitive_disposition": CognitiveDispositionAgent,
         "root_hygiene": RootHygieneAgent,
     }
@@ -4395,6 +4423,7 @@ Examples:
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
 
                 from dataclasses import replace as _dc_replace
+
                 effective_ctx = ctx
 
                 # [FIX] Reset per-territory decision engine state so cycle detection
@@ -4419,19 +4448,31 @@ Examples:
                         # Build violations from actual drift report keys.
                         # suggested_agent must match agents dict keys for lookup + BMG GPU routing.
                         _phase1_violations = []
-                        for _f in (p1_drift.get("forbidden_folders") or []):
-                            _phase1_violations.append({"type": "FORBIDDEN_FOLDER", "file": str(_f), "suggested_agent": "reconciler"})
-                        for _d in (p1_drift.get("duplicate_folders") or []):
+                        for _f in p1_drift.get("forbidden_folders") or []:
+                            _phase1_violations.append(
+                                {"type": "FORBIDDEN_FOLDER", "file": str(_f), "suggested_agent": "reconciler"}
+                            )
+                        for _d in p1_drift.get("duplicate_folders") or []:
                             _dname = _d.get("name", str(_d)) if isinstance(_d, dict) else str(_d)
-                            _phase1_violations.append({"type": "DUPLICATE_FOLDER", "file": _dname, "suggested_agent": "location"})
-                        for _a in (p1_drift.get("archived_files_at_root") or []):
-                            _phase1_violations.append({"type": "ARCHIVED_FILE_AT_ROOT", "file": str(_a), "suggested_agent": "root_hygiene"})
-                        for _lv in (p1_loc or []):
+                            _phase1_violations.append(
+                                {"type": "DUPLICATE_FOLDER", "file": _dname, "suggested_agent": "location"}
+                            )
+                        for _a in p1_drift.get("archived_files_at_root") or []:
+                            _phase1_violations.append(
+                                {
+                                    "type": "ARCHIVED_FILE_AT_ROOT",
+                                    "file": str(_a),
+                                    "suggested_agent": "root_hygiene",
+                                }
+                            )
+                        for _lv in p1_loc or []:
                             if isinstance(_lv, dict):
                                 _lv["suggested_agent"] = "location"
                                 _phase1_violations.append(_lv)
                             else:
-                                _phase1_violations.append({"type": "LOCATION", "file": str(_lv), "suggested_agent": "location"})
+                                _phase1_violations.append(
+                                    {"type": "LOCATION", "file": str(_lv), "suggested_agent": "location"}
+                                )
                         plan = {"violations_found": _phase1_violations}
 
                         # Execute Phase 2 with decision engine gating
@@ -4672,6 +4713,7 @@ Examples:
                 from agentic_core.L6_observability.engines.determinism_digest_emitter import (
                     DeterminismDigestEmitter as _DET_EMITTER,
                 )
+
                 _det_digest = _compute_pipeline_digest(targets)
                 _det_line = _DET_EMITTER().emit_once(_det_digest)
                 print(_det_line)

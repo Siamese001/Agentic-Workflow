@@ -37,31 +37,33 @@ SKIP_FILES = {"__init__.py", "conftest.py", "__main__.py"}
 
 # Pre-existing violations that require multi-phase remediation (file rename + import update).
 # Adding them to SKIP_FILES prevents false failures while they're in the remediation queue.
-_SKIP_PATH_FRAGMENTS: frozenset[str] = frozenset([
-    # interfaces/ — these pre-date the I* naming convention
-    "agentic_core/interfaces/",
-    # mixins/ — these pre-date the *_mixin.py convention
-    "agentic_core/mixins/",
-    # healers/ — non-healer support files
-    "agentic_core/L2_execution/healers/healing_provider_adapters.py",
-    "agentic_core/L2_execution/healers/healing_tier_config.py",
-    "agentic_core/L2_execution/healers/healing_tier_dispatcher.py",
-    "agentic_core/L2_execution/healers/healing_tier_router.py",
-    "agentic_core/L2_execution/healers/healing_tier_types.py",
-    "agentic_core/L2_execution/healers/monotonic_reentrancy_enforcer.py",
-    "agentic_core/L2_execution/healers/qwen_circuit_breaker.py",
-    "agentic_core/L2_execution/healers/qwen_determinism.py",
-    "agentic_core/L2_execution/healers/qwen_gpu_validator.py",
-    "agentic_core/L2_execution/healers/qwen_health.py",
-    "agentic_core/L2_execution/healers/qwen_meta_learning.py",
-    "agentic_core/L2_execution/healers/signature_invalidator.py",
-    "agentic_core/L2_execution/healers/tiering_allowlist.py",
-    "agentic_core/L2_execution/healers/vllm_process_manager.py",
-    # engines/ — validator file misplaced
-    "agentic_core/L4_state/engines/fresh_data_validator.py",
-    # healers/ — context/support file, not a healer
-    "agentic_core/L2_execution/healers/escalation_context.py",
-])
+_SKIP_PATH_FRAGMENTS: frozenset[str] = frozenset(
+    [
+        # interfaces/ — these pre-date the I* naming convention
+        "agentic_core/interfaces/",
+        # mixins/ — these pre-date the *_mixin.py convention
+        "agentic_core/mixins/",
+        # healers/ — non-healer support files
+        "agentic_core/L2_execution/healers/healing_provider_adapters.py",
+        "agentic_core/L2_execution/healers/healing_tier_config.py",
+        "agentic_core/L2_execution/healers/healing_tier_dispatcher.py",
+        "agentic_core/L2_execution/healers/healing_tier_router.py",
+        "agentic_core/L2_execution/healers/healing_tier_types.py",
+        "agentic_core/L2_execution/healers/monotonic_reentrancy_enforcer.py",
+        "agentic_core/L2_execution/healers/qwen_circuit_breaker.py",
+        "agentic_core/L2_execution/healers/qwen_determinism.py",
+        "agentic_core/L2_execution/healers/qwen_gpu_validator.py",
+        "agentic_core/L2_execution/healers/qwen_health.py",
+        "agentic_core/L2_execution/healers/qwen_meta_learning.py",
+        "agentic_core/L2_execution/healers/signature_invalidator.py",
+        "agentic_core/L2_execution/healers/tiering_allowlist.py",
+        "agentic_core/L2_execution/healers/vllm_process_manager.py",
+        # engines/ — validator file misplaced
+        "agentic_core/L4_state/engines/fresh_data_validator.py",
+        # healers/ — context/support file, not a healer
+        "agentic_core/L2_execution/healers/escalation_context.py",
+    ]
+)
 
 
 def _collect_py_files_in_folder(folder_path: Path) -> list[Path]:
@@ -350,15 +352,19 @@ class TestRCANegativeTests:
         assert yaml_matches, f"'{compliant_yaml}' should be ACCEPTED by agent_configs patterns"
 
     def test_observability_probe_executor_compliant(self) -> None:
-        """ObservabilityProbeExecutor.py should be compliant (Executor suffix allowed)."""
+        """ObservabilityProbeExecutorAgent.py should be compliant (Agent suffix)."""
         obs_probe = (
-            PROJECT_ROOT / "agentic_core" / "L6_observability" / "reasoning" / "ObservabilityProbeExecutor.py"
+            PROJECT_ROOT
+            / "agentic_core"
+            / "L6_observability"
+            / "reasoning"
+            / "ObservabilityProbeExecutorAgent.py"
         )
         if not obs_probe.exists():
-            pytest.skip("ObservabilityProbeExecutor.py not found")
+            pytest.skip("ObservabilityProbeExecutorAgent.py not found")
 
-        # This should PASS - Executor suffix is allowed in reasoning folders
-        assert obs_probe.name.endswith("Executor.py"), "Should end with Executor.py"
+        # This should PASS - Agent suffix is allowed in reasoning folders
+        assert obs_probe.name.endswith("Agent.py"), "Should end with Agent.py"
 
     def test_meta_learning_utils_location_ssot(self) -> None:
         """meta_learning utils should be classified to L7_meta_learning/utils."""

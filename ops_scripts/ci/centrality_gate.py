@@ -61,7 +61,7 @@ ALLOWLIST: dict[str, int] = {
 
 EXECUTOR_CEILINGS: dict[str, int] = {
     "apps_lic.engines.HOPPipelineExecutor": 12,
-    "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutor": 10,
+    "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent": 10,
     "apps_lic.engines.LICValidationExecutor": 10,
     "agentic_core.L5_safety.reasoning.InspectorExecutor": 10,
     "apps_rg.engines.RGValidationExecutor": 10,
