@@ -191,7 +191,63 @@ RUNTIME_DIR: str = "agentic_core/runtime"
 TESTS_UNIT_DIR: str = "tests/unit"
 TESTS_INTEGRATION_DIR: str = "tests/integration"
 TESTS_E2E_DIR: str = "tests/e2e"
-TESTS_AUTOGEN_DIR: str = "tests/autogen"
+TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
+
+# ---------------------------------------------------------------------------
+# TEST PLACEMENT SSOT
+# Single canonical map: source root → mirror test directory.
+# LocationHealerAgent, TestGeneratorAgent, and all validators MUST import
+# from here instead of hardcoding test paths.
+# ---------------------------------------------------------------------------
+TEST_MIRROR_ROOTS: frozenset[str] = frozenset({"agentic_core", "apps_lic", "apps_rg", "apps_shared"})
+TEST_MIRROR_BASE: str = "tests/unit"
+TEST_CANONICAL_LOCATION_MAP: dict[str, str] = {
+    "agentic_core": "tests/unit/agentic_core",
+    "apps_lic": "tests/unit/apps_lic",
+    "apps_rg": "tests/unit/apps_rg",
+    "apps_shared": "tests/unit/apps_shared",
+    "system_learning": "tests/unit_min_deps/system_learning",
+}
+
+
+def get_canonical_test_path(source_path: Path, repo_root: Path) -> Path:
+    """Return the canonical test file path for a given source file.
+
+    LocationHealerAgent and TestGeneratorAgent MUST call this function instead
+    of constructing test paths ad-hoc.  The mapping is read from
+    TEST_CANONICAL_LOCATION_MAP so there is a single SSOT.
+
+    Examples
+    --------
+    source: agentic_core/L5_safety/foo.py  →  tests/unit/agentic_core/L5_safety/test_foo.py
+    source: apps_rg/engines/bar.py         →  tests/unit/apps_rg/engines/test_bar.py
+    source: tools/mirror_tests.py          →  tests/unit_min_deps/test_mirror_tests.py
+    """
+    from pathlib import Path as _Path
+
+    src = _Path(source_path)
+    root = _Path(repo_root)
+    try:
+        rel = src.relative_to(root)
+    except ValueError:
+        rel = src
+
+    parts = rel.parts
+    if not parts:
+        return root / TESTS_AUTOGEN_DIR / f"test_{src.stem}.py"
+
+    source_root = parts[0]
+    mirror_base = TEST_CANONICAL_LOCATION_MAP.get(source_root)
+    if mirror_base is None:
+        return root / TESTS_AUTOGEN_DIR / f"test_{src.stem}.py"
+
+    sub_parts = parts[1:-1]  # directories between root and filename
+    return (
+        root / mirror_base / _Path(*sub_parts) / f"test_{src.stem}.py"
+        if sub_parts
+        else root / mirror_base / f"test_{src.stem}.py"
+    )
+
 
 REPORTS_DIR: str = "reports"
 ARCHIVES_DIR: str = "archives"

@@ -1063,6 +1063,32 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "behavioral": {"purpose": "Behavioral and acceptance testing"},
             "stress": {"purpose": "Stress and load testing"},
             "performance": {"purpose": "Performance benchmarking and profiling tests"},
+            # ---- Non-mirror specialist categories (all declared here as canonical) ----
+            "_config": {"purpose": "Test-suite configuration (conftest helpers, marker registries)"},
+            "architecture": {
+                "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
+            },
+            "contracts": {"purpose": "Interface contract and API boundary tests"},
+            "enforcement": {"purpose": "Enforcement rule and guardrail tests"},
+            "governance": {"purpose": "Governance policy and lifecycle tests"},
+            "integration_e2e": {
+                "purpose": "Full-pipeline integration tests (transition: will merge into integration/)",
+            },
+            "integration_full_deps": {
+                "purpose": "Heavy-dependency integration tests (transition: will merge into integration/)",
+            },
+            "scripts": {"purpose": "Script-level entrypoint tests"},
+            "sovereign_hardening": {"purpose": "Sovereign integrity and lockdown tests"},
+            "ssot_equivalence": {"purpose": "SSOT drift and equivalence tests"},
+            "support": {
+                "purpose": "Shared test infrastructure — base classes, helpers, shared fixtures",
+            },
+            "system_learning": {
+                "purpose": "Tests mirroring system_learning/ module",
+                "mirror_source": True,
+                "exclude_from_depth_rules": True,
+                "subfolders": {},
+            },
         },
         "volatile": False,
     }

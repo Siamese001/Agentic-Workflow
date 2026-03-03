@@ -165,7 +165,13 @@ def pytest_collection_modifyitems(config, items):
 
     # If no marker specified, default to integration_full_deps + governance + unit_min_deps
     if not marker_expr:
-        default_markers = ("integration_full_deps", "governance", "unit_min_deps", "sovereign_hardening")
+        default_markers = (
+            "integration_full_deps",
+            "governance",
+            "unit_min_deps",
+            "sovereign_hardening",
+            "architecture",
+        )
         deselected = []
         selected = []
         for item in items:

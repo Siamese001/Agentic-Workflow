@@ -258,18 +258,43 @@ SCRIPTS_PLACEMENT_RULES: Final[Mapping[str, Mapping[str, Any]]] = {
 
 # ============================================================================
 # TESTS SUBFOLDER MAP
+# Derived from SOVEREIGN_TERRITORIES["tests"]["subfolders"] — the single SSOT.
+# Do NOT add entries here directly; update _constants.py instead.
 # ============================================================================
 
-TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
-    "unit": [],
-    "integration": [],
-    "e2e": [],
-    "functional": [],
-    "fixtures": [],
-    "core": [],
-    "apps_rg": [],
-    "apps_lic": [],
-}
+
+def _derive_tests_subfolder_map() -> dict[str, list[str]]:
+    """Build tests subfolder map from the SSOT territory declaration.
+
+    SOVEREIGN_TERRITORIES uses mappingproxy objects (not plain dicts), so we
+    check for a 'keys' attribute (Mapping duck-type) rather than isinstance(dict).
+    """
+    from agentic_core.L5_safety.config.structure_blueprint.territories import (
+        SOVEREIGN_TERRITORIES,
+    )
+
+    tests_config = SOVEREIGN_TERRITORIES.get("tests", {})
+    raw = tests_config.get("subfolders", {})
+    result: dict[str, list[str]] = {}
+    if not hasattr(raw, "keys"):
+        return result
+    for key, val in raw.items():
+        if hasattr(val, "keys"):
+            nested = val.get("subfolders", {})
+            if hasattr(nested, "keys"):
+                result[key] = list(nested.keys())
+            elif isinstance(nested, (list, tuple)):
+                result[key] = list(nested)
+            else:
+                result[key] = []
+        elif isinstance(val, (list, tuple)):
+            result[key] = list(val)
+        else:
+            result[key] = []
+    return result
+
+
+TESTS_L2_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_tests_subfolder_map()
 
 TESTS_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = TESTS_L2_SUBFOLDER_MAP
 

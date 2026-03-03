@@ -7,11 +7,7 @@ Ensures all test directories have __init__.py for Python package recognition.
 import os
 from typing import Any
 
-# TESTS_L2_SUBFOLDER_MAP derived from SOVEREIGN_TERRITORIES
-TESTS_L2_SUBFOLDER_MAP = {
-    "unit": ["test_agents", "test_utils", "test_core"],
-    "integration": ["test_workflows", "test_pipelines"],
-}
+from agentic_core.L5_safety.config.structure_blueprint import TESTS_L2_SUBFOLDER_MAP
 
 
 def align_tests_structure(root_path: Any) -> Any:
