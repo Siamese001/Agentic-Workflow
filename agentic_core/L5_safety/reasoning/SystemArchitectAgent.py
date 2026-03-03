@@ -45,6 +45,10 @@ class SystemArchitectAgent(SovereignBaseAgent):
 
     def __post_init__(self) -> None:
         super().__post_init__()
+        # Fix 11: cache graph per scan_root to avoid N full AST rebuilds (one per territory)
+        self._cached_scan_root: Path | None = None
+        self._cached_module_map: dict | None = None
+        self._cached_dependency_graph: dict | None = None
 
     def heal(self, violation: dict) -> dict:
         """
@@ -187,37 +191,47 @@ class SystemArchitectAgent(SovereignBaseAgent):
             f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})",
         )
 
-        # Inline Scoped Graph Building (O(M) where M is files in scope)
-        python_files = list(scan_root.rglob("*.py"))
+        # Fix 11: reuse cached graph when scan_root is unchanged
+        if self._cached_scan_root == scan_root and self._cached_module_map is not None:
+            Logger.info(f"SystemArchitect: Reusing cached dependency graph for {scan_root.name}")
+            module_map = self._cached_module_map
+            dependency_graph = self._cached_dependency_graph
+        else:
+            # Inline Scoped Graph Building (O(M) where M is files in scope)
+            python_files = list(scan_root.rglob("*.py"))
 
-        # 1. Map files to module names
-        module_map = {}
-        for p in python_files:
-            try:
-                rel = p.relative_to(self.project_root)
-                mod = ".".join(rel.with_suffix("").parts)
-                module_map[p] = mod
-            except ValueError:
-                continue
+            # 1. Map files to module names
+            module_map = {}
+            for p in python_files:
+                try:
+                    rel = p.relative_to(self.project_root)
+                    mod = ".".join(rel.with_suffix("").parts)
+                    module_map[p] = mod
+                except ValueError:
+                    continue
 
-        # 2. Build Graph (AST Parse)
-        dependency_graph = {}
-        # Initialize all known modules in graph
-        for mod in module_map.values():
-            dependency_graph[mod] = set()
+            # 2. Build Graph (AST Parse)
+            dependency_graph = {}
+            # Initialize all known modules in graph
+            for mod in module_map.values():
+                dependency_graph[mod] = set()
 
-        for p, mod in module_map.items():
-            try:
-                tree = ast.parse(p.read_text(encoding="utf-8"))
-                for node in ast.walk(tree):
-                    if isinstance(node, ast.Import):
-                        for alias in node.names:
-                            dependency_graph[mod].add(alias.name)
-                    elif isinstance(node, ast.ImportFrom):
-                        if node.module:
-                            dependency_graph[mod].add(node.module)
-            except Exception as e:
-                Logger.warning(f"Failed to parse {p}: {e}")
+            for p, mod in module_map.items():
+                try:
+                    tree = ast.parse(p.read_text(encoding="utf-8"))
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.Import):
+                            for alias in node.names:
+                                dependency_graph[mod].add(alias.name)
+                        elif isinstance(node, ast.ImportFrom):
+                            if node.module:
+                                dependency_graph[mod].add(node.module)
+                except Exception as e:
+                    Logger.warning(f"Failed to parse {p}: {e}")
+
+            self._cached_scan_root = scan_root
+            self._cached_module_map = module_map
+            self._cached_dependency_graph = dependency_graph
 
         # 3. Detect Cycles (DFS)
         circular_dependencies = []

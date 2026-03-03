@@ -2409,7 +2409,11 @@ def execute_phase1_discovery_impl(
     if ctx is not None and getattr(ctx, "heal", False):
         reconciler.heal_repository(force=True, dry_run=not getattr(ctx, "heal", False), execute=True)
 
-    violations_count = len(drift_report.get("violations", []))
+    violations_count = (
+        len(drift_report.get("forbidden_folders", []))
+        + len(drift_report.get("archived_files_at_root", []))
+        + len(drift_report.get("duplicate_folders", []))
+    )
     state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", True, f"Drift violations: {violations_count}")
 
     # Location Validation
@@ -2819,7 +2823,9 @@ def execute_phase4_healing_impl(
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
             # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
             res = arch_gov.heal_repository(
-                dry_run=not ctx.heal if ctx else True, auto_approve=ctx.auto_approve if ctx else True
+                dry_run=not ctx.heal if ctx else True,
+                auto_approve=ctx.auto_approve if ctx else True,
+                target_territory=territory,
             )
             status = res.get("status", "UNKNOWN")
             fixed = res.get("violations_fixed", 0)
@@ -2956,10 +2962,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             }
             all_violations.append(violation_dict)
 
-    # Get DebateSynthesisAgent violations
-    debate_synthesis_agent = agents["conversational_repair"](project_root=REPO_ROOT, probe_type="debate")
-    debate_synthesis_result = debate_synthesis_agent.scan_violations(target_territory=territory)
-    conversational_violations = debate_synthesis_result.get("violations", [])
+    # Get DebateSynthesisAgent violations (already stored by Phase 4.5 — do not re-invoke)
+    conversational_violations = state_mgr.state.get("conversational_violations", [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
             violation_dict = {
@@ -3061,6 +3065,9 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             "violations_fixed": (
                 compliance_report.get("stats", {}).get("violations_fixed", 0)
                 + state_mgr.state.get("hygiene_fixed", 0)
+                + state_mgr.state.get("location_fixed", 0)
+                + state_mgr.state.get("hierarchy_fixed", 0)
+                + state_mgr.state.get("gravity_fixed", 0)
             ),
             "agents_run": len(agents_executed),
             "agents_skipped": len(agents_skipped),
@@ -4412,6 +4419,44 @@ Examples:
 
             # [HARDENED] Universal Compliance Persistence
             results = []
+            # Fix 4: RootHygieneAgent scans REPO_ROOT (not per-territory).
+            # Run once before the territory loop to prevent N× duplicate violations.
+            state_mgr.state["hygiene_violations"] = []
+            state_mgr.state["hygiene_fixed"] = 0
+            try:
+                state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
+                hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
+                if hasattr(hygiene_agent, "scan_root_violations"):
+                    hygiene_results = hygiene_agent.scan_root_violations()
+                    hygiene_violations = hygiene_results.get("violations", [])
+                    high = [v for v in hygiene_violations if v.get("severity") == "high"]
+                    hygiene_fixed = 0
+                    if ctx and ctx.heal and hasattr(hygiene_agent, "heal"):
+                        for _v in hygiene_violations:
+                            try:
+                                _r = hygiene_agent.heal(_v)
+                                if isinstance(_r, dict) and _r.get("status") == "success":
+                                    hygiene_fixed += 1
+                                    logger.info(
+                                        "[RootHygiene] HEALED %s: %s",
+                                        _v.get("type"),
+                                        _v.get("file", ""),
+                                    )
+                            except Exception as _he:  # guardian: allow-silent-swallower
+                                logger.debug("[RootHygiene] heal() error: %s", _he)
+                    state_mgr.complete_agent(
+                        "RootHygieneAgent",
+                        True,
+                        f"Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}",
+                    )
+                    state_mgr.state["hygiene_violations"] = hygiene_violations
+                    state_mgr.state["hygiene_fixed"] = hygiene_fixed
+                else:
+                    state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
+            # guardian: allow-silent-swallow
+            except Exception as e:  # guardian: allow-silent-swallower
+                logger.warning(f"RootHygieneAgent failed: {e}")
+                state_mgr.complete_agent("RootHygieneAgent", False, str(e))
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
                 logger.info(f"PROCESSING TERRITORY: {territory}")
@@ -4635,49 +4680,7 @@ Examples:
                             logger.warning(f"CognitiveDispositionAgent failed: {e}")
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
 
-                        # Execute RootHygieneAgent — full project root SSOT scan + heal
-                        try:
-                            state_mgr.update_agent("RootHygieneAgent", "L0 - Maintenance")
-                            hygiene_agent = agents["root_hygiene"](project_root=REPO_ROOT)
-                            if hasattr(hygiene_agent, "scan_root_violations"):
-                                hygiene_results = hygiene_agent.scan_root_violations()
-                                hygiene_violations = hygiene_results.get("violations", [])
-                                high = [v for v in hygiene_violations if v.get("severity") == "high"]
-                                hygiene_fixed = 0
-                                if effective_ctx.heal and hasattr(hygiene_agent, "heal"):
-                                    for _v in hygiene_violations:
-                                        try:
-                                            _r = hygiene_agent.heal(_v)
-                                            if isinstance(_r, dict) and _r.get("status") == "success":
-                                                hygiene_fixed += 1
-                                                logger.info(
-                                                    "[RootHygiene] HEALED %s: %s",
-                                                    _v.get("type"),
-                                                    _v.get("file", ""),
-                                                )
-                                        except Exception as _he:  # guardian: allow-silent-swallower
-                                            logger.debug("[RootHygiene] heal() error: %s", _he)
-                                state_mgr.complete_agent(
-                                    "RootHygieneAgent",
-                                    True,
-                                    f"Violations: {len(hygiene_violations)} (high: {len(high)}) fixed: {hygiene_fixed}",
-                                )
-                                if not state_mgr.state.get("hygiene_violations"):
-                                    state_mgr.state["hygiene_violations"] = []
-                                state_mgr.state["hygiene_violations"].extend(hygiene_violations)
-                                state_mgr.state["hygiene_fixed"] = (
-                                    state_mgr.state.get("hygiene_fixed", 0) + hygiene_fixed
-                                )
-                            else:
-                                state_mgr.complete_agent(
-                                    "RootHygieneAgent", False, "No scan_root_violations method"
-                                )
-                        # guardian: allow-silent-swallow
-                        except Exception as e:  # guardian: allow-silent-swallower
-                            logger.warning(f"RootHygieneAgent failed: {e}")
-                            state_mgr.complete_agent("RootHygieneAgent", False, str(e))
-
-                        # Phase 5
+                        # Phase 5 (RootHygieneAgent moved outside territory loop — Fix 4)
                         cert = execute_phase5_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
                     else:

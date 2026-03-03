@@ -284,6 +284,9 @@ class RootHygieneAgent(SovereignBaseAgent):
             ".coverage",
             # Misc tracked files
             "progress.txt",
+            # Runtime / test infrastructure
+            "conftest.py",
+            "runtime_state.json",
         }
         # Transient dirs/files that should be deleted, not relocated
         delete_patterns = {

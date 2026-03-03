@@ -818,6 +818,8 @@ class LocationValidatorAgent(SovereignBaseAgent):
                         ".venv",
                         ".sovereign_healing_backup",
                         "node_modules",
+                        "ops_scripts",
+                        "artifacts",
                     ]
                 ):
                     continue

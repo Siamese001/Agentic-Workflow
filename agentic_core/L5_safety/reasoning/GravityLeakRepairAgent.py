@@ -312,6 +312,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 self.logger.info(f"[DRY RUN] Would fix {fix.file_path.name}: {fix.fix_type}")
                 return {"status": "simulated", "fix_type": fix.fix_type}
 
+            # Fix 3: all gravity fix strategies are plan_only — ABSTRACT writes a TODO
+            # comment that breaks the import, and RELOCATE produces an unverified path.
+            # Emit a rich plan artifact so developers can fix manually with full context.
+            return self._emit_plan_only(fix)
+
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
 
@@ -470,12 +475,20 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             # Post-filter: drop violations whose file_path is under excluded dirs
             _excluded = config.excluded_paths
             violations = [
-                v for v in results.violations
+                v
+                for v in results.violations
                 if not any(
-                    (str(getattr(v, 'file_path', v.get('file_path', '') if isinstance(v, dict) else ''))
-                     .replace('\\', '/')
-                     .split('/')[:2] or [''])[0] == ex
-                    or ex in str(getattr(v, 'file_path', v.get('file_path', '') if isinstance(v, dict) else '')).replace('\\', '/')
+                    (
+                        str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else ""))
+                        .replace("\\", "/")
+                        .split("/")[:2]
+                        or [""]
+                    )[0]
+                    == ex
+                    or ex
+                    in str(
+                        getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")
+                    ).replace("\\", "/")
                     for ex in _excluded
                 )
             ]
@@ -507,49 +520,53 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
         fixes_applied = 0
 
-        for v in violations[:10]:  # Limit to first 10 for safety
+        for v in violations:  # Fix 2: removed [:10] cap — process all violations
             if hasattr(v, "file_path"):
+                # Fix 1: extract import_statement from actual file content at line_number
+                _import_stmt = ""
+                try:
+                    _lines = Path(v.file_path).read_text(encoding="utf-8", errors="replace").splitlines()
+                    _ln = getattr(v, "line_number", 0) or 0
+                    if 1 <= _ln <= len(_lines):
+                        _import_stmt = _lines[_ln - 1].strip()
+                except Exception:  # guardian: allow-silent-swallower
+                    pass
                 fix = self.analyze_violation(
                     file_path=v.file_path,
-                    import_statement=getattr(v, "import_statement", ""),
+                    import_statement=_import_stmt,
                     file_layer=getattr(v, "source_layer", ""),
                     import_layer=getattr(v, "target_layer", ""),
                 )
             else:
                 # Legacy dict format
+                _import_stmt = ""
+                try:
+                    _fp = v.get("file_path")
+                    _ln = v.get("line_number", 0) or 0
+                    if _fp and _ln:
+                        _lines = Path(_fp).read_text(encoding="utf-8", errors="replace").splitlines()
+                        if 1 <= _ln <= len(_lines):
+                            _import_stmt = _lines[_ln - 1].strip()
+                except Exception:  # guardian: allow-silent-swallower
+                    pass
                 fix = self.analyze_violation(
                     file_path=v.get("file_path"),
-                    import_statement=v.get("import_statement", ""),
+                    import_statement=_import_stmt,
                     file_layer=v.get("file_layer", ""),
                     import_layer=v.get("import_layer", ""),
                 )
 
             fix_summary[fix.fix_type] += 1
 
-            # Apply fix if execute=True
-            if execute and not dry_run:
-                # Wave 2: pass privileged_mutation_context so non-sovereign script
-                # files are not blocked by the L0 circuit breaker.
-                _priv = any(
-                    ex in str(fix.file_path).replace('\\', '/')
-                    for ex in ("ops_scripts", "scripts")
-                )
-                result = self.apply_fix(fix, dry_run=False, privileged_mutation_context=_priv)
-                status = result.get("status")
-                if status == "fixed":
-                    fixes_applied += 1
-                elif status == "plan_only":
-                    self.logger.info(
-                        f"[PLAN-ONLY] {fix.file_path.name}: mutation prohibited, proposal recorded"
-                    )
-            else:
-                # Just report
-                self.apply_fix(fix, dry_run=True)
+            # Fix 3: all gravity fixes are plan_only — RELOCATE's _suggest_utils_import
+            # is a heuristic producing unverified paths; ABSTRACT writes a TODO comment.
+            # Both are unsafe to auto-apply. Emit accurate plan artifacts instead.
+            self.apply_fix(fix, dry_run=True)
 
         # Report summary
         self.logger.info("\nGravity Leak Repair Summary:")
         self.logger.info(f"  Total violations: {len(violations)}")
-        self.logger.info(f"  Analyzed: {min(10, len(violations))}")
+        self.logger.info(f"  Analyzed: {len(violations)}")
         self.logger.info("  Fix types:")
         for fix_type, count in fix_summary.items():
             if count > 0:

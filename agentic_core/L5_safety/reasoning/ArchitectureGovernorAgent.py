@@ -1501,8 +1501,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
             architect = SystemArchitectAgent(project_root=self.project_root)
             for territory in target_territories:
-                path = f"agentic_core/{territory}"
-                arch_report = architect.validate_core_architecture(path)
+                # Fix 8: prevent agentic_core/agentic_core double-nesting
+                arch_path = territory if territory.startswith("agentic_core") else f"agentic_core/{territory}"
+                arch_report = architect.validate_core_architecture(arch_path)
                 if not arch_report.get("imports_valid", True):
                     for circ in arch_report.get("circular_dependencies", []):
                         audit_results["violations"].append(
@@ -1558,9 +1559,6 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         if not plan["actions"]:
             plan["actions"].append("No healing required - system is compliant")
-
-        Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
-        return plan
 
         Logger.info(f"Generated healing plan with {len(plan['actions'])} actions")
         return plan
