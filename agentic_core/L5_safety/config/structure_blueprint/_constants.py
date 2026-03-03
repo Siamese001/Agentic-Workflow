@@ -1071,11 +1071,8 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "contracts": {"purpose": "Interface contract and API boundary tests"},
             "enforcement": {"purpose": "Enforcement rule and guardrail tests"},
             "governance": {"purpose": "Governance policy and lifecycle tests"},
-            "integration_e2e": {
-                "purpose": "Full-pipeline integration tests (transition: will merge into integration/)",
-            },
             "integration_full_deps": {
-                "purpose": "Heavy-dependency integration tests (transition: will merge into integration/)",
+                "purpose": "Heavy-dependency integration tests requiring full runtime deps",
             },
             "scripts": {"purpose": "Script-level entrypoint tests"},
             "sovereign_hardening": {"purpose": "Sovereign integrity and lockdown tests"},
