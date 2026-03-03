@@ -1,36 +1,31 @@
-"""L4 State Writer - Write-once, versioned, idempotent state persistence.
+"""L4 State Writer — Write-once, versioned, idempotent state persistence.
 
-Phase 7: Persists L2 healing outcome aggregates and L6 drift/detection signals
-into L4 structured state with content-hash keyed writes.
+Provides content-hash keyed writes for L4A detection signals, L4B healing
+snapshots, and L4C shadow drift / policy recommendation / retrieval profile
+artifacts.  All writes are idempotent: re-writing the same payload_bytes for
+the same component returns the existing version_id without mutation.
+
+Two concrete implementations:
+  - ``InMemoryL4StateWriter``  — test / single-process use
+  - ``FileBackedL4StateWriter`` — persistent across restarts
+  - ``NoOpL4StateWriter``      — safe default when persistence is disabled
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
+import hashlib
+import json
+import logging
+from dataclasses import dataclass, field
+from pathlib import Path
 from typing import Protocol
 
-from system_learning.engines.l4_version_store import L4VersionStore
+logger = logging.getLogger(__name__)
 
 
-@dataclass(frozen=True, slots=True)
-class SimpleChangePackage:
-    """Simple ChangePackage implementation for L4 state writing."""
-
-    component: str
-    payload_bytes: bytes
-    metadata: dict[str, object]
-
-    def canonical_bytes(self) -> bytes:
-        """Return deterministic canonical byte representation."""
-        import json
-
-        data = {
-            "component": self.component,
-            "payload_bytes": self.payload_bytes.hex(),
-            "metadata": self.metadata,
-        }
-        json_str = json.dumps(data, separators=(",", ":"), sort_keys=True)
-        return json_str.encode("utf-8")
+# ---------------------------------------------------------------------------
+# Protocol
+# ---------------------------------------------------------------------------
 
 
 class L4StateWriter(Protocol):
@@ -42,99 +37,230 @@ class L4StateWriter(Protocol):
 
     def write_l4a_detection_signal(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
-    ) -> str:
-        """Write L4A detection signal to L4 state.
-
-        Args:
-            payload_bytes: Serialized detection signal payload.
-            component_name: Name of the component emitting the signal.
-            created_utc: Timestamp for the write (injected, no wall clock).
-
-        Returns:
-            Version ID of the written state.
-        """
-        ...
+    ) -> str: ...
 
     def write_l4b_healing_snapshot(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str: ...
+
+    def write_l4c_shadow_drift(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str: ...
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str: ...
+
+    def write_l4c_retrieval_profile_proposal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str: ...
+
+    def read_latest_detection_signal(self) -> bytes | None: ...
+
+    def read_latest_drift_snapshot(self) -> bytes | None: ...
+
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _content_hash(payload_bytes: bytes) -> str:
+    """SHA-256 content hash of payload bytes (deterministic)."""
+    return hashlib.sha256(payload_bytes).hexdigest()
+
+
+@dataclass(frozen=True, slots=True)
+class _VersionEntry:
+    """Immutable record of a single L4 write."""
+
+    version_id: str
+    bucket: str
+    component_name: str
+    created_utc: int
+    payload_bytes: bytes
+
+
+# ---------------------------------------------------------------------------
+# In-memory implementation (tests / single process)
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class InMemoryL4StateWriter:
+    """In-memory L4 state writer for tests and single-process pipelines."""
+
+    _store: dict[str, _VersionEntry] = field(default_factory=dict)
+    _latest: dict[str, bytes] = field(default_factory=dict)
+
+    # -- private helpers ----------------------------------------------------
+
+    def _write(
+        self,
+        bucket: str,
+        *,
+        payload_bytes: bytes,
+        component_name: str,
+        created_utc: int,
     ) -> str:
-        """Write L4B healing outcome snapshot to L4 state.
+        content_key = _content_hash(payload_bytes)
+        version_id = f"{bucket}_{component_name}_{content_key[:16]}_{created_utc}"
+        if version_id not in self._store:
+            self._store[version_id] = _VersionEntry(
+                version_id=version_id,
+                bucket=bucket,
+                component_name=component_name,
+                created_utc=created_utc,
+                payload_bytes=payload_bytes,
+            )
+        self._latest[bucket] = payload_bytes
+        return version_id
 
-        Args:
-            payload_bytes: Serialized healing outcome snapshot.
-            component_name: Name of the component (typically 'meta-learning').
-            created_utc: Timestamp for the write (injected, no wall clock).
-
-        Returns:
-            Version ID of the written state.
-        """
-        ...
-
-
-class DefaultL4StateWriter:
-    """Default implementation of L4 state writer using version store.
-
-    Provides write-once, content-hash keyed persistence with version tracking.
-    """
-
-    def __init__(self, version_store: L4VersionStore) -> None:
-        """Initialize with version store backend.
-
-        Args:
-            version_store: Version store for content-addressable storage.
-        """
-        self._version_store = version_store
+    # -- L4A ----------------------------------------------------------------
 
     def write_l4a_detection_signal(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
     ) -> str:
-        """Write L4A detection signal to L4 state."""
-        # Create a change package for the detection signal
-        package = SimpleChangePackage(
-            component=f"l4a_detection_signal_{component_name}",
-            payload_bytes=payload_bytes,
-            metadata={
-                "type": "detection_signal",
-                "component_name": component_name,
-                "created_utc": created_utc,
-            },
-        )
+        return self._write("l4a_detection", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
 
-        # Write to version store (content-hash keyed, write-once)
-        version_id = self._version_store.commit_change_package(
-            package=package,
-            parent_version_id=None,
-            change_spec_hash="detection_signal",
-            committed_at_utc=created_utc,
-        )
-        return version_id
+    # -- L4B ----------------------------------------------------------------
 
     def write_l4b_healing_snapshot(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
     ) -> str:
-        """Write L4B healing outcome snapshot to L4 state."""
-        # Create a change package for the healing snapshot
-        package = SimpleChangePackage(
-            component=f"l4b_healing_snapshot_{component_name}",
-            payload_bytes=payload_bytes,
-            metadata={
-                "type": "healing_snapshot",
+        return self._write("l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    # -- L4C ----------------------------------------------------------------
+
+    def write_l4c_shadow_drift(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_shadow_drift", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_policy_rec", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    def write_l4c_retrieval_profile_proposal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_profile_prop", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    # -- reads --------------------------------------------------------------
+
+    def read_latest_detection_signal(self) -> bytes | None:
+        return self._latest.get("l4a_detection")
+
+    def read_latest_drift_snapshot(self) -> bytes | None:
+        return self._latest.get("l4c_shadow_drift")
+
+
+# ---------------------------------------------------------------------------
+# File-backed implementation (persistent across restarts)
+# ---------------------------------------------------------------------------
+
+
+class FileBackedL4StateWriter:
+    """File-backed L4 state writer with content-addressable storage.
+
+    Directory layout::
+
+        <base_dir>/
+            l4a_detection/<content_hash>.json
+            l4b_healing/<content_hash>.json
+            l4c_shadow_drift/<content_hash>.json
+            l4c_policy_rec/<content_hash>.json
+            l4c_profile_prop/<content_hash>.json
+            _latest/<bucket>.bin          # raw payload of most recent write
+    """
+
+    def __init__(self, base_dir: Path) -> None:
+        self._base_dir = Path(base_dir)
+        self._base_dir.mkdir(parents=True, exist_ok=True)
+        (self._base_dir / "_latest").mkdir(exist_ok=True)
+
+    # -- private helpers ----------------------------------------------------
+
+    def _write(
+        self,
+        bucket: str,
+        *,
+        payload_bytes: bytes,
+        component_name: str,
+        created_utc: int,
+    ) -> str:
+        content_key = _content_hash(payload_bytes)
+        version_id = f"{bucket}_{component_name}_{content_key[:16]}_{created_utc}"
+
+        bucket_dir = self._base_dir / bucket
+        bucket_dir.mkdir(exist_ok=True)
+
+        entry_path = bucket_dir / f"{content_key}.json"
+        if not entry_path.exists():
+            meta = {
+                "version_id": version_id,
+                "bucket": bucket,
                 "component_name": component_name,
                 "created_utc": created_utc,
-            },
-        )
+                "content_hash": content_key,
+                "payload_hex": payload_bytes.hex(),
+            }
+            entry_path.write_text(json.dumps(meta, indent=2), encoding="utf-8")
 
-        # Write to version store (content-hash keyed, write-once)
-        version_id = self._version_store.commit_change_package(
-            package=package,
-            parent_version_id=None,
-            change_spec_hash="healing_snapshot",
-            committed_at_utc=created_utc,
-        )
+        # Update latest pointer
+        latest_path = self._base_dir / "_latest" / f"{bucket}.bin"
+        latest_path.write_bytes(payload_bytes)
+
         return version_id
 
+    # -- L4A ----------------------------------------------------------------
 
-# No-op implementation for safe default
+    def write_l4a_detection_signal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4a_detection", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    # -- L4B ----------------------------------------------------------------
+
+    def write_l4b_healing_snapshot(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4b_healing", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    # -- L4C ----------------------------------------------------------------
+
+    def write_l4c_shadow_drift(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_shadow_drift", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_policy_rec", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    def write_l4c_retrieval_profile_proposal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write("l4c_profile_prop", payload_bytes=payload_bytes, component_name=component_name, created_utc=created_utc)
+
+    # -- reads --------------------------------------------------------------
+
+    def read_latest_detection_signal(self) -> bytes | None:
+        p = self._base_dir / "_latest" / "l4a_detection.bin"
+        return p.read_bytes() if p.exists() else None
+
+    def read_latest_drift_snapshot(self) -> bytes | None:
+        p = self._base_dir / "_latest" / "l4c_shadow_drift.bin"
+        return p.read_bytes() if p.exists() else None
+
+
+# ---------------------------------------------------------------------------
+# No-op implementation (safe default)
+# ---------------------------------------------------------------------------
+
+
 class NoOpL4StateWriter:
     """No-op implementation that does nothing.
 
@@ -144,18 +270,38 @@ class NoOpL4StateWriter:
     def write_l4a_detection_signal(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
     ) -> str:
-        """No-op write that returns a placeholder version ID."""
         return f"noop_l4a_{created_utc}"
 
     def write_l4b_healing_snapshot(
         self, *, payload_bytes: bytes, component_name: str, created_utc: int
     ) -> str:
-        """No-op write that returns a placeholder version ID."""
         return f"noop_l4b_{created_utc}"
+
+    def write_l4c_shadow_drift(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return f"noop_l4c_drift_{created_utc}"
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return f"noop_l4c_policy_{created_utc}"
+
+    def write_l4c_retrieval_profile_proposal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return f"noop_l4c_profile_{created_utc}"
+
+    def read_latest_detection_signal(self) -> bytes | None:
+        return None
+
+    def read_latest_drift_snapshot(self) -> bytes | None:
+        return None
 
 
 __all__ = [
     "L4StateWriter",
-    "DefaultL4StateWriter",
+    "InMemoryL4StateWriter",
+    "FileBackedL4StateWriter",
     "NoOpL4StateWriter",
 ]

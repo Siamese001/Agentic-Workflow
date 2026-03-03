@@ -1,0 +1,131 @@
+"""Pipeline Factory — assembles PipelineConfig and PipelineDependencies for execute_ssot.
+
+Provides ``build_pipeline_config()`` and ``build_pipeline_deps()`` that wire
+concrete store/engine implementations into the meta-learning pipeline.
+
+All construction is explicit — no auto-discovery, no globals.
+"""
+
+from __future__ import annotations
+
+import logging
+from pathlib import Path
+from typing import Any
+
+logger = logging.getLogger(__name__)
+
+
+def build_pipeline_config() -> Any:
+    """Build a default PipelineConfig for proposal-only mode.
+
+    Returns a ``PipelineConfig`` with conservative defaults suitable for
+    initial bootstrap.  All validation gates are enabled and
+    ``proposal_only=True``.
+    """
+    from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
+    from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+    from system_learning.validators.oscillation_detector import OscillationPolicy
+    from system_learning.validators.shadow_evaluator import ShadowThresholds
+
+    return PipelineConfig(
+        engine_version="0.1.0",
+        config_surface_version="0.1.0",
+        shadow_thresholds=ShadowThresholds(
+            max_p95_latency_regression_pct=10.0,
+            max_error_rate_regression_abs=0.05,
+            max_cpu_regression_pct=15.0,
+            max_mem_regression_pct=15.0,
+            forbid_any_safety_violation_increase=True,
+        ),
+        cooldown_policy=CooldownPolicy(min_seconds_between_updates=3600),
+        sample_policy=SampleSizePolicy(min_observations=10),
+        oscillation_policy=OscillationPolicy(
+            window=5,
+            epsilon=0.01,
+            freeze_seconds=7200,
+        ),
+        enabled_proposers=("l0",),
+        require_replay_validation=True,
+        require_shadow_validation=False,
+        proposal_only=True,
+    )
+
+
+def build_pipeline_deps(
+    *,
+    repo_root: Path,
+    healing_outcome_intake_adapter: Any | None = None,
+    healing_config_optimizer: Any | None = None,
+) -> Any:
+    """Build PipelineDependencies wired to real stores.
+
+    Parameters
+    ----------
+    repo_root : Path
+        Repository root directory (for locating compliance reports, runtime
+        state, etc.).
+    healing_outcome_intake_adapter : Any | None
+        Pre-built intake adapter from the calling function (reuse to avoid
+        double-build).
+    healing_config_optimizer : Any | None
+        Pre-built optimizer (or None for default).
+
+    Returns
+    -------
+    PipelineDependencies
+        Fully-wired dependencies ready for ``run_pipeline()``.
+    """
+    from system_learning.engines.l4_state_writer import InMemoryL4StateWriter
+    from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
+    from system_learning.stores.audit_store import FileBackedAuditStore
+    from system_learning.stores.config_provider import (
+        FileBackedConfigProvider,
+        InMemoryBaselineMetricsProvider,
+    )
+    from system_learning.stores.telemetry_store import InMemoryTelemetryStore
+
+    reports_dir = repo_root / "logs" / "compliance_reports"
+    runtime_state_path = repo_root / "runtime_state.json"
+
+    audit_store = FileBackedAuditStore(reports_dir=reports_dir)
+    telemetry_store = InMemoryTelemetryStore()
+    config_provider = FileBackedConfigProvider(
+        runtime_state_path=runtime_state_path,
+    )
+    baseline_metrics = InMemoryBaselineMetricsProvider()
+    l4_writer = InMemoryL4StateWriter()
+
+    # Optional engines — import failures are non-fatal
+    pattern_engine = None
+    try:
+        from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine
+
+        pattern_engine = PatternAnalysisEngine()
+    except ImportError:
+        logger.debug("PatternAnalysisEngine not available; skipping.")
+
+    optimizer = healing_config_optimizer
+    if optimizer is None:
+        try:
+            from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
+
+            optimizer = HealingConfigOptimizer()
+        except ImportError:
+            logger.debug("HealingConfigOptimizer not available; skipping.")
+
+    return PipelineDependencies(
+        audit_store=audit_store,
+        telemetry_store=telemetry_store,
+        config_provider=config_provider,
+        baseline_metrics_provider=baseline_metrics,
+        healing_outcome_intake_adapter=healing_outcome_intake_adapter,
+        healing_config_optimizer=optimizer,
+        l4_state_writer=l4_writer,
+        pattern_analysis_engine=pattern_engine,
+    )
+
+
+__all__ = [
+    "build_pipeline_config",
+    "build_pipeline_deps",
+]

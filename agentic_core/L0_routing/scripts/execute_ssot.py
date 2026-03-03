@@ -27,6 +27,7 @@ import sys
 import tempfile
 import time
 import traceback
+from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
@@ -113,11 +114,21 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
 
     try:
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
+        from system_learning.pipelines.pipeline_factory import (
+            build_pipeline_config,
+            build_pipeline_deps,
+        )
 
-        _ml_run_pipeline(now_utc=0, window_start_utc=0, window_end_utc=0)
+        _ml_cfg = build_pipeline_config()
+        _ml_deps = build_pipeline_deps(
+            repo_root=REPO_ROOT,
+            healing_outcome_intake_adapter=adapter if "adapter" in dir() else None,
+        )
+        # Use deterministic timestamps: window covers [0, now_utc=1] for bootstrap
+        _ml_run_pipeline(now_utc=1, window_start_utc=0, window_end_utc=1, cfg=_ml_cfg, deps=_ml_deps)
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
-    except ImportError:
-        logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B). Skipping.")
+    except ImportError as _imp_err:
+        logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
     except Exception as _pl_err:  # guardian: allow-silent-swallower
         logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
 
@@ -453,7 +464,7 @@ def _v15_build_ssot_manifest():
     Bootstrap-safe: lazy imports with fail-closed semantics.
     """
     try:
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         if not is_v15_enforced():
             return None
@@ -900,6 +911,45 @@ class ASTCodeQualityValidator:
 
 
 # ============================================================================
+# HEALING ACTION RECORDING — Structured Healing Log with Routing Details
+# ============================================================================
+
+
+def _record_healing_action(
+    state_mgr,
+    agent: str,
+    territory: str,
+    routing_score: float = 0.0,
+    routing_tier: str = "DETERMINISTIC",
+    model: str = "none",
+    routing_gate: str = "N/A",
+    confidence: float = 0.0,
+    fix_summary: str = "",
+    outcome: str = "SUCCESS",
+):
+    """[H2] Record a structured healing action for per-territory JSON and Markdown reports.
+
+    Appends to state_mgr.state["healing_actions"] so Phase 5 can filter by territory
+    and emit a healing_log in the detailed_cert JSON.
+    """
+    action = {
+        "agent": agent,
+        "territory": territory,
+        "routing_score": round(routing_score, 4),
+        "routing_tier": routing_tier,
+        "model": model,
+        "routing_gate": routing_gate,
+        "confidence": round(confidence, 4),
+        "fix_summary": fix_summary,
+        "outcome": outcome,
+        "timestamp": datetime.now().isoformat(),
+    }
+    if "healing_actions" not in state_mgr.state:
+        state_mgr.state["healing_actions"] = []
+    state_mgr.state["healing_actions"].append(action)
+
+
+# ============================================================================
 # ============================================================================
 # HEAL CONTEXT — Single Source of Truth for Healing Flags
 # ============================================================================
@@ -1259,6 +1309,7 @@ class AutonomousDecisionEngine:
 
         decision_data = {
             "agent": agent_name,
+            "territory": territory,
             "confidence": confidence.value,
             "reasoning": confidence.reasoning,
             "timestamp": datetime.now().isoformat(),
@@ -1884,7 +1935,24 @@ def execute_phase2_reconciliation(
                 reason.split("(")[0].strip(),
             )
 
-            fix_result = agent_instance.heal_repository(dry_run=False, execute=True)
+            # [FIX-HANG] Run heal_repository with timeout to prevent indefinite hangs.
+            # Territory scoping reduces scan surface; timeout is the hard safety net.
+            _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
+            with ThreadPoolExecutor(max_workers=1) as _pool:
+                _future = _pool.submit(
+                    agent_instance.heal_repository,
+                    dry_run=False, execute=True, target_territory=territory,
+                )
+                try:
+                    fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
+                except FuturesTimeoutError:
+                    logging.error(
+                        "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
+                        agent_key, _HEAL_TIMEOUT_S,
+                    )
+                    raise RuntimeError(
+                        f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
+                    )
             if not isinstance(fix_result, dict):
                 fix_result = {"raw_output": str(fix_result)}
 
@@ -1897,6 +1965,17 @@ def execute_phase2_reconciliation(
 
             reconciliation_log.append(fix_result)
             decision_engine.release_sovereignty_token(agent_key, success=True)
+            # [H3] Record healing action for Phase 2 reconciliation
+            _record_healing_action(
+                state_mgr,
+                agent=agent_key,
+                territory=territory,
+                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
+                outcome="SUCCESS",
+            )
             logging.warning(
                 "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
                 agent_key,
@@ -1945,13 +2024,6 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
         return False, "Name too long"
     if not re.match(r"^[A-Za-z0-9_]+$", territory):
         return False, "Invalid characters"
-    if ".." in territory or territory.startswith(("/", "\\")):
-        return False, "Path traversal attempt"
-    # Additional security checks
-    if ";" in territory or "|" in territory or "&" in territory:
-        return False, "Injection attempt"
-    if "<" in territory or ">" in territory:
-        return False, "HTML/script injection attempt"
     return True, ""
 
 
@@ -2029,7 +2101,7 @@ class RuntimeStateManager:
         self.state["current_agent"] = agent_name
         self.state["current_layer"] = layer
         self.add_event("agent_start", f"→ Executing {agent_name} ({layer})")
-        self.save()
+        # [FIX-I1] Removed self.save() — save at territory boundaries only
 
     def skip_agent(self, agent_name: str, reason: str):
         """Records agent as skipped — confidence gate or HITL rejected execution."""
@@ -2041,7 +2113,7 @@ class RuntimeStateManager:
             },
         )
         self.add_event("agent_skip", f"SKIPPED {agent_name}: {reason}")
-        self.save()
+        # [FIX-I1] Removed self.save() — save at territory boundaries only
 
     def complete_agent(self, agent_name: str, success: bool, details: str = ""):
         """
@@ -2058,7 +2130,7 @@ class RuntimeStateManager:
         )
         # Log to file/state but DO NOT PRINT JSON to console here
         self.add_event("agent_end", f"{'✓' if success else '❌'} Completed {agent_name}")
-        self.save()
+        # [FIX-I1] Removed self.save() — save at territory boundaries only
 
     def add_event(self, event_type: str, message: str):
         self.state["events"].append(
@@ -2418,7 +2490,8 @@ def execute_phase1_discovery_impl(
 
     # Location Validation
     state_mgr.update_agent("LocationAgent", "L5 - Safety")
-    location_validator = agents["location"](project_root=REPO_ROOT)
+    # [FIX-B11] Single LocationValidatorAgent instance for both scanning and healing
+    location_validator = _get_location_validator_agent()(project_root=REPO_ROOT)
 
     # [ULTRA-HARDENED] Explicit path traversal protection for user-supplied territory string.
     # Territory may live anywhere under REPO_ROOT (e.g. apps_rg, docs, tests) — not only
@@ -2434,9 +2507,8 @@ def execute_phase1_discovery_impl(
     violations = []
     location_scan_result = {}
     if territory_path.exists():
-        # Let LocationAgent do comprehensive file discovery
-        _lva = _get_location_validator_agent()(project_root=REPO_ROOT)
-        location_scan_result = _lva.run(target_territory=territory) or {}
+        # [FIX-B11] Use the single location_validator instance for scanning
+        location_scan_result = location_validator.run(target_territory=territory) or {}
         violations = location_scan_result.get("violations", [])
     else:
         logger.warning(f"Territory path does not exist: {territory_path}")
@@ -2448,11 +2520,9 @@ def execute_phase1_discovery_impl(
         # Create event loop for async cognitive analysis
         import asyncio
 
-        try:
-            loop = asyncio.get_event_loop()
-        except RuntimeError:
-            loop = asyncio.new_event_loop()
-            asyncio.set_event_loop(loop)
+        # [FIX-I4] Use new_event_loop() — asyncio.get_event_loop() is deprecated in Python 3.10+
+        loop = asyncio.new_event_loop()
+        asyncio.set_event_loop(loop)
 
         # Get cognitive dispositions and enhanced confidence
         cognitive_dispositions, enhanced_confidence = loop.run_until_complete(
@@ -2525,6 +2595,19 @@ def execute_phase1_discovery_impl(
                     violations, auto_approve=(ctx.auto_approve if ctx else True)
                 )
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
+                state_mgr.state["location_fixed"] = healed_count  # [FIX-B3]
+                # [H3] Record healing action for LocationAgent
+                if healed_count > 0:
+                    _record_healing_action(
+                        state_mgr,
+                        agent="LocationAgent",
+                        territory=territory,
+                        routing_score=confidence.value,
+                        routing_tier="DETERMINISTIC",
+                        confidence=confidence.value,
+                        fix_summary=f"Healed {healed_count} of {len(violations)} location violations",
+                        outcome="SUCCESS",
+                    )
                 state_mgr.complete_agent(
                     "LocationAgent",
                     True,
@@ -2559,7 +2642,13 @@ def execute_phase1_discovery_impl(
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
         file_classifier.dry_run = not ctx.heal if ctx else True  # Respect heal flag during discovery
-        classification_scan_result = file_classifier.run() or {}
+        # [FIX-B9] Scope scan to current territory instead of entire repo
+        if hasattr(file_classifier, "target_territory"):
+            file_classifier.target_territory = territory
+        try:
+            classification_scan_result = file_classifier.run(target_territory=territory) or {}
+        except TypeError:
+            classification_scan_result = file_classifier.run() or {}
 
         # Extract violations from stats
         if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
@@ -2646,6 +2735,7 @@ def execute_phase2_alignment_impl(
                 auto_approve=ctx.auto_approve if ctx else True,
             )
             healed = res.get("total_healed", 0)
+            state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
             state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
             return res
         else:
@@ -2654,6 +2744,79 @@ def execute_phase2_alignment_impl(
         state_mgr.complete_agent("HierarchyAgent", True, "No violations found")
 
     return None
+
+
+# [FIX-B8] GravityLeakRepairAgent runs once globally before the territory loop.
+def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
+    """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
+    state_mgr.update_agent("GravityLeakRepairAgent", "L5 - Safety")
+    gravity_agent = agents["gravity_repair"](project_root=REPO_ROOT)
+
+    try:
+        logger.info("Detecting gravity violations (layer inversions)...")
+        gravity_result = gravity_agent.heal_repository(
+            dry_run=not ctx.heal if ctx else True, execute=ctx.heal if ctx else False
+        )
+
+        gravity_violations = gravity_result.get("violations_found", 0)
+        gravity_fixed = gravity_result.get("violations_fixed", 0)
+        state_mgr.state["gravity_fixed"] = gravity_fixed  # [FIX-B3]
+        # [H3] Record healing action for GravityLeakRepairAgent
+        if gravity_fixed > 0:
+            _record_healing_action(
+                state_mgr,
+                agent="GravityLeakRepairAgent",
+                territory="__global__",
+                routing_tier="DETERMINISTIC",
+                confidence=0.9,
+                fix_summary=f"Fixed {gravity_fixed} of {gravity_violations} gravity violations",
+                outcome="SUCCESS",
+            )
+
+        # Store gravity violations for final reporting
+        if gravity_result.get("violations"):
+            state_mgr.state["gravity_violations"] = gravity_result["violations"]
+        else:
+            gravity_violation_list = []
+            if gravity_violations > 0:
+                gravity_violation_list.append(
+                    {
+                        "type": "GRAVITY",
+                        "message": f"Found {gravity_violations} gravity violations (layer inversions)",
+                        "severity": "high",
+                        "recommended_action": "Review and fix layer boundary violations",
+                        "confidence": 0.9,
+                        "violations_found": gravity_violations,
+                        "violations_fixed": gravity_fixed,
+                    }
+                )
+            state_mgr.state["gravity_violations"] = gravity_violation_list
+
+        if gravity_result.get("status") == "ERROR":
+            state_mgr.complete_agent(
+                "GravityLeakRepairAgent", False, f"Error: {gravity_result.get('error', 'Unknown')}"
+            )
+        elif gravity_violations > 0:
+            status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
+            state_mgr.complete_agent("GravityLeakRepairAgent", True, status_msg)
+            logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
+        else:
+            state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
+            logger.info("No gravity violations detected")
+
+    # guardian: allow-silent-swallow
+    except Exception as e:
+        logger.error(f"Gravity violation detection failed: {e}")
+        state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
+        state_mgr.state["gravity_violations"] = [
+            {
+                "type": "GRAVITY_ERROR",
+                "message": f"Gravity detection failed: {str(e)}",
+                "severity": "high",
+                "recommended_action": "Fix gravity detection error",
+                "confidence": 0.5,
+            }
+        ]
 
 
 # guardian: allow-magic-config
@@ -2682,67 +2845,16 @@ def execute_phase3_validation_impl(agents, territory, state_mgr, ctx: "HealConte
     violations = len(gov_report.get("layer_violations", [])) + len(gov_report.get("naming_violations", []))
     state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Violations: {violations}")
 
-    # Phase 3.5: Gravity Violation Detection and Healing
-    state_mgr.update_agent("GravityLeakRepairAgent", "L5 - Safety")
-    gravity_agent = agents["gravity_repair"](project_root=REPO_ROOT)
-
-    try:
-        logger.info("🔍 Detecting gravity violations (layer inversions)...")
-        gravity_result = gravity_agent.heal_repository(
-            dry_run=not ctx.heal if ctx else True, execute=ctx.heal if ctx else False
-        )
-
-        gravity_violations = gravity_result.get("violations_found", 0)
-        gravity_fixed = gravity_result.get("violations_fixed", 0)
-
-        # Store gravity violations for final reporting
-        if gravity_result.get("violations"):
-            state_mgr.state["gravity_violations"] = gravity_result["violations"]
-        else:
-            # Create violation entries from the result
-            gravity_violation_list = []
-            if gravity_violations > 0:
-                gravity_violation_list.append(
-                    {
-                        "type": "GRAVITY",
-                        "message": f"Found {gravity_violations} gravity violations (layer inversions)",
-                        "severity": "high",
-                        "recommended_action": "Review and fix layer boundary violations",
-                        "confidence": 0.9,
-                        "violations_found": gravity_violations,
-                        "violations_fixed": gravity_fixed,
-                    }
-                )
-            state_mgr.state["gravity_violations"] = gravity_violation_list
-
-        if gravity_result.get("status") == "ERROR":
-            state_mgr.complete_agent(
-                "GravityLeakRepairAgent", False, f"Error: {gravity_result.get('error', 'Unknown')}"
-            )
-        elif gravity_violations > 0:
-            status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
-            state_mgr.complete_agent("GravityLeakRepairAgent", True, status_msg)
-            logger.info(f"🔧 Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
-        else:
-            state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
-            logger.info("✅ No gravity violations detected")
-
-    # guardian: allow-silent-swallow
-    except Exception as e:
-        logger.error(f"Gravity violation detection failed: {e}")
-        state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
-        # Store error as violation for reporting
-        state_mgr.state["gravity_violations"] = [
-            {
-                "type": "GRAVITY_ERROR",
-                "message": f"Gravity detection failed: {str(e)}",
-                "severity": "high",
-                "recommended_action": "Fix gravity detection error",
-                "confidence": 0.5,
-            }
-        ]
+    # [FIX-B8] GravityLeakRepairAgent moved to _run_gravity_repair_global() — runs once before territory loop
 
     state_mgr.update_agent("SystemArchitectAgent", "L5 - Safety")
+
+    # [FIX-B10] Only invoke SystemArchitectAgent for agentic_core L-layer territories
+    _ac_layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
+    if territory != "agentic_core" and not any(territory.startswith(p) for p in _ac_layer_prefixes):
+        state_mgr.complete_agent("SystemArchitectAgent", True, f"Skipped for non-AC territory: {territory}")
+        return gov_report, None
+
     sys_arch = agents["system_architect"](project_root=REPO_ROOT)
     arch_report = sys_arch.validate_core_architecture(f"agentic_core/{territory}")
 
@@ -2831,6 +2943,18 @@ def execute_phase4_healing_impl(
             fixed = res.get("violations_fixed", 0)
             found = res.get("violations_found", 0)
             success = status not in ("BLOCKED", "ERROR", "UNKNOWN") or fixed > 0 or found >= 0
+            # [H3] Record healing action for ArchitectureGovernorAgent
+            if fixed > 0:
+                _record_healing_action(
+                    state_mgr,
+                    agent="ArchitectureGovernorAgent",
+                    territory=territory,
+                    routing_score=confidence.value,
+                    routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                    confidence=confidence.value,
+                    fix_summary=f"Fixed {fixed} of {found} architecture violations",
+                    outcome="SUCCESS",
+                )
             state_mgr.complete_agent(
                 "ArchitectureGovernorAgent", success, f"status={status} found={found} fixed={fixed}"
             )
@@ -2856,7 +2980,6 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # [UNIFIED MANIFEST] Aggregate all findings from the state manager
     compliance_report = state_mgr.state.get("compliance_report", {})
-    state_mgr.state.get("decision_history", [])
 
     # [CRITICAL FIX] Aggregate violations from ALL agents, not just ArchitectureGovernor
     # The compliance_report only has ArchitectureGovernor violations
@@ -2910,15 +3033,6 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         elif "Forbidden keyword 'import '" in message:
             violation_type = "IMPORT_IN_DOCS"
 
-        # Add file-specific factors for confidence calculation
-        {
-            "has_test_functions": "def test_" in message,
-            "has_sovereign_class": "class Sovereign" in message,
-            "is_python_file": file_path.endswith(".py"),
-            "is_backup_file": file_path.endswith(".backup"),
-            "is_in_docs": "docs/reports" in message,
-        }
-
         violation_confidence = decision_engine.calculate_healing_confidence(
             violations_count=1,  # Single violation
             violation_types=[violation_type],  # Use specific violation type
@@ -2942,25 +3056,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         }
         all_violations.append(violation_dict)
 
-    # Get GravityLeakRepairAgent violations from phase 3.5
-    gravity_violations = state_mgr.state.get("gravity_violations", [])
-    for gravity_violation in gravity_violations:
-        if isinstance(gravity_violation, dict):
-            violation_dict = {
-                "type": "GRAVITY",
-                "source": "GravityLeakRepairAgent",
-                "file": gravity_violation.get("file", "unknown"),
-                "message": gravity_violation.get("message", str(gravity_violation)),
-                "severity": gravity_violation.get("severity", "high"),
-                "recommended_action": gravity_violation.get(
-                    "recommended_action", "Fix layer inversion violation"
-                ),
-                "llm_triggered": False,  # Gravity violations are structural, not LLM-triggered
-                "confidence": round(
-                    gravity_violation.get("confidence", 0.9), 3
-                ),  # High confidence for structural issues
-            }
-            all_violations.append(violation_dict)
+    # [FIX-B1] Gravity violations are global (not per-territory) — excluded from per-territory reports.
+    # They are emitted only in save_aggregate_report() under "global_violations".
 
     # Get DebateSynthesisAgent violations (already stored by Phase 4.5 — do not re-invoke)
     conversational_violations = state_mgr.state.get("conversational_violations", [])
@@ -2981,21 +3078,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             }
             all_violations.append(violation_dict)
 
-    # Get RootHygieneAgent violations
-    hygiene_violations = state_mgr.state.get("hygiene_violations", [])
-    for hygiene_violation in hygiene_violations:
-        if isinstance(hygiene_violation, dict):
-            violation_dict = {
-                "type": hygiene_violation.get("type", "HYGIENE"),
-                "source": "RootHygieneAgent",
-                "file": hygiene_violation.get("file", "unknown"),
-                "message": hygiene_violation.get("message", str(hygiene_violation)),
-                "severity": hygiene_violation.get("severity", "medium"),
-                "recommended_action": hygiene_violation.get("recommended_action", "Clean root directory"),
-                "llm_triggered": decision_engine.enable_llm,
-                "confidence": round(hygiene_violation.get("confidence", 0.5), 3),
-            }
-            all_violations.append(violation_dict)
+    # [FIX-B1] Hygiene violations are global (not per-territory) — excluded from per-territory reports.
+    # They are emitted only in save_aggregate_report() under "global_violations".
 
     # [PHASE 3 ENHANCEMENT] Get FileClassificationAgent violations from early detection
     classification_violations = state_mgr.state.get("classification_violations", [])
@@ -3021,10 +3105,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
     status = "COMPLIANT" if violation_count == 0 else "NON-COMPLIANT"
 
     # [LOGIC FIX] Recalculate confidence based on FINAL violation count, not Phase 1
-    # Get the decision engine to recalculate confidence for the final state
-    decision_engine = getattr(state_mgr, "_decision_engine", None)
+    # [FIX-B4+B5] Use the passed decision_engine directly — no fallback creation
     if decision_engine is None:
-        # Fallback: create a temporary decision engine for final calculation
         decision_engine = AutonomousDecisionEngine(enable_llm=False)
 
     final_confidence = decision_engine.calculate_healing_confidence(
@@ -3036,8 +3118,11 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     drift_count = compliance_report.get("stats", {}).get("drift_detected", 0)
 
-    # Build detailed decision log with LLM status
-    decisions_made = state_mgr.state.get("decisions_made", [])
+    # [FIX-B4] Use decision_engine.decisions_made filtered by territory
+    decisions_made = [
+        d for d in getattr(decision_engine, "decisions_made", [])
+        if d.get("territory") == territory
+    ]
 
     # Get location scan result from state manager
     location_scan_result = state_mgr.state.get("location_scan_result", {})
@@ -3074,6 +3159,11 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         },
         "governance_log": {"decisions": decisions_made, "files_processed": []},
         "unified_violations": all_violations,  # Use all_violations instead of just arch violations
+        # [H4] Per-territory healing log with routing details
+        "healing_log": [
+            a for a in state_mgr.state.get("healing_actions", [])
+            if a.get("territory") == territory or a.get("territory") == "__global__"
+        ],
         "agents_executed": agents_executed,
         "agents_skipped": agents_skipped,
     }
@@ -3181,31 +3271,36 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
             "",
             "## 🧠 AI Governance Log",
             "",
-            "| Decision Context | Confidence | LLM Triggered | Outcome |",
-            "| :--- | :--- | :--- | :--- |",
+            "| Agent | Score | Tier | Model | Gate | Confidence | Outcome | Fix Applied |",
+            "| :--- | :--- | :--- | :--- | :--- | :--- | :--- | :--- |",
         ],
     )
 
-    # Add decision details to markdown table
+    # [H5] Upgraded 8-column governance table with routing details
     for decision in decisions_made:
-        confidence = decision.get("confidence", 0.0)
-        llm_triggered = confidence <= 0.75
+        agent = decision.get("agent", "Unknown")
+        score = decision.get("routing_score", 0.0)
+        tier = decision.get("routing_tier", "UNKNOWN")
+        model = decision.get("model", "none")
+        gate = decision.get("routing_gate", "N/A")
+        conf = decision.get("confidence", 0.0)
         outcome = "PROCEED" if decision.get("decision", False) else "SKIP"
-        context = decision.get("reason", "Unknown")
-        # Format confidence as percentage
-        if confidence <= 1.0:
-            conf_display = f"{confidence:.1%}"
-        else:
-            conf_display = f"{confidence:.1f}%"
-
+        # Match fix details from healing_log
+        fix_applied = "-"
+        for ha in detailed_cert.get("healing_log", []):
+            if ha.get("agent") == agent:
+                fix_applied = ha.get("fix_summary", "-")
+                break
+        conf_display = f"{conf:.1%}" if conf <= 1.0 else f"{conf:.1f}%"
         markdown_summary.append(
-            f"| {context} | {conf_display} | {'Yes' if llm_triggered else 'No'} | {outcome} |",
+            f"| {agent} | {score:.3f} | {tier} | {model} | {gate} | {conf_display} | {outcome} | {fix_applied} |",
         )
 
-    # Print JSON Manifest
-    _safe_print(json.dumps(detailed_cert, indent=2))
+    # [FIX-I3] Only print per-territory JSON manifest in verbose mode
+    if logger.isEnabledFor(logging.DEBUG):
+        _safe_print(json.dumps(detailed_cert, indent=2))
 
-    # Print Markdown Summary
+    # Print Markdown Summary (always shown — it's the human-readable output)
     _safe_print("\n" + "\n".join(markdown_summary))
     if files_affected:
         _safe_print("\n### Affected Files")
@@ -3358,6 +3453,22 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
 
         overall_status = "COMPLIANT" if non_compliant == 0 else "NON-COMPLIANT"
 
+        # [FIX-B1] Collect global violations (hygiene + gravity) for aggregate-only reporting
+        global_violations = []
+        # Read runtime_state.json for global violation data if available
+        runtime_state_path = project_root / "runtime_state.json"
+        if runtime_state_path.exists():
+            try:
+                _rs = json.loads(runtime_state_path.read_text(encoding="utf-8"))
+                for hv in _rs.get("hygiene_violations", []):
+                    if isinstance(hv, dict):
+                        global_violations.append({**hv, "source": "RootHygieneAgent", "scope": "global"})
+                for gv in _rs.get("gravity_violations", []):
+                    if isinstance(gv, dict):
+                        global_violations.append({**gv, "source": "GravityLeakRepairAgent", "scope": "global"})
+            except Exception:  # guardian: allow-silent-swallower
+                pass
+
         aggregate = {
             "meta": {
                 "report_type": "AGGREGATE",
@@ -3376,6 +3487,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                 "violations_by_type": by_type,
                 "violations_by_severity": by_severity,
             },
+            "global_violations": global_violations,
             "territories": territory_summaries,
             "agents_executed": sorted(agents_seen),
             "violations": deduplicated_violations,
@@ -3412,7 +3524,7 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
     """
     try:
         # Invoke via subprocess to avoid upward import edges
-        from agentic_core.L0_routing.utils.subprocess_runner import (
+        from agentic_core.L0_routing.utils.subprocess_runner_util import (
             invoke_orchestrator_mission,
         )
 
@@ -4282,7 +4394,7 @@ Examples:
     if args.capture_baseline:
         print("\n🔒 INITIATING BASELINE CAPTURE PROTOCOL...")
         try:
-            from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+            from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
             result = invoke_arch_governor(
                 action="capture_baseline",
@@ -4391,7 +4503,7 @@ Examples:
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
     try:
-        from agentic_core.L0_routing.utils.subprocess_runner import (
+        from agentic_core.L0_routing.utils.subprocess_runner_util import (
             invoke_agent_roster_validation,
         )
 
@@ -4487,7 +4599,7 @@ Examples:
             if is_autonomous:
                 logger.info(f"🔍 [PHASE 8] Running integrity check (Scope: {targets})...")
                 try:
-                    from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+                    from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
                     result = invoke_arch_governor(
                         action="audit",
@@ -4498,7 +4610,7 @@ Examples:
                     if result.get("success"):
                         audit_results = result.get("audit_results", {})
                         # [UNIFIED AUDIT] Persist all identified violations to the runtime state
-                        state_mgr.state["compliance_report"] = audit_results
+                        state_mgr.state["compliance_report_audit"] = audit_results
 
                         stats = audit_results.get("stats", {})
                         if stats.get("violations_found", 0) > 0:
@@ -4577,12 +4689,30 @@ Examples:
                     )
                     state_mgr.state["hygiene_violations"] = hygiene_violations
                     state_mgr.state["hygiene_fixed"] = hygiene_fixed
+                    # [H3] Record healing action for RootHygieneAgent
+                    if hygiene_fixed > 0:
+                        _record_healing_action(
+                            state_mgr,
+                            agent="RootHygieneAgent",
+                            territory="__global__",
+                            routing_tier="DETERMINISTIC",
+                            confidence=0.9,
+                            fix_summary=f"Cleaned {hygiene_fixed} of {len(hygiene_violations)} root hygiene violations",
+                            outcome="SUCCESS",
+                        )
                 else:
                     state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
             # guardian: allow-silent-swallow
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning(f"RootHygieneAgent failed: {e}")
                 state_mgr.complete_agent("RootHygieneAgent", False, str(e))
+
+            # [FIX-B8] Run GravityLeakRepairAgent once globally (same pattern as RootHygieneAgent)
+            try:
+                _run_gravity_repair_global(agents, state_mgr, ctx=ctx)
+            except Exception as e:  # guardian: allow-silent-swallower
+                logger.warning(f"GravityLeakRepairAgent global run failed: {e}")
+
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
                 logger.info(f"PROCESSING TERRITORY: {territory}")
@@ -4597,10 +4727,16 @@ Examples:
 
                 effective_ctx = ctx
 
+                # [FIX-B12] Enforce scan-only for non-AC territories in multi-domain sweep
+                if territory in _NON_AC_TERRITORIES:
+                    effective_ctx = _dc_replace(effective_ctx, heal=False)
+                    logger.info(f"[SCAN-ONLY] Territory '{territory}' is outside agentic_core — mutations disabled")
+
                 # [FIX] Reset per-territory decision engine state so cycle detection
                 # does not bleed across territories (agent_name="Unknown" accumulates).
                 decision_engine._call_path = set()
                 decision_engine._healing_count = 0
+                decision_engine._healing_enabled = True  # [FIX-B15] Reset budget gate per territory
 
                 try:
                     # [UNIVERSAL HEALING] Unified Execution Phase
@@ -4664,11 +4800,11 @@ Examples:
                             logger.warning(f"⚠️ Phase 2: {len(raw['failures'])} fixes failed")
 
                         # Phase 3: Final Validation (Post-heal AST checks)
-                        # Use the original violations from Phase 1
+                        # [FIX-B6] Use _phase1_violations built above, not p1_drift.get('violations', []) which is always []
                         phase3_result = execute_phase3_validation(
                             agents,
                             territory,
-                            p1_drift.get("violations", []),
+                            _phase1_violations,
                             effective_ctx.dry_run,
                         )
 
@@ -4754,6 +4890,9 @@ Examples:
                         # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
                         logger.info(f"=== PHASE 4.5: ADDITIONAL AGENTS - {territory} ===")
 
+                        # [FIX-B2] Reset per-territory conversational violations to prevent cross-territory accumulation
+                        state_mgr.state["conversational_violations"] = []
+
                         # Execute DebateSynthesisAgent
                         logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
                         state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
@@ -4828,6 +4967,7 @@ Examples:
                     if is_autonomous:
                         continue
                     else:
+                        _fire_meta_learning_intake(state_mgr)
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
 
@@ -4872,6 +5012,7 @@ Examples:
         # Catch-all for top-level crashes (e.g., initialization failure)
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
+        _fire_meta_learning_intake(state_mgr)
         state_mgr.finish_mission(status="fatal_error")
         sys.exit(1)
 

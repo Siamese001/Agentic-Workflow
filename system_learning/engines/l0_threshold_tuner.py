@@ -1,48 +1,63 @@
-"""G-16-18: L0 threshold tuner â€” proposal-only optimizer for routing thresholds.
+"""L0 Threshold Tuner — deterministic threshold adjustment proposals for L0 routing surfaces.
 
-Proposes changes to L0 routing thresholds based on metrics, enforcing:
-  - Allowlist constraints (only allowed surfaces)
-  - Bounds + max-delta enforcement
-  - Cooldown + sample-size dampening
-  - Deterministic inputs only (no wall-clock)
-  - Proposal-only (no activation)
+Analyzes L0 routing metrics (escalation rates, routing confidence distributions)
+and proposes bounded threshold adjustments subject to cooldown and sample-size
+dampening policies.
+
+All logic is pure and deterministic — no wall-clock reads, no randomness.
 """
 
 from __future__ import annotations
 
 import hashlib
+import json
+import logging
 from dataclasses import dataclass
+from typing import Any
 
-from system_learning.constraints.delta_enforcer import validate_surface_change
 from system_learning.validators.dampening import (
     CooldownPolicy,
+    CooldownViolation,
     SampleSizePolicy,
+    SampleSizeViolation,
     assert_cooldown_ok,
     assert_min_sample_size,
 )
 
+logger = logging.getLogger(__name__)
 
-# =============================================================================
-# ChangePackage (Minimal Implementation for Phase 3)
-# =============================================================================
+# ---------------------------------------------------------------------------
+# Constants — all bounds are hard-coded, no external config
+# ---------------------------------------------------------------------------
+
+_MIN_THRESHOLD = 0.50
+_MAX_THRESHOLD = 0.95
+_MAX_DELTA = 0.05
+_DEFAULT_DELTA = 0.03
+_ESCALATION_RATE_TRIGGER = 0.20  # propose adjustment when rate exceeds this
+
+
+# ---------------------------------------------------------------------------
+# Change Package
+# ---------------------------------------------------------------------------
 
 
 @dataclass(frozen=True, slots=True)
 class L0ThresholdChangePackage:
-    """Immutable ChangePackage for L0 threshold changes.
+    """Immutable, deterministically-hashable threshold change proposal.
 
     Fields
     ------
     surface_name : str
-        The config surface being changed.
+        Name of the L0 routing surface being tuned (e.g. ``"escalation_threshold"``).
     old_value : float
-        The current value.
+        Current threshold value.
     new_value : float
-        The proposed new value.
+        Proposed threshold value.
     justification : str
-        Rationale for the change.
+        Human-readable reason for the change.
     snapshot_id : str
-        The snapshot this proposal is based on.
+        ID of the snapshot that triggered this proposal.
     """
 
     surface_name: str
@@ -53,104 +68,123 @@ class L0ThresholdChangePackage:
 
     def canonical_bytes(self) -> bytes:
         """Return deterministic canonical byte representation."""
-        # Canonical concatenation with delimiter
-        parts = [
-            self.surface_name.encode("utf-8"),
-            str(self.old_value).encode("utf-8"),
-            str(self.new_value).encode("utf-8"),
-            self.justification.encode("utf-8"),
-            self.snapshot_id.encode("utf-8"),
-        ]
-        return b"\x1f".join(parts)
+        data = {
+            "surface_name": self.surface_name,
+            "old_value": self.old_value,
+            "new_value": self.new_value,
+            "justification": self.justification,
+            "snapshot_id": self.snapshot_id,
+        }
+        return json.dumps(data, separators=(",", ":"), sort_keys=True).encode("utf-8")
 
     def content_hash(self) -> str:
-        """Return SHA-256 hash of canonical bytes."""
+        """SHA-256 content hash of canonical bytes."""
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
 
 
-# =============================================================================
-# L0 Threshold Tuner
-# =============================================================================
+# ---------------------------------------------------------------------------
+# Proposal Function
+# ---------------------------------------------------------------------------
 
 
 def propose_l0_threshold_changes(
+    *,
     snapshot_id: str,
     metrics: dict[str, float],
     current_config: dict[str, float],
     now_utc: int,
-    history: dict[str, int],
+    history: dict[str, Any],
     cooldown_policy: CooldownPolicy,
     sample_policy: SampleSizePolicy,
 ) -> L0ThresholdChangePackage | None:
-    """Propose L0 threshold changes based on metrics.
+    """Propose an L0 threshold change based on routing metrics.
 
-    Proposal-only: does NOT activate or commit. Returns a ChangePackage
-    that can be committed via Phase 2 version store.
+    Currently supports the ``escalation_threshold`` surface.  When the
+    ``escalation_rate`` metric exceeds the trigger level the function proposes
+    a bounded increase to the threshold, subject to cooldown and sample-size
+    dampening.
 
     Parameters
     ----------
     snapshot_id : str
-        The snapshot this proposal is based on.
+        Identifier for the metrics snapshot.
     metrics : dict[str, float]
-        Observed metrics (e.g., {"escalation_rate": 0.15}).
+        Routing metrics (must include ``"escalation_rate"``).
     current_config : dict[str, float]
-        Current L0 threshold values.
+        Current threshold values (must include ``"escalation_threshold"``).
     now_utc : int
-        Current time (injected, not wall-clock).
-    history : dict[str, int]
-        Last update timestamps and observation counts per surface.
-        Format: {"escalation_threshold_last_update": 1700000000,
-                 "escalation_threshold_n_obs": 1500}
+        Current deterministic timestamp.
+    history : dict[str, Any]
+        Historical context with keys ``"<surface>_last_update"`` and
+        ``"<surface>_n_obs"`` for dampening checks.
     cooldown_policy : CooldownPolicy
-        Cooldown policy to enforce.
+        Cooldown dampening policy.
     sample_policy : SampleSizePolicy
-        Sample size policy to enforce.
+        Sample-size dampening policy.
 
     Returns
     -------
     L0ThresholdChangePackage | None
-        Proposed change, or None if no change needed or dampening violated.
-
-    Raises
-    ------
-    ConstraintViolation
-        If proposed change violates constraints.
+        A proposal if adjustment is warranted, ``None`` otherwise.
     """
-    # Example: tune escalation_threshold based on escalation_rate
-    surface_name = "escalation_threshold"
-    escalation_rate = metrics.get("escalation_rate", 0.0)
-    current_value = current_config.get(surface_name, 0.85)
+    surface = "escalation_threshold"
+    escalation_rate = metrics.get("escalation_rate")
+    current_value = current_config.get(surface)
 
-    # Check dampening policies
-    last_update = history.get(f"{surface_name}_last_update", 0)
-    n_obs = history.get(f"{surface_name}_n_obs", 0)
+    if escalation_rate is None or current_value is None:
+        return None
 
+    # Check if adjustment is warranted
+    if escalation_rate <= _ESCALATION_RATE_TRIGGER:
+        return None
+
+    # Dampening: cooldown
+    last_update_utc = history.get(f"{surface}_last_update", 0)
     try:
-        assert_cooldown_ok(last_update, now_utc, cooldown_policy)
+        assert_cooldown_ok(last_update_utc, now_utc, cooldown_policy)
+    except CooldownViolation:
+        return None
+
+    # Dampening: sample size
+    n_obs = history.get(f"{surface}_n_obs", 0)
+    try:
         assert_min_sample_size(n_obs, sample_policy)
-    except Exception:
-        # Dampening violated - no proposal
+    except SampleSizeViolation:
         return None
 
-    # Simple heuristic: if escalation_rate > 0.20, increase threshold
-    # if escalation_rate < 0.10, decrease threshold
-    if escalation_rate > 0.20:
-        proposed_value = min(current_value + 0.03, 0.95)
-    elif escalation_rate < 0.10:
-        proposed_value = max(current_value - 0.03, 0.70)
-    else:
-        # No change needed
+    # Compute proposed value: fixed delta, capped to bounds
+    new_value = current_value + _DEFAULT_DELTA
+    new_value = min(new_value, _MAX_THRESHOLD)
+    new_value = max(new_value, _MIN_THRESHOLD)
+
+    # Round to avoid floating-point noise
+    new_value = round(new_value, 4)
+
+    # No-op check: if value didn't change, skip
+    if new_value == current_value:
         return None
 
-    # Validate constraint
-    validate_surface_change(surface_name, current_value, proposed_value)
+    # Delta safety check
+    delta = abs(new_value - current_value)
+    if delta > _MAX_DELTA:
+        new_value = current_value + (_MAX_DELTA if new_value > current_value else -_MAX_DELTA)
+        new_value = round(new_value, 4)
 
-    # Create proposal
-    justification = f"escalation_rate={escalation_rate:.2f}, adjusting threshold"
+    justification = (
+        f"escalation_rate={escalation_rate:.4f} exceeds trigger={_ESCALATION_RATE_TRIGGER}; "
+        f"adjusting {surface} from {current_value} to {new_value} (delta={delta:.4f})"
+    )
+
     return L0ThresholdChangePackage(
-        surface_name=surface_name,
+        surface_name=surface,
         old_value=current_value,
-        new_value=proposed_value,
+        new_value=new_value,
         justification=justification,
         snapshot_id=snapshot_id,
     )
+
+
+__all__ = [
+    "L0ThresholdChangePackage",
+    "propose_l0_threshold_changes",
+]
