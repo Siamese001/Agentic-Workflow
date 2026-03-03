@@ -3274,6 +3274,132 @@ def save_comprehensive_reports(
         # Don't fail the entire process if report saving fails
 
 
+def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None:
+    """
+    [AGGREGATE REPORT] Merge all per-territory compliance_report_<t>.json into a single
+    compliance_report_AGGREGATE.json in logs/compliance_reports/.
+
+    Deduplicates violations by (type, file, message) so cross-territory duplicates
+    (e.g. GRAVITY, ILLEGAL_CACHE_DIR) are counted once.
+
+    Returns the Path to the written file, or None on failure.
+    """
+    import datetime
+
+    try:
+        reports_dir = project_root / "logs" / "compliance_reports"
+        reports_dir.mkdir(parents=True, exist_ok=True)
+
+        territory_summaries: list[dict] = []
+        all_violations_seen: set[tuple] = set()
+        deduplicated_violations: list[dict] = []
+        agents_seen: set[str] = set()
+
+        total_violation_count = 0
+        total_violations_fixed = 0
+        total_drift_count = 0
+        total_errors = 0
+        non_compliant = 0
+        compliant = 0
+
+        for t in targets:
+            t_path = reports_dir / f"compliance_report_{t}.json"
+            if not t_path.exists():
+                continue
+            try:
+                t_data = json.loads(t_path.read_text(encoding="utf-8"))
+            except Exception:  # guardian: allow-silent-swallower
+                continue
+
+            meta = t_data.get("meta", {})
+            metrics = t_data.get("metrics", {})
+            status = meta.get("status", "UNKNOWN")
+
+            if status == "COMPLIANT":
+                compliant += 1
+            else:
+                non_compliant += 1
+
+            total_violation_count += metrics.get("violation_count", 0)
+            total_violations_fixed += metrics.get("violations_fixed", 0)
+            total_drift_count += metrics.get("drift_count", 0)
+            total_errors += metrics.get("errors", 0)
+
+            territory_summaries.append(
+                {
+                    "territory": t,
+                    "status": status,
+                    "confidence_score": metrics.get("confidence_score", 0.0),
+                    "violation_count": metrics.get("violation_count", 0),
+                    "violations_fixed": metrics.get("violations_fixed", 0),
+                    "drift_count": metrics.get("drift_count", 0),
+                    "agents_run": metrics.get("agents_run", 0),
+                    "timestamp": meta.get("timestamp", ""),
+                }
+            )
+
+            for v in t_data.get("unified_violations", []):
+                key = (v.get("type", ""), v.get("file", ""), v.get("message", ""))
+                if key not in all_violations_seen:
+                    all_violations_seen.add(key)
+                    deduplicated_violations.append(v)
+
+            for a in t_data.get("agents_executed", []):
+                agents_seen.add(a)
+
+        # Violation breakdown by type and severity
+        by_type: dict[str, int] = {}
+        by_severity: dict[str, int] = {}
+        for v in deduplicated_violations:
+            vtype = v.get("type", "UNKNOWN")
+            vsev = v.get("severity", "unknown")
+            by_type[vtype] = by_type.get(vtype, 0) + 1
+            by_severity[vsev] = by_severity.get(vsev, 0) + 1
+
+        overall_status = "COMPLIANT" if non_compliant == 0 else "NON-COMPLIANT"
+
+        aggregate = {
+            "meta": {
+                "report_type": "AGGREGATE",
+                "timestamp": datetime.datetime.now().isoformat(),
+                "territories_scanned": len(territory_summaries),
+                "territories_compliant": compliant,
+                "territories_non_compliant": non_compliant,
+                "overall_status": overall_status,
+            },
+            "metrics": {
+                "total_violations_detected": total_violation_count,
+                "unique_violations_deduplicated": len(deduplicated_violations),
+                "total_violations_fixed": total_violations_fixed,
+                "total_drift_count": total_drift_count,
+                "total_errors": total_errors,
+                "violations_by_type": by_type,
+                "violations_by_severity": by_severity,
+            },
+            "territories": territory_summaries,
+            "agents_executed": sorted(agents_seen),
+            "violations": deduplicated_violations,
+        }
+
+        agg_path = reports_dir / "compliance_report_AGGREGATE.json"
+        with open(agg_path, "w", encoding="utf-8") as f:
+            assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
+            json.dump(aggregate, f, indent=2, default=str, ensure_ascii=False)
+
+        logger.info(f"📊 Aggregate compliance report saved: {agg_path.relative_to(project_root)}")
+        logger.info(
+            f"   Territories: {len(territory_summaries)} | "
+            f"Unique violations: {len(deduplicated_violations)} | "
+            f"Fixed: {total_violations_fixed} | "
+            f"Status: {overall_status}"
+        )
+        return agg_path
+
+    except Exception as e:  # guardian: allow-silent-swallower
+        logger.error(f"[AGGREGATE] Failed to save aggregate report: {e}")
+        return None
+
+
 # ============================================================================
 # L3 ORCHESTRATION INTEGRATION
 # ============================================================================
@@ -4707,6 +4833,9 @@ Examples:
 
             # Wave 0C: fire meta-learning intake before closing the mission
             _fire_meta_learning_intake(state_mgr)
+
+            # Save aggregate report across all territories
+            save_aggregate_report(targets, REPO_ROOT)
 
             # Only mark completed if we got here
             state_mgr.finish_mission(status="completed")
