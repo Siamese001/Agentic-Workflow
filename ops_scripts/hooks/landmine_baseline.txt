@@ -119,50 +119,90 @@
 .healing_backups/location_violations/_capture_evidence.py:21:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/_capture_evidence.py:26:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/_capture_evidence.py:39:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:13:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:156:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:157:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:21:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:26:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_capture_evidence_1.py:39:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/_discover_debt.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/_discover_debt.py:210:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/_discover_debt.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/_run_entry1.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_run_entry1_1.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/_run_entry2.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.healing_backups/location_violations/_run_entry2_1.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 .healing_backups/location_violations/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 .healing_backups/location_violations/agent_registry.py:353:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/agent_registry_2.py:347:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/agentic_core_L1_cognition_reasoning_StrategistAgent.py:55:type_erasure:Type erasure: StrategistAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L1_cognition_reasoning_StrategistAgent_1.py:49:type_erasure:Type erasure: StrategistAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent.py:122:magic_configuration:Magic configuration: Hardcoded max_attempts=2 in function call
 .healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent.py:180:type_erasure:Type erasure: RgStrategicPlannerAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent.py:185:magic_configuration:Magic configuration: Hardcoded max_depth=3
+.healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent_1.py:116:magic_configuration:Magic configuration: Hardcoded max_attempts=2 in function call
+.healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent_1.py:174:type_erasure:Type erasure: RgStrategicPlannerAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L2_execution_reasoning_RgStrategicPlannerAgent_1.py:179:magic_configuration:Magic configuration: Hardcoded max_depth=3
 .healing_backups/location_violations/agentic_core_L2_execution_reasoning_UiValidationAgent.py:171:type_erasure:Type erasure: UiValidationAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L2_execution_reasoning_UiValidationAgent.py:45:type_erasure:Type erasure: UiValidationAgent.execute returns Any instead of structured type
+.healing_backups/location_violations/agentic_core_L2_execution_reasoning_UiValidationAgent_1.py:165:type_erasure:Type erasure: UiValidationAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L2_execution_reasoning_UiValidationAgent_1.py:39:type_erasure:Type erasure: UiValidationAgent.execute returns Any instead of structured type
 .healing_backups/location_violations/agentic_core_L4_state_reasoning_CartographerAgent.py:113:type_erasure:Type erasure: CartographerAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L4_state_reasoning_CartographerAgent_1.py:107:type_erasure:Type erasure: CartographerAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L5_safety_reasoning_GlobalComplianceAggregatorAgent.py:95:magic_configuration:Magic configuration: Hardcoded max_depth=3
+.healing_backups/location_violations/agentic_core_L5_safety_reasoning_GlobalComplianceAggregatorAgent_1.py:89:magic_configuration:Magic configuration: Hardcoded max_depth=3
 .healing_backups/location_violations/agentic_core_L5_safety_reasoning_OmniContextAgent.py:45:type_erasure:Type erasure: OmniContextAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L5_safety_reasoning_OmniContextAgent_1.py:39:type_erasure:Type erasure: OmniContextAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L5_safety_reasoning_SemanticMapperAgent.py:33:type_erasure:Type erasure: SemanticMapperAgent.execute returns Any instead of structured type
 .healing_backups/location_violations/agentic_core_L5_safety_reasoning_SemanticMapperAgent.py:40:type_erasure:Type erasure: SemanticMapperAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/agentic_core_L5_safety_reasoning_SemanticMapperAgent_1.py:27:type_erasure:Type erasure: SemanticMapperAgent.execute returns Any instead of structured type
+.healing_backups/location_violations/agentic_core_L5_safety_reasoning_SemanticMapperAgent_1.py:34:type_erasure:Type erasure: SemanticMapperAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_CoordinateObservabilityOperationsAgent.py:146:magic_configuration:Magic configuration: Hardcoded max_depth=3
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_CoordinateObservabilityOperationsAgent_1.py:140:magic_configuration:Magic configuration: Hardcoded max_depth=3
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py:28:magic_configuration:Magic configuration: Hardcoded max_phase_time=300
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py:29:magic_configuration:Magic configuration: Hardcoded heartbeat_interval=30
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py:30:magic_configuration:Magic configuration: Hardcoded deadlock_threshold=2
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent.py:67:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py:22:magic_configuration:Magic configuration: Hardcoded max_phase_time=300
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py:23:magic_configuration:Magic configuration: Hardcoded heartbeat_interval=30
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py:24:magic_configuration:Magic configuration: Hardcoded deadlock_threshold=2
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_DeadlockDetectorAgent_1.py:61:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_DebateSynthesisAgent.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_DebateSynthesisAgent_1.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_RuntimeTelemetryAgent.py:72:magic_configuration:Magic configuration: Hardcoded limit_multiplier=2.0
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_RuntimeTelemetryAgent_1.py:72:magic_configuration:Magic configuration: Hardcoded limit_multiplier=2.0
 .healing_backups/location_violations/agentic_core_L6_observability_reasoning_TrackObservabilityCostAgent.py:92:magic_configuration:Magic configuration: Hardcoded max_depth=3
+.healing_backups/location_violations/agentic_core_L6_observability_reasoning_TrackObservabilityCostAgent_1.py:86:magic_configuration:Magic configuration: Hardcoded max_depth=3
 .healing_backups/location_violations/analyze_agent_count_waterfall_util.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+.healing_backups/location_violations/analyze_agent_count_waterfall_util_1.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/analyze_duplicates_detailed.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/analyze_duplicates_detailed.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/app_content_validator_agent_types.py:492:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.9 in function call
 .healing_backups/location_violations/apps_lic_engines_HOP5GenerationAgent.py:291:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+.healing_backups/location_violations/apps_lic_engines_HOP5GenerationAgent_1.py:285:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 .healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent.py:153:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 .healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent.py:153:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 .healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent.py:197:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent_1.py:147:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+.healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent_1.py:147:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+.healing_backups/location_violations/apps_lic_engines_Hop1ProfileAnalysisAgent_1.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/apps_lic_engines_Hop2ResearchAgent.py:231:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/apps_lic_engines_Hop2ResearchAgent.py:293:magic_configuration:Magic configuration: Hardcoded max_age_days=90 in function call
+.healing_backups/location_violations/apps_lic_engines_Hop2ResearchAgent_1.py:225:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/apps_lic_engines_Hop2ResearchAgent_1.py:287:magic_configuration:Magic configuration: Hardcoded max_age_days=90 in function call
 .healing_backups/location_violations/apps_lic_engines_LeadQualityAgent.py:78:type_erasure:Type erasure: LeadQualityAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_LeadQualityAgent_1.py:72:type_erasure:Type erasure: LeadQualityAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_lic_engines_LicReflectionAgent.py:73:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_LicReflectionAgent_1.py:67:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_lic_engines_LicTemplateOptimizerAgent.py:70:type_erasure:Type erasure: LicTemplateOptimizerAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_LicTemplateOptimizerAgent_1.py:64:type_erasure:Type erasure: LicTemplateOptimizerAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_lic_engines_MessageComplianceAgent.py:97:type_erasure:Type erasure: MessageComplianceAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_MessageComplianceAgent_1.py:91:type_erasure:Type erasure: MessageComplianceAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_lic_engines_MessageDiversityValidator.py:40:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
 .healing_backups/location_violations/apps_lic_engines_MessageDiversityValidator.py:91:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_MessageDiversityValidator_1.py:34:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
+.healing_backups/location_violations/apps_lic_engines_MessageDiversityValidator_1.py:85:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:190:magic_configuration:Magic configuration: Hardcoded limit=10
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:296:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -170,8 +210,17 @@
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:383:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:393:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
 .healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent.py:402:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:184:magic_configuration:Magic configuration: Hardcoded limit=10
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:283:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:290:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:373:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:377:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:387:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
+.healing_backups/location_violations/apps_lic_engines_OutreachLearningAgent_1.py:396:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_rg_reasoning_RgStrategicPlannerAgent.py:83:type_erasure:Type erasure: RgStrategicPlannerAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_rg_reasoning_RgStrategicPlannerAgent_1.py:77:type_erasure:Type erasure: RgStrategicPlannerAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/apps_rg_reasoning_RgTemplateOptimizerAgent.py:100:type_erasure:Type erasure: RgTemplateOptimizerAgent.heal_repository returns dict instead of structured type
+.healing_backups/location_violations/apps_rg_reasoning_RgTemplateOptimizerAgent_1.py:94:type_erasure:Type erasure: RgTemplateOptimizerAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/authenticity_patterns_util.py:502:magic_configuration:Magic configuration: Hardcoded max_attempts=3
 .healing_backups/location_violations/capture_golden.py:140:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/capture_golden.py:147:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -179,6 +228,7 @@
 .healing_backups/location_violations/capture_golden.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/capture_golden.py:223:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/check_vram.py:3:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+.healing_backups/location_violations/check_vram_1.py:3:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 .healing_backups/location_violations/clean_duplicates_enhanced.py:100:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/clean_duplicates_enhanced.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 .healing_backups/location_violations/clean_duplicates_enhanced.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -205,6 +255,7 @@
 .healing_backups/location_violations/competitor_recon_agent_types.py:317:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/competitor_recon_agent_types.py:366:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/conftest_1.py:6:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+.healing_backups/location_violations/conftest_10.py:6:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/conftest_2.py:134:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/conftest_2.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/conftest_5.py:56:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -228,6 +279,8 @@
 .healing_backups/location_violations/deep_brain_harvester_util.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/dry_run_apps_lic.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/dry_run_apps_lic.py:46:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/dry_run_apps_lic_1.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+.healing_backups/location_violations/dry_run_apps_lic_1.py:46:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/fetch_user_preferences.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
 .healing_backups/location_violations/fix_duplicate_imports.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 .healing_backups/location_violations/generate_final_report.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
@@ -262,9 +315,15 @@
 .healing_backups/location_violations/minimal_anthropic.py:22:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
 .healing_backups/location_violations/minimal_anthropic.py:48:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
 .healing_backups/location_violations/minimal_anthropic.py:70:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
+.healing_backups/location_violations/minimal_anthropic_1.py:22:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
+.healing_backups/location_violations/minimal_anthropic_1.py:48:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
+.healing_backups/location_violations/minimal_anthropic_1.py:70:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
 .healing_backups/location_violations/minimal_openai.py:21:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
 .healing_backups/location_violations/minimal_openai.py:43:magic_configuration:Magic configuration: Hardcoded max_tokens=2000 in function call
+.healing_backups/location_violations/minimal_openai_1.py:21:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
+.healing_backups/location_violations/minimal_openai_1.py:43:magic_configuration:Magic configuration: Hardcoded max_tokens=2000 in function call
 .healing_backups/location_violations/minimal_vertex.py:34:magic_configuration:Magic configuration: Hardcoded threshold=0.7
+.healing_backups/location_violations/minimal_vertex_1.py:34:magic_configuration:Magic configuration: Hardcoded threshold=0.7
 .healing_backups/location_violations/placeholder_detector_agent_config.py:61:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/placeholder_detector_agent_config_1.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 .healing_backups/location_violations/placeholder_detector_agent_config_2.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
@@ -331,9 +390,14 @@
 .healing_backups/location_violations/routing_tier_types.py:69:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
 .healing_backups/location_violations/run_phase11_ptc_evidence.py:107:magic_configuration:Magic configuration: Hardcoded limit=100 in function call
 .healing_backups/location_violations/run_phase11_ptc_evidence.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/run_phase11_ptc_evidence_1.py:107:magic_configuration:Magic configuration: Hardcoded limit=100 in function call
+.healing_backups/location_violations/run_phase11_ptc_evidence_1.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/run_phase3_integration.py:24:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
+.healing_backups/location_violations/run_phase3_integration_1.py:24:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
 .healing_backups/location_violations/run_replay_execute_ssot_plan.py:41:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
 .healing_backups/location_violations/run_replay_execute_ssot_plan.py:56:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
+.healing_backups/location_violations/run_replay_execute_ssot_plan_1.py:41:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
+.healing_backups/location_violations/run_replay_execute_ssot_plan_1.py:56:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
 .healing_backups/location_violations/run_workflow.py:16:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 .healing_backups/location_violations/run_workflow_lic.py:220:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/run_workflow_lic.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -341,6 +405,7 @@
 .healing_backups/location_violations/run_workflow_lic.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/run_workflow_lic.py:29:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
 .healing_backups/location_violations/seed_direct_writes_baseline.py:8:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+.healing_backups/location_violations/seed_direct_writes_baseline_1.py:8:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/location_violations/skill_extractor_node_types.py:268:magic_configuration:Magic configuration: Hardcoded exact_match_threshold=0.9
 .healing_backups/location_violations/skill_extractor_node_types.py:269:magic_configuration:Magic configuration: Hardcoded partial_match_threshold=0.7
 .healing_backups/location_violations/stack_modernization_agent_types.py:187:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -353,6 +418,11 @@
 .healing_backups/location_violations/validate_mcps.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/validate_mcps.py:252:path_fragility:Path fragility: os.chdir() - use pathlib.Path instead
 .healing_backups/location_violations/validate_mcps.py:40:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/validate_mcps_1.py:114:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/validate_mcps_1.py:170:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/validate_mcps_1.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/validate_mcps_1.py:252:path_fragility:Path fragility: os.chdir() - use pathlib.Path instead
+.healing_backups/location_violations/validate_mcps_1.py:40:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/validation_result_validator.py:72:magic_configuration:Magic configuration: Hardcoded max_attempts=3
 .healing_backups/location_violations/verify_golden.py:101:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/verify_golden.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
@@ -364,7 +434,14 @@
 .healing_backups/location_violations/vertex_client.py:474:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/vertex_client.py:63:magic_configuration:Magic configuration: Hardcoded max_tries=5 in function call
 .healing_backups/location_violations/vertex_client.py:63:magic_configuration:Magic configuration: Hardcoded max_value=60 in function call
+.healing_backups/location_violations/vertex_client_1.py:141:magic_configuration:Magic configuration: Hardcoded dynamic_threshold=0.7 in function call
+.healing_backups/location_violations/vertex_client_1.py:185:magic_configuration:Magic configuration: Hardcoded grounding_threshold=0.7
+.healing_backups/location_violations/vertex_client_1.py:460:magic_configuration:Magic configuration: Hardcoded grounding_threshold=0.7 in function call
+.healing_backups/location_violations/vertex_client_1.py:474:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+.healing_backups/location_violations/vertex_client_1.py:63:magic_configuration:Magic configuration: Hardcoded max_tries=5 in function call
+.healing_backups/location_violations/vertex_client_1.py:63:magic_configuration:Magic configuration: Hardcoded max_value=60 in function call
 .healing_backups/location_violations/vllm_boundary_client.py:24:magic_configuration:Magic configuration: Hardcoded _default_timeout_seconds=30
+.healing_backups/location_violations/vllm_boundary_client_1.py:24:magic_configuration:Magic configuration: Hardcoded _default_timeout_seconds=30
 .healing_backups/location_violations/void_compliance_config.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 .healing_backups/location_violations/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
@@ -382,21 +459,29 @@
 .healing_backups/location_violations/volatile_rules.py:53:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 .healing_backups/location_violations/w1_negative_control.py:5:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/naming_violations/l1_health_benchmark_util.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+.healing_backups/naming_violations/l1_health_benchmark_util_1.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 .healing_backups/naming_violations/l5_autonomous_orchestrator_util.py:34:magic_configuration:Magic configuration: Hardcoded max_cycles=5
 .healing_backups/naming_violations/l5_autonomous_orchestrator_util.py:35:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
+.healing_backups/naming_violations/l5_autonomous_orchestrator_util_1.py:28:magic_configuration:Magic configuration: Hardcoded max_cycles=5
+.healing_backups/naming_violations/l5_autonomous_orchestrator_util_1.py:29:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
 agentic_core/L0_routing/enforcement/execution_gateway.py:341:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/enforcement/execution_gateway.py:367:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1261:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:3416:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:3512:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:3579:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4009:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:4010:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:4413:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:914:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:996:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
+agentic_core/L0_routing/scripts/execute_ssot.py:1057:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
+agentic_core/L0_routing/scripts/execute_ssot.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1203:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:121:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1345:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1368:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3558:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3654:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3721:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3901:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4213:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:4214:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:4617:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4678:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:975:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/scripts/ssot_adapters.py:402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -831,6 +916,7 @@ agentic_core/L5_safety/reasoning/CodeValidatorAgent.py:460:silent_swallower:Sile
 agentic_core/L5_safety/reasoning/CodeValidatorAgent.py:483:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/CodeValidatorAgent.py:505:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/CodeValidatorAgent.py:527:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/CognitiveDispositionAgent.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py:145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/ComplexityAnalyzerAgent.py:236:type_erasure:Type erasure: ComplexityAnalyzerAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py:116:magic_configuration:Magic configuration: Hardcoded max_depth=3
@@ -846,15 +932,16 @@ agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:70:magic_configuratio
 agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:83:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:141:type_erasure:Type erasure: DocumentationAgent.heal_repository returns dict instead of structured type
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:143:type_erasure:Type erasure: GitHygieneAgent.execute returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:194:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:294:type_erasure:Type erasure: GitHygieneAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:319:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:338:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:341:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:391:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:404:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:348:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:351:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:401:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/GravityLeakRepairAgent.py:414:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:170:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -862,34 +949,37 @@ agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:183:silent_swallower:
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:196:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:203:type_erasure:Type erasure: L5SafetyExerciserAgent.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/reasoning/L5SafetyExerciserAgent.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1064:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1207:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1284:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1448:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1614:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1643:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1689:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1805:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1874:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1970:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2061:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2201:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1285:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1362:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1526:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1692:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1721:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1767:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1883:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:1952:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2048:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2139:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:220:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2232:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2308:magic_configuration:Magic configuration: Hardcoded max_actions=50
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2279:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2310:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:232:type_erasure:Type erasure: LocationHealerAgent.heal_violations returns dict instead of structured type
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2416:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2501:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:342:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:353:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:410:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:527:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:562:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:630:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:690:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:707:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:740:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:765:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2386:magic_configuration:Magic configuration: Hardcoded max_actions=50
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2494:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2579:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:291:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:380:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:391:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:448:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:565:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:600:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:728:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:745:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:778:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:803:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:893:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:920:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:116:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1093,7 +1183,7 @@ agentic_core/base_agents/L3OrchestrationBase.py:62:magic_configuration:Magic con
 agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/L4StateBase.py:46:type_erasure:Type erasure: L4StateBase.get_state returns Any instead of structured type
 agentic_core/base_agents/SovereignBaseAgent.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/base_agents/SovereignBaseAgent.py:514:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/base_agents/SovereignBaseAgent.py:515:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/config/core/reflection_config.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:279:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1196,6 +1286,8 @@ agentic_core/runtime/types/expansion_strategy_types.py:64:magic_configuration:Ma
 agentic_core/runtime/utils/file_cache_util.py:159:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/runtime/utils/main_util.py:45:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/runtime/utils/trait_system_util.py:215:magic_configuration:Magic configuration: Hardcoded _max_batch_queues=50
+agentic_core/system_learning/confidence/engine.py:24:magic_configuration:Magic configuration: Hardcoded _escalate_threshold=0.33
+agentic_core/system_learning/confidence/engine.py:25:magic_configuration:Magic configuration: Hardcoded _review_threshold=0.66
 agentic_core/utils/meta_learning_engine_util.py:112:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:167:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1205,6 +1297,182 @@ agentic_core/utils/meta_learning_engine_util.py:215:silent_swallower:Silent exce
 agentic_core/utils/meta_learning_engine_util.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/meta_learning_engine_util.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/project_root_util.py:32:global_mutation:Global mutation: os.environ['PROJECT_ROOT'] assignment modifies global state at runtime
+apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
+apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4
+apps_lic/reasoning/LicCodeInterpreter.py:324:magic_configuration:Magic configuration: Hardcoded min_word_length=4
+apps_lic/reasoning/LicReflectionAgent.py:64:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/LicTemplateOptimizerAgent.py:61:type_erasure:Type erasure: LicTemplateOptimizerAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/MessageComplianceAgent.py:88:type_erasure:Type erasure: MessageComplianceAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:177:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/reasoning/OutreachLearningAgent.py:275:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:282:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachLearningAgent.py:365:type_erasure:Type erasure: OutreachLearningAgent.inject_instruction returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:369:type_erasure:Type erasure: OutreachLearningAgent.record_success returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:379:type_erasure:Type erasure: OutreachLearningAgent.record_failure returns Any instead of structured type
+apps_lic/reasoning/OutreachLearningAgent.py:388:type_erasure:Type erasure: OutreachLearningAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachMessageAgent.py:127:type_erasure:Type erasure: OutreachMessageAgent.heal returns dict instead of structured type
+apps_lic/reasoning/OutreachMessageAgent.py:132:type_erasure:Type erasure: OutreachMessageAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachSignalRouterAgent.py:177:type_erasure:Type erasure: OutreachSignalRouterAgent.heal_repository returns dict instead of structured type
+apps_lic/reasoning/OutreachSignalRouterAgent.py:347:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/OutreachSignalRouterAgent.py:443:magic_configuration:Magic configuration: Hardcoded max_cycles=5
+apps_lic/scripts/migrate_agents.py:10:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:11:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:15:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:16:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:26:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:27:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:29:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:30:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/scripts/migrate_agents.py:9:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:10:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:11:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:12:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:16:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:16:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/scripts/purge_legacy_archive.py:21:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/BuildPersonalizationQuery.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/tools/ExtractContactInfo.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/tools/analyze_duplicates_detailed.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_lic/tools/analyze_duplicates_detailed.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:100:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:103:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:161:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:167:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:24:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:278:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:313:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:324:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:330:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:73:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:89:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/fix_duplicate_imports.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/query_past_campaigns.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_lic/tools/run_workflow.py:16:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/run_workflow_lic.py:220:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:27:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+apps_lic/tools/run_workflow_lic.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/run_workflow_lic.py:29:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_lic/types/app_content_validator_agent_types.py:486:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.9 in function call
+apps_lic/types/code_quality_guardrail_types.py:71:magic_configuration:Magic configuration: Hardcoded max_line_length=120
+apps_lic/types/code_quality_guardrail_types.py:72:magic_configuration:Magic configuration: Hardcoded max_function_length=50
+apps_lic/types/code_quality_guardrail_types.py:73:magic_configuration:Magic configuration: Hardcoded max_file_length=500
+apps_lic/types/code_quality_guardrail_types.py:76:magic_configuration:Magic configuration: Hardcoded min_duplicate_lines=5
+apps_lic/types/competitor_recon_agent_types.py:286:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/competitor_recon_agent_types.py:311:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/competitor_recon_agent_types.py:360:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/lic_vector_memory_types.py:214:magic_configuration:Magic configuration: Hardcoded max_age_days=90
+apps_lic/types/message_route_types.py:86:magic_configuration:Magic configuration: Hardcoded char_limit=330 in function call
+apps_lic/types/message_route_types.py:86:magic_configuration:Magic configuration: Hardcoded cta_max_words=5 in function call
+apps_lic/types/route_types.py:120:magic_configuration:Magic configuration: Hardcoded cta_word_limit=5 in function call
+apps_lic/types/route_types.py:176:magic_configuration:Magic configuration: Hardcoded cta_word_limit=10 in function call
+apps_lic/types/route_types.py:351:magic_configuration:Magic configuration: Hardcoded threshold=0.7 in function call
+apps_lic/types/route_types.py:370:magic_configuration:Magic configuration: Hardcoded threshold=0.85 in function call
+apps_lic/types/route_types.py:389:magic_configuration:Magic configuration: Hardcoded threshold=0.95 in function call
+apps_lic/types/route_types.py:453:magic_configuration:Magic configuration: Hardcoded threshold=0.92 in function call
+apps_lic/types/route_types.py:472:magic_configuration:Magic configuration: Hardcoded threshold=0.95 in function call
+apps_lic/types/route_types.py:482:magic_configuration:Magic configuration: Hardcoded threshold=0.92 in function call
+apps_lic/types/stack_modernization_agent_types.py:181:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/stack_modernization_agent_types.py:217:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/stack_modernization_agent_types.py:252:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/types/stack_modernization_agent_types.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/validators/MessageDiversityValidator.py:31:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
+apps_lic/validators/MessageDiversityValidator.py:82:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
+apps_lic/validators/PersonaPlannerValidator.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:235:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:668:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/config/void_compliance_config.py:674:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:41:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded timeout_s=60
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
+apps_rg/reasoning/ConfidencemetricsStrategy.py:206:magic_configuration:Magic configuration: Hardcoded min_confidence=0.8
+apps_rg/reasoning/ConfidencemetricsStrategy.py:25:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.95
+apps_rg/reasoning/ConfidencemetricsStrategy.py:26:magic_configuration:Magic configuration: Hardcoded convergence_threshold=0.9
+apps_rg/reasoning/ConfidencemetricsStrategy.py:27:magic_configuration:Magic configuration: Hardcoded min_confidence_for_pruning=0.8
+apps_rg/reasoning/ConfidencemetricsStrategy.py:28:magic_configuration:Magic configuration: Hardcoded min_steps=2
+apps_rg/reasoning/ConfidencemetricsStrategy.py:29:magic_configuration:Magic configuration: Hardcoded max_steps=8
+apps_rg/reasoning/ContentQualityAgent.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:49:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
+apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:50:magic_configuration:Magic configuration: Hardcoded timeout_s=60
+apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:51:magic_configuration:Magic configuration: Hardcoded max_retries=3
+apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:52:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:53:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
+apps_rg/reasoning/HeadlineOutputAgent.py:85:magic_configuration:Magic configuration: Hardcoded char_limit=90
+apps_rg/reasoning/ProactiveAgent.py:36:type_erasure:Type erasure: ProactiveAgent.record_result returns Any instead of structured type
+apps_rg/reasoning/ProactiveAgent.py:46:type_erasure:Type erasure: ProactiveAgent.add_signal returns Any instead of structured type
+apps_rg/reasoning/ResumeAssemblyAgent.py:138:type_erasure:Type erasure: ResumeAssemblyAgent.heal returns dict instead of structured type
+apps_rg/reasoning/ResumeAssemblyAgent.py:143:type_erasure:Type erasure: ResumeAssemblyAgent.heal_repository returns dict instead of structured type
+apps_rg/reasoning/ResumeEnhancementOrchestrator.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/ResumeEnhancementOrchestrator.py:135:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/RgReflectionAgent.py:101:type_erasure:Type erasure: RgReflectionAgent.heal_repository returns dict instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:143:type_erasure:Type erasure: RgReflectionAgent.ml_recall_execution_insight returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:177:type_erasure:Type erasure: RgReflectionAgent.ml_recall_quality_pattern returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgReflectionAgent.py:221:type_erasure:Type erasure: RgReflectionAgent.ml_recall_similar_reflection returns dict[str, Any] | None instead of structured type
+apps_rg/reasoning/RgResumeOrchestrator.py:83:magic_configuration:Magic configuration: Hardcoded max_depth=3
+apps_rg/scripts/generate_final_report.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/scripts/generate_final_report.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/generate_resume.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/scripts/migration_executor.py:135:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/scripts/migration_executor.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/migration_executor.py:177:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/rg_inject_archives.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/rg_json_miner.py:20:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_rg/scripts/rg_json_miner.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/scripts/rg_json_miner.py:284:magic_configuration:Magic configuration: Hardcoded min_length=100
+apps_rg/scripts/rg_live_fire.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/tools/ResumeGenerator.py:116:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/tools/ResumeGenerator.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/tools/ResumeGenerator.py:255:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/tools/ResumeGenerator.py:81:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/tools/RetrieveResumeHistory.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_rg/tools/fetch_user_preferences.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_rg/tools/query_past_generations.py:21:magic_configuration:Magic configuration: Hardcoded limit=10
+apps_rg/types/AllProvidersDownError.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded min_tot_depth=4 in function call
+apps_rg/types/PromptTemplate.py:208:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
+apps_rg/types/PromptTemplate.py:222:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:222:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
+apps_rg/types/PromptTemplate.py:233:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:233:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
+apps_rg/types/PromptTemplate.py:244:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:244:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
+apps_rg/types/PromptTemplate.py:270:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:296:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:317:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/resume_analysis_plan_types.py:439:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/routing_tier_types.py:57:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
+apps_rg/types/routing_tier_types.py:63:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
+apps_rg/types/routing_tier_types.py:69:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
+apps_rg/types/skill_extractor_node_types.py:268:magic_configuration:Magic configuration: Hardcoded exact_match_threshold=0.9
+apps_rg/types/skill_extractor_node_types.py:269:magic_configuration:Magic configuration: Hardcoded partial_match_threshold=0.7
+apps_rg/utils/authenticity_patterns_util.py:502:magic_configuration:Magic configuration: Hardcoded max_attempts=3
+apps_rg/utils/deep_brain_harvester_util.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_rg/utils/deep_brain_harvester_util.py:238:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/utils/deep_brain_harvester_util.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/utils/text_util.py:19:magic_configuration:Magic configuration: Hardcoded max_words=5
+apps_rg/validators/validation_result_validator.py:66:magic_configuration:Magic configuration: Hardcoded max_attempts=3
 apps_shared/config/titanium_search_tool_config.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1528,6 +1796,9 @@ apps_shared/utils/health_check_types_util.py:227:silent_swallower:Silent excepti
 apps_shared/utils/health_check_types_util.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/health_check_types_util.py:274:magic_configuration:Magic configuration: Hardcoded max_percent=90.0
 apps_shared/utils/health_check_types_util.py:304:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/l1_health_benchmark_util.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+apps_shared/utils/l5_autonomous_orchestrator_util.py:28:magic_configuration:Magic configuration: Hardcoded max_cycles=5
+apps_shared/utils/l5_autonomous_orchestrator_util.py:29:magic_configuration:Magic configuration: Hardcoded quality_threshold=0.75
 apps_shared/utils/late_interaction_reranker_util.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/late_interaction_reranker_util.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/late_interaction_reranker_util.py:253:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1830,6 +2101,9 @@ system_learning/ports/healing_pattern_advisor.py:19:magic_configuration:Magic co
 system_learning/ports/meta_outcome_bus_hook.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:110:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/check_vram.py:3:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
+tools/dry_run_apps_lic.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/dry_run_apps_lic.py:46:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 tools/evidence/_run_ssot_healing.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/_run_ssot_healing.py:20:global_mutation:Global mutation: os.environ['AGENTIC_BYPASS_LONGPATHS_CHECK'] assignment modifies global state at runtime
 tools/evidence/_run_ssot_healing.py:21:global_mutation:Global mutation: os.environ['SOVEREIGN_AUTO_APPROVE'] assignment modifies global state at runtime
@@ -1873,3 +2147,10 @@ tools/evidence/qwen_migration_phase9_shadow_router_runner.py:45:path_fragility:P
 tools/evidence/qwen_migration_phase9_shadow_router_runner.py:61:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
 tools/evidence/qwen_migration_phase9_shadow_router_runner.py:86:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/w6_scan_runner.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/run_phase11_ptc_evidence.py:107:magic_configuration:Magic configuration: Hardcoded limit=100 in function call
+tools/run_phase11_ptc_evidence.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+tools/run_phase3_integration.py:24:magic_configuration:Magic configuration: Hardcoded timeout_seconds=300
+tools/run_replay_execute_ssot_plan.py:41:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
+tools/run_replay_execute_ssot_plan.py:56:magic_configuration:Magic configuration: Hardcoded timeout_s=120 in function call
+tools/seed_direct_writes_baseline.py:8:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/vllm_boundary_client.py:24:magic_configuration:Magic configuration: Hardcoded _default_timeout_seconds=30

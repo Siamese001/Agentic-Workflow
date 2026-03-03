@@ -832,13 +832,24 @@ def is_path_allowed(rel_path: str | Path) -> bool:
     # If the last part is a file, the 'folder depth' is path_depth - 1
     folder_depth = path_depth - 1 if "." in filename else path_depth
 
-    # [CRITICAL] For L4 specializations, ensure we don't exceed depth 5 (L4 + 1 for file)
-    if folder_depth > config["depth"] + 1 and not is_l4_approved(normalized_path):
-        return False
+    # Skip depth enforcement for subfolders that mirror the source tree
+    # (e.g. tests/unit, tests/integration — their depth tracks the source, not a cap)
+    _sub_cfgs = config.get("subfolders", {})
+    _exclude_depth = (
+        isinstance(_sub_cfgs, dict)
+        and len(parts) > 1
+        and isinstance(_sub_cfgs.get(parts[1]), dict)
+        and _sub_cfgs[parts[1]].get("exclude_from_depth_rules", False)
+    )
 
-    # [CRITICAL] Even for L4-approved paths, don't allow depth 6+ (L4 + L5 + file)
-    if folder_depth > config["depth"] + 2:
-        return False
+    if not _exclude_depth:
+        # [CRITICAL] For L4 specializations, ensure we don't exceed depth 5 (L4 + 1 for file)
+        if folder_depth > config["depth"] + 1 and not is_l4_approved(normalized_path):
+            return False
+
+        # [CRITICAL] Even for L4-approved paths, don't allow depth 6+ (L4 + L5 + file)
+        if folder_depth > config["depth"] + 2:
+            return False
 
     # Check subfolder existence and nested forbidden patterns
     if len(parts) > 1:
