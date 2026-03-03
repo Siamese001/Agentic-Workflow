@@ -24,7 +24,7 @@ f4fb1b8601c4317a4c453d744b3bd1c859c22f2b
 
 ## EVIDENCE_COMMIT
 
-PENDING
+ca36fd9e29d88e64616b2a855cacd53f1412c6cf
 
 ## FILES_CHANGED_CODE
 
@@ -32,7 +32,7 @@ agentic_core/L5_safety/config/structure_blueprint/_constants.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/root_folders_ssot_31dbff_evidence.md
 
 ## INSPECTED_FILES
 
