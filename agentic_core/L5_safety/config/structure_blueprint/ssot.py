@@ -199,14 +199,16 @@ TESTS_AUTOGEN_DIR: str = "tests/unit_min_deps"
 # LocationHealerAgent, TestGeneratorAgent, and all validators MUST import
 # from here instead of hardcoding test paths.
 # ---------------------------------------------------------------------------
-TEST_MIRROR_ROOTS: frozenset[str] = frozenset({"agentic_core", "apps_lic", "apps_rg", "apps_shared"})
+TEST_MIRROR_ROOTS: frozenset[str] = frozenset(
+    {"agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"}
+)
 TEST_MIRROR_BASE: str = "tests/unit"
 TEST_CANONICAL_LOCATION_MAP: dict[str, str] = {
     "agentic_core": "tests/unit/agentic_core",
     "apps_lic": "tests/unit/apps_lic",
     "apps_rg": "tests/unit/apps_rg",
     "apps_shared": "tests/unit/apps_shared",
-    "system_learning": "tests/unit_min_deps/system_learning",
+    "system_learning": "tests/unit/system_learning",
 }
 
 

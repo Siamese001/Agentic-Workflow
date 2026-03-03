@@ -64,8 +64,13 @@ def test_no_source_mirror_at_tests_root():
     """
     from agentic_core.L5_safety.config.structure_blueprint import TEST_MIRROR_ROOTS
 
+    declared_ssot = _get_blueprint_test_subfolders()
     on_disk = _get_disk_test_subfolders()
-    misplaced = on_disk & TEST_MIRROR_ROOTS
+    # A mirror root is only misplaced if it is NOT also declared as a specialist
+    # category in the SSOT.  system_learning, for example, is legitimately declared
+    # at tests/system_learning/ (functional tests) AND has a unit mirror under
+    # tests/unit/system_learning/ — both are correct.
+    misplaced = (on_disk & TEST_MIRROR_ROOTS) - declared_ssot
     assert not misplaced, (
         f"Source-mirror roots found directly under tests/ (wrong level): {sorted(misplaced)}\n"
         f"These must live under tests/unit/<name>/, not tests/<name>/.\n"
@@ -94,7 +99,7 @@ def test_canonical_location_map_keys_in_mirror_roots():
         TEST_MIRROR_ROOTS,
     )
 
-    extra = set(TEST_CANONICAL_LOCATION_MAP.keys()) - TEST_MIRROR_ROOTS - {"system_learning"}
+    extra = set(TEST_CANONICAL_LOCATION_MAP.keys()) - TEST_MIRROR_ROOTS
     assert not extra, f"TEST_CANONICAL_LOCATION_MAP has keys not in TEST_MIRROR_ROOTS: {extra}"
 
 
