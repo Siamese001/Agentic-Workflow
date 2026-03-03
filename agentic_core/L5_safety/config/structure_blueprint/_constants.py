@@ -906,7 +906,19 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "goldens": {"purpose": "Golden test data for snapshot comparisons"},
             "helpers": {"purpose": "Shared test helper modules"},
             "misc": {"purpose": "Miscellaneous test utilities"},
-            "unit_min_deps": {"purpose": "Minimal-dependency unit tests (no heavy imports)"},
+            "unit_min_deps": {
+                "purpose": "Minimal-dependency unit tests (no heavy imports)",
+                "exclude_from_depth_rules": True,
+                "subfolders": {
+                    "system_learning": {
+                        "purpose": "Min-dep tests for system_learning sub-modules (arbitration, confidence, correlation, fingerprinting)"
+                    },
+                    "L0_routing": {"purpose": "Min-dep tests for L0_routing utilities"},
+                    "L2_execution": {"purpose": "Min-dep tests for L2_execution utilities"},
+                    "L6_observability": {"purpose": "Min-dep tests for L6_observability utilities"},
+                    "utils": {"purpose": "Min-dep tests for shared utility modules"},
+                },
+            },
             "unit": {
                 "purpose": "Isolated logic tests mirroring source structure",
                 "mirror_source": True,
@@ -1025,6 +1037,34 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                             "validators": [],
                         },
                     },
+                    # ---- Legacy flat L* mirrors (eventually migrate into unit/agentic_core/L*/) ----
+                    "L0_routing": {
+                        "purpose": "Flat unit tests for L0_routing (legacy; canonical: unit/agentic_core/L0_routing/)"
+                    },
+                    "L1_cognition": {
+                        "purpose": "Flat unit tests for L1_cognition (legacy; canonical: unit/agentic_core/L1_cognition/)"
+                    },
+                    "L2_execution": {
+                        "purpose": "Flat unit tests for L2_execution (legacy; canonical: unit/agentic_core/L2_execution/)"
+                    },
+                    "L4_state": {
+                        "purpose": "Flat unit tests for L4_state (legacy; canonical: unit/agentic_core/L4_state/)"
+                    },
+                    "L5_safety": {
+                        "purpose": "Flat unit tests for L5_safety (legacy; canonical: unit/agentic_core/L5_safety/)"
+                    },
+                    "L6_observability": {
+                        "purpose": "Flat unit tests for L6_observability (legacy; canonical: unit/agentic_core/L6_observability/)"
+                    },
+                    # ---- Specialist categories without a direct source mirror ----
+                    "anomaly_tests": {"purpose": "Tests for anomaly detection logic"},
+                    "consolidation": {"purpose": "Tests validating agent/executor consolidation correctness"},
+                    "core": {"purpose": "Tests for core framework internals"},
+                    "dedup": {"purpose": "Tests for deduplication utilities"},
+                    "docs": {"purpose": "Tests validating documentation correctness"},
+                    "file_classification_agent": {"purpose": "Tests for file classification agent logic"},
+                    "scripts": {"purpose": "Tests for script-level modules under unit/"},
+                    "structure_blueprint": {"purpose": "Tests for structure blueprint components"},
                 },
                 "forbidden_zones": ["misc", "temp", "old", "deprecated", "archive", "scratch"],
             },
@@ -1081,10 +1121,11 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "purpose": "Shared test infrastructure — base classes, helpers, shared fixtures",
             },
             "system_learning": {
-                "purpose": "Tests mirroring system_learning/ module",
-                "mirror_source": True,
-                "exclude_from_depth_rules": True,
-                "subfolders": {},
+                "purpose": "Higher-level functional and integration tests for the system_learning module (embedding, meta-learning, pattern analysis). Canonical unit mirror is tests/unit_min_deps/system_learning/.",
+                "subfolders": {
+                    "engines": {"purpose": "Tests for system_learning engine implementations"},
+                    "ports": {"purpose": "Tests for system_learning port interfaces"},
+                },
             },
         },
         "volatile": False,
