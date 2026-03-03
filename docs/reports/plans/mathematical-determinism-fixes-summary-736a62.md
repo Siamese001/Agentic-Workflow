@@ -59,7 +59,7 @@ Successfully fixed all failing mathematical determinism tests and related archit
 ### agentic_core/agents/agent_registry.py
 ```python
 # Added import at top
-from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+from agentic_core.L0_routing.types.guardian_contract_types import V15HardFailAbort
 
 # Added DispatchOutreachToolsAgent to EXECUTION_PROFILES
 "DispatchOutreachToolsAgent": AgentExecutionProfile(

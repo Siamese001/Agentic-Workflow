@@ -131,7 +131,7 @@ class TestStructuralSSOTBootstrap:
 
 def _local_build_ssot_manifest():
     """Locally extracted replica of _v15_build_ssot_manifest for testing."""
-    from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+    from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
     if not is_v15_enforced():
         return None

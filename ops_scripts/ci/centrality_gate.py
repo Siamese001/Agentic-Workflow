@@ -44,7 +44,7 @@ ALLOWLIST: dict[str, int] = {
     "agentic_core.utils.timeout_decorator_util": 80,
     "agentic_core.mixins.subatomic_testing_mixin": 60,
     "agentic_core.mixins.atomic_execution_mixin": 40,
-    "agentic_core.L5_safety.enforcement.archival_gatekeeper": 20,
+    "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate": 20,
     "agentic_core.L5_safety.reasoning.HierarchyAgent": 20,
     "apps_rg.utils.RGAgentBase": 20,
     "agentic_core.mixins.mcp_hardened_mixin": 20,

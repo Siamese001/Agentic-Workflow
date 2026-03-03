@@ -48,7 +48,7 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     run_dispatcher,
     validate_phase_names,
 )
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
     check_schema_compatibility,
@@ -702,7 +702,7 @@ class TestApprovalsSatisfyPhase:
         assert approvals_satisfy_phase(None, "healing") is False
 
     def test_matching_approval_returns_true(self) -> None:
-        from agentic_core.L3_orchestration.types.approval_contract import (
+        from agentic_core.L3_orchestration.types.approval_contract_types import (
             ApprovalBundle,
             ApprovalDecision,
             ApprovalRecord,
@@ -722,7 +722,7 @@ class TestApprovalsSatisfyPhase:
         assert approvals_satisfy_phase(bundle, "healing") is True
 
     def test_wrong_phase_returns_false(self) -> None:
-        from agentic_core.L3_orchestration.types.approval_contract import (
+        from agentic_core.L3_orchestration.types.approval_contract_types import (
             ApprovalBundle,
             ApprovalDecision,
             ApprovalRecord,
@@ -742,7 +742,7 @@ class TestApprovalsSatisfyPhase:
         assert approvals_satisfy_phase(bundle, "healing") is False
 
     def test_rejected_returns_false(self) -> None:
-        from agentic_core.L3_orchestration.types.approval_contract import (
+        from agentic_core.L3_orchestration.types.approval_contract_types import (
             ApprovalBundle,
             ApprovalDecision,
             ApprovalRecord,

@@ -18,11 +18,11 @@ from agentic_core.L2_execution.enforcement.key_source import (
     get_key_source,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 # ---------------------------------------------------------------------------
 # Test Infrastructure
@@ -202,7 +202,7 @@ def test_w2_determinism_digest_printed():
 
     # Verify digest is stable - compute expected value
     # Using TestKeySource with "phase1-test-secret-key"
-    from agentic_core.L2_execution.types.instruction_packet import _canonical_bytes
+    from agentic_core.L2_execution.types.instruction_packet_types import _canonical_bytes
 
     # Recreate the exact vectors
     packet_dict = {

@@ -12,7 +12,7 @@ Move 6 files to L5_safety enforcement locations, update all import references fr
 Remove empty tools/ directory, prove zero references remain, run full verification, overwrite single evidence file with all wave outputs, commit with specific message.
 
 ## Migration Map
-- tools/architectural/module_collision_guard.py → agentic_core/L5_safety/enforcement/module_collision_guard.py
+- tools/architectural/module_collision_guard.py → agentic_core/L5_safety/enforcement/module_collision_guardrail.py
 - tools/governance/artifacts_guard.py → agentic_core/L5_safety/enforcement/governance/artifacts_guard.py
 - tools/governance/cache_guard.py → agentic_core/L5_safety/enforcement/governance/cache_guard.py
 - tools/governance/docs_structure_guard.py → agentic_core/L5_safety/enforcement/governance/docs_structure_guard.py

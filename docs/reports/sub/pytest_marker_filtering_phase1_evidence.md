@@ -99,7 +99,7 @@ Exit code: 0
 
 ## Wave 1.3: Enforcement Guard Detection Rule
 
-**Implementation in tools/enforcement/pytest_config_guard.py:**
+**Implementation in tools/enforcement/pytest_config_guardrail.py:**
 
 Added AST-based detection rule to flag brittle `config.getoption("-m")` marker access:
 
@@ -116,8 +116,8 @@ Added AST-based detection rule to flag brittle `config.getoption("-m")` marker a
 ============================= test session starts =============================
 collected 2 items
 
-tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m PASSED [ 50%]
-tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern PASSED [100%]
+tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m PASSED [ 50%]
+tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern PASSED [100%]
 
 ============================== 2 passed in 0.02s ==============================
 ```
@@ -139,5 +139,5 @@ Exit code: 0
 **Files modified in Phase 1:**
 
 - tests/enforcement/test_pytest_config_guard.py (test examples updated)
-- tools/enforcement/pytest_config_guard.py (guard detection rule added)
+- tools/enforcement/pytest_config_guardrail.py (guard detection rule added)
 - docs/reports/sub/pytest_marker_filtering_phase1_evidence.md (this evidence file)

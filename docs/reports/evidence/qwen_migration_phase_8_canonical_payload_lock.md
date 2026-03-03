@@ -10,12 +10,12 @@ Phase 8 strengthens replay validation by proving the exact canonical payload use
 88ebbe3c2e9bafc53853d400fc7ff9da9de95dee
 
 ## FILES_CHANGED_CODE
-agentic_core/L2_execution/types/vllm_replay_validator.py
+agentic_core/L2_execution/types/vllm_replay_validator_types.py
 tests/unit_min_deps/test_vllm_canonical_payload_lock.py
 tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py
 
 ## INSPECTED_FILES
-agentic_core/L2_execution/types/vllm_replay_validator.py
+agentic_core/L2_execution/types/vllm_replay_validator_types.py
 tests/unit_min_deps/test_vllm_canonical_payload_lock.py
 tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py
 
@@ -33,7 +33,7 @@ SCOPE_JUSTIFICATION:
   - test_vllm_canonical_payload_lock.py added for canonical payload stability validation
   - Evidence runner validates deterministic canonical payload echo with inline proofs
 PHASE_TOUCHED_FILES:
-  agentic_core/L2_execution/types/vllm_replay_validator.py
+  agentic_core/L2_execution/types/vllm_replay_validator_types.py
   tests/unit_min_deps/test_vllm_canonical_payload_lock.py
   tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py
 

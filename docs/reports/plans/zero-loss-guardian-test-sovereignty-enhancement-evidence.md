@@ -10,7 +10,7 @@ PENDING (will be set after commit)
 PENDING (will be set after commit)
 
 ## FILES_CHANGED_CODE
-agentic_core/L0_routing/types/guardian_registry.py
+agentic_core/L0_routing/types/guardian_registry_types.py
 agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py
 agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
 agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py
@@ -28,7 +28,7 @@ tests/guardian/test_guardian_meta_coverage.py
 docs/reports/plans/zero-loss-guardian-test-sovereignty-enhancement-evidence.md
 
 ## INSPECTED_FILES
-agentic_core/L0_routing/types/guardian_registry.py
+agentic_core/L0_routing/types/guardian_registry_types.py
 agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py
 agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py
 agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py
@@ -46,7 +46,7 @@ tests/guardian/test_guardian_meta_coverage.py
 $ python -c "
 import sys
 sys.path.insert(0, '.')
-from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
 new_guardians = [
     'c0_sovereignty_enforcement',
     'change_package_activation_guard',
@@ -95,7 +95,7 @@ with tempfile.TemporaryDirectory() as tmpdir:
             runner_fn = getattr(module, fn_name)
             result = runner_fn(repo_root=tmpdir_path)
             print(f'✓ {gid}: {result.guardian_id} → {result.status} ({len(result.checks)} checks)')
-            from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
+            from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
             spec = get_guardian_by_id(gid)
             actual_checks = {c.check_id for c in result.checks}
             expected_checks = set(spec.check_ids)

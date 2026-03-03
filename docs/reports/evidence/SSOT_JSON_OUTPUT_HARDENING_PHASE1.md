@@ -38,7 +38,7 @@ ERROR [LocationHealerAgent] Move failed: 'charmap' codec can't encode character 
 ### Emoji Emission Sources
 
 ```
-agentic_core/L5_safety/enforcement/archival_gatekeeper.py:289
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:289
     print("🔒 ARCHIVAL GATEKEEPER - APPROVAL REQUIRED")
 
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:511

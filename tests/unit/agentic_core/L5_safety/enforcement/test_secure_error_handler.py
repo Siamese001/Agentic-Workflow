@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.secure_error_handler
+import agentic_core.L5_safety.enforcement.secure_error_handler_enforcer
 
 
 def test_secure_error_handler_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.secure_error_handler is not None
+    assert agentic_core.L5_safety.enforcement.secure_error_handler_enforcer is not None
 
 
 def test_SecureError_exists():
     """Test that SecureError class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.SecureError
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.SecureError
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_SecureError_exists():
 def test_SecurityError_exists():
     """Test that SecurityError class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.SecurityError
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.SecurityError
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -50,7 +50,7 @@ def test_SecurityError_exists():
 def test_ConfigurationError_exists():
     """Test that ConfigurationError class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.ConfigurationError
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.ConfigurationError
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -66,7 +66,7 @@ def test_ConfigurationError_exists():
 def test_ValidationError_exists():
     """Test that ValidationError class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.ValidationError
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.ValidationError
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -82,7 +82,7 @@ def test_ValidationError_exists():
 def test_ExecutionError_exists():
     """Test that ExecutionError class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.ExecutionError
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.ExecutionError
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -98,7 +98,7 @@ def test_ExecutionError_exists():
 def test_ErrorSanitizer_exists():
     """Test that ErrorSanitizer class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.ErrorSanitizer
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.ErrorSanitizer
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -114,7 +114,7 @@ def test_ErrorSanitizer_exists():
 def test_SecureErrorHandler_exists():
     """Test that SecureErrorHandler class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.secure_error_handler.SecureErrorHandler
+        cls = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.SecureErrorHandler
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -130,7 +130,7 @@ def test_SecureErrorHandler_exists():
 def test_secure_exception_exists():
     """Test that secure_exception function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.secure_exception
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.secure_exception
         assert callable(func)
     except AttributeError:
         pytest.skip("Function secure_exception not found in module")
@@ -139,7 +139,7 @@ def test_secure_exception_exists():
 def test_handle_secure_error_exists():
     """Test that handle_secure_error function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.handle_secure_error
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.handle_secure_error
         assert callable(func)
     except AttributeError:
         pytest.skip("Function handle_secure_error not found in module")
@@ -148,7 +148,7 @@ def test_handle_secure_error_exists():
 def test_to_dict_exists():
     """Test that to_dict function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.to_dict
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.to_dict
         assert callable(func)
     except AttributeError:
         pytest.skip("Function to_dict not found in module")
@@ -157,7 +157,7 @@ def test_to_dict_exists():
 def test_sanitize_message_exists():
     """Test that sanitize_message function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.sanitize_message
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.sanitize_message
         assert callable(func)
     except AttributeError:
         pytest.skip("Function sanitize_message not found in module")
@@ -166,7 +166,7 @@ def test_sanitize_message_exists():
 def test_sanitize_stack_trace_exists():
     """Test that sanitize_stack_trace function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.sanitize_stack_trace
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.sanitize_stack_trace
         assert callable(func)
     except AttributeError:
         pytest.skip("Function sanitize_stack_trace not found in module")
@@ -175,7 +175,7 @@ def test_sanitize_stack_trace_exists():
 def test_create_secure_error_exists():
     """Test that create_secure_error function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.create_secure_error
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.create_secure_error
         assert callable(func)
     except AttributeError:
         pytest.skip("Function create_secure_error not found in module")
@@ -184,7 +184,7 @@ def test_create_secure_error_exists():
 def test_decorator_exists():
     """Test that decorator function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.decorator
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.decorator
         assert callable(func)
     except AttributeError:
         pytest.skip("Function decorator not found in module")
@@ -193,7 +193,7 @@ def test_decorator_exists():
 def test_handle_error_exists():
     """Test that handle_error function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.handle_error
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.handle_error
         assert callable(func)
     except AttributeError:
         pytest.skip("Function handle_error not found in module")
@@ -202,7 +202,7 @@ def test_handle_error_exists():
 def test_raise_secure_exists():
     """Test that raise_secure function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.raise_secure
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.raise_secure
         assert callable(func)
     except AttributeError:
         pytest.skip("Function raise_secure not found in module")
@@ -211,7 +211,7 @@ def test_raise_secure_exists():
 def test_heal_repository_exists():
     """Test that heal_repository function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.heal_repository
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.heal_repository
         assert callable(func)
     except AttributeError:
         pytest.skip("Function heal_repository not found in module")
@@ -220,7 +220,7 @@ def test_heal_repository_exists():
 def test_sync_wrapper_exists():
     """Test that sync_wrapper function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.secure_error_handler.sync_wrapper
+        func = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.sync_wrapper
         assert callable(func)
     except AttributeError:
         pytest.skip("Function sync_wrapper not found in module")
@@ -229,7 +229,7 @@ def test_sync_wrapper_exists():
 def test_SENSITIVE_PATTERNS_exists():
     """Test that SENSITIVE_PATTERNS constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.secure_error_handler.SENSITIVE_PATTERNS
+        value = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.SENSITIVE_PATTERNS
         assert value is not None
     except AttributeError:
         pytest.skip("Constant SENSITIVE_PATTERNS not found in module")
@@ -238,7 +238,7 @@ def test_SENSITIVE_PATTERNS_exists():
 def test_STACK_PATTERNS_exists():
     """Test that STACK_PATTERNS constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.secure_error_handler.STACK_PATTERNS
+        value = agentic_core.L5_safety.enforcement.secure_error_handler_enforcer.STACK_PATTERNS
         assert value is not None
     except AttributeError:
         pytest.skip("Constant STACK_PATTERNS not found in module")
@@ -247,7 +247,7 @@ def test_STACK_PATTERNS_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.secure_error_handler
+    import agentic_core.L5_safety.enforcement.secure_error_handler_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -259,5 +259,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.secure_error_handler appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.secure_error_handler_enforcer appears to be empty"
     )

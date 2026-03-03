@@ -227,7 +227,7 @@ Agents with `BMG=YES` receive both; others receive only `_call_qwen_vllm`.
 | `TypeMechanicAgent` | `agentic_core/L5_safety/reasoning/TypeMechanicAgent.py` | L5_safety | **DETERMINISTIC** | NO | Type mechanic repairs, AST-based |
 | `UnusedCleanupAgent` | `agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py` | L5_safety | **DETERMINISTIC** | NO | Unused import/var cleanup, AST |
 | `input_validation_guardrail` | `agentic_core/L5_safety/enforcement/input_validation_guardrail.py` | L5_safety | **DETERMINISTIC** | NO | Input validation rules, deterministic |
-| `toxic_dependency_auditor` | `agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py` | L5_safety | **DETERMINISTIC** | NO | Toxic dependency rules, deterministic |
+| `toxic_dependency_auditor` | `agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py` | L5_safety | **DETERMINISTIC** | NO | Toxic dependency rules, deterministic |
 | `verification_gate` | `agentic_core/L5_safety/enforcement/verification_gate.py` | L5_safety | **DETERMINISTIC** | NO | Verification gate — must be deterministic |
 | `AutonomicMonitorAgent` | `agentic_core/L6_observability/reasoning/AutonomicMonitorAgent.py` | L6_observability | **DETERMINISTIC** | NO | Metric polling, fixed protocol |
 | `CoordinateObservabilityOperationsAgent` | `agentic_core/L6_observability/reasoning/CoordinateObservabilityOperationsAgent.py` | L6_observability | **DETERMINISTIC** | NO | Coordination ops, fixed |

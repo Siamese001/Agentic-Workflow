@@ -17,10 +17,10 @@ OPERATIONAL SAFETY (Feb 2026):
 import logging
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.process_guard import ProcessGuard, SecurityViolation
+from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard, SecurityViolation
 
 try:
-    from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+    from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
         safe_communicate,
         safe_popen,
         safe_run,

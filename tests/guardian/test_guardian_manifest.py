@@ -26,7 +26,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L0_routing.scripts.run_guardian_manifest import (
     run_manifest_guardian,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     validate_no_absolute_paths,

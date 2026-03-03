@@ -258,7 +258,7 @@ class TestCanonicalSeamEnforcement:
 
     def test_direct_llm_call_without_seam_fails(self):
         """Direct call to guarded_heal_llm_call without standard_heal context fails."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealLlmRequest,
             HealSeamBypassError,
             guarded_heal_llm_call,
@@ -278,7 +278,7 @@ class TestCanonicalSeamEnforcement:
 
     def test_standard_heal_sets_capability_token(self):
         """standard_heal decorator sets capability token for LLM access."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             _HEAL_SEAM_CAPABILITY,
         )
         from agentic_core.utils import decorators_util
@@ -353,7 +353,7 @@ class TestPolicyDecisionRecord:
 
     def test_policy_decision_record_schema(self):
         """PolicyDecisionRecord has correct schema."""
-        from agentic_core.L5_safety.types.heal_llm_seam import PolicyDecisionRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import PolicyDecisionRecord
 
         record = PolicyDecisionRecord(
             confidence=0.75,
@@ -379,7 +379,7 @@ class TestPolicyDecisionRecord:
 
     def test_policy_decision_record_deterministic_hash(self):
         """PolicyDecisionRecord produces deterministic input hash."""
-        from agentic_core.L5_safety.types.heal_llm_seam import PolicyDecisionRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import PolicyDecisionRecord
 
         record1 = PolicyDecisionRecord(
             confidence=0.75,

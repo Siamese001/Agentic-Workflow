@@ -7,7 +7,7 @@ replay hashes and that tampering is detected.
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_invariant_contract import (
+from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
     InvariantViolation,
@@ -18,14 +18,14 @@ pytestmark = pytest.mark.unit_min_deps
 
 def test_replay_hash_identical_with_same_violations():
     """Test that identical FAIL scenarios produce identical replay_hash."""
-    from agentic_core.L2_execution.types.vllm_gateway_integration import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
         VLLMInfrastructureFingerprint,
     )
-    from agentic_core.L2_execution.types.vllm_replay_validator import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
         compute_replay_hash,
     )
 
@@ -117,14 +117,14 @@ def test_replay_hash_changes_when_violation_id_changes():
     """Test that changing invariant_id changes replay_hash."""
     from dataclasses import dataclass
 
-    from agentic_core.L2_execution.types.vllm_gateway_integration import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
         VLLMInfrastructureFingerprint,
     )
-    from agentic_core.L2_execution.types.vllm_replay_validator import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
         compute_replay_hash,
     )
 
@@ -216,14 +216,14 @@ def test_replay_hash_changes_when_violation_hash_changes():
     """Test that changing violation content changes replay_hash."""
     from dataclasses import dataclass
 
-    from agentic_core.L2_execution.types.vllm_gateway_integration import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
         VLLMInfrastructureFingerprint,
     )
-    from agentic_core.L2_execution.types.vllm_replay_validator import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
         compute_replay_hash,
     )
 
@@ -317,14 +317,14 @@ def test_replay_hash_deterministic_without_violations():
     """Test that PASS scenario (no violations) produces deterministic replay_hash."""
     from dataclasses import dataclass
 
-    from agentic_core.L2_execution.types.vllm_gateway_integration import (
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMGatewayCallResult,
         VLLMGatewayTelemetry,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
         VLLMInfrastructureFingerprint,
     )
-    from agentic_core.L2_execution.types.vllm_replay_validator import (
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import (
         compute_replay_hash,
     )
 

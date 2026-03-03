@@ -16,7 +16,7 @@ from __future__ import annotations
 import shutil
 from pathlib import Path
 
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )

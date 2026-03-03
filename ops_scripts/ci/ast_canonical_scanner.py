@@ -2,7 +2,7 @@
 AST Canonical Scanner — CI enforcement for CanonicalJSON SSOT.
 
 Scans Python source files for unauthorized direct json.dumps usage
-in L2 execution paths.  Only agentic_core/utils/canonical_json.py and
+in L2 execution paths.  Only agentic_core/utils/canonical_json_util.py and
 agentic_core/utils/canonical_serializer_util.py are exempt.
 
 Exit codes:
@@ -23,7 +23,7 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 _EXEMPT_SUFFIXES = (
-    "agentic_core/utils/canonical_json.py",
+    "agentic_core/utils/canonical_json_util.py",
     "agentic_core/utils/canonical_serializer_util.py",
     "agentic_core/determinism/digest_authority.py",
 )

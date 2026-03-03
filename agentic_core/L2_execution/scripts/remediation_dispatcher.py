@@ -40,12 +40,12 @@ from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
     dispatch_healing,
 )
 from agentic_core.L2_execution.healers.healing_tier_types import FailureSignal
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     CombinedHealResult,
     HealCheckResult,
     HealStatus,
 )
-from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
+from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
 from agentic_core.L2_execution.types.l2_phase_spec import (
     LEGACY_MIRROR_PLAN,
     L2ExecutionPlan,
@@ -54,7 +54,7 @@ from agentic_core.L2_execution.types.l2_phase_spec import (
 
 def _get_approval_types():
     """Lazy load approval types to avoid upward import."""
-    from agentic_core.L3_orchestration.types.approval_contract import (
+    from agentic_core.L3_orchestration.types.approval_contract_types import (
         ApprovalBundle,
         ApprovalDecision,
         ApprovalRecord,

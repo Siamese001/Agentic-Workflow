@@ -55,8 +55,8 @@ _ALLOWLIST: frozenset[tuple[str, str, str]] = frozenset([
     ("agentic_core/L4_state/utils/experience_buffer_util.py", "__init__", "Call:.write_text()"),
     ("agentic_core/L4_state/utils/experience_buffer_util.py", "_enforce_size_limit", "Call:.write_text()"),
     # L5 safety enforcement — legitimate audit persistence
-    ("agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit.py", "save_audit_report", "Call:.mkdir()"),
-    ("agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit.py", "save_audit_report", "Call:.write_text()"),
+    ("agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py", "save_audit_report", "Call:.mkdir()"),
+    ("agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py", "save_audit_report", "Call:.write_text()"),
 ])
 
 

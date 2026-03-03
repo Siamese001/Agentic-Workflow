@@ -74,7 +74,7 @@ def test_req399_signature_enclave_real_round_trip():
         TrustRoot,
     )
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
     inject_key_source(TestKeySource())
     key_id = "test-key-1"

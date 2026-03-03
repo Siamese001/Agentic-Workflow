@@ -36,11 +36,11 @@
 | **Prompt Governance** | `prompt_governance/core/prompt_assembler.py`, `prompt_governance/core/governance_hub.py`, `prompt_governance/core/invariant_registry.py` | Partial |
 | **Signature/HMAC** | `security/signature_verifier.py`, `L2_execution/enforcement/key_derivation.py`, `L2_execution/enforcement/key_source.py`, `L0_routing/types/crypto_trust_types.py` | Partial |
 | **Healing** | `L2_execution/healers/healing_tier_router.py`, `L2_execution/healers/healing_tier_dispatcher.py`, `L2_execution/healers/healing_provider_adapters.py` | Partial |
-| **RAG/Citation** | `L4_state/types/citation_bundle.py`, `L4_state/enforcement/citation_enforcement.py`, `L0_routing/types/traceability_types.py` | Partial |
+| **RAG/Citation** | `L4_state/types/citation_bundle_types.py`, `L4_state/enforcement/citation_enforcement.py`, `L0_routing/types/traceability_types.py` | Partial |
 | **Semantic Clock** | `L0_routing/types/determinism_types.py`, `L0_routing/enforcement/trace_id_generator.py`, `L2_execution/types/capability_token_types.py` | Partial |
 | **Version/Promotion** | `L4_state/enforcement/promotion_authority.py`, `L4_state/enforcement/activation_flags.py`, `L4_state/enforcement/phase_lock_store.py` | Partial |
 | **Guardian** | `L5_safety/enforcement/` (extensive), `L0_routing/enforcement/governance_contracts.py` | Partial |
-| **Emergency Freeze** | `L0_routing/types/routing_artifact_types.py`, `L0_routing/types/routing_contracts.py` | SPARSE |
+| **Emergency Freeze** | `L0_routing/types/routing_artifact_types.py`, `L0_routing/types/routing_contracts_types.py` | SPARSE |
 | **Memory/State** | `L4_state/memory/` (15 items), `L4_state/enforcement/` (26 items) | Partial |
 | **DPO/RLHF** | `L6_observability/engines/dpo_pair_generator.py`, `system_learning/engines/rlhf_optimizer.py` | Partial |
 | **Cognitive Safety** | No `PolicyViolationArtifact`, no `PolicyAlignmentCheck` found | MISSING |
@@ -68,7 +68,7 @@ Classification key:
 
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
-| REQ-001 | CRITICAL | PARTIAL | Runtime import hook not demonstrated live | `L0_routing/enforcement/`, `L5_safety/enforcement/mutation_prohibition.py` | AST scan present; no runtime hook verified as active import interceptor |
+| REQ-001 | CRITICAL | PARTIAL | Runtime import hook not demonstrated live | `L0_routing/enforcement/`, `L5_safety/enforcement/mutation_prohibition_enforcer.py` | AST scan present; no runtime hook verified as active import interceptor |
 | REQ-002 | CRITICAL | PARTIAL | Runtime import hook not demonstrated live | Same as above | Same gap as REQ-001 |
 | REQ-003 | CRITICAL | PARTIAL | Runtime import hook not demonstrated live | `L2_execution/UniversalWriteGateway.py` | UWG exists; runtime durable-write intercept coverage for apps_* gap |
 | REQ-004 | CRITICAL | PARTIAL | Runtime boundary assertion at L1 not independently verified | `base_agents/L1CognitionBase.py` | Layer declared; no standalone L1 boundary runtime assertion enforcer found |
@@ -94,7 +94,7 @@ Classification key:
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
 | REQ-016 | CRITICAL | PARTIAL | "No silent fallback" contractually declared but no single meta-invariant runtime enforcer | Multiple enforcement files | Individual failure-close present per subsystem; no unified meta-gate |
-| REQ-017 | HIGH | PARTIAL | Schema validation present; NaN/float rejection and byte-stability not verified as explicit guards | `utils/canonical_json.py` | `sort_keys=True` likely present; NaN rejection unverified |
+| REQ-017 | HIGH | PARTIAL | Schema validation present; NaN/float rejection and byte-stability not verified as explicit guards | `utils/canonical_json_util.py` | `sort_keys=True` likely present; NaN rejection unverified |
 | REQ-018 | CRITICAL | PARTIAL | HMAC-SHA256 signing present on packets; "all authenticity-critical artifacts" scope unverified | `L2_execution/enforcement/key_derivation.py`, `L0_routing/types/crypto_trust_types.py` | Packet-level signing present; artifact-level universality unverified |
 | REQ-019 | CRITICAL | PARTIAL | "Before any state mutation" sequencing not verified as a universal gate | `security/signature_verifier.py` | Signature verify exists; sequencing guarantee (verify THEN mutate) not structurally enforced across all paths |
 | REQ-020 | CRITICAL | PARTIAL | Append-only memory confirmed partially; memory conflict INCIDENT emission not verified | `L4_state/enforcement/violation_event_store.py`, `L4_state/memory/` | Memory conflict detection and prior-version preservation not confirmed |
@@ -103,10 +103,10 @@ Classification key:
 
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
-| REQ-021 | HIGH | PARTIAL | Schema validated; `allowed_tools[]` field presence unverified | `L2_execution/types/instruction_packet.py` | Most fields present; `allowed_tools` field not confirmed |
-| REQ-022 | CRITICAL | PASS | — | `L2_execution/types/instruction_packet.py`, `L2_execution/enforcement/boundary_verifier.py` | Signature + verification present |
+| REQ-021 | HIGH | PARTIAL | Schema validated; `allowed_tools[]` field presence unverified | `L2_execution/types/instruction_packet_types.py` | Most fields present; `allowed_tools` field not confirmed |
+| REQ-022 | CRITICAL | PASS | — | `L2_execution/types/instruction_packet_types.py`, `L2_execution/enforcement/boundary_verifier.py` | Signature + verification present |
 | REQ-023 | CRITICAL | PARTIAL | `ReplayGuardStore` concrete class not found; replay check in `replay_guard.py` only | `L2_execution/determinism/replay_guard.py` | Single-use enforcement partially present; full store unverified |
-| REQ-024 | CRITICAL | PASS | — | `L2_execution/types/sandbox_envelope.py`, `L2_execution/enforcement/boundary_verifier.py` | Envelope + signature verification found |
+| REQ-024 | CRITICAL | PASS | — | `L2_execution/types/sandbox_envelope_types.py`, `L2_execution/enforcement/boundary_verifier.py` | Envelope + signature verification found |
 | REQ-025 | CRITICAL | PARTIAL | Budget schema and runtime present; CI enforcement coverage unverified | `L2_execution/enforcement/budget_enforcer.py` | Enforcer exists; `compute_ms/memory_mb/stdout_bytes` field completeness unverified |
 | REQ-026 | HIGH | PARTIAL | Schema defined; `exit_code` field presence in ToolResult unverified | `L2_execution/types/` | Tool types present; field completeness not confirmed |
 | REQ-027 | HIGH | STRUCTURAL_ONLY | Runtime STDOUT-only enforcement not verified | `L2_execution/tools/` | Tool tools exist; runtime STDOUT restriction not verified as live |
@@ -120,7 +120,7 @@ Classification key:
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
 | REQ-032 | CRITICAL | PARTIAL | TypedDict/Pydantic typing enforced selectively; AST scan coverage across all artifacts unverified | `L2_execution/types/`, `L0_routing/types/` | Rich type ecosystem present; universal enforcement unverified |
-| REQ-033 | CRITICAL | PARTIAL | ExecutionTrace present; `prev_hash` field presence unverified | `L2_execution/types/execution_trace.py` | Most fields confirmed; hash-chain field unconfirmed |
+| REQ-033 | CRITICAL | PARTIAL | ExecutionTrace present; `prev_hash` field presence unverified | `L2_execution/types/execution_trace_types.py` | Most fields confirmed; hash-chain field unconfirmed |
 | REQ-034 | CRITICAL | PARTIAL | `replay_key` present in L6; deterministic binding of all three components unverified | `L6_observability/engines/replay_key_computer.py` | Partial binding |
 
 ### Determinism Canon (REQ-035..REQ-037, REQ-111..REQ-116)
@@ -131,7 +131,7 @@ Classification key:
 | REQ-036 | CRITICAL | PARTIAL | Replay engine present; dual-run identical-digest test not confirmed in CI | `system_learning/engines/deterministic_replay_engine.py` | Engine present; no confirmed dual-run CI test |
 | REQ-037 | CRITICAL | FAIL | Negative control test with `XFAIL(strict=True)` covering all 5 tamper vectors not found | No file found | **CRITICAL FAIL** — No evidence of negative control test covering: prompt slot order mutation, slot ownership violation, embedding misuse, CitationBundle bypass, hidden context injection |
 | REQ-111 | CRITICAL | PARTIAL | `uuid4` AST scan present; `determinism_guard.py` catches uses; completeness unverified | `L2_execution/determinism/determinism_guard.py` | Guard present; CI ratchet completeness unverified |
-| REQ-112 | CRITICAL | PARTIAL | `sort_keys=True` likely enforced in canonical_json; all lists sorted before hashing unverified | `utils/canonical_json.py` | Partial |
+| REQ-112 | CRITICAL | PARTIAL | `sort_keys=True` likely enforced in canonical_json; all lists sorted before hashing unverified | `utils/canonical_json_util.py` | Partial |
 | REQ-113 | CRITICAL | PARTIAL | UTF-8 encoding enforced in canonical serializer; explicit enforcement of canonical byte representation in hash inputs unverified | `utils/canonical_serializer_util.py` | Partial |
 | REQ-114 | CRITICAL | PARTIAL | `wall.clock`/`datetime.now` appear in 260+ files — **significant drift** | Widespread | `uuid4` and wall-clock in determinism paths: 737 matches across 260 files is a CRITICAL drift signal |
 | REQ-115 | CRITICAL | PARTIAL | Semantic Clock tick logic present in types; "StateCommit-only" advancement not verified as exclusive | `L0_routing/types/determinism_types.py` | Partial |
@@ -208,7 +208,7 @@ Classification key:
 
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
-| REQ-085 | CRITICAL | PARTIAL | `HumanDecisionArtifact` with `reviewer_id` + `reviewer_sig` found; full schema enforcement unverified | `L5_safety/types/human_decision_artifact.py`, `L3_orchestration/types/human_decision_artifact.py` | Partial |
+| REQ-085 | CRITICAL | PARTIAL | `HumanDecisionArtifact` with `reviewer_id` + `reviewer_sig` found; full schema enforcement unverified | `L5_safety/types/human_decision_artifact_types.py`, `L3_orchestration/types/human_decision_artifact_types.py` | Partial |
 | REQ-086 | CRITICAL | PARTIAL | MODIFY_DIFF fields `original_plan_hash` + `structured_patch_schema` + L5 re-clear not confirmed as schema | `L5_safety/types/` | Partial |
 | REQ-087 | CRITICAL | PARTIAL | Signature invalidation on MODIFY_DIFF present in `signature_invalidator.py`; full test unverified | `L2_execution/healers/signature_invalidator.py` | Partial |
 
@@ -260,23 +260,23 @@ Classification key:
 | Req ID | Severity | Status | Missing Layers | File Paths | Notes |
 |--------|----------|--------|---------------|------------|-------|
 | REQ-117 | CRITICAL | PARTIAL | Layer import direction checked in CI; runtime guard absent | `layer-sovereignty-enforcement.yml` | STRUCTURAL_ONLY partially |
-| REQ-118 | CRITICAL | PARTIAL | Reflection bypass AST scan present; runtime guard not confirmed | `L5_safety/enforcement/mutation_prohibition.py` | Partial |
+| REQ-118 | CRITICAL | PARTIAL | Reflection bypass AST scan present; runtime guard not confirmed | `L5_safety/enforcement/mutation_prohibition_enforcer.py` | Partial |
 | REQ-119 | CRITICAL | PARTIAL | `eval`/`exec` AST scan present; completeness unverified | `L5_safety/static_checks/` | Partial |
-| REQ-120 | CRITICAL | PARTIAL | Subprocess AST scan + allowlist present; L2 allowlist completeness unverified | `L5_safety/enforcement/safe_subprocess_handler.py` | Partial |
-| REQ-121 | CRITICAL | PARTIAL | `ToolTranscript` hash-binding to ExecutionTrace not confirmed | `L2_execution/types/execution_trace.py` | Partial |
+| REQ-120 | CRITICAL | PARTIAL | Subprocess AST scan + allowlist present; L2 allowlist completeness unverified | `L5_safety/enforcement/safe_subprocess_handler_enforcer.py` | Partial |
+| REQ-121 | CRITICAL | PARTIAL | `ToolTranscript` hash-binding to ExecutionTrace not confirmed | `L2_execution/types/execution_trace_types.py` | Partial |
 | REQ-122 | CRITICAL | PARTIAL | L2 boundary reject unsigned/expired/unscoped tokens present; completeness of all 3 checks unverified | `L2_execution/enforcement/boundary_verifier.py` | Partial |
 | REQ-123 | CRITICAL | PARTIAL | Gateway model-unknown reject + audit + kill-switch block present; completeness unverified | `L2_execution/enforcement/SovereignLLMGateway.py` | Partial |
 | REQ-124 | CRITICAL | PARTIAL | `EMBEDDING_ENABLED` check + no-fallback enforcement present; completeness unverified | `embeddings/embedding_factory.py` | Partial |
 | REQ-125 | CRITICAL | PARTIAL | Vector index writes through UWG; external weight pull L5 cert requirement unverified | `L2_execution/UniversalWriteGateway.py` | Partial |
-| REQ-126 | CRITICAL | PARTIAL | No direct env mutation AST scan; config mutation without ChangePackage prevention unverified | `L5_safety/enforcement/mutation_prohibition.py` | Partial |
+| REQ-126 | CRITICAL | PARTIAL | No direct env mutation AST scan; config mutation without ChangePackage prevention unverified | `L5_safety/enforcement/mutation_prohibition_enforcer.py` | Partial |
 | REQ-127 | CRITICAL | PARTIAL | VersionStore injection logging present; `PolicyUpdateProposal` emission on all `policy_hash` changes unverified | `system_learning/engines/l4_version_store.py` | Partial |
 | REQ-128 | CRITICAL | PARTIAL | `PolicyUpdateProposal` with prev hash + HMAC sign not confirmed as schema | `L0_routing/enforcement/governance_contracts.py` | Partial |
-| REQ-129 | CRITICAL | PARTIAL | No mutable global state AST scan present; all exceptions subclassing `SovereigntyError` not confirmed | `L5_safety/enforcement/mutation_prohibition.py` | Partial |
+| REQ-129 | CRITICAL | PARTIAL | No mutable global state AST scan present; all exceptions subclassing `SovereigntyError` not confirmed | `L5_safety/enforcement/mutation_prohibition_enforcer.py` | Partial |
 | REQ-130 | HIGH | PARTIAL | `AbortArtifact` with `reason_code`, `trace_id`, `timestamp_utc` not confirmed as universal emission | `L2_execution/UniversalWriteGateway.py` | Partial |
 | REQ-131 | CRITICAL | PARTIAL | CI fails on CRITICAL violations — CI workflows present; unified per-Req-ID failure list output unverified | 17 CI workflow files | Partial — no single gate that outputs by Req ID |
 | REQ-132 | CRITICAL | PARTIAL | Discovery mismatch abort present; signature failure abort and replay mismatch abort — all 3 confirmed? Unverified | `ssot_verify.yml`, `guardian-tests.yml` | Partial |
 | REQ-133 | CRITICAL | PARTIAL | No TODO/bypass flags — static scan referenced; confirmed as CI-enforced scan unverified | `L5_safety/static_checks/` | Partial |
-| REQ-134 | CRITICAL | PARTIAL | "Zero CRITICAL violations" calculation mechanism unverified as live CI gate | `L5_safety/enforcement/compliance_audit_manager.py` | Partial |
+| REQ-134 | CRITICAL | PARTIAL | "Zero CRITICAL violations" calculation mechanism unverified as live CI gate | `L5_safety/enforcement/compliance_audit_manager_enforcer.py` | Partial |
 
 ### Governance (REQ-135..REQ-139, REQ-255..REQ-264)
 

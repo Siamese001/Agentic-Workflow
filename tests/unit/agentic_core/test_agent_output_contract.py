@@ -6,7 +6,7 @@ pytestmark = pytest.mark.unit_min_deps
 
 from pydantic import BaseModel
 
-from agentic_core.L2_execution.types.agent_output_contract import (
+from agentic_core.L2_execution.types.agent_output_contract_types import (
     AgentOutputContract,
     OutputContractViolation,
     wrap_output,

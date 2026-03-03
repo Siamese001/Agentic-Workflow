@@ -30,12 +30,12 @@
 | REQ-018 | Canonicalization | CRITICAL | EXECUTION_PATH | CI, Signature, Runtime | Runtime, CI | Signature verification test absent | MEDIUM | PARTIAL | No dedicated HMAC-SHA256 signature test for all authenticity-critical artifacts |
 | REQ-019 | META-INVARIANT | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | HIGH | PARTIAL | Signature-before-side-effect ordering not mechanically proven for all paths |
 | REQ-020 | META-INVARIANT | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | MEDIUM | PARTIAL | Append-only enforcement partial; no single seal-immutability proof across all artifact types |
-| REQ-021 | Packet | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet.py |
-| REQ-022 | Packet | CRITICAL | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet.py, tests/agentic_core/L2_execution/types/test_instruction_packet.py |
+| REQ-021 | Packet | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet_types.py |
+| REQ-022 | Packet | CRITICAL | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet_types.py, tests/agentic_core/L2_execution/types/test_instruction_packet.py |
 | REQ-023 | Replay | CRITICAL | EXECUTION_PATH | Runtime, Replay | Runtime, Replay | — | LOW | PASS | agentic_core/L2_execution/determinism/replay_guard.py |
-| REQ-024 | Envelope | CRITICAL | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/sandbox_envelope.py, tests/agentic_core/L2_execution/types/test_sandbox_envelope.py |
+| REQ-024 | Envelope | CRITICAL | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/sandbox_envelope_types.py, tests/agentic_core/L2_execution/types/test_sandbox_envelope.py |
 | REQ-025 | Budget | CRITICAL | EXECUTION_PATH | Runtime, CI, Schema | Runtime, CI, Schema | — | LOW | PASS | tests/guardian/test_v15_p11_token_cap_enforced.py |
-| REQ-026 | Tools | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet.py |
+| REQ-026 | Tools | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L2_execution/types/instruction_packet_types.py |
 | REQ-027 | Tools | HIGH | EXECUTION_PATH | Runtime | Runtime | — | LOW | PASS | agentic_core/L2_execution/tools/safe_subprocess.py |
 | REQ-028 | Tools | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | LOW | PASS | tests/governance/test_preventative_sandbox.py |
 | REQ-029 | Mutation | CRITICAL | EXECUTION_PATH | AST, Runtime | AST, Runtime | — | LOW | PASS | agentic_core/L2_execution/UniversalWriteGateway.py, agentic_core/interfaces/write_gateway.py |
@@ -119,7 +119,7 @@
 | REQ-107 | Replay | CRITICAL | EXECUTION_PATH | Replay, Runtime | Replay, Runtime | — | LOW | PASS | tests/governance/test_replay_integrity.py |
 | REQ-108 | Replay | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | LOW | PASS | tests/unit_min_deps/test_vllm_replay_tamper_roundtrip.py |
 | REQ-109 | Replay | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | LOW | PASS | tests/governance/test_phase11_universal_replay_lock.py |
-| REQ-110 | Replay | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L4_state/types/replay_bundle.py |
+| REQ-110 | Replay | HIGH | EXECUTION_PATH | Runtime, Schema | Runtime, Schema | — | LOW | PASS | agentic_core/L4_state/types/replay_bundle_types.py |
 | REQ-111 | Determinism Canon | CRITICAL | STRUCTURAL | AST, CI | AST, CI | — | MEDIUM | PARTIAL | AST scan exists; uuid4 found in 86 files incl. core modules (tracing_mixin, governance_contracts) |
 | REQ-112 | Determinism Canon | CRITICAL | EXECUTION_PATH | AST, Runtime | AST, Runtime | — | LOW | PASS | tools/canonical_hash.py |
 | REQ-113 | Determinism Canon | CRITICAL | EXECUTION_PATH | Runtime, CI | Runtime, CI | — | LOW | PASS | tools/canonical_hash.py |

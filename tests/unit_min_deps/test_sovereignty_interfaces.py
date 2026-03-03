@@ -259,13 +259,13 @@ class TestDualInjectionRequirement:
 
 class TestSealedInterfaceCheck:
     def test_no_violations_in_apps_packages(self):
-        from agentic_core.enforcement.sealed_interface_check import run_check
+        from agentic_core.enforcement.sealed_interface_check_enforcer import run_check
 
         violations = run_check()
         assert violations == [], "Sovereignty violations found:\n" + "\n".join(violations)
 
     def test_direct_layer_import_is_detected(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check import check_file
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         bad_file = tmp_path / "bad_module.py"
         bad_file.write_text("from agentic_core.L1_cognition.engines.meta_client import MetaLearningClient\n")
@@ -273,7 +273,7 @@ class TestSealedInterfaceCheck:
         assert any("DIRECT_LAYER_IMPORT" in v for v in violations)
 
     def test_sealed_impl_import_is_detected(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check import check_file
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         bad_file = tmp_path / "bypass_attempt.py"
         bad_file.write_text(
@@ -283,7 +283,7 @@ class TestSealedInterfaceCheck:
         assert any("SEALED_IMPL_BYPASS" in v for v in violations)
 
     def test_clean_interface_import_not_flagged(self, tmp_path):
-        from agentic_core.enforcement.sealed_interface_check import check_file
+        from agentic_core.enforcement.sealed_interface_check_enforcer import check_file
 
         good_file = tmp_path / "good_module.py"
         good_file.write_text("from agentic_core.interfaces.meta_learning import get_sovereign_meta_client\n")

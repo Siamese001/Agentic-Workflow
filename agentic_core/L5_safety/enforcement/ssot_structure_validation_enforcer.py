@@ -11,7 +11,7 @@ This module provides:
 5. Forbidden pattern detection
 
 USAGE:
-    from agentic_core.L5_safety.enforcement.ssot_structure_validation import (
+    from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
         SSOTStructureValidator
     )
     validator = SSOTStructureValidator()
@@ -30,7 +30,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
     VARIABLE_DEPTH_SUBFOLDERS,
 )
-from agentic_core.L5_safety.enforcement.registry_verification import (
+from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
 )

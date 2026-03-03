@@ -18,7 +18,7 @@ project_root = Path(__file__).resolve().parents[1]
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
+from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
 
 
 def main():

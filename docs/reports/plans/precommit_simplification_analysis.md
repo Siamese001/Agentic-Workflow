@@ -42,7 +42,7 @@
 10. `reject-generated-artifacts-tracked` - Block tracking of generated files
 11. `folder-purity-validation` - Agent/Types/Engine placement rules (MANUAL stage)
 12. `purge-cache` - Cleanup __pycache__
-13. `module-collision-guard` - Duplicate module detection (agentic_core/L5_safety/enforcement/module_collision_guard.py)
+13. `module-collision-guard` - Duplicate module detection (agentic_core/L5_safety/enforcement/module_collision_guardrail.py)
 14. `validate-evidence-contract` - Evidence file validation
 15. `guard-pytest-ini-scope` - pytest.ini change guard
 16. `governance-policy-validation` - Policy documentation check
@@ -61,7 +61,7 @@
 ### Guardian System
 
 - **Aggregator:** `agentic_core/L0_routing/scripts/run_all_guardians.py`
-- **Registry:** `agentic_core/L0_routing/types/guardian_registry.py`
+- **Registry:** `agentic_core/L0_routing/types/guardian_registry_types.py`
 - **Contract:** Standardized GuardianResult format with status promotion
 - **Execution:** Discovers and runs all registered guardians deterministically
 
@@ -342,7 +342,7 @@ types: [python]
 # Add to guardian_registry.py:
 GuardianSpec(
     guardian_id="module_collision",
-    entrypoint_module="agentic_core.L5_safety.enforcement.module_collision_guard",
+    entrypoint_module="agentic_core.L5_safety.enforcement.module_collision_guardrail",
     entrypoint_fn="run_as_guardian",  # Need to add this wrapper
     description="Detects duplicate modules, logical import paths, case collisions",
     enabled_by_default=True,
@@ -427,8 +427,8 @@ pass_filenames: true   # Scans only staged files
 ### ✅ IMPLEMENTED: Simplification #4 - Module Collision Guardian Registration
 
 **Changes:**
-1. Added `run_module_collision_guardian()` wrapper to `agentic_core/L5_safety/enforcement/module_collision_guard.py`
-2. Registered in `agentic_core/L0_routing/types/guardian_registry.py`:
+1. Added `run_module_collision_guardian()` wrapper to `agentic_core/L5_safety/enforcement/module_collision_guardrail.py`
+2. Registered in `agentic_core/L0_routing/types/guardian_registry_types.py`:
    - `guardian_id`: "module_collision"
    - `tier`: "fast"
    - `enabled_by_default`: True

@@ -465,6 +465,18 @@ class TestPipelineFactory:
         assert cfg.proposal_only is True
         assert "l0" in cfg.enabled_proposers
 
+    def test_build_config_apply_proposals(self):
+        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+
+        cfg = build_pipeline_config(proposal_only=False)
+        assert cfg.proposal_only is False
+
+    def test_build_config_all_proposers_enabled(self):
+        from system_learning.pipelines.pipeline_factory import build_pipeline_config
+
+        cfg = build_pipeline_config()
+        assert set(cfg.enabled_proposers) == {"l0", "rag", "l1", "l5"}
+
     def test_build_deps(self):
         from pathlib import Path
 
@@ -475,6 +487,22 @@ class TestPipelineFactory:
         assert deps.telemetry_store is not None
         assert deps.config_provider is not None
         assert deps.l4_state_writer is not None
+
+    def test_build_deps_all_proposers_wired(self):
+        """Phase 11 acceptance: factory wires all 4 concrete proposers."""
+        from pathlib import Path
+
+        from system_learning.engines.l0_threshold_tuner import L0ProposerAdapter
+        from system_learning.engines.l1_model_proposer import L1ModelProposer
+        from system_learning.engines.l5_policy_proposer import L5PolicyProposer
+        from system_learning.engines.rag_proposer import RAGParameterProposer
+        from system_learning.pipelines.pipeline_factory import build_pipeline_deps
+
+        deps = build_pipeline_deps(repo_root=Path("."))
+        assert isinstance(deps.l0_proposer, L0ProposerAdapter)
+        assert isinstance(deps.rag_proposer, RAGParameterProposer)
+        assert isinstance(deps.l1_proposer, L1ModelProposer)
+        assert isinstance(deps.l5_proposer, L5PolicyProposer)
 
 
 # ---------------------------------------------------------------------------
@@ -517,3 +545,172 @@ class TestFullPipelineExecution:
             # This is acceptable in bootstrap mode — the key test is that
             # the factory wiring doesn't TypeError.
             assert "Invalid window" not in str(exc), f"Window validation should pass: {exc}"
+
+
+# ---------------------------------------------------------------------------
+# Phase 11 Acceptance: Each proposer produces ChangePackage with real inputs
+# ---------------------------------------------------------------------------
+
+
+class TestPhase11ProposerChangePackages:
+    """Phase 11 acceptance criterion: Assert each proposer produces at least
+    one ChangePackage per proposer category when given real metric inputs."""
+
+    def _make_snapshot(self, snapshot_id="test-snap-001"):
+        """Build a minimal fake snapshot object with snapshot_id."""
+
+        class FakeSnapshot:
+            pass
+
+        s = FakeSnapshot()
+        s.snapshot_id = snapshot_id
+        return s
+
+    def test_l0_proposer_adapter_produces_change_package(self):
+        """L0ProposerAdapter produces L0ThresholdChangePackage given escalation data."""
+        from system_learning.engines.l0_threshold_tuner import (
+            L0ProposerAdapter,
+            L0ThresholdChangePackage,
+        )
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+
+        adapter = L0ProposerAdapter()
+        snapshot = self._make_snapshot()
+        metrics = {"escalation_rate": 0.85, "routing_confidence_p50": 0.65}
+        cooldown = CooldownPolicy(min_seconds_between_updates=0)
+        sample = SampleSizePolicy(min_observations=1)
+        result = adapter.propose(
+            snapshot=snapshot,
+            metrics=metrics,
+            config={"escalation_threshold": 0.6},
+            now_utc=1_000_000,
+            history={"escalation_threshold_last_update": 0, "escalation_threshold_n_obs": 10},
+            cooldown=cooldown,
+            sample=sample,
+        )
+        assert result is not None
+        assert isinstance(result, L0ThresholdChangePackage)
+        assert result.new_value != result.old_value
+
+    def test_rag_proposer_produces_change_package(self):
+        """RAGParameterProposer produces RAGChangePackage when recall is low."""
+        from system_learning.engines.rag_proposer import RAGChangePackage, RAGParameterProposer
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+
+        proposer = RAGParameterProposer()
+        snapshot = self._make_snapshot()
+        # rag_recall=0.50 < threshold 0.60 triggers proposal; min 5 observations
+        metrics = {"rag_recall": 0.50, "rag_precision": 0.80, "rag_observation_count": 10}
+        cooldown = CooldownPolicy(min_seconds_between_updates=0)
+        sample = SampleSizePolicy(min_observations=1)
+        result = proposer.propose(
+            snapshot=snapshot,
+            metrics=metrics,
+            config={"similarity_cutoff": 0.70, "top_k": 5},
+            now_utc=1_000_000,
+            history={"last_update_utc": 0},
+            cooldown=cooldown,
+            sample=sample,
+        )
+        assert result is not None
+        assert isinstance(result, RAGChangePackage)
+
+    def test_l1_proposer_produces_change_package(self):
+        """L1ModelProposer produces L1ModelChangePackage when drift exceeds threshold."""
+        from system_learning.engines.l1_model_proposer import L1ModelChangePackage, L1ModelProposer
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+
+        proposer = L1ModelProposer()
+        snapshot = self._make_snapshot()
+        # l1_confidence_drift=0.25 > threshold 0.15 triggers proposal; min 5 observations
+        metrics = {"l1_confidence_drift": 0.25, "l1_observation_count": 10}
+        cooldown = CooldownPolicy(min_seconds_between_updates=0)
+        sample = SampleSizePolicy(min_observations=1)
+        result = proposer.propose(
+            snapshot=snapshot,
+            metrics=metrics,
+            config={"temperature": 0.7},
+            now_utc=1_000_000,
+            history={"last_update_utc": 0},
+            cooldown=cooldown,
+            sample=sample,
+        )
+        assert result is not None
+        assert isinstance(result, L1ModelChangePackage)
+
+    def test_l5_proposer_produces_change_package(self):
+        """L5PolicyProposer produces L5PolicyChangePackage when FP rate is high."""
+        from system_learning.engines.l5_policy_proposer import (
+            L5PolicyChangePackage,
+            L5PolicyProposer,
+        )
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+
+        proposer = L5PolicyProposer()
+        snapshot = self._make_snapshot()
+        # l5_false_positive_rate=0.25 > threshold 0.15 triggers relaxation; min 5 obs
+        metrics = {"l5_false_positive_rate": 0.25, "l5_false_negative_rate": 0.05,
+                   "l5_observation_count": 10}
+        cooldown = CooldownPolicy(min_seconds_between_updates=0)
+        sample = SampleSizePolicy(min_observations=1)
+        result = proposer.propose(
+            snapshot=snapshot,
+            metrics=metrics,
+            config={"policy_strictness": 0.8},
+            now_utc=1_000_000,
+            history={"last_update_utc": 0},
+            cooldown=cooldown,
+            sample=sample,
+        )
+        assert result is not None
+        assert isinstance(result, L5PolicyChangePackage)
+
+    def test_all_four_proposers_produce_packages(self):
+        """Phase 11 integration: all 4 proposer categories produce ChangePackages."""
+        from system_learning.engines.l0_threshold_tuner import L0ProposerAdapter
+        from system_learning.engines.l1_model_proposer import L1ModelProposer
+        from system_learning.engines.l5_policy_proposer import L5PolicyProposer
+        from system_learning.engines.rag_proposer import RAGParameterProposer
+        from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
+
+        snapshot = self._make_snapshot()
+        cooldown = CooldownPolicy(min_seconds_between_updates=0)
+        sample = SampleSizePolicy(min_observations=1)
+        common_kwargs = dict(
+            snapshot=snapshot,
+            now_utc=1_000_000,
+            history={"last_update_utc": 0},
+            cooldown=cooldown,
+            sample=sample,
+        )
+
+        results = {
+            "l0": L0ProposerAdapter().propose(
+                metrics={"escalation_rate": 0.85, "routing_confidence_p50": 0.65},
+                config={"escalation_threshold": 0.6},
+                history={"escalation_threshold_last_update": 0, "escalation_threshold_n_obs": 10},
+                snapshot=snapshot,
+                now_utc=1_000_000,
+                cooldown=cooldown,
+                sample=sample,
+            ),
+            "rag": RAGParameterProposer().propose(
+                metrics={"rag_recall": 0.50, "rag_precision": 0.80, "rag_observation_count": 10},
+                config={"similarity_cutoff": 0.70, "top_k": 5},
+                **common_kwargs,
+            ),
+            "l1": L1ModelProposer().propose(
+                metrics={"l1_confidence_drift": 0.25, "l1_observation_count": 10},
+                config={"temperature": 0.7},
+                **common_kwargs,
+            ),
+            "l5": L5PolicyProposer().propose(
+                metrics={"l5_false_positive_rate": 0.25, "l5_false_negative_rate": 0.05,
+                         "l5_observation_count": 10},
+                config={"policy_strictness": 0.8},
+                **common_kwargs,
+            ),
+        }
+
+        for category, pkg in results.items():
+            assert pkg is not None, f"Proposer '{category}' produced no ChangePackage"

@@ -6,7 +6,7 @@ import importlib
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.runtime_mutation_guard import (
+from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
     _CORE_PREFIXES,
     _guarded_setattr,
     _GuardedSysModules,

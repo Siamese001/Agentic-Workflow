@@ -23,7 +23,7 @@ SCRIPTS_FORBIDDEN_PATTERNS: Final[Sequence[str]] = [
 # ============================================================================
 
 L5_SUBPROCESS_ALLOWLIST: Final[Sequence[str]] = [
-    "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py",
+    "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",
     "agentic_core/L5_safety/utils/subprocess_security_util.py",
     "agentic_core/L5_safety/reasoning/PreCommitSovereignAgent.py",
     "agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py",

@@ -438,7 +438,7 @@ def content_hash(self) -> str:
     ).hexdigest()
 ```
 
-**File:** `agentic_core/L4_state/types/replay_bundle.py`
+**File:** `agentic_core/L4_state/types/replay_bundle_types.py`
 
 `active_config_hashes` already accepts arbitrary string keys. Callers should now include:
 ```python

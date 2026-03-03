@@ -47,22 +47,22 @@ C:\Git\Agentic-Workflow\tools\tmp_ok\scan_ast_fuzzy_defs.py:7009 bytes
 
 ### Tools Import References Found
 ```
-C:\Git\Agentic-Workflow\tests\enforcement\test_phase_acceptance_guard.py:20:from tools.enforcement.phase_acceptance_guard import PhaseAcceptanceGuard
-C:\Git\Agentic-Workflow\tests\enforcement\test_pytest_config_guard.py:18:from tools.enforcement.pytest_config_guard import PytestEnforcementGuard
+C:\Git\Agentic-Workflow\tests\enforcement\test_phase_acceptance_guard.py:20:from tools.enforcement.phase_acceptance_guardrail import PhaseAcceptanceGuard
+C:\Git\Agentic-Workflow\tests\enforcement\test_pytest_config_guard.py:18:from tools.enforcement.pytest_config_guardrail import PytestEnforcementGuard
 C:\Git\Agentic-Workflow\tests\governance\test_agent_heal_audit.py:206:        from tools.governance.agent_heal_audit import AgentHealAuditScanner
 ```
 
 ### Migration Map (Target Files Only)
 | Source Path | Destination Path | New Import Module |
 |-------------|------------------|-------------------|
-| tools/architectural/module_collision_guard.py | agentic_core/L5_safety/enforcement/module_collision_guard.py | agentic_core.L5_safety.enforcement.module_collision_guard |
+| tools/architectural/module_collision_guard.py | agentic_core/L5_safety/enforcement/module_collision_guardrail.py | agentic_core.L5_safety.enforcement.module_collision_guardrail |
 | tools/governance/artifacts_guard.py | agentic_core/L5_safety/enforcement/governance/artifacts_guard.py | agentic_core.L5_safety.enforcement.governance.artifacts_guard |
 | tools/governance/cache_guard.py | agentic_core/L5_safety/enforcement/governance/cache_guard.py | agentic_core.L5_safety.enforcement.governance.cache_guard |
 | tools/governance/docs_structure_guard.py | agentic_core/L5_safety/enforcement/governance/docs_structure_guard.py | agentic_core.L5_safety.enforcement.governance.docs_structure_guard |
 | tools/governance/logs_guard.py | agentic_core/L5_safety/enforcement/governance/logs_guard.py | agentic_core.L5_safety.enforcement.governance.logs_guard |
 | tools/security/credential_guard.py | agentic_core/L5_safety/enforcement/security/credential_guard.py | agentic_core.L5_safety.enforcement.security.credential_guard |
-| tools/enforcement/phase_acceptance_guard.py | agentic_core/L5_safety/enforcement/phase_acceptance_guard.py | agentic_core.L5_safety.enforcement.phase_acceptance_guard |
-| tools/enforcement/pytest_config_guard.py | agentic_core/L5_safety/enforcement/pytest_config_guard.py | agentic_core.L5_safety.enforcement.pytest_config_guard |
+| tools/enforcement/phase_acceptance_guardrail.py | agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py | agentic_core.L5_safety.enforcement.phase_acceptance_guardrail |
+| tools/enforcement/pytest_config_guardrail.py | agentic_core/L5_safety/enforcement/pytest_config_guardrail.py | agentic_core.L5_safety.enforcement.pytest_config_guardrail |
 | tools/governance/agent_heal_audit.py | agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py | agentic_core.L5_safety.enforcement.governance.agent_heal_audit |
 
 ### Files Not in Scope
@@ -106,8 +106,8 @@ no tools references
  M tests/enforcement/test_pytest_config_guard.py
  M tests/governance/test_agent_heal_audit.py
  D tools/architectural/module_collision_guard.py
- D tools/enforcement/phase_acceptance_guard.py
- D tools/enforcement/pytest_config_guard.py
+ D tools/enforcement/phase_acceptance_guardrail.py
+ D tools/enforcement/pytest_config_guardrail.py
  D tools/governance/agent_heal_audit.py
  D tools/governance/artifacts_guard.py
  D tools/governance/cache_guard.py
@@ -121,9 +121,9 @@ no tools references
  D tools/tmp_ok/derive_central_candidates.py
  D tools/tmp_ok/scan_ast_fuzzy_defs.py
 ?? agentic_core/L5_safety/enforcement/governance/
-?? agentic_core/L5_safety/enforcement/module_collision_guard.py
-?? agentic_core/L5_safety/enforcement/phase_acceptance_guard.py
-?? agentic_core/L5_safety/enforcement/pytest_config_guard.py
+?? agentic_core/L5_safety/enforcement/module_collision_guardrail.py
+?? agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py
+?? agentic_core/L5_safety/enforcement/pytest_config_guardrail.py
 ?? agentic_core/L5_safety/enforcement/security/
 ?? docs/reports/sub/tools_directory_migration_phase1.md
 ```
@@ -139,17 +139,17 @@ agentic_core/L5_safety/enforcement/governance/artifacts_guard.py
 agentic_core/L5_safety/enforcement/governance/cache_guard.py
 agentic_core/L5_safety/enforcement/governance/docs_structure_guard.py
 agentic_core/L5_safety/enforcement/governance/logs_guard.py
-agentic_core/L5_safety/enforcement/module_collision_guard.py
-agentic_core/L5_safety/enforcement/phase_acceptance_guard.py
-agentic_core/L5_safety/enforcement/pytest_config_guard.py
+agentic_core/L5_safety/enforcement/module_collision_guardrail.py
+agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py
+agentic_core/L5_safety/enforcement/pytest_config_guardrail.py
 agentic_core/L5_safety/enforcement/security/__init__.py
 agentic_core/L5_safety/enforcement/security/credential_guard.py
 tests/enforcement/test_phase_acceptance_guard.py
 tests/enforcement/test_pytest_config_guard.py
 tests/governance/test_agent_heal_audit.py
 tools/architectural/module_collision_guard.py
-tools/enforcement/phase_acceptance_guard.py
-tools/enforcement/pytest_config_guard.py
+tools/enforcement/phase_acceptance_guardrail.py
+tools/enforcement/pytest_config_guardrail.py
 tools/governance/agent_heal_audit.py
 tools/governance/artifacts_guard.py
 tools/governance/cache_guard.py

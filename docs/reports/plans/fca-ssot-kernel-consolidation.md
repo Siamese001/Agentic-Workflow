@@ -55,7 +55,7 @@ Created a zero-dependency **classification kernel** (`agentic_core/core/classifi
   - Added Mixin exclusion
 
 ### Phase 5: Cleaned Up Inline Checks
-- **MODIFIED:** `agentic_core/L5_safety/enforcement/ssot_scanner.py` — Added Mixin exclusion
+- **MODIFIED:** `agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py` — Added Mixin exclusion
 - **MODIFIED:** `agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py` — Added Mixin exclusion
 - **MODIFIED:** `agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py` — Added Mixin exclusion
 - **MODIFIED:** `ops_scripts/maintenance/run_classification.py` — Replaced 130-line `classify_file()` reimplementation with kernel delegation

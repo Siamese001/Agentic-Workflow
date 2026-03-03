@@ -4,7 +4,7 @@
 **9a6f3745c** — phase7: ToolIntent + L1 block enforcement + ToolIntentExecutor + ToolResult + tests
 
 ## Modified / New Files
-- `agentic_core/L2_execution/types/tool_intent.py` [NEW — Wave 1: ToolCapability enum + ToolIntent + ToolViolation + l1_cognition_scope() + assert_l1_tool_allowed() + build_tool_intent()]
+- `agentic_core/L2_execution/types/tool_intent_types.py` [NEW — Wave 1: ToolCapability enum + ToolIntent + ToolViolation + l1_cognition_scope() + assert_l1_tool_allowed() + build_tool_intent()]
 - `agentic_core/L2_execution/engines/tool_intent_executor.py` [NEW — Wave 2: ToolIntentExecutor (L2.2 sandbox-only) + ToolResult]
 - `tests/agentic_core/test_phase7_tool_intent_model.py` [NEW — Wave 1: 35 tests]
 - `tests/agentic_core/test_phase7_tool_executor.py` [NEW — Wave 2: 24 tests]

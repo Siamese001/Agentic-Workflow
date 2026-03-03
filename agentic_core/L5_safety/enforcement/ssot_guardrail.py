@@ -97,10 +97,10 @@ ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset(
         "agentic_core/L0_routing/utils/complexity_visitor_util.py",
         "agentic_core/L0_routing/scripts/full_agent_discovery.py",
         # Naming/renaming scripts that check suffixes for compliance:
-        "agentic_core/L5_safety/enforcement/ssot_scanner.py",
-        "agentic_core/L5_safety/enforcement/registry_verification.py",
-        "agentic_core/L5_safety/enforcement/data.py",
-        "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
+        "agentic_core/L5_safety/enforcement/registry_verification_enforcer.py",
+        "agentic_core/L5_safety/enforcement/data_enforcer.py",
+        "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         # Dedup/migration scripts:
         "agentic_core/L0_routing/scripts/extract_agent_duplicates_util.py",
         "agentic_core/L0_routing/scripts/find_real_duplicates_v2_util.py",

@@ -798,7 +798,7 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 
 **I.5 FAIL-CLOSED:** proposal_only=True. Silent fallback:NO. Bypass:NO.
 
-**I.6 TRACEABILITY:** Source: `agentic_core/L3_orchestration/types/human_decision_artifact.py:145-173` (create_for_review() builds HumanDecisionArtifact with original_plan_hash CONFIRMED). `L6_observability/engines/dpo_pair_generator.py` builds DPOPairs. Target: `meta_learning_bus.py:57-64` enqueue.
+**I.6 TRACEABILITY:** Source: `agentic_core/L3_orchestration/types/human_decision_artifact_types.py:145-173` (create_for_review() builds HumanDecisionArtifact with original_plan_hash CONFIRMED). `L6_observability/engines/dpo_pair_generator.py` builds DPOPairs. Target: `meta_learning_bus.py:57-64` enqueue.
 
 **I.9 OSCILLATION:** DPO clamp [0.1,2.0]:YES | Cooldown:YES | Sample size:YES | OscillationDetector:YES | proposal_only:YES | Dual injection:YES.
 
@@ -838,7 +838,7 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 
 **I.5 FAIL-CLOSED:** Rejection is explicit. No silent fallback. Old InstructionPacket must not be reused.
 
-**I.6 TRACEABILITY:** Source: L5 safety enforcement (L5SafetyBase.py). Target: L0 routing / L1 re-routing. `agentic_core/L5_safety/enforcement/human_review_queue.py:32` (HumanDecisionArtifact import CONFIRMED — same module handles Path D). No sig verify on rejection signal.
+**I.6 TRACEABILITY:** Source: L5 safety enforcement (L5SafetyBase.py). Target: L0 routing / L1 re-routing. `agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py:32` (HumanDecisionArtifact import CONFIRMED — same module handles Path D). No sig verify on rejection signal.
 
 **I.8 SOVEREIGNTY:** Upward mutation:NO | Gateway bypass:NO | Sig skip:YES (no sig on rejection signal — acceptable; rejection IS the safety enforcement) | Kill-switch bypass:NO (this is the kill-switch result).
 
@@ -909,7 +909,7 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 
 **I.3 FLAGS:** InstructionPacket:NO | SandboxEnvelope:NO | L5-Cert:YES | L6-Observable:YES | L4-Persist:NO | C0-only:NO | Gateway:NO | UWG:NO | Sig-verify-before:YES (reviewer_sig)
 
-**I.6 TRACEABILITY:** Source: `agentic_core/L3_orchestration/types/human_decision_artifact.py:145-173` — `create_for_review()` CONFIRMED with original_plan_hash. `agentic_core/L5_safety/enforcement/human_review_queue.py:32` confirms L5 ingestion of HumanDecisionArtifact.
+**I.6 TRACEABILITY:** Source: `agentic_core/L3_orchestration/types/human_decision_artifact_types.py:145-173` — `create_for_review()` CONFIRMED with original_plan_hash. `agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py:32` confirms L5 ingestion of HumanDecisionArtifact.
 
 **I.11:** STATUS: **YELLOW** — HumanDecisionArtifact with original_plan_hash CONFIRMED. Mandatory re-clear documented. Gap: original_plan_hash validation at L5 re-clear ingress not confirmed from human_review_queue.py source.
 
@@ -936,7 +936,7 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 
 **I.3–I.5:** Same as A-11.
 
-**I.6 TRACEABILITY:** Source: `agentic_core/L2_execution/scripts/remediation_dispatcher.py:526` (needs_llm_escalation check CONFIRMED; FailureSignal construction). `agentic_core/L2_execution/types/heal_contract.py:140` needs_llm_escalation:bool=False CONFIRMED (S16 scan). Target: `meta_learning_bus.py:57-64` enqueue.
+**I.6 TRACEABILITY:** Source: `agentic_core/L2_execution/scripts/remediation_dispatcher.py:526` (needs_llm_escalation check CONFIRMED; FailureSignal construction). `agentic_core/L2_execution/types/heal_contract_types.py:140` needs_llm_escalation:bool=False CONFIRMED (S16 scan). Target: `meta_learning_bus.py:57-64` enqueue.
 
 **I.9 OSCILLATION:** Same as A-11 — all YES confirmed.
 
@@ -1180,11 +1180,11 @@ Enumeration from ASCII glyphs (diagram lines 41–258), split into atomic flows:
 | A-29 | Same as A-28 | Same | YES | NO | NO | Same | Stage 7 | FRAGMENTED |
 | A-30 | Same as A-28 | Same | YES | NO | NO | Same | Stage 7 | FRAGMENTED |
 | A-31 | Same as A-28 | Same | YES | NO | NO | Same | Stage 7 | FRAGMENTED |
-| A-32 | `L3_orchestration/types/human_decision_artifact.py:145` | `create_for_review()` | YES(DPO sorted) | reviewer_sig | YES(DPO) | `meta_learning_pipeline.py` | Stage 7 | FRAGMENTED |
+| A-32 | `L3_orchestration/types/human_decision_artifact_types.py:145` | `create_for_review()` | YES(DPO sorted) | reviewer_sig | YES(DPO) | `meta_learning_pipeline.py` | Stage 7 | FRAGMENTED |
 | A-33 | Same as A-32 | Same | YES | reviewer_sig | YES | Same | Stage 7 | FRAGMENTED |
 | A-34 | `base_agents/L5SafetyBase.py` | HARD STOP emit | NO | NO | NO | L0/L1 re-route | NONE | FRAGMENTED |
 | A-35 | `L5SafetyBase.py` | SandboxEnvelope build | YES | YES(L5 stamp) | YES(ReplayEnv) | `boundary_verifier.py:82-85` + `engines/execution_gateway.py:53` | verify_sandbox_envelope() | SOVEREIGN |
-| A-36 | `human_decision_artifact.py:145` | `create_for_review()` | YES | reviewer_sig | NO | `L5_safety/enforcement/human_review_queue.py:32` | human_review_queue | FRAGMENTED |
+| A-36 | `human_decision_artifact.py:145` | `create_for_review()` | YES | reviewer_sig | NO | `L5_safety/enforcement/human_review_queue_enforcer.py:32` | human_review_queue | FRAGMENTED |
 | A-37 | `L5SafetyBase.py` (re-clear) | new SandboxEnvelope | YES | YES(new stamp) | YES | `boundary_verifier.py:82-85` | verify_sandbox_envelope() | SOVEREIGN(partial) |
 | A-38 | `remediation_dispatcher.py:526` | FailureSignal build | YES | NO | NO | `meta_learning_bus.py:57-64` | Stage 7 | FRAGMENTED |
 | A-39 | Same as A-38 | Same | YES | NO | NO | Same | Stage 7 | FRAGMENTED |
@@ -1351,7 +1351,7 @@ def verify_instruction_packet(self, packet: InstructionPacket) -> None:
 ### CP-3: HumanDecisionArtifact Verification (A-36)
 
 **Method:** Grep scan (S6) + file read
-**Implementation:** `human_decision_artifact.py:46-54` (class with original_plan_hash CONFIRMED). `L5_safety/enforcement/human_review_queue.py:32` imports HumanDecisionArtifact.
+**Implementation:** `human_decision_artifact.py:46-54` (class with original_plan_hash CONFIRMED). `L5_safety/enforcement/human_review_queue_enforcer.py:32` imports HumanDecisionArtifact.
 **Call sites:** 55 grep refs; `deterministic_orchestrator.py:298-300` confirms MODIFY_DIFF must reference original_plan_hash
 **Gap:** `human_review_queue.py` ingestion logic not directly read — validation of original_plan_hash at L5 ingress not confirmed as code
 
@@ -1719,7 +1719,7 @@ All stages confirmed in scope: `system_learning/pipelines/meta_learning_pipeline
 
 **Model literals outside gateway (S9):**
 - 189 total references (mostly in `agent_registry.py` — ALLOWED as registry definition)
-- Non-registry violations: `agentic_core/agents/types/agent_execution_profile.py:96` — example strings (low-risk docs)
+- Non-registry violations: `agentic_core/agents/types/agent_execution_profile_types.py:96` — example strings (low-risk docs)
 - Registry definitions allowed: allowed_models tuples in AGENT_REGISTRY are the SSOT
 
 **Gateway bypass classification:**
@@ -1810,7 +1810,7 @@ All stages confirmed in scope: `system_learning/pipelines/meta_learning_pipeline
 
 **HumanDecisionArtifact verify (S6): 55 refs**
 - `human_decision_artifact.py:46` — class definition with original_plan_hash (CONFIRMED)
-- `L5_safety/enforcement/human_review_queue.py:32` — L5 ingests HumanDecisionArtifact
+- `L5_safety/enforcement/human_review_queue_enforcer.py:32` — L5 ingests HumanDecisionArtifact
 - `deterministic_orchestrator.py:298-300` — MODIFY_DIFF must reference original_plan_hash (CONFIRMED)
 - Gap: validator at L5 re-clear ingress not directly read
 
@@ -2981,7 +2981,7 @@ All "ML Integration:" annotations in the ASCII diagram. Enumerated from `docs/te
 - STATUS: YELLOW (HMAC gap — A-30 HIGHEST-SENS maintained)
 
 **ML-12/ML-13 (HUMAN REVIEW → META-LEARNING BUS):**
-- Implementation: `L3_orchestration/types/human_decision_artifact.py:145-173` — `create_for_review()` with original_plan_hash CONFIRMED
+- Implementation: `L3_orchestration/types/human_decision_artifact_types.py:145-173` — `create_for_review()` with original_plan_hash CONFIRMED
 - `L6_observability/engines/dpo_pair_generator.py` — builds DPOPairs from Path D decisions
 - ML-12: reviewer_sig CONFIRMED (human_decision_artifact.py:46)
 - ML-13: "Tune L0/L5 Thresholds ONLY" — scope label only; no ChangePackage payload enforcement CONFIRMED gap

@@ -59,7 +59,7 @@ def main():
 
     # PHASE_TOUCHED_FILES (deterministic from git)
     phase_touched = [
-        "agentic_core/L2_execution/types/vllm_replay_validator.py",
+        "agentic_core/L2_execution/types/vllm_replay_validator_types.py",
         "tests/unit_min_deps/test_vllm_replay_with_violations.py",
         "tools/evidence/qwen_migration_phase6_evidence_runner.py",
     ]
@@ -171,19 +171,19 @@ def execute_proofs():
     from dataclasses import dataclass
     from unittest.mock import patch
 
-    from agentic_core.L2_execution.types.vllm_gateway_adapter import VLLMGatewayAdapter, reset_singletons
-    from agentic_core.L2_execution.types.vllm_gateway_integration import (
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter, reset_singletons
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMCircuitBreakerRegistry,
         VLLMGatewayCallResult,
         VLLMQueueController,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
-    from agentic_core.L2_execution.types.vllm_invariant_contract import (
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
         InvariantId,
         InvariantSeverity,
         InvariantViolation,
     )
-    from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+    from agentic_core.L2_execution.types.vllm_replay_validator_types import compute_replay_hash
 
     @dataclass
     class MockPreflight:
@@ -212,7 +212,7 @@ def execute_proofs():
     print("PASS SCENARIO:")
 
     # Create result with no violations
-    from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMGatewayTelemetry
+    from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMGatewayTelemetry
 
     telemetry_pass = VLLMGatewayTelemetry(
         provider_selected="Qwen2.5-7B-Instruct",
@@ -284,7 +284,7 @@ def execute_proofs():
 
     # Patch verifier to return FAIL violation
     with patch(
-        "agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants"
+        "agentic_core.L2_execution.types.vllm_invariant_verifier_types.verify_gateway_invariants"
     ) as mock_verify:
         mock_verify.return_value = [fail_violation]
 
@@ -318,7 +318,7 @@ def execute_proofs():
 
     # Determinism re-run (same inputs)
     with patch(
-        "agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants"
+        "agentic_core.L2_execution.types.vllm_invariant_verifier_types.verify_gateway_invariants"
     ) as mock_verify:
         mock_verify.return_value = [fail_violation]
 
@@ -369,7 +369,7 @@ def execute_proofs():
 
     def canonical_response_hash_no_violations(result):
         """Test-only seam: canonical_response_hash without violations."""
-        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+        from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
             canonical_json,
             sha256_hex,
         )
@@ -380,7 +380,7 @@ def execute_proofs():
 
     # Patch canonical_response_hash to disable violation inclusion
     with patch(
-        "agentic_core.L2_execution.types.vllm_replay_validator.canonical_response_hash",
+        "agentic_core.L2_execution.types.vllm_replay_validator_types.canonical_response_hash",
         canonical_response_hash_no_violations,
     ):
         hash_no_violations = compute_replay_hash("tamper_test", None, fp, result_tampered)

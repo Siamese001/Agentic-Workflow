@@ -1,12 +1,12 @@
 """
 Backward compatibility stub for v15_p2_contracts_types module.
 
-Canonical location: agentic_core/L0_routing/types/determinism_contracts.py
+Canonical location: agentic_core/L0_routing/types/determinism_contracts_types.py
 """
 
 from __future__ import annotations
 
-from agentic_core.L0_routing.types.determinism_contracts import (
+from agentic_core.L0_routing.types.determinism_contracts_types import (
     EpisodicMemoryNotQueried,
     ForbiddenInputError,
     RollbackHashMismatch,

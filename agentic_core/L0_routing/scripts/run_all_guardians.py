@@ -20,7 +20,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     AGGREGATE_GUARDIAN_ID,
     CONTRACT_VERSION,
     ArtifactClass,
@@ -32,11 +32,11 @@ from agentic_core.L0_routing.types.guardian_contract import (
     normalize_repo_path,
     write_guardian_result,
 )
-from agentic_core.L0_routing.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry_types import (
     GuardianSpec,
     get_guardian_specs,
 )
-from agentic_core.L0_routing.utils.project_root import get_validated_project_root
+from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 
 
 def _run_single_guardian(

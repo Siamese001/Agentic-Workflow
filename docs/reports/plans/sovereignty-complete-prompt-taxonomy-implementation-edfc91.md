@@ -14,8 +14,8 @@ The original prompt taxonomy implementation plan identified critical gaps but la
 
 #### 0.1 Cryptographic Boundary Enforcement
 **Files to Create/Modify:**
-- `agentic_core/L2_execution/types/instruction_packet.py` - ENHANCE
-- `agentic_core/L2_execution/types/sandbox_envelope.py` - ENHANCE
+- `agentic_core/L2_execution/types/instruction_packet_types.py` - ENHANCE
+- `agentic_core/L2_execution/types/sandbox_envelope_types.py` - ENHANCE
 - `agentic_core/L2_execution/enforcement/boundary_validator.py` - NEW
 - `tests/governance/test_cryptographic_boundaries.py` - NEW
 

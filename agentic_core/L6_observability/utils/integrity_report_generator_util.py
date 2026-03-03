@@ -25,15 +25,15 @@ from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L5_safety.enforcement.registry_verification import (
+from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     RegistryVerifier,
     VerificationResult,
 )
-from agentic_core.L5_safety.enforcement.ssot_structure_validation import (
+from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
     SSOTStructureValidator,
     StructureValidationResult,
 )
-from agentic_core.L5_safety.enforcement.three_tier_compliance import (
+from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )

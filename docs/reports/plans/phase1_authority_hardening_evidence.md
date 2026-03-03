@@ -11,7 +11,7 @@ docs/reports/plans/phase1_authority_hardening_evidence.md | 1 +-
 
 Cumulative files introduced across Phase 1 (ace6057e8 → c03cbf58d):
 - agentic_core/L0_routing/enforcement/execution_gateway.py
-- agentic_core/L1_cognition/types/execution_intent.py
+- agentic_core/L1_cognition/types/execution_intent_types.py
 - agentic_core/L1_cognition/validators/truth_keeper_validator.py
 - agentic_core/L2_execution/enforcement/durable_write_wrapper.py
 - agentic_core/L5_safety/reasoning/guardian_decision.py

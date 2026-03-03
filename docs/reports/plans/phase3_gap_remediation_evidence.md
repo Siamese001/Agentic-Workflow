@@ -47,10 +47,10 @@ docs/reports/plans/phase3_gap_remediation_evidence.md
 
 agentic_core/L2_execution/determinism/canonicalize.py
 agentic_core/determinism/digest_authority.py
-agentic_core/L2_execution/types/instruction_packet.py
+agentic_core/L2_execution/types/instruction_packet_types.py
 agentic_core/L0_routing/types/determinism_types.py
 agentic_core/L4_state/enforcement/replay_bundle_store.py
-agentic_core/L4_state/types/replay_bundle.py
+agentic_core/L4_state/types/replay_bundle_types.py
 agentic_core/L0_routing/types/crypto_trust_types.py
 agentic_core/L0_routing/enforcement/crypto_trust_contracts.py
 agentic_core/L2_execution/enforcement/key_source.py

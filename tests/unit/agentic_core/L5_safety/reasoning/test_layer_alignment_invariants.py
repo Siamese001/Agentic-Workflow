@@ -167,7 +167,7 @@ class TestFCALayerAlignment:
         fca = fca_cls(project_root=tmp_path)
         p = _make_py(
             tmp_path,
-            "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py",
+            "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",
             "import subprocess",
         )
         result = fca.validate_layer_alignment(p)

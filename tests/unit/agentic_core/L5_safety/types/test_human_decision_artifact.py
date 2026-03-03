@@ -3,7 +3,7 @@
 import pytest
 
 pytestmark = pytest.mark.unit_min_deps
-from agentic_core.L5_safety.types.human_decision_artifact import (
+from agentic_core.L5_safety.types.human_decision_artifact_types import (
     HumanDecisionArtifact,
     HumanDecisionViolation,
 )

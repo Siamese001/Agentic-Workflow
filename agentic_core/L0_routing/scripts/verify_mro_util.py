@@ -92,7 +92,7 @@ def verify_location_validator_agent():
 def verify_hierarchy_agent():
     """Verify HierarchyAgent MRO via subprocess."""
     try:
-        from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
+        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
 
         result = invoke_hierarchy_agent(action="verify_mro")
 

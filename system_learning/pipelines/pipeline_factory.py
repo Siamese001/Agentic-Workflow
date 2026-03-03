@@ -15,12 +15,18 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
-def build_pipeline_config() -> Any:
-    """Build a default PipelineConfig for proposal-only mode.
+def build_pipeline_config(*, proposal_only: bool = True) -> Any:
+    """Build a PipelineConfig for the meta-learning pipeline.
+
+    Parameters
+    ----------
+    proposal_only : bool
+        When True (default), the pipeline only produces proposals without
+        applying them.  Pass False (via ``--apply-proposals``) to activate
+        the commit/activate path.
 
     Returns a ``PipelineConfig`` with conservative defaults suitable for
-    initial bootstrap.  All validation gates are enabled and
-    ``proposal_only=True``.
+    initial bootstrap.  All validation gates are enabled.
     """
     from system_learning.pipelines.meta_learning_pipeline import PipelineConfig
     from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -44,10 +50,10 @@ def build_pipeline_config() -> Any:
             epsilon=0.01,
             freeze_seconds=7200,
         ),
-        enabled_proposers=("l0",),
+        enabled_proposers=("l0", "rag", "l1", "l5"),
         require_replay_validation=True,
         require_shadow_validation=False,
-        proposal_only=True,
+        proposal_only=proposal_only,
     )
 
 
@@ -75,7 +81,11 @@ def build_pipeline_deps(
     PipelineDependencies
         Fully-wired dependencies ready for ``run_pipeline()``.
     """
+    from system_learning.engines.l0_threshold_tuner import L0ProposerAdapter
+    from system_learning.engines.l1_model_proposer import L1ModelProposer
     from system_learning.engines.l4_state_writer import InMemoryL4StateWriter
+    from system_learning.engines.l5_policy_proposer import L5PolicyProposer
+    from system_learning.engines.rag_proposer import RAGParameterProposer
     from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
     from system_learning.stores.audit_store import FileBackedAuditStore
     from system_learning.stores.config_provider import (
@@ -94,6 +104,12 @@ def build_pipeline_deps(
     )
     baseline_metrics = InMemoryBaselineMetricsProvider()
     l4_writer = InMemoryL4StateWriter()
+
+    # Concrete proposers — all four layers wired
+    l0_proposer = L0ProposerAdapter()
+    rag_proposer = RAGParameterProposer()
+    l1_proposer = L1ModelProposer()
+    l5_proposer = L5PolicyProposer()
 
     # Optional engines — import failures are non-fatal
     pattern_engine = None
@@ -118,6 +134,10 @@ def build_pipeline_deps(
         telemetry_store=telemetry_store,
         config_provider=config_provider,
         baseline_metrics_provider=baseline_metrics,
+        l0_proposer=l0_proposer,
+        rag_proposer=rag_proposer,
+        l1_proposer=l1_proposer,
+        l5_proposer=l5_proposer,
         healing_outcome_intake_adapter=healing_outcome_intake_adapter,
         healing_config_optimizer=optimizer,
         l4_state_writer=l4_writer,

@@ -73,7 +73,7 @@ def execute_canonical_payload_proofs():
             validate_64hex,
         )
 
-        from agentic_core.L2_execution.types.vllm_replay_validator import VLLMReplayValidator
+        from agentic_core.L2_execution.types.vllm_replay_validator_types import VLLMReplayValidator
     except ImportError as e:
         print(f"FAIL: Cannot import test modules: {e}")
         sys.exit(1)
@@ -266,7 +266,7 @@ def main():
 
     # Phase 8 touched files
     phase_touched = [
-        "agentic_core/L2_execution/types/vllm_replay_validator.py",
+        "agentic_core/L2_execution/types/vllm_replay_validator_types.py",
         "tests/unit_min_deps/test_vllm_canonical_payload_lock.py",
         "tools/evidence/qwen_migration_phase8_canonical_payload_lock_runner.py",
     ]

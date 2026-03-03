@@ -10,7 +10,7 @@ Non-mutating to knowledge index (no upsert/setex calls).
 from __future__ import annotations
 
 from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
-from agentic_core.L4_state.types.replay_bundle import ReplayBundle, build_replay_bundle
+from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle, build_replay_bundle
 
 
 def emit_replay_bundle(

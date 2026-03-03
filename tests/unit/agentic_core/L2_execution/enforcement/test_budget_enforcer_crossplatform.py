@@ -17,7 +17,7 @@ from agentic_core.L2_execution.enforcement.budget_enforcer import (
     BudgetExceeded,
     _wall_clock_cap_threading,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, ToolBudget
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, ToolBudget
 
 
 def _make_envelope(compute_ms: int = 5000, memory_mb: int = 256, stdout_bytes: int = 1024) -> SandboxEnvelope:

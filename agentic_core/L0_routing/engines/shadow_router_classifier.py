@@ -23,7 +23,7 @@ from agentic_core.L0_routing.types.shadow_routing_types import (
 
 
 def _get_canonical_json():
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import canonical_json as _cj
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json as _cj
 
     return _cj
 

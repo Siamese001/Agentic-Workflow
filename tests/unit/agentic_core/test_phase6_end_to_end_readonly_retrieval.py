@@ -18,8 +18,8 @@ from agentic_core.L4_state.enforcement.readonly_retrieval_scope import (
 from agentic_core.L4_state.engines.readonly_retrieval_orchestrator import (
     retrieve_with_readonly_guarantee,
 )
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
-from agentic_core.L4_state.types.retrieval_boundary_snapshot import (
+from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
+from agentic_core.L4_state.types.retrieval_boundary_snapshot_types import (
     RetrievalBoundarySnapshot,
 )
 
@@ -163,7 +163,7 @@ class TestRetrievalRemainingFunctional:
         (it is itself non-mutating).
         """
         with read_only_retrieval_scope():
-            from agentic_core.L4_state.types.retrieval_boundary_snapshot import (
+            from agentic_core.L4_state.types.retrieval_boundary_snapshot_types import (
                 create_retrieval_boundary_snapshot,
             )
 

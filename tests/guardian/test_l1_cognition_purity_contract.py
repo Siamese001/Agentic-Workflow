@@ -2,7 +2,7 @@
 
 Proves:
 1. All Python files in L1_cognition parse without SyntaxError.
-2. L1_cognition/types/execution_intent.py: assert_l1_purity() raises on
+2. L1_cognition/types/execution_intent_types.py: assert_l1_purity() raises on
    mutation attempts (FAIL-CLOSED contract).
 3. L1_cognition must not import from L2_execution, L3_orchestration, L4_state,
    or L5_safety — it is a read/plan-only layer (layer boundary contract, AST).
@@ -177,11 +177,11 @@ class TestWritePurityContract:
 
 class TestExecutionIntentPurity:
     def test_assert_l1_purity_importable(self):
-        from agentic_core.L1_cognition.types.execution_intent import assert_l1_purity
+        from agentic_core.L1_cognition.types.execution_intent_types import assert_l1_purity
         assert callable(assert_l1_purity), "assert_l1_purity must be callable"
 
     def test_mutation_guard_starts_at_zero(self):
-        from agentic_core.L1_cognition.types.execution_intent import (
+        from agentic_core.L1_cognition.types.execution_intent_types import (
             get_mutation_count,
             reset_mutation_guard,
         )
@@ -189,7 +189,7 @@ class TestExecutionIntentPurity:
         assert get_mutation_count() == 0
 
     def test_increment_mutation_guard_increments(self):
-        from agentic_core.L1_cognition.types.execution_intent import (
+        from agentic_core.L1_cognition.types.execution_intent_types import (
             get_mutation_count,
             increment_mutation_guard,
             reset_mutation_guard,
@@ -200,7 +200,7 @@ class TestExecutionIntentPurity:
 
     def test_assert_l1_purity_passes_on_clean_instance(self):
         """assert_l1_purity(instance) must not raise for a clean plain object."""
-        from agentic_core.L1_cognition.types.execution_intent import assert_l1_purity
+        from agentic_core.L1_cognition.types.execution_intent_types import assert_l1_purity
 
         class _CleanObj:
             pass
@@ -209,7 +209,7 @@ class TestExecutionIntentPurity:
 
     def test_assert_l1_purity_raises_for_redis_attr(self):
         """assert_l1_purity must raise if instance has a redis attribute."""
-        from agentic_core.L1_cognition.types.execution_intent import assert_l1_purity
+        from agentic_core.L1_cognition.types.execution_intent_types import assert_l1_purity
 
         class _DirtyObj:
             redis = object()
@@ -219,7 +219,7 @@ class TestExecutionIntentPurity:
 
     def test_assert_l1_purity_raises_for_subprocess_attr(self):
         """assert_l1_purity must raise if instance has a subprocess attribute."""
-        from agentic_core.L1_cognition.types.execution_intent import assert_l1_purity
+        from agentic_core.L1_cognition.types.execution_intent_types import assert_l1_purity
 
         class _DirtyObj:
             subprocess = object()
@@ -304,7 +304,7 @@ class TestGuardrailsContract:
 
     def test_guardrails_importable(self):
         try:
-            from agentic_core.L1_cognition.utils.guardrails import (
+            from agentic_core.L1_cognition.utils.guardrails_util import (
                 CacheGuardrails,
                 MetaLearningGuardrails,
                 get_guardrails,

@@ -62,7 +62,7 @@ This review analyzes the implementation of Phases 0-5 against the hardened speci
 ### Phase 3: Detection Signal ⚠️
 
 **What Was Done:**
-- Created DetectionSignal model in `agentic_core/L6_observability/types/detection_signal.py`
+- Created DetectionSignal model in `agentic_core/L6_observability/types/detection_signal_types.py`
 - Implemented emission hooks in `detection_signal_emitter.py`
 - Created unit tests for signal validation and emission
 

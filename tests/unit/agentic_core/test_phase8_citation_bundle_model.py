@@ -6,11 +6,11 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.citation_bundle import (
+from agentic_core.L4_state.types.citation_bundle_types import (
     CitationBundle,
     build_citation_bundle,
 )
-from agentic_core.L4_state.types.retrieval_anchor import RetrievalAnchor
+from agentic_core.L4_state.types.retrieval_anchor_types import RetrievalAnchor
 
 pytestmark = pytest.mark.unit_min_deps
 

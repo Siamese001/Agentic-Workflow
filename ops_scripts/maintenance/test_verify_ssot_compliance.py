@@ -23,7 +23,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     ARCHIVES_DIR,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 
 def test_ssot_import():

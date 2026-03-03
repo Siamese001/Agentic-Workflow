@@ -32,7 +32,7 @@
 | §4 | Policy Immutability | L0,L5 | PRESENT | `v15_contracts.py:90-119` (`PolicyConfigGuard` — read-once, SHA-256 hash, mutation detection), `v15_p4_types.py:86-107` (`PolicyConfigPin`), `v15_types.py:265-271` (`PolicyConfigSnapshot`), `v15_p3_types.py:109-120` (`PolicyExceptionArtifact` with nonce + scope + tick) | `rg -n "policy_config\|policy_hash\|PolicyConfigGuard" agentic_core` (161 matches/19 files) |
 | §5 | Signal Detection & Deduplication | L0,L4,L5,L6 | PRESENT | `v15_p4_types.py:39-78` (`ErrorSignature` with `compute_error_signature_hash`), `v15_types.py:117-126` (`SelfHealingTrigger`), `L5_safety/reasoning/CodeDeduplicationAgent.py` (28 matches for dedup), `L0_routing/enforcement/v15_p4_contracts.py` (14 matches for dedup/signal) | `rg -n "dedup\|ErrorSignature\|signal.*hash" agentic_core` (204 matches/45 files) |
 | §6 | Cognitive Safety (Episodic Memory, RAG, Prompt Augmentation) | L0,L1,L4 | PRESENT | `v15_p2_types.py:249-259` (`EpisodicMemoryQueryResult`), `v15_p2_types.py:266-281` (`TrajectoryReuseConstraint`), `v15_p2_types.py:290-300` (`KnowledgeSupervisorResult`), `v15_p2_types.py:307-314` (`MemoryHypostate`), `v15_p2_types.py:321-328` (`EpisodicSemanticLink`), `v15_p4_types.py:151-280` (RAG chain: `RetrievalQuery`, `RetrievedChunk`, `RerankScore`, `CitationBundle`), `v15_types.py:187-199` (`TokenControlArtifact` ≤300 tokens), `v15_p4_types.py:115-142` (`PlanProvenance`), `v15_p4_types.py:341-371` (`KnowledgeAdvisoryConstraint`), `L1_cognition/engines/episodic_manager.py` (5 matches), `L4_state/utils/rag_enhancement_util.py` (7 matches) | `rg -n "episodic.*memory\|RetrievalQuery\|CitationBundle\|TokenControl" agentic_core` (29+27 matches) |
-| §7 | Guardian Physics (Cryptographic Trust) | L0,L5 | PRESENT | `v15_p5_types.py:36-90` (`KeyRecord`, `TrustRoot`), `v15_p5_types.py:98-120` (`SignatureEnvelope` with `artifact_hash`, `key_id`, `signature`, `algorithm`), `L0_routing/types/guardian_contract.py` (1053 lines — canonical guardian schema, `certification_hash`, `V15EnforcementError`), `runtime/config/contextual_router_config.py` (39 matches for guardian/signature) | `rg -n "GuardianArtifact\|SignatureEnvelope\|certification_hash" agentic_core` (95+13 matches) |
+| §7 | Guardian Physics (Cryptographic Trust) | L0,L5 | PRESENT | `v15_p5_types.py:36-90` (`KeyRecord`, `TrustRoot`), `v15_p5_types.py:98-120` (`SignatureEnvelope` with `artifact_hash`, `key_id`, `signature`, `algorithm`), `L0_routing/types/guardian_contract_types.py` (1053 lines — canonical guardian schema, `certification_hash`, `V15EnforcementError`), `runtime/config/contextual_router_config.py` (39 matches for guardian/signature) | `rg -n "GuardianArtifact\|SignatureEnvelope\|certification_hash" agentic_core` (95+13 matches) |
 | §8 | MRO & Structural Integrity | L0,L5 | PRESENT | Discovery JSON captures `mro_chain`, `mixins`, `integrity_hash`, `mro_signature` per agent (`v15_p6_types.py:265-304` — `V15DiscoverySchema`), `base_agents/SovereignBaseAgent.py` (8 matches for heal/validator), `L5_safety/config/structure_blueprint/` (SSOT enforcement) | `rg -n "mro_chain\|mro_signature\|V15DiscoverySchema" agentic_core` (found in v15_p6_types.py, forensic_discovery_prep.py) |
 | §9 | Separation of Responsibilities | L0-L7 | PARTIAL | Layer structure exists (L0_routing, L1_cognition, L2_execution, L3_orchestration, L4_state, L5_safety, L6_observability, L7_meta_learning). LCD+ folder structure enforced per layer (`config/`, `types/`, `reasoning/`, `engines/`, `enforcement/`, `validators/`, `utils/`). Missing: no formal typed role-per-agent contract artifact; separation is structural (folder-based) not artifact-gated. | `rg -n "L0_routing\|L1_cognition\|L2_execution\|L3_orchestration" agentic_core` (structural evidence) |
 | §10 | Atomic Execution & Rollback | L0,L2,L4 | PRESENT | `v15_p2_types.py:226-238` (`BoundarySnapshotArtifact` — `filesystem_hash`, `git_state_hash`, `agent_memory_hash`), `v15_types.py:135-143` (`AggregateArtifact`), `v15_types.py:153-160` (`ResultArtifact`), `mixins/atomic_execution_mixin.py` (17 matches for rollback/snapshot), `L4_state/memory/verifiable_checkpoint_manager.py` (12 matches), `L4_state/reasoning/CheckpointManagerAgent.py` (16 matches) | `rg -n "rollback\|snapshot\|atomic.*write\|BoundarySnapshot" agentic_core` (583 matches/105 files) |
@@ -133,7 +133,7 @@ Search commands:
 | `L0_routing/scripts/run_guardian_contract_integrity.py` | guardian runner | Guardian result JSON to artifacts/ |
 | `L5_safety/config/structure_blueprint/_verify.py` | verification | Verification results |
 | `L5_safety/config/structure_blueprint/_simulate_verify.py` | simulation | Simulation snapshots |
-| `L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py` | dashboard pipeline | Dashboard artifacts |
+| `L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py` | dashboard pipeline | Dashboard artifacts |
 | `L6_observability/dashboards/dashboard_generator.py` | dashboard gen | Dashboard HTML/JSON |
 
 ### (b) Writes to docs/
@@ -148,7 +148,7 @@ Search commands:
 
 | file:line | function/context | what it writes |
 |-----------|-----------------|----------------|
-| `L0_routing/types/guardian_contract.py` | `certification_hash` | Guardian certification records |
+| `L0_routing/types/guardian_contract_types.py` | `certification_hash` | Guardian certification records |
 | `runtime/config/security_level_config.py` | config writes | Security level config JSON |
 | `L5_safety/config/blueprint_compiler.py` | compiler | Blueprint-derived artifacts |
 | `L4_state/memory/verifiable_checkpoint_manager.py` | checkpoint mgr | Checkpoint state files |
@@ -170,8 +170,8 @@ Search commands:
 | `L4_state/reasoning/CachedStateLedgerAgent.py` | ledger | Cached state ledger |
 | `L3_orchestration/reasoning/StateManagementAgent.py` | state mgmt | State files (shutil.move, json.dump) |
 | `mixins/atomic_execution_mixin.py` | atomic exec | Atomic write with rollback (shutil.move) |
-| `L5_safety/enforcement/sovereign_healing_engine.py` | healing engine | Healing state artifacts |
-| `L5_safety/enforcement/archival_gatekeeper.py` | archival | File archival (shutil.move, unlink) |
+| `L5_safety/enforcement/sovereign_healing_engine_enforcer.py` | healing engine | Healing state artifacts |
+| `L5_safety/enforcement/archival_gatekeeper_gate.py` | archival | File archival (shutil.move, unlink) |
 | `L5_safety/reasoning/RootHygieneAgent.py` | root hygiene | File moves/deletes (shutil.move, unlink) |
 | `L5_safety/reasoning/FileClassificationAgent.py` | FCA | File renames (shutil.move) |
 | `L5_safety/reasoning/CodeDeduplicationAgent.py` | code dedup | File removals (unlink) |

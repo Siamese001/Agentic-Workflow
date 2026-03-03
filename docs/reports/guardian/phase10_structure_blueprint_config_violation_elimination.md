@@ -70,7 +70,7 @@ STRUCTURE_BLUEPRINT_CONFIG_VIOLATIONS: 36
 - ROOT_PROTECTED_FILES, ROOT_ALLOWED_PATTERNS
 - SOVEREIGN_EXCLUDED_FOLDERS, VARIABLE_DEPTH_SUBFOLDERS, L4_APPROVED_FOLDERS
 
-**`agentic_core/L0_routing/utils/path_utils.py`** - New file with:
+**`agentic_core/L0_routing/utils/path_util.py`** - New file with:
 - validate_path_within_project()
 - safe_path_join()
 - safe_prefixed_filename()
@@ -181,7 +181,7 @@ These are not new violations - they existed before this phase.
 ## Files in Commit
 
 ### New Files
-- `agentic_core/L0_routing/utils/path_utils.py`
+- `agentic_core/L0_routing/utils/path_util.py`
 - `docs/reports/guardian/phase10_structure_blueprint_config_violation_elimination.md`
 
 ### Modified Files (L0 Config)

@@ -5200,7 +5200,7 @@
       "identity": "toxic_dependency_auditor",
       "layer": "L5_safety",
       "status": "ACTIVE",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor_enforcer.py",
       "class_name": "ToxicDependencyAuditor",
       "mro_chain": [
         "SovereignBaseAgent",

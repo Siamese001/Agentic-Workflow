@@ -22,7 +22,7 @@ import argparse
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     ArtifactType,
     CheckStatus,
     GuardianResult,
@@ -31,7 +31,7 @@ from agentic_core.L0_routing.types.guardian_contract import (
     normalize_repo_path,
     write_guardian_result,
 )
-from agentic_core.L0_routing.utils.project_root import get_validated_project_root
+from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 
 GUARDIAN_ID = "hierarchy_compliance"
 

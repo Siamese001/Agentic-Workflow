@@ -5,7 +5,7 @@
 
 ## Modified / New Files
 - `agentic_core/L4_state/enforcement/readonly_retrieval_scope.py` [NEW — Wave 1: read_only_retrieval_scope() + RetrievalMutationViolation + assert_not_read_only()]
-- `agentic_core/L4_state/types/retrieval_boundary_snapshot.py` [NEW — Wave 2: RetrievalBoundarySnapshot + AnchorEntry + build_request_hash() + create_retrieval_boundary_snapshot()]
+- `agentic_core/L4_state/types/retrieval_boundary_snapshot_types.py` [NEW — Wave 2: RetrievalBoundarySnapshot + AnchorEntry + build_request_hash() + create_retrieval_boundary_snapshot()]
 - `agentic_core/L4_state/engines/readonly_retrieval_orchestrator.py` [NEW — Wave 3: retrieve_with_readonly_guarantee() canonical retrieval entrypoint]
 - `tests/agentic_core/test_phase6_readonly_scope.py` [NEW — Wave 1: 20 tests]
 - `tests/agentic_core/test_phase6_retrieval_snapshot.py` [NEW — Wave 2: 26 tests]

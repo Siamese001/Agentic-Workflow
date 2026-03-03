@@ -25,7 +25,7 @@ from pathlib import Path
 from typing import Any, Optional, Protocol
 
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
-from agentic_core.L5_safety.enforcement.circuit_breaker import get_breaker
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 from agentic_core.L5_safety.enforcement.context_session import (
     ContextSession,
     ContextSessionManager,

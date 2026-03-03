@@ -33,7 +33,7 @@ tools/security/credential_guard.py (177 lines)
 
 ### Phase 1: Migration to L5_safety
 1. **Move architectural guard**
-   - `tools/architectural/module_collision_guard.py` → `agentic_core/L5_safety/enforcement/module_collision_guard.py`
+   - `tools/architectural/module_collision_guard.py` → `agentic_core/L5_safety/enforcement/module_collision_guardrail.py`
 
 2. **Move governance guards**
    - `tools/governance/*.py` → `agentic_core/L5_safety/enforcement/governance/`

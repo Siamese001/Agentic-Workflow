@@ -75,7 +75,7 @@ tests/agentic_core/L7_meta_learning/
 #### Core System Files
 - `agentic_core/L5_safety/config/structure_blueprint/_constants.py`
 - `agentic_core/L5_safety/config/structure_blueprint/classification.py`
-- `agentic_core/L5_safety/enforcement/module_collision_guard.py`
+- `agentic_core/L5_safety/enforcement/module_collision_guardrail.py`
 - `agentic_core/L5_safety/enforcement/module_collision_guardrail.py`
 
 #### L0 Routing Meta Control (4 files)

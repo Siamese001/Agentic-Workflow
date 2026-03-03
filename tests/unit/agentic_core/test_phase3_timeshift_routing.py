@@ -12,8 +12,8 @@ from agentic_core.L0_routing.engines.timeshift_router import (
     evaluate_timeshift_routing,
 )
 from agentic_core.L4_state.config.versioned_configs import RoutingConfig
-from agentic_core.L4_state.types.detection_signal_store import DetectionSignalStore
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+from agentic_core.L4_state.types.detection_signal_store_types import DetectionSignalStore
+from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 pytestmark = pytest.mark.unit_min_deps
 

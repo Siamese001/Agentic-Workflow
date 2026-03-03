@@ -17,14 +17,14 @@ def load_archival_gatekeeper():
     """Load archival_gatekeeper from L5."""
     import importlib
 
-    return importlib.import_module("agentic_core.L5_safety.enforcement.archival_gatekeeper")
+    return importlib.import_module("agentic_core.L5_safety.enforcement.archival_gatekeeper_gate")
 
 
 def load_ssot_scanner():
     """Load ssot_scanner from L5."""
     import importlib
 
-    return importlib.import_module("agentic_core.L5_safety.enforcement.ssot_scanner")
+    return importlib.import_module("agentic_core.L5_safety.enforcement.ssot_scanner_enforcer")
 
 
 def load_activation_gate():

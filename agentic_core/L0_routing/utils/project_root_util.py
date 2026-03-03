@@ -11,6 +11,7 @@ computing paths manually.
 
 from functools import lru_cache
 from pathlib import Path
+from typing import Final
 
 # Markers that indicate the root of the project
 ROOT_MARKERS: list[str] = [
@@ -79,4 +80,28 @@ def clear_project_root_cache() -> None:
     get_project_root.cache_clear()
 
 
-__all__ = ["get_project_root", "clear_project_root_cache", "ROOT_MARKERS"]
+PROJECT_ROOT_MARKERS: Final[frozenset[str]] = frozenset(
+    {
+        "pyproject.toml",
+        "canon_validator_agentic_v2_thin.py",
+        "agentic_core",
+        ".git",
+    },
+)
+
+
+def get_validated_project_root() -> Path:
+    """Get the validated project root by searching upward from this file.
+
+    Compatibility alias — delegates to get_project_root().
+    """
+    return get_project_root(str(Path(__file__)))
+
+
+__all__ = [
+    "get_project_root",
+    "get_validated_project_root",
+    "clear_project_root_cache",
+    "ROOT_MARKERS",
+    "PROJECT_ROOT_MARKERS",
+]

@@ -19,7 +19,7 @@ from agentic_core.L2_execution.types.vllm_backpressure_types import (
     CIRCUIT_BREAKER_FAILURE_THRESHOLD,
     MAX_QUEUE_DEPTH,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMGatewayTelemetry,
     VLLMQueueController,

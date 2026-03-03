@@ -108,7 +108,7 @@ class P5EvidenceCollector:
 
     def _check_ensure_v15_signed(self):
         """Verify ensure_v15_signed function exists in guardian_contract."""
-        gc_path = self.repo_root / "agentic_core/L0_routing/types/guardian_contract.py"
+        gc_path = self.repo_root / "agentic_core/L0_routing/types/guardian_contract_types.py"
         if not gc_path.exists():
             self.violations.append(
                 {

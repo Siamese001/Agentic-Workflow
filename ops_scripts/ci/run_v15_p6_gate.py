@@ -34,7 +34,7 @@ LAYER_ORDER = {"L0": 0, "L1": 1, "L2": 2, "L3": 3, "L4": 4, "L5": 5, "L6": 6}
 # V15 type files that define cross-layer boundaries
 V15_TYPE_FILES = [
     "agentic_core/L0_routing/types/determinism_types.py",
-    "agentic_core/L0_routing/types/determinism_contracts.py",
+    "agentic_core/L0_routing/types/determinism_contracts_types.py",
     "agentic_core/L0_routing/types/governance_types.py",
     "agentic_core/L0_routing/types/traceability_types.py",
     "agentic_core/L0_routing/types/crypto_trust_types.py",

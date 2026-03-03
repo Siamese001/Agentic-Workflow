@@ -14,7 +14,7 @@ from agentic_core.L4_state.enforcement.citation_enforcement import (
     assemble_response,
     enforce_citations_for_retrieval,
 )
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
+from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
 
 pytestmark = pytest.mark.unit_min_deps
 

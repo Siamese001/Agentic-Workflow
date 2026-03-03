@@ -33,8 +33,8 @@ agentic_core/L2_execution/determinism/replay_guard.py
 agentic_core/L2_execution/enforcement/capability_revoker.py
 agentic_core/L2_execution/enforcement/key_derivation.py
 agentic_core/L2_execution/healers/escalation_context.py
-agentic_core/L2_execution/types/blast_radius_controls.py
-agentic_core/utils/canonical_json.py
+agentic_core/L2_execution/types/blast_radius_controls_types.py
+agentic_core/utils/canonical_json_util.py
 ops_scripts/ci/ast_canonical_scanner.py
 ops_scripts/ci/ast_layer_sovereignty_scanner.py
 system_learning/enforcement/oscillation_detector.py
@@ -55,7 +55,7 @@ docs/reports/plans/mathematically-sealed-sovereignty-hardening-evidence-fbbde8.m
 
 ## INSPECTED_FILES
 
-agentic_core/utils/canonical_json.py
+agentic_core/utils/canonical_json_util.py
 agentic_core/L2_execution/enforcement/key_derivation.py
 agentic_core/L2_execution/enforcement/capability_revoker.py
 agentic_core/L2_execution/determinism/__init__.py
@@ -63,7 +63,7 @@ agentic_core/L2_execution/determinism/digest_calculator.py
 agentic_core/L2_execution/determinism/replay_guard.py
 agentic_core/L2_execution/determinism/dependency_locker.py
 agentic_core/L2_execution/healers/escalation_context.py
-agentic_core/L2_execution/types/blast_radius_controls.py
+agentic_core/L2_execution/types/blast_radius_controls_types.py
 system_learning/enforcement/shadow_replay_validator.py
 system_learning/enforcement/oscillation_detector.py
 ops_scripts/ci/ast_canonical_scanner.py

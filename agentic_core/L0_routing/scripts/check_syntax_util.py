@@ -7,7 +7,7 @@ from pathlib import Path
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
 
 
 def main():

@@ -4,7 +4,7 @@ Unit tests for L5 D0 Injection Engine - deterministic fence rendering.
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.d0_injection_engine import D0InjectionEngine, RoleFence
+from agentic_core.L5_safety.enforcement.d0_injection_engine_enforcer import D0InjectionEngine, RoleFence
 
 
 @pytest.mark.unit

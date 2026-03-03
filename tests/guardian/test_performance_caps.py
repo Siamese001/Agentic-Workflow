@@ -20,7 +20,7 @@ from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
     run_hygiene_guardian,
     scan_temp_artifacts,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     IGNORE_PATTERNS,
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,

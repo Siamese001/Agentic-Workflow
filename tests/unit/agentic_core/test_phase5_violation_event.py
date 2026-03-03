@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.violation_event import (
+from agentic_core.L4_state.types.violation_event_types import (
     ViolationEvent,
     emit_violation_event,
 )

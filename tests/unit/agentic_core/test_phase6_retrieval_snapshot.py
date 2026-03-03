@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.retrieval_boundary_snapshot import (
+from agentic_core.L4_state.types.retrieval_boundary_snapshot_types import (
     AnchorEntry,
     RetrievalBoundarySnapshot,
     build_request_hash,

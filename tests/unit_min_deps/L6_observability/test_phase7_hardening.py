@@ -218,7 +218,7 @@ import hashlib
 sys.path.insert(0, r"{os.getcwd()}")
 
 from agentic_core.L6_observability.engines.detection_signal_emitter import emit_detection_signal_with_l4a
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 class TestWriter:
     def __init__(self):

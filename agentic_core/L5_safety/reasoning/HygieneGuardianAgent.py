@@ -22,7 +22,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 # --- SOVEREIGN GUARDRAILS ---

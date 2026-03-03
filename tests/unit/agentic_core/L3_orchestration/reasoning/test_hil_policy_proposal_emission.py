@@ -202,7 +202,7 @@ class TestDeterministicMapping:
 
 def _make_queue_and_request():
     """Build a HumanReviewQueue with one pending request that has context."""
-    from agentic_core.L5_safety.enforcement.human_review_queue import (
+    from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
         ContextBundle,
         HumanReviewQueue,
         ProposedDiff,
@@ -258,7 +258,7 @@ class TestApproveEmitsProposal:
                 proposals.append(asdict(proposal))
 
         with patch(
-            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter",
+            "agentic_core.L0_routing.types.routing_contracts_types.TelemetryEmitter",
         ) as MockEmitter:
             mock_instance = MagicMock()
             mock_instance.emit_typed_artifact = mock_emit
@@ -302,7 +302,7 @@ class TestRejectEmitsProposal:
                 proposals.append(asdict(proposal))
 
         with patch(
-            "agentic_core.L0_routing.types.routing_contracts.TelemetryEmitter",
+            "agentic_core.L0_routing.types.routing_contracts_types.TelemetryEmitter",
         ) as MockEmitter:
             mock_instance = MagicMock()
             mock_instance.emit_typed_artifact = mock_emit
@@ -321,7 +321,7 @@ class TestNonFinalizationNoProposal:
     """Negative: non-finalization paths emit no PolicyUpdateProposal."""
 
     def test_submit_only_no_proposal(self):
-        from agentic_core.L5_safety.enforcement.human_review_queue import (
+        from agentic_core.L5_safety.enforcement.human_review_queue_enforcer import (
             ContextBundle,
             HumanReviewQueue,
             ProposedDiff,

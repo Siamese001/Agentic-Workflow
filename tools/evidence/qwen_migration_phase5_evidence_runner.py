@@ -111,10 +111,10 @@ def main():
     # Inspected files
     h("## INSPECTED_FILES")
     phase5_files = [
-        "agentic_core/L2_execution/types/vllm_invariant_contract.py",
-        "agentic_core/L2_execution/types/vllm_invariant_verifier.py",
-        "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
-        "agentic_core/L2_execution/types/vllm_gateway_integration.py",
+        "agentic_core/L2_execution/types/vllm_invariant_contract_types.py",
+        "agentic_core/L2_execution/types/vllm_invariant_verifier_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
         "tests/unit_min_deps/test_vllm_invariant_contract.py",
         "tests/unit_min_deps/test_vllm_invariant_verifier.py",
         "tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py",
@@ -242,10 +242,10 @@ def main():
     h("## Scope Isolation Proof")
     h("PHASE_TOUCHED_FILES:")
     phase5_touched = [
-        "agentic_core/L2_execution/types/vllm_invariant_contract.py",
-        "agentic_core/L2_execution/types/vllm_invariant_verifier.py",
-        "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
-        "agentic_core/L2_execution/types/vllm_gateway_integration.py",
+        "agentic_core/L2_execution/types/vllm_invariant_contract_types.py",
+        "agentic_core/L2_execution/types/vllm_invariant_verifier_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
         "tests/unit_min_deps/test_vllm_invariant_contract.py",
         "tests/unit_min_deps/test_vllm_invariant_verifier.py",
         "tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py",
@@ -296,10 +296,10 @@ def main():
     h("## Proof: FAIL Violation Triggers Gemini Fallback")
     fallback_proof_code = """
 from unittest.mock import patch
-from agentic_core.L2_execution.types.vllm_gateway_adapter import VLLMGatewayAdapter, reset_singletons
-from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
-from agentic_core.L2_execution.types.vllm_invariant_contract import InvariantId, InvariantSeverity, InvariantViolation
+from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter, reset_singletons
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_invariant_contract_types import InvariantId, InvariantSeverity, InvariantViolation
 
 reset_singletons()
 adapter = VLLMGatewayAdapter(queue=VLLMQueueController(), registry=VLLMCircuitBreakerRegistry())
@@ -314,7 +314,7 @@ mock_violation = InvariantViolation(
 )
 
 # Patch verifier to return FAIL violation
-with patch('agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants') as mock_verify:
+with patch('agentic_core.L2_execution.types.vllm_invariant_verifier_types.verify_gateway_invariants') as mock_verify:
     mock_verify.return_value = [mock_violation]
 
     result = adapter.evaluate(

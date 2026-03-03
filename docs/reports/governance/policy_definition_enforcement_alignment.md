@@ -134,7 +134,7 @@ class MemoryStoreConfig:
 
 ##### 1. Mutation Prohibition Enforcer
 
-**File:** `L5_safety/enforcement/mutation_prohibition.py`
+**File:** `L5_safety/enforcement/mutation_prohibition_enforcer.py`
 
 **Enforcement Type:** Safety Policy
 **Policy Enforced:** Physical mutation prohibition for L0/L4/L6

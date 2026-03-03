@@ -21,12 +21,12 @@ git grep -n 'getoption("-m"' -- tests tools
 
 ```
 tests/conftest.py:149:    marker_expr = config.getoption("-m", default="")
-tools/enforcement/pytest_config_guard.py:126:        # Check for brittle getoption("-m") marker access (AST-based detection)
-tools/enforcement/pytest_config_guard.py:136:        """Check for brittle config.getoption("-m") marker access patterns.
-tools/enforcement/pytest_config_guard.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
-tools/enforcement/pytest_config_guard.py:150:                                f'config.getoption("-m") should be replaced with '
-tools/enforcement/pytest_config_guard.py:252:        """Test that getoption("-m") is flagged as brittle."""
-tools/enforcement/pytest_config_guard.py:275:    marker_expr = config.getoption("-m", default="")
+tools/enforcement/pytest_config_guardrail.py:126:        # Check for brittle getoption("-m") marker access (AST-based detection)
+tools/enforcement/pytest_config_guardrail.py:136:        """Check for brittle config.getoption("-m") marker access patterns.
+tools/enforcement/pytest_config_guardrail.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
+tools/enforcement/pytest_config_guardrail.py:150:                                f'config.getoption("-m") should be replaced with '
+tools/enforcement/pytest_config_guardrail.py:252:        """Test that getoption("-m") is flagged as brittle."""
+tools/enforcement/pytest_config_guardrail.py:275:    marker_expr = config.getoption("-m", default="")
 ```
 
 ### Scan 2: getoption('-m') patterns (single quotes)
@@ -39,7 +39,7 @@ git grep -n "getoption('-m'" -- tests tools
 **Results:**
 
 ```
-tools/enforcement/pytest_config_guard.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
+tools/enforcement/pytest_config_guardrail.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
 ```
 
 ### In-scope hits to fix
@@ -52,12 +52,12 @@ tools/enforcement/pytest_config_guard.py:138:        Flags any use of getoption(
 
 **Test/Guard code (no action needed - these are comments, docstrings, and test fixtures):**
 
-- tools/enforcement/pytest_config_guard.py:126 (comment)
-- tools/enforcement/pytest_config_guard.py:136 (docstring)
-- tools/enforcement/pytest_config_guard.py:138 (docstring)
-- tools/enforcement/pytest_config_guard.py:150 (error message string)
-- tools/enforcement/pytest_config_guard.py:252 (docstring)
-- tools/enforcement/pytest_config_guard.py:275 (test fixture code string - intentional for testing)
+- tools/enforcement/pytest_config_guardrail.py:126 (comment)
+- tools/enforcement/pytest_config_guardrail.py:136 (docstring)
+- tools/enforcement/pytest_config_guardrail.py:138 (docstring)
+- tools/enforcement/pytest_config_guardrail.py:150 (error message string)
+- tools/enforcement/pytest_config_guardrail.py:252 (docstring)
+- tools/enforcement/pytest_config_guardrail.py:275 (test fixture code string - intentional for testing)
 
 **Summary:** 1 production hit to fix in tests/conftest.py
 
@@ -82,8 +82,8 @@ marker_expr = getattr(config.option, "markexpr", "")
 
 The guard already has regression tests in place from Phase 1:
 
-- `tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m` - Verifies that getoption("-m") is flagged as brittle
-- `tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern` - Verifies that getattr(config.option, "markexpr", "") is NOT flagged
+- `tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m` - Verifies that getoption("-m") is flagged as brittle
+- `tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern` - Verifies that getattr(config.option, "markexpr", "") is NOT flagged
 
 These tests will fail if the brittle detection rule is removed.
 
@@ -128,12 +128,12 @@ git grep -n 'getoption("-m"' -- tests tools
 **Results:**
 
 ```
-tools/enforcement/pytest_config_guard.py:126:        # Check for brittle getoption("-m") marker access (AST-based detection)
-tools/enforcement/pytest_config_guard.py:136:        """Check for brittle config.getoption("-m") marker access patterns.
-tools/enforcement/pytest_config_guard.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
-tools/enforcement/pytest_config_guard.py:150:                                f'config.getoption("-m") should be replaced with '
-tools/enforcement/pytest_config_guard.py:252:        """Test that getoption("-m") is flagged as brittle."""
-tools/enforcement/pytest_config_guard.py:275:    marker_expr = config.getoption("-m", default="")
+tools/enforcement/pytest_config_guardrail.py:126:        # Check for brittle getoption("-m") marker access (AST-based detection)
+tools/enforcement/pytest_config_guardrail.py:136:        """Check for brittle config.getoption("-m") marker access patterns.
+tools/enforcement/pytest_config_guardrail.py:138:        Flags any use of getoption("-m") or getoption('-m') with or without default arg.
+tools/enforcement/pytest_config_guardrail.py:150:                                f'config.getoption("-m") should be replaced with '
+tools/enforcement/pytest_config_guardrail.py:252:        """Test that getoption("-m") is flagged as brittle."""
+tools/enforcement/pytest_config_guardrail.py:275:    marker_expr = config.getoption("-m", default="")
 ```
 
 **Analysis:** Production hit in tests/conftest.py has been removed. Remaining hits are only in:
@@ -232,8 +232,8 @@ Exit code: 0
 - Only remaining hits are in comments, docstrings, and test fixture code (intentional)
 
 ✅ **Guard has a regression test that fails if brittle detection is removed**
-- `tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m` - Flags getoption("-m") as brittle
-- `tools/enforcement/pytest_config_guard.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern` - Allows getattr(config.option, "markexpr", "")
+- `tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_detects_brittle_getoption_m` - Flags getoption("-m") as brittle
+- `tools/enforcement/pytest_config_guardrail.py::TestPytestConfigGuardBrittleMarkerDetection::test_allows_robust_getattr_pattern` - Allows getattr(config.option, "markexpr", "")
 
 ✅ **python -m pytest -q passes**
 - 153 passed in 19.89s

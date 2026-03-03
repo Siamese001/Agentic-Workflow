@@ -12,7 +12,7 @@ import re
 
 import pytest
 
-from agentic_core.L5_safety.enforcement.mutation_prohibition import (
+from agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer import (
     FORBIDDEN_WRITE_LAYERS,
     assert_no_persistent_write,
     safe_json_dump,

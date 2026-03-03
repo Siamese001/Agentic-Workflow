@@ -23,13 +23,13 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L0_routing.scripts.run_all_guardians import (
     run_all_guardians,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     AGGREGATE_GUARDIAN_ID,
     CONTRACT_VERSION,
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_routing.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
 )
 
@@ -222,7 +222,7 @@ class TestPerGuardianMetadata:
         """Aggregate result must preserve contract version."""
         result = run_all_guardians(repo_root=clean_repo)
 
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             CONTRACT_VERSION,
         )
 
@@ -330,7 +330,7 @@ class TestArtifactIndex:
 
     def test_index_schema_validates(self, clean_repo: Path):
         """Aggregate with index must pass JSON schema validation."""
-        from agentic_core.L0_routing.types.guardian_contract import validate_against_json_schema
+        from agentic_core.L0_routing.types.guardian_contract_types import validate_against_json_schema
 
         result = run_all_guardians(repo_root=clean_repo)
         errors = validate_against_json_schema(result.to_dict())

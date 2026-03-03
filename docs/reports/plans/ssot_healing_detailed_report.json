@@ -1929,13 +1929,13 @@
     {
       "timestamp": "2026-03-01 03:14:56,851",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] Initialized with project_root: C:\\Git\\Agentic-Workflow"
     },
     {
       "timestamp": "2026-03-01 03:14:56,851",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] Archive root: C:\\Git\\Agentic-Workflow\\archives\\gatekeeper"
     },
     {
@@ -2001,13 +2001,13 @@
     {
       "timestamp": "2026-03-01 03:14:56,989",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\agent_registry.py"
     },
     {
       "timestamp": "2026-03-01 03:14:56,991",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\agent_registry.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\agent_registry_4.py (requester: LocationHealerAgent, reason: Reorganizing structure)"
     },
     {
@@ -2031,13 +2031,13 @@
     {
       "timestamp": "2026-03-01 03:14:57,133",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\__init__.py"
     },
     {
       "timestamp": "2026-03-01 03:14:57,135",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\__init__.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\__init___9.py (requester: LocationHealerAgent, reason: Reorganizing structure)"
     },
     {
@@ -2067,13 +2067,13 @@
     {
       "timestamp": "2026-03-01 03:14:58,127",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\replay_envelope.py"
     },
     {
       "timestamp": "2026-03-01 03:14:58,128",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\replay_envelope.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\replay_envelope_4.py (requester: LocationHealerAgent, reason: Reorganizing structure)"
     },
     {
@@ -2097,13 +2097,13 @@
     {
       "timestamp": "2026-03-01 03:14:58,327",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\__init__.py"
     },
     {
       "timestamp": "2026-03-01 03:14:58,327",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\__init__.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\__init___10.py (requester: LocationHealerAgent, reason: Reorganizing structure)"
     },
     {
@@ -4506,14 +4506,14 @@
     {
       "timestamp": "2026-03-01 03:14:56,851",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] Initialized with project_root: C:\\Git\\Agentic-Workflow",
       "extra": []
     },
     {
       "timestamp": "2026-03-01 03:14:56,851",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] Archive root: C:\\Git\\Agentic-Workflow\\archives\\gatekeeper",
       "extra": []
     },
@@ -4646,14 +4646,14 @@
     {
       "timestamp": "2026-03-01 03:14:56,989",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\agent_registry.py",
       "extra": []
     },
     {
       "timestamp": "2026-03-01 03:14:56,991",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\agent_registry.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\agent_registry_4.py (requester: LocationHealerAgent, reason: Reorganizing structure)",
       "extra": []
     },
@@ -4688,14 +4688,14 @@
     {
       "timestamp": "2026-03-01 03:14:57,133",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\__init__.py",
       "extra": []
     },
     {
       "timestamp": "2026-03-01 03:14:57,135",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\agents\\__init__.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\__init___9.py (requester: LocationHealerAgent, reason: Reorganizing structure)",
       "extra": []
     },
@@ -4737,14 +4737,14 @@
     {
       "timestamp": "2026-03-01 03:14:58,127",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\replay_envelope.py",
       "extra": []
     },
     {
       "timestamp": "2026-03-01 03:14:58,128",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\replay_envelope.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\replay_envelope_4.py (requester: LocationHealerAgent, reason: Reorganizing structure)",
       "extra": []
     },
@@ -4779,14 +4779,14 @@
     {
       "timestamp": "2026-03-01 03:14:58,327",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] BATCH_APPROVED: MOVE C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\__init__.py",
       "extra": []
     },
     {
       "timestamp": "2026-03-01 03:14:58,327",
       "level": "INFO",
-      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper",
+      "logger": "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate",
       "message": "[ArchivalGatekeeper] [SUCCESS] MOVE: C:\\Git\\Agentic-Workflow\\agentic_core\\replay\\__init__.py -> C:\\Git\\Agentic-Workflow\\.healing_backups\\location_violations\\__init___10.py (requester: LocationHealerAgent, reason: Reorganizing structure)",
       "extra": []
     },

@@ -13,7 +13,7 @@ from unittest.mock import AsyncMock, patch
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
+from agentic_core.L0_routing.types.guardian_contract_types import V15HardFailAbort
 from agentic_core.L0_routing.types.routing_artifact_types import (
     TokenCapArtifact,
     TokenGateResult,

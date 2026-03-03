@@ -90,9 +90,9 @@
       "n_classes": 5,
       "n_funcs": 31,
       "uncovered_paths": [
-        "agentic_core/enforcement/hierarchy_validator.py",
-        "agentic_core/enforcement/import_boundary_check.py",
-        "agentic_core/enforcement/structural_namespace_fence.py"
+        "agentic_core/enforcement/hierarchy_validator_enforcer.py",
+        "agentic_core/enforcement/import_boundary_check_enforcer.py",
+        "agentic_core/enforcement/structural_namespace_fence_enforcer.py"
       ]
     },
     "agentic_core/interfaces": {
@@ -278,10 +278,10 @@
         "agentic_core/L0_routing/seams/safety_reasoning_seam.py",
         "agentic_core/L0_routing/seams/safety_validators_seam.py",
         "agentic_core/L0_routing/seams/vigilance_seam.py",
-        "agentic_core/L0_routing/types/artifact_typed_compat.py",
+        "agentic_core/L0_routing/types/artifact_typed_compat_types.py",
         "agentic_core/L0_routing/types/artifact_typed_compat_types.py",
         "agentic_core/L0_routing/types/artifact_validate_compat_types.py",
-        "agentic_core/L0_routing/types/artifact_validators.py",
+        "agentic_core/L0_routing/types/artifact_validators_types.py",
         "agentic_core/L0_routing/types/guardian_contract_types.py",
         "agentic_core/L0_routing/types/guardian_registry_types.py",
         "agentic_core/L0_routing/types/integration_contract_types.py",
@@ -301,7 +301,7 @@
         "agentic_core/L0_routing/utils/init_setup_util.py",
         "agentic_core/L0_routing/utils/json_formatter_util.py",
         "agentic_core/L0_routing/utils/manifest_guardian_util.py",
-        "agentic_core/L0_routing/utils/path_utils.py",
+        "agentic_core/L0_routing/utils/path_util.py",
         "agentic_core/L0_routing/utils/project_root.py",
         "agentic_core/L0_routing/utils/project_root_util.py",
         "agentic_core/L0_routing/utils/scan_util.py",
@@ -309,7 +309,7 @@
         "agentic_core/L0_routing/utils/sovereign_alignment_v2_util.py",
         "agentic_core/L0_routing/utils/sovereign_convergence_util.py",
         "agentic_core/L0_routing/utils/structural_fix_util.py",
-        "agentic_core/L0_routing/utils/subprocess_runner.py",
+        "agentic_core/L0_routing/utils/subprocess_runner_util.py",
         "agentic_core/L0_routing/utils/trim_remaining_airlocks_util.py"
       ]
     },
@@ -365,16 +365,16 @@
         "agentic_core/L1_cognition/utils/execution_util.py",
         "agentic_core/L1_cognition/utils/filter_inappropriate_content_util.py",
         "agentic_core/L1_cognition/utils/guardrails_util.py",
-        "agentic_core/L1_cognition/utils/history_merger.py",
         "agentic_core/L1_cognition/utils/history_merger_util.py",
-        "agentic_core/L1_cognition/utils/profile_updater.py",
+        "agentic_core/L1_cognition/utils/history_merger_util.py",
+        "agentic_core/L1_cognition/utils/profile_updater_util.py",
         "agentic_core/L1_cognition/utils/profile_updater_util.py",
         "agentic_core/L1_cognition/utils/prompts_util.py",
-        "agentic_core/L1_cognition/utils/template_finder.py",
         "agentic_core/L1_cognition/utils/template_finder_util.py",
-        "agentic_core/L1_cognition/utils/template_matcher.py",
+        "agentic_core/L1_cognition/utils/template_finder_util.py",
         "agentic_core/L1_cognition/utils/template_matcher_util.py",
-        "agentic_core/L1_cognition/utils/token_updater.py",
+        "agentic_core/L1_cognition/utils/template_matcher_util.py",
+        "agentic_core/L1_cognition/utils/token_updater_util.py",
         "agentic_core/L1_cognition/utils/token_updater_util.py",
         "agentic_core/L1_cognition/validators/consensus_validator.py",
         "agentic_core/L1_cognition/validators/dark_reasoning_visitor_validator.py",
@@ -443,7 +443,7 @@
         "agentic_core/L2_execution/tools/web_search_client.py",
         "agentic_core/L2_execution/types/bullet_format_types.py",
         "agentic_core/L2_execution/types/ephemeral_vm_types.py",
-        "agentic_core/L2_execution/types/execution_trace.py",
+        "agentic_core/L2_execution/types/execution_trace_types.py",
         "agentic_core/L2_execution/types/heal_contract_types.py",
         "agentic_core/L2_execution/types/healer_registry_types.py",
         "agentic_core/L2_execution/types/keyword_classification_types.py",
@@ -525,7 +525,7 @@
         "agentic_core/L3_orchestration/types/telepathy_interface_types.py",
         "agentic_core/L3_orchestration/types/workflow_loader_types.py",
         "agentic_core/L3_orchestration/types/workflow_types.py",
-        "agentic_core/L3_orchestration/utils/log_orchestration_metrics.py",
+        "agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py",
         "agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py"
       ]
     },
@@ -591,7 +591,7 @@
         "agentic_core/L4_state/utils/get_existing_files_util.py",
         "agentic_core/L4_state/utils/get_file_hash_util.py",
         "agentic_core/L4_state/utils/layer_gravity_util.py",
-        "agentic_core/L4_state/utils/local_disk_adapter.py",
+        "agentic_core/L4_state/utils/local_disk_adapter_util.py",
         "agentic_core/L4_state/utils/local_disk_adapter_util.py",
         "agentic_core/L4_state/utils/rag_enhancement_util.py",
         "agentic_core/L4_state/utils/telemetry_sanitizer.py"
@@ -634,7 +634,7 @@
         "agentic_core/L5_safety/enforcement/dependency_graph_enforcer.py",
         "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py",
         "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
-        "agentic_core/L5_safety/enforcement/git_health_sensor.py",
+        "agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py",
         "agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py",
         "agentic_core/L5_safety/enforcement/git_kraken_healing_strategy.py",
         "agentic_core/L5_safety/enforcement/governance/artifacts_guard.py",
@@ -648,7 +648,7 @@
         "agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py",
         "agentic_core/L5_safety/enforcement/mission_utils_enforcer.py",
         "agentic_core/L5_safety/enforcement/mock_context_enforcer.py",
-        "agentic_core/L5_safety/enforcement/module_collision_guard.py",
+        "agentic_core/L5_safety/enforcement/module_collision_guardrail.py",
         "agentic_core/L5_safety/enforcement/module_collision_guardrail.py",
         "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py",
         "agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py",
@@ -661,18 +661,18 @@
         "agentic_core/L5_safety/enforcement/safety_layer_enforcer.py",
         "agentic_core/L5_safety/enforcement/secure_error_handler_enforcer.py",
         "agentic_core/L5_safety/enforcement/security/credential_guard.py",
-        "agentic_core/L5_safety/enforcement/sovereign_fence_validator.py",
+        "agentic_core/L5_safety/enforcement/sovereign_fence_validator_enforcer.py",
         "agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py",
         "agentic_core/L5_safety/enforcement/sovereign_policy_registry_enforcer.py",
         "agentic_core/L5_safety/enforcement/ssot_guardrail.py",
         "agentic_core/L5_safety/enforcement/ssot_import_enforcer.py",
-        "agentic_core/L5_safety/enforcement/ssot_scanner.py",
+        "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
         "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
         "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
-        "agentic_core/L5_safety/enforcement/system.py",
+        "agentic_core/L5_safety/enforcement/system_enforcer.py",
         "agentic_core/L5_safety/enforcement/system_enforcer.py",
         "agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py",
-        "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+        "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
         "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
         "agentic_core/L5_safety/enforcement/vector_healing_strategy.py",
         "agentic_core/L5_safety/governance/lazy_seam_classifier.py",
@@ -719,7 +719,7 @@
         "agentic_core/L5_safety/runners/code_validator_runner.py",
         "agentic_core/L5_safety/runners/hierarchy_runner.py",
         "agentic_core/L5_safety/runners/orchestrator_runner.py",
-        "agentic_core/L5_safety/types/agent_audit_result.py",
+        "agentic_core/L5_safety/types/agent_audit_result_types.py",
         "agentic_core/L5_safety/types/agent_audit_result_types.py",
         "agentic_core/L5_safety/types/constitutional_governance_types.py",
         "agentic_core/L5_safety/types/core_contracts_types.py",
@@ -744,16 +744,16 @@
         "agentic_core/L5_safety/types/verification_types.py",
         "agentic_core/L5_safety/utils/agent_categorizer_util.py",
         "agentic_core/L5_safety/utils/cache_invalidation_util.py",
-        "agentic_core/L5_safety/utils/cache_invalidation_utils.py",
+        "agentic_core/L5_safety/utils/cache_invalidation_util.py",
         "agentic_core/L5_safety/utils/canonical_truth_util.py",
         "agentic_core/L5_safety/utils/capability_extractor_util.py",
         "agentic_core/L5_safety/utils/check_output_quality_util.py",
-        "agentic_core/L5_safety/utils/code_tool_runner_core.py",
+        "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
         "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
         "agentic_core/L5_safety/utils/cognitive_batch_processor_util.py",
         "agentic_core/L5_safety/utils/constitutional_overseer_util.py",
-        "agentic_core/L5_safety/utils/ConstitutionalOverseer.py",
-        "agentic_core/L5_safety/utils/cst_transformers_types.py",
+        "agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py",
+        "agentic_core/L5_safety/utils/cst_transformers_types_util.py",
         "agentic_core/L5_safety/utils/enforce_length_limits_util.py",
         "agentic_core/L5_safety/utils/extract_pattern_util.py",
         "agentic_core/L5_safety/utils/fca_safety_gates_util.py",
@@ -772,7 +772,7 @@
         "agentic_core/L5_safety/utils/sovereign_lock_util.py",
         "agentic_core/L5_safety/utils/ssot_folder_check_util.py",
         "agentic_core/L5_safety/utils/subprocess_security_util.py",
-        "agentic_core/L5_safety/utils/surgical_context_types.py",
+        "agentic_core/L5_safety/utils/surgical_context_types_util.py",
         "agentic_core/L5_safety/utils/tiered_batch_util.py",
         "agentic_core/L5_safety/utils/validate_dashboard_data_sourcing_util.py",
         "agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py",
@@ -831,7 +831,7 @@
         "agentic_core/L6_observability/golden_evaluation/resume_quality_evaluator.py",
         "agentic_core/L6_observability/golden_evaluation/tool_use_ground_truth_evaluator.py",
         "agentic_core/L6_observability/types/monitor_types.py",
-        "agentic_core/L6_observability/types/sovereign_report.py",
+        "agentic_core/L6_observability/types/sovereign_report_types.py",
         "agentic_core/L6_observability/types/sovereign_report_types.py",
         "agentic_core/L6_observability/utils/fix_testing_observability_util.py",
         "agentic_core/L6_observability/utils/system_telemetry_util.py"
@@ -2261,8 +2261,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.enforcement.hierarchy_validator",
-      "path": "agentic_core/enforcement/hierarchy_validator.py",
+      "mod": "agentic_core.enforcement.hierarchy_validator_enforcer",
+      "path": "agentic_core/enforcement/hierarchy_validator_enforcer.py",
       "target": "agentic_core",
       "layer": "enforcement",
       "n_classes": 1,
@@ -2276,8 +2276,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.enforcement.import_boundary_check",
-      "path": "agentic_core/enforcement/import_boundary_check.py",
+      "mod": "agentic_core.enforcement.import_boundary_check_enforcer",
+      "path": "agentic_core/enforcement/import_boundary_check_enforcer.py",
       "target": "agentic_core",
       "layer": "enforcement",
       "n_classes": 1,
@@ -2292,8 +2292,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.enforcement.structural_namespace_fence",
-      "path": "agentic_core/enforcement/structural_namespace_fence.py",
+      "mod": "agentic_core.enforcement.structural_namespace_fence_enforcer",
+      "path": "agentic_core/enforcement/structural_namespace_fence_enforcer.py",
       "target": "agentic_core",
       "layer": "enforcement",
       "n_classes": 3,
@@ -4535,8 +4535,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L0_routing.types.artifact_typed_compat",
-      "path": "agentic_core/L0_routing/types/artifact_typed_compat.py",
+      "mod": "agentic_core.L0_routing.types.artifact_typed_compat_types",
+      "path": "agentic_core/L0_routing/types/artifact_typed_compat_types.py",
       "target": "agentic_core",
       "layer": "L0_routing",
       "n_classes": 0,
@@ -4568,8 +4568,8 @@
       "severity": "LOW"
     },
     {
-      "mod": "agentic_core.L0_routing.types.artifact_validators",
-      "path": "agentic_core/L0_routing/types/artifact_validators.py",
+      "mod": "agentic_core.L0_routing.types.artifact_validators_types",
+      "path": "agentic_core/L0_routing/types/artifact_validators_types.py",
       "target": "agentic_core",
       "layer": "L0_routing",
       "n_classes": 0,
@@ -4928,8 +4928,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L0_routing.utils.path_utils",
-      "path": "agentic_core/L0_routing/utils/path_utils.py",
+      "mod": "agentic_core.L0_routing.utils.path_util",
+      "path": "agentic_core/L0_routing/utils/path_util.py",
       "target": "agentic_core",
       "layer": "L0_routing",
       "n_classes": 0,
@@ -5043,8 +5043,8 @@
       "severity": "LOW"
     },
     {
-      "mod": "agentic_core.L0_routing.utils.subprocess_runner",
-      "path": "agentic_core/L0_routing/utils/subprocess_runner.py",
+      "mod": "agentic_core.L0_routing.utils.subprocess_runner_util",
+      "path": "agentic_core/L0_routing/utils/subprocess_runner_util.py",
       "target": "agentic_core",
       "layer": "L0_routing",
       "n_classes": 0,
@@ -5746,8 +5746,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L1_cognition.utils.history_merger",
-      "path": "agentic_core/L1_cognition/utils/history_merger.py",
+      "mod": "agentic_core.L1_cognition.utils.history_merger_util",
+      "path": "agentic_core/L1_cognition/utils/history_merger_util.py",
       "target": "agentic_core",
       "layer": "L1_cognition",
       "n_classes": 1,
@@ -5778,8 +5778,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L1_cognition.utils.profile_updater",
-      "path": "agentic_core/L1_cognition/utils/profile_updater.py",
+      "mod": "agentic_core.L1_cognition.utils.profile_updater_util",
+      "path": "agentic_core/L1_cognition/utils/profile_updater_util.py",
       "target": "agentic_core",
       "layer": "L1_cognition",
       "n_classes": 1,
@@ -5821,8 +5821,8 @@
       "severity": "LOW"
     },
     {
-      "mod": "agentic_core.L1_cognition.utils.template_finder",
-      "path": "agentic_core/L1_cognition/utils/template_finder.py",
+      "mod": "agentic_core.L1_cognition.utils.template_finder_util",
+      "path": "agentic_core/L1_cognition/utils/template_finder_util.py",
       "target": "agentic_core",
       "layer": "L1_cognition",
       "n_classes": 1,
@@ -5853,8 +5853,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L1_cognition.utils.template_matcher",
-      "path": "agentic_core/L1_cognition/utils/template_matcher.py",
+      "mod": "agentic_core.L1_cognition.utils.template_matcher_util",
+      "path": "agentic_core/L1_cognition/utils/template_matcher_util.py",
       "target": "agentic_core",
       "layer": "L1_cognition",
       "n_classes": 1,
@@ -5885,8 +5885,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L1_cognition.utils.token_updater",
-      "path": "agentic_core/L1_cognition/utils/token_updater.py",
+      "mod": "agentic_core.L1_cognition.utils.token_updater_util",
+      "path": "agentic_core/L1_cognition/utils/token_updater_util.py",
       "target": "agentic_core",
       "layer": "L1_cognition",
       "n_classes": 1,
@@ -6827,8 +6827,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L2_execution.types.execution_trace",
-      "path": "agentic_core/L2_execution/types/execution_trace.py",
+      "mod": "agentic_core.L2_execution.types.execution_trace_types",
+      "path": "agentic_core/L2_execution/types/execution_trace_types.py",
       "target": "agentic_core",
       "layer": "L2_execution",
       "n_classes": 2,
@@ -7986,8 +7986,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L3_orchestration.utils.log_orchestration_metrics",
-      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics.py",
+      "mod": "agentic_core.L3_orchestration.utils.log_orchestration_metrics_util",
+      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py",
       "target": "agentic_core",
       "layer": "L3_orchestration",
       "n_classes": 1,
@@ -8822,8 +8822,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L4_state.utils.local_disk_adapter",
-      "path": "agentic_core/L4_state/utils/local_disk_adapter.py",
+      "mod": "agentic_core.L4_state.utils.local_disk_adapter_util",
+      "path": "agentic_core/L4_state/utils/local_disk_adapter_util.py",
       "target": "agentic_core",
       "layer": "L4_state",
       "n_classes": 1,
@@ -9368,8 +9368,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.git_health_sensor",
-      "path": "agentic_core/L5_safety/enforcement/git_health_sensor.py",
+      "mod": "agentic_core.L5_safety.enforcement.git_health_sensor_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 1,
@@ -9602,8 +9602,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.module_collision_guard",
-      "path": "agentic_core/L5_safety/enforcement/module_collision_guard.py",
+      "mod": "agentic_core.L5_safety.enforcement.module_collision_guardrail",
+      "path": "agentic_core/L5_safety/enforcement/module_collision_guardrail.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 0,
@@ -9832,8 +9832,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.sovereign_fence_validator",
-      "path": "agentic_core/L5_safety/enforcement/sovereign_fence_validator.py",
+      "mod": "agentic_core.L5_safety.enforcement.sovereign_fence_validator_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_fence_validator_enforcer.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 2,
@@ -9915,8 +9915,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.ssot_scanner",
-      "path": "agentic_core/L5_safety/enforcement/ssot_scanner.py",
+      "mod": "agentic_core.L5_safety.enforcement.ssot_scanner_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 2,
@@ -9960,8 +9960,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.system",
-      "path": "agentic_core/L5_safety/enforcement/system.py",
+      "mod": "agentic_core.L5_safety.enforcement.system_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/system_enforcer.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 3,
@@ -10012,8 +10012,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L5_safety.enforcement.toxic_dependency_auditor",
-      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+      "mod": "agentic_core.L5_safety.enforcement.toxic_dependency_auditor_enforcer",
+      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 1,
@@ -10760,8 +10760,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.types.agent_audit_result",
-      "path": "agentic_core/L5_safety/types/agent_audit_result.py",
+      "mod": "agentic_core.L5_safety.types.agent_audit_result_types",
+      "path": "agentic_core/L5_safety/types/agent_audit_result_types.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 1,
@@ -11160,8 +11160,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L5_safety.utils.cache_invalidation_utils",
-      "path": "agentic_core/L5_safety/utils/cache_invalidation_utils.py",
+      "mod": "agentic_core.L5_safety.utils.cache_invalidation_util",
+      "path": "agentic_core/L5_safety/utils/cache_invalidation_util.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 0,
@@ -11219,8 +11219,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.utils.code_tool_runner_core",
-      "path": "agentic_core/L5_safety/utils/code_tool_runner_core.py",
+      "mod": "agentic_core.L5_safety.utils.code_tool_runner_core_util",
+      "path": "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 1,
@@ -11271,8 +11271,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.utils.ConstitutionalOverseer",
-      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer.py",
+      "mod": "agentic_core.L5_safety.utils.ConstitutionalOverseer_util",
+      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 1,
@@ -11284,8 +11284,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L5_safety.utils.cst_transformers_types",
-      "path": "agentic_core/L5_safety/utils/cst_transformers_types.py",
+      "mod": "agentic_core.L5_safety.utils.cst_transformers_types_util",
+      "path": "agentic_core/L5_safety/utils/cst_transformers_types_util.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 0,
@@ -11582,8 +11582,8 @@
       "severity": "CRITICAL"
     },
     {
-      "mod": "agentic_core.L5_safety.utils.surgical_context_types",
-      "path": "agentic_core/L5_safety/utils/surgical_context_types.py",
+      "mod": "agentic_core.L5_safety.utils.surgical_context_types_util",
+      "path": "agentic_core/L5_safety/utils/surgical_context_types_util.py",
       "target": "agentic_core",
       "layer": "L5_safety",
       "n_classes": 0,
@@ -12342,8 +12342,8 @@
       "severity": "HIGH"
     },
     {
-      "mod": "agentic_core.L6_observability.types.sovereign_report",
-      "path": "agentic_core/L6_observability/types/sovereign_report.py",
+      "mod": "agentic_core.L6_observability.types.sovereign_report_types",
+      "path": "agentic_core/L6_observability/types/sovereign_report_types.py",
       "target": "agentic_core",
       "layer": "L6_observability",
       "n_classes": 2,

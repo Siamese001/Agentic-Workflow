@@ -306,7 +306,7 @@ class MCPToolServer:
 
         # Emit enforcement artifact via TelemetryEmitter
         try:
-            from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
+            from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)

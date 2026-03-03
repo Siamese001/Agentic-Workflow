@@ -51,12 +51,12 @@ from __future__ import annotations
 from dataclasses import dataclass
 from typing import Any, Protocol
 
-from system_learning.engines.arbitration.engine import ArbitrationEngine
-from system_learning.engines.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
-from system_learning.engines.confidence.engine import HealingConfidenceScorer
-from system_learning.engines.correlation.engine import RiskCorrelator
+from system_learning.arbitration.engine import ArbitrationEngine
+from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
+from system_learning.confidence.engine import HealingConfidenceScorer
+from system_learning.correlation.engine import RiskCorrelator
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-from system_learning.engines.fingerprinting.engine import FailureFingerprinter
+from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter

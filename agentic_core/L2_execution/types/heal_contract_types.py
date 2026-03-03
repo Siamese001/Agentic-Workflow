@@ -40,7 +40,7 @@ HEAL_STATUS_VALUES: frozenset[str] = frozenset(s.value for s in HealStatus)
 # Contract version
 # ---------------------------------------------------------------------------
 
-CONTRACT_VERSION: int = 1
+CONTRACT_VERSION: int = 2
 
 # ---------------------------------------------------------------------------
 # JSON Schema
@@ -84,6 +84,8 @@ CONTRACT_JSON_SCHEMA: dict[str, Any] = {
                     },
                     "rollback_info": {"type": ["string", "null"]},
                     "notes": {"type": ["string", "null"]},
+                    "needs_llm_escalation": {"type": "boolean"},
+                    "escalation_hint": {"type": ["string", "null"]},
                 },
             },
         },
@@ -122,6 +124,12 @@ class HealCheckResult:
         changes_made: Sorted repo-relative paths or human-readable actions.
         rollback_info: Optional rollback instructions.
         notes: Optional free-text notes.
+        needs_llm_escalation: True only when the healer explicitly determines
+            LLM-tier escalation is required (e.g. complex rewrite needed).
+            Must NOT be set for policy-blocked, permission, or N/A failures.
+        escalation_hint: Structured hint for tier routing, e.g.
+            "failure_type=code_edit_required blast_radius=0.7".
+            Ignored unless needs_llm_escalation is True.
     """
 
     check_id: str
@@ -129,6 +137,8 @@ class HealCheckResult:
     changes_made: tuple[str, ...] = ()
     rollback_info: str | None = None
     notes: str | None = None
+    needs_llm_escalation: bool = False
+    escalation_hint: str | None = None
 
     def __post_init__(self) -> None:
         if not self.check_id:
@@ -151,6 +161,8 @@ class HealCheckResult:
             "changes_made": sorted(self.changes_made),
             "rollback_info": self.rollback_info,
             "notes": self.notes,
+            "needs_llm_escalation": self.needs_llm_escalation,
+            "escalation_hint": self.escalation_hint,
         }
 
 

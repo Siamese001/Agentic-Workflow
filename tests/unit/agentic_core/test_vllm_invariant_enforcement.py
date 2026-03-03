@@ -6,18 +6,18 @@ Tests that FAIL violations trigger Gemini fallback with violations in telemetry.
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_gateway_adapter import (
+from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
     VLLMGatewayAdapter,
     reset_singletons,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
 )
-from agentic_core.L2_execution.types.vllm_invariant_contract import (
+from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
 )
@@ -144,7 +144,7 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
     """
     from unittest.mock import patch
 
-    from agentic_core.L2_execution.types.vllm_invariant_contract import (
+    from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
         InvariantViolation,
     )
 
@@ -165,7 +165,7 @@ def test_adapter_fail_violation_triggers_gemini_with_violations_attached():
 
     # Patch the verifier to return a FAIL violation
     with patch(
-        "agentic_core.L2_execution.types.vllm_invariant_verifier.verify_gateway_invariants"
+        "agentic_core.L2_execution.types.vllm_invariant_verifier_types.verify_gateway_invariants"
     ) as mock_verify:
         mock_verify.return_value = [mock_violation]
 

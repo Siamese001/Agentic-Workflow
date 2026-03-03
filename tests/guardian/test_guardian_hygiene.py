@@ -31,7 +31,7 @@ from agentic_core.L0_routing.scripts.run_guardian_hygiene import (
     scan_init_only_folders,
     scan_temp_artifacts,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     validate_no_absolute_paths,

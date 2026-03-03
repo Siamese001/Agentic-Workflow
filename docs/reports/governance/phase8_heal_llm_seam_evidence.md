@@ -15,7 +15,7 @@
 #### Imports Added
 
 ```python
-from agentic_core.L5_safety.types.heal_llm_seam import (
+from agentic_core.L5_safety.types.heal_llm_seam_types import (
     DEFAULT_HEAL_LLM_CALLER,
     HealLlmRequest,
 )
@@ -53,7 +53,7 @@ index 8731dcca4..884dbd008 100644
  from typing import Any, TypeVar, cast
 
  from agentic_core.base_agents.timeout_decorator import TimeoutError, timeout
-+from agentic_core.L5_safety.types.heal_llm_seam import (
++from agentic_core.L5_safety.types.heal_llm_seam_types import (
 +    DEFAULT_HEAL_LLM_CALLER,
 +    HealLlmRequest,
 +)

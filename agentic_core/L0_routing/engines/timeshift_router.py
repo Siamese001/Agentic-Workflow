@@ -23,7 +23,7 @@ def _get_routing_config_and_active():
 
 
 def _get_prior_detection_signal():
-    from agentic_core.L4_state.types.detection_signal_store import get_prior_detection_signal
+    from agentic_core.L4_state.types.detection_signal_store_types import get_prior_detection_signal
 
     return get_prior_detection_signal
 

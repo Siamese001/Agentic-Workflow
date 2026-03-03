@@ -94,7 +94,7 @@ except ImportError:
 # Logger for healing operations
 import logging
 
-from agentic_core.L5_safety.utils._fca_safety_gates import (
+from agentic_core.L5_safety.utils.fca_safety_gates_util import (
     NestedLCDPolicy,
     SafetyGateResult,
     WaveConfig,
@@ -2063,7 +2063,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # --- NESTED LCD PREVENTION (WAVE 2.3 HARDENED) ---
         # When strict_lcd_roots_only=False (default), findings are WARN not VIOLATION
         # and are NOT executable moves.
-        from agentic_core.L5_safety.utils._fca_safety_gates import (
+        from agentic_core.L5_safety.utils.fca_safety_gates_util import (
             check_nested_lcd_with_policy,
         )
 
@@ -3031,6 +3031,109 @@ class FileClassificationAgent(*BASE_CLASSES):
                         ),
                     },
                 )
+
+        # [FIX] Detect same-directory semantic duplicates: files with different
+        # names but overlapping primary class definitions.  This catches the case
+        # where two healing passes rename the same source file to different
+        # target names (e.g. IBlackboardLeaseVerifier.py vs
+        # IBlackboardLeaseVerifierProtocol.py) producing two divergent copies.
+        violations.extend(self._detect_semantic_duplicates(file_registry))
+
+        return violations
+
+    def _detect_semantic_duplicates(self, file_registry: list[Path]) -> list[dict[str, Any]]:
+        """Detect same-directory files with overlapping primary class names.
+
+        Two files in the same directory whose primary (first) AST class shares a
+        normalised stem are flagged.  The file with more external importers wins;
+        ties are broken alphabetically (shorter name first).
+        """
+        # Group files by parent directory
+        dir_index: dict[Path, list[Path]] = {}
+        for path in file_registry:
+            if not path.name.endswith(".py") or path.name.startswith("test_"):
+                continue
+            dir_index.setdefault(path.parent, []).append(path)
+
+        violations: list[dict[str, Any]] = []
+
+        # [FIX-HANG] Build a single-pass import index: module_stem -> importer_count.
+        # This replaces the O(n^2) per-candidate AST re-parse that caused execute_ssot
+        # Phase 2 reconciliation to hang on large repositories.
+        _import_index: dict[str, int] = {}
+        for path in file_registry:
+            if not path.name.endswith(".py"):
+                continue
+            try:
+                _tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                _seen_modules: set[str] = set()
+                for _node in ast.walk(_tree):
+                    if isinstance(_node, ast.ImportFrom) and _node.module:
+                        for _seg in _node.module.split("."):
+                            _seen_modules.add(_seg)
+                    elif isinstance(_node, ast.Import):
+                        for _alias in _node.names:
+                            for _seg in _alias.name.split("."):
+                                _seen_modules.add(_seg)
+                for _mod in _seen_modules:
+                    _import_index[_mod] = _import_index.get(_mod, 0) + 1
+            except (SyntaxError, OSError, UnicodeDecodeError):
+                continue
+
+        for directory, paths in dir_index.items():
+            if len(paths) < 2:
+                continue
+
+            # Extract primary class name per file (first ClassDef in AST)
+            class_map: dict[str, list[Path]] = {}
+            for path in paths:
+                try:
+                    tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"))
+                    for node in ast.walk(tree):
+                        if isinstance(node, ast.ClassDef):
+                            # Normalise: strip I-prefix and Protocol/Base suffixes
+                            norm = node.name
+                            if norm.startswith("I") and len(norm) > 1 and norm[1].isupper():
+                                norm = norm[1:]
+                            for suffix in ("Protocol", "Base"):
+                                if norm.endswith(suffix) and len(norm) > len(suffix):
+                                    norm = norm[: -len(suffix)]
+                            # Also normalise snake_case → lower to match PascalCase
+                            norm_key = norm.replace("_", "").lower()
+                            class_map.setdefault(norm_key, []).append(path)
+                            break  # Only inspect primary class
+                except (SyntaxError, OSError, UnicodeDecodeError):
+                    continue
+
+            # Flag groups with >1 file sharing the same normalised primary class
+            seen_pairs: set[tuple[str, str]] = set()
+            for norm_key, group_paths in class_map.items():
+                unique = list(dict.fromkeys(group_paths))  # dedupe, preserve order
+                if len(unique) < 2:
+                    continue
+
+                # Determine canonical: most module-level importers wins, then shorter name.
+                scored = sorted(unique, key=lambda p: (-_import_index.get(p.stem, 0), len(p.name), p.name))
+                canonical = scored[0]
+                for dup in scored[1:]:
+                    pair_key = (str(canonical), str(dup))
+                    if pair_key in seen_pairs:
+                        continue
+                    seen_pairs.add(pair_key)
+                    violations.append(
+                        {
+                            "type": "SEMANTIC_DUPLICATE",
+                            "filename": dup.name,
+                            "canonical_path": str(canonical),
+                            "duplicate_path": str(dup),
+                            "message": (
+                                f"Semantic duplicate: {dup.name} shares primary class "
+                                f"with {canonical.name} in {directory.name}/. "
+                                f"Canonical: {canonical.name} (more importers). "
+                                f"Duplicate: {dup.name} — should be deleted."
+                            ),
+                        },
+                    )
 
         return violations
 

@@ -27,7 +27,7 @@ from agentic_core.L2_execution.tools.ptc_contract import (
     PTCUnsignedEnvelopeError,
     redact_output,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 # ---------------------------------------------------------------------------
 # Fixed test vectors
@@ -46,7 +46,7 @@ _ENVELOPE_V = SandboxEnvelope(
 
 def _make_unsigned_envelope(**overrides) -> SandboxEnvelope:
     """Construct a SandboxEnvelope with empty signature, bypassing __post_init__."""
-    from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
     e = SandboxEnvelope.__new__(SandboxEnvelope)
     object.__setattr__(e, "envelope_id", overrides.get("envelope_id", "ptc-env-0001"))

@@ -10,7 +10,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.utils.timeout_decorator_util import timeout
 
 """
@@ -305,7 +305,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         from agentic_core.L0_routing.enforcement.traceability_contracts import (
             generate_trace_id,
         )
-        from agentic_core.L0_routing.types.determinism_contracts import (
+        from agentic_core.L0_routing.types.determinism_contracts_types import (
             require_manifest_hash_ok,
         )
         from agentic_core.L0_routing.types.determinism_types import (

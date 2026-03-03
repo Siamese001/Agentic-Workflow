@@ -556,7 +556,7 @@ class TestDispatcherDryRunTrace:
         dispatcher_artifacts: tuple[Path, dict],
     ) -> None:
         heal_path, _ = dispatcher_artifacts
-        from agentic_core.L2_execution.types.heal_contract import (
+        from agentic_core.L2_execution.types.heal_contract_types import (
             check_schema_compatibility,
         )
 

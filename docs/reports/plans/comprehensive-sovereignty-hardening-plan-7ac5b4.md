@@ -346,11 +346,11 @@ FORBIDDEN_MUTATION_MODULES: Final[Set[str]] = frozenset({
 
 #### Wave 4.1: AST Gateway Bypass Scanner
 **Enhanced Files**:
-- `agentic_core/enforcement/import_boundary_check.py`
+- `agentic_core/enforcement/import_boundary_check_enforcer.py`
 
 **Additions**:
 ```python
-# agentic_core/enforcement/import_boundary_check.py
+# agentic_core/enforcement/import_boundary_check_enforcer.py
 class GatewayBypassVisitor(ast.NodeVisitor):
     """AST visitor to detect gateway bypass attempts."""
 
@@ -494,7 +494,7 @@ jobs:
       - uses: actions/checkout@v3
 
       - name: Check agentic_core import boundaries
-        run: python -m agentic_core.enforcement.import_boundary_check
+        run: python -m agentic_core.enforcement.import_boundary_check_enforcer
 
       - name: Check gateway bypass violations
         run: python -m agentic_core.enforcement.gateway_bypass_check

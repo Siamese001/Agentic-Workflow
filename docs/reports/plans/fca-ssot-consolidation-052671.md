@@ -40,10 +40,10 @@ Three files claim or act as SSOT for agent discovery:
 ### Category 3: Inline `endswith("Agent")` Checks (12+ files)
 
 **Enforcement scripts** (4 files):
-- `L5_safety/enforcement/ssot_scanner.py` — `node.name.endswith("Agent")`
-- `L5_safety/enforcement/registry_verification.py` — `node.name.endswith("Agent")`
-- `L5_safety/enforcement/data.py` — `not name.endswith("Agent")`
-- `L5_safety/enforcement/ssot_structure_validation.py` — `class_name.endswith("BaseAgent")`
+- `L5_safety/enforcement/ssot_scanner_enforcer.py` — `node.name.endswith("Agent")`
+- `L5_safety/enforcement/registry_verification_enforcer.py` — `node.name.endswith("Agent")`
+- `L5_safety/enforcement/data_enforcer.py` — `not name.endswith("Agent")`
+- `L5_safety/enforcement/ssot_structure_validation_enforcer.py` — `class_name.endswith("BaseAgent")`
 
 **Test files** (8+ files):
 - `tests/integration/test_repo_scan_no_agents_outside_reasoning.py` — 4 inline checks
@@ -99,10 +99,10 @@ Three files claim or act as SSOT for agent discovery:
 
 | # | File | Action |
 |---|------|--------|
-| 3a | `L5_safety/enforcement/ssot_scanner.py` | Replace `node.name.endswith("Agent")` with FCA `is_agent_file(path)` |
-| 3b | `L5_safety/enforcement/registry_verification.py` | Same pattern |
-| 3c | `L5_safety/enforcement/data.py` | Same pattern |
-| 3d | `L5_safety/enforcement/ssot_structure_validation.py` | Same pattern |
+| 3a | `L5_safety/enforcement/ssot_scanner_enforcer.py` | Replace `node.name.endswith("Agent")` with FCA `is_agent_file(path)` |
+| 3b | `L5_safety/enforcement/registry_verification_enforcer.py` | Same pattern |
+| 3c | `L5_safety/enforcement/data_enforcer.py` | Same pattern |
+| 3d | `L5_safety/enforcement/ssot_structure_validation_enforcer.py` | Same pattern |
 
 ### Phase 4: Fix Filename-Only Utilities (P2 — Low Risk)
 

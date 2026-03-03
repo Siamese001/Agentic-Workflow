@@ -80,7 +80,7 @@ git mv agentic_core/prompt_governance/security/normalization_util.py -> agentic_
 ### 3. Imports Updated (7 files)
 
 - agentic_core/L3_orchestration/engines/sub_atomic_engine_impl.py
-- agentic_core/L5_safety/enforcement/canary_token_defense.py
+- agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py
 - agentic_core/mixins/instructional_injection_mixin.py
 - agentic_core/prompt_governance/security/injection_detector.py
 - tests/unit/agentic_core/L2_execution/enforcement/test_gateway_output_injection_scan.py

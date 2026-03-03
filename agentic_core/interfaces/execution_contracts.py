@@ -22,7 +22,7 @@ from __future__ import annotations
 
 try:
     from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-    from agentic_core.L2_execution.types.agent_output_contract import (
+    from agentic_core.L2_execution.types.agent_output_contract_types import (
         AgentOutputContract,
         wrap_output,
     )

@@ -4,7 +4,7 @@
 **0f0a0d4a6** — phase9: ReplayBundle + ReplayBundleStore + ReplayVerifier + emitter + tests
 
 ## Modified / New Files
-- `agentic_core/L4_state/types/replay_bundle.py` [NEW — Wave 1: ReplayBundle + build_replay_bundle()]
+- `agentic_core/L4_state/types/replay_bundle_types.py` [NEW — Wave 1: ReplayBundle + build_replay_bundle()]
 - `agentic_core/L4_state/enforcement/replay_bundle_store.py` [NEW — Wave 2: ReplayBundleStore + ReplayVerifier + ReplayVerificationError + VerifiedReplay]
 - `agentic_core/L4_state/engines/replay_bundle_emitter.py` [NEW — Wave 3: emit_replay_bundle() gateway emission]
 - `tests/agentic_core/test_phase9_replay_bundle_model.py` [NEW — Wave 1: 29 tests]

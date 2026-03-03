@@ -15,7 +15,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     is_v15_enforced,
     is_v15_hard_fail,
     is_v15_soft_fail,

@@ -114,7 +114,7 @@ class TestManifestConstructionPattern:
             FixConstraint,
             SurgicalManifest,
         )
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         assert is_v15_enforced()
 
@@ -153,7 +153,7 @@ class TestManifestConstructionPattern:
     def test_manifest_construction_pattern_not_enforced(self):
         """When V15 explicitly opted out, is_v15_enforced() returns False."""
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "0"}):
-            from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+            from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
             assert not is_v15_enforced()
 

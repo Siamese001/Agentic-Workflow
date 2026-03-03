@@ -28,7 +28,7 @@ _REQUIRED_COMPONENTS: list[tuple[str, str, str]] = [
         "capability_chokepoint",
     ),
     (
-        "agentic_core.L5_safety.enforcement.mutation_prohibition",
+        "agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer",
         "assert_no_persistent_write",
         "mutation_prohibition",
     ),

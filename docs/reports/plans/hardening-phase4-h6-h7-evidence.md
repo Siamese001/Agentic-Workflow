@@ -16,7 +16,7 @@ Implement H6 (AST-based learning seam compliance test) and H7 (formal tier latti
 | File | Intent |
 |---|---|
 | `tests/governance/test_learning_seam_compliance.py` | New: H6 AST compliance test (6 tests) |
-| `agentic_core/L5_safety/types/tier_lattice.py` | New: H7 TierLattice, BackpressurePolicy, LearningTier |
+| `agentic_core/L5_safety/types/tier_lattice_types.py` | New: H7 TierLattice, BackpressurePolicy, LearningTier |
 | `tests/governance/test_tier_lattice.py` | New: H7 property-based tests (279 parametrized) |
 | `docs/reports/plans/hardening-phase4-h6-h7-evidence.md` | This evidence file |
 

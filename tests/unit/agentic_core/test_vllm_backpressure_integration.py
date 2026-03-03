@@ -21,7 +21,7 @@ from agentic_core.L2_execution.types.vllm_backpressure_types import (
     QUEUE_WAIT_TIMEOUT_SECONDS,
     CircuitBreakerState,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
     evaluate_gateway_call,

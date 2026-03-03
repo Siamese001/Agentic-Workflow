@@ -18,7 +18,7 @@ from unittest.mock import patch
 import pytest
 
 import agentic_core.utils.decorators_util as decorators_module
-from agentic_core.L5_safety.types.heal_model_map import map_tier_to_model_id
+from agentic_core.L5_safety.types.heal_model_map_types import map_tier_to_model_id
 from agentic_core.L5_safety.types.heal_policy_types import (
     HealEscalationDecision,
     ReasoningTier,

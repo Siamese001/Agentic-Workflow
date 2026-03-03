@@ -24,7 +24,7 @@ d2507d13bb471231f7d46a22802d0043cea0de29
 agentic_core/L2_execution/UniversalWriteGateway.py
 agentic_core/L2_execution/healers/healing_provider_adapters.py
 agentic_core/L2_execution/healers/vllm_process_manager.py
-agentic_core/L5_safety/enforcement/runtime_mutation_guard.py
+agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py
 agentic_core/__init__.py
 apps_rg/utils/deep_brain_harvester_util.py
 ops_scripts/ci/check_llm_sdk_imports.py
@@ -46,7 +46,7 @@ agentic_core/__init__.py
 agentic_core/L2_execution/UniversalWriteGateway.py
 agentic_core/L2_execution/healers/healing_provider_adapters.py
 agentic_core/L2_execution/healers/vllm_process_manager.py
-agentic_core/L5_safety/enforcement/runtime_mutation_guard.py
+agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py
 apps_rg/utils/deep_brain_harvester_util.py
 ops_scripts/ci/check_llm_sdk_imports.py
 ops_scripts/ci/check_object_dunder_setattr.py

@@ -4,7 +4,7 @@
 
 ### File Created
 
-`agentic_core/L5_safety/types/heal_llm_seam.py`
+`agentic_core/L5_safety/types/heal_llm_seam_types.py`
 
 ### Contents
 
@@ -46,7 +46,7 @@ DEFAULT_HEAL_LLM_CALLER: HealLlmCaller | None = None
 ### python -c sanity check
 
 ```bash
-python -c "from agentic_core.L5_safety.types.heal_llm_seam import HealLlmRequest; print('ok')"
+python -c "from agentic_core.L5_safety.types.heal_llm_seam_types import HealLlmRequest; print('ok')"
 ```
 
 ```text
@@ -183,7 +183,7 @@ c940a2e66 docs(evidence): phase6 closeout proof
 ### git diff HEAD~3 HEAD --stat
 
 ```text
- agentic_core/L5_safety/types/heal_llm_seam.py      |  32 ++++++
+ agentic_core/L5_safety/types/heal_llm_seam_types.py      |  32 ++++++
  agentic_core/utils/decorators_util.py              |   7 +-
  docs/reports/governance/phase7_model_id_propagation_evidence.md | 64 ++++++++++++
  tests/governance/test_heal_routed_model_id_propagation.py       | 109 +++++++++++++++++++++
@@ -202,7 +202,7 @@ c940a2e66 docs(evidence): phase6 closeout proof
 
 ✅ Only allowed files changed:
 
-- agentic_core/L5_safety/types/heal_llm_seam.py
+- agentic_core/L5_safety/types/heal_llm_seam_types.py
 - agentic_core/utils/decorators_util.py
 - tests/governance/test_heal_routed_model_id_propagation.py
 - docs/reports/governance/phase7_model_id_propagation_evidence.md

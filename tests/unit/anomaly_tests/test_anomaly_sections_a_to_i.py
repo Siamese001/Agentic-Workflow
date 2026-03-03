@@ -157,7 +157,7 @@ class TestSectionE_PascalCaseInL0Scripts:
             ("GitKrakenHealingStrategy.py", "L0_routing/enforcement/git_kraken_healing_strategy.py"),
             ("InMemoryVectorCache.py", "L4_state/memory/in_memory_vector_cache.py"),
             ("SovereignHealingEngine.py", "L0_routing/reasoning/sovereign_healing_engine.py"),
-            ("SovereignReport.py", "L6_observability/types/sovereign_report.py"),
+            ("SovereignReport.py", "L6_observability/types/sovereign_report_types.py"),
             ("StrategistBioWriter.py", "L1_cognition/reasoning/strategist_bio_writer.py"),
             ("VectorHealingStrategy.py", "L0_routing/enforcement/vector_healing_strategy.py"),
         ],

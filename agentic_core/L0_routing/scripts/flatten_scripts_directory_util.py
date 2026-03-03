@@ -10,7 +10,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.utils.path_utils import (
+from agentic_core.L0_routing.utils.path_util import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )

@@ -12,9 +12,9 @@ from typing import Any
 
 from agentic_core.L2_execution.enforcement.budget_enforcer import BudgetEnforcer, BudgetExceeded
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-from agentic_core.L2_execution.types.execution_trace import ExecutionTrace, ExecutionTraceBuilder
-from agentic_core.L2_execution.types.ptc_tool_contracts import ToolContractViolation, ToolResult
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, SignatureVerificationError
+from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace, ExecutionTraceBuilder
+from agentic_core.L2_execution.types.ptc_tool_contracts_types import ToolContractViolation, ToolResult
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
 
 
 class SignatureBoundaryError(RuntimeError):
@@ -113,7 +113,7 @@ class ExecutionGateway:
         **metadata: Any,
     ) -> SandboxEnvelope:
         """Create a signed SandboxEnvelope for execution."""
-        from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
         env_metadata = {"agent_id": agent_id, **metadata}
         envelope = SandboxEnvelope(

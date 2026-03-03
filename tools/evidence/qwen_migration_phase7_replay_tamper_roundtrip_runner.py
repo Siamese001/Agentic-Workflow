@@ -59,7 +59,7 @@ def execute_tamper_roundtrip_proofs():
             validate_64hex,
         )
 
-        from agentic_core.L2_execution.types.vllm_replay_validator import VLLMReplayValidator
+        from agentic_core.L2_execution.types.vllm_replay_validator_types import VLLMReplayValidator
     except ImportError as e:
         print(f"FAIL: Cannot import test modules: {e}")
         sys.exit(1)

@@ -28,7 +28,7 @@ except ImportError:
 # SIGALRM is Unix-only (not available on Windows)
 _HAS_SIGALRM = hasattr(signal, "SIGALRM")
 
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 
 class BudgetExceeded(RuntimeError):

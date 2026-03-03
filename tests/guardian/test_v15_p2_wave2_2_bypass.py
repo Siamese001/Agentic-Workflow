@@ -21,7 +21,7 @@ from agentic_core.L0_routing.enforcement.runtime_guard import (
     _get_active_guards,
     assert_v15_guarded,
 )
-from agentic_core.L0_routing.types.guardian_contract import V15EnforcementError
+from agentic_core.L0_routing.types.guardian_contract_types import V15EnforcementError
 
 INVENTORY_PATH = (
     Path(__file__).resolve().parents[2]

@@ -23,7 +23,7 @@ from __future__ import annotations
 import logging
 from typing import Any
 
-from agentic_core.L2_execution.types.ml_write_intent import (
+from agentic_core.L2_execution.types.ml_write_intent_types import (
     MLWriteEnvelopeViolation,
     is_commit_sandbox_active,
 )
@@ -104,7 +104,7 @@ class MetaLearningClientMixin:
         """Ensure guardrails are initialized (lazy loading)."""
         if MetaLearningClientMixin._ml_guardrails is None:
             try:
-                from agentic_core.L1_cognition.utils.guardrails import get_guardrails
+                from agentic_core.L1_cognition.utils.guardrails_util import get_guardrails
 
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")

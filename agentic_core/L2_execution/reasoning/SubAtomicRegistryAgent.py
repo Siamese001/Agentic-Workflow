@@ -239,7 +239,7 @@ def _get_phase2_validator_mapping() -> dict[str, type]:
             if project_root:
                 sys.path.insert(0, str(project_root))
 
-            from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+            from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
 
             self.project_root = project_root or Path.cwd()
             self._invoke = invoke_code_validator

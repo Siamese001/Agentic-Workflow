@@ -57,7 +57,7 @@ from typing import Any
 
 from agentic_core.L4_state.utils.complexity_analyzer import calculate_mccabe_complexity
 
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 # GRAVITY FIXED: Explicit import for MCPHardenedMixin
 try:

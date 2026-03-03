@@ -38,8 +38,8 @@ the canonical SSOT per §38.
 | `agentic_core/L2_execution/audit/__init__.py` | 2 | H2 | Package init (empty) |
 | `agentic_core/L2_execution/audit/hash_chain_audit_log.py` | 2 | H2 | Hash-chained immutable audit log with genesis rule |
 | `agentic_core/L2_execution/types/llm_replay_types.py` | 3 | H3 | ReplayBundle, ReplayMode, LLMReplayStrategy |
-| `agentic_core/L5_safety/types/shift_report.py` | 3 | H4 | ShiftReport, CovariateShiftDetector (MMD+PSI) |
-| `agentic_core/L5_safety/types/tier_lattice.py` | 4 | H7 | TierLattice, BackpressurePolicy, LearningTier |
+| `agentic_core/L5_safety/types/shift_report_types.py` | 3 | H4 | ShiftReport, CovariateShiftDetector (MMD+PSI) |
+| `agentic_core/L5_safety/types/tier_lattice_types.py` | 4 | H7 | TierLattice, BackpressurePolicy, LearningTier |
 
 #### Test files (new)
 
@@ -140,7 +140,7 @@ tests/governance/test_preventative_sandbox.py
 
 ```
 agentic_core/L2_execution/types/llm_replay_types.py
-agentic_core/L5_safety/types/shift_report.py
+agentic_core/L5_safety/types/shift_report_types.py
 docs/reports/plans/hardening-phase3-h3-h4-evidence.md
 ops_scripts/hooks/landmine_baseline.txt
 tests/governance/test_llm_replay_enforcement.py
@@ -150,7 +150,7 @@ tests/governance/test_shift_report.py
 ### Phase 4: `64ee082b6` (H6 + H7)
 
 ```
-agentic_core/L5_safety/types/tier_lattice.py
+agentic_core/L5_safety/types/tier_lattice_types.py
 docs/reports/plans/hardening-phase4-h6-h7-evidence.md
 tests/governance/test_learning_seam_compliance.py
 tests/governance/test_tier_lattice.py

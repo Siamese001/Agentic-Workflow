@@ -203,7 +203,7 @@ class TestTypoglycemiaDefense:
 **OWASP Reference:** "Multi-Turn and Persistent Attacks" — Common Attack Type. "Comprehensive Monitoring: Track agent reasoning patterns and tool usage."
 
 **Affected files:**
-- `agentic_core/L5_safety/enforcement/context_session_manager.py` (exists but no injection tracking)
+- `agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py` (exists but no injection tracking)
 - `agentic_core/prompt_governance/security/injection_detector.py`
 
 **Recommendation:** Add a `SessionInjectionTracker` that accumulates risk signals across turns within a session. When cumulative risk exceeds threshold, escalate to HITL or block.

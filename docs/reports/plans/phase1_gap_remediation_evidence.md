@@ -8,7 +8,7 @@ Wave 2 (W2.1-W2.3): uuid4 removal from tracing_mixin + governance_contracts,
   wall-clock CI scanner (REQ-111/REQ-114).
 Correction: W2.3 wall-clock scanner scope narrowed to L2 determinism engine only
   (prior version scanned all mixins/scripts, producing 140 false positives).
-Precondition gap: agentic_core/L5_safety/enforcement/runtime_mutation_guard.py
+Precondition gap: agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py
   not yet created; scheduled for Phase 2 / Wave 4.
 
 ## PHASE_ACCEPTANCE_CRITERION

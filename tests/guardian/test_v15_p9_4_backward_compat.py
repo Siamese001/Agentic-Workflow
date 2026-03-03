@@ -19,7 +19,7 @@ from agentic_core.L0_routing.enforcement.execution_gateway import (
     GatewayResult,
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     V15HardFailAbort,
 )
 
@@ -172,7 +172,7 @@ class TestModeDefaulting:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"})
     def test_soft_mode_via_env_only(self):
         """SOFT_FAIL triggered by env, no mode kwarg needed."""
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         m = _make_manifest("compat_soft")
@@ -193,7 +193,7 @@ class TestModeDefaulting:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "1"})
     def test_hard_mode_via_env_only(self):
         """HARD_FAIL triggered by env, no mode kwarg needed."""
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()

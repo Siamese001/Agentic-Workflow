@@ -171,12 +171,12 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+        "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
         "name": "tokenize",
         "line": 21
       },
       "b": {
-        "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+        "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
         "name": "restore",
         "line": 26
       },
@@ -493,7 +493,7 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },
@@ -647,7 +647,7 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },
@@ -1319,7 +1319,7 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },
@@ -1361,12 +1361,12 @@
     },
     {
       "a": {
-        "path": "agentic_core/L2_execution/types/heal_contract.py",
+        "path": "agentic_core/L2_execution/types/heal_contract_types.py",
         "name": "CombinedHealResult",
         "line": 158
       },
       "b": {
-        "path": "agentic_core/L3_orchestration/types/approval_contract.py",
+        "path": "agentic_core/L3_orchestration/types/approval_contract_types.py",
         "name": "ApprovalBundle",
         "line": 157
       },
@@ -1921,7 +1921,7 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+        "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
         "name": "_extract_internal_imports",
         "line": 91
       },
@@ -2467,12 +2467,12 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },
       "b": {
-        "path": "agentic_core/L5_safety/enforcement/three_tier_compliance.py",
+        "path": "agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py",
         "name": "_normalize_agent_name",
         "line": 183
       },
@@ -3069,7 +3069,7 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+        "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
         "name": "_extract_internal_imports",
         "line": 91
       },
@@ -3251,12 +3251,12 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+        "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
         "name": "tokenize",
         "line": 21
       },
       "b": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },
@@ -3265,12 +3265,12 @@
     },
     {
       "a": {
-        "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+        "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
         "name": "restore",
         "line": 26
       },
       "b": {
-        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+        "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
         "name": "_normalize_path",
         "line": 99
       },

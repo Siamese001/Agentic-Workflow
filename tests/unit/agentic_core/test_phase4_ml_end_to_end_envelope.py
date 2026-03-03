@@ -16,7 +16,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L2_execution.types.ml_write_intent import (
+from agentic_core.L2_execution.types.ml_write_intent_types import (
     MLWriteEnvelopeViolation,
     MLWriteIntentExecutor,
     is_commit_sandbox_active,

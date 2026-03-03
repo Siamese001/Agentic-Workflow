@@ -28,12 +28,12 @@ from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     classify_check_ids,
     extract_check_ids,
 )
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     CombinedHealResult,
     HealCheckResult,
     HealStatus,
 )
-from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
+from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
 
 pytestmark = pytest.mark.ssot_equivalence
 

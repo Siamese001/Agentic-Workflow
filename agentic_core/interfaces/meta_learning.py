@@ -198,7 +198,7 @@ def get_sovereign_meta_client(
 
 def get_guardrails() -> Any:
     """Re-export guardrails — read-only safety checks, no mutation authority."""
-    from agentic_core.L1_cognition.utils.guardrails import get_guardrails as _get
+    from agentic_core.L1_cognition.utils.guardrails_util import get_guardrails as _get
 
     return _get()
 
@@ -211,7 +211,7 @@ def _import_healing_pattern() -> type:
 
 
 def _import_guardrails_class() -> type:
-    from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
+    from agentic_core.L1_cognition.utils.guardrails_util import MetaLearningGuardrails
 
     return MetaLearningGuardrails
 
@@ -219,7 +219,7 @@ def _import_guardrails_class() -> type:
 # Lazy type aliases (populated on first import by callers)
 try:
     from agentic_core.L1_cognition.types.client_types import HealingPattern
-    from agentic_core.L1_cognition.utils.guardrails import MetaLearningGuardrails
+    from agentic_core.L1_cognition.utils.guardrails_util import MetaLearningGuardrails
 except ImportError:
     HealingPattern = None  # type: ignore[assignment,misc]
     MetaLearningGuardrails = None  # type: ignore[assignment,misc]

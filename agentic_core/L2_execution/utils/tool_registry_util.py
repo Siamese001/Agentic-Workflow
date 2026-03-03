@@ -11,7 +11,7 @@ from pathlib import Path
 from typing import Any, Optional
 
 from agentic_core.L0_routing.config import GLOBAL_EXCLUDED_DIRS
-from agentic_core.L0_routing.utils.path_utils import is_path_allowed
+from agentic_core.L0_routing.utils.path_util import is_path_allowed
 
 Logger = logging.getLogger(__name__)
 

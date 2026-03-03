@@ -17,7 +17,7 @@ dc9c77b26d78f4922c33fc14c791944c78143aff
 
 ## FILES_CHANGED_CODE
 agentic_core/L2_execution/enforcement/network_egress_guard.py
-agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit.py
+agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py
 agentic_core/L0_routing/enforcement/runtime_mutation_guard.py
 tests/governance/test_req413_provider_binding_determinism.py
 tests/governance/test_req414_network_egress_guard.py
@@ -35,7 +35,7 @@ tests/governance/test_req415_provider_substitution_prohibition.py
 tests/governance/test_req416_critical_dual_enforcement.py
 tests/governance/test_req417_runtime_mutation_prohibition.py
 agentic_core/L2_execution/enforcement/network_egress_guard.py
-agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit.py
+agentic_core/L5_safety/enforcement/critical_dual_enforcement_audit_enforcer.py
 agentic_core/L0_routing/enforcement/runtime_mutation_guard.py
 
 ## Test Results Summary

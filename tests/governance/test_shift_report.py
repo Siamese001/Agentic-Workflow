@@ -12,7 +12,7 @@ Validates:
 
 import pytest
 
-from agentic_core.L5_safety.types.shift_report import (
+from agentic_core.L5_safety.types.shift_report_types import (
     MIN_SAMPLE_SIZE,
     CovariateShiftDetector,
     ShiftReport,

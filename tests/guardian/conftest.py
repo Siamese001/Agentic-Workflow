@@ -273,7 +273,7 @@ def critical_files():
     """List of critical files that must exist."""
     return [
         "agentic_core/L3_orchestration/reasoning/SovereignMcpRouterAgent.py",
-        "agentic_core/L5_safety/enforcement/mcp_sovereign_authority.py",
+        "agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py",
         "agentic_core/L2_execution/enforcement/SovereignPineconeMcpClientAgent.py",
         "agentic_core/L2_execution/enforcement/SovereignMCPGatewayAgent.py",
         "agentic_core/L2_execution/reasoning/WebSearchTools.py",

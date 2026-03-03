@@ -18,7 +18,7 @@ import pytest
 from agentic_core.L0_routing.enforcement.execution_gateway import (
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     V15HardFailAbort,
 )
 
@@ -168,7 +168,7 @@ class TestModeSmokeAfterSoak:
 
     def test_soft_fail_stable_after_soak(self):
         """SOFT_FAIL returns structured failure after many prior cycles."""
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         self._soak_gateway(gw)
@@ -190,7 +190,7 @@ class TestModeSmokeAfterSoak:
 
     def test_hard_fail_stable_after_soak(self):
         """HARD_FAIL raises V15HardFailAbort after many prior cycles."""
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         self._soak_gateway(gw)

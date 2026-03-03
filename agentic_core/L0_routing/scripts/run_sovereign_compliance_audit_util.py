@@ -17,7 +17,7 @@ sys.path.insert(0, str(project_root))
 from agentic_core.L0_routing.seams.safety_reasoning_seam import (
     load_structure_enforcer_agent,
 )
-from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
 
 
 def run_code_validator():

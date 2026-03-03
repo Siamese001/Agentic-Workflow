@@ -57,7 +57,7 @@ Flattening would put 30+ files in one directory with mixed Python/YAML/JSON — 
 
 The original `"ADAPTER": "enforcement"` hardcoding (since removed) placed it in enforcement/. The Adapter RCA fixed the naming but didn't challenge the folder placement.
 
-**Fix:** Moved `L4_state/enforcement/LocalDiskAdapter.py` → `L4_state/utils/local_disk_adapter.py`. Now in the correct domain folder with snake_case naming (PascalCase is only for files in reasoning/enforcement/base_agents/mixins).
+**Fix:** Moved `L4_state/enforcement/LocalDiskAdapter.py` → `L4_state/utils/local_disk_adapter_util.py`. Now in the correct domain folder with snake_case naming (PascalCase is only for files in reasoning/enforcement/base_agents/mixins).
 
 ---
 
@@ -121,7 +121,7 @@ L0 and L4 having few validators is **architecturally correct**. Validators conce
 | `knowledge/document_loaders/ResearchCache.py` | **Renamed** | → `research_cache.py` (snake_case) |
 | `knowledge/document_loaders/SourceDocument.py` | **Renamed** | → `source_document_types.py` (types suffix) |
 | `knowledge/engine/rag_orchestrator.py` | **Fixed path** | Hardcoded `"ResearchCache"` → `"research_cache"` |
-| `L4_state/enforcement/LocalDiskAdapter.py` | **Moved+Renamed** | → `L4_state/utils/local_disk_adapter.py` |
+| `L4_state/enforcement/LocalDiskAdapter.py` | **Moved+Renamed** | → `L4_state/utils/local_disk_adapter_util.py` |
 | `L0/scripts/budget_auditor_validator.py` | **Renamed** | → `budget_auditor_util.py` (not a validator) |
 | `L0/scripts/routing_decision_validator.py` | **Renamed** | → `routing_decision_script.py` |
 | `L0/scripts/full_agent_discovery_validator.py` | **Renamed** | → `full_agent_discovery_script.py` |

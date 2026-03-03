@@ -9,7 +9,7 @@ from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import (
+from agentic_core.L2_execution.types.sandbox_envelope_types import (
     SandboxEnvelope,
     ToolBudget,
 )

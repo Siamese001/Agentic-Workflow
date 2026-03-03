@@ -26,7 +26,7 @@ from __future__ import annotations
 
 import hashlib
 
-from agentic_core.utils.canonical_json import CanonicalJSON
+from agentic_core.utils.canonical_json_util import CanonicalJSON
 
 
 class DigestCalculator:

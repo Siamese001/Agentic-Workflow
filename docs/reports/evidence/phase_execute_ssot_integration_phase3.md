@@ -250,8 +250,8 @@ DIFF: JSON formatting-only; normalized match (blob-sorted). Exit codes identical
 2026-02-22 21:13:13,321 INFO UnifiedSovereign ============================================================
 2026-02-22 21:13:13,321 INFO UnifiedSovereign === PHASE 1: DISCOVERY - prompt_governance ===
 2026-02-22 21:13:13,321 INFO UnifiedSovereign → Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)
-2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
-2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
+2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
+2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
 2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent initialized for C:\Git\Agentic-Workflow
 2026-02-22 21:13:13,322 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent: Detecting root-level drift...
 2026-02-22 21:13:13,322 WARNING agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent    [DRIFT] Forbidden root folder: logs/
@@ -460,8 +460,8 @@ DIFF: JSON formatting-only; normalized match (blob-sorted). Exit codes identical
 2026-02-22 21:13:57,643 INFO UnifiedSovereign ============================================================
 2026-02-22 21:13:57,643 INFO UnifiedSovereign === PHASE 1: DISCOVERY - prompt_governance ===
 2026-02-22 21:13:57,643 INFO UnifiedSovereign → Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)
-2026-02-22 21:13:57,643 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
-2026-02-22 21:13:57,644 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
+2026-02-22 21:13:57,643 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
+2026-02-22 21:13:57,644 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
 2026-02-22 21:13:57,644 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent initialized for C:\Git\Agentic-Workflow
 2026-02-22 21:13:57,644 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent: Detecting root-level drift...
 2026-02-22 21:13:57,644 WARNING agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent    [DRIFT] Forbidden root folder: logs/
@@ -680,8 +680,8 @@ DIFF: JSON formatting-only; normalized match (blob-sorted). Exit codes identical
 2026-02-22 21:14:41,542 INFO UnifiedSovereign ============================================================
 2026-02-22 21:14:41,542 INFO UnifiedSovereign === PHASE 1: DISCOVERY - prompt_governance ===
 2026-02-22 21:14:41,542 INFO UnifiedSovereign → Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)
-2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
-2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
+2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
+2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
 2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent initialized for C:\Git\Agentic-Workflow
 2026-02-22 21:14:41,542 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent: Detecting root-level drift...
 2026-02-22 21:14:41,543 WARNING agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent    [DRIFT] Forbidden root folder: logs/
@@ -890,8 +890,8 @@ DIFF: JSON formatting-only; normalized match (blob-sorted). Exit codes identical
 2026-02-22 21:15:25,758 INFO UnifiedSovereign ============================================================
 2026-02-22 21:15:25,758 INFO UnifiedSovereign === PHASE 1: DISCOVERY - prompt_governance ===
 2026-02-22 21:15:25,758 INFO UnifiedSovereign → Executing FilesystemSSOTReconcilerAgent (L0 - Maintenance)
-2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
-2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
+2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Initialized with project_root: C:\Git\Agentic-Workflow
+2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.enforcement.archival_gatekeeper_gate [ArchivalGatekeeper] Archive root: C:\Git\Agentic-Workflow\archives\gatekeeper
 2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent initialized for C:\Git\Agentic-Workflow
 2026-02-22 21:15:25,760 INFO agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent FilesystemSSOTReconcilerAgent: Detecting root-level drift...
 2026-02-22 21:15:25,760 WARNING agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent    [DRIFT] Forbidden root folder: logs/

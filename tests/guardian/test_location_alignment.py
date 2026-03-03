@@ -21,7 +21,7 @@ from agentic_core.L0_routing.scripts.run_guardian_location_alignment import (
     scan_misplaced_files,
     scan_missing_directories,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,

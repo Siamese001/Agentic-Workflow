@@ -42,7 +42,7 @@ This plan implements a comprehensive system to wire agents in apps_*, agentic_co
 **Files to Modify**:
 - `agentic_core/L2_execution/healers/healing_tier_router.py` - Agent-aware confidence scoring
 - `agentic_core/L2_execution/healers/healing_tier_config.py` - Per-agent threshold configuration
-- `agentic_core/L2_execution/types/heal_contract.py` - Add agent execution mode context
+- `agentic_core/L2_execution/types/heal_contract_types.py` - Add agent execution mode context
 
 **Key Changes**:
 1. Incorporate agent execution profiles into confidence calculation
@@ -70,7 +70,7 @@ This plan implements a comprehensive system to wire agents in apps_*, agentic_co
 
 **Files to Modify**:
 - `agentic_core/L2_execution/healers/classification_compliance_healer.py` - Pure deterministic logic
-- `agentic_core/L5_safety/enforcement/sovereign_healing_engine.py` - Deterministic fallback routing
+- `agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py` - Deterministic fallback routing
 - `agentic_core/L2_execution/healers/hierarchy_compliance_healer.py` - Rule-based healing
 
 **Key Changes**:

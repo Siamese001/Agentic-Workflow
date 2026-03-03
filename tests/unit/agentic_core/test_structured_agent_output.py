@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.structured_agent_output import (
+from agentic_core.L2_execution.types.structured_agent_output_types import (
     StructuredAgentOutput,
     StructuredOutputViolation,
     ToolRequest,

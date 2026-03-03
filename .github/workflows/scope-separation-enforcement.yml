@@ -22,7 +22,7 @@ jobs:
         run: pip install -e . --quiet
 
       - name: Check agentic_core import boundaries
-        run: python -m agentic_core.enforcement.import_boundary_check
+        run: python -m agentic_core.enforcement.import_boundary_check_enforcer
 
       - name: Check system_learning isolation
         run: python -m system_learning.enforcement.boundary_guard
@@ -30,7 +30,7 @@ jobs:
       - name: Validate hierarchy config hash
         run: |
           python -c "
-          from agentic_core.enforcement.hierarchy_validator import get_hierarchy_validator
+          from agentic_core.enforcement.hierarchy_validator_enforcer import get_hierarchy_validator
           v = get_hierarchy_validator()
           print('Hierarchy config hash:', v.config_hash)
           print('OK: hierarchy config valid')
@@ -85,8 +85,8 @@ jobs:
             agentic_core/runtime/execution_bound_token.py \
             agentic_core/runtime/sovereignty_exceptions.py \
             agentic_core/runtime/sovereignty_bootstrap.py \
-            agentic_core/enforcement/hierarchy_validator.py \
-            agentic_core/enforcement/structural_namespace_fence.py
+            agentic_core/enforcement/hierarchy_validator_enforcer.py \
+            agentic_core/enforcement/structural_namespace_fence_enforcer.py
           echo "OK: all sovereignty modules pass syntax check"
 
       - name: Double-run determinism verification

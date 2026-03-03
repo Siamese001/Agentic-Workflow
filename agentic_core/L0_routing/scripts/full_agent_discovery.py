@@ -51,7 +51,7 @@ from agentic_core.L0_routing.config import (
 from agentic_core.L0_routing.seams.safety_kernel_seam import (
     get_classification_cache_context,
 )
-from agentic_core.L0_routing.utils.path_utils import validate_path_within_project
+from agentic_core.L0_routing.utils.path_util import validate_path_within_project
 from agentic_core.L0_routing.utils.ssot_discovery_util import (
     get_healers,
     invalidate_cache,

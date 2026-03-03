@@ -10,7 +10,7 @@ from __future__ import annotations
 import hashlib
 from dataclasses import dataclass, field
 
-from agentic_core.L4_state.types.replay_bundle import ReplayBundle
+from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
 
 
 def _sha256(data: bytes) -> str:

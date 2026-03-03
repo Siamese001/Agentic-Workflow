@@ -16,7 +16,7 @@ class TestRepoHealPlanDeterminism:
 
     def test_build_plan_produces_same_result_twice(self, tmp_path):
         """Building plan twice on same repo produces identical results."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         # Create test repo structure
         (tmp_path / "src").mkdir()
@@ -39,7 +39,7 @@ class TestRepoHealPlanDeterminism:
 
     def test_plan_is_sorted_deterministically(self, tmp_path):
         """Plan operations are sorted by priority then path."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         # Create files in random order
         (tmp_path / "z_last.py").write_text("")
@@ -57,7 +57,7 @@ class TestRepoHealScopeControls:
 
     def test_denylist_excludes_directories(self, tmp_path):
         """Denylist directories are excluded from scan."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         # Create allowed and denied directories
         (tmp_path / "src").mkdir()
@@ -79,7 +79,7 @@ class TestRepoHealScopeControls:
 
     def test_allowlist_filters_extensions(self, tmp_path):
         """Only allowlisted extensions are included."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         # Create files with various extensions
         (tmp_path / "main.py").write_text("")
@@ -103,7 +103,7 @@ class TestRepoHealScopeControls:
 
     def test_skipped_files_counted(self, tmp_path):
         """Skipped files are counted correctly."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         (tmp_path / "main.py").write_text("")
         (tmp_path / "binary.exe").write_text("")
@@ -120,7 +120,7 @@ class TestRepoHealApplyIdempotency:
 
     def test_apply_is_idempotent(self, tmp_path):
         """Applying plan twice produces same result."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )
@@ -139,7 +139,7 @@ class TestRepoHealApplyIdempotency:
 
     def test_apply_handles_missing_files(self, tmp_path):
         """Apply handles files that were deleted after plan creation."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )
@@ -159,7 +159,7 @@ class TestRepoHealApplyIdempotency:
 
     def test_dry_run_makes_no_changes(self, tmp_path):
         """Dry run mode makes no file changes."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )
@@ -179,7 +179,7 @@ class TestRepoHealPlanSchema:
 
     def test_plan_to_dict_schema(self, tmp_path):
         """Plan to_dict produces correct schema."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         (tmp_path / "main.py").write_text("")
 
@@ -195,7 +195,7 @@ class TestRepoHealPlanSchema:
 
     def test_result_to_dict_schema(self, tmp_path):
         """Result to_dict produces correct schema."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )
@@ -215,7 +215,7 @@ class TestRepoHealPlanSchema:
 
     def test_plan_json_serializable(self, tmp_path):
         """Plan can be serialized to JSON."""
-        from agentic_core.L5_safety.types.heal_llm_seam import build_repo_heal_plan
+        from agentic_core.L5_safety.types.heal_llm_seam_types import build_repo_heal_plan
 
         (tmp_path / "main.py").write_text("")
 
@@ -268,7 +268,7 @@ class TestHealRepositoryPolicyIntegration:
 
     def test_enable_llm_true_requires_capability_token(self):
         """LLM escalation requires capability token even with enable_llm=True."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealLlmRequest,
             HealSeamBypassError,
             guarded_heal_llm_call,
@@ -286,7 +286,7 @@ class TestHealRepositoryPolicyIntegration:
 
     def test_policy_decision_record_emitted(self):
         """PolicyDecisionRecord is emitted with stable schema."""
-        from agentic_core.L5_safety.types.heal_llm_seam import PolicyDecisionRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import PolicyDecisionRecord
 
         record = PolicyDecisionRecord(
             confidence=0.75,
@@ -321,7 +321,7 @@ class TestHealRepositoryPolicyIntegration:
 
     def test_baseline_plan_runs_before_escalation(self, tmp_path):
         """Baseline plan runs before any LLM escalation."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )

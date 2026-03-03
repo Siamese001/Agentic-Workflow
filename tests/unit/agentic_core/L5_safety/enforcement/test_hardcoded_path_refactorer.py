@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.hardcoded_path_refactorer
+import agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer
 
 
 def test_hardcoded_path_refactorer_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.hardcoded_path_refactorer is not None
+    assert agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer is not None
 
 
 def test_should_exclude_path_exists():
     """Test that should_exclude_path function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.should_exclude_path
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.should_exclude_path
         assert callable(func)
     except AttributeError:
         pytest.skip("Function should_exclude_path not found in module")
@@ -27,7 +27,7 @@ def test_should_exclude_path_exists():
 def test_has_ssot_import_exists():
     """Test that has_ssot_import function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.has_ssot_import
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.has_ssot_import
         assert callable(func)
     except AttributeError:
         pytest.skip("Function has_ssot_import not found in module")
@@ -36,7 +36,7 @@ def test_has_ssot_import_exists():
 def test_add_ssot_import_exists():
     """Test that add_ssot_import function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.add_ssot_import
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.add_ssot_import
         assert callable(func)
     except AttributeError:
         pytest.skip("Function add_ssot_import not found in module")
@@ -45,7 +45,7 @@ def test_add_ssot_import_exists():
 def test_refactor_file_exists():
     """Test that refactor_file function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.refactor_file
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.refactor_file
         assert callable(func)
     except AttributeError:
         pytest.skip("Function refactor_file not found in module")
@@ -54,7 +54,7 @@ def test_refactor_file_exists():
 def test_refactor_repository_exists():
     """Test that refactor_repository function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.refactor_repository
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.refactor_repository
         assert callable(func)
     except AttributeError:
         pytest.skip("Function refactor_repository not found in module")
@@ -63,7 +63,7 @@ def test_refactor_repository_exists():
 def test_main_exists():
     """Test that main function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.main
+        func = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.main
         assert callable(func)
     except AttributeError:
         pytest.skip("Function main not found in module")
@@ -72,7 +72,7 @@ def test_main_exists():
 def test_PROJECT_ROOT_exists():
     """Test that PROJECT_ROOT constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.PROJECT_ROOT
+        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.PROJECT_ROOT
         assert value is not None
     except AttributeError:
         pytest.skip("Constant PROJECT_ROOT not found in module")
@@ -81,7 +81,7 @@ def test_PROJECT_ROOT_exists():
 def test_EXCLUDED_DIRS_exists():
     """Test that EXCLUDED_DIRS constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.EXCLUDED_DIRS
+        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.EXCLUDED_DIRS
         assert value is not None
     except AttributeError:
         pytest.skip("Constant EXCLUDED_DIRS not found in module")
@@ -90,7 +90,7 @@ def test_EXCLUDED_DIRS_exists():
 def test_EXCLUDED_FILES_exists():
     """Test that EXCLUDED_FILES constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.EXCLUDED_FILES
+        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.EXCLUDED_FILES
         assert value is not None
     except AttributeError:
         pytest.skip("Constant EXCLUDED_FILES not found in module")
@@ -99,7 +99,7 @@ def test_EXCLUDED_FILES_exists():
 def test_PATH_TO_SSOT_MAP_exists():
     """Test that PATH_TO_SSOT_MAP constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.PATH_TO_SSOT_MAP
+        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.PATH_TO_SSOT_MAP
         assert value is not None
     except AttributeError:
         pytest.skip("Constant PATH_TO_SSOT_MAP not found in module")
@@ -108,7 +108,7 @@ def test_PATH_TO_SSOT_MAP_exists():
 def test_PATH_CONSTRUCTOR_MAP_exists():
     """Test that PATH_CONSTRUCTOR_MAP constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer.PATH_CONSTRUCTOR_MAP
+        value = agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer.PATH_CONSTRUCTOR_MAP
         assert value is not None
     except AttributeError:
         pytest.skip("Constant PATH_CONSTRUCTOR_MAP not found in module")
@@ -117,7 +117,7 @@ def test_PATH_CONSTRUCTOR_MAP_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.hardcoded_path_refactorer
+    import agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -129,5 +129,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.hardcoded_path_refactorer appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.hardcoded_path_refactorer_enforcer appears to be empty"
     )

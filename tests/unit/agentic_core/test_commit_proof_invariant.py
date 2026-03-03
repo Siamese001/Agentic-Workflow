@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.commit_proof_invariant import (
+from agentic_core.L2_execution.types.commit_proof_invariant_types import (
     CommitProofInvariant,
     DeterminismProofFailure,
     canonical_digest,

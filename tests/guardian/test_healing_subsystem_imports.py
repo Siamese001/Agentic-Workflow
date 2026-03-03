@@ -97,7 +97,7 @@ KNOWN_BROKEN_IMPORTS = frozenset(
         "agentic_core.knowledge.healing.wiki_healer",
         "agentic_core.L3_orchestration.enforcement.knowledge_graph_healing_strategy",
         # Other broken import chains (pre-existing)
-        "agentic_core.L5_safety.enforcement.healing_invocation_audit",  # missing agentic_core.utils.security
+        "agentic_core.L5_safety.enforcement.healing_invocation_audit_enforcer",  # missing agentic_core.utils.security
     },
 )
 

@@ -11,7 +11,7 @@ Validates:
 
 import pytest
 
-from agentic_core.L0_routing.types.routing_config_seal import (
+from agentic_core.L0_routing.types.routing_config_seal_types import (
     RoutingConfigSeal,
     RoutingConfigSealViolation,
     SealedRoutingContext,

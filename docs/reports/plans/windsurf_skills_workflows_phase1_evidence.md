@@ -137,48 +137,48 @@ soccer_epiphanies
  M agentic_core/L4_state/types/cycle_types.py
  M agentic_core/L4_state/types/validation_context_types.py
  M agentic_core/L4_state/utils/experience_buffer_util.py
- M agentic_core/L4_state/utils/local_disk_adapter.py
+ M agentic_core/L4_state/utils/local_disk_adapter_util.py
  M agentic_core/L4_state/utils/local_disk_adapter_util.py
  M agentic_core/L5_safety/config/gravity_leak_config.py
  M agentic_core/L5_safety/config/structure_blueprint/_simulate_verify.py
  M agentic_core/L5_safety/config/structure_blueprint/_verify.py
  M agentic_core/L5_safety/config/structure_blueprint/enforcement/blueprint_hash.py
- M agentic_core/L5_safety/enforcement/agent_info.py
  M agentic_core/L5_safety/enforcement/agent_info_enforcer.py
- M agentic_core/L5_safety/enforcement/airlock_trimmer.py
+ M agentic_core/L5_safety/enforcement/agent_info_enforcer.py
  M agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py
- M agentic_core/L5_safety/enforcement/archival_gatekeeper.py
+ M agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py
  M agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
- M agentic_core/L5_safety/enforcement/circular_import_fixer.py
+ M agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py
  M agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py
- M agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py
+ M agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py
  M agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py
- M agentic_core/L5_safety/enforcement/final_airlock_trimmer.py
+ M agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py
+ M agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py
  M agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py
  M agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
  M agentic_core/L5_safety/enforcement/governance/artifacts_guard.py
  M agentic_core/L5_safety/enforcement/governance/cache_guard.py
  M agentic_core/L5_safety/enforcement/governance/docs_structure_guard.py
  M agentic_core/L5_safety/enforcement/governance/logs_guard.py
- M agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py
  M agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py
- M agentic_core/L5_safety/enforcement/healing_invocation_audit.py
+ M agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py
  M agentic_core/L5_safety/enforcement/healing_invocation_audit_enforcer.py
- M agentic_core/L5_safety/enforcement/import_surgeon.py
+ M agentic_core/L5_safety/enforcement/healing_invocation_audit_enforcer.py
  M agentic_core/L5_safety/enforcement/import_surgeon_enforcer.py
- M agentic_core/L5_safety/enforcement/module_collision_guard.py
+ M agentic_core/L5_safety/enforcement/import_surgeon_enforcer.py
  M agentic_core/L5_safety/enforcement/module_collision_guardrail.py
- M agentic_core/L5_safety/enforcement/mutation_prohibition.py
+ M agentic_core/L5_safety/enforcement/module_collision_guardrail.py
  M agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py
- M agentic_core/L5_safety/enforcement/namespace_medic.py
+ M agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py
  M agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py
- M agentic_core/L5_safety/enforcement/pytest_config_guard.py
+ M agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py
+ M agentic_core/L5_safety/enforcement/pytest_config_guardrail.py
  M agentic_core/L5_safety/enforcement/pytest_config_guardrail.py
  M agentic_core/L5_safety/enforcement/security/credential_guard.py
- M agentic_core/L5_safety/enforcement/sovereign_healing_engine.py
+ M agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py
  M agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py
  M agentic_core/L5_safety/enforcement/ssot_import_enforcer.py
- M agentic_core/L5_safety/enforcement/system.py
+ M agentic_core/L5_safety/enforcement/system_enforcer.py
  M agentic_core/L5_safety/enforcement/system_enforcer.py
  M agentic_core/L5_safety/governance/lazy_seam_classifier.py
  M agentic_core/L5_safety/governance/lazy_seam_scanner.py
@@ -218,7 +218,7 @@ soccer_epiphanies
  M agentic_core/L5_safety/reasoning/StructureHealerAgent.py
  M agentic_core/L5_safety/reasoning/SystemArchitectAgent.py
  M agentic_core/L5_safety/reasoning/TestGeneratorAgent.py
- M agentic_core/L5_safety/types/heal_llm_seam.py
+ M agentic_core/L5_safety/types/heal_llm_seam_types.py
  M agentic_core/L5_safety/types/learning_types.py
  M agentic_core/L5_safety/types/safety_types.py
  M agentic_core/L5_safety/types/ssot_relocator_types.py
@@ -496,7 +496,7 @@ Bypass conditions verified (per user rules pre-commit bypass exception):
    This is a pre-existing hook import failure unrelated to staged files — CONFIRMED
 3. Hook output captured verbatim above — CONFIRMED
 4. Unrelated path reported by hook:
-   `agentic_core/L5_safety/enforcement/module_collision_guard.py` (hook itself broken) — CONFIRMED
+   `agentic_core/L5_safety/enforcement/module_collision_guardrail.py` (hook itself broken) — CONFIRMED
 5. Follow-on remediation: fix `module_collision_guard.py` import to be invocable
    without `agentic_core` on sys.path (tracked as remediation item for next phase) — CONFIRMED
 

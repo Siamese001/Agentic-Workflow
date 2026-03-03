@@ -7,7 +7,7 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
-from agentic_core.L4_state.types.violation_event import ViolationEvent, emit_violation_event
+from agentic_core.L4_state.types.violation_event_types import ViolationEvent, emit_violation_event
 
 pytestmark = pytest.mark.unit_min_deps
 

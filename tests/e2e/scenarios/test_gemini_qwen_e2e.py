@@ -88,21 +88,21 @@ def network_guard():
 
 
 from agentic_core.L2_execution.types.llm_replay_types import ReplayBundle
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMGatewayCallResult,
     VLLMGatewayTelemetry,
     VLLMLocalRequest,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
 )
-from agentic_core.L2_execution.types.vllm_invariant_contract import (
+from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
     InvariantViolation,
 )
-from agentic_core.L2_execution.types.vllm_invariant_verifier import verify_gateway_invariants
-from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+from agentic_core.L2_execution.types.vllm_invariant_verifier_types import verify_gateway_invariants
+from agentic_core.L2_execution.types.vllm_replay_validator_types import compute_replay_hash
 
 
 def _make_fingerprint(fields: dict) -> VLLMInfrastructureFingerprint:

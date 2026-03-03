@@ -17,7 +17,7 @@ Implement LLM routing hardening based on what actually exists in the codebase â€
 | `HealSeamBypassError` + capability token | `heal_llm_seam.py` | COMPLETE |
 | `HealBudgetCaps` + context counters | `heal_llm_seam.py` | COMPLETE |
 | `HealTelemetryRecord` + `policy_hash` | `heal_llm_seam.py` | COMPLETE |
-| `ReplayBundle` + `canonical_bytes()` | `L4_state/types/replay_bundle.py` | COMPLETE |
+| `ReplayBundle` + `canonical_bytes()` | `L4_state/types/replay_bundle_types.py` | COMPLETE |
 | `active_config_hashes` dict in replay | `replay_bundle.py` | COMPLETE |
 | `@standard_heal` seam enforcement | `decorators_util.py` | COMPLETE |
 

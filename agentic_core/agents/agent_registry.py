@@ -1,6 +1,6 @@
 """Agent Registry - Single Source of Truth for Agent Execution Profiles."""
 
-from agentic_core.agents.types.agent_execution_profile import (
+from agentic_core.agents.types.agent_execution_profile_types import (
     AgentExecutionProfile,
     ExecutionMode,
     ReasoningIntensity,

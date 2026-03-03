@@ -10,7 +10,7 @@ $ git rev-parse HEAD
 $ git --no-pager show --name-only --oneline HEAD
 6b1c20b33 healing: lock Phase 5 closeout evidence (telemetry+budgets)
 agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
-agentic_core/L5_safety/types/heal_llm_seam.py
+agentic_core/L5_safety/types/heal_llm_seam_types.py
 artifacts/consolidation/heal_telemetry/determinism_proof_fixed.json
 docs/reports/governance/agent_heal_phase5_report.md
 docs/reports/governance/phase5_telemetry_and_budgets_evidence.md

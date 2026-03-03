@@ -230,7 +230,7 @@ Exit code: 0
 1. **`matches`** (319 refs) — agentic_core/L3_orchestration/types/permission_scope_types.py:54
 2. **`token`** (150 refs) — agentic_core/L2_execution/types/capability_token_types.py:299
 3. **`file_hash`** (58 refs) — agentic_core/L0_routing/scripts/compare_archive_to_current_util.py:8
-4. **`normalize_repo_path`** (49 refs) — agentic_core/L0_routing/types/guardian_contract.py:604
+4. **`normalize_repo_path`** (49 refs) — agentic_core/L0_routing/types/guardian_contract_types.py:604
 5. **`CapabilityTokenArtifact`** (33 refs) — agentic_core/L2_execution/types/capability_token_types.py:98
 6. **`ASTValidatorAgent`** (25 refs) — agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py:60
 7. **`ASTCoordinate`** (23 refs) — agentic_core/L5_safety/types/surgical_context_types.py:17

@@ -17,7 +17,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     V15HardFailAbort,
     V15SoftFailAbort,
 )
@@ -161,7 +161,7 @@ def _stub_hashes():
 
 def _force_pipe_violation(gw):
     """Monkeypatch gateway to force a pipe order violation in _execute_inner."""
-    from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+    from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
     _orig_inner = gw._execute_inner
 
@@ -179,7 +179,7 @@ class TestLogOnlyNoAbort:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_pipe_violation_no_raise(self):
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()
@@ -223,7 +223,7 @@ class TestHardFailDeterministicAbort:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "1"})
     def test_pipe_violation_raises_hard_fail_abort(self):
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()
@@ -238,7 +238,7 @@ class TestHardFailDeterministicAbort:
     def test_hard_fail_is_not_soft_fail(self):
         """Ensure HARD_FAIL raises V15HardFailAbort, NOT V15SoftFailAbort."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()
@@ -260,7 +260,7 @@ class TestHardFailDeterministicAbort:
     def test_hard_fail_not_raw_pipe_order_violation(self):
         """HARD_FAIL must raise V15HardFailAbort, NOT raw PipeOrderViolation."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer, PipeOrderViolation
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer, PipeOrderViolation
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()
@@ -289,7 +289,7 @@ class TestHardFailDeterministicAbort:
     def test_hard_fail_chains_original_cause(self):
         """V15HardFailAbort should chain the original violation as __cause__."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer, PipeOrderViolation
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer, PipeOrderViolation
 
         gw = V15ExecutionGateway()
         pipe = PipeOrderEnforcer()

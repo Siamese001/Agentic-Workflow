@@ -36,7 +36,7 @@ from data.sdks_mcps.client_wrappers import (
 # Agent execution profile enforcement
 try:
     from agentic_core.agents.agent_registry import get_profile
-    from agentic_core.agents.types.agent_execution_profile import ExecutionMode
+    from agentic_core.agents.types.agent_execution_profile_types import ExecutionMode
 except ImportError:
     # Fallback for environments without agent registry
     def get_profile(agent_id: str):
@@ -318,7 +318,7 @@ class SovereignLLMGateway:
     def _emit_token_artifact(self, artifact: Any) -> None:
         """§Wave1.8 — Emit TokenEnforcementArtifact via TelemetryEmitter."""
         try:
-            from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
+            from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 
             emitter = TelemetryEmitter()
             emitter.emit_typed_artifact("TOKEN_ENFORCEMENT", artifact)

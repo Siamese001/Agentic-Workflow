@@ -59,7 +59,7 @@ All guarantees must anchor to exactly one choke point:
 - Input: `trace_id + plan_hash + policy_hash + transcript_hash + config_surface_hash`
 
 ### Wave 1.2 — L5 Hard Fence Binding (#1, #2)
-**NEW**: `agentic_core/L5_safety/enforcement/sovereign_fence_validator.py`
+**NEW**: `agentic_core/L5_safety/enforcement/sovereign_fence_validator_enforcer.py`
 - L5 P1 `VALIDATE Proposal vs Policy` must call `validate()` — hard import, not optional
 - Fence violation blocks before STAMP, emits deterministic reason code
 - Raises `SovereignFenceViolation` (typed, no permissive mode)
@@ -264,7 +264,7 @@ agentic_core/L4_state/engines/error_context_preserver.py
 agentic_core/L4_state/engines/fresh_data_validator.py
 agentic_core/L4_state/engines/ghost_mutation_detector.py
 agentic_core/L4_state/engines/memory_collision_detector.py
-agentic_core/L5_safety/enforcement/sovereign_fence_validator.py
+agentic_core/L5_safety/enforcement/sovereign_fence_validator_enforcer.py
 agentic_core/L6_observability/engines/replay_key_computer.py
 agentic_core/prompt_governance/security/assembly_injection_neutralizer.py
 system_learning/enforcement/dual_injection_proposal_gate.py

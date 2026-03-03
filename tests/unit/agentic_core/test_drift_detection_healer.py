@@ -16,7 +16,7 @@ from pathlib import Path
 from agentic_core.L2_execution.healers.drift_detection_healer import (
     heal_guardian_drift_detection,
 )
-from agentic_core.L2_execution.types.heal_contract import HealStatus
+from agentic_core.L2_execution.types.heal_contract_types import HealStatus
 
 
 class TestDriftDetectionHealer:

@@ -16,7 +16,7 @@ from agentic_core.L0_routing.enforcement.execution_gateway import (
     GatewayResult,
     V15ExecutionGateway,
 )
-from agentic_core.L0_routing.types.determinism_contracts import (
+from agentic_core.L0_routing.types.determinism_contracts_types import (
     ForbiddenInputError,
 )
 from agentic_core.L0_routing.types.determinism_types import (

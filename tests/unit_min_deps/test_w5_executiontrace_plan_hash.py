@@ -11,7 +11,7 @@ import json
 import pytest
 
 from agentic_core.L0_routing.engines.assembly_stage import AirlockAssembler
-from agentic_core.L3_orchestration.types.execution_trace import (
+from agentic_core.L3_orchestration.types.execution_trace_types import (
     ExecutionTrace,
     canonical_json,
     compute_plan_hash,

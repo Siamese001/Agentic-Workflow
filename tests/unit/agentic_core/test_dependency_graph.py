@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.dependency_graph
+import agentic_core.L5_safety.enforcement.dependency_graph_enforcer
 
 
 def test_dependency_graph_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.dependency_graph is not None
+    assert agentic_core.L5_safety.enforcement.dependency_graph_enforcer is not None
 
 
 def test_DependencyGraph_exists():
     """Test that DependencyGraph class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.dependency_graph.DependencyGraph
+        cls = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.DependencyGraph
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_DependencyGraph_exists():
 def test_build_exists():
     """Test that build function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.build
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.build
         assert callable(func)
     except AttributeError:
         pytest.skip("Function build not found in module")
@@ -43,7 +43,7 @@ def test_build_exists():
 def test_get_impact_radius_exists():
     """Test that get_impact_radius function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.get_impact_radius
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.get_impact_radius
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_impact_radius not found in module")
@@ -52,7 +52,7 @@ def test_get_impact_radius_exists():
 def test_get_imports_exists():
     """Test that get_imports function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.get_imports
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.get_imports
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_imports not found in module")
@@ -61,7 +61,7 @@ def test_get_imports_exists():
 def test_get_classes_exists():
     """Test that get_classes function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.get_classes
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.get_classes
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_classes not found in module")
@@ -70,7 +70,7 @@ def test_get_classes_exists():
 def test_get_all_files_exists():
     """Test that get_all_files function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.get_all_files
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.get_all_files
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_all_files not found in module")
@@ -79,7 +79,7 @@ def test_get_all_files_exists():
 def test_clear_exists():
     """Test that clear function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.dependency_graph.clear
+        func = agentic_core.L5_safety.enforcement.dependency_graph_enforcer.clear
         assert callable(func)
     except AttributeError:
         pytest.skip("Function clear not found in module")
@@ -88,7 +88,7 @@ def test_clear_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.dependency_graph
+    import agentic_core.L5_safety.enforcement.dependency_graph_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -100,5 +100,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.dependency_graph appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.dependency_graph_enforcer appears to be empty"
     )

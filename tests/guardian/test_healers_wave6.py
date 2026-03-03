@@ -33,11 +33,11 @@ from agentic_core.L2_execution.healers.hierarchy_compliance_healer import (
     heal_missing_structure,
     heal_subfolder_compliance,
 )
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     HealCheckResult,
     HealStatus,
 )
-from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
+from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
 
 pytestmark = pytest.mark.guardian
 

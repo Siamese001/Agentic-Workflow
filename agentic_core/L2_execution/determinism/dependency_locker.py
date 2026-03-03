@@ -16,7 +16,7 @@ import json
 from pathlib import Path
 from typing import Any
 
-from agentic_core.utils.canonical_json import CanonicalJSON
+from agentic_core.utils.canonical_json_util import CanonicalJSON
 
 _REQUIREMENTS_PATH = Path("requirements.txt")
 _LOCK_FILE_PATH = Path("data/dependencies/lock_hash.json")

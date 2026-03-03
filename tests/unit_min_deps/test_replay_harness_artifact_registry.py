@@ -49,7 +49,7 @@ def test_req158_reorder_tamper_detected():
 def test_req157_replay_bundle_store_deterministic():
     from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
     from agentic_core.L4_state.enforcement.replay_bundle_store import ReplayBundleStore
-    from agentic_core.L4_state.types.replay_bundle import ReplayBundle
+    from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
 
     bundle = ReplayBundle(
         schema_version=1,

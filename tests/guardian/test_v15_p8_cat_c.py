@@ -136,7 +136,7 @@ def _local_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
 
     Same logic as mission_runner.py but without importing the heavy module.
     """
-    from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced as _check
+    from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced as _check
 
     if not _check():
         return None

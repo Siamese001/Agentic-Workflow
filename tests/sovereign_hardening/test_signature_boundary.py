@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope, SignatureVerificationError
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
 from agentic_core.L2_execution.UniversalWriteGateway import (
     MutationRecord,
     SimulationResult,
@@ -28,7 +28,7 @@ def execution_gateway():
 @pytest.fixture
 def sample_envelope():
     """Create a sample SandboxEnvelope for testing."""
-    from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
     return SandboxEnvelope(
         envelope_id="test_envelope_1",
@@ -113,7 +113,7 @@ class TestSignatureBoundary:
         SandboxEnvelope is a frozen dataclass so we use object.__setattr__
         to force-clear the signature field on a fresh instance.
         """
-        from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
         from agentic_core.L2_execution.enforcement.key_source import TestKeySource
 
         unsigned_envelope = SandboxEnvelope(

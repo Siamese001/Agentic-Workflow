@@ -88,7 +88,7 @@ class SafetyStrategy:
         """
         if agent_name == "CodeValidatorAgent":
             try:
-                from agentic_core.L0_routing.utils.subprocess_runner import (
+                from agentic_core.L0_routing.utils.subprocess_runner_util import (
                     invoke_code_validator,
                 )
 

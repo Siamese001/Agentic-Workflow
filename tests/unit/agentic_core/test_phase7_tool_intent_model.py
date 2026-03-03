@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.types.tool_intent import (
+from agentic_core.L2_execution.types.tool_intent_types import (
     ToolCapability,
     ToolIntent,
     ToolViolation,

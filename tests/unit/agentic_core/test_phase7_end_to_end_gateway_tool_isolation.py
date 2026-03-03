@@ -13,8 +13,8 @@ from agentic_core.L2_execution.engines.tool_intent_executor import (
     ToolIntentExecutor,
     ToolResult,
 )
-from agentic_core.L2_execution.types.ml_write_intent import MLWriteIntentExecutor
-from agentic_core.L2_execution.types.tool_intent import (
+from agentic_core.L2_execution.types.ml_write_intent_types import MLWriteIntentExecutor
+from agentic_core.L2_execution.types.tool_intent_types import (
     ToolCapability,
     ToolViolation,
     assert_l1_tool_allowed,
@@ -132,7 +132,7 @@ class TestEndToEndGatewayPath:
 
     def test_sandbox_released_after_execution(self):
         """L2.2 sandbox is released after ToolIntentExecutor.execute returns."""
-        from agentic_core.L2_execution.types.ml_write_intent import (
+        from agentic_core.L2_execution.types.ml_write_intent_types import (
             is_commit_sandbox_active,
         )
 

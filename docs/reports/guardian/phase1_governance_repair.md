@@ -65,7 +65,7 @@ The Phase 0 artifacts ARE isolated in a dedicated commit. The collision baseline
 
 **Problem**: Module collision guard writes JSON with CRLF line endings on Windows, but .gitattributes enforces LF. This causes an infinite pre-commit loop.
 
-**Fix Applied**: Modified `agentic_core/L5_safety/enforcement/module_collision_guard.py` line 243:
+**Fix Applied**: Modified `agentic_core/L5_safety/enforcement/module_collision_guardrail.py` line 243:
 
 ```python
 # Before:
@@ -138,7 +138,7 @@ M  agentic_core/L0_routing/scripts/execute_ssot.py
 M  agentic_core/L0_routing/scripts/execute_ssot_entrypoint.py
 M  agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py
 M  agentic_core/L5_safety/config/structure_blueprint/classification.py
-M  agentic_core/L5_safety/enforcement/module_collision_guard.py
+M  agentic_core/L5_safety/enforcement/module_collision_guardrail.py
 M  agentic_core/L5_safety/reasoning/CodeFormatterAgent.py
 M  agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 M  agentic_core/L5_safety/reasoning/LocationAgent.py

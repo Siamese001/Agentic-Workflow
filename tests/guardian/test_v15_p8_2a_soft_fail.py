@@ -19,7 +19,7 @@ from unittest.mock import patch
 
 import pytest
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     V15SoftFailAbort,
     is_v15_enforced,
     is_v15_hard_fail,
@@ -218,7 +218,7 @@ class TestGatewaySoftFail:
     def test_pipe_violation_causes_structured_abort(self):
         """Force a pipe order violation; SOFT_FAIL must return structured failure, not crash."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -251,7 +251,7 @@ class TestGatewaySoftFail:
     def test_soft_fail_result_has_deterministic_fields(self):
         """Structured failure result must have all required GatewayResult fields."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
         manifest = _make_test_manifest()
@@ -281,8 +281,8 @@ class TestGatewayHardFail:
     def test_hard_fail_raises_on_pipe_violation(self):
         """HARD_FAIL must escalate PipeOrderViolation to V15HardFailAbort."""
         from agentic_core.L0_routing.enforcement.execution_gateway import V15ExecutionGateway
-        from agentic_core.L0_routing.types.guardian_contract import V15HardFailAbort
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.guardian_contract_types import V15HardFailAbort
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
 

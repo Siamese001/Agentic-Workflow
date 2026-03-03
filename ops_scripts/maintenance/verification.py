@@ -23,7 +23,7 @@ def test_circuit_breaker():
     print("TEST 1: Circuit Breaker")
     print("=" * 60)
 
-    from agentic_core.L5_safety.enforcement.circuit_breaker import (
+    from agentic_core.L5_safety.enforcement.circuit_breaker_gate import (
         CircuitBreaker,
         CircuitBreakerConfig,
         CircuitBreakerOpenError,

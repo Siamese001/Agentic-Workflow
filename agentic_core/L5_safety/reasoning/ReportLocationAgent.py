@@ -137,7 +137,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
     def is_git_tracked(self, file_path: Path) -> bool:
         """Check if a file is tracked by git via L5-safe subprocess delegation."""
         try:
-            from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+            from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
                 safe_subprocess_run,
             )
 
@@ -153,7 +153,7 @@ class ReportLocationAgent(AtomicExecutionMixin):
         """Move a file using git mv to preserve history (L5-safe delegation)."""
         try:
             _wg.ensure_dir(destination.parent)
-            from agentic_core.L5_safety.enforcement.safe_subprocess_handler import (
+            from agentic_core.L5_safety.enforcement.safe_subprocess_handler_enforcer import (
                 safe_subprocess_run,
             )
 

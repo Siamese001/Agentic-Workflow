@@ -10,7 +10,7 @@ Add 5 new sovereignty-enforcement guardians to the SSOT registry, implement thei
 
 | # | File | Action |
 |---|------|--------|
-| 1 | `agentic_core/L0_routing/types/guardian_registry.py` | diff — add 5 specs |
+| 1 | `agentic_core/L0_routing/types/guardian_registry_types.py` | diff — add 5 specs |
 | 2 | `agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py` | new |
 | 3 | `agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py` | new |
 | 4 | `agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py` | new |
@@ -28,7 +28,7 @@ Add 5 new sovereignty-enforcement guardians to the SSOT registry, implement thei
 
 ## Phase 1 — Registry Expansion (1 file, fast)
 
-**Scope:** `agentic_core/L0_routing/types/guardian_registry.py`
+**Scope:** `agentic_core/L0_routing/types/guardian_registry_types.py`
 
 ```diff
 -        key=lambda s: s.guardian_id,
@@ -129,7 +129,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     ArtifactType,
     CheckStatus,
     GuardianResult,
@@ -361,7 +361,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
@@ -558,7 +558,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
@@ -740,7 +740,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
@@ -911,7 +911,7 @@ import ast
 import sys
 from pathlib import Path
 
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
     GuardianStatus,
@@ -1124,7 +1124,7 @@ from agentic_core.L0_routing.scripts.run_guardian_gateway_bypass import (
     scan_direct_model_calls,
     scan_provider_sdk_imports,
 )
-from agentic_core.L0_routing.types.guardian_contract import CheckStatus, GuardianStatus, validate_no_absolute_paths
+from agentic_core.L0_routing.types.guardian_contract_types import CheckStatus, GuardianStatus, validate_no_absolute_paths
 
 pytestmark = pytest.mark.guardian
 

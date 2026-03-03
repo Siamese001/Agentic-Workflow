@@ -13,7 +13,7 @@ import pytest
 
 pytestmark = pytest.mark.governance
 
-from agentic_core.L5_safety.enforcement.critical_dual_enforcement_audit import (
+from agentic_core.L5_safety.enforcement.critical_dual_enforcement_audit_enforcer import (
     CriticalDualEnforcementAuditor,
     RequirementMetadata,
     run_dual_enforcement_audit,

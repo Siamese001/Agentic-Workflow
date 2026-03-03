@@ -16,7 +16,7 @@ from agentic_core.L4_state.enforcement.replay_bundle_store import (
     VerifiedReplay,
 )
 from agentic_core.L4_state.engines.replay_bundle_emitter import emit_replay_bundle
-from agentic_core.L4_state.types.replay_bundle import ReplayBundle
+from agentic_core.L4_state.types.replay_bundle_types import ReplayBundle
 
 pytestmark = pytest.mark.unit_min_deps
 

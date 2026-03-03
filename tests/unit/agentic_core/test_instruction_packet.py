@@ -18,7 +18,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )

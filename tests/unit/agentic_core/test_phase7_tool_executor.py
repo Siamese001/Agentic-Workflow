@@ -10,8 +10,8 @@ from agentic_core.L2_execution.engines.tool_intent_executor import (
     ToolIntentExecutor,
     ToolResult,
 )
-from agentic_core.L2_execution.types.ml_write_intent import MLWriteIntentExecutor
-from agentic_core.L2_execution.types.tool_intent import (
+from agentic_core.L2_execution.types.ml_write_intent_types import MLWriteIntentExecutor
+from agentic_core.L2_execution.types.tool_intent_types import (
     ToolCapability,
     ToolViolation,
     build_tool_intent,

@@ -46,9 +46,9 @@ agentic_core/L0_routing/scripts/root_hygiene_util.py:1
 agentic_core/L0_routing/scripts/run_hygiene_guardian_util.py:1
 agentic_core/L0_routing/scripts/scan_testing_compliance_util.py:1
 agentic_core/L0_routing/scripts/ssot_cli.py:1
-agentic_core/L0_routing/types/guardian_contract.py:1
 agentic_core/L0_routing/types/guardian_contract_types.py:1
-agentic_core/L0_routing/types/integration_contract.py:1
+agentic_core/L0_routing/types/guardian_contract_types.py:1
+agentic_core/L0_routing/types/integration_contract_types.py:1
 agentic_core/L0_routing/types/integration_contract_types.py:1
 agentic_core/L0_routing/utils/add_test_coverage_util.py:1
 agentic_core/L0_routing/utils/complexity_visitor_util.py:1

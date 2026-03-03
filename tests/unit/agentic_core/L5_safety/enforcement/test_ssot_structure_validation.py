@@ -19,8 +19,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L5_safety.enforcement.registry_verification import AgentInfo
-from agentic_core.L5_safety.enforcement.ssot_structure_validation import (
+from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
+from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
     SSOTStructureValidator,
     StructureValidationResult,
     StructureViolation,
@@ -309,7 +309,7 @@ class TestLayerValidation:
 
     def test_layer_patterns_defined(self):
         """Test that layer patterns are properly defined."""
-        from agentic_core.L5_safety.enforcement.ssot_structure_validation import (
+        from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
             LAYER_PATTERNS,
         )
 

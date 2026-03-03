@@ -23,7 +23,7 @@ from agentic_core.L4_state.config.versioned_configs import (
     RoutingConfig,
     get_active_configs,
 )
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, AnchorViolationError
+from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, AnchorViolationError
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -171,7 +171,7 @@ class TestRetrievalAnchorIntegration:
         then verify enforce_anchor_coverage accepts full coverage and
         rejects missing coverage.
         """
-        from agentic_core.L4_state.types.retrieval_anchor import (
+        from agentic_core.L4_state.types.retrieval_anchor_types import (
             AnchoredResult,
             RetrievalAnchor,
             enforce_anchor_coverage,
@@ -200,7 +200,7 @@ class TestRetrievalAnchorIntegration:
             enforce_anchor_coverage(results, [results[0].anchor])
 
     def test_anchor_violation_error_has_violation_code(self):
-        from agentic_core.L4_state.types.retrieval_anchor import (
+        from agentic_core.L4_state.types.retrieval_anchor_types import (
             AnchoredResult,
             AnchorViolationError,
             RetrievalAnchor,

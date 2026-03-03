@@ -4,7 +4,7 @@
 **6ab8afefc** — phase8: CitationBundle + citation enforcement + anchor coverage + tests
 
 ## Modified / New Files
-- `agentic_core/L4_state/types/citation_bundle.py` [NEW — Wave 1: CitationBundle + build_citation_bundle()]
+- `agentic_core/L4_state/types/citation_bundle_types.py` [NEW — Wave 1: CitationBundle + build_citation_bundle()]
 - `agentic_core/L4_state/enforcement/citation_enforcement.py` [NEW — Wave 2: enforce_citations_for_retrieval() + assemble_response() + CitationEnforcementViolation]
 - `tests/agentic_core/test_phase8_citation_bundle_model.py` [NEW — Wave 1: 20 tests]
 - `tests/agentic_core/test_phase8_citation_enforcement.py` [NEW — Wave 2: 20 tests]

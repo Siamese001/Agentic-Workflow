@@ -190,7 +190,7 @@ def _get_provider_client(self, provider: Provider):
 
 **Files to Modify**:
 - `agentic_core/L2_execution/healers/classification_compliance_healer.py`
-- `agentic_core/L5_safety/enforcement/sovereign_healing_engine.py`
+- `agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py`
 
 **Key Changes**: Ensure deterministic agents cannot escalate
 
@@ -215,7 +215,7 @@ def can_escalate_to_llm(self, agent_id: str, check_id: str) -> bool:
 
 **Files to Modify**:
 - `agentic_core/L2_execution/healers/healing_tier_dispatcher.py`
-- `agentic_core/L2_execution/types/heal_contract.py`
+- `agentic_core/L2_execution/types/heal_contract_types.py`
 
 **Key Changes**: Preserve existing InvocationRecord structure
 

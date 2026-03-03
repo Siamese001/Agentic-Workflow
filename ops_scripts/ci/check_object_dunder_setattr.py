@@ -27,9 +27,9 @@ SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_lear
 
 ALLOWED_PATHS = {
     # The guard itself uses object.__setattr__ legitimately for frozen-dataclass workarounds
-    "agentic_core/L2_execution/types/instruction_packet.py",
+    "agentic_core/L2_execution/types/instruction_packet_types.py",
     # The guard reference implementation
-    "agentic_core/L5_safety/enforcement/runtime_mutation_guard.py",
+    "agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py",
 }
 
 

@@ -80,7 +80,7 @@ def test_req289_enforcement_audit_deterministic():
 def test_req036_instruction_packet_canonical_bytes_stable():
     from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
     from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
     inject_key_source(TestKeySource())
     pkt = InstructionPacket(instruction_id="CI-00000001", payload="fixed")

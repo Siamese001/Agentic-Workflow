@@ -26,7 +26,7 @@ This plan prioritizes the 10 highest-impact gaps between the repo's current stat
 ---
 
 ### Gap 1 — `SandboxEnvelope` missing `ToolBudget` caps
-**Location:** `agentic_core/L2_execution/types/sandbox_envelope.py`
+**Location:** `agentic_core/L2_execution/types/sandbox_envelope_types.py`
 
 **Spec requirement (contract [2]):**
 ```
@@ -35,7 +35,7 @@ SandboxEnvelope = [InstructionPacket, ToolBudget(compute_ms, memory_mb, stdout_b
 `SandboxEnvelope` currently carries only `envelope_id`, `tool_name`, `tool_args`, `instruction_packet_id`, `invocation_metadata`. No budget cap fields exist anywhere in the codebase.
 
 **Implementation steps:**
-1. Add `ToolBudget` dataclass to `agentic_core/L2_execution/types/sandbox_envelope.py` with fields `compute_ms: int`, `memory_mb: int`, `stdout_bytes: int` (all `> 0`).
+1. Add `ToolBudget` dataclass to `agentic_core/L2_execution/types/sandbox_envelope_types.py` with fields `compute_ms: int`, `memory_mb: int`, `stdout_bytes: int` (all `> 0`).
 2. Add `tool_budget: ToolBudget` field to `SandboxEnvelope`; include in `_signable_dict()` so budget is cryptographically bound to the envelope.
 3. In `agentic_core/L2_execution/enforcement/boundary_verifier.py`, add enforcement that verifies budget is present before permitting any side-effect.
 4. Update existing unit tests in `tests/agentic_core/L2_execution/types/test_sandbox_envelope.py` to supply a budget; add new assertion that `verify()` rejects a zero-budget envelope.
@@ -44,7 +44,7 @@ SandboxEnvelope = [InstructionPacket, ToolBudget(compute_ms, memory_mb, stdout_b
 ---
 
 ### Gap 2 — `HumanDecisionArtifact` (Path D contract) absent
-**Location:** `agentic_core/L5_safety/enforcement/human_review_queue.py` + new type file
+**Location:** `agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py` + new type file
 
 **Spec requirement (contract [5]):**
 ```
@@ -56,7 +56,7 @@ MODIFY_DIFF MUST reference original plan_hash, use allowlist tools, re-clear L5 
 `human_review_queue.py` exists but there is no typed `HumanDecisionArtifact` contract with `reviewer_sig` binding, `MODIFY_DIFF` must-reference enforcement, or L5 re-clear trigger.
 
 **Implementation steps:**
-1. Create `agentic_core/L5_safety/types/human_decision_artifact.py` with frozen `HumanDecisionArtifact` dataclass matching the spec (all 6 fields; `reviewer_sig` HMAC-SHA256 over canonical JSON).
+1. Create `agentic_core/L5_safety/types/human_decision_artifact_types.py` with frozen `HumanDecisionArtifact` dataclass matching the spec (all 6 fields; `reviewer_sig` HMAC-SHA256 over canonical JSON).
 2. Add `MODIFY_DIFF` invariant: if `action == "MODIFY_DIFF"` and `original_plan_hash` is absent → raise `HumanDecisionContractViolation`.
 3. Wire `human_review_queue.py` to emit `HumanDecisionArtifact` on queue completion and return it to the L5 `safety_layer.py` for mandatory re-clear before Path D routes back to L2.
 4. Add `test_human_decision_artifact_contract.py` under `tests/agentic_core/L5_safety/types/` covering: APPROVE, REJECT, MODIFY_DIFF with/without plan_hash, missing reviewer_sig.
@@ -78,7 +78,7 @@ L0: Every agent must be registered in AgentExecutionProfileRegistry.
 
 **Implementation steps:**
 1. In `agentic_core/L0_routing/enforcement/execution_gateway.py`, add a `check_agent_profile_registered(agent_name: str)` call that looks up `AgentExecutionProfileRegistry`; raise `UnregisteredAgentError` on miss.
-2. Add `registry_hash` to the `InstructionPacket` determinism digest computation in `agentic_core/L2_execution/types/instruction_packet.py`.
+2. Add `registry_hash` to the `InstructionPacket` determinism digest computation in `agentic_core/L2_execution/types/instruction_packet_types.py`.
 3. Create `tests/agentic_core/L0_routing/enforcement/test_agent_profile_enforcement.py` verifying: registered LOW agent passes, registered HIGH agent passes, unregistered agent raises `UnregisteredAgentError`, registry hash changes when registry mutates.
 4. Add AST-based CI check (extend `ops_scripts/ci/`) that scans `apps_*` for any agent invocation missing a registry entry.
 
@@ -115,7 +115,7 @@ ExecutionTrace = [trace_id, plan_hash, actor, target, diff, policy_hash,
 `ExecutionTrace` appears only in `apps_shared/types/execution_orchestrator_types.py` as a partial struct (no `prev_hash` chaining, no `replay_key`). There is no write path to L4 nor broadcast to L6.
 
 **Implementation steps:**
-1. Create canonical `ExecutionTrace` type in `agentic_core/L2_execution/types/execution_trace.py` with all 8 fields from spec including `prev_hash` and `replay_key`.
+1. Create canonical `ExecutionTrace` type in `agentic_core/L2_execution/types/execution_trace_types.py` with all 8 fields from spec including `prev_hash` and `replay_key`.
 2. Implement `ExecutionTraceWriter` in `agentic_core/L2_execution/audit/execution_trace_writer.py` that: computes `replay_key = sha256(trace_id + plan_hash + transcript_hash)`, chains `prev_hash` from last committed trace, writes to L4 via `L4StateWriter`.
 3. Call `ExecutionTraceWriter.commit()` at the `[FINAL DECISION / OUTCOME LOGGING]` stage in the L2 `validation_orchestrator.py`.
 4. Add `ExecutionTraceReader` to `agentic_core/L6_observability/engines/` to read traces for anomaly detection.

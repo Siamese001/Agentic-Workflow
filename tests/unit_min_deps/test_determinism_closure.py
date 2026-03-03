@@ -368,7 +368,7 @@ class TestProviderBindingFingerprint:
 class TestEmbeddingNonInterferenceGuard:
     @pytest.mark.unit_min_deps
     def test_clean_routing_inputs_pass(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             assert_no_c0_influence,
         )
         clean = {"tier": "DETERMINISTIC", "agent_id": "ssot_audit", "confidence": 0.9}
@@ -376,7 +376,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_marker_key_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -386,7 +386,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_value_fragment_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -396,7 +396,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_c0_key_collision_raises(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
@@ -407,7 +407,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_verify_routing_decision_clean_returns_bool(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             verify_routing_decision_clean,
         )
         clean = {"tier": "GEMINI", "confidence": 0.6}
@@ -417,7 +417,7 @@ class TestEmbeddingNonInterferenceGuard:
 
     @pytest.mark.unit_min_deps
     def test_assert_routing_decision_clean_raises_on_dirty(self):
-        from agentic_core.L5_safety.enforcement.embedding_non_interference_guard import (
+        from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             C0InterferenceViolation,
             assert_routing_decision_clean,
         )
@@ -432,7 +432,7 @@ class TestEmbeddingNonInterferenceGuard:
 
 class TestOscillationFirewall:
     def _fw(self, cooldown=4, freeze=3):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
         )
@@ -442,7 +442,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_stable_sequence_does_not_trip(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
         )
@@ -455,7 +455,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_oscillating_sequence_trips_firewall(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
             OscillationFirewallTripped,
@@ -470,7 +470,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_reset_clears_frozen_state(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
             OscillationFirewallTripped,
@@ -487,7 +487,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_validate_threshold_stable_sequence(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             validate_threshold,
         )
         stable = ("DETERMINISTIC",) * 6
@@ -495,7 +495,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_validate_threshold_oscillating_sequence(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             validate_threshold,
             OscillationFirewallConfig,
         )
@@ -505,7 +505,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_config_rejects_small_cooldown(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
         with pytest.raises(ValueError):
@@ -513,7 +513,7 @@ class TestOscillationFirewall:
 
     @pytest.mark.unit_min_deps
     def test_config_rejects_zero_freeze(self):
-        from agentic_core.L5_safety.enforcement.oscillation_firewall import (
+        from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
         with pytest.raises(ValueError):

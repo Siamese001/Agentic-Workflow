@@ -70,7 +70,7 @@ Critical violations detected across multiple architectural principles:
 | **L2** | `L2_execution/engines/secure_tools_impl.py` | 66-67 | Secure file writes | CRITICAL |
 | **L3** | `L3_orchestration/reasoning/StateManagementAgent.py` | 266-267, 300-301 | Manifest/state writes | CRITICAL |
 | **L4** | `L4_state/utils/local_disk_adapter_util.py` | 30-31 | Disk persistence | CRITICAL |
-| **L4** | `L4_state/utils/local_disk_adapter.py` | 30-31 | Disk persistence | CRITICAL |
+| **L4** | `L4_state/utils/local_disk_adapter_util.py` | 30-31 | Disk persistence | CRITICAL |
 | **L4** | `L4_state/utils/experience_buffer_util.py` | 75 | Experience log append | CRITICAL |
 | **L4** | `L4_state/types/validation_context_types.py` | 112-114 | File history writes | CRITICAL |
 | **L4** | `L4_state/types/cycle_types.py` | 306-308 | State checkpoint writes | CRITICAL |
@@ -211,7 +211,7 @@ Correction Option 2 (Remove - L6 should only observe):
 | File | Lines | Violation Type | Severity |
 |------|-------|----------------|----------|
 | `L2_execution/engines/validation_orchestrator.py` | 277-295 | Healing writes directly without re-entry | CRITICAL |
-| `L5_safety/enforcement/sovereign_healing_engine.py` | 57-100 | Autonomous healing without approval gate | CRITICAL |
+| `L5_safety/enforcement/sovereign_healing_engine_enforcer.py` | 57-100 | Autonomous healing without approval gate | CRITICAL |
 | `L2_execution/healers/architecture_governance_healer.py` | 1-92 | Dry-run only (COMPLIANT) | PASS |
 
 **Violation Detail:**
@@ -256,7 +256,7 @@ L2 Execution (if approved)
 **2. Sovereign Healing Engine Autonomous Commit**
 
 ```
-File: L5_safety/enforcement/sovereign_healing_engine.py:57-100
+File: L5_safety/enforcement/sovereign_healing_engine_enforcer.py:57-100
 
 Violation:
     async def execute_autonomous_cycle(self, issues: list[dict[str, Any]]) -> dict[str, Any]:
@@ -366,7 +366,7 @@ Correction Option 2 (Delegate to L2):
 File: L2_execution/scripts/remediation_dispatcher.py:35
 
 Current:
-from agentic_core.L3_orchestration.types.approval_contract import (
+from agentic_core.L3_orchestration.types.approval_contract_types import (
     ApprovalBundle,
     ApprovalDecision,
     ApprovalRecord,

@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L2_execution.types.ptc_tool_contracts import (
+from agentic_core.L2_execution.types.ptc_tool_contracts_types import (
     ToolCall,
     ToolContractViolation,
     ToolResult,

@@ -41,7 +41,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     ROOT_PROTECTED_FILES,
     get_validated_project_root,
 )
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L5_safety.utils.location_constants_util import (
     ARCHIVE_SUBFOLDERS,
     DEFAULT_APP_HEALING_TARGET,

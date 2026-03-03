@@ -5,7 +5,7 @@ This module re-exports symbols from routing_artifact_types
 to maintain backwards compatibility with existing imports.
 
 Canonical location: agentic_core/L0_routing/types/routing_artifact_types.py
-Compatibility stub: agentic_core/L0_routing/types/artifact_typed_compat.py
+Compatibility stub: agentic_core/L0_routing/types/artifact_typed_compat_types.py
 """
 
 from __future__ import annotations

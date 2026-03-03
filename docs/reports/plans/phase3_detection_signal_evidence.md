@@ -24,7 +24,7 @@ docs/reports/plans/phase3_detection_signal_evidence.md
 ## INSPECTED_FILES
 
 tests/governance/test_phase3_detection_signal.py
-agentic_core/L6_observability/types/detection_signal.py
+agentic_core/L6_observability/types/detection_signal_types.py
 agentic_core/L6_observability/engines/detection_signal_emitter.py
 tests/conftest.py
 tests/governance/conftest.py

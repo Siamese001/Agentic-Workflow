@@ -37,7 +37,7 @@ def main() -> int:
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
-        from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
         print("=" * 60)
         print("SOVEREIGN LOCKDOWN VERIFICATION")

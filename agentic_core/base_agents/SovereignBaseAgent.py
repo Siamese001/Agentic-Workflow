@@ -41,7 +41,7 @@ from agentic_core.L0_routing.enforcement.traceability_contracts import (
 from agentic_core.L0_routing.types.determinism_types import (
     SurgicalManifest,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L0_routing.utils.core_integrity_util import (
     CoreIntegrityVerifier,
     emergency_shutdown,
@@ -482,7 +482,7 @@ class SovereignBaseAgent(
             }
 
         # Phase 4: Use deterministic repo-heal pipeline (baseline first)
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             apply_repo_heal_plan,
             build_repo_heal_plan,
         )

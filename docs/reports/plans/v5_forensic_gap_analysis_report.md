@@ -265,7 +265,7 @@ Capabilities: §2, §3, §5, §6, §7, §8, §9, §11, §12, §13, §15
 | TypeMechanicAgent | `agentic_core/L5_safety/reasoning/TypeMechanicAgent.py` | `SovereignBaseAgent, SubAtomicAgent` | COMPLIANT | N/A | PASS | NO |
 | UnusedCleanupAgent | `agentic_core/L5_safety/reasoning/UnusedCleanupAgent.py` | `CodeToolRunnerCapability, SovereignBaseAgent` | COMPLIANT | COMPLIANT (Capability LEFT) | PASS | NO |
 | input_validation_guardrail | `agentic_core/L5_safety/enforcement/input_validation_guardrail.py` | `SovereignBaseAgent` | COMPLIANT | N/A | PASS | YES |
-| toxic_dependency_auditor | `agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py` | `SovereignBaseAgent` | COMPLIANT | N/A | PASS | YES |
+| toxic_dependency_auditor | `agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py` | `SovereignBaseAgent` | COMPLIANT | N/A | PASS | YES |
 | verification_gate | `agentic_core/L5_safety/enforcement/verification_gate.py` | `AtomicExecutionMixin, HallucinationDetectionMixin, SovereignBaseAgent` | COMPLIANT | COMPLIANT (Mixins LEFT) | PASS | NO |
 
 ### L6_observability (8 agents)

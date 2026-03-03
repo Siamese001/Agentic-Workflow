@@ -1,5 +1,3 @@
-from agentic_core.L2_execution.tools import write_gateway as _wg
-
 #!/usr/bin/env python3
 """
 Module Collision Guard - Architectural Integrity Enforcement
@@ -240,9 +238,10 @@ def save_baseline(collisions: dict[str, list[tuple[str, list[Path]]]]) -> None:
     )
 
     baseline_path = Path("artifacts/architecture/module_collision_baseline.json")
-    _wg.ensure_dir(baseline_path.parent)
+    baseline_path.parent.mkdir(parents=True, exist_ok=True)
 
-    _wg.write_json(baseline_path, baseline, indent=2)
+    content = json.dumps(baseline, indent=2, sort_keys=True) + "\n"
+    baseline_path.write_text(content, encoding="utf-8")
 
 
 def check_against_baseline(collisions: dict[str, list[tuple[str, list[Path]]]], baseline: dict) -> list[str]:

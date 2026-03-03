@@ -12,12 +12,12 @@ e124b0f32194396d5e577dec5c1833120c99b414
 173fec4fea79a6c28532937c5265ddb3814f2c1a
 
 ## FILES_CHANGED_CODE
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
+agentic_core/L2_execution/types/vllm_gateway_adapter_types.py
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py
 tools/evidence/qwen_migration_phase6_evidence_runner.py
 
 ## INSPECTED_FILES
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
+agentic_core/L2_execution/types/vllm_gateway_adapter_types.py
 tests/agentic_core/L2_execution/types/test_vllm_invariant_enforcement.py
 tools/evidence/qwen_migration_phase6_evidence_runner.py
 
@@ -33,7 +33,7 @@ SCOPE_JUSTIFICATION:
   - test_vllm_replay_with_violations.py added to verify replay hash determinism with violations
   - Existing tests referencing canonical_response_hash impacted by Phase 6 changes
 PHASE_TOUCHED_FILES:
-  agentic_core/L2_execution/types/vllm_replay_validator.py
+  agentic_core/L2_execution/types/vllm_replay_validator_types.py
   tests/unit_min_deps/test_vllm_replay_with_violations.py
   tools/evidence/qwen_migration_phase6_evidence_runner.py
 

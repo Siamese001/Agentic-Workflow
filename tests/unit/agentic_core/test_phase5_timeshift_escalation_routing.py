@@ -17,7 +17,7 @@ from agentic_core.L0_routing.engines.escalation_router import (
 )
 from agentic_core.L4_state.config.versioned_configs import RoutingConfig
 from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
-from agentic_core.L4_state.types.violation_event import emit_violation_event
+from agentic_core.L4_state.types.violation_event_types import emit_violation_event
 
 pytestmark = pytest.mark.unit_min_deps
 

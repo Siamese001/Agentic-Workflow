@@ -290,8 +290,8 @@
 
 | File | Current | Suggested | Confidence | Evidence |
 |---|---|---|---|---|
-| `agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py` | L0_maintenance | L5_safety | HIGH | agentic_core.L5_safety.enforcement.archival_gatekeeper, agentic_core.L5_safety.reasoning.HierarchyAgent, agentic_core.L5_safety.reasoning.LocationValidatorAgent |
-| `agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py` | L0_maintenance | L5_safety | HIGH | agentic_core.L5_safety.config.structure_blueprint_config, agentic_core.L5_safety.reasoning.CognitiveDispositionAgent, agentic_core.L5_safety.enforcement.archival_gatekeeper |
+| `agentic_core/L0_maintenance/reasoning/FilesystemSSOTReconcilerAgent.py` | L0_maintenance | L5_safety | HIGH | agentic_core.L5_safety.enforcement.archival_gatekeeper_gate, agentic_core.L5_safety.reasoning.HierarchyAgent, agentic_core.L5_safety.reasoning.LocationValidatorAgent |
+| `agentic_core/L0_maintenance/reasoning/SSOTFolderCleanupAgent.py` | L0_maintenance | L5_safety | HIGH | agentic_core.L5_safety.config.structure_blueprint_config, agentic_core.L5_safety.reasoning.CognitiveDispositionAgent, agentic_core.L5_safety.enforcement.archival_gatekeeper_gate |
 | `agentic_core/L2_execution/reasoning/EmbeddingSovereignAgent.py` | L2_execution | L1_cognition | HIGH | google.generativeai, openai |
 | `agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py` | L2_execution | L5_safety | HIGH | agentic_core.L5_safety.reasoning.StructureValidatorAgent, agentic_core.L5_safety.reasoning.CodeEnforcerAgent, agentic_core.L5_safety.reasoning.CodeEnforcerAgent |
 
@@ -328,7 +328,7 @@
 ### L5_SUBPROCESS_NOT_ALLOWED (9)
 
 - `agentic_core/L5_safety/config/structure_blueprint/_simulate_verify.py`: '_simulate_verify.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with justific
-- `agentic_core/L5_safety/enforcement/safe_subprocess_handler.py`: 'safe_subprocess_handler.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with j
+- `agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py`: 'safe_subprocess_handler.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with j
 - `agentic_core/L5_safety/reasoning/ArchitectureGovernorAgent.py`: 'ArchitectureGovernorAgent.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with
 - `agentic_core/L5_safety/reasoning/AutonomyGuardianAgent.py`: 'AutonomyGuardianAgent.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with jus
 - `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`: 'FileClassificationAgent.py' imports subprocess in L5 but is NOT on the L5_SUBPROCESS_ALLOWLIST. Move execution logic to L2 or add to allowlist with j
@@ -478,7 +478,7 @@
 | `agentic_core/L2_execution/enforcement/dashboard_e2_e_pipeline.py` | dashboard | L2_execution |
 | `agentic_core/L4_state/enforcement/telemetry_recorder.py` | telemetry | L4_state |
 | `agentic_core/L4_state/utils/sanitize_telemetry_util.py` | telemetry | L4_state |
-| `agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py` | dashboard | L5_safety |
+| `agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py` | dashboard | L5_safety |
 | `agentic_core/L5_safety/utils/validate_dashboard_data_sourcing_util.py` | dashboard | L5_safety |
 | `agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py` | dashboard | L5_safety |
 

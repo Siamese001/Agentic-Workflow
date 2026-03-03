@@ -1829,7 +1829,7 @@ agentic_core\L4_state\utils\local_disk_adapter.py:5:from agentic_core.L2_executi
 agentic_core\L4_state\utils\local_disk_adapter_util.py:5:from agentic_core.L2_execution.tools import write_gateway as _wg
 agentic_core\L5_safety\config\gravity_leak_config.py:4:from agentic_core.L2_execution.tools import write_gateway as _wg
 agentic_core\L5_safety\enforcement\activation_gate.py:7:2. Mutation prohibition guard  (assert_no_persistent_write)
-agentic_core\L5_safety\enforcement\activation_gate.py:31:        "agentic_core.L5_safety.enforcement.mutation_prohibition",
+agentic_core\L5_safety\enforcement\activation_gate.py:31:        "agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer",
 agentic_core\L5_safety\enforcement\activation_gate.py:32:        "assert_no_persistent_write",
 agentic_core\L5_safety\enforcement\activation_gate.py:33:        "mutation_prohibition",
 agentic_core\L5_safety\enforcement\agent_info.py:1:from agentic_core.L2_execution.tools import write_gateway as _wg
@@ -2100,7 +2100,7 @@ INTERNALERROR>   File "<frozen importlib._bootstrap>", line 935, in _load_unlock
 INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\assertion\rewrite.py", line 197, in exec_module
 INTERNALERROR>     exec(co, module.__dict__)
 INTERNALERROR>   File "c:\Git\Agentic-Workflow\tests\agentic_core\L5_safety\enforcement\test_data.py", line 9, in <module>
-INTERNALERROR>     import agentic_core.L5_safety.enforcement.data
+INTERNALERROR>     import agentic_core.L5_safety.enforcement.data_enforcer
 INTERNALERROR>   File "C:\Git\Agentic-Workflow\agentic_core\L5_safety\enforcement\data.py", line 34, in <module>
 INTERNALERROR>     sys.exit(1)
 INTERNALERROR> SystemExit: 1

@@ -13,8 +13,8 @@ import hashlib
 import json
 from typing import Any
 
-from agentic_core.L4_state.types.citation_bundle import build_citation_bundle
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
+from agentic_core.L4_state.types.citation_bundle_types import build_citation_bundle
+from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
 
 
 def _sha256(data: bytes) -> str:

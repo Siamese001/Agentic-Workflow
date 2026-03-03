@@ -10,9 +10,9 @@ from pathlib import Path
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
-root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / "agentic_core"
-heavy_airlocks: Any = [
+ROOT: Any = Path("C:/Git/Agentic-Workflow")
+CORE: Any = ROOT / "agentic_core"
+HEAVY_AIRLOCKS: Any = [
     "L1_cognition/P1_core/check_outreach/__init__.py",
     "L1_cognition/P1_core/P1_retrieve/get_info/__init__.py",
     "L1_cognition/P1_core/P3_aggregate/pick_resume/__init__.py",

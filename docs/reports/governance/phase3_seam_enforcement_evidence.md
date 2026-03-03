@@ -9,7 +9,7 @@ $ git rev-parse HEAD
 
 $ git --no-pager show --name-only --oneline HEAD
 5fd3ecf1a governance(healing): Phase 3 canonical seam enforcement + network tripwire
-agentic_core/L5_safety/types/heal_llm_seam.py
+agentic_core/L5_safety/types/heal_llm_seam_types.py
 agentic_core/utils/decorators_util.py
 docs/reports/governance/phase3_seam_enforcement_evidence.md
 tests/governance/conftest.py

@@ -9,7 +9,7 @@ from __future__ import annotations
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.types.integration_contract import (
+from agentic_core.L0_routing.types.integration_contract_types import (
     Finding,
     ResultEnvelope,
 )

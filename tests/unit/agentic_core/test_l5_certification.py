@@ -27,7 +27,7 @@ from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )

@@ -36,7 +36,7 @@ Close all 68 PARTIAL and 1 FAIL findings from the v3.2 gap analysis by adding ta
 
 Before Phase 1 starts, the repo must have:
 - AST/CI guard blocking `setattr`/`monkeypatch`/`importlib.reload`/dynamic injection in core layers (L0-L6) — delivered by `ops_scripts/ci/check_llm_sdk_imports.py` augmentation or dedicated scanner.
-- Runtime invariant that fails-closed on detected mutation attempts — `agentic_core/L5_safety/enforcement/runtime_mutation_guard.py` installed via `agentic_core/__init__.py`.
+- Runtime invariant that fails-closed on detected mutation attempts — `agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py` installed via `agentic_core/__init__.py`.
 - Proof: CI job fails on introduced mutation primitive (negative test) and passes on restore.
 - Validation evidence: `tests/governance/test_req417_runtime_mutation_guard.py`
 
@@ -308,7 +308,7 @@ SOV-DELTA: DETERMINISM ARTIFACT FORMAT — phase emits exactly one line: `W1-DET
 **HARDENING: SURFACE + FREEZE**
 - Surface: **Signature / Crypto Trust / Mutation Guard**
 - Frozen: Gateway, Replay/Determinism runtime, SSOT/Blueprint, Side-Effect Registry, CI Ratchet (P1 ratchets locked).
-- Impacted modules: `agentic_core/L0_routing/enforcement/crypto_trust_contracts.py`, `agentic_core/L2_execution/types/instruction_packet.py`, `agentic_core/L5_safety/enforcement/runtime_mutation_guard.py`, `agentic_core/__init__.py`
+- Impacted modules: `agentic_core/L0_routing/enforcement/crypto_trust_contracts.py`, `agentic_core/L2_execution/types/instruction_packet_types.py`, `agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py`, `agentic_core/__init__.py`
 
 ### Wave 3 — Signature Enforcement
 
@@ -321,7 +321,7 @@ SOV-DELTA: DETERMINISM ARTIFACT FORMAT — phase emits exactly one line: `W1-DET
 ```python
 """REQ-087: MODIFY_DIFF must invalidate all prior signatures on the plan."""
 import pytest
-from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
     SignatureEnclave, verify_signature,
 )
@@ -425,7 +425,7 @@ HARDENING ORDER: land AST/CI ratchet for mutation detection BEFORE applying runt
 
 #### W4.1 — Core layer mutation guard at import time (REQ-417)
 
-**New file:** `agentic_core/L5_safety/enforcement/runtime_mutation_guard.py`
+**New file:** `agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py`
 
 ```python
 """REQ-417: block setattr/monkeypatch/importlib.reload on core layer objects."""
@@ -461,7 +461,7 @@ def install_guards() -> None:
 **File:** `agentic_core/__init__.py` — add at bottom:
 
 ```diff
-+from agentic_core.L5_safety.enforcement.runtime_mutation_guard import install_guards as _g
++from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import install_guards as _g
 +_g()
 ```
 
@@ -597,7 +597,7 @@ SOV-DELTA: ADD REAL CALL PATHS (append to `test_replay_harness_core_determinism.
 ```python
 # REQ-036 real path: InstructionPacket canonicalization
 def test_req036_instruction_packet_canonical_bytes_stable():
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
     from agentic_core.L2_execution.determinism.canonicalize import canonical_bytes
     pkt = InstructionPacket(trace_id="CC3AL1-00000001", payload="fixed",
                             policy_hash="ph1", route_mode="direct", allowed_tools=())
@@ -791,7 +791,7 @@ SOV-DELTA: ADD REAL CALL PATH for W8 (append; do NOT remove existing tests)
 # REQ-395/399 real path: SignatureEnclave sign+verify round-trip
 def test_req399_signature_enclave_real_round_trip():
     from agentic_core.L0_routing.enforcement.crypto_trust_contracts import SignatureEnclave, verify_signature
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
     pkt = InstructionPacket(trace_id="CC3AL1-00000001", payload="canonical",
                             policy_hash="ph1", route_mode="direct", allowed_tools=())
     enclave = SignatureEnclave()

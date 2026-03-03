@@ -24,7 +24,7 @@ from agentic_core.L2_execution.types.tool_args_types import (
     ReadFileArgs,
     WriteFileArgs,
 )
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 
 # Define a Protocol for the Blackboard interface required by this module

@@ -74,7 +74,7 @@ Files in L5 (Safety) should validate and enforce — not execute external proces
 
 | File Path | Why Acceptable |
 |-----------|---------------|
-| `L5_safety/enforcement/safe_subprocess_handler.py` | **IS** the safety wrapper around subprocess — correctly in L5 |
+| `L5_safety/enforcement/safe_subprocess_handler_enforcer.py` | **IS** the safety wrapper around subprocess — correctly in L5 |
 | `L5_safety/utils/subprocess_security_util.py` | **IS** the security utility for sanitizing subprocess calls — correctly in L5 |
 | `L5_safety/reasoning/PreCommitSovereignAgent.py` | Safety agent that enforces pre-commit hooks — subprocess is the enforcement mechanism |
 | `L5_safety/reasoning/ArchitectureGovernorAgent.py` | Governance agent — subprocess used to read architectural state |
@@ -203,7 +203,7 @@ Files that genuinely straddle two layers based on their functionality:
 
 | File Path | Layer A | Layer B | Reason | Recommended Resolution |
 |-----------|---------|---------|--------|----------------------|
-| `L5_safety/enforcement/safe_subprocess_handler.py` | L5 (Safety) | L2 (Execution) | Wraps subprocess with safety checks. The **safety wrapping** is L5, the **execution** is L2. | **Keep in L5** — primary purpose is safety enforcement. The subprocess call is the *mechanism*, not the *purpose*. |
+| `L5_safety/enforcement/safe_subprocess_handler_enforcer.py` | L5 (Safety) | L2 (Execution) | Wraps subprocess with safety checks. The **safety wrapping** is L5, the **execution** is L2. | **Keep in L5** — primary purpose is safety enforcement. The subprocess call is the *mechanism*, not the *purpose*. |
 | `L5_safety/reasoning/PreCommitSovereignAgent.py` | L5 (Safety) | L2 (Execution) | Safety agent that executes git hooks via subprocess. | **Keep in L5** — pre-commit enforcement is a safety concern. subprocess is the enforcement tool. |
 | `L5_safety/reasoning/ArchitectureGovernorAgent.py` | L5 (Safety) | L0 (Maintenance) | Governance agent that reads/validates architecture via subprocess. | **Keep in L5** — governance/validation is the primary purpose. |
 | `L3_orchestration/reasoning/UnifiedAgent.py` | L3 (Orchestration) | L5 (Safety) | Orchestration agent with embedded Validator classes. | **Keep in L3** — extract the 3 validator classes to `L5_safety/validators/` or inline them. |

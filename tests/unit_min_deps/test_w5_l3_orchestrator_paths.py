@@ -12,7 +12,7 @@ from agentic_core.L3_orchestration.engines.deterministic_orchestrator import (
     DeterministicOrchestrator,
 )
 from agentic_core.L3_orchestration.engines.handshake_state_machine import HandshakeState
-from agentic_core.L3_orchestration.types.human_decision_artifact import HumanAction
+from agentic_core.L3_orchestration.types.human_decision_artifact_types import HumanAction
 
 pytestmark = pytest.mark.unit_min_deps
 

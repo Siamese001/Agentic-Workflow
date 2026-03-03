@@ -10,8 +10,8 @@
 **7fd290e31** — phase4: ML write envelope enforcement + versioned compatibility + MLCacheConfig
 
 ## All Modified / New Files (Phase 4.0 + 4.1)
-- `agentic_core/L2_execution/types/ml_write_intent.py` [NEW — Phase 4.0]
-- `agentic_core/L2_execution/types/ml_pattern_record.py` [NEW — Phase 4.0]
+- `agentic_core/L2_execution/types/ml_write_intent_types.py` [NEW — Phase 4.0]
+- `agentic_core/L2_execution/types/ml_pattern_record_types.py` [NEW — Phase 4.0]
 - `agentic_core/L4_state/config/versioned_configs.py` [MODIFIED — added MLCacheConfig + get_ml_cache_config()]
 - `agentic_core/mixins/meta_learning_client_mixin.py` [MODIFIED — Phase 4.1: sandbox guard in ml_store_healing_pattern + ml_cache_set]
 - `ops_scripts/hooks/landmine_baseline.txt` [MODIFIED — Phase 4.1: baseline updated for line-shifted pre-existing violations]

@@ -94,7 +94,7 @@ except ImportError:
         pass
 
 
-from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 Logger = logging.getLogger(__name__)
 
@@ -1424,7 +1424,7 @@ class FilesystemSSOTReconcilerAgent(
                 )
                 return {"drift_detected": True, "forbidden": len(forbidden), "applied": False}
             # Execute: archive forbidden root folders
-            from agentic_core.L5_safety.enforcement.archival_gatekeeper import ArchivalGatekeeper
+            from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
             gk = ArchivalGatekeeper.get_instance(self.project_root)
             archived = 0

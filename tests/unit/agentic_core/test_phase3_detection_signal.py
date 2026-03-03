@@ -10,7 +10,7 @@ from agentic_core.L6_observability.engines.detection_signal_emitter import (
     emit_detection_signal,
     emit_signal_from_gateway_result,
 )
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 pytestmark = pytest.mark.unit_min_deps
 

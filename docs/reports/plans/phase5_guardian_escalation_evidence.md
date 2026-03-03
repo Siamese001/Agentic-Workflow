@@ -4,7 +4,7 @@
 **8787755be** — phase5: ViolationEvent schema + L4 store + time-shifted escalation routing + tests
 
 ## Modified / New Files
-- `agentic_core/L4_state/types/violation_event.py` [NEW — Wave 1: ViolationEvent schema + emit_violation_event]
+- `agentic_core/L4_state/types/violation_event_types.py` [NEW — Wave 1: ViolationEvent schema + emit_violation_event]
 - `agentic_core/L4_state/enforcement/violation_event_store.py` [NEW — Wave 2: L4 prior-only persistence store]
 - `agentic_core/L0_routing/engines/escalation_router.py` [NEW — Wave 3: decide_mode_from_prior_violations]
 - `agentic_core/L4_state/config/versioned_configs.py` [MODIFIED — Wave 3: RoutingConfig extended with Phase 5 escalation policy fields]

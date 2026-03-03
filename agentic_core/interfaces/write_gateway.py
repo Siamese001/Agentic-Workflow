@@ -23,7 +23,7 @@ USAGE (L4_state):
 from __future__ import annotations
 
 from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, get_write_gateway
-from agentic_core.L2_execution.types.instruction_packet import InstructionPacket
+from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket
 
 __all__ = [
     "UniversalWriteGateway",

@@ -28,7 +28,7 @@ agentic_core/L3_orchestration/engines/AgentFactory.py
 agentic_core/L5_safety/utils/gravity_visitor_util.py
 agentic_core/L5_safety/reasoning/FileClassificationAgent.py
 agentic_core/L5_safety/reasoning/LocationValidatorAgent.py
-agentic_core/L5_safety/enforcement/circular_import_fixer.py
+agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py
 agentic_core/L5_safety/config/structure_blueprint/ssot.py
 agentic_core/L5_safety/config/structure_blueprint/_constants.py
 agentic_core/L5_safety/config/structure_blueprint/semantics.py
@@ -68,10 +68,10 @@ agentic_core/L4_state/utils/layer_gravity_util.py
 ```
 agentic_core/runtime/mathematical_determinism.py (NEW)
 agentic_core/config/layer_hierarchy.json (NEW)
-agentic_core/enforcement/hierarchy_validator.py (NEW)
+agentic_core/enforcement/hierarchy_validator_enforcer.py (NEW)
 agentic_core/runtime/execution_bound_token.py (NEW)
 agentic_core/runtime/execution_trace.py (NEW)
-agentic_core/enforcement/structural_namespace_fence.py (NEW)
+agentic_core/enforcement/structural_namespace_fence_enforcer.py (NEW)
 agentic_core/runtime/sovereignty_bootstrap.py (NEW)
 agentic_core/runtime/sovereignty_exceptions.py (NEW)
 ```
@@ -240,7 +240,7 @@ jobs:
     steps:
       - uses: actions/checkout@v3
       - name: Check agentic_core imports
-        run: python -m agentic_core.enforcement.import_boundary_check
+        run: python -m agentic_core.enforcement.import_boundary_check_enforcer
       - name: Check system_learning isolation
         run: python -m system_learning.enforcement.boundary_guard
       - name: Validate tooling boundaries
@@ -304,7 +304,7 @@ jobs:
 
 ### New Boundary Enforcement Files
 
-#### 1. agentic_core/enforcement/import_boundary_check.py
+#### 1. agentic_core/enforcement/import_boundary_check_enforcer.py
 ```python
 """
 Import Boundary Checker - Enforces scope separation in agentic_core
@@ -461,7 +461,7 @@ def test_system_learning_isolation():
 ```python
 # tests/integration/test_dependency_flow.py
 import pytest
-from agentic_core.enforcement.import_boundary_check import check_agentic_core_boundaries
+from agentic_core.enforcement.import_boundary_check_enforcer import check_agentic_core_boundaries
 from system_learning.enforcement.boundary_guard import check_system_learning_isolation
 
 @pytest.mark.integration
@@ -549,7 +549,7 @@ class DeterminismProof:
 ### Phase 5.2: Externalized Hierarchy Configuration
 **New Files**:
 - `agentic_core/config/layer_hierarchy.json` - Externalized hierarchy mapping
-- `agentic_core/enforcement/hierarchy_validator.py` - Loads, validates, hashes config
+- `agentic_core/enforcement/hierarchy_validator_enforcer.py` - Loads, validates, hashes config
 
 **Implementation**:
 ```json
@@ -607,7 +607,7 @@ class ExecutionBoundToken:
 
 ### Phase 5.4: Structural Namespace Enforcement
 **Enhanced Files**:
-- `agentic_core/enforcement/structural_namespace_fence.py` - MetaPathFinder-based enforcement
+- `agentic_core/enforcement/structural_namespace_fence_enforcer.py` - MetaPathFinder-based enforcement
 - `agentic_core/runtime/sovereignty_bootstrap.py` - Deterministic initialization
 
 **Key Principles**:
@@ -638,7 +638,7 @@ class ExecutionBoundToken:
 - name: Validate Hierarchy Config Hash
   run: |
     python -c "
-    from agentic_core.enforcement.hierarchy_validator import get_hierarchy_validator
+    from agentic_core.enforcement.hierarchy_validator_enforcer import get_hierarchy_validator
     validator = get_hierarchy_validator()
     print(f'Hierarchy hash: {validator.config_hash}')
     "

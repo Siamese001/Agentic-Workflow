@@ -20,10 +20,10 @@ from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
 )
-from agentic_core.L3_orchestration.types.execution_trace import (
+from agentic_core.L3_orchestration.types.execution_trace_types import (
     create_execution_trace_skeleton,
 )
-from agentic_core.L3_orchestration.types.human_decision_artifact import (
+from agentic_core.L3_orchestration.types.human_decision_artifact_types import (
     create_human_review_draft,
 )
 from agentic_core.seams.orchestration_protocols import OrchestrationResult

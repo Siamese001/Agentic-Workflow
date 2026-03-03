@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.mcp_sovereign_authority
+import agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer
 
 
 def test_mcp_sovereign_authority_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.mcp_sovereign_authority is not None
+    assert agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer is not None
 
 
 def test_MCPSovereignAuthority_exists():
     """Test that MCPSovereignAuthority class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.mcp_sovereign_authority.MCPSovereignAuthority
+        cls = agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer.MCPSovereignAuthority
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_MCPSovereignAuthority_exists():
 def test_is_authorized_exists():
     """Test that is_authorized function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority.is_authorized
+        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer.is_authorized
         assert callable(func)
     except AttributeError:
         pytest.skip("Function is_authorized not found in module")
@@ -43,7 +43,7 @@ def test_is_authorized_exists():
 def test_record_breach_exists():
     """Test that record_breach function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority.record_breach
+        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer.record_breach
         assert callable(func)
     except AttributeError:
         pytest.skip("Function record_breach not found in module")
@@ -52,7 +52,7 @@ def test_record_breach_exists():
 def test_authorize_tool_call_exists():
     """Test that authorize_tool_call function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority.authorize_tool_call
+        func = agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer.authorize_tool_call
         assert callable(func)
     except AttributeError:
         pytest.skip("Function authorize_tool_call not found in module")
@@ -61,7 +61,7 @@ def test_authorize_tool_call_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.mcp_sovereign_authority
+    import agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -73,5 +73,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.mcp_sovereign_authority appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.mcp_sovereign_authority_enforcer appears to be empty"
     )

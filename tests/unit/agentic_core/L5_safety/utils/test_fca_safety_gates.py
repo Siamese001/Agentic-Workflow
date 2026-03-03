@@ -11,7 +11,7 @@ from __future__ import annotations
 import json
 import textwrap
 
-from agentic_core.L5_safety.utils._fca_safety_gates import (
+from agentic_core.L5_safety.utils._fca_safety_gates_util import (
     MAX_ACTIONS_DEFAULT,
     NestedLCDPolicy,
     PlannedAction,

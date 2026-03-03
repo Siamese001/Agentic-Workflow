@@ -4,9 +4,9 @@
 **b1cca7338** — phase3: L6 detection signals + L4 persistence + L0 time-shifted routing (no same-cycle influence)
 
 ## Modified / New Files
-- `agentic_core/L6_observability/types/detection_signal.py` [NEW]
+- `agentic_core/L6_observability/types/detection_signal_types.py` [NEW]
 - `agentic_core/L6_observability/engines/detection_signal_emitter.py` [NEW]
-- `agentic_core/L4_state/types/detection_signal_store.py` [NEW]
+- `agentic_core/L4_state/types/detection_signal_store_types.py` [NEW]
 - `agentic_core/L4_state/config/versioned_configs.py` [MODIFIED — added anomaly_routing_threshold to RoutingConfig]
 - `agentic_core/L0_routing/engines/timeshift_router.py` [NEW]
 - `tests/agentic_core/test_phase3_detection_signal.py` [NEW]

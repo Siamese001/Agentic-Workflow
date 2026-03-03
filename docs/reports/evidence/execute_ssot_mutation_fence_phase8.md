@@ -262,7 +262,7 @@ FILE: agentic_core\L0_routing\scripts\action_capability.py
 
 FILE: agentic_core\L0_routing\scripts\agent_validation_util.py
 --------------------------------------------------------------------------------
-  Line 73: from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+  Line 73: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
   Line 79: # Invoke via subprocess to avoid upward import edge
   Line 80: result = invoke_arch_governor(
 
@@ -310,7 +310,7 @@ FILE: agentic_core\L0_routing\scripts\base_tool_script.py
 
 FILE: agentic_core\L0_routing\scripts\check_syntax_util.py
 --------------------------------------------------------------------------------
-  Line 10: from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+  Line 10: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
   Line 15: result = invoke_code_validator(action="validate", project_root=project_root)
 
 FILE: agentic_core\L0_routing\scripts\collision_resolver.py
@@ -396,11 +396,11 @@ FILE: agentic_core\L0_routing\scripts\execute_ssot.py
   Line 2417: result = invoke_orchestrator_mission(
   Line 2621: """Alias for discover_agents_from_registry (backward compat)."""
   Line 2624: return discover_agents_from_registry(project_root)
-  Line 2816: from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+  Line 2816: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
   Line 2818: result = invoke_arch_governor(
   Line 2909: invoke_agent_roster_validation,
   Line 2912: roster_result = invoke_agent_roster_validation()
-  Line 3019: from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+  Line 3019: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
   Line 3021: result = invoke_arch_governor(
 
 FILE: agentic_core\L0_routing\scripts\execute_ssot_entrypoint.py
@@ -459,12 +459,12 @@ FILE: agentic_core\L0_routing\scripts\populate_ssot_folders_util.py
 
 FILE: agentic_core\L0_routing\scripts\run_all_guardians.py
 --------------------------------------------------------------------------------
-  Line 35: from agentic_core.L0_routing.types.guardian_registry import (
+  Line 35: from agentic_core.L0_routing.types.guardian_registry_types import (
   Line 100: # Get guardians from SSOT registry (already sorted by guardian_id)
 
 FILE: agentic_core\L0_routing\scripts\run_guardian_contract_integrity.py
 --------------------------------------------------------------------------------
-  Line 30: from agentic_core.L0_routing.types.guardian_registry import (
+  Line 30: from agentic_core.L0_routing.types.guardian_registry_types import (
   Line 166: Scan all guardian scripts from SSOT registry and verify they follow the contract.
   Line 176: # Enumerate from SSOT registry (no filesystem globs)
   Line 184: details="No guardians found in SSOT registry (excluding self)",
@@ -473,24 +473,24 @@ FILE: agentic_core\L0_routing\scripts\run_guardian_contract_integrity.py
 
 FILE: agentic_core\L0_routing\scripts\run_hierarchy_agent_dry_run_util.py
 --------------------------------------------------------------------------------
-  Line 21: from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
+  Line 21: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
   Line 33: # Invoke via subprocess to avoid upward import edge
   Line 34: result = invoke_hierarchy_agent(action="dry_run", project_root=project_root)
 
 FILE: agentic_core\L0_routing\scripts\run_hierarchy_healer_dry_run_util.py
 --------------------------------------------------------------------------------
-  Line 19: from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
+  Line 19: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
   Line 28: # Invoke via subprocess to avoid upward import edge
   Line 30: result = invoke_hierarchy_agent(action="heal_violations", project_root=project_root)
 
 FILE: agentic_core\L0_routing\scripts\run_sovereign_compliance_audit_util.py
 --------------------------------------------------------------------------------
-  Line 20: from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+  Line 20: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
   Line 30: result = invoke_code_validator(
 
 FILE: agentic_core\L0_routing\scripts\sovereign_lockdown_check_util.py
 --------------------------------------------------------------------------------
-  Line 40: from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+  Line 40: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
   Line 46: # Invoke via subprocess to avoid upward import edge
   Line 47: result = invoke_arch_governor(
 
@@ -517,7 +517,7 @@ FILE: agentic_core\L0_routing\scripts\verify_manifest_util.py
 
 FILE: agentic_core\L0_routing\scripts\verify_mro_util.py
 --------------------------------------------------------------------------------
-  Line 95: from agentic_core.L0_routing.utils.subprocess_runner import invoke_hierarchy_agent
+  Line 95: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_hierarchy_agent
   Line 97: result = invoke_hierarchy_agent(action="verify_mro")
 
 FILE: agentic_core\L0_routing\types\boundary_types.py
@@ -923,7 +923,7 @@ FILE: agentic_core\L2_execution\reasoning\SubAtomicRegistryAgent.py
 --------------------------------------------------------------------------------
   Line 13: SubAtomicRegistry - Live Semantic Index of Every Method
   Line 51: # UNIFIED AGENT MAPPING (Post-Consolidation Registry)
-  Line 242: from agentic_core.L0_routing.utils.subprocess_runner import invoke_code_validator
+  Line 242: from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
   Line 245: self._invoke = invoke_code_validator
   Line 249: return self._invoke(action="validate", project_root=self.project_root)
   Line 254: return self._invoke(
@@ -1018,7 +1018,7 @@ FILE: agentic_core\L2_execution\reasoning\ToolsmithAgent.py
 
 FILE: agentic_core\L2_execution\scripts\remediation_dispatcher.py
 --------------------------------------------------------------------------------
-  Line 30: from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
+  Line 30: from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
   Line 285: - If roll-up check_id itself exists in HEALER_REGISTRY, include it.
   Line 286: - Also include extracted sub-items where sub_check_id exists in HEALER_REGISTRY.
   Line 298: if rollup_id in HEALER_REGISTRY and rollup_id not in seen:
@@ -1727,7 +1727,7 @@ FILE: agentic_core\L5_safety\enforcement\registry_verification.py
   Line 9: 3. Orphan agent detection (in registry but missing from filesystem)
   Line 10: 4. Missing agent detection (in filesystem but not in registry)
   Line 11: 5. Path mismatch detection (registry path != actual path)
-  Line 14: from agentic_core.L5_safety.enforcement.registry_verification import RegistryVerifier
+  Line 14: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import RegistryVerifier
   Line 15: verifier = RegistryVerifier()
   Line 16: report = verifier.verify_registry()
   Line 65: """Result of registry verification."""
@@ -1770,7 +1770,7 @@ FILE: agentic_core\L5_safety\enforcement\registry_verification_enforcer.py
   Line 9: 3. Orphan agent detection (in registry but missing from filesystem)
   Line 10: 4. Missing agent detection (in filesystem but not in registry)
   Line 11: 5. Path mismatch detection (registry path != actual path)
-  Line 14: from agentic_core.L5_safety.enforcement.registry_verification import RegistryVerifier
+  Line 14: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import RegistryVerifier
   Line 15: verifier = RegistryVerifier()
   Line 16: report = verifier.verify_registry()
   Line 65: """Result of registry verification."""
@@ -1817,7 +1817,7 @@ FILE: agentic_core\L5_safety\enforcement\sovereign_policy_registry_enforcer.py
 
 FILE: agentic_core\L5_safety\enforcement\ssot_guardrail.py
 --------------------------------------------------------------------------------
-  Line 101: "agentic_core/L5_safety/enforcement/registry_verification.py",
+  Line 101: "agentic_core/L5_safety/enforcement/registry_verification_enforcer.py",
 
 FILE: agentic_core\L5_safety\enforcement\ssot_import_enforcer.py
 --------------------------------------------------------------------------------
@@ -1837,25 +1837,25 @@ FILE: agentic_core\L5_safety\enforcement\ssot_scanner_enforcer.py
 
 FILE: agentic_core\L5_safety\enforcement\ssot_structure_validation.py
 --------------------------------------------------------------------------------
-  Line 33: from agentic_core.L5_safety.enforcement.registry_verification import (
+  Line 33: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
   Line 35: RegistryVerifier,
   Line 96: self.verifier = RegistryVerifier(project_root)
 
 FILE: agentic_core\L5_safety\enforcement\ssot_structure_validation_enforcer.py
 --------------------------------------------------------------------------------
-  Line 33: from agentic_core.L5_safety.enforcement.registry_verification import (
+  Line 33: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
   Line 35: RegistryVerifier,
   Line 96: self.verifier = RegistryVerifier(project_root)
 
 FILE: agentic_core\L5_safety\enforcement\three_tier_compliance.py
 --------------------------------------------------------------------------------
-  Line 34: from agentic_core.L5_safety.enforcement.registry_verification import (
+  Line 34: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
   Line 36: RegistryVerifier,
   Line 144: self.verifier = RegistryVerifier(project_root)
 
 FILE: agentic_core\L5_safety\enforcement\three_tier_compliance_enforcer.py
 --------------------------------------------------------------------------------
-  Line 34: from agentic_core.L5_safety.enforcement.registry_verification import (
+  Line 34: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
   Line 36: RegistryVerifier,
   Line 144: self.verifier = RegistryVerifier(project_root)
 
@@ -2284,7 +2284,7 @@ FILE: agentic_core\L6_observability\golden_evaluation\tool_use_ground_truth_eval
 FILE: agentic_core\L6_observability\utils\integrity_report_generator_util.py
 --------------------------------------------------------------------------------
   Line 9: 3. 100% registry coverage validation script
-  Line 28: from agentic_core.L5_safety.enforcement.registry_verification import (
+  Line 28: from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
   Line 29: RegistryVerifier,
   Line 62: # Phase 1: Registry Verification
   Line 63: registry_result: VerificationResult | None = None
@@ -4263,7 +4263,7 @@ INTERNALERROR>   File "<frozen importlib._bootstrap>", line 935, in _load_unlock
 INTERNALERROR>   File "C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\assertion\rewrite.py", line 197, in exec_module
 INTERNALERROR>     exec(co, module.__dict__)
 INTERNALERROR>   File "c:\Git\Agentic-Workflow\tests\agentic_core\L5_safety\enforcement\test_data.py", line 9, in <module>
-INTERNALERROR>     import agentic_core.L5_safety.enforcement.data
+INTERNALERROR>     import agentic_core.L5_safety.enforcement.data_enforcer
 INTERNALERROR>   File "C:\Git\Agentic-Workflow\agentic_core\L5_safety\enforcement\data.py", line 34, in <module>
 INTERNALERROR>     sys.exit(1)
 INTERNALERROR> SystemExit: 1

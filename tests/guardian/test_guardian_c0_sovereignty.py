@@ -23,7 +23,7 @@ from agentic_core.L0_routing.scripts.run_guardian_c0_sovereignty import (
     run_c0_sovereignty_guardian,
     scan_embedding_control_flow,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     validate_no_absolute_paths,

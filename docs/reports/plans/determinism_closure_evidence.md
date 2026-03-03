@@ -23,8 +23,8 @@ PENDING
 ## FILES_CHANGED_CODE
 
 agentic_core/L2_execution/determinism/negative_control_harness.py
-agentic_core/L5_safety/enforcement/embedding_non_interference_guard.py
-agentic_core/L5_safety/enforcement/oscillation_firewall.py
+agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py
+agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py
 agentic_core/L6_observability/engines/determinism_digest_emitter.py
 agentic_core/L6_observability/engines/provider_binding_fingerprint.py
 agentic_core/L6_observability/engines/semantic_clock_validator.py
@@ -41,8 +41,8 @@ system_learning/validators/oscillation_detector.py
 agentic_core/L6_observability/engines/determinism_digest_emitter.py
 agentic_core/L6_observability/engines/semantic_clock_validator.py
 agentic_core/L6_observability/engines/provider_binding_fingerprint.py
-agentic_core/L5_safety/enforcement/embedding_non_interference_guard.py
-agentic_core/L5_safety/enforcement/oscillation_firewall.py
+agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py
+agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py
 agentic_core/L2_execution/determinism/negative_control_harness.py
 agentic_core/L0_routing/types/determinism_types.py
 agentic_core/L2_execution/determinism/digest_calculator.py
@@ -97,7 +97,7 @@ File: agentic_core/L6_observability/engines/provider_binding_fingerprint.py
 - Override changes fingerprint; two clean captures produce identical fingerprint.
 
 ### 5. EmbeddingNonInterferenceGuard
-File: agentic_core/L5_safety/enforcement/embedding_non_interference_guard.py
+File: agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py
 
 - C0 marker key taxonomy: 13 keys incl. rag_context, c0_embedding, retrieval_results.
 - C0 value fragments: 5 strings incl. c0_context, rag_result, embedding_hit.
@@ -109,7 +109,7 @@ File: agentic_core/L5_safety/enforcement/embedding_non_interference_guard.py
 - scan_file_for_c0_mutations(path): AST-based attribute assignment scan.
 
 ### 6. OscillationFirewall
-File: agentic_core/L5_safety/enforcement/oscillation_firewall.py
+File: agentic_core/L5_safety/enforcement/oscillation_firewall_gate.py
 
 - Wraps system_learning.enforcement.oscillation_detector.OscillationDetector.
 - Tracks a SINGLE "routing_tier" parameter; value = tier name (string).

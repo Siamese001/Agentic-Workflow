@@ -105,7 +105,7 @@ Exit code: 0
 
 ### File Created
 
-`agentic_core/L5_safety/types/heal_model_map.py`
+`agentic_core/L5_safety/types/heal_model_map_types.py`
 
 ### Contents
 
@@ -141,7 +141,7 @@ def map_tier_to_model_id(tier: ReasoningTier) -> str:
 ### Verification
 
 ```bash
-python -c "from agentic_core.L5_safety.types.heal_model_map import map_tier_to_model_id; from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier; print(map_tier_to_model_id(ReasoningTier.LOW))"
+python -c "from agentic_core.L5_safety.types.heal_model_map_types import map_tier_to_model_id; from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier; print(map_tier_to_model_id(ReasoningTier.LOW))"
 ```
 
 ```text
@@ -245,7 +245,7 @@ git status --porcelain=v1
 - ✓ Enabled path invokes router seam deterministically and logs routed model id
 - ✓ Only allowed files changed:
   - `agentic_core/utils/decorators_util.py`
-  - `agentic_core/L5_safety/types/heal_model_map.py`
+  - `agentic_core/L5_safety/types/heal_model_map_types.py`
   - `tests/governance/test_heal_model_routing_enabled_path.py`
   - `tests/governance/test_standard_heal_no_routing_contract.py` (Phase 5 contract updated)
   - `docs/reports/governance/phase6_model_routing_evidence.md`

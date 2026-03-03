@@ -12,7 +12,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L1_cognition.types.execution_intent import (
+from agentic_core.L1_cognition.types.execution_intent_types import (
     ExecutionIntent,
     L1Result,
     assert_l1_purity,

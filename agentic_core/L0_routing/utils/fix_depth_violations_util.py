@@ -11,7 +11,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config import get_validated_project_root
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L0_routing.utils.path_utils import safe_path_join
+from agentic_core.L0_routing.utils.path_util import safe_path_join
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations

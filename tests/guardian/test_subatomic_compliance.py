@@ -587,7 +587,7 @@ class TestSubatomicCompliance:
             {
                 "agentic_core/L5_safety/reasoning/FilesystemSSOTReconcilerAgent.py",
                 "agentic_core/L0_routing/scripts/execute_ssot.py",
-                "agentic_core/L0_routing/types/guardian_contract.py",
+                "agentic_core/L0_routing/types/guardian_contract_types.py",
                 "agentic_core/L0_routing/utils/complexity_visitor_util.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_constants.py",
                 "agentic_core/L5_safety/config/structure_blueprint/_verify.py",

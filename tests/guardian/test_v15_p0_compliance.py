@@ -48,7 +48,7 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_has_v15_fields(self):
         """GuardianResult must have v15_trace_id, v15_signature, v15_commit_hash."""
-        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult
 
         field_names = {f.name for f in dataclasses.fields(GuardianResult)}
         assert "v15_trace_id" in field_names
@@ -60,7 +60,7 @@ class TestP01GuardianSchema:
         from agentic_core.L0_routing.types.crypto_trust_types import (
             SignedGuardianArtifact,
         )
-        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult
 
         result = GuardianResult(guardian_id="test_guardian", v15_trace_id="trace-001")
 
@@ -76,7 +76,7 @@ class TestP01GuardianSchema:
 
     def test_guardian_result_sign_requires_trace_id(self):
         """sign() must raise V15EnforcementError if v15_trace_id is not set."""
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             GuardianResult,
             V15EnforcementError,
         )
@@ -91,7 +91,7 @@ class TestP01GuardianSchema:
         """INV-2: to_json() must raise when V15 enforced and result unsigned."""
         _set_v15_enforcement(True, monkeypatch)
 
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             GuardianResult,
             V15EnforcementError,
         )
@@ -104,7 +104,7 @@ class TestP01GuardianSchema:
         """Signed results must serialize without error in V15 mode."""
         _set_v15_enforcement(True, monkeypatch)
 
-        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult
 
         result = GuardianResult(
             guardian_id="test_guardian",
@@ -121,7 +121,7 @@ class TestP01GuardianSchema:
         """Without V15 enforcement, unsigned results must still serialize."""
         _set_v15_enforcement(False, monkeypatch)
 
-        from agentic_core.L0_routing.types.guardian_contract import GuardianResult
+        from agentic_core.L0_routing.types.guardian_contract_types import GuardianResult
 
         result = GuardianResult(guardian_id="test_guardian")
         output = result.to_json()
@@ -131,7 +131,7 @@ class TestP01GuardianSchema:
 
     def test_contract_version_bumped(self):
         """CONTRACT_VERSION must be >= 2 after P0.1."""
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             CONTRACT_VERSION,
         )
 
@@ -139,7 +139,7 @@ class TestP01GuardianSchema:
 
     def test_v15_enforcement_error_exists(self):
         """V15EnforcementError must be importable."""
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             V15EnforcementError,
         )
 

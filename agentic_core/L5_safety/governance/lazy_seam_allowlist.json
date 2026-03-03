@@ -55,7 +55,7 @@
       "file_path": "agentic_core\\L0_routing\\engines\\timeshift_router.py",
       "function_name": "_get_prior_detection_signal",
       "imported_modules": [
-        "agentic_core.L4_state.types.detection_signal_store"
+        "agentic_core.L4_state.types.detection_signal_store_types"
       ],
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
@@ -465,7 +465,7 @@
       "file_path": "agentic_core\\L2_execution\\scripts\\remediation_dispatcher.py",
       "function_name": "_get_approval_types",
       "imported_modules": [
-        "agentic_core.L3_orchestration.types.approval_contract"
+        "agentic_core.L3_orchestration.types.approval_contract_types"
       ],
       "imported_symbols": [],
       "reason_code": "D2_ENTRYPOINT_SCRIPT",
@@ -555,7 +555,7 @@
       "file_path": "agentic_core\\L3_orchestration\\engines\\sovereign_rag_orchestrator.py",
       "function_name": "_get_retrieval_anchor_types",
       "imported_modules": [
-        "agentic_core.L4_state.types.retrieval_anchor"
+        "agentic_core.L4_state.types.retrieval_anchor_types"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -582,10 +582,10 @@
       "justification": "Plugin registry or dynamic dispatch boundary"
     },
     {
-      "file_path": "agentic_core\\L4_state\\types\\detection_signal_store.py",
+      "file_path": "agentic_core\\L4_state\types\detection_signal_store_types.py",
       "function_name": "_get_detection_signal_class",
       "imported_modules": [
-        "agentic_core.L6_observability.types.detection_signal"
+        "agentic_core.L6_observability.types.detection_signal_types"
       ],
       "imported_symbols": [],
       "reason_code": "D1_EXTERNAL_OPTIONAL_DEP",
@@ -625,7 +625,7 @@
       "file_path": "agentic_core\\L0_routing\\engines\\shadow_router_classifier.py",
       "function_name": "_get_canonical_json",
       "imported_modules": [
-        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint"
+        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types"
       ],
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
@@ -635,14 +635,14 @@
       "file_path": "agentic_core\\L0_routing\\types\\shadow_routing_types.py",
       "function_name": "_get_canonical_json",
       "imported_modules": [
-        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint"
+        "agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types"
       ],
       "imported_symbols": [],
       "reason_code": "D3_PLUGIN_REGISTRY_DISPATCH",
       "justification": "L0 lazy seam to avoid circular dependency; wraps L2 canonical_json"
     },
     {
-      "file_path": "agentic_core\\L0_routing\\enforcement\\mutation_prohibition.py",
+      "file_path": "agentic_core\\L0_routing\\enforcement\\mutation_prohibition_enforcer.py",
       "function_name": "assert_no_persistent_write",
       "imported_modules": [
         "agentic_core.L2_execution.tools.write_gateway"

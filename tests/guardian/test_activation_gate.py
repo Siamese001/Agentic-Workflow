@@ -62,7 +62,7 @@ class TestMissingComponentDenial:
 
     def test_missing_mutation_prohibition(self, monkeypatch):
         """Missing mutation_prohibition → PermissionError."""
-        mod_key = "agentic_core.L5_safety.enforcement.mutation_prohibition"
+        mod_key = "agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer"
         original = sys.modules.get(mod_key)
         monkeypatch.setitem(sys.modules, mod_key, None)
         try:

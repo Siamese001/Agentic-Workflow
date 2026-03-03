@@ -8,7 +8,7 @@
 - `agentic_core/L0_routing/enforcement/execution_gateway.py` [MODIFIED — L2.0 wired]
 - `agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py` [MODIFIED — anchors + config]
 - `agentic_core/L4_state/config/versioned_configs.py` [NEW — prior commit a73bb0e84]
-- `agentic_core/L4_state/types/retrieval_anchor.py` [NEW — prior commit a73bb0e84]
+- `agentic_core/L4_state/types/retrieval_anchor_types.py` [NEW — prior commit a73bb0e84]
 - `agentic_core/L2_execution/enforcement/manifest_hash_validator.py` [NEW — prior commit a73bb0e84]
 - `tests/agentic_core/test_phase2_integration.py` [NEW — integration tests]
 - `tests/agentic_core/test_phase2_versioned_config.py` [NEW — prior commit a73bb0e84]

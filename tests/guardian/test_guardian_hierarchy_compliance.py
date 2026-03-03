@@ -32,11 +32,11 @@ from agentic_core.L0_routing.scripts.run_guardian_hierarchy_compliance import (
     scan_missing_structure,
     scan_subfolder_compliance,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
 
 pytestmark = pytest.mark.guardian
 

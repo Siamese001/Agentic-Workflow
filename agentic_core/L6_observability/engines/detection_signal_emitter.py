@@ -10,7 +10,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 if TYPE_CHECKING:
     from system_learning.engines.l4_state_writer import L4StateWriter

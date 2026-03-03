@@ -27,13 +27,13 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L0_routing.scripts.run_all_guardians import (
     run_all_guardians,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,
 )
-from agentic_core.L0_routing.types.guardian_registry import (
+from agentic_core.L0_routing.types.guardian_registry_types import (
     get_guardian_specs,
 )
 

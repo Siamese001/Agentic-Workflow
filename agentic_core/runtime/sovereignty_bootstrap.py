@@ -16,7 +16,7 @@ Bootstrap order (must not be reordered):
 import hashlib
 from pathlib import Path
 
-from agentic_core.L5_safety.enforcement.hierarchy_validator import get_hierarchy_validator
+from agentic_core.L5_safety.enforcement.hierarchy_validator_enforcer import get_hierarchy_validator
 from agentic_core.runtime.execution_trace import (
     bind_determinism_to_trace,
     start_execution_trace,

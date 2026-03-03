@@ -25,26 +25,26 @@ class TestEnforcementModeSemantics:
     """is_v15_enforced() must return True for log/soft/1; is_v15_hard_fail() only for 1."""
 
     def test_is_v15_enforced_accepts_log(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "log"}):
             assert is_v15_enforced(), "V15_ENFORCEMENT=log must enter V15 path"
 
     def test_is_v15_enforced_accepts_soft(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         with patch.dict(os.environ, {"V15_ENFORCEMENT": "soft"}):
             assert is_v15_enforced(), "V15_ENFORCEMENT=soft must enter V15 path"
 
     def test_is_v15_enforced_accepts_hard(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("1", "true", "yes", "TRUE", "True"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert is_v15_enforced(), f"V15_ENFORCEMENT={val} must enter V15 path"
 
     def test_is_v15_enforced_rejects_disabled(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("0", "false", "no", "off"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -53,7 +53,7 @@ class TestEnforcementModeSemantics:
     def test_is_v15_enforced_raises_on_invalid(self):
         import pytest
 
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         for val in ("", "something"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -61,14 +61,14 @@ class TestEnforcementModeSemantics:
                     is_v15_enforced()
 
     def test_is_v15_hard_fail_only_for_hard_values(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_hard_fail
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
 
         for val in ("1", "true", "yes"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
                 assert is_v15_hard_fail(), f"V15_ENFORCEMENT={val} must be hard-fail"
 
     def test_is_v15_hard_fail_false_for_log_soft(self):
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_hard_fail
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_hard_fail
 
         for val in ("log", "soft"):
             with patch.dict(os.environ, {"V15_ENFORCEMENT": val}):
@@ -89,7 +89,7 @@ class TestEnforcementModeSemantics:
         from agentic_core.L0_routing.enforcement.runtime_guard import (
             assert_v15_guarded,
         )
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             V15EnforcementError,
         )
 

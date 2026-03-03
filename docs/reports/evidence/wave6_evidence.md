@@ -54,3 +54,885 @@ tests/agentic_core/test_wave6_hitl_gates.py::test_execute_ssot_wires_hitl_approv
 tests/agentic_core/test_wave6_hitl_gates.py::test_execute_ssot_hitl_gate_before_heal_violations PASSED [100%]
 
 8 passed in 0.17s
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\apps_shared\utils\l1_health_benchmark_util.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l1_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\apps_shared\utils\l5_autonomous_orchestrator_util.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l5_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\general\l0_import_model.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l0_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l0_threshold_tuner.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l0_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_5: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_audit_reader.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_6: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_state_writer.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_7: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_version_store.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_8: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\unit\test_SovereignBaseAgent.py
+  Violation=CRITICAL: Base Agents must reside in 'agentic_core/base_agents/', not 'unit' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_9: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_10: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_11: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_12: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_13: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L1_cognition__reasoning__StrategistAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_14: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L2_execution__reasoning__RgStrategicPlannerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_15: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L2_execution__reasoning__UiValidationAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_16: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L3_orchestration__reasoning__DagRuntimeInspectorAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_17: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L4_state__reasoning__CartographerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_18: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__DependencyDiplomatAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_19: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__GlobalComplianceAggregatorAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_20: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__OmniContextAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_21: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__SemanticMapperAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_22: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__SemanticTerritoryMapperAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_23: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__SignatureVerifierAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_24: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L5_safety__reasoning__TokenBudgetInspectorAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_25: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__CoordinateObservabilityOperationsAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_26: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__DeadlockDetectorAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_27: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__DebateSynthesisAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_28: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__RuntimeTelemetryAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_29: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__StrategicObservationAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_30: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__L6_observability__reasoning__TrackObservabilityCostAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_31: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\agentic_core__runtime__utils__discovery_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_32: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__CampaignBalanceAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_33: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__DeliverabilityAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_34: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__Hop1ProfileAnalysisAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_35: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__Hop2ResearchAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_36: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__HOP3SenderGroundingAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_37: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__Hop4RoutingAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_38: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__HOP5GenerationAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_39: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__Hop6ValidationAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_40: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__HOP7GateDecisionAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_41: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__HOP8QAReportAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_42: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__HOP9IntegrationAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_43: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__IntelligenceLibrarianAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_44: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__LeadQualityAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_45: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__LicReflectionAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_46: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__LicTemplateOptimizerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_47: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__MessageArchitectAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_48: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__MessageComplianceAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_49: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__MessageDiversityValidator.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_50: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__OutreachLearningAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_51: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_lic__engines__OutreachProactiveAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_52: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__ATSCompatibilityAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_53: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__BrandComplianceAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_54: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__CampaignPlannerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_55: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__ContentStrategyAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_56: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__FactCheckAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_57: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__RgStrategicPlannerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_58: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__RgTemplateOptimizerAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_59: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\consolidation\backups\apps_rg__reasoning__SectionBalanceAgent.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_60: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\windsurf\legacy\_capture_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_61: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\windsurf\legacy\_run_entry1.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_62: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\artifacts\windsurf\legacy\_run_entry2.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_63: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_64: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_65: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_66: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\constitutional_principle_types.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_67: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\const_ai_impl.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_68: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\const_ai_impl_impl_impl_impl.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_69: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\const_final.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_70: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\const_final_impl_impl_impl_impl.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_71: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\safety\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_72: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\versioning\PromptTemplate.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_73: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\prompt_governance\versioning\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_74: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\client_wrappers\anthropic_client.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_75: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\client_wrappers\openai_client.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_76: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\client_wrappers\vertex_client.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_77: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\client_wrappers\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_78: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_anthropic.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_79: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_openai.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_80: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\reference_clients\minimal_vertex.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_81: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\validation\validate_mcps.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_82: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_83: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_84: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_85: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\docs\reports\assessments\prompt-modules\validation\assemble.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_86: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\docs\reports\assessments\prompt-modules\validation\validate_assembly.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_87: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_88: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_89: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\add_agent_suffix_plan_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_90: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\analyze_agent_count_waterfall_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_91: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\analyze_app_files_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_92: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\analyze_archive_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_93: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\analyze_extract.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_94: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\ast_layer_stats_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_95: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_all_agents_mro_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_96: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_code_quality_metrics_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_97: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_complexity_health_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_98: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_dashboard_naming_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_99: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_dashboard_ssot_flow_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_100: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_dashboard_ssot_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_101: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_live_runtime_consolidation_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_102: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_residual_rglob_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_103: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_status.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_104: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\audit_table_validation_parity_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_105: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\budget_auditor_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_106: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\bulk_agent_rename_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_107: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\callable_report.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_108: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\clean_dashboard_html_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_109: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\compare_dashboard_data_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_110: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\complete_terminal_alignment_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_111: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\complexity.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_112: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\complexity_reducer.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_113: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\comprehensive_agent_audit_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_114: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\dashboard_live_server_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_115: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\dashboard_qa_deep_audit_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_116: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\dashboard_style_report_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_117: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\dashboard_verifier.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_118: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\debug_dashboard_rendering_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_119: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\deep_deprecation_audit_v2_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_120: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\detailed_territory_report_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_121: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\detailed_territory_subterritory_report_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_122: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\diagnose_dashboard_live_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_123: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\diagnose_user_dashboard_view_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_124: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\enforce_dashboard_freshness_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_125: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\extract_dashboard_errors_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_126: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\extract_layer_stats_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_127: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\finalize_architecture_safe_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_128: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\finalize_architecture_simple_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_129: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\finalize_architecture_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_130: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\finalize_sovereign_structure_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_131: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\find_and_fix_all_missing_heal_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_132: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\find_and_fix_missing_heal_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_133: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_all_imports_comprehensive_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_134: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_all_invocations_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_135: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_apps_lic_engines_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_136: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_healer_mixin_imports_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_137: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_heal_schema_violations_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_138: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\ops_scripts\dev_tools\l0_scripts\fix_imports_emergency_util.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_139: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_140: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_141: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_142: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\depth_aligned\depth_aligned\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_143: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\arbitration\engine.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_144: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\arbitration\types.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_145: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\arbitration\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_146: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\confidence\engine.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_147: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\confidence\types.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_148: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\confidence\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_149: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\correlation\engine.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_150: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\correlation\types.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_151: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\correlation\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_152: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\fingerprinting\engine.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_153: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\fingerprinting\types.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_154: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\fingerprinting\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_155: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_156: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_157: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_158: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_159: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_apps_ssot_shared_enforcement.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_160: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_artifacts_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_161: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_cache_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_162: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_classification_hardening.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_163: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_compile_time_frozen_governance.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_164: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_docs_structure_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_165: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_environment_independence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_166: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_invariants.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_167: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_layer_write_sovereignty.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_168: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_logs_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_169: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_longpaths_bypass.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_170: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_mathematical_determinism.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_171: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_module_collision_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_172: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_no_credentials_in_repo.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_173: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_prompt_governance_no_orphans.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_174: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_prompt_root_boundary.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_175: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_sovereign_gateway_boundary.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_176: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\test_tests_ssot_invariant.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_177: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\architecture\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_178: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\behavioral\capture_golden.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_179: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\behavioral\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_180: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\behavioral\verify_golden.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_181: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_182: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_artifact_emission.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_183: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_execute_contract.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_184: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_guard_integration.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_185: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_inheritance.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_186: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_prod_hygiene.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_187: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_reachability.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_188: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_agent_structural_identity.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_189: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_guardian_quarantine_contract.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_190: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_hardening_negative.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_191: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_minimum_behavioral_bar.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_192: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\test_structure_mirror_contract.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_193: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\_discover_debt.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_194: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\_scanner.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_195: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\contracts\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_196: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_active_set_fingerprint.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_197: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_active_set_snapshot_check.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_198: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_active_set_ssot_check.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_199: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_baseline_import_no_guardrail_fire.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_200: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_baseline_io.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_201: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_classification_contract.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_202: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_dependency_verifier_exit_code.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_203: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_executor_dispatch_runtime_equivalence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_204: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_executor_dispatch_snapshot.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_205: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_executor_smoke.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_206: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_governance_coverage_check.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_207: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_hop_migration_structure.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_208: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_209: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_210: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_211: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\canonical_hash.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_212: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\capture_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_213: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\check_vram.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_214: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\dry_run_apps_lic.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_215: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\embedding_rtx5090_optimizer.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_216: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\rag_reranker_shim.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_217: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase10_arbitration_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_218: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase11_final_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_219: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase11_ptc_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_220: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase3_integration.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_221: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase6_replay_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_222: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase7_storage_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_223: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase8_perf_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_224: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_phase9_formal_checks_evidence.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_225: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_replay_execute_ssot_plan.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_226: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\run_static_invariants.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_227: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\seed_direct_writes_baseline.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_228: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\test_vllm_boundary.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_229: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\vllm_boundary_client.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_230: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\wave1_audit.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_231: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\wave3_verification.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_232: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tools\depth_aligned\depth_aligned\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_233: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_234: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\data\sdks_mcps\client_wrappers\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_lic_validation_capability_structure.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_7: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_mro_new_diamond_check.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_8: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\test_repo_structure.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_9: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\core\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_10: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\depth_aligned\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_11: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_anomaly_remediation_pipeline_fixture_repo.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_12: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_batch_performance_optimization.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_13: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_canon_key_removal.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_14: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_cognitive_subset.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_15: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_complete_mission_workflow.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_16: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_import_resolution.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_17: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_layer_isolation.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_18: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_lic_rg_parity.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_19: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_location_agent_telemetry.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_20: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_manifest_completion.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_21: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_meta_learning_e2e.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_22: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_mission_dry_run.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_23: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_mission_script_integrity.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_24: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_mro_refactor.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_25: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_phase5_invariants_fixture_repo.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_26: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\test_sovereign_validation_e2e.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_27: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_28: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\__init___1.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_29: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\e2e\__init___2.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_30: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_31: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_constitutional_validator.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_32: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_folder_purity_governance.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_33: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_folder_purity_invariants.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_34: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_phase_acceptance_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_35: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_pytest_config_guard.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_36: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\enforcement\test_windsurfrules_budget_and_evidence_gate.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_37: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\fixtures\embedding_provider_registry_fixture.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_38: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\fixtures\test_testing_utils.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_39: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\fixtures\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_40: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\goldens\allowlist_goldens.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_41: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\goldens\test_allowlist_goldens.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_42: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\goldens\__init__.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_43: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\conftest.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_44: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_agent_execution_policy_application.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_45: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_agent_execution_profiles.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_46: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_agent_heal_audit.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_47: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_architectural_invariants.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_48: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_authority_boundaries.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_49: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_blast_radius.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_50: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_canonical_serializer.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_51: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_canonical_serializer_ssot.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_52: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_capability_revocation.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_53: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_cross_layer_import_freeze.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_54: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_embedding_invariants.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_55: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\tests\governance\test_escalation_monotonicity.py
+  Violation=Location violation | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_56: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_57: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)

@@ -50,7 +50,7 @@ providing controlled access to higher-layer functionality.
 
 ```python
 # BEFORE (static module-level import)
-from agentic_core.L5_safety.enforcement.artifact_emission_prohibition import (
+from agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer import (
     assert_layer_may_emit,
 )
 
@@ -63,7 +63,7 @@ from agentic_core.L0_routing.seams.layer_emission_seam import (
 def get_layer_emission_validator():
     import importlib
     module = importlib.import_module(
-        "agentic_core.L5_safety.enforcement.artifact_emission_prohibition"
+        "agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer"
     )
     return module
 ```

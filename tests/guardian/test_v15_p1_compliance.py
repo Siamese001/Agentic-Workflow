@@ -33,7 +33,7 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     TokenGateResult,
     VigilanceTier,
 )
-from agentic_core.L0_routing.types.routing_contracts import (
+from agentic_core.L0_routing.types.routing_contracts_types import (
     ArtifactAbsenceFailure,
     GuardrailGuard,
     HealingTransactionBoundary,
@@ -692,7 +692,7 @@ class TestP1CriticalDWiring:
 
     def test_v15_enforcement_flag_exists(self):
         """V15_ENFORCEMENT environment variable must be recognized."""
-        from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+        from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
         # Test enabled values (explicit opt-in)
         for val in ["1", "true", "yes", "on", "TRUE", "True"]:
@@ -746,7 +746,7 @@ class TestP1CriticalDWiring:
             return ("fs_hash", "git_hash", "mem_hash")
 
         # Test with invalid input
-        from agentic_core.L0_routing.types.determinism_contracts import ForbiddenInputError
+        from agentic_core.L0_routing.types.determinism_contracts_types import ForbiddenInputError
 
         with pytest.raises(ForbiddenInputError):  # Should raise validation error
             gateway.execute(
@@ -923,7 +923,7 @@ class TestP1CriticalDWiring:
 
     def test_healing_transaction_boundary_exists(self):
         """HealingTransactionBoundary must be available."""
-        from agentic_core.L0_routing.types.routing_contracts import HealingTransactionBoundary
+        from agentic_core.L0_routing.types.routing_contracts_types import HealingTransactionBoundary
 
         # Verify it's a context manager
         assert hasattr(HealingTransactionBoundary, "__enter__")
@@ -931,7 +931,7 @@ class TestP1CriticalDWiring:
 
     def test_policy_config_guard_exists(self):
         """PolicyConfigGuard must be available for policy pinning."""
-        from agentic_core.L0_routing.types.routing_contracts import PolicyConfigGuard
+        from agentic_core.L0_routing.types.routing_contracts_types import PolicyConfigGuard
 
         # Verify it has required methods
         assert hasattr(PolicyConfigGuard, "read_config")
@@ -950,7 +950,7 @@ class TestP1CriticalDWiring:
         import hashlib
         import uuid
 
-        from agentic_core.L0_routing.types.determinism_contracts import create_boundary_snapshot
+        from agentic_core.L0_routing.types.determinism_contracts_types import create_boundary_snapshot
         from agentic_core.L0_routing.types.determinism_types import (
             SemanticClock,
             SurgicalManifest,
@@ -990,7 +990,7 @@ class TestP1CriticalDWiring:
 
     def test_boundary_snapshot_contract(self):
         """Boundary snapshot creation and verification must work."""
-        from agentic_core.L0_routing.types.determinism_contracts import create_boundary_snapshot
+        from agentic_core.L0_routing.types.determinism_contracts_types import create_boundary_snapshot
         from agentic_core.L0_routing.types.determinism_types import (
             BoundarySnapshotArtifact,
             SemanticClock,
@@ -1105,10 +1105,10 @@ class TestEnforceRouteDecisionPresence:
     """Under V15, downstream validation must have a RouteDecisionArtifact."""
 
     def test_v15_enforced_none_payload_raises(self):
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             V15HardFailAbort,
         )
-        from agentic_core.L0_routing.types.routing_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts_types import (
             enforce_route_decision_presence,
         )
 
@@ -1117,10 +1117,10 @@ class TestEnforceRouteDecisionPresence:
                 enforce_route_decision_presence(None)
 
     def test_v15_enforced_missing_key_raises(self):
-        from agentic_core.L0_routing.types.guardian_contract import (
+        from agentic_core.L0_routing.types.guardian_contract_types import (
             V15HardFailAbort,
         )
-        from agentic_core.L0_routing.types.routing_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts_types import (
             enforce_route_decision_presence,
         )
 
@@ -1129,7 +1129,7 @@ class TestEnforceRouteDecisionPresence:
                 enforce_route_decision_presence({"status": "success"})
 
     def test_v15_enforced_valid_artifact_passes(self):
-        from agentic_core.L0_routing.types.routing_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts_types import (
             enforce_route_decision_presence,
         )
 
@@ -1143,7 +1143,7 @@ class TestEnforceRouteDecisionPresence:
             enforce_route_decision_presence(payload)
 
     def test_non_v15_none_payload_passes(self):
-        from agentic_core.L0_routing.types.routing_contracts import (
+        from agentic_core.L0_routing.types.routing_contracts_types import (
             enforce_route_decision_presence,
         )
 

@@ -5,7 +5,7 @@ from __future__ import annotations
 import json
 from typing import Sequence
 
-from .types import CorrelatedRiskReport, CorrelatedRow
+from .types import CorrelatedRiskReport, CorrelatedRow, DriftEvent
 
 
 class RiskCorrelator:

@@ -14,7 +14,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLM_SEED,
     VLLM_TEMPERATURE,
     VLLM_TOP_P,

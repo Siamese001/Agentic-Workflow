@@ -12,7 +12,7 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-from agentic_core.L5_safety.types.heal_llm_seam import HealLlmRequest
+from agentic_core.L5_safety.types.heal_llm_seam_types import HealLlmRequest
 from agentic_core.L5_safety.types.heal_policy_types import ReasoningTier
 from agentic_core.utils.decorators_util import standard_heal
 
@@ -112,7 +112,7 @@ def test_heal_llm_seam_enabled_with_caller():
                 mock_router,
             ):
                 with patch(
-                    "agentic_core.L5_safety.types.heal_llm_seam.DEFAULT_HEAL_LLM_CALLER",
+                    "agentic_core.L5_safety.types.heal_llm_seam_types.DEFAULT_HEAL_LLM_CALLER",
                     mock_caller,
                 ):
                     healer = DummyHealer()

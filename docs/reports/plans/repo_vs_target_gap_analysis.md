@@ -292,7 +292,7 @@ Based on `@/c:\Git\Agentic-Workflow\docs\technical\agentic_process_mapping.md:1-
 |---|---|
 | **Target claim** | [39] InstructionPacket + [40] SandboxEnvelope + [41] PTC contracts |
 | **Repo evidence** | `grep InstructionPacket *.py` → 0 hits; `grep SandboxEnvelope *.py` → 0 hits |
-| **Tasks** | Create `agentic_core/L2_execution/types/instruction_packet.py` (InstructionPacket with HMAC-SHA256), `sandbox_envelope.py` (SandboxEnvelope), PTC contract enforcer |
+| **Tasks** | Create `agentic_core/L2_execution/types/instruction_packet_types.py` (InstructionPacket with HMAC-SHA256), `sandbox_envelope.py` (SandboxEnvelope), PTC contract enforcer |
 | **Acceptance** | `python -m pytest tests/agentic_core/L2_execution/types/test_instruction_packet.py -q --color=no` |
 | **Determinism** | 2-run stable digest on canonical JSON serialization |
 | **Negative control** | Tamper signature → XFAIL; restore → PASS |

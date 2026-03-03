@@ -731,9 +731,9 @@ tools/evidence/gap_analysis_evidence_v2.py:683:             r"validate_slot_orde
 **Matches:** 353 in 85 files
 ```
 agentic_core/L2_execution/determinism.py:222:     # Add tampering if negative control is active
-agentic_core/L2_execution/types/commit_proof_invariant.py:6: or verify it has changed (negative control: tampered inputs → different hash).
-agentic_core/L2_execution/types/commit_proof_invariant.py:62:         Negative control: verifies that tampered inputs produce a different hash.
-agentic_core/L2_execution/types/commit_proof_invariant.py:68:                 f"[Phase {self.phase_id}] Negative control FAILED: "
+agentic_core/L2_execution/types/commit_proof_invariant_types.py:6: or verify it has changed (negative control: tampered inputs → different hash).
+agentic_core/L2_execution/types/commit_proof_invariant_types.py:62:         Negative control: verifies that tampered inputs produce a different hash.
+agentic_core/L2_execution/types/commit_proof_invariant_types.py:68:                 f"[Phase {self.phase_id}] Negative control FAILED: "
 agentic_core/L3_orchestration/engines/deterministic_orchestrator.py:81:         # Negative control: intentionally reverse sort order to cause mismatch
 agentic_core/prompt_governance/contracts/slot_contracts.py:54:     REQ-PT-011: Negative control — tampered slot order MUST be detected and
 ops_scripts/ci/audit_agent_registry_enforcement.py:202:             "Synthetic violation for negative control testing"
@@ -830,8 +830,8 @@ tools/evidence/gap_analysis_evidence_v2.py:1340:                 r"SovereigntyEr
 **Matches:** 13 in 7 files
 ```
 agentic_core/architecture/architectural_invariants.py:89:         "No silent fallback to alternate retrieval paths",
-agentic_core/L2_execution/types/ml_pattern_record.py:7: deterministically (no silent fallback).
-agentic_core/L2_execution/types/ml_pattern_record.py:166:     No silent fallback.
+agentic_core/L2_execution/types/ml_pattern_record_types.py:7: deterministically (no silent fallback).
+agentic_core/L2_execution/types/ml_pattern_record_types.py:166:     No silent fallback.
 agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py:9:   - HARD STOP on branch/depth/token budget violations (no silent fallback).
 agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py:43:     This is a HARD STOP — no retry, no silent fallback, no mode downgrade.
 agentic_core/L3_orchestration/engines/reasoning_intensity_enforcer.py:228:         No silent truncation, no fallback, no mode downgrade.
@@ -1879,7 +1879,7 @@ layers_present = {
   Runtime: True,
     # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: calls ['verify_gateway_invariants']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: calls ['verify_gateway_invariants']
     # ... +22 more predicates
   AST: True,
     # ops_scripts/ci/check_model_string_literals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -1888,7 +1888,7 @@ layers_present = {
     # ... +16 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
     # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
@@ -1962,7 +1962,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (15): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L5_safety/static_checks/system_invariant_scanner.py', 'agentic_core/architecture/architectural_invariants.py']
+prod (15): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L5_safety/static_checks/system_invariant_scanner.py', 'agentic_core/architecture/architectural_invariants.py']
   ... +10 more
 test (17): ['tests/governance/conftest.py', 'tests/governance/test_embedding_and_routing_bypass_elimination.py', 'tests/governance/test_embedding_and_routing_enforced_closure.py', 'tests/governance/test_phase10_embedding_non_mutation.py', 'tests/governance/test_phase7_embedding_sovereignty.py']
   ... +12 more
@@ -2032,7 +2032,7 @@ layers_present = {
   Runtime: True,
     # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: calls ['verify_gateway_invariants']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: calls ['verify_gateway_invariants']
     # ... +23 more predicates
   AST: True,
     # ops_scripts/ci/check_model_string_literals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -2041,7 +2041,7 @@ layers_present = {
     # ... +17 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
     # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
@@ -2088,7 +2088,7 @@ layers_present = {
   Runtime: True,
     # tests/unit/structure_blueprint/test_enforcement_counters.py: classes ['TestOutputDirDriftGuard']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: calls ['verify_gateway_invariants']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: calls ['verify_gateway_invariants']
     # ... +23 more predicates
   AST: True,
     # ops_scripts/ci/check_model_string_literals.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -2097,7 +2097,7 @@ layers_present = {
     # ... +17 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
     # apps_rg/enforcement/HardenedanthropicexecutorStrategy.py: decorators ['dataclass']
     # ... +5 more predicates
   Replay: True,
@@ -2152,7 +2152,7 @@ layers_present = {
     # tests/guardian/test_execute_ssot_v15_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/prompt_governance/core/prompt_assembler.py: imports ['pydantic']
     # ... +18 more predicates
@@ -2163,7 +2163,7 @@ layers_present = {
     # ... +7 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +14 more predicates
   CI: True,
@@ -2201,7 +2201,7 @@ ci_test (55): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L3_orchestration/reasoning/StateManagementAgent.py: defines ['validate_and_sync']
     # tools/vllm_boundary_client.py: raises ['TypeError', 'ConnectionError', 'RuntimeError', 'TimeoutError']
     # ... +220 more predicates
@@ -2211,7 +2211,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # ... +24 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/reasoning/StateManagementAgent.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +44 more predicates
@@ -2260,7 +2260,7 @@ ci_test (55): ['tests/agentic_core/L0_routing/meta_control/test_config_store.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L3_orchestration/reasoning/StateManagementAgent.py: defines ['validate_and_sync']
     # tools/vllm_boundary_client.py: raises ['TypeError', 'ConnectionError', 'RuntimeError', 'TimeoutError']
     # ... +220 more predicates
@@ -2270,7 +2270,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # ... +24 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/reasoning/StateManagementAgent.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +44 more predicates
@@ -2329,7 +2329,7 @@ layers_present = {
     # tests/guardian/test_execute_ssot_v15_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/prompt_governance/core/prompt_assembler.py: imports ['pydantic']
     # ... +18 more predicates
@@ -2340,7 +2340,7 @@ layers_present = {
     # ... +7 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +14 more predicates
   CI: True,
@@ -2388,7 +2388,7 @@ layers_present = {
     # tests/guardian/test_execute_ssot_v15_contract.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +19 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/prompt_governance/core/prompt_assembler.py: imports ['pydantic']
     # ... +18 more predicates
@@ -2399,7 +2399,7 @@ layers_present = {
     # ... +7 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +14 more predicates
   CI: True,
@@ -2438,7 +2438,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_
 layers_present = {
   Runtime: True,
     # tests/unit_min_deps/test_replay_harness_crypto_clock.py: calls ['verify_signature']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +23 more predicates
   AST: True,
@@ -2478,7 +2478,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L2_execution/enforcement/boundary_verifier.py', 'agentic_core/L2_execution/types/instruction_packet.py']
+prod (2): ['agentic_core/L2_execution/enforcement/boundary_verifier.py', 'agentic_core/L2_execution/types/instruction_packet_types.py']
 test (1): ['tests/agentic_core/L2_execution/types/test_instruction_packet.py']
 tool (1): ['tools/evidence/w6_scan_runner.py']
 ci_test (1): ['tests/agentic_core/L2_execution/types/test_instruction_packet.py']
@@ -2492,7 +2492,7 @@ layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/enforcement/boundary_verifier.py: raises ['TypeError', 'SignatureVerificationError', 'ValueError']
     # agentic_core/L2_execution/enforcement/boundary_verifier.py: defines ['verify_instruction_packet_with_l5', 'verify_l5_certification', 'verify_sandbox_envelope', 'verify_envelope', 'verify_packet', 'verify_instruction_packet']
-    # agentic_core/L2_execution/types/instruction_packet.py: raises ['SignatureVerificationError']
+    # agentic_core/L2_execution/types/instruction_packet_types.py: raises ['SignatureVerificationError']
     # ... +1 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
@@ -2500,8 +2500,8 @@ layers_present = {
   Replay: False,
   Signature: True,
     # tests/agentic_core/L2_execution/types/test_instruction_packet.py: imports ['hashlib'], defines ['test_is_signed_true_after_sign', '_make_unsigned_packet', 'test_sign_verify_pass', 'test_wrong_key_fails_verify', 'test_sign_returns_new_instance', 'test_sign_signature_is_lowercase_hex', 'test_tamper_signature_directly_fails_verify', 'test_is_signed_false_when_unsigned', 'test_sign_is_deterministic', 'test_sign_sets_signature', 'test_unsigned_packet_verify_raises', 'test_canonical_bytes_excludes_signature']
-    # agentic_core/L2_execution/types/instruction_packet.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
-    # agentic_core/L2_execution/types/instruction_packet.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L2_execution/types/instruction_packet_types.py: imports ['hashlib', 'hmac'], calls ['hmac.compare_digest', 'hmac.new']
+    # agentic_core/L2_execution/types/instruction_packet_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2524,7 +2524,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -2538,7 +2538,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -2580,7 +2580,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (3): ['agentic_core/L2_execution/enforcement/boundary_verifier.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/sandbox_envelope.py']
+prod (3): ['agentic_core/L2_execution/enforcement/boundary_verifier.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/sandbox_envelope_types.py']
 test (3): ['tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py', 'tests/sovereign_hardening/test_signature_boundary.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py']
@@ -2594,7 +2594,7 @@ layers_present = {
   Runtime: True,
     # tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py: calls ['enforcer.pre_execute', 'enforcer.post_execute']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: raises ['SignatureVerificationError', 'ValueError']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: raises ['SignatureVerificationError', 'ValueError']
     # ... +3 more predicates
   AST: True,
     # has_core=True (production code exists)
@@ -2603,9 +2603,9 @@ layers_present = {
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
     # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.check_write_permission', 'replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: calls ['hmac.new']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2627,7 +2627,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L2_execution/enforcement/budget_enforcer.py', 'agentic_core/L2_execution/enforcement/deterministic_loop_detector.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts.py', 'agentic_core/L2_execution/types/sandbox_envelope.py']
+prod (5): ['agentic_core/L2_execution/enforcement/budget_enforcer.py', 'agentic_core/L2_execution/enforcement/deterministic_loop_detector.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts_types.py', 'agentic_core/L2_execution/types/sandbox_envelope_types.py']
 test (8): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.py', 'tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py', 'tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py']
   ... +3 more
 tool (0): []
@@ -2651,9 +2651,9 @@ layers_present = {
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
     # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.check_write_permission', 'replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], defines ['sign']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: calls ['hmac.new']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: calls ['hmac.new']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -2691,19 +2691,19 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 layers_present = {
   Runtime: True,
     # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/ptc_tool_contracts_types.py: raises ['ToolContractViolation']
     # ... +17 more predicates
   AST: True,
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L4_state/types/replay_bundle_types.py: classes ['ReplayBundle']
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
@@ -2741,19 +2741,19 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 layers_present = {
   Runtime: True,
     # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/ptc_tool_contracts_types.py: raises ['ToolContractViolation']
     # ... +17 more predicates
   AST: True,
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L4_state/types/replay_bundle_types.py: classes ['ReplayBundle']
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
@@ -2791,19 +2791,19 @@ ci_test (5): ['tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contrac
 layers_present = {
   Runtime: True,
     # tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py: classes ['TestToolResultFromBudgetEnforcer']
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/ptc_tool_contracts.py: raises ['ToolContractViolation']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/ptc_tool_contracts_types.py: raises ['ToolContractViolation']
     # ... +17 more predicates
   AST: True,
     # agentic_core/L0_routing/scripts/execute_ssot.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk', 'inspect.getsource']
     # tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/execute_ssot.py: decorators ['dataclass']
     # ... +3 more predicates
   Replay: True,
-    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L4_state/types/replay_bundle_types.py: classes ['ReplayBundle']
   Signature: False,
   CI: True,
     # tests exist + CI runs pytest
@@ -2892,7 +2892,7 @@ ci_test (14): ['tests/agentic_core/L2_execution/enforcement/test_uwg_hard_block.
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: classes ['PytestEnforcementGuard']
     # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: defines ['validate_pytest_configuration']
     # ... +82 more predicates
@@ -2903,7 +2903,7 @@ layers_present = {
     # ... +49 more predicates
   Schema: True,
     # agentic_core/L5_safety/reasoning/RedSentinelAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/DynamicSealAgent.py: decorators ['dataclass']
     # ... +53 more predicates
   Replay: True,
@@ -2951,7 +2951,7 @@ ci_test (14): ['tests/agentic_core/L2_execution/enforcement/test_uwg_hard_block.
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: classes ['PytestEnforcementGuard']
     # agentic_core/L5_safety/enforcement/pytest_config_guardrail.py: defines ['validate_pytest_configuration']
     # ... +82 more predicates
@@ -2962,7 +2962,7 @@ layers_present = {
     # ... +49 more predicates
   Schema: True,
     # agentic_core/L5_safety/reasoning/RedSentinelAgent.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/DynamicSealAgent.py: decorators ['dataclass']
     # ... +53 more predicates
   Replay: True,
@@ -3010,7 +3010,7 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +24 more predicates
@@ -3023,7 +3023,7 @@ layers_present = {
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # ... +9 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -3064,7 +3064,7 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +24 more predicates
@@ -3077,7 +3077,7 @@ layers_present = {
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # ... +9 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -3118,7 +3118,7 @@ ci_test (4): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/support/l3_orchestration/NervousSystemAgent.py: defines ['validate_architecture']
     # ... +24 more predicates
@@ -3131,7 +3131,7 @@ layers_present = {
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # ... +9 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
@@ -3158,7 +3158,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism/__init__.py', 'agentic_core/interfaces/determinism.py', 'agentic_core/runtime/mathematical_determinism.py']
+prod (6): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism/__init__.py', 'agentic_core/interfaces/determinism.py', 'agentic_core/runtime/mathematical_determinism.py']
   ... +1 more
 test (8): ['tests/enforcement/test_folder_purity_invariants.py', 'tests/governance/test_determinism_surface.py', 'tests/governance/test_req111_no_uuid4_determinism.py', 'tests/governance/test_req114_no_wallclock_determinism.py', 'tests/guardian/test_guardian_escalation_determinism.py']
   ... +3 more
@@ -3205,7 +3205,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism/__init__.py', 'agentic_core/interfaces/determinism.py', 'agentic_core/runtime/mathematical_determinism.py']
+prod (6): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism/__init__.py', 'agentic_core/interfaces/determinism.py', 'agentic_core/runtime/mathematical_determinism.py']
   ... +1 more
 test (8): ['tests/enforcement/test_folder_purity_invariants.py', 'tests/governance/test_determinism_surface.py', 'tests/governance/test_req111_no_uuid4_determinism.py', 'tests/governance/test_req114_no_wallclock_determinism.py', 'tests/guardian/test_guardian_escalation_determinism.py']
   ... +3 more
@@ -3252,7 +3252,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L2_execution/types/commit_proof_invariant.py', 'agentic_core/prompt_governance/contracts/slot_contracts.py']
+prod (2): ['agentic_core/L2_execution/types/commit_proof_invariant_types.py', 'agentic_core/prompt_governance/contracts/slot_contracts.py']
 test (46): ['tests/agentic_core/L2_execution/enforcement/test_commit_proof_invariant.py', 'tests/agentic_core/L2_execution/tools/test_ptc_contract_enforcement.py', 'tests/agentic_core/L2_execution/types/test_instruction_packet.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope.py']
   ... +41 more
 tool (3): ['tools/evidence/_w_ast_fix_evidence.py', 'tools/evidence/qwen_migration_phase6_evidence_runner.py', 'tools/evidence/qwen_migration_phase7_replay_tamper_roundtrip_runner.py']
@@ -3267,7 +3267,7 @@ layers_present = {
   Runtime: True,
     # tools/evidence/qwen_migration_phase6_evidence_runner.py: defines ['validate_64hex']
     # tests/system_learning/test_activation_gate_w4f.py: raises ['ValueError']
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['CommitProofInvariant']
+    # agentic_core/L2_execution/types/commit_proof_invariant_types.py: classes ['CommitProofInvariant']
     # ... +11 more predicates
   AST: True,
     # tests/governance/test_phase9_apps_generation_routing_sovereignty.py: imports ['ast', 'inspect'], calls ['ast.parse', 'ast.walk']
@@ -3277,7 +3277,7 @@ layers_present = {
   Schema: True,
     # tools/evidence/qwen_migration_phase6_evidence_runner.py: decorators ['dataclass']
   Replay: True,
-    # agentic_core/L2_execution/types/commit_proof_invariant.py: classes ['DeterminismProofFailure']
+    # agentic_core/L2_execution/types/commit_proof_invariant_types.py: classes ['DeterminismProofFailure']
     # tests/sovereign_hardening/test_signature_boundary.py: defines ['replay_gateway']
     # tests/sovereign_hardening/test_signature_boundary.py: calls ['replay_gateway.check_write_permission', 'replay_gateway.simulate_write', 'replay_gateway.grant_write_permission', 'replay_gateway.revoke_write_permission']
   Signature: True,
@@ -3353,7 +3353,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -3401,7 +3401,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -3449,7 +3449,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -3497,7 +3497,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -3545,7 +3545,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -3593,7 +3593,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
+prod (11): ['agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/determinism.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_dispatcher.py']
   ... +6 more
 test (21): ['tests/agentic_core/L2_execution/healers/test_commit_with_retry.py', 'tests/agentic_core/L2_execution/healers/test_healing_outcome_wiring.py', 'tests/agentic_core/L2_execution/healers/test_healing_provider_adapters.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_full_integration.py', 'tests/agentic_core/L2_execution/healers/test_healing_tier_dispatcher_phase2_integration.py']
   ... +16 more
@@ -5679,7 +5679,7 @@ ci_test (46): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # scripts/tools/capture_ssot_cleanup_evidence.py: defines ['check_for_shell_injection']
     # agentic_core/L0_routing/types/guardian_contract_types.py: raises ['V15EnforcementError', 'ValueError']
     # ... +209 more predicates
@@ -5689,7 +5689,7 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # tests/guardian/test_orphan_agent_detection.py: decorators ['dataclass']
     # ... +100 more predicates
@@ -5735,7 +5735,7 @@ ci_test (46): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # scripts/tools/capture_ssot_cleanup_evidence.py: defines ['check_for_shell_injection']
     # agentic_core/L0_routing/types/guardian_contract_types.py: raises ['V15EnforcementError', 'ValueError']
     # ... +209 more predicates
@@ -5745,7 +5745,7 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # tests/guardian/test_orphan_agent_detection.py: decorators ['dataclass']
     # ... +100 more predicates
@@ -5791,7 +5791,7 @@ ci_test (46): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # scripts/tools/capture_ssot_cleanup_evidence.py: defines ['check_for_shell_injection']
     # agentic_core/L0_routing/types/guardian_contract_types.py: raises ['V15EnforcementError', 'ValueError']
     # ... +209 more predicates
@@ -5801,7 +5801,7 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # tests/guardian/test_orphan_agent_detection.py: decorators ['dataclass']
     # ... +100 more predicates
@@ -5847,7 +5847,7 @@ ci_test (46): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # scripts/tools/capture_ssot_cleanup_evidence.py: defines ['check_for_shell_injection']
     # agentic_core/L0_routing/types/guardian_contract_types.py: raises ['V15EnforcementError', 'ValueError']
     # ... +209 more predicates
@@ -5857,7 +5857,7 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # tests/guardian/test_orphan_agent_detection.py: decorators ['dataclass']
     # ... +100 more predicates
@@ -5903,7 +5903,7 @@ ci_test (46): ['tests/agentic_core/L0_routing/core/test_execute_ssot_enhancement
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/violation_event.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/violation_event_types.py: raises ['TypeError', 'ValueError']
     # scripts/tools/capture_ssot_cleanup_evidence.py: defines ['check_for_shell_injection']
     # agentic_core/L0_routing/types/guardian_contract_types.py: raises ['V15EnforcementError', 'ValueError']
     # ... +209 more predicates
@@ -5913,7 +5913,7 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +51 more predicates
   Schema: True,
-    # agentic_core/L4_state/types/violation_event.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/violation_event_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # tests/guardian/test_orphan_agent_detection.py: decorators ['dataclass']
     # ... +100 more predicates
@@ -5945,7 +5945,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py']
+prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +1 more
 test (6): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req087_modify_diff_signature_invalidation.py', 'tests/unit_min_deps/test_w5_handshake_state_machine.py']
   ... +1 more
@@ -5966,14 +5966,14 @@ layers_present = {
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -5996,7 +5996,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py']
+prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +1 more
 test (6): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req087_modify_diff_signature_invalidation.py', 'tests/unit_min_deps/test_w5_handshake_state_machine.py']
   ... +1 more
@@ -6017,14 +6017,14 @@ layers_present = {
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6047,7 +6047,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py']
+prod (6): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/engines/handshake_state_machine.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +1 more
 test (6): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req087_modify_diff_signature_invalidation.py', 'tests/unit_min_deps/test_w5_handshake_state_machine.py']
   ... +1 more
@@ -6068,14 +6068,14 @@ layers_present = {
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
     # agentic_core/L3_orchestration/engines/handshake_state_machine.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -6192,7 +6192,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L6_observability/engines/TieredVigilanceEmitter.py', 'agentic_core/L6_observability/types/vigilance_event_types.py']
+prod (4): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L6_observability/engines/TieredVigilanceEmitter.py', 'agentic_core/L6_observability/types/vigilance_event_types.py']
 test (2): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (1): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py']
@@ -6206,12 +6206,12 @@ layers_present = {
   Runtime: True,
     # tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py: classes ['TestArtifactSchemaContract']
     # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -6236,7 +6236,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L6_observability/engines/TieredVigilanceEmitter.py', 'agentic_core/L6_observability/types/vigilance_event_types.py']
+prod (4): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L6_observability/engines/TieredVigilanceEmitter.py', 'agentic_core/L6_observability/types/vigilance_event_types.py']
 test (2): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (1): ['tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py']
@@ -6250,12 +6250,12 @@ layers_present = {
   Runtime: True,
     # tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py: classes ['TestArtifactSchemaContract']
     # agentic_core/L6_observability/types/vigilance_event_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -6993,7 +6993,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7007,7 +7007,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7049,7 +7049,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7063,7 +7063,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7105,7 +7105,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7119,7 +7119,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7161,7 +7161,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7175,7 +7175,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7217,7 +7217,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7231,7 +7231,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7273,7 +7273,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace.py']
+prod (14): ['agentic_core/L2_execution/enforcement/SovereignLLMGateway.py', 'agentic_core/L2_execution/healers/healing_provider_adapters.py', 'agentic_core/L2_execution/healers/healing_tier_router.py', 'agentic_core/L2_execution/healers/healing_tier_types.py', 'agentic_core/L2_execution/types/execution_trace_types.py']
   ... +9 more
 test (25): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 'tests/agentic_core/L2_execution/test_ssot_mixin_stack.py', 'tests/agentic_core/L2_execution/test_ssot_mixins_phase2_7.py', 'tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py']
   ... +20 more
@@ -7287,7 +7287,7 @@ ci_test (11): ['tests/agentic_core/L2_execution/test_replay_guard_mixin.py', 'te
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # tests/governance/test_shadow_replay.py: classes ['TestShadowReplayValidator']
     # ... +28 more predicates
@@ -7520,7 +7520,7 @@ ci_test (26): ['tests/agentic_core/L0_routing/scripts/test_core_components.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/mixins/autonomy_mixin.py: raises ['NotImplementedError']
     # apps_shared/enforcement/GlobalcacheStrategy.py: raises ['ImportError']
     # ... +291 more predicates
@@ -7530,8 +7530,8 @@ layers_present = {
     # agentic_core/L5_safety/validators/anti_pattern_scanner_validator.py: classes ['AntiPatternScanner']
     # ... +55 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/context_session_manager.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py: decorators ['dataclass']
     # agentic_core/L4_state/memory/reasoning_memory.py: decorators ['dataclass']
     # ... +232 more predicates
   Replay: True,
@@ -7709,11 +7709,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -7764,11 +7764,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -7819,11 +7819,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -7874,11 +7874,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -7929,11 +7929,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -7984,11 +7984,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8039,11 +8039,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8094,11 +8094,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8149,11 +8149,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8204,11 +8204,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8259,11 +8259,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8314,11 +8314,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8369,11 +8369,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8424,11 +8424,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8479,11 +8479,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8534,11 +8534,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8589,11 +8589,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8644,11 +8644,11 @@ layers_present = {
   Schema: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: decorators ['dataclass']
     # agentic_core/L4_state/types/cycle_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +26 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # artifacts/consolidation/backups/apps_lic__engines__Hop2ResearchAgent.py: imports ['hashlib'], defines ['_calculate_signal_score']
     # ... +4 more predicates
@@ -8673,7 +8673,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -8696,7 +8696,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -8720,7 +8720,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -8743,7 +8743,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -8767,7 +8767,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -8790,7 +8790,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -8814,7 +8814,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -8837,7 +8837,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -8861,7 +8861,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -8884,7 +8884,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -9691,7 +9691,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -9700,12 +9700,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -9747,7 +9747,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -9756,12 +9756,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -9838,7 +9838,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (4): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/guardian/test_v15_p3_compliance.py', 'tests/guardian/test_v15_p6_compliance.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py']
@@ -9858,7 +9858,7 @@ layers_present = {
     # has_core=True (production code exists)
   Schema: True,
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -9881,7 +9881,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -9937,7 +9937,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -10203,7 +10203,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10262,7 +10262,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10321,7 +10321,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -10552,7 +10552,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -10565,14 +10565,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -10597,7 +10597,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -10610,14 +10610,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -10656,7 +10656,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -10706,7 +10706,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -10756,7 +10756,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -10884,7 +10884,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -10909,14 +10909,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -10941,7 +10941,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -10966,14 +10966,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -11225,7 +11225,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -11247,7 +11247,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -11282,7 +11282,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -11304,7 +11304,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -11339,7 +11339,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -11360,7 +11360,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -11393,7 +11393,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -11414,7 +11414,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -11447,7 +11447,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -11468,7 +11468,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -11678,7 +11678,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
+prod (5): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
 test (2): ['tests/guardian/test_v15_p2_compliance.py', 'tests/support/l6_observability/AutonomicMonitorAgent.py']
 tool (0): []
 ci_test (0): []
@@ -11695,7 +11695,7 @@ layers_present = {
     # tests/support/l6_observability/AutonomicMonitorAgent.py: defines ['check_health']
     # ... +5 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
@@ -11722,7 +11722,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
+prod (5): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
 test (2): ['tests/guardian/test_v15_p2_compliance.py', 'tests/support/l6_observability/AutonomicMonitorAgent.py']
 tool (0): []
 ci_test (0): []
@@ -11739,7 +11739,7 @@ layers_present = {
     # tests/support/l6_observability/AutonomicMonitorAgent.py: defines ['check_health']
     # ... +5 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
@@ -11766,7 +11766,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
+prod (5): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
 test (2): ['tests/guardian/test_v15_p2_compliance.py', 'tests/support/l6_observability/AutonomicMonitorAgent.py']
 tool (0): []
 ci_test (0): []
@@ -11783,7 +11783,7 @@ layers_present = {
     # tests/support/l6_observability/AutonomicMonitorAgent.py: defines ['check_health']
     # ... +5 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
@@ -11810,7 +11810,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
+prod (5): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L1_cognition/engines/capability_analyzer.py', 'agentic_core/L3_orchestration/engines/agent_gym_engine.py', 'system_learning/validators/dampening.py']
 test (2): ['tests/guardian/test_v15_p2_compliance.py', 'tests/support/l6_observability/AutonomicMonitorAgent.py']
 tool (0): []
 ci_test (0): []
@@ -11827,7 +11827,7 @@ layers_present = {
     # tests/support/l6_observability/AutonomicMonitorAgent.py: defines ['check_health']
     # ... +5 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
     # tests/support/l6_observability/AutonomicMonitorAgent.py: decorators ['dataclass']
@@ -11854,7 +11854,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -11867,14 +11867,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -11900,7 +11900,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -11913,14 +11913,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -11946,7 +11946,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -11959,14 +11959,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -11992,7 +11992,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -12005,14 +12005,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -12040,7 +12040,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
+prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
   ... +12 more
 test (54): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/agentic_core/L0_routing/scripts/test_security_compliance_minimal.py', 'tests/agentic_core/L0_routing/types/test_guardian_contract.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L5_safety/enforcement/test_three_tier_compliance.py']
   ... +49 more
@@ -12066,11 +12066,11 @@ layers_present = {
   Schema: True,
     # tests/guardian/test_mro_integrity.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/ReportLocationAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +7 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_l5_certification_signature_verification', 'test_negative_control_tampered_signature', 'inject_test_key_source']
     # ... +1 more predicates
@@ -12097,7 +12097,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
+prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
   ... +12 more
 test (54): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/agentic_core/L0_routing/scripts/test_security_compliance_minimal.py', 'tests/agentic_core/L0_routing/types/test_guardian_contract.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L5_safety/enforcement/test_three_tier_compliance.py']
   ... +49 more
@@ -12123,11 +12123,11 @@ layers_present = {
   Schema: True,
     # tests/guardian/test_mro_integrity.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/ReportLocationAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +7 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_l5_certification_signature_verification', 'test_negative_control_tampered_signature', 'inject_test_key_source']
     # ... +1 more predicates
@@ -12154,7 +12154,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
+prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
   ... +12 more
 test (54): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/agentic_core/L0_routing/scripts/test_security_compliance_minimal.py', 'tests/agentic_core/L0_routing/types/test_guardian_contract.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L5_safety/enforcement/test_three_tier_compliance.py']
   ... +49 more
@@ -12180,11 +12180,11 @@ layers_present = {
   Schema: True,
     # tests/guardian/test_mro_integrity.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/ReportLocationAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +7 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_l5_certification_signature_verification', 'test_negative_control_tampered_signature', 'inject_test_key_source']
     # ... +1 more predicates
@@ -12211,7 +12211,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
+prod (17): ['.github/workflows/guardian-tests.yml', '.github/workflows/layer-sovereignty-enforcement.yml', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py']
   ... +12 more
 test (54): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_file_classification_e2e.py', 'tests/agentic_core/L0_routing/scripts/test_security_compliance_minimal.py', 'tests/agentic_core/L0_routing/types/test_guardian_contract.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L5_safety/enforcement/test_three_tier_compliance.py']
   ... +49 more
@@ -12237,11 +12237,11 @@ layers_present = {
   Schema: True,
     # tests/guardian/test_mro_integrity.py: decorators ['dataclass']
     # agentic_core/L5_safety/reasoning/ReportLocationAgent.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +7 more predicates
   Replay: False,
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # tests/agentic_core/L2_execution/types/test_l5_certification.py: imports ['hashlib'], defines ['test_l5_certification_signature_verification', 'test_negative_control_tampered_signature', 'inject_test_key_source']
     # ... +1 more predicates
@@ -12313,7 +12313,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
   ... +3 more
 test (6): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.py', 'tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py', 'tests/governance/test_req378_384_forensic_determinism.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/guardian/test_v15_p2_compliance.py']
   ... +1 more
@@ -12335,7 +12335,7 @@ layers_present = {
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -12361,7 +12361,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
   ... +3 more
 test (6): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.py', 'tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py', 'tests/governance/test_req378_384_forensic_determinism.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/guardian/test_v15_p2_compliance.py']
   ... +1 more
@@ -12383,7 +12383,7 @@ layers_present = {
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -12409,7 +12409,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
   ... +3 more
 test (6): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.py', 'tests/agentic_core/L6_observability/types/test_tiered_vigilance_monitor.py', 'tests/governance/test_req378_384_forensic_determinism.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/guardian/test_v15_p2_compliance.py']
   ... +1 more
@@ -12431,7 +12431,7 @@ layers_present = {
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/determinism_types.py: imports ['hashlib'], defines ['signal_count']
@@ -12625,7 +12625,7 @@ layers_present = {
     # artifacts/consolidation/build_inventory.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/vllm_backpressure_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +37 more predicates
@@ -12636,7 +12636,7 @@ layers_present = {
     # ... +6 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
@@ -12684,7 +12684,7 @@ layers_present = {
     # artifacts/consolidation/build_inventory.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/vllm_backpressure_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +37 more predicates
@@ -12695,7 +12695,7 @@ layers_present = {
     # ... +6 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
@@ -12743,7 +12743,7 @@ layers_present = {
     # artifacts/consolidation/build_inventory.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +21 more predicates
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/vllm_backpressure_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +37 more predicates
@@ -12754,7 +12754,7 @@ layers_present = {
     # ... +6 more predicates
   Signature: True,
     # agentic_core/L0_routing/enforcement/traceability_contracts.py: imports ['hashlib'], defines ['build_error_signature']
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # ... +6 more predicates
   CI: True,
@@ -12778,7 +12778,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts.py']
+prod (4): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts_types.py']
 test (6): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.py', 'tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py', 'tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py', 'tests/governance/test_phase1_classification_kernel.py', 'tests/guardian/test_v15_p1_compliance.py']
   ... +1 more
 tool (0): []
@@ -12798,7 +12798,7 @@ layers_present = {
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -12823,7 +12823,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts.py']
+prod (4): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts_types.py']
 test (6): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.py', 'tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py', 'tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py', 'tests/governance/test_phase1_classification_kernel.py', 'tests/guardian/test_v15_p1_compliance.py']
   ... +1 more
 tool (0): []
@@ -12843,7 +12843,7 @@ layers_present = {
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -12868,7 +12868,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts.py']
+prod (4): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/engines/execution_gateway.py', 'agentic_core/L2_execution/types/ptc_tool_contracts_types.py']
 test (6): ['tests/agentic_core/L1_cognition/enforcement/test_budget_enforcer.py', 'tests/agentic_core/L2_execution/enforcement/test_budget_enforcer_crossplatform.py', 'tests/agentic_core/L2_execution/enforcement/test_ptc_tool_contracts.py', 'tests/governance/test_phase1_classification_kernel.py', 'tests/guardian/test_v15_p1_compliance.py']
   ... +1 more
 tool (0): []
@@ -12888,7 +12888,7 @@ layers_present = {
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -12913,7 +12913,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
+prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/unit_min_deps/test_replay_harness_state_protocol.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py']
@@ -12927,13 +12927,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -12959,7 +12959,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
+prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/unit_min_deps/test_replay_harness_state_protocol.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py']
@@ -12973,13 +12973,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -13005,7 +13005,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
+prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/unit_min_deps/test_replay_harness_state_protocol.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py']
@@ -13019,13 +13019,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -13051,7 +13051,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
+prod (5): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'agentic_core/L2_execution/types/mcp_tool_types.py', 'agentic_core/L2_execution/types/tool_enforcement_types.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/unit_min_deps/test_replay_harness_state_protocol.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_tool_enforcement_gate.py', 'tests/governance/test_req201_212_222_242_262_289_rag_law_rollback.py']
@@ -13065,13 +13065,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L2_execution/types/tool_enforcement_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +12 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
     # agentic_core/L2_execution/types/mcp_tool_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
@@ -13335,7 +13335,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +94 more predicates
@@ -13345,7 +13345,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +41 more predicates
@@ -13389,7 +13389,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +94 more predicates
@@ -13399,7 +13399,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +41 more predicates
@@ -13443,7 +13443,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +94 more predicates
@@ -13453,7 +13453,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +41 more predicates
@@ -13497,7 +13497,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +94 more predicates
@@ -13507,7 +13507,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +63 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +41 more predicates
@@ -13537,7 +13537,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
+prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
 test (4): ['tests/_quarantine/integration/agentic_core/L5_safety/validators/test_agent_integrity_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
 tool (0): []
 ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
@@ -13551,13 +13551,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: defines ['validate_structure', 'validate_agent']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -13583,7 +13583,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
+prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
 test (4): ['tests/_quarantine/integration/agentic_core/L5_safety/validators/test_agent_integrity_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
 tool (0): []
 ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
@@ -13597,13 +13597,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: defines ['validate_structure', 'validate_agent']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -13629,7 +13629,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
+prod (4): ['agentic_core/L5_safety/enforcement/ssot_guardrail.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py', 'agentic_core/L6_observability/utils/integrity_report_generator_util.py']
 test (4): ['tests/_quarantine/integration/agentic_core/L5_safety/validators/test_agent_integrity_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
 tool (0): []
 ci_test (3): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py', 'tests/agentic_core/L5_safety/enforcement/test_ssot_structure_validation.py', 'tests/agentic_core/L5_safety/validators/test_agent_integrity_report.py']
@@ -13643,13 +13643,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: defines ['validate_structure', 'validate_agent']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: classes ['SSOTStructureValidator']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: classes ['SSOTStructureValidator']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/ssot_structure_validation.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_guardrail.py: decorators ['dataclass']
     # ... +1 more predicates
   Replay: False,
@@ -13689,7 +13689,7 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -13699,7 +13699,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +40 more predicates
@@ -13743,7 +13743,7 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -13753,7 +13753,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +40 more predicates
@@ -13797,7 +13797,7 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -13807,7 +13807,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +40 more predicates
@@ -13851,7 +13851,7 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -13861,7 +13861,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +40 more predicates
@@ -13905,7 +13905,7 @@ ci_test (51): ['tests/agentic_core/L0_routing/scripts/test_canon_key_removal.py'
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -13915,7 +13915,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +61 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +40 more predicates
@@ -14035,7 +14035,7 @@ layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: raises ['ValueError']
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: defines ['validate_repository']
-    # agentic_core/L5_safety/enforcement/sovereign_healing_engine.py: raises ['NotImplementedError']
+    # agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py: raises ['NotImplementedError']
     # ... +93 more predicates
   AST: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: imports ['ast', 'inspect'], calls ['ast.get_source_segment', 'ast.parse', 'ast.walk']
@@ -14092,7 +14092,7 @@ layers_present = {
   Runtime: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: raises ['ValueError']
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: defines ['validate_repository']
-    # agentic_core/L5_safety/enforcement/sovereign_healing_engine.py: raises ['NotImplementedError']
+    # agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py: raises ['NotImplementedError']
     # ... +93 more predicates
   AST: True,
     # agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py: imports ['ast', 'inspect'], calls ['ast.get_source_segment', 'ast.parse', 'ast.walk']
@@ -14227,7 +14227,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/types/human_decision_artifact.py']
+prod (5): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/types/human_decision_artifact_types.py']
 test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req245_248_hil_ttl.py']
 tool (1): ['tools/evidence/w6_scan_runner.py']
 ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py']
@@ -14241,18 +14241,18 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/governance_types.py: raises ['TypeError', 'ValueError']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: raises ['ValueError']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: raises ['ValueError']
     # ... +5 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -14275,7 +14275,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/types/human_decision_artifact.py']
+prod (5): ['agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/types/human_decision_artifact_types.py']
 test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req245_248_hil_ttl.py']
 tool (1): ['tools/evidence/w6_scan_runner.py']
 ci_test (4): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py']
@@ -14289,18 +14289,18 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/governance_types.py: raises ['TypeError', 'ValueError']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: raises ['ValueError']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: raises ['ValueError']
     # ... +5 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -14611,7 +14611,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14634,7 +14634,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14658,7 +14658,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14681,7 +14681,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14705,7 +14705,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14728,7 +14728,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14752,7 +14752,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14775,7 +14775,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14799,7 +14799,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14822,7 +14822,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14846,7 +14846,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14869,7 +14869,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14893,7 +14893,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14916,7 +14916,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14940,7 +14940,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -14963,7 +14963,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -14987,7 +14987,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -15010,7 +15010,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -15034,7 +15034,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (8): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L3_orchestration/reasoning/OrchestrationHandshakeAgent.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +3 more
 test (9): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_evidence_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/agentic_core/L5_safety/validators/test_architecture_governor_agent.py', 'tests/contracts/test_structure_mirror_contract.py']
   ... +4 more
@@ -15057,7 +15057,7 @@ layers_present = {
   Schema: True,
     # agentic_core/L5_safety/reasoning/BoundaryTestingAgent.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -16784,7 +16784,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -16793,12 +16793,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -16840,7 +16840,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -16849,12 +16849,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -16896,7 +16896,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -16905,12 +16905,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -16952,7 +16952,7 @@ ci_test (7): ['tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py', 
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/execution_trace.py: raises ['ValueError']
+    # agentic_core/L2_execution/types/execution_trace_types.py: raises ['ValueError']
     # agentic_core/mixins/ssot_audit_trail_mixin.py: defines ['verify_ssot_audit_chain']
     # agentic_core/L2_execution/engines/execution_gateway.py: raises ['SignatureBoundaryError']
     # ... +10 more predicates
@@ -16961,12 +16961,12 @@ layers_present = {
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/governance/test_canonical_serializer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: decorators ['dataclass']
     # apps_shared/types/execution_orchestrator_types.py: decorators ['dataclass']
     # tests/agentic_core/L2_execution/test_ssot_audit_trail_mixin.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: True,
-    # agentic_core/L3_orchestration/types/execution_trace.py: calls ['replay_data.encode']
+    # agentic_core/L3_orchestration/types/execution_trace_types.py: calls ['replay_data.encode']
     # agentic_core/L2_execution/enforcement/SovereignLLMGateway.py: calls ['replay_envelope.to_canonical_json']
   Signature: True,
     # tests/unit_min_deps/test_w5_executiontrace_plan_hash.py: imports ['hashlib'], defines ['test_replay_key_computation', 'test_replay_key_changes_with_inputs', 'test_replay_key_deterministic']
@@ -17190,7 +17190,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
+prod (4): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
 test (4): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py', 'tests/guardian/test_v15_p3_compliance.py', 'tests/guardian/test_v15_p6_compliance.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L3_orchestration/reasoning/test_hil_policy_proposal_emission.py', 'tests/agentic_core/L3_orchestration/reasoning/test_semantic_clock_propagation.py']
@@ -17210,7 +17210,7 @@ layers_present = {
     # has_core=True (production code exists)
   Schema: True,
     # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: False,
   CI: True,
@@ -17233,7 +17233,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -17289,7 +17289,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -17345,7 +17345,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -17401,7 +17401,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts.py']
+prod (18): ['agentic_core/L0_routing/enforcement/boundary_contracts.py', 'agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/execute_ssot.py', 'agentic_core/L0_routing/types/boundary_types.py', 'agentic_core/L0_routing/types/determinism_contracts_types.py']
   ... +13 more
 test (41): ['tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L5_safety/enforcement/test_SurgicalHealingAdapter.py', 'tests/agentic_core/L5_safety/reasoning/test_lcd_migration_remediation.py', 'tests/agentic_core/L5_safety/validators/test_cst_canary.py']
   ... +36 more
@@ -17471,7 +17471,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17481,7 +17481,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17525,7 +17525,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17535,7 +17535,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17579,7 +17579,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17589,7 +17589,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17633,7 +17633,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17643,7 +17643,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17687,7 +17687,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17697,7 +17697,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17741,7 +17741,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17751,7 +17751,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17795,7 +17795,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17805,7 +17805,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17849,7 +17849,7 @@ ci_test (54): ['tests/agentic_core/L0_routing/enforcement/test_ssot_guardrail.py
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: raises ['ValueError', 'FileExistsError']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: raises ['ValueError', 'FileExistsError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: raises ['DiscoveryError']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: defines ['check_compliance_gate']
     # ... +93 more predicates
@@ -17859,7 +17859,7 @@ layers_present = {
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ... +62 more predicates
   Schema: True,
-    # agentic_core/L5_safety/enforcement/archival_gatekeeper.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py: decorators ['dataclass']
     # agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py: decorators ['dataclass']
     # agentic_core/L0_routing/scripts/full_agent_discovery.py: decorators ['dataclass']
     # ... +42 more predicates
@@ -17925,7 +17925,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -17984,7 +17984,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18043,7 +18043,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18102,7 +18102,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18161,7 +18161,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18220,7 +18220,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18279,7 +18279,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18338,7 +18338,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18397,7 +18397,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18456,7 +18456,7 @@ layers_present = {
   Signature: True,
     # tests/governance/test_phase3_detection_signal.py: imports ['hashlib'], defines ['test_detection_signal_different_inputs_different_hash', 'test_detection_signal_hash_is_deterministic', 'test_detection_signal_build_creates_valid_signal', 'test_emit_detection_signal_returns_valid_signal', 'test_negative_control_detection_signal_tamper', 'test_detection_signal_validation_enforces_ranges', 'test_detection_signal_requires_mission_id', 'test_phase3_detection_signal_comprehensive', 'test_w3_detection_signal_digest_printed', 'test_w3_detection_signal_digest_deterministic', 'test_detection_signal_model_exists', 'test_detection_signal_canonical_bytes_is_deterministic']
     # system_learning/engines/l4_version_store.py: imports ['hashlib'], defines ['_verify_package_hmac']
-    # agentic_core/L2_execution/types/sandbox_envelope.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L2_execution/types/sandbox_envelope_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
     # ... +9 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -18999,7 +18999,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19012,14 +19012,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19044,7 +19044,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19057,14 +19057,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19089,7 +19089,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19102,14 +19102,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19134,7 +19134,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19147,14 +19147,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19179,7 +19179,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19192,14 +19192,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19224,7 +19224,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19237,14 +19237,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19269,7 +19269,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19282,14 +19282,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19314,7 +19314,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19327,14 +19327,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19359,7 +19359,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py']
+prod (2): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py']
 test (3): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/governance/test_req346_347_tier3_authority.py']
@@ -19372,14 +19372,14 @@ ci_test (2): ['tests/governance/test_req345_349_freeze_subsystems.py', 'tests/go
 layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -19418,7 +19418,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19468,7 +19468,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19518,7 +19518,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19568,7 +19568,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19618,7 +19618,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19668,7 +19668,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19718,7 +19718,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19768,7 +19768,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -19818,7 +19818,7 @@ ci_test (5): ['tests/agentic_core/L3_orchestration/reasoning/test_route_decision
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py: raises ['PermissionError']
+    # agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py: raises ['PermissionError']
     # tests/contracts/_scanner.py: defines ['check_exemption']
     # apps_rg/tools/local_workflow_loader.py: raises ['ValueError']
     # ... +16 more predicates
@@ -20314,7 +20314,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -20339,14 +20339,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -20371,7 +20371,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -20396,14 +20396,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -20428,7 +20428,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -20453,14 +20453,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -20485,7 +20485,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -20510,14 +20510,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -20542,7 +20542,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (28): ['agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter.py']
+prod (28): ['agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/utils/complexity_visitor_util.py', 'agentic_core/L2_execution/reasoning/StructuredEngineAgent.py', 'agentic_core/L2_execution/types/vllm_gateway_adapter_types.py']
   ... +23 more
 test (27): ['tests/_quarantine/integration/agentic_core/core_dashboard/test_arch_guard.py', 'tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py', 'tests/agentic_core/L0_routing/enforcement/test_registry_hard_fail.py', 'tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py', 'tests/agentic_core/test_phase7_end_to_end_gateway_tool_isolation.py']
   ... +22 more
@@ -20567,14 +20567,14 @@ layers_present = {
     # ... +21 more predicates
   Schema: True,
     # agentic_core/config/core/gateway_config.py: decorators ['dataclass']
-    # agentic_core/L2_execution/types/vllm_gateway_adapter.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L2_execution/types/vllm_gateway_adapter_types.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +13 more predicates
   Replay: True,
     # agentic_core/L4_state/enforcement/phase_lock_store.py: calls ['replay_data.encode']
     # tests/governance/test_req375_phase_lock_persistence.py: calls ['replay_data.encode']
   Signature: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: imports ['hashlib'], defines ['sign']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/types/guardian_contract_types.py: imports ['hashlib'], defines ['sign']
     # agentic_core/L0_routing/utils/complexity_visitor_util.py: imports ['hashlib'], defines ['extract_method_signatures']
     # ... +4 more predicates
@@ -21389,7 +21389,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21411,7 +21411,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21446,7 +21446,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21468,7 +21468,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21503,7 +21503,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21525,7 +21525,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21560,7 +21560,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21582,7 +21582,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21617,7 +21617,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21639,7 +21639,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21674,7 +21674,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21696,7 +21696,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21731,7 +21731,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21753,7 +21753,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21788,7 +21788,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
+prod (22): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L2_execution/enforcement/boundary_verifier.py']
   ... +17 more
 test (19): ['tests/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py', 'tests/agentic_core/L2_execution/types/test_l5_certification.py', 'tests/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py', 'tests/agentic_core/conftest.py', 'tests/agentic_core/test_sovereignty_proof_suite.py']
   ... +14 more
@@ -21810,7 +21810,7 @@ layers_present = {
     # tests/unit_min_deps/test_replay_harness_core_determinism.py: imports ['ast'], calls ['ast.parse']
     # tests/agentic_core/test_sovereignty_proof_suite.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # apps_shared/utils/security_config_util.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # ... +3 more predicates
@@ -21845,7 +21845,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -21866,7 +21866,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -21899,7 +21899,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -21920,7 +21920,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -21953,7 +21953,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -21974,7 +21974,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22007,7 +22007,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22028,7 +22028,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22061,7 +22061,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22082,7 +22082,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22115,7 +22115,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22136,7 +22136,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22169,7 +22169,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22190,7 +22190,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22223,7 +22223,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22244,7 +22244,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22277,7 +22277,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22298,7 +22298,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -22331,7 +22331,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
+prod (6): ['agentic_core/L0_routing/enforcement/crypto_trust_contracts.py', 'agentic_core/L0_routing/types/crypto_trust_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/L0_routing/types/guardian_contract_types.py', 'agentic_core/security/side_effect_guard.py']
   ... +1 more
 test (4): ['tests/governance/test_phase8_signature_boundary.py', 'tests/governance/test_req188_189_398_399_403_404_407_enclave_replay.py', 'tests/guardian/test_v15_p5_compliance.py', 'tests/unit_min_deps/test_replay_harness_crypto_clock.py']
 tool (0): []
@@ -22352,7 +22352,7 @@ layers_present = {
     # tests/governance/test_phase8_signature_boundary.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/crypto_trust_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/guardian_contract.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
     # agentic_core/L0_routing/types/guardian_contract_types.py: decorators ['dataclass']
   Replay: True,
     # agentic_core/L0_routing/enforcement/crypto_trust_contracts.py: classes ['ReplayGuardStore']
@@ -23071,7 +23071,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L1_cognition/validators/consensus_validator.py', 'agentic_core/L2_execution/types/llm_replay_types.py', 'agentic_core/L2_execution/types/vllm_replay_validator.py', 'artifacts/dedup/sprawl_gate.py']
+prod (4): ['agentic_core/L1_cognition/validators/consensus_validator.py', 'agentic_core/L2_execution/types/llm_replay_types.py', 'agentic_core/L2_execution/types/vllm_replay_validator_types.py', 'artifacts/dedup/sprawl_gate.py']
 test (1): ['tests/agentic_core/L3_orchestration/reasoning/test_token_budget_enforcement.py']
 tool (2): ['tools/evidence/phase01_determinism_util_evidence_runner.py', 'tools/evidence/qwen_migration_phase1_evidence_runner.py']
 ci_test (1): ['tests/agentic_core/L3_orchestration/reasoning/test_token_budget_enforcement.py']
@@ -23083,8 +23083,8 @@ ci_test (1): ['tests/agentic_core/L3_orchestration/reasoning/test_token_budget_e
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L2_execution/types/vllm_replay_validator.py: classes ['VLLMReplayValidator']
-    # agentic_core/L2_execution/types/vllm_replay_validator.py: defines ['validate_and_report', 'verify']
+    # agentic_core/L2_execution/types/vllm_replay_validator_types.py: classes ['VLLMReplayValidator']
+    # agentic_core/L2_execution/types/vllm_replay_validator_types.py: defines ['validate_and_report', 'verify']
     # agentic_core/L2_execution/types/llm_replay_types.py: raises ['NotImplementedError', 'ValueError']
     # ... +3 more predicates
   AST: True,
@@ -23441,7 +23441,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
+prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
   ... +4 more
 test (7): ['tests/governance/conftest.py', 'tests/governance/test_embedding_and_routing_bypass_elimination.py', 'tests/governance/test_phase10_embedding_non_mutation.py', 'tests/governance/test_phase7_embedding_sovereignty.py', 'tests/governance/test_phase8_signature_boundary.py']
   ... +2 more
@@ -23493,7 +23493,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
+prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
   ... +4 more
 test (7): ['tests/governance/conftest.py', 'tests/governance/test_embedding_and_routing_bypass_elimination.py', 'tests/governance/test_phase10_embedding_non_mutation.py', 'tests/governance/test_phase7_embedding_sovereignty.py', 'tests/governance/test_phase8_signature_boundary.py']
   ... +2 more
@@ -23545,7 +23545,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
+prod (9): ['agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py', 'agentic_core/L0_routing/types/guardian_registry_types.py', 'agentic_core/L2_execution/enforcement/runtime_interceptor.py', 'agentic_core/embeddings/embedding_factory.py', 'system_learning/engines/embedding_service_factory.py']
   ... +4 more
 test (7): ['tests/governance/conftest.py', 'tests/governance/test_embedding_and_routing_bypass_elimination.py', 'tests/governance/test_phase10_embedding_non_mutation.py', 'tests/governance/test_phase7_embedding_sovereignty.py', 'tests/governance/test_phase8_signature_boundary.py']
   ... +2 more
@@ -23639,7 +23639,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -23652,14 +23652,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -23685,7 +23685,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -23698,14 +23698,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -23731,7 +23731,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -23744,14 +23744,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -23777,7 +23777,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
+prod (5): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/enforcement/citation_enforcement.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L5_safety/enforcement/rag_guardrail.py']
 test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/prompt_governance/test_w_ast_fix_negative_control.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py']
   ... +2 more
 tool (0): []
@@ -23790,14 +23790,14 @@ ci_test (6): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
     # ... +11 more predicates
   AST: True,
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -23823,7 +23823,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/scripts/chunk_type.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/types/retrieval_boundary_snapshot.py']
+prod (4): ['agentic_core/L0_routing/enforcement/traceability_contracts.py', 'agentic_core/L0_routing/scripts/chunk_type.py', 'agentic_core/L0_routing/types/traceability_types.py', 'agentic_core/L4_state/types/retrieval_boundary_snapshot_types.py']
 test (4): ['tests/_quarantine/integration/core_dir/test_meta_learning_full_integration.py', 'tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py', 'tests/guardian/test_v15_p4_compliance.py']
 tool (0): []
 ci_test (2): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase6_retrieval_snapshot.py']
@@ -23837,13 +23837,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/traceability_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/traceability_types.py: defines ['validate_trace_id']
-    # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/retrieval_boundary_snapshot_types.py: raises ['TypeError', 'ValueError']
     # ... +3 more predicates
   AST: True,
     # agentic_core/L0_routing/scripts/chunk_type.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/scripts/chunk_type.py: decorators ['dataclass']
-    # agentic_core/L4_state/types/retrieval_boundary_snapshot.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/retrieval_boundary_snapshot_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L0_routing/types/traceability_types.py: imports ['hashlib'], defines ['compute_error_signature_hash']
@@ -23908,7 +23908,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (9): ['agentic_core/L0_routing/utils/add_test_coverage_util.py', 'agentic_core/L2_execution/types/token_enforcement_types.py', 'agentic_core/L3_orchestration/engines/context_curator_engine.py', 'agentic_core/L5_safety/types/heal_llm_seam.py', 'agentic_core/config/core/injection_layer_config.py']
+prod (9): ['agentic_core/L0_routing/utils/add_test_coverage_util.py', 'agentic_core/L2_execution/types/token_enforcement_types.py', 'agentic_core/L3_orchestration/engines/context_curator_engine.py', 'agentic_core/L5_safety/types/heal_llm_seam_types.py', 'agentic_core/config/core/injection_layer_config.py']
   ... +4 more
 test (2): ['tests/agentic_core/L3_orchestration/engines/test_context_curator_engine.py', 'tests/support/l1_cognition/ContextCuratorAgent.py']
 tool (0): []
@@ -24091,7 +24091,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (3): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
+prod (3): ['agentic_core/L0_routing/types/routing_artifact_types.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py']
 test (3): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.py', 'tests/guardian/test_v15_p1_compliance.py', 'tests/unit/L4_state/test_telemetry_recorder.py']
 tool (0): []
 ci_test (1): ['tests/agentic_core/L4_state/enforcement/test_telemetry_recorder.py']
@@ -24105,13 +24105,13 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: raises ['TypeError', 'ValueError']
     # tests/unit/L4_state/test_telemetry_recorder.py: raises ['RuntimeError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
     # ... +6 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/routing_artifact_types.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']
@@ -24136,7 +24136,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py']
+prod (6): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +1 more
 test (6): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req245_248_hil_ttl.py', 'tests/guardian/test_v15_p3_compliance.py']
   ... +1 more
@@ -24152,18 +24152,18 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/governance_types.py: raises ['TypeError', 'ValueError']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: raises ['ValueError']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: raises ['ValueError']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -24186,7 +24186,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact.py', 'agentic_core/L5_safety/enforcement/human_review_queue.py']
+prod (6): ['agentic_core/L0_routing/enforcement/governance_contracts.py', 'agentic_core/L0_routing/types/governance_types.py', 'agentic_core/L3_orchestration/engines/deterministic_orchestrator.py', 'agentic_core/L3_orchestration/types/human_decision_artifact_types.py', 'agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py']
   ... +1 more
 test (6): ['tests/agentic_core/L5_safety/types/test_human_decision_artifact.py', 'tests/architecture/test_invariants.py', 'tests/governance/test_req085_086_hil.py', 'tests/governance/test_req245_248_hil_ttl.py', 'tests/guardian/test_v15_p3_compliance.py']
   ... +1 more
@@ -24202,18 +24202,18 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/governance_types.py: raises ['TypeError', 'ValueError']
     # tests/architecture/test_invariants.py: classes ['TestProposalOnlyInvariant', 'TestUnregisteredAgentInvariant', 'TestTierChokeInvariant', 'TestC0Invariant', 'TestModifyDiffInvariant']
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: raises ['ValueError']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: raises ['ValueError']
     # ... +7 more predicates
   AST: True,
     # tools/evidence/w6_scan_runner.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L3_orchestration/types/human_decision_artifact.py: decorators ['dataclass']
-    # agentic_core/L5_safety/enforcement/human_review_queue.py: decorators ['dataclass']
+    # agentic_core/L3_orchestration/types/human_decision_artifact_types.py: decorators ['dataclass']
+    # agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # agentic_core/L3_orchestration/engines/deterministic_orchestrator.py: imports ['hashlib'], defines ['_compute_tool_key_hash']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
-    # agentic_core/L5_safety/types/human_decision_artifact.py: imports ['hashlib', 'hmac'], defines ['sign']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], calls ['hmac.new', 'hmac.compare_digest']
+    # agentic_core/L5_safety/types/human_decision_artifact_types.py: imports ['hashlib', 'hmac'], defines ['sign']
     # ... +1 more predicates
   CI: True,
     # tests exist + CI runs pytest
@@ -24236,7 +24236,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (6): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/utils/rag_enhancement_util.py']
+prod (6): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/utils/rag_enhancement_util.py']
   ... +1 more
 test (1): ['tests/guardian/test_v15_p2_compliance.py']
 tool (1): ['ops_scripts/general/architecture_gap_analyzer.py']
@@ -24251,10 +24251,10 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/determinism_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/determinism_types.py: defines ['verify_hash', 'validate_semantic_clock', 'verify']
-    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
     # ... +3 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
@@ -24284,7 +24284,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
   ... +3 more
 test (1): ['tests/guardian/test_v15_p2_compliance.py']
 tool (1): ['ops_scripts/general/architecture_gap_analyzer.py']
@@ -24299,10 +24299,10 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/determinism_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/determinism_types.py: defines ['verify_hash', 'validate_semantic_clock', 'verify']
-    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
     # ... +3 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
@@ -24369,7 +24369,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
   ... +3 more
 test (1): ['tests/guardian/test_v15_p2_compliance.py']
 tool (1): ['ops_scripts/general/architecture_gap_analyzer.py']
@@ -24384,10 +24384,10 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/determinism_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/determinism_types.py: defines ['verify_hash', 'validate_semantic_clock', 'verify']
-    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
     # ... +3 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
@@ -24417,7 +24417,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (8): ['agentic_core/L0_routing/types/determinism_contracts.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
+prod (8): ['agentic_core/L0_routing/types/determinism_contracts_types.py', 'agentic_core/L0_routing/types/determinism_types.py', 'agentic_core/L0_routing/types/v15_p2_contracts_types.py', 'agentic_core/L1_cognition/engines/episodic_manager.py', 'agentic_core/L4_state/engines/memory_collision_detector.py']
   ... +3 more
 test (1): ['tests/guardian/test_v15_p2_compliance.py']
 tool (1): ['ops_scripts/general/architecture_gap_analyzer.py']
@@ -24432,10 +24432,10 @@ layers_present = {
   Runtime: True,
     # agentic_core/L0_routing/types/determinism_types.py: raises ['TypeError', 'ValueError']
     # agentic_core/L0_routing/types/determinism_types.py: defines ['verify_hash', 'validate_semantic_clock', 'verify']
-    # agentic_core/L0_routing/types/determinism_contracts.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: raises ['TypeError', 'ForbiddenInputError', 'ValueError']
     # ... +3 more predicates
   AST: True,
-    # agentic_core/L0_routing/types/determinism_contracts.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
+    # agentic_core/L0_routing/types/determinism_contracts_types.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # ops_scripts/general/architecture_gap_analyzer.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
     # agentic_core/L0_routing/types/determinism_types.py: decorators ['dataclass']
@@ -24465,7 +24465,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (4): ['agentic_core/L4_state/enforcement/replay_bundle_store.py', 'agentic_core/L4_state/engines/replay_bundle_emitter.py', 'agentic_core/L4_state/types/citation_bundle.py', 'agentic_core/L4_state/types/replay_bundle.py']
+prod (4): ['agentic_core/L4_state/enforcement/replay_bundle_store.py', 'agentic_core/L4_state/engines/replay_bundle_emitter.py', 'agentic_core/L4_state/types/citation_bundle_types.py', 'agentic_core/L4_state/types/replay_bundle_types.py']
 test (8): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citation_custody.py', 'tests/agentic_core/test_phase8_citation_bundle_model.py', 'tests/agentic_core/test_phase8_citation_enforcement.py', 'tests/agentic_core/test_phase8_end_to_end_gateway_citations.py', 'tests/agentic_core/test_phase9_end_to_end_gateway_replay.py']
   ... +3 more
 tool (0): []
@@ -24478,19 +24478,19 @@ ci_test (7): ['tests/agentic_core/L5_safety/enforcement/test_req_ragx006_citatio
 ```
 layers_present = {
   Runtime: True,
-    # agentic_core/L4_state/types/citation_bundle.py: raises ['TypeError', 'ValueError']
-    # agentic_core/L4_state/types/replay_bundle.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/citation_bundle_types.py: raises ['TypeError', 'ValueError']
+    # agentic_core/L4_state/types/replay_bundle_types.py: raises ['TypeError', 'ValueError']
     # tests/agentic_core/test_phase8_citation_enforcement.py: calls ['enforce_citations_for_retrieval']
     # ... +3 more predicates
   AST: True,
     # tests/agentic_core/test_phase9_end_to_end_gateway_replay.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
     # tests/agentic_core/test_phase8_end_to_end_gateway_citations.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L4_state/types/citation_bundle.py: decorators ['dataclass']
-    # agentic_core/L4_state/types/replay_bundle.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/citation_bundle_types.py: decorators ['dataclass']
+    # agentic_core/L4_state/types/replay_bundle_types.py: decorators ['dataclass']
     # agentic_core/L4_state/enforcement/replay_bundle_store.py: decorators ['dataclass']
   Replay: True,
-    # agentic_core/L4_state/types/replay_bundle.py: classes ['ReplayBundle']
+    # agentic_core/L4_state/types/replay_bundle_types.py: classes ['ReplayBundle']
     # agentic_core/L4_state/enforcement/replay_bundle_store.py: classes ['ReplayVerificationError', 'ReplayBundleStore', 'ReplayVerifier']
   Signature: False,
   CI: True,
@@ -24514,7 +24514,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (7): ['agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/run_guardian_cross_layer_mutation.py', 'agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py']
+prod (7): ['agentic_core/L0_routing/enforcement/execution_gateway.py', 'agentic_core/L0_routing/scripts/run_guardian_cross_layer_mutation.py', 'agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L4_state/enforcement/telemetry_recorder.py', 'agentic_core/L4_state/engines/ghost_mutation_detector.py']
   ... +2 more
 test (11): ['tests/agentic_core/L0_routing/enforcement/test_re_clear_loop.py', 'tests/agentic_core/test_sovereignty_proof_suite.py', 'tests/governance/test_phase13_structural_non_mutation.py', 'tests/governance/test_seam_dynamic_enforcement.py', 'tests/governance/test_upward_import_enforcement.py']
   ... +6 more
@@ -24540,7 +24540,7 @@ layers_present = {
   Schema: True,
     # tests/governance/test_seam_dynamic_enforcement.py: decorators ['dataclass']
     # tests/governance/test_upward_import_enforcement.py: decorators ['dataclass']
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
     # ... +2 more predicates
   Replay: False,
   Signature: True,
@@ -24757,7 +24757,7 @@ layers_present = {
 
 #### HIT_FILES
 ```
-prod (3): ['agentic_core/L0_routing/types/routing_contracts.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'system_learning/types/meta_learning_types.py']
+prod (3): ['agentic_core/L0_routing/types/routing_contracts_types.py', 'agentic_core/L0_routing/types/v15_contracts_types.py', 'system_learning/types/meta_learning_types.py']
 test (2): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.py', 'tests/guardian/test_v15_p1_compliance.py']
 tool (0): []
 ci_test (1): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.py']
@@ -24770,13 +24770,13 @@ ci_test (1): ['tests/agentic_core/L7_meta_learning/test_meta_learning_contract.p
 layers_present = {
   Runtime: True,
     # system_learning/types/meta_learning_types.py: raises ['RuntimeError', 'ValueError']
-    # agentic_core/L0_routing/types/routing_contracts.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
-    # agentic_core/L0_routing/types/routing_contracts.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: classes ['PolicyConfigGuard', 'GuardrailGuard', 'PipeOrderEnforcer']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: raises ['KeyError', 'RuntimeError', 'PipeOrderViolation', 'ResultEmissionViolation']
     # ... +5 more predicates
   AST: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['ast'], calls ['ast.parse', 'ast.walk']
   Schema: True,
-    # agentic_core/L0_routing/types/routing_contracts.py: decorators ['dataclass']
+    # agentic_core/L0_routing/types/routing_contracts_types.py: decorators ['dataclass']
   Replay: False,
   Signature: True,
     # tests/guardian/test_v15_p1_compliance.py: imports ['hashlib'], defines ['test_v15_enforced_missing_key_raises']

@@ -19,10 +19,10 @@ import pytest
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 # ---------------------------------------------------------------------------
 # Fixed test vectors
@@ -41,7 +41,7 @@ _ENVELOPE_V = SandboxEnvelope(
 
 def _make_unsigned_envelope(**overrides) -> SandboxEnvelope:
     """Construct a SandboxEnvelope with no signature, bypassing __post_init__."""
-    from agentic_core.L2_execution.types.sandbox_envelope import ToolBudget
+    from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
     e = SandboxEnvelope.__new__(SandboxEnvelope)
     object.__setattr__(e, "envelope_id", overrides.get("envelope_id", "env-0001"))
@@ -234,7 +234,7 @@ def test_envelope_is_immutable():
 
 def test_boundary_verifier_rejects_unsigned_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket as _IP
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
 
     p = _IP.__new__(_IP)
     object.__setattr__(p, "instruction_id", "x")
@@ -267,7 +267,7 @@ def test_boundary_verifier_accepts_signed_envelope():
 
 def test_boundary_verifier_accepts_signed_packet():
     verifier = L2BoundaryVerifier(secret=_SECRET)
-    from agentic_core.L2_execution.types.instruction_packet import InstructionPacket as _IP
+    from agentic_core.L2_execution.types.instruction_packet_types import InstructionPacket as _IP
 
     p = _IP.__new__(_IP)
     object.__setattr__(p, "instruction_id", "instr-0001")

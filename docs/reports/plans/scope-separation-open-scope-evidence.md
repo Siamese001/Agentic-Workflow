@@ -17,7 +17,7 @@ aa0485cc74f38cc52fa2cfd8d6195b99ac9d8474
 ## FILES_CHANGED_CODE
 
 .github/workflows/scope-separation-enforcement.yml
-agentic_core/enforcement/import_boundary_check.py
+agentic_core/enforcement/import_boundary_check_enforcer.py
 agentic_core/interfaces/determinism_types.py
 agentic_core/runtime/boundary_validator.py
 docs/reports/plans/scope-separation-gap-analysis-7ac5b4.md
@@ -71,7 +71,7 @@ EXIT CODE: 0 (clean - all 7 files redirected to agentic_core.interfaces.determin
 
 ## Python Syntax Validation - New Files
 
-$ python -m py_compile agentic_core/interfaces/determinism_types.py agentic_core/enforcement/import_boundary_check.py agentic_core/runtime/boundary_validator.py system_learning/config/import_policy.py system_learning/enforcement/boundary_guard.py system_learning/validators/readonly_access.py system_learning/runtime/isolation_monitor.py
+$ python -m py_compile agentic_core/interfaces/determinism_types.py agentic_core/enforcement/import_boundary_check_enforcer.py agentic_core/runtime/boundary_validator.py system_learning/config/import_policy.py system_learning/enforcement/boundary_guard.py system_learning/validators/readonly_access.py system_learning/runtime/isolation_monitor.py
 OK: all compile
 
 ## Python Syntax Validation - Edited Files

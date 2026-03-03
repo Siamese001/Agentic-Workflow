@@ -10,7 +10,7 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """Sovereign Action Plane Implementation.

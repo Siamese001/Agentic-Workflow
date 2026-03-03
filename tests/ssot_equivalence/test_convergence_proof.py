@@ -33,12 +33,12 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.types.guardian_registry import get_guardian_specs
+from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_specs
 from agentic_core.L2_execution.scripts.remediation_dispatcher import (
     EXPECTED_PHASE_NAMES,
     PHASE_CHECK_ID_PREFIXES,
 )
-from agentic_core.L2_execution.types.healer_registry import HEALER_REGISTRY
+from agentic_core.L2_execution.types.healer_registry_types import HEALER_REGISTRY
 
 pytestmark = pytest.mark.ssot_equivalence
 

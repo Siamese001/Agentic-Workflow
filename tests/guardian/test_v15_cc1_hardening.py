@@ -62,7 +62,7 @@ class TestGatewayViolationListReset:
     def test_pipe_violations_reset_between_executions(self):
         """_pipe_violations must be empty after a clean second execution,
         even if the first execution recorded violations."""
-        from agentic_core.L0_routing.types.routing_contracts import PipeOrderEnforcer
+        from agentic_core.L0_routing.types.routing_contracts_types import PipeOrderEnforcer
 
         gw = V15ExecutionGateway()
 
@@ -83,7 +83,7 @@ class TestGatewayViolationListReset:
     @patch.dict(os.environ, {"V15_ENFORCEMENT": "log"})
     def test_policy_violations_reset_between_executions(self):
         """_policy_violations must be empty after a clean second execution."""
-        from agentic_core.L0_routing.types.routing_contracts import PolicyConfigGuard
+        from agentic_core.L0_routing.types.routing_contracts_types import PolicyConfigGuard
 
         gw = V15ExecutionGateway()
 

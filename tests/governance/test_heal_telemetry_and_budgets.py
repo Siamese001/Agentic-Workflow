@@ -18,7 +18,7 @@ class TestHealTelemetrySchema:
 
     def test_telemetry_record_schema(self):
         """HealTelemetryRecord has all required fields."""
-        from agentic_core.L5_safety.types.heal_llm_seam import HealTelemetryRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
 
         record = HealTelemetryRecord(
             run_kind="heal_repository",
@@ -50,7 +50,7 @@ class TestHealTelemetrySchema:
 
     def test_telemetry_hash_deterministic(self):
         """Telemetry hash is deterministic for same inputs."""
-        from agentic_core.L5_safety.types.heal_llm_seam import HealTelemetryRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
 
         record1 = HealTelemetryRecord(
             run_kind="heal",
@@ -83,7 +83,7 @@ class TestHealTelemetrySchema:
 
     def test_telemetry_json_serializable(self):
         """Telemetry record can be serialized to deterministic JSON."""
-        from agentic_core.L5_safety.types.heal_llm_seam import HealTelemetryRecord
+        from agentic_core.L5_safety.types.heal_llm_seam_types import HealTelemetryRecord
 
         record = HealTelemetryRecord(
             run_kind="heal_repository",
@@ -108,7 +108,7 @@ class TestTelemetryEmission:
 
     def test_emit_creates_artifact(self, tmp_path):
         """emit_heal_telemetry creates artifact file."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealTelemetryRecord,
             emit_heal_telemetry,
         )
@@ -138,7 +138,7 @@ class TestTelemetryEmission:
 
     def test_emit_idempotent_same_content(self, tmp_path):
         """emit_heal_telemetry is idempotent for same content."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealTelemetryRecord,
             emit_heal_telemetry,
         )
@@ -164,7 +164,7 @@ class TestTelemetryEmission:
 
     def test_emit_fails_on_conflict(self, tmp_path):
         """emit_heal_telemetry fails if file exists with different content."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealTelemetryRecord,
             emit_heal_telemetry,
         )
@@ -208,7 +208,7 @@ class TestHealBudgetCaps:
 
     def test_budget_caps_from_env_defaults(self):
         """HealBudgetCaps loads defaults correctly."""
-        from agentic_core.L5_safety.types.heal_llm_seam import HealBudgetCaps
+        from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
 
         # Clear env vars for test
         with mock.patch.dict(os.environ, {}, clear=True):
@@ -223,7 +223,7 @@ class TestHealBudgetCaps:
 
     def test_budget_caps_from_env_custom(self):
         """HealBudgetCaps respects env var overrides."""
-        from agentic_core.L5_safety.types.heal_llm_seam import HealBudgetCaps
+        from agentic_core.L5_safety.types.heal_llm_seam_types import HealBudgetCaps
 
         env = {
             "HEAL_MAX_ESCALATIONS_PER_RUN": "3",
@@ -237,7 +237,7 @@ class TestHealBudgetCaps:
 
     def test_escalation_budget_enforcement(self):
         """Second escalation in one run fails closed."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             HealBudgetExceededError,
             increment_escalation_count,
@@ -261,7 +261,7 @@ class TestHealBudgetCaps:
 
     def test_high_tier_budget_enforcement(self):
         """HIGH-tier use beyond cap fails closed."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             HealBudgetExceededError,
             increment_escalation_count,
@@ -286,7 +286,7 @@ class TestHealBudgetCaps:
 
     def test_budget_counters_tracked(self):
         """Budget counters are tracked correctly."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             get_budget_counters,
             increment_escalation_count,
@@ -314,7 +314,7 @@ class TestHealBudgetCaps:
 
     def test_enable_llm_false_budgets_zero(self):
         """enable_llm=False => HIGH-tier budget is zero."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             HealBudgetExceededError,
             increment_escalation_count,
@@ -339,7 +339,7 @@ class TestBudgetAndSeamIntegration:
 
     def test_seam_guard_still_enforced_with_budgets(self):
         """Seam guard is still enforced even with budgets set."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             HealLlmRequest,
             HealSeamBypassError,
@@ -367,7 +367,7 @@ class TestBudgetAndSeamIntegration:
 
     def test_no_network_calls_in_budget_checks(self):
         """Budget checks make no network calls."""
-        from agentic_core.L5_safety.types.heal_llm_seam import (
+        from agentic_core.L5_safety.types.heal_llm_seam_types import (
             HealBudgetCaps,
             increment_escalation_count,
             reset_heal_budget_counters,

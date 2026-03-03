@@ -15,7 +15,7 @@ import time
 import pytest
 
 # from agentic_core.L5_safety.enforcement.safe_subprocess import safe_popen, safe_run  # TODO: Fix import
-from agentic_core.L5_safety.enforcement.process_guard import (
+from agentic_core.L5_safety.enforcement.process_guardrail import (
     BLOCKED_COMMANDS,
     ProcessGuard,
     SecurityViolation,

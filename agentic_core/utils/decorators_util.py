@@ -27,7 +27,7 @@ import traceback
 from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
-from agentic_core.L5_safety.types.heal_llm_seam import (
+from agentic_core.L5_safety.types.heal_llm_seam_types import (
     HealLlmRequest,
     PolicyDecisionRecord,
     guarded_heal_llm_call,

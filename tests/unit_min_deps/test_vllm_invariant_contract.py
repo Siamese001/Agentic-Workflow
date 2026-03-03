@@ -8,7 +8,7 @@ import json
 
 import pytest
 
-from agentic_core.L2_execution.types.vllm_invariant_contract import (
+from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
     InvariantId,
     InvariantSeverity,
     InvariantViolation,

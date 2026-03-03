@@ -158,7 +158,7 @@ python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy --val
 
 ```text
 2026-02-16 09:10:10,877 WARNING root Windows LongPathsEnabled is NOT active (Set to 1 in Registry) - proceeding in dry-run mode
-2026-02-16 09:10:10,984 ERROR agentic_core.L5_safety.enforcement.mutation_prohibition MUTATION_PROHIBITION DENY: MUTATION_PROHIBITED:layer=L0|op=shutil.mutate
+2026-02-16 09:10:10,984 ERROR agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer MUTATION_PROHIBITION DENY: MUTATION_PROHIBITED:layer=L0|op=shutil.mutate
 ...
 ```
 

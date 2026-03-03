@@ -26,7 +26,7 @@ class TestSafeSubprocessHandler:
 
     def test_safe_subprocess_handler_exists(self):
         """Safe subprocess handler should exist in enforcement/."""
-        handler_path = Path("agentic_core/L5_safety/enforcement/safe_subprocess_handler.py")
+        handler_path = Path("agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py")
         assert handler_path.exists(), "safe_subprocess_handler.py should exist"
 
     def test_subprocess_security_util_exists(self):

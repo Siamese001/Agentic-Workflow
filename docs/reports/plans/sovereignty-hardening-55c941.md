@@ -424,7 +424,7 @@ if __name__ == "__main__":
     sys.exit(main())
 ```
 
-### B7. `agentic_core/L5_safety/types/human_decision_artifact.py`
+### B7. `agentic_core/L5_safety/types/human_decision_artifact_types.py`
 Full replacement of previous skeleton — adds `original_plan_hash` binding and `l5_reclear_required` flag.
 
 ```python
@@ -515,7 +515,7 @@ class HumanDecisionArtifact:
             )
 ```
 
-### B8. `agentic_core/L2_execution/types/execution_trace.py` (revised)
+### B8. `agentic_core/L2_execution/types/execution_trace_types.py` (revised)
 Extended with `policy_hash`, `prev_hash`, `transcript_hash`, `replay_key`.
 
 ```python
@@ -693,7 +693,7 @@ class ExecutionTraceBuilder:
 
 Also add `self._egress_audit_log = HashChainAuditLog()` in `__init__`.
 
-### C2. `agentic_core/L2_execution/types/sandbox_envelope.py` — add `ToolBudget`
+### C2. `agentic_core/L2_execution/types/sandbox_envelope_types.py` — add `ToolBudget`
 
 ```diff
 +from dataclasses import dataclass as _dc
@@ -748,7 +748,7 @@ from __future__ import annotations
 import hashlib, io, resource, signal, time
 from contextlib import contextmanager
 from typing import Any, Callable
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 
 class BudgetExceeded(RuntimeError):
@@ -801,7 +801,7 @@ class BudgetEnforcer:
         return 0, buf.getvalue()
 ```
 
-### C4. `agentic_core/L5_safety/enforcement/human_review_queue.py` — MODIFY_DIFF enforcement
+### C4. `agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py` — MODIFY_DIFF enforcement
 
 ```diff
  class ReviewStatus(Enum):
@@ -828,7 +828,7 @@ class BudgetEnforcer:
 +        Spec [5]: MUST reference original_plan_hash; MUST set l5_reclear_required=True;
 +        prior plan signatures are STRICTLY INVALID after this call.
 +        """
-+        from agentic_core.L5_safety.types.human_decision_artifact import HumanDecisionArtifact
++        from agentic_core.L5_safety.types.human_decision_artifact_types import HumanDecisionArtifact
 +        with self._lock:
 +            req = self._pending_requests.get(request_id)
 +            if req is None:
@@ -1037,7 +1037,7 @@ def test_c0_result_does_not_affect_routing_hash():
 # tests/invariants/test_modify_diff_l5_reclear.py
 """Invariant: MODIFY_DIFF action sets l5_reclear_required=True and prior sig is invalid."""
 import pytest, hashlib
-from agentic_core.L5_safety.types.human_decision_artifact import (
+from agentic_core.L5_safety.types.human_decision_artifact_types import (
     HumanDecisionArtifact, HumanDecisionViolation
 )
 

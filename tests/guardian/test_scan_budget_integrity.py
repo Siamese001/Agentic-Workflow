@@ -36,7 +36,7 @@ pytestmark = pytest.mark.guardian
 # ---------------------------------------------------------------------------
 
 GOOD_GUARDIAN_SOURCE = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
     guard_scan_budget,
@@ -53,7 +53,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_RUNTIME_ERROR = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -68,7 +68,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_NO_BUDGET_HELPER = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -83,7 +83,7 @@ def scan(repo_root):
 """
 
 NON_SCANNING_GUARDIAN_SOURCE = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     CheckStatus,
 )
@@ -94,7 +94,7 @@ def run_guardian(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_VALUE_ERROR = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     MAX_FILES_PER_SCAN,
     MAX_FOLDER_DEPTH,
 )
@@ -109,7 +109,7 @@ def scan(repo_root):
 """
 
 BAD_GUARDIAN_RAISES_CUSTOM_EXCEPTION = """\
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     MAX_FILES_PER_SCAN,
 )
 

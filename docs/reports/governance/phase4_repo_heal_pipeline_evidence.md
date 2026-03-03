@@ -10,7 +10,7 @@ c577a6f29ded4fd821743eca37165fb51bd4419c
 $ git --no-pager show --name-only --oneline HEAD
 c577a6f29 healing: governed deterministic repo-heal pipeline + reporting
 agentic_core/L5_safety/enforcement/governance/agent_heal_audit.py
-agentic_core/L5_safety/types/heal_llm_seam.py
+agentic_core/L5_safety/types/heal_llm_seam_types.py
 agentic_core/base_agents/SovereignBaseAgent.py
 docs/reports/governance/agent_heal_phase4_report.md
 docs/reports/governance/phase4_repo_heal_pipeline_evidence.md

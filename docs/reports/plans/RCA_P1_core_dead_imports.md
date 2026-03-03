@@ -20,9 +20,9 @@ raises `ModuleNotFoundError` at runtime.
 |------|---------------|
 | `agentic_core/L5_safety/enforcement/audit_healing_strategy.py:14` | `L0_maintenance.P1_core.filesystem_mcp_client_1` |
 | `agentic_core/L5_safety/enforcement/git_kraken_healing_strategy.py:11` | `L0_maintenance.P1_core.gitkraken_mcp_client_1` |
-| `agentic_core/L5_safety/enforcement/sovereign_healing_engine.py:18` | `L0_maintenance.P1_core.filesystem_mcp_client_1` |
-| `agentic_core/L5_safety/enforcement/sovereign_healing_engine.py:19` | `L0_maintenance.P1_core.gitkraken_mcp_client_1` |
-| `agentic_core/L5_safety/enforcement/sovereign_healing_engine.py:20` | `L0_maintenance.P1_core.transaction_manager` |
+| `agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py:18` | `L0_maintenance.P1_core.filesystem_mcp_client_1` |
+| `agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py:19` | `L0_maintenance.P1_core.gitkraken_mcp_client_1` |
+| `agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py:20` | `L0_maintenance.P1_core.transaction_manager` |
 | `agentic_core/L5_safety/enforcement/vector_healing_strategy.py:25` | `L0_maintenance.P1_core.filesystem_mcp_client_1` |
 | `agentic_core/knowledge/healing/wiki_healer.py:12` | `L0_maintenance.P1_core.filesystem_mcp_client_1` |
 | `agentic_core/runtime/utils/main_util.py:12` | `runtime.P1_core.runtime_bootstrapper` |

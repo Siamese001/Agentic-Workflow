@@ -139,7 +139,7 @@ Update `LAYER_OVERRIDES["L0_maintenance"]`:
 | Source | Destination |
 |--------|-------------|
 | `L0_maintenance/enforcement/audit_healing_strategy.py` | `L5_safety/enforcement/` |
-| `L0_maintenance/enforcement/git_health_sensor.py` | `L5_safety/enforcement/` |
+| `L0_maintenance/enforcement/git_health_sensor_enforcer.py` | `L5_safety/enforcement/` |
 | `L0_maintenance/enforcement/git_kraken_healing_strategy.py` | `L5_safety/enforcement/` |
 | `L0_maintenance/enforcement/vector_healing_strategy.py` | `L5_safety/enforcement/` |
 | `L0_maintenance/enforcement/ssot_guardrail.py` | `L5_safety/enforcement/` |

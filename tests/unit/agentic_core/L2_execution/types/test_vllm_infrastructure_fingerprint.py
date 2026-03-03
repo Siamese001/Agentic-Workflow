@@ -13,7 +13,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
     canonical_json,
     sha256_hex,

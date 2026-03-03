@@ -13,7 +13,7 @@ import itertools
 
 import pytest
 
-from agentic_core.L5_safety.types.tier_lattice import (
+from agentic_core.L5_safety.types.tier_lattice_types import (
     BackpressurePolicy,
     DropPolicy,
     LearningTier,

@@ -24,8 +24,8 @@ EVIDENCE_PATH = Path(
 )
 
 SCOPE_FILES = [
-    "agentic_core/L2_execution/types/vllm_gateway_integration.py",
-    "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
+    "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+    "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
     "tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py",
     "tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py",
@@ -188,7 +188,7 @@ def main() -> None:
     # Seam proof
     h("## Seam Proof: SovereignLLMGateway Uses VLLMGatewayAdapter")
     seam_script = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_adapter import emit_seam_proof, SEAM_PROOF_MARKER",
+        "from agentic_core.L2_execution.types.vllm_gateway_adapter_types import emit_seam_proof, SEAM_PROOF_MARKER",
         "print(emit_seam_proof())",
         "assert 'SovereignLLMGateway' in SEAM_PROOF_MARKER",
         "assert 'evaluate_gateway_call' in SEAM_PROOF_MARKER",
@@ -204,7 +204,7 @@ def main() -> None:
     # Token budget fallback proof
     h("## Token Budget Fallback Proof")
     tb_script = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
         "from agentic_core.L2_execution.types.vllm_serving_profile_types import LOCAL_FAST_7B_MAX_MODEL_LEN",
         "from agentic_core.L2_execution.types.vllm_token_budget_types import TASK_CLASS_OUTPUT_CAPS, SAFETY_MARGIN_TOKENS, TaskClass",
         "task = TaskClass.PATCH_SUGGESTION.value",
@@ -234,7 +234,7 @@ def main() -> None:
     # Queue full fallback proof
     h("## Queue Full Fallback Proof")
     qf_script = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
         "from agentic_core.L2_execution.types.vllm_backpressure_types import MAX_QUEUE_DEPTH",
         "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
         "ctrl = VLLMQueueController()",
@@ -260,7 +260,7 @@ def main() -> None:
     # Breaker open fallback proof
     h("## Circuit Breaker Open Fallback Proof")
     bo_script = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
         "from agentic_core.L2_execution.types.vllm_backpressure_types import CIRCUIT_BREAKER_FAILURE_THRESHOLD",
         "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
         "ctrl = VLLMQueueController()",
@@ -286,7 +286,7 @@ def main() -> None:
     # Local success telemetry proof (shows local_request.max_tokens + max_model_len)
     h("## Local Success Telemetry Proof")
     ls_script = "; ".join([
-        "from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
+        "from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call",
         "from agentic_core.L2_execution.types.vllm_token_budget_types import TaskClass",
         "ctrl = VLLMQueueController()",
         "reg = VLLMCircuitBreakerRegistry()",

@@ -92,6 +92,12 @@ Examples:
         "--v15-enforcement", type=int, choices=(0, 1), default=None, help="Override V15_ENFORCEMENT"
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase log verbosity")
+    parser.add_argument(
+        "--apply-proposals",
+        action="store_true",
+        default=False,
+        help="Apply approved meta-learning proposals (default: proposal_only mode).",
+    )
     # Keep --legacy for backward compat (silently accepted, no longer required)
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
 
@@ -152,6 +158,8 @@ Examples:
         inner_argv += ["--no-cda"]
     if args.verbose:
         inner_argv += ["-v"] * args.verbose
+    if args.apply_proposals:
+        inner_argv += ["--apply-proposals"]
 
     try:
         _legacy_main(

@@ -1376,7 +1376,7 @@
     },
     {
       "identity": "toxic_dependency_auditor",
-      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+      "file_path": "C:\\Git\\Agentic-Workflow\\agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor_enforcer.py",
       "mro_chain": [
         "SovereignBaseAgent",
         "infrastructure_mixin",

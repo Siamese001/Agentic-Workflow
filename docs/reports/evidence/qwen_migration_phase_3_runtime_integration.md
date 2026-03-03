@@ -12,7 +12,7 @@ f299108a9214d00478f10539006175595139fe21
 ## FILES_CHANGED_CODE
 ```
 agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
+agentic_core/L2_execution/types/vllm_gateway_adapter_types.py
 tests/agentic_core/L2_execution/types/test_vllm_gateway_adapter.py
 ```
 
@@ -23,8 +23,8 @@ docs/reports/evidence/qwen_migration_phase_3_runtime_integration.md
 
 ## INSPECTED_FILES
 ```
-agentic_core/L2_execution/types/vllm_gateway_integration.py
-agentic_core/L2_execution/types/vllm_gateway_adapter.py
+agentic_core/L2_execution/types/vllm_gateway_integration_types.py
+agentic_core/L2_execution/types/vllm_gateway_adapter_types.py
 agentic_core/L2_execution/enforcement/SovereignLLMGateway.py
 tests/agentic_core/L2_execution/types/test_vllm_profile_selection.py
 tests/agentic_core/L2_execution/types/test_vllm_backpressure_integration.py

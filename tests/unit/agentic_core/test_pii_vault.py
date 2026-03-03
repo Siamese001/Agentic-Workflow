@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.pii_vault
+import agentic_core.L5_safety.enforcement.pii_vault_enforcer
 
 
 def test_pii_vault_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.pii_vault is not None
+    assert agentic_core.L5_safety.enforcement.pii_vault_enforcer is not None
 
 
 def test_PiiVault_exists():
     """Test that PiiVault class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.pii_vault.PiiVault
+        cls = agentic_core.L5_safety.enforcement.pii_vault_enforcer.PiiVault
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_PiiVault_exists():
 def test_tokenize_exists():
     """Test that tokenize function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.pii_vault.tokenize
+        func = agentic_core.L5_safety.enforcement.pii_vault_enforcer.tokenize
         assert callable(func)
     except AttributeError:
         pytest.skip("Function tokenize not found in module")
@@ -43,7 +43,7 @@ def test_tokenize_exists():
 def test_restore_exists():
     """Test that restore function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.pii_vault.restore
+        func = agentic_core.L5_safety.enforcement.pii_vault_enforcer.restore
         assert callable(func)
     except AttributeError:
         pytest.skip("Function restore not found in module")
@@ -52,7 +52,7 @@ def test_restore_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.pii_vault
+    import agentic_core.L5_safety.enforcement.pii_vault_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -64,5 +64,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.pii_vault appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.pii_vault_enforcer appears to be empty"
     )

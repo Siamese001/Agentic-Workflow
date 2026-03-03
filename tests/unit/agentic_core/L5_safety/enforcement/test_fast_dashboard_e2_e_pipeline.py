@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline
+import agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer
 
 
 def test_fast_dashboard_e2_e_pipeline_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline is not None
+    assert agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer is not None
 
 
 def test_FastDashboardE2EPipeline_exists():
     """Test that FastDashboardE2EPipeline class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.FastDashboardE2EPipeline
+        cls = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.FastDashboardE2EPipeline
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_FastDashboardE2EPipeline_exists():
 def test_main_exists():
     """Test that main function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.main
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.main
         assert callable(func)
     except AttributeError:
         pytest.skip("Function main not found in module")
@@ -43,7 +43,7 @@ def test_main_exists():
 def test_print_header_exists():
     """Test that print_header function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.print_header
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.print_header
         assert callable(func)
     except AttributeError:
         pytest.skip("Function print_header not found in module")
@@ -52,7 +52,7 @@ def test_print_header_exists():
 def test_print_step_exists():
     """Test that print_step function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.print_step
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.print_step
         assert callable(func)
     except AttributeError:
         pytest.skip("Function print_step not found in module")
@@ -61,7 +61,7 @@ def test_print_step_exists():
 def test_step1_fix_heal_invocation_exists():
     """Test that step1_fix_heal_invocation function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step1_fix_heal_invocation
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step1_fix_heal_invocation
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step1_fix_heal_invocation not found in module")
@@ -70,7 +70,7 @@ def test_step1_fix_heal_invocation_exists():
 def test_step1_5_fix_mcp_hardening_exists():
     """Test that step1_5_fix_mcp_hardening function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step1_5_fix_mcp_hardening
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step1_5_fix_mcp_hardening
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step1_5_fix_mcp_hardening not found in module")
@@ -79,7 +79,7 @@ def test_step1_5_fix_mcp_hardening_exists():
 def test_step2_update_discovery_metadata_exists():
     """Test that step2_update_discovery_metadata function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step2_update_discovery_metadata
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step2_update_discovery_metadata
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step2_update_discovery_metadata not found in module")
@@ -88,7 +88,7 @@ def test_step2_update_discovery_metadata_exists():
 def test_step3_regenerate_dashboard_exists():
     """Test that step3_regenerate_dashboard function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step3_regenerate_dashboard
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step3_regenerate_dashboard
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step3_regenerate_dashboard not found in module")
@@ -97,7 +97,7 @@ def test_step3_regenerate_dashboard_exists():
 def test_step4_run_tests_exists():
     """Test that step4_run_tests function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step4_run_tests
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step4_run_tests
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step4_run_tests not found in module")
@@ -106,7 +106,7 @@ def test_step4_run_tests_exists():
 def test_step5_visual_confirmation_exists():
     """Test that step5_visual_confirmation function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step5_visual_confirmation
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step5_visual_confirmation
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step5_visual_confirmation not found in module")
@@ -115,7 +115,7 @@ def test_step5_visual_confirmation_exists():
 def test_step0_validate_data_exists():
     """Test that step0_validate_data function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.step0_validate_data
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.step0_validate_data
         assert callable(func)
     except AttributeError:
         pytest.skip("Function step0_validate_data not found in module")
@@ -124,7 +124,7 @@ def test_step0_validate_data_exists():
 def test_run_exists():
     """Test that run function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline.run
+        func = agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer.run
         assert callable(func)
     except AttributeError:
         pytest.skip("Function run not found in module")
@@ -133,7 +133,7 @@ def test_run_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline
+    import agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -145,5 +145,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.fast_dashboard_e2_e_pipeline_enforcer appears to be empty"
     )

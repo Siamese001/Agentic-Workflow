@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L2_execution.types.ml_pattern_record import (
+from agentic_core.L2_execution.types.ml_pattern_record_types import (
     MLPatternRecord,
     PatternCompatibilityError,
     enforce_pattern_compatibility,

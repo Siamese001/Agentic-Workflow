@@ -11,16 +11,16 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
     evaluate_gateway_call,
 )
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import (
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
     VLLMInfrastructureFingerprint,
     sha256_hex,
 )
-from agentic_core.L2_execution.types.vllm_replay_validator import (
+from agentic_core.L2_execution.types.vllm_replay_validator_types import (
     VLLMReplayArtifact,
     VLLMReplayValidator,
     canonical_local_request_hash,

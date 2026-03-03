@@ -11,11 +11,11 @@ Phase 2: L5 Guardian Certification Enforcement
 from __future__ import annotations
 
 from agentic_core.L2_execution.enforcement.key_source import get_current_secret
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 
 class L2BoundaryVerifier:

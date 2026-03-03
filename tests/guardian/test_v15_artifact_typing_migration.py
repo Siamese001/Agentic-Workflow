@@ -15,7 +15,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.types.artifact_validate_compat import (
+from agentic_core.L0_routing.types.artifact_validate_compat_types import (
     make_healing_plan_from_dataclass,
     make_result_artifact_from_dataclass,
     to_healing_plan_dict,
@@ -369,15 +369,15 @@ class TestStructural:
     """TypedDict SSOT module exists with correct exports."""
 
     def test_td_module_exists(self):
-        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat.py")
+        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat_types.py")
         assert td_path.exists(), f"Missing: {td_path}"
 
     def test_validate_module_exists(self):
-        val_path = Path("agentic_core/L0_routing/types/artifact_validate_compat.py")
+        val_path = Path("agentic_core/L0_routing/types/artifact_validate_compat_types.py")
         assert val_path.exists(), f"Missing: {val_path}"
 
     def test_td_module_exports_expected_names(self):
-        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat.py")
+        td_path = Path("agentic_core/L0_routing/types/artifact_typed_compat_types.py")
         source = td_path.read_text(encoding="utf-8")
         tree = ast.parse(source)
 

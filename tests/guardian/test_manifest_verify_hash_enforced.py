@@ -13,7 +13,7 @@ import hashlib
 
 import pytest
 
-from agentic_core.L0_routing.types.determinism_contracts import (
+from agentic_core.L0_routing.types.determinism_contracts_types import (
     require_manifest_hash_ok,
 )
 from agentic_core.L0_routing.types.determinism_types import (

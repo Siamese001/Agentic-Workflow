@@ -28,7 +28,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,
     SOVEREIGN_TERRITORIES,  # [RECONCILED 2026-01-27] Use unified schema
 )
-from agentic_core.L5_safety.enforcement.ssot_scanner import SSOTScanner
+from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import SSOTScanner
 
 
 @dataclass

@@ -6,10 +6,10 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.detection_signal_store import (
+from agentic_core.L4_state.types.detection_signal_store_types import (
     DetectionSignalStore,
 )
-from agentic_core.L6_observability.types.detection_signal import DetectionSignal
+from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
 pytestmark = pytest.mark.unit_min_deps
 

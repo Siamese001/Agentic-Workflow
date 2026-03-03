@@ -12,7 +12,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.retrieval_anchor import (
+from agentic_core.L4_state.types.retrieval_anchor_types import (
     AnchoredResult,
     AnchorViolationError,
     RetrievalAnchor,

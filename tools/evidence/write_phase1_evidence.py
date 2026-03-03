@@ -55,7 +55,7 @@ def main() -> int:
     emit("  wall-clock CI scanner (REQ-111/REQ-114).")
     emit("Correction: W2.3 wall-clock scanner scope narrowed to L2 determinism engine only")
     emit("  (prior version scanned all mixins/scripts, producing 140 false positives).")
-    emit("Precondition gap: agentic_core/L5_safety/enforcement/runtime_mutation_guard.py")
+    emit("Precondition gap: agentic_core/L5_safety/enforcement/runtime_mutation_guardrail.py")
     emit("  not yet created; scheduled for Phase 2 / Wave 4.")
     emit()
     emit("## PHASE_ACCEPTANCE_CRITERION")

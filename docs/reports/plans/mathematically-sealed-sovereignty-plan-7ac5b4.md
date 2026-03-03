@@ -192,7 +192,7 @@ def get_determinism_engine() -> MathematicalDeterminismEngine:
 #### Wave 1.2: Externalized Hierarchy Configuration
 **New Files**:
 - `agentic_core/config/layer_hierarchy.json`
-- `agentic_core/enforcement/hierarchy_validator.py`
+- `agentic_core/enforcement/hierarchy_validator_enforcer.py`
 
 **Implementation**:
 ```json
@@ -224,7 +224,7 @@ def get_determinism_engine() -> MathematicalDeterminismEngine:
 ```
 
 ```python
-// agentic_core/enforcement/hierarchy_validator.py
+// agentic_core/enforcement/hierarchy_validator_enforcer.py
 import json
 import hashlib
 from pathlib import Path
@@ -577,11 +577,11 @@ def get_active_execution_trace() -> Optional[ExecutionTrace]:
 
 #### Wave 3.1: ModuleSpec Provenance Tracking
 **Enhanced Files**:
-- `agentic_core/enforcement/structural_namespace_fence.py`
+- `agentic_core/enforcement/structural_namespace_fence_enforcer.py`
 
 **Implementation**:
 ```python
-# agentic_core/enforcement/structural_namespace_fence.py
+# agentic_core/enforcement/structural_namespace_fence_enforcer.py
 import sys
 import importlib.abc
 import importlib.util
@@ -755,7 +755,7 @@ from typing import Optional
 
 from agentic_core.runtime.mathematical_determinism import initialize_determinism_engine
 from agentic_core.runtime.execution_trace import start_execution_trace, bind_determinism_to_trace
-from agentic_core.enforcement.hierarchy_validator import get_hierarchy_validator
+from agentic_core.enforcement.hierarchy_validator_enforcer import get_hierarchy_validator
 from agentic_core.runtime.execution_bound_token import get_capability_authority
 
 class SovereigntyBootstrap:

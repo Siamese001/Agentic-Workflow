@@ -79,7 +79,7 @@ python -m agentic_core.L2_execution.scripts.remediation_dispatcher \
 ```
 
 ### Step 3: Build HealResult contract (new file)
-**`agentic_core/L2_execution/types/heal_contract.py`**
+**`agentic_core/L2_execution/types/heal_contract_types.py`**
 
 Parallel to `guardian_contract.py`:
 - `HealStatus`: `HEALED | PARTIAL | FAILED | SKIPPED`

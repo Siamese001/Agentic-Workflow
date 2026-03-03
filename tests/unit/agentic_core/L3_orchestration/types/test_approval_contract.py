@@ -15,7 +15,7 @@ import json
 
 import pytest
 
-from agentic_core.L3_orchestration.types.approval_contract import (
+from agentic_core.L3_orchestration.types.approval_contract_types import (
     ApprovalBundle,
     ApprovalDecision,
     ApprovalRecord,

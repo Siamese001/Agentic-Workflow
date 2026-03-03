@@ -21,7 +21,7 @@ from agentic_core.L0_routing.scripts.run_guardian_drift_detection import (
     scan_duplicate_ssot_folders,
     scan_forbidden_root_folders,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianStatus,
     check_schema_compatibility,
     validate_no_absolute_paths,

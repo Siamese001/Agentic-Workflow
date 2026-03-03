@@ -6,7 +6,7 @@ import logging
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.patterns.base import BaseReasoningPattern
 from agentic_core.runtime.exceptions import ToolExecutionError, ToolNotFoundError
 from agentic_core.runtime.state import AgentState

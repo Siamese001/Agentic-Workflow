@@ -29,7 +29,7 @@ from agentic_core.L0_routing.scripts.run_guardian_contract_integrity import (
     _check_returns_guardian_result,
     run_contract_integrity_guardian,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianStatus,
     check_schema_compatibility,
@@ -45,7 +45,7 @@ pytestmark = pytest.mark.guardian
 
 COMPLIANT_SCRIPT = '''
 """Compliant guardian."""
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     normalize_repo_path,
 )

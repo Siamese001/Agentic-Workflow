@@ -33,7 +33,7 @@ def _get_active_configs():
 
 
 def _get_retrieval_anchor_types():
-    from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult, RetrievalAnchor
+    from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult, RetrievalAnchor
 
     return AnchoredResult, RetrievalAnchor
 

@@ -73,7 +73,7 @@
 - `agentic_core/runtime/utils/discovery_util.py`
 - `agentic_core/prompt_governance/scripts/file_intent.py`
 - `agentic_core/L5_safety/validators/type_erasure_validator.py`
-- `agentic_core/L5_safety/enforcement/ssot_scanner.py`
+- `agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py`
 - `agentic_core/L0_maintenance/scripts/extract_agent_duplicates_util.py`
 - `agentic_core/L0_maintenance/scripts/find_real_duplicates_v2_util.py`
 - `agentic_core/L0_maintenance/scripts/pascal_sovereignty_fixer.py`

@@ -32,11 +32,11 @@ from agentic_core.L0_routing.scripts.run_guardian_classification_compliance impo
     scan_naming_compliance,
     scan_territory_compliance,
 )
-from agentic_core.L0_routing.types.guardian_contract import (
+from agentic_core.L0_routing.types.guardian_contract_types import (
     GuardianResult,
     GuardianStatus,
 )
-from agentic_core.L0_routing.types.guardian_registry import get_guardian_by_id
+from agentic_core.L0_routing.types.guardian_registry_types import get_guardian_by_id
 
 pytestmark = pytest.mark.guardian
 

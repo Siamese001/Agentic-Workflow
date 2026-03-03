@@ -47,7 +47,7 @@ DEFAULT_TOOL_BUDGET = ToolBudget()  # uses dataclass defaults: compute_ms=5000, 
 
 | Sub-item | Check | Status |
 |---|---|---|
-| 3a | `agentic_core/L5_safety/types/human_decision_artifact.py` exists | ✅ PASS |
+| 3a | `agentic_core/L5_safety/types/human_decision_artifact_types.py` exists | ✅ PASS |
 | 3b | `human_review_queue.py` imports and returns `HumanDecisionArtifact` | ✅ PASS |
 | 3c | `tests/agentic_core/L5_safety/types/test_human_decision_artifact.py` | ✅ PASS |
 
@@ -68,7 +68,7 @@ DEFAULT_TOOL_BUDGET = ToolBudget()  # uses dataclass defaults: compute_ms=5000, 
 
 | Sub-item | Check | Status |
 |---|---|---|
-| 5a | `agentic_core/L2_execution/types/agent_output_contract.py` exists | ✅ PASS |
+| 5a | `agentic_core/L2_execution/types/agent_output_contract_types.py` exists | ✅ PASS |
 | 5b | `BaseRGEngine` has `AGENT_ID` class attribute | ✅ PASS |
 | 5b | `BaseRGEngine` has `execute_contracted` method | ✅ PASS |
 | 5c | `ops_scripts/ci/check_apps_output_contract.py` exists | ✅ PASS |
@@ -132,4 +132,4 @@ Full spec-compliant implementation with `C0_TOP_K=20`, `C0_SCORE_THRESHOLD=0.5`,
 | Gap 9 (PatternAnalysis/DPO) | ✅ Complete | |
 | Gap 10 (Layer Sovereignty) | ✅ Complete | |
 
-**Only 1 remaining remediation:** Add `DEFAULT_TOOL_BUDGET = ToolBudget()` to `agentic_core/L2_execution/types/sandbox_envelope.py` (1 line).
+**Only 1 remaining remediation:** Add `DEFAULT_TOOL_BUDGET = ToolBudget()` to `agentic_core/L2_execution/types/sandbox_envelope_types.py` (1 line).

@@ -25,13 +25,13 @@ from agentic_core.L2_execution.types.vllm_backpressure_types import (
     CIRCUIT_BREAKER_FAILURE_THRESHOLD,
     MAX_QUEUE_DEPTH,
 )
-from agentic_core.L2_execution.types.vllm_gateway_adapter import (
+from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
     SEAM_PROOF_MARKER,
     VLLMGatewayAdapter,
     emit_seam_proof,
     reset_singletons,
 )
-from agentic_core.L2_execution.types.vllm_gateway_integration import (
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
     VLLMCircuitBreakerRegistry,
     VLLMQueueController,
 )
@@ -183,7 +183,7 @@ def test_adapter_record_local_success_resets_breaker():
 def test_reset_singletons_clears_state():
     reset_singletons()
     # After reset, a fresh adapter using defaults should work cleanly
-    from agentic_core.L2_execution.types.vllm_gateway_adapter import (
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
         _get_default_queue,
         _get_default_registry,
     )

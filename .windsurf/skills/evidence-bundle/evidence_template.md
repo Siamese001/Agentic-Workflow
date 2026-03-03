@@ -52,8 +52,8 @@ List each command in execution order:
 
 ```powershell
 # Example:
-python agentic_core/L5_safety/enforcement/system.py 2>&1 | Tee-Object -FilePath $E -Append
-python -m agentic_core.L5_safety.enforcement.system 2>&1 | Tee-Object -FilePath $E -Append
+python agentic_core/L5_safety/enforcement/system_enforcer.py 2>&1 | Tee-Object -FilePath $E -Append
+python -m agentic_core.L5_safety.enforcement.system_enforcer 2>&1 | Tee-Object -FilePath $E -Append
 pytest -xvv tests/governance/ 2>&1 | Tee-Object -FilePath $E -Append
 pre-commit run --all-files 2>&1 | Tee-Object -FilePath $E -Append
 git diff --name-only HEAD 2>&1 | Tee-Object -FilePath $E -Append

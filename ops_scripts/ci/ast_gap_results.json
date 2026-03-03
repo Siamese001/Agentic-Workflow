@@ -258,7 +258,7 @@
       ]
     },
     {
-      "path": "agentic_core/agents/types/agent_execution_profile.py",
+      "path": "agentic_core/agents/types/agent_execution_profile_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -834,7 +834,7 @@
       ]
     },
     {
-      "path": "agentic_core/enforcement/hierarchy_validator.py",
+      "path": "agentic_core/enforcement/hierarchy_validator_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -848,7 +848,7 @@
       ]
     },
     {
-      "path": "agentic_core/enforcement/import_boundary_check.py",
+      "path": "agentic_core/enforcement/import_boundary_check_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -862,7 +862,7 @@
       ]
     },
     {
-      "path": "agentic_core/enforcement/sealed_interface_check.py",
+      "path": "agentic_core/enforcement/sealed_interface_check_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -875,7 +875,7 @@
       ]
     },
     {
-      "path": "agentic_core/enforcement/structural_namespace_fence.py",
+      "path": "agentic_core/enforcement/structural_namespace_fence_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -4087,7 +4087,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/artifact_typed_compat.py",
+      "path": "agentic_core/L0_routing/types/artifact_typed_compat_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -4111,7 +4111,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/artifact_validate_compat.py",
+      "path": "agentic_core/L0_routing/types/artifact_validate_compat_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -4136,7 +4136,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/artifact_validators.py",
+      "path": "agentic_core/L0_routing/types/artifact_validators_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -4202,7 +4202,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/determinism_contracts.py",
+      "path": "agentic_core/L0_routing/types/determinism_contracts_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 4,
@@ -4317,7 +4317,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/guardian_contract.py",
+      "path": "agentic_core/L0_routing/types/guardian_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 11,
@@ -4410,7 +4410,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/guardian_registry.py",
+      "path": "agentic_core/L0_routing/types/guardian_registry_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -4451,7 +4451,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/integration_contract.py",
+      "path": "agentic_core/L0_routing/types/integration_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -4545,7 +4545,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/routing_config_seal.py",
+      "path": "agentic_core/L0_routing/types/routing_config_seal_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -4563,7 +4563,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/types/routing_contracts.py",
+      "path": "agentic_core/L0_routing/types/routing_contracts_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 14,
@@ -4861,7 +4861,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/utils/path_utils.py",
+      "path": "agentic_core/L0_routing/utils/path_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -4971,7 +4971,7 @@
       ]
     },
     {
-      "path": "agentic_core/L0_routing/utils/subprocess_runner.py",
+      "path": "agentic_core/L0_routing/utils/subprocess_runner_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -5544,7 +5544,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/types/execution_intent.py",
+      "path": "agentic_core/L1_cognition/types/execution_intent_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -5729,7 +5729,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/guardrails.py",
+      "path": "agentic_core/L1_cognition/utils/guardrails_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -5760,7 +5760,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/history_merger.py",
+      "path": "agentic_core/L1_cognition/utils/history_merger_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -5788,7 +5788,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/profile_updater.py",
+      "path": "agentic_core/L1_cognition/utils/profile_updater_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -5828,7 +5828,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/template_finder.py",
+      "path": "agentic_core/L1_cognition/utils/template_finder_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -5856,7 +5856,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/template_matcher.py",
+      "path": "agentic_core/L1_cognition/utils/template_matcher_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -5884,7 +5884,7 @@
       ]
     },
     {
-      "path": "agentic_core/L1_cognition/utils/token_updater.py",
+      "path": "agentic_core/L1_cognition/utils/token_updater_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -7554,7 +7554,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/agent_output_contract.py",
+      "path": "agentic_core/L2_execution/types/agent_output_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -7571,7 +7571,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/blast_radius_controls.py",
+      "path": "agentic_core/L2_execution/types/blast_radius_controls_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -7645,7 +7645,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/execution_trace.py",
+      "path": "agentic_core/L2_execution/types/execution_trace_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -7680,7 +7680,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/heal_contract.py",
+      "path": "agentic_core/L2_execution/types/heal_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -7720,7 +7720,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/healer_registry.py",
+      "path": "agentic_core/L2_execution/types/healer_registry_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -7749,7 +7749,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/instruction_packet.py",
+      "path": "agentic_core/L2_execution/types/instruction_packet_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -7913,7 +7913,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/ml_pattern_record.py",
+      "path": "agentic_core/L2_execution/types/ml_pattern_record_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -7930,7 +7930,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/ml_write_intent.py",
+      "path": "agentic_core/L2_execution/types/ml_write_intent_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -7994,7 +7994,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/sandbox_envelope.py",
+      "path": "agentic_core/L2_execution/types/sandbox_envelope_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -8090,7 +8090,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/tool_intent.py",
+      "path": "agentic_core/L2_execution/types/tool_intent_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -8153,7 +8153,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
+      "path": "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -8172,7 +8172,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_gateway_integration.py",
+      "path": "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 5,
@@ -8201,7 +8201,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
+      "path": "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -8223,7 +8223,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_invariant_contract.py",
+      "path": "agentic_core/L2_execution/types/vllm_invariant_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -8247,7 +8247,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_invariant_verifier.py",
+      "path": "agentic_core/L2_execution/types/vllm_invariant_verifier_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -8262,7 +8262,7 @@
       ]
     },
     {
-      "path": "agentic_core/L2_execution/types/vllm_replay_validator.py",
+      "path": "agentic_core/L2_execution/types/vllm_replay_validator_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -9416,7 +9416,7 @@
       ]
     },
     {
-      "path": "agentic_core/L3_orchestration/types/approval_contract.py",
+      "path": "agentic_core/L3_orchestration/types/approval_contract_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -9789,7 +9789,7 @@
       ]
     },
     {
-      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics.py",
+      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -10625,7 +10625,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/citation_bundle.py",
+      "path": "agentic_core/L4_state/types/citation_bundle_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -10673,7 +10673,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/detection_signal_store.py",
+      "path": "agentic_core/L4_state/types/detection_signal_store_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -10723,7 +10723,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/replay_bundle.py",
+      "path": "agentic_core/L4_state/types/replay_bundle_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -10740,7 +10740,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/retrieval_anchor.py",
+      "path": "agentic_core/L4_state/types/retrieval_anchor_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -10762,7 +10762,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/retrieval_boundary_snapshot.py",
+      "path": "agentic_core/L4_state/types/retrieval_boundary_snapshot_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -10836,7 +10836,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/types/violation_event.py",
+      "path": "agentic_core/L4_state/types/violation_event_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -10967,7 +10967,7 @@
       ]
     },
     {
-      "path": "agentic_core/L4_state/utils/local_disk_adapter.py",
+      "path": "agentic_core/L4_state/utils/local_disk_adapter_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -11548,7 +11548,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/agent_info.py",
+      "path": "agentic_core/L5_safety/enforcement/agent_info_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -11594,7 +11594,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/airlock_trimmer.py",
+      "path": "agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -11619,7 +11619,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper.py",
+      "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -11653,7 +11653,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py",
+      "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -11692,7 +11692,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/canary_token_defense.py",
+      "path": "agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -11723,7 +11723,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/circuit_breaker.py",
+      "path": "agentic_core/L5_safety/enforcement/circuit_breaker_gate.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 6,
@@ -11762,7 +11762,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/circular_import_fixer.py",
+      "path": "agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -11787,7 +11787,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/compliance_audit_manager.py",
+      "path": "agentic_core/L5_safety/enforcement/compliance_audit_manager_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -11834,7 +11834,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/context_session_manager.py",
+      "path": "agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 4,
@@ -11869,7 +11869,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/d0_injection_engine.py",
+      "path": "agentic_core/L5_safety/enforcement/d0_injection_engine_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -11885,7 +11885,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/data.py",
+      "path": "agentic_core/L5_safety/enforcement/data_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -11914,7 +11914,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/dependency_graph.py",
+      "path": "agentic_core/L5_safety/enforcement/dependency_graph_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -11994,7 +11994,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py",
+      "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12023,7 +12023,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer.py",
+      "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12048,7 +12048,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/git_health_sensor.py",
+      "path": "agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12153,7 +12153,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py",
+      "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12178,7 +12178,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/healing_invocation_audit.py",
+      "path": "agentic_core/L5_safety/enforcement/healing_invocation_audit_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12222,7 +12222,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/human_review_queue.py",
+      "path": "agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 6,
@@ -12280,7 +12280,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/import_surgeon.py",
+      "path": "agentic_core/L5_safety/enforcement/import_surgeon_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12341,7 +12341,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mcp_sovereign_authority.py",
+      "path": "agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12370,7 +12370,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mission_utils.py",
+      "path": "agentic_core/L5_safety/enforcement/mission_utils_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12395,7 +12395,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mock_context.py",
+      "path": "agentic_core/L5_safety/enforcement/mock_context_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12424,7 +12424,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/module_collision_guard.py",
+      "path": "agentic_core/L5_safety/enforcement/module_collision_guardrail.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12448,7 +12448,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mutation_prohibition.py",
+      "path": "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12473,7 +12473,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/namespace_medic.py",
+      "path": "agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12498,7 +12498,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/phase_acceptance_guard.py",
+      "path": "agentic_core/L5_safety/enforcement/phase_acceptance_guardrail.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12527,7 +12527,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+      "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12556,7 +12556,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/process_guard.py",
+      "path": "agentic_core/L5_safety/enforcement/process_guardrail.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12587,7 +12587,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/pytest_config_guard.py",
+      "path": "agentic_core/L5_safety/enforcement/pytest_config_guardrail.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12633,7 +12633,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/registry_verification.py",
+      "path": "agentic_core/L5_safety/enforcement/registry_verification_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -12682,7 +12682,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py",
+      "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -12722,7 +12722,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/safety_layer.py",
+      "path": "agentic_core/L5_safety/enforcement/safety_layer_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -12751,7 +12751,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/secure_error_handler.py",
+      "path": "agentic_core/L5_safety/enforcement/secure_error_handler_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 7,
@@ -12804,7 +12804,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/sovereign_fence_validator.py",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_fence_validator_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12819,7 +12819,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/sovereign_healing_engine.py",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12850,7 +12850,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry.py",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -12910,7 +12910,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/ssot_scanner.py",
+      "path": "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -12940,7 +12940,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+      "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -12994,7 +12994,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/system.py",
+      "path": "agentic_core/L5_safety/enforcement/system_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 3,
@@ -13026,7 +13026,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/three_tier_compliance.py",
+      "path": "agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 4,
@@ -13062,7 +13062,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -14533,7 +14533,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/agent_audit_result.py",
+      "path": "agentic_core/L5_safety/types/agent_audit_result_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -14649,7 +14649,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/heal_llm_seam.py",
+      "path": "agentic_core/L5_safety/types/heal_llm_seam_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 9,
@@ -14691,7 +14691,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/heal_model_map.py",
+      "path": "agentic_core/L5_safety/types/heal_model_map_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -14785,7 +14785,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/human_decision_artifact.py",
+      "path": "agentic_core/L5_safety/types/human_decision_artifact_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -14973,7 +14973,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/shift_report.py",
+      "path": "agentic_core/L5_safety/types/shift_report_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -15090,7 +15090,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/types/tier_lattice.py",
+      "path": "agentic_core/L5_safety/types/tier_lattice_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 4,
@@ -15148,7 +15148,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/_fca_safety_gates.py",
+      "path": "agentic_core/L5_safety/utils/_fca_safety_gates_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 4,
@@ -15192,7 +15192,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/cache_invalidation_utils.py",
+      "path": "agentic_core/L5_safety/utils/cache_invalidation_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -15242,7 +15242,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/code_tool_runner_core.py",
+      "path": "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -15298,7 +15298,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer.py",
+      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -15312,7 +15312,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/cst_transformers_types.py",
+      "path": "agentic_core/L5_safety/utils/cst_transformers_types_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -15577,7 +15577,7 @@
       ]
     },
     {
-      "path": "agentic_core/L5_safety/utils/surgical_context_types.py",
+      "path": "agentic_core/L5_safety/utils/surgical_context_types_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 0,
@@ -16783,7 +16783,7 @@
       ]
     },
     {
-      "path": "agentic_core/L6_observability/types/detection_signal.py",
+      "path": "agentic_core/L6_observability/types/detection_signal_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,
@@ -16817,7 +16817,7 @@
       ]
     },
     {
-      "path": "agentic_core/L6_observability/types/sovereign_report.py",
+      "path": "agentic_core/L6_observability/types/sovereign_report_types.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 2,
@@ -19518,7 +19518,7 @@
       ]
     },
     {
-      "path": "agentic_core/utils/canonical_json.py",
+      "path": "agentic_core/utils/canonical_json_util.py",
       "target": "agentic_core",
       "severity": "COVERED",
       "n_classes": 1,

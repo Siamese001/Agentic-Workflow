@@ -23,7 +23,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any, Generic, TypeVar
 
-from agentic_core.L5_safety.enforcement.circuit_breaker import CircuitBreaker, get_breaker
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import CircuitBreaker, get_breaker
 
 logger = logging.getLogger(__name__)
 

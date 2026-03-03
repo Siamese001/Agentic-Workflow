@@ -6,7 +6,7 @@ Phase 1 of the hardened L5→L2 signaling plan has been successfully implemented
 ## Implementation Details
 
 ### 1. InstructionPacket Extension
-**File**: `agentic_core/L2_execution/types/instruction_packet.py`
+**File**: `agentic_core/L2_execution/types/instruction_packet_types.py`
 
 - Added L5 certification fields:
   - `l5_signature`: HMAC-SHA256 signature from L5 guardian
@@ -134,7 +134,7 @@ Phase 1 is complete. The remaining phases from the hardened plan include:
 - Add permission lifecycle management
 
 ## Files Changed
-1. `agentic_core/L2_execution/types/instruction_packet.py` - Extended with L5 certification
+1. `agentic_core/L2_execution/types/instruction_packet_types.py` - Extended with L5 certification
 2. `agentic_core/L2_execution/enforcement/boundary_verifier.py` - Enhanced with L5 verification
 3. `tests/agentic_core/L2_execution/types/test_l5_certification.py` - New comprehensive test suite
 

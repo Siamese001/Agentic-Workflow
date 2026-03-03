@@ -63,7 +63,7 @@
 
 ### Implementation
 
-- Created `agentic_core/L0_routing/types/routing_config_seal.py`:
+- Created `agentic_core/L0_routing/types/routing_config_seal_types.py`:
   - `RoutingConfigSeal` frozen dataclass with canonical_hash, version,
     sealed_at
   - `RoutingConfigSealViolation` exception
@@ -104,7 +104,7 @@ Post-phase: 581 passed (+35 new tests, 0 failures, 0 regressions).
 | File | Wave | Purpose |
 |---|---|---|
 | `agentic_core/utils/canonical_serializer_util.py` | 5.1 | Shared canonical serializer |
-| `agentic_core/L0_routing/types/routing_config_seal.py` | 5.3 | Routing config seal |
+| `agentic_core/L0_routing/types/routing_config_seal_types.py` | 5.3 | Routing config seal |
 | `tests/governance/test_canonical_serializer.py` | 5.1 | Golden determinism + AST guard |
 | `tests/governance/test_replay_integrity.py` | 5.2 | Tamper detection tests |
 | `tests/governance/test_routing_config_seal.py` | 5.3 | Seal verification tests |

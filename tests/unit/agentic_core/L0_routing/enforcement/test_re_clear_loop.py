@@ -10,7 +10,7 @@ import pytest
 
 pytestmark = pytest.mark.unit
 
-from agentic_core.L5_safety.enforcement.re_clear_loop import (
+from agentic_core.L5_safety.enforcement.re_clear_loop_enforcer import (
     ReClearStatus,
     ReClearTicket,
     ReClearViolation,

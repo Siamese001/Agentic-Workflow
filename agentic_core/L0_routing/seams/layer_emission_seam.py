@@ -28,7 +28,7 @@ def get_layer_emission_validator() -> LayerEmissionValidator:
     import importlib
 
     try:
-        module = importlib.import_module("agentic_core.L5_safety.enforcement.artifact_emission_prohibition")
+        module = importlib.import_module("agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer")
         return module  # type: ignore
     except ImportError as e:
         raise RuntimeError(f"Failed to load layer emission validator: {e}")

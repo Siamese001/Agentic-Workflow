@@ -21,7 +21,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.enforcement.circuit_breaker import get_breaker
+from agentic_core.L5_safety.enforcement.circuit_breaker_gate import get_breaker
 
 logger = logging.getLogger(__name__)
 

@@ -113,7 +113,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "target_layer": "L5"
                 },
                 {
-                  "import_line": "from agentic_core.L5_safety.enforcement.archival_gatekeeper import ...",
+                  "import_line": "from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ...",
                   "line_number": 172,
                   "path": "agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py",
                   "source_layer": "L0",
@@ -267,7 +267,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "target_layer": "L2"
                 },
                 {
-                  "import_line": "from agentic_core.L5_safety.enforcement.ssot_scanner import ...",
+                  "import_line": "from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import ...",
                   "line_number": 183,
                   "path": "agentic_core/L0_routing/scripts/run_guardian_architecture_governance.py",
                   "source_layer": "L0",
@@ -337,7 +337,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "target_layer": "L5"
                 },
                 {
-                  "import_line": "from agentic_core.L5_safety.enforcement.artifact_emission_prohibition import ...",
+                  "import_line": "from agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer import ...",
                   "line_number": 20,
                   "path": "agentic_core/L0_routing/types/v15_types.py",
                   "source_layer": "L0",
@@ -568,7 +568,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "target_layer": "L5"
                 },
                 {
-                  "import_line": "from agentic_core.L3_orchestration.types.approval_contract import ...",
+                  "import_line": "from agentic_core.L3_orchestration.types.approval_contract_types import ...",
                   "line_number": 35,
                   "path": "agentic_core/L2_execution/scripts/remediation_dispatcher.py",
                   "source_layer": "L2",
@@ -1554,7 +1554,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "types",
                   "expected_folder": "utils",
                   "filename": "healer_registry.py",
-                  "path": "agentic_core/L2_execution/types/healer_registry.py"
+                  "path": "agentic_core/L2_execution/types/healer_registry_types.py"
                 },
                 {
                   "classified_as": "UTILITY",
@@ -1652,7 +1652,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "airlock_trimmer.py",
-                  "path": "agentic_core/L5_safety/enforcement/airlock_trimmer.py"
+                  "path": "agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1666,14 +1666,14 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "archival_gatekeeper.py",
-                  "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper.py"
+                  "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py"
                 },
                 {
                   "classified_as": "UTILITY",
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "artifact_emission_prohibition.py",
-                  "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py"
+                  "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py"
                 },
                 {
                   "classified_as": "UTILITY",
@@ -1687,7 +1687,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "circular_import_fixer.py",
-                  "path": "agentic_core/L5_safety/enforcement/circular_import_fixer.py"
+                  "path": "agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1701,14 +1701,14 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "context_session_manager.py",
-                  "path": "agentic_core/L5_safety/enforcement/context_session_manager.py"
+                  "path": "agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py"
                 },
                 {
                   "classified_as": "ORCHESTRATOR",
                   "current_folder": "enforcement",
                   "expected_folder": "reasoning",
                   "filename": "fast_dashboard_e2_e_pipeline.py",
-                  "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py"
+                  "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py"
                 },
                 {
                   "classified_as": "ORCHESTRATOR",
@@ -1722,7 +1722,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "final_airlock_trimmer.py",
-                  "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer.py"
+                  "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1736,7 +1736,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "hardcoded_path_refactorer.py",
-                  "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py"
+                  "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1757,7 +1757,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "mission_utils.py",
-                  "path": "agentic_core/L5_safety/enforcement/mission_utils.py"
+                  "path": "agentic_core/L5_safety/enforcement/mission_utils_enforcer.py"
                 },
                 {
                   "classified_as": "UTILITY",
@@ -1771,7 +1771,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "module_collision_guard.py",
-                  "path": "agentic_core/L5_safety/enforcement/module_collision_guard.py"
+                  "path": "agentic_core/L5_safety/enforcement/module_collision_guardrail.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1785,7 +1785,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "mutation_prohibition.py",
-                  "path": "agentic_core/L5_safety/enforcement/mutation_prohibition.py"
+                  "path": "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py"
                 },
                 {
                   "classified_as": "UTILITY",
@@ -1799,7 +1799,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "scripts",
                   "filename": "namespace_medic.py",
-                  "path": "agentic_core/L5_safety/enforcement/namespace_medic.py"
+                  "path": "agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py"
                 },
                 {
                   "classified_as": "SCRIPT",
@@ -1813,7 +1813,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "process_guard.py",
-                  "path": "agentic_core/L5_safety/enforcement/process_guard.py"
+                  "path": "agentic_core/L5_safety/enforcement/process_guardrail.py"
                 },
                 {
                   "classified_as": "EXCEPTION",
@@ -1834,7 +1834,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "utils",
                   "filename": "safe_subprocess_handler.py",
-                  "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py"
+                  "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py"
                 },
                 {
                   "classified_as": "UTILITY",
@@ -1862,7 +1862,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "enforcement",
                   "expected_folder": "reasoning",
                   "filename": "toxic_dependency_auditor.py",
-                  "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py"
+                  "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py"
                 },
                 {
                   "classified_as": "AGENT",
@@ -1883,7 +1883,7 @@ $ python -m agentic_core.L0_routing.scripts.run_all_guardians --format json
                   "current_folder": "types",
                   "expected_folder": "utils",
                   "filename": "heal_model_map.py",
-                  "path": "agentic_core/L5_safety/types/heal_model_map.py"
+                  "path": "agentic_core/L5_safety/types/heal_model_map_types.py"
                 },
                 {
                   "classified_as": "UTILITY",

@@ -12,7 +12,7 @@ from agentic_core.L0_routing.types.routing_artifact_types import (
     HealingPlan,
     ResultArtifact,
 )
-from agentic_core.L5_safety.enforcement.artifact_emission_prohibition import (
+from agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer import (
     FORBIDDEN_ARTIFACT_KINDS,
     FORBIDDEN_EMISSION_LAYERS,
     assert_layer_may_emit,

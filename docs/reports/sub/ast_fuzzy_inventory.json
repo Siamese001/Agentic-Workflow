@@ -2456,7 +2456,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L0_routing/types/guardian_contract.py",
+      "path": "agentic_core/L0_routing/types/guardian_contract_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -2507,7 +2507,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L0_routing/types/guardian_registry.py",
+      "path": "agentic_core/L0_routing/types/guardian_registry_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -2526,7 +2526,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L0_routing/types/integration_contract.py",
+      "path": "agentic_core/L0_routing/types/integration_contract_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4262,7 +4262,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/guardrails.py",
+      "path": "agentic_core/L1_cognition/utils/guardrails_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4298,7 +4298,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/history_merger.py",
+      "path": "agentic_core/L1_cognition/utils/history_merger_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4308,7 +4308,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/profile_updater.py",
+      "path": "agentic_core/L1_cognition/utils/profile_updater_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4328,7 +4328,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/template_finder.py",
+      "path": "agentic_core/L1_cognition/utils/template_finder_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4338,7 +4338,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/template_matcher.py",
+      "path": "agentic_core/L1_cognition/utils/template_matcher_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -4348,7 +4348,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L1_cognition/utils/token_updater.py",
+      "path": "agentic_core/L1_cognition/utils/token_updater_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -5419,7 +5419,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L2_execution/types/heal_contract.py",
+      "path": "agentic_core/L2_execution/types/heal_contract_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -5438,7 +5438,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L2_execution/types/healer_registry.py",
+      "path": "agentic_core/L2_execution/types/healer_registry_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -6543,7 +6543,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L3_orchestration/types/approval_contract.py",
+      "path": "agentic_core/L3_orchestration/types/approval_contract_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -6856,7 +6856,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics.py",
+      "path": "agentic_core/L3_orchestration/utils/log_orchestration_metrics_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -7746,7 +7746,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L4_state/utils/local_disk_adapter.py",
+      "path": "agentic_core/L4_state/utils/local_disk_adapter_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8312,7 +8312,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/agent_info.py",
+      "path": "agentic_core/L5_safety/enforcement/agent_info_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -8379,7 +8379,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/airlock_trimmer.py",
+      "path": "agentic_core/L5_safety/enforcement/airlock_trimmer_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8389,7 +8389,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper.py",
+      "path": "agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8399,7 +8399,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition.py",
+      "path": "agentic_core/L5_safety/enforcement/artifact_emission_prohibition_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8419,7 +8419,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/canary_token_defense.py",
+      "path": "agentic_core/L5_safety/enforcement/canary_token_defense_strategy.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8486,7 +8486,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/circuit_breaker.py",
+      "path": "agentic_core/L5_safety/enforcement/circuit_breaker_gate.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8496,7 +8496,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/circular_import_fixer.py",
+      "path": "agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8506,7 +8506,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/compliance_audit_manager.py",
+      "path": "agentic_core/L5_safety/enforcement/compliance_audit_manager_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8516,7 +8516,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/context_session_manager.py",
+      "path": "agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8526,7 +8526,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/data.py",
+      "path": "agentic_core/L5_safety/enforcement/data_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8536,7 +8536,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/dependency_graph.py",
+      "path": "agentic_core/L5_safety/enforcement/dependency_graph_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -8568,7 +8568,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline.py",
+      "path": "agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8603,7 +8603,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer.py",
+      "path": "agentic_core/L5_safety/enforcement/final_airlock_trimmer_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8613,7 +8613,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/git_health_sensor.py",
+      "path": "agentic_core/L5_safety/enforcement/git_health_sensor_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8633,7 +8633,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer.py",
+      "path": "agentic_core/L5_safety/enforcement/hardcoded_path_refactorer_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8652,7 +8652,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/healing_invocation_audit.py",
+      "path": "agentic_core/L5_safety/enforcement/healing_invocation_audit_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8662,7 +8662,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/human_review_queue.py",
+      "path": "agentic_core/L5_safety/enforcement/human_review_queue_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": [
@@ -8674,7 +8674,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/import_surgeon.py",
+      "path": "agentic_core/L5_safety/enforcement/import_surgeon_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8704,7 +8704,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mcp_sovereign_authority.py",
+      "path": "agentic_core/L5_safety/enforcement/mcp_sovereign_authority_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8714,7 +8714,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mission_utils.py",
+      "path": "agentic_core/L5_safety/enforcement/mission_utils_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8741,7 +8741,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mock_context.py",
+      "path": "agentic_core/L5_safety/enforcement/mock_context_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8751,7 +8751,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/mutation_prohibition.py",
+      "path": "agentic_core/L5_safety/enforcement/mutation_prohibition_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8778,7 +8778,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/namespace_medic.py",
+      "path": "agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -8790,7 +8790,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/pii_vault.py",
+      "path": "agentic_core/L5_safety/enforcement/pii_vault_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8825,7 +8825,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/process_guard.py",
+      "path": "agentic_core/L5_safety/enforcement/process_guardrail.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8845,7 +8845,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/registry_verification.py",
+      "path": "agentic_core/L5_safety/enforcement/registry_verification_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -8876,7 +8876,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler.py",
+      "path": "agentic_core/L5_safety/enforcement/safe_subprocess_handler_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8898,7 +8898,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/safety_layer.py",
+      "path": "agentic_core/L5_safety/enforcement/safety_layer_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8917,7 +8917,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/secure_error_handler.py",
+      "path": "agentic_core/L5_safety/enforcement/secure_error_handler_enforcer.py",
       "imports": {
         "ast": [
           "inspect"
@@ -8929,7 +8929,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/sovereign_healing_engine.py",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_healing_engine_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8939,7 +8939,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry.py",
+      "path": "agentic_core/L5_safety/enforcement/sovereign_policy_registry_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -8988,7 +8988,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/ssot_scanner.py",
+      "path": "agentic_core/L5_safety/enforcement/ssot_scanner_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -9017,7 +9017,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation.py",
+      "path": "agentic_core/L5_safety/enforcement/ssot_structure_validation_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -9044,7 +9044,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/system.py",
+      "path": "agentic_core/L5_safety/enforcement/system_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -9056,7 +9056,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/three_tier_compliance.py",
+      "path": "agentic_core/L5_safety/enforcement/three_tier_compliance_enforcer.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -9076,7 +9076,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor.py",
+      "path": "agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py",
       "imports": {
         "ast": [
           "ast"
@@ -10910,7 +10910,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/types/agent_audit_result.py",
+      "path": "agentic_core/L5_safety/types/agent_audit_result_types.py",
       "imports": {
         "ast": [
           "ast"
@@ -11030,7 +11030,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/types/heal_llm_seam.py",
+      "path": "agentic_core/L5_safety/types/heal_llm_seam_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -11040,7 +11040,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/types/heal_model_map.py",
+      "path": "agentic_core/L5_safety/types/heal_model_map_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -11335,7 +11335,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer.py",
+      "path": "agentic_core/L5_safety/utils/ConstitutionalOverseer_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -11355,7 +11355,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/utils/_fca_safety_gates.py",
+      "path": "agentic_core/L5_safety/utils/_fca_safety_gates_util.py",
       "imports": {
         "ast": [
           "ast"
@@ -11421,7 +11421,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/utils/cache_invalidation_utils.py",
+      "path": "agentic_core/L5_safety/utils/cache_invalidation_util.py",
       "imports": {
         "ast": [
           "inspect"
@@ -11491,7 +11491,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L5_safety/utils/code_tool_runner_core.py",
+      "path": "agentic_core/L5_safety/utils/code_tool_runner_core_util.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -12963,7 +12963,7 @@
       "parse_error": null
     },
     {
-      "path": "agentic_core/L6_observability/types/sovereign_report.py",
+      "path": "agentic_core/L6_observability/types/sovereign_report_types.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -20767,7 +20767,7 @@
       "parse_error": null
     },
     {
-      "path": "tools/enforcement/phase_acceptance_guard.py",
+      "path": "tools/enforcement/phase_acceptance_guardrail.py",
       "imports": {
         "ast": [],
         "fuzzy": []
@@ -20777,7 +20777,7 @@
       "parse_error": null
     },
     {
-      "path": "tools/enforcement/pytest_config_guard.py",
+      "path": "tools/enforcement/pytest_config_guardrail.py",
       "imports": {
         "ast": [
           "ast"

@@ -335,7 +335,7 @@
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L0_maintenance\\enforcement\\git_health_sensor.py",
+      "module": "agentic_core\\L0_maintenance\\enforcement\\git_health_sensor_enforcer.py",
       "expected_test": "tests\\agentic_core\\L0_maintenance\\enforcement\\test_git_health_sensor.py",
       "status": "MISSING"
     },
@@ -3220,7 +3220,7 @@
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L4_state\\utils\\local_disk_adapter.py",
+      "module": "agentic_core\\L4_state\utils\local_disk_adapter_util.py",
       "expected_test": "tests\\agentic_core\\L4_state\\utils\\test_local_disk_adapter.py",
       "status": "MISSING"
     },
@@ -3375,7 +3375,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\agent_info.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\agent_info_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_agent_info.py",
       "status": "PRESENT"
     },
@@ -3385,47 +3385,47 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\airlock_trimmer.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\airlock_trimmer_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_airlock_trimmer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\archival_gatekeeper.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\archival_gatekeeper_gate.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_archival_gatekeeper.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\canary_token_defense.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\canary_token_defense_strategy.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_canary_token_defense.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\circuit_breaker.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\circuit_breaker_gate.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_circuit_breaker.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\circular_import_fixer.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\circular_import_fixer_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_circular_import_fixer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\compliance_audit_manager.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\compliance_audit_manager_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_compliance_audit_manager.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\context_session_manager.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\context_session_manager_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_context_session_manager.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\data.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\data_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_data.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\dependency_graph.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\dependency_graph_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_dependency_graph.py",
       "status": "PRESENT"
     },
@@ -3445,22 +3445,22 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\fast_dashboard_e2_e_pipeline.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\fast_dashboard_e2_e_pipeline_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_fast_dashboard_e2_e_pipeline.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\final_airlock_trimmer.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\final_airlock_trimmer_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_final_airlock_trimmer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\hardcoded_path_refactorer.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\hardcoded_path_refactorer_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_hardcoded_path_refactorer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\healing_invocation_audit.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\healing_invocation_audit_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_healing_invocation_audit.py",
       "status": "PRESENT"
     },
@@ -3470,7 +3470,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\human_review_queue.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\human_review_queue_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_human_review_queue.py",
       "status": "PRESENT"
     },
@@ -3480,7 +3480,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\import_surgeon.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\import_surgeon_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_import_surgeon.py",
       "status": "PRESENT"
     },
@@ -3495,32 +3495,32 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\mcp_sovereign_authority.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\mcp_sovereign_authority_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_mcp_sovereign_authority.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\mission_utils.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\mission_utils_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_mission_utils.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\mock_context.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\mock_context_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_mock_context.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\namespace_medic.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\namespace_medic_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_namespace_medic.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\pii_vault.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\pii_vault_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_pii_vault.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\process_guard.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\process_guardrail.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_process_guard.py",
       "status": "PRESENT"
     },
@@ -3530,7 +3530,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\registry_verification.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\registry_verification_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_registry_verification.py",
       "status": "PRESENT"
     },
@@ -3540,7 +3540,7 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\safe_subprocess_handler.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\safe_subprocess_handler_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_safe_subprocess_handler.py",
       "status": "PRESENT"
     },
@@ -3550,17 +3550,17 @@
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\safety_layer.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\safety_layer_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_safety_layer.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\secure_error_handler.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\secure_error_handler_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_secure_error_handler.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\sovereign_policy_registry.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\sovereign_policy_registry_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_sovereign_policy_registry.py",
       "status": "PRESENT"
     },
@@ -3570,12 +3570,12 @@
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\ssot_scanner.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\ssot_scanner_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_ssot_scanner.py",
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\ssot_structure_validation.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\ssot_structure_validation_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_ssot_structure_validation.py",
       "status": "PRESENT"
     },
@@ -3585,17 +3585,17 @@
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\system.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\system_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_system.py",
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\three_tier_compliance.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\three_tier_compliance_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_three_tier_compliance.py",
       "status": "PRESENT"
     },
     {
-      "module": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor.py",
+      "module": "agentic_core\\L5_safety\\enforcement\\toxic_dependency_auditor_enforcer.py",
       "expected_test": "tests\\agentic_core\\L5_safety\\enforcement\\test_toxic_dependency_auditor.py",
       "status": "MISSING"
     },
@@ -4670,7 +4670,7 @@
       "status": "MISSING"
     },
     {
-      "module": "agentic_core\\L6_observability\\types\\sovereign_report.py",
+      "module": "agentic_core\\L6_observability\types\sovereign_report_types.py",
       "expected_test": "tests\\agentic_core\\L6_observability\\types\\test_sovereign_report.py",
       "status": "MISSING"
     },

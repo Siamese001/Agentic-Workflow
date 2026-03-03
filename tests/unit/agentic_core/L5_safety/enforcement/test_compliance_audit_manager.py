@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.compliance_audit_manager
+import agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer
 
 
 def test_compliance_audit_manager_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.compliance_audit_manager is not None
+    assert agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer is not None
 
 
 def test_ComplianceAuditManager_exists():
     """Test that ComplianceAuditManager class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.compliance_audit_manager.ComplianceAuditManager
+        cls = agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer.ComplianceAuditManager
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_ComplianceAuditManager_exists():
 def test_audit_event_exists():
     """Test that audit_event function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.compliance_audit_manager.audit_event
+        func = agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer.audit_event
         assert callable(func)
     except AttributeError:
         pytest.skip("Function audit_event not found in module")
@@ -43,7 +43,7 @@ def test_audit_event_exists():
 def test_generate_report_exists():
     """Test that generate_report function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.compliance_audit_manager.generate_report
+        func = agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer.generate_report
         assert callable(func)
     except AttributeError:
         pytest.skip("Function generate_report not found in module")
@@ -52,7 +52,7 @@ def test_generate_report_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.compliance_audit_manager
+    import agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -64,5 +64,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.compliance_audit_manager appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.compliance_audit_manager_enforcer appears to be empty"
     )

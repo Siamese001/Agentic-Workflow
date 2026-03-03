@@ -299,9 +299,141 @@ class NoOpL4StateWriter:
         return None
 
 
+# ---------------------------------------------------------------------------
+# SimpleChangePackage — minimal ChangePackage for L4 state writes
+# ---------------------------------------------------------------------------
+
+
+@dataclass
+class SimpleChangePackage:
+    """Minimal ChangePackage suitable for L4 state writes.
+
+    Implements the ``canonical_bytes()`` contract required by
+    ``L4VersionStore.commit_change_package``.
+    """
+
+    component: str
+    payload_bytes: bytes
+    metadata: dict
+
+    def canonical_bytes(self) -> bytes:
+        """Deterministic bytes representation of this package."""
+        meta_str = json.dumps(
+            {k: str(v) for k, v in sorted(self.metadata.items())},
+            separators=(",", ":"),
+        )
+        return f"{self.component}:{self.payload_bytes.hex()}:{meta_str}".encode()
+
+
+# ---------------------------------------------------------------------------
+# DefaultL4StateWriter — backed by L4VersionStore
+# ---------------------------------------------------------------------------
+
+
+class DefaultL4StateWriter:
+    """L4 state writer backed by an L4VersionStore.
+
+    Delegates all writes to the provided version store.  Each call creates a
+    ``SimpleChangePackage`` and commits it via
+    ``version_store.commit_change_package``, returning the resulting version_id.
+    Idempotency is enforced by the store's content-hash keying.
+    """
+
+    def __init__(self, version_store) -> None:
+        self._store = version_store
+
+    def _write(
+        self,
+        signal_type: str,
+        signal_prefix: str,
+        *,
+        payload_bytes: bytes,
+        component_name: str,
+        created_utc: int,
+    ) -> str:
+        pkg = SimpleChangePackage(
+            component=f"{signal_prefix}_{component_name}",
+            payload_bytes=payload_bytes,
+            metadata={
+                "component_name": component_name,
+                "created_utc": created_utc,
+                "type": signal_type,
+            },
+        )
+        return self._store.commit_change_package(
+            pkg,
+            parent_version_id=None,
+            change_spec_hash=hashlib.sha256(payload_bytes).hexdigest(),
+            committed_at_utc=created_utc,
+        )
+
+    def write_l4a_detection_signal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write(
+            "detection_signal",
+            "l4a_detection_signal",
+            payload_bytes=payload_bytes,
+            component_name=component_name,
+            created_utc=created_utc,
+        )
+
+    def write_l4b_healing_snapshot(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write(
+            "healing_snapshot",
+            "l4b_healing_snapshot",
+            payload_bytes=payload_bytes,
+            component_name=component_name,
+            created_utc=created_utc,
+        )
+
+    def write_l4c_shadow_drift(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write(
+            "shadow_drift",
+            "l4c_shadow_drift",
+            payload_bytes=payload_bytes,
+            component_name=component_name,
+            created_utc=created_utc,
+        )
+
+    def write_l4c_policy_recommendation(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write(
+            "policy_recommendation",
+            "l4c_policy_rec",
+            payload_bytes=payload_bytes,
+            component_name=component_name,
+            created_utc=created_utc,
+        )
+
+    def write_l4c_retrieval_profile_proposal(
+        self, *, payload_bytes: bytes, component_name: str, created_utc: int
+    ) -> str:
+        return self._write(
+            "retrieval_profile_proposal",
+            "l4c_profile_prop",
+            payload_bytes=payload_bytes,
+            component_name=component_name,
+            created_utc=created_utc,
+        )
+
+    def read_latest_detection_signal(self) -> bytes | None:
+        return None
+
+    def read_latest_drift_snapshot(self) -> bytes | None:
+        return None
+
+
 __all__ = [
     "L4StateWriter",
     "InMemoryL4StateWriter",
     "FileBackedL4StateWriter",
     "NoOpL4StateWriter",
+    "DefaultL4StateWriter",
+    "SimpleChangePackage",
 ]

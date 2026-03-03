@@ -16,7 +16,7 @@ Implement H3 (provider-pinned LLM replay enforcement) and H4 (multivariate drift
 | File | Intent |
 |---|---|
 | `agentic_core/L2_execution/types/llm_replay_types.py` | New: ReplayBundle, ReplayMode, LLMReplayStrategy (H3) |
-| `agentic_core/L5_safety/types/shift_report.py` | New: ShiftReport, CovariateShiftDetector, MMD+PSI (H4) |
+| `agentic_core/L5_safety/types/shift_report_types.py` | New: ShiftReport, CovariateShiftDetector, MMD+PSI (H4) |
 | `tests/governance/test_llm_replay_enforcement.py` | New: 15 H3 governance tests |
 | `tests/governance/test_shift_report.py` | New: 14 H4 governance tests |
 | `docs/reports/plans/hardening-phase3-h3-h4-evidence.md` | This evidence file |

@@ -26,7 +26,7 @@ Gaps identified and closed:
 agentic_core/L3_orchestration/engines/deterministic_orchestrator.py
 agentic_core/L3_orchestration/engines/handshake_state_machine.py
 agentic_core/L3_orchestration/types/__init__.py
-agentic_core/L3_orchestration/types/execution_trace.py
+agentic_core/L3_orchestration/types/execution_trace_types.py
 tests/unit_min_deps/test_w5_determinism_digest.py
 tests/unit_min_deps/test_w5_executiontrace_plan_hash.py
 tests/unit_min_deps/test_w5_handshake_state_machine.py
@@ -38,8 +38,8 @@ docs/reports/plans/w5-l3-orchestration-scope-completion.md
 ## INSPECTED_FILES
 agentic_core/L3_orchestration/engines/deterministic_orchestrator.py
 agentic_core/L3_orchestration/engines/handshake_state_machine.py
-agentic_core/L3_orchestration/types/execution_trace.py
-agentic_core/L3_orchestration/types/human_decision_artifact.py
+agentic_core/L3_orchestration/types/execution_trace_types.py
+agentic_core/L3_orchestration/types/human_decision_artifact_types.py
 agentic_core/seams/orchestration_protocols.py
 tests/unit_min_deps/test_w5_l3_orchestrator_paths.py
 tests/unit_min_deps/test_w5_handshake_state_machine.py

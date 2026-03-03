@@ -70,7 +70,7 @@ def run_architecture_governance_check() -> tuple[bool, str]:
         Tuple of (success, message)
     """
     try:
-        from agentic_core.L0_routing.utils.subprocess_runner import invoke_arch_governor
+        from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_arch_governor
 
         print("\n" + "=" * 70)
         print("AGENT VALIDATION: Architecture Governance")

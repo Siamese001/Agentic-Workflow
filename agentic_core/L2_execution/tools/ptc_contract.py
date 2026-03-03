@@ -16,10 +16,10 @@ import re
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L2_execution.types.instruction_packet import (
+from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
-from agentic_core.L2_execution.types.sandbox_envelope import SandboxEnvelope
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 
 
 # ---------------------------------------------------------------------------

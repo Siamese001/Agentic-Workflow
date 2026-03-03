@@ -535,7 +535,7 @@
       "tests/guardian/test_guardian_runtime_budget.py",
       "tests/guardian/test_l6_signal_contract.py"
     ],
-    "agentic_core.L0_routing.types.guardian_contract": [
+    "agentic_core.L0_routing.types.guardian_contract_types": [
       "tests/guardian/test_aggregator_invariants.py",
       "tests/guardian/test_certification_evidence_hygiene.py",
       "tests/guardian/test_contract_compatibility.py",
@@ -577,7 +577,7 @@
       "tests/guardian/test_v15_p9_3_daemon_soak.py",
       "tests/guardian/test_v15_p9_4_backward_compat.py"
     ],
-    "agentic_core.L0_routing.types.guardian_registry": [
+    "agentic_core.L0_routing.types.guardian_registry_types": [
       "tests/guardian/test_aggregator_invariants.py",
       "tests/guardian/test_behavioral_coverage_ratchet.py",
       "tests/guardian/test_guardian_aggregation.py",
@@ -626,7 +626,7 @@
       "tests/guardian/test_v15_p1_compliance.py",
       "tests/guardian/test_v15_p7_gateway_order.py"
     ],
-    "agentic_core.L5_safety.enforcement.artifact_emission_prohibition": [
+    "agentic_core.L5_safety.enforcement.artifact_emission_prohibition_enforcer": [
       "tests/guardian/test_artifact_emission_prohibition.py"
     ],
     "agentic_core.L0_routing.types.determinism_types": [
@@ -757,10 +757,10 @@
     "agentic_core.L2_execution.healers.hierarchy_compliance_healer": [
       "tests/guardian/test_healers_wave6.py"
     ],
-    "agentic_core.L2_execution.types.heal_contract": [
+    "agentic_core.L2_execution.types.heal_contract_types": [
       "tests/guardian/test_healers_wave6.py"
     ],
-    "agentic_core.L2_execution.types.healer_registry": [
+    "agentic_core.L2_execution.types.healer_registry_types": [
       "tests/guardian/test_healers_wave6.py"
     ],
     "system_learning.enforcement.determinism": [
@@ -769,7 +769,7 @@
     "agentic_core.L0_routing.scripts.run_guardian_location_alignment": [
       "tests/guardian/test_location_alignment.py"
     ],
-    "agentic_core.L0_routing.types.determinism_contracts": [
+    "agentic_core.L0_routing.types.determinism_contracts_types": [
       "tests/guardian/test_manifest_verify_hash_enforced.py",
       "tests/guardian/test_v15_integration_wiring.py",
       "tests/guardian/test_v15_p1_compliance.py",
@@ -795,7 +795,7 @@
     "agentic_core.L3_orchestration.reasoning.DomainPlannerAgent": [
       "tests/guardian/test_mro_mixin_order.py"
     ],
-    "agentic_core.L5_safety.enforcement.mutation_prohibition": [
+    "agentic_core.L5_safety.enforcement.mutation_prohibition_enforcer": [
       "tests/guardian/test_mutation_prohibition.py"
     ],
     "agentic_core.L5_safety.reasoning.LocationAgent": [
@@ -807,10 +807,10 @@
     "agentic_core.L5_safety.validators.structure_drift_validator": [
       "tests/guardian/test_structure_drift.py"
     ],
-    "agentic_core.L0_routing.types.artifact_validate_compat": [
+    "agentic_core.L0_routing.types.artifact_validate_compat_types": [
       "tests/guardian/test_v15_artifact_typing_migration.py"
     ],
-    "agentic_core.L0_routing.types.routing_contracts": [
+    "agentic_core.L0_routing.types.routing_contracts_types": [
       "tests/guardian/test_v15_cc1_hardening.py",
       "tests/guardian/test_v15_p1_compliance.py",
       "tests/guardian/test_v15_p7_gateway_order.py",
@@ -840,7 +840,7 @@
       "tests/guardian/test_v15_p0_compliance.py",
       "tests/guardian/test_v15_p6_compliance.py"
     ],
-    "agentic_core.L0_routing.types.integration_contract": [
+    "agentic_core.L0_routing.types.integration_contract_types": [
       "tests/guardian/test_v15_p10_3_integration_envelope.py"
     ],
     "agentic_core.L2_execution.enforcement.SovereignLLMGateway": [

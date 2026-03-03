@@ -72,7 +72,7 @@ Subprocess-callable runner for HierarchyAgent with actions:
 
 ### Files Modified
 
-**`agentic_core/L0_routing/utils/subprocess_runner.py`**
+**`agentic_core/L0_routing/utils/subprocess_runner_util.py`**
 
 Added `invoke_hierarchy_agent()` function:
 - Actions: dry_run, heal_violations, verify_mro
@@ -188,7 +188,7 @@ All hooks pass:
 - `docs/reports/guardian/phase12_hierarchyagent_elimination.md`
 
 ### Modified Files
-- `agentic_core/L0_routing/utils/subprocess_runner.py`
+- `agentic_core/L0_routing/utils/subprocess_runner_util.py`
 - `agentic_core/L0_routing/scripts/run_hierarchy_agent_dry_run_util.py`
 - `agentic_core/L0_routing/scripts/run_hierarchy_healer_dry_run_util.py`
 - `agentic_core/L0_routing/scripts/verify_mro_util.py`

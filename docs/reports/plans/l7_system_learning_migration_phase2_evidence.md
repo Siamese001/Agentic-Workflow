@@ -56,7 +56,7 @@ python -m pytest -q -m "unit_min_deps or governance or integration_full_deps" te
 ### Module collision guard updates
 
 Updated ALLOWED_SHIM_PAIRS in:
-- agentic_core/L5_safety/enforcement/module_collision_guard.py
+- agentic_core/L5_safety/enforcement/module_collision_guardrail.py
 - agentic_core/L5_safety/enforcement/module_collision_guardrail.py
 
 Changed:
@@ -79,7 +79,7 @@ git status --porcelain=v1
  D agentic_core/L7_meta_learning/types/meta_learning_types.py
  D agentic_core/L7_meta_learning/types/offline_replay_types.py
  D agentic_core/L7_meta_learning/types/rollout_types.py
- M agentic_core/L5_safety/enforcement/module_collision_guard.py
+ M agentic_core/L5_safety/enforcement/module_collision_guardrail.py
  M agentic_core/L5_safety/enforcement/module_collision_guardrail.py
 ```
 

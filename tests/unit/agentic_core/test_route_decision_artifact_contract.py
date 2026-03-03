@@ -33,7 +33,7 @@ _STUB_MODULES = {
     "agentic_core.L3_orchestration.unified": None,
     "agentic_core.L3_orchestration.unified.CoreOrchestrationAgent": None,
     "agentic_core.L5_safety.enforcement.context_session": None,
-    "agentic_core.L5_safety.enforcement.circuit_breaker": None,
+    "agentic_core.L5_safety.enforcement.circuit_breaker_gate": None,
 }
 
 # Seam module key (invalidated between tests to pick up fresh patches)
@@ -71,11 +71,11 @@ def _build_stubs() -> dict[str, types.ModuleType]:
     stubs["agentic_core.L5_safety.enforcement.context_session"] = cs
 
     # circuit_breaker
-    cb = types.ModuleType("agentic_core.L5_safety.enforcement.circuit_breaker")
+    cb = types.ModuleType("agentic_core.L5_safety.enforcement.circuit_breaker_gate")
     breaker = MagicMock()
     breaker.allow_request.return_value = True
     cb.get_breaker = MagicMock(return_value=breaker)
-    stubs["agentic_core.L5_safety.enforcement.circuit_breaker"] = cb
+    stubs["agentic_core.L5_safety.enforcement.circuit_breaker_gate"] = cb
 
     return stubs
 
@@ -399,7 +399,7 @@ class TestFlushDurability:
         """flush_to_artifacts_dir writes NDJSON containing ROUTE_DECISION payload."""
         import json
 
-        from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
+        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 
         artifact = RouteDecisionArtifact(
             trace_id="flush-test-trace",
@@ -428,7 +428,7 @@ class TestFlushDurability:
 
     def test_flush_returns_none_when_no_events(self, tmp_path):
         """flush_to_artifacts_dir returns None if no events buffered."""
-        from agentic_core.L0_routing.types.routing_contracts import TelemetryEmitter
+        from agentic_core.L0_routing.types.routing_contracts_types import TelemetryEmitter
 
         emitter = TelemetryEmitter()
         assert emitter.flush_to_artifacts_dir(tmp_path) is None

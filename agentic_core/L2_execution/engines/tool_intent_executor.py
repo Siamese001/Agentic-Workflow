@@ -14,8 +14,8 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any, Callable, Generator
 
-from agentic_core.L2_execution.types.ml_write_intent import is_commit_sandbox_active
-from agentic_core.L2_execution.types.tool_intent import ToolIntent, ToolViolation
+from agentic_core.L2_execution.types.ml_write_intent_types import is_commit_sandbox_active
+from agentic_core.L2_execution.types.tool_intent_types import ToolIntent, ToolViolation
 
 _SCHEMA_VERSION: int = 1
 

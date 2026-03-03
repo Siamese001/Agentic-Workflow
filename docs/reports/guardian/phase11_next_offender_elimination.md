@@ -80,7 +80,7 @@ the fix pattern is **(C) Restructure call responsibility**:
 **`agentic_core/L5_safety/runners/agent_roster_runner.py`**
 - Subprocess-callable runner for agent roster validation
 
-**`agentic_core/L0_routing/utils/subprocess_runner.py`**
+**`agentic_core/L0_routing/utils/subprocess_runner_util.py`**
 - L0 utility module for invoking L5 runners via subprocess
 - Functions: invoke_arch_governor, invoke_orchestrator_mission, invoke_agent_roster_validation
 
@@ -194,7 +194,7 @@ All hooks pass:
 - `agentic_core/L5_safety/runners/arch_governor_runner.py`
 - `agentic_core/L5_safety/runners/orchestrator_runner.py`
 - `agentic_core/L5_safety/runners/agent_roster_runner.py`
-- `agentic_core/L0_routing/utils/subprocess_runner.py`
+- `agentic_core/L0_routing/utils/subprocess_runner_util.py`
 - `docs/reports/guardian/phase11_next_offender_elimination.md`
 
 ### Modified Files

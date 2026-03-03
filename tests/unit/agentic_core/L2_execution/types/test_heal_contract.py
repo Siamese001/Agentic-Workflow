@@ -15,7 +15,7 @@ import json
 
 import pytest
 
-from agentic_core.L2_execution.types.heal_contract import (
+from agentic_core.L2_execution.types.heal_contract_types import (
     CombinedHealResult,
     HealCheckResult,
     HealStatus,

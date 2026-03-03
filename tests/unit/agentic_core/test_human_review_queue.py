@@ -6,19 +6,19 @@ Generated as part of test structure mirror contract enforcement.
 
 import pytest
 
-import agentic_core.L5_safety.enforcement.human_review_queue
+import agentic_core.L5_safety.enforcement.human_review_queue_enforcer
 
 
 def test_human_review_queue_can_import():
     """Test that the module can be imported successfully."""
     # This is a basic smoke test to ensure the module is importable
-    assert agentic_core.L5_safety.enforcement.human_review_queue is not None
+    assert agentic_core.L5_safety.enforcement.human_review_queue_enforcer is not None
 
 
 def test_ReviewStatus_exists():
     """Test that ReviewStatus class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.ReviewStatus
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.ReviewStatus
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -34,7 +34,7 @@ def test_ReviewStatus_exists():
 def test_ProposedDiff_exists():
     """Test that ProposedDiff class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.ProposedDiff
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.ProposedDiff
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -50,7 +50,7 @@ def test_ProposedDiff_exists():
 def test_SimulatedOutcome_exists():
     """Test that SimulatedOutcome class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.SimulatedOutcome
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.SimulatedOutcome
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -66,7 +66,7 @@ def test_SimulatedOutcome_exists():
 def test_ContextBundle_exists():
     """Test that ContextBundle class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.ContextBundle
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.ContextBundle
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -82,7 +82,7 @@ def test_ContextBundle_exists():
 def test_ReviewRequest_exists():
     """Test that ReviewRequest class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.ReviewRequest
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.ReviewRequest
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -98,7 +98,7 @@ def test_ReviewRequest_exists():
 def test_HumanReviewQueue_exists():
     """Test that HumanReviewQueue class exists and can be instantiated."""
     try:
-        cls = agentic_core.L5_safety.enforcement.human_review_queue.HumanReviewQueue
+        cls = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.HumanReviewQueue
         # Try to instantiate if it doesn't require required parameters
         try:
             instance = cls()
@@ -114,7 +114,7 @@ def test_HumanReviewQueue_exists():
 def test_to_unified_diff_exists():
     """Test that to_unified_diff function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.to_unified_diff
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.to_unified_diff
         assert callable(func)
     except AttributeError:
         pytest.skip("Function to_unified_diff not found in module")
@@ -123,7 +123,7 @@ def test_to_unified_diff_exists():
 def test_to_dict_exists():
     """Test that to_dict function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.to_dict
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.to_dict
         assert callable(func)
     except AttributeError:
         pytest.skip("Function to_dict not found in module")
@@ -132,7 +132,7 @@ def test_to_dict_exists():
 def test_is_expired_exists():
     """Test that is_expired function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.is_expired
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.is_expired
         assert callable(func)
     except AttributeError:
         pytest.skip("Function is_expired not found in module")
@@ -141,7 +141,7 @@ def test_is_expired_exists():
 def test_to_dict_exists():
     """Test that to_dict function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.to_dict
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.to_dict
         assert callable(func)
     except AttributeError:
         pytest.skip("Function to_dict not found in module")
@@ -150,7 +150,7 @@ def test_to_dict_exists():
 def test_submit_for_review_exists():
     """Test that submit_for_review function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.submit_for_review
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.submit_for_review
         assert callable(func)
     except AttributeError:
         pytest.skip("Function submit_for_review not found in module")
@@ -159,7 +159,7 @@ def test_submit_for_review_exists():
 def test_approve_exists():
     """Test that approve function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.approve
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.approve
         assert callable(func)
     except AttributeError:
         pytest.skip("Function approve not found in module")
@@ -168,7 +168,7 @@ def test_approve_exists():
 def test_reject_exists():
     """Test that reject function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.reject
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.reject
         assert callable(func)
     except AttributeError:
         pytest.skip("Function reject not found in module")
@@ -177,7 +177,7 @@ def test_reject_exists():
 def test_escalate_exists():
     """Test that escalate function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.escalate
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.escalate
         assert callable(func)
     except AttributeError:
         pytest.skip("Function escalate not found in module")
@@ -186,7 +186,7 @@ def test_escalate_exists():
 def test_get_pending_requests_exists():
     """Test that get_pending_requests function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.get_pending_requests
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.get_pending_requests
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_pending_requests not found in module")
@@ -195,7 +195,7 @@ def test_get_pending_requests_exists():
 def test_get_request_status_exists():
     """Test that get_request_status function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.get_request_status
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.get_request_status
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_request_status not found in module")
@@ -204,7 +204,7 @@ def test_get_request_status_exists():
 def test_register_callback_exists():
     """Test that register_callback function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.register_callback
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.register_callback
         assert callable(func)
     except AttributeError:
         pytest.skip("Function register_callback not found in module")
@@ -213,7 +213,7 @@ def test_register_callback_exists():
 def test_get_queue_stats_exists():
     """Test that get_queue_stats function exists."""
     try:
-        func = agentic_core.L5_safety.enforcement.human_review_queue.get_queue_stats
+        func = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.get_queue_stats
         assert callable(func)
     except AttributeError:
         pytest.skip("Function get_queue_stats not found in module")
@@ -222,7 +222,7 @@ def test_get_queue_stats_exists():
 def test_PENDING_exists():
     """Test that PENDING constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.human_review_queue.PENDING
+        value = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.PENDING
         assert value is not None
     except AttributeError:
         pytest.skip("Constant PENDING not found in module")
@@ -231,7 +231,7 @@ def test_PENDING_exists():
 def test_IN_REVIEW_exists():
     """Test that IN_REVIEW constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.human_review_queue.IN_REVIEW
+        value = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.IN_REVIEW
         assert value is not None
     except AttributeError:
         pytest.skip("Constant IN_REVIEW not found in module")
@@ -240,7 +240,7 @@ def test_IN_REVIEW_exists():
 def test_APPROVED_exists():
     """Test that APPROVED constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.human_review_queue.APPROVED
+        value = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.APPROVED
         assert value is not None
     except AttributeError:
         pytest.skip("Constant APPROVED not found in module")
@@ -249,7 +249,7 @@ def test_APPROVED_exists():
 def test_REJECTED_exists():
     """Test that REJECTED constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.human_review_queue.REJECTED
+        value = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.REJECTED
         assert value is not None
     except AttributeError:
         pytest.skip("Constant REJECTED not found in module")
@@ -258,7 +258,7 @@ def test_REJECTED_exists():
 def test_ESCALATED_exists():
     """Test that ESCALATED constant exists."""
     try:
-        value = agentic_core.L5_safety.enforcement.human_review_queue.ESCALATED
+        value = agentic_core.L5_safety.enforcement.human_review_queue_enforcer.ESCALATED
         assert value is not None
     except AttributeError:
         pytest.skip("Constant ESCALATED not found in module")
@@ -267,7 +267,7 @@ def test_ESCALATED_exists():
 def test_module_has_minimum_coverage():
     """Test that the module has some minimum level of functionality."""
     # This test ensures we're not just importing empty modules
-    import agentic_core.L5_safety.enforcement.human_review_queue
+    import agentic_core.L5_safety.enforcement.human_review_queue_enforcer
 
     # Check that module has some content
     module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
@@ -279,5 +279,5 @@ def test_module_has_minimum_coverage():
 
     # At least one meaningful item should exist
     assert len(meaningful_items) > 0, (
-        "Module agentic_core.L5_safety.enforcement.human_review_queue appears to be empty"
+        "Module agentic_core.L5_safety.enforcement.human_review_queue_enforcer appears to be empty"
     )

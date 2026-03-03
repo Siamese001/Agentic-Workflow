@@ -28,7 +28,7 @@ from typing import Any, TypeVar
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 
 Logger = logging.getLogger(__name__)
 

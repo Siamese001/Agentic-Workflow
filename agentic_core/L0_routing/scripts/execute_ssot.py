@@ -119,13 +119,23 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
             build_pipeline_deps,
         )
 
-        _ml_cfg = build_pipeline_config()
+        import time as _time_mod
+
+        _apply_proposals = state_mgr.state.get("apply_proposals", False)
+        _now_utc = int(_time_mod.time())
+        _window_start_utc = max(0, _now_utc - 3600)
+        _ml_cfg = build_pipeline_config(proposal_only=not _apply_proposals)
         _ml_deps = build_pipeline_deps(
             repo_root=REPO_ROOT,
             healing_outcome_intake_adapter=adapter if "adapter" in dir() else None,
         )
-        # Use deterministic timestamps: window covers [0, now_utc=1] for bootstrap
-        _ml_run_pipeline(now_utc=1, window_start_utc=0, window_end_utc=1, cfg=_ml_cfg, deps=_ml_deps)
+        _ml_run_pipeline(
+            now_utc=_now_utc,
+            window_start_utc=_window_start_utc,
+            window_end_utc=_now_utc,
+            cfg=_ml_cfg,
+            deps=_ml_deps,
+        )
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
@@ -4339,6 +4349,12 @@ Examples:
         default=0,
         help="Increase log verbosity (repeatable).",
     )
+    parser.add_argument(
+        "--apply-proposals",
+        action="store_true",
+        default=False,
+        help="Apply approved meta-learning proposals (default: proposal_only mode).",
+    )
     args = parser.parse_args(extra_argv)
 
     # [PLAN MODE] Pure introspection — no execution, no side effects.
@@ -4475,6 +4491,9 @@ Examples:
     )
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
+
+    # [META-LEARNING] Store apply_proposals flag so _fire_meta_learning_intake can read it
+    state_mgr.state["apply_proposals"] = getattr(args, "apply_proposals", False)
 
     # [HEAL CONTEXT] Single source of truth for all healing flags
     ctx = HealContext.from_args(args)
@@ -4713,6 +4732,10 @@ Examples:
             except Exception as e:  # guardian: allow-silent-swallower
                 logger.warning(f"GravityLeakRepairAgent global run failed: {e}")
 
+            # [L3-SEAM] Initialize agent execution log for L3EfficiencyTuner consumption
+            if "agent_execution_log" not in state_mgr.state:
+                state_mgr.state["agent_execution_log"] = []
+
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
                 logger.info(f"PROCESSING TERRITORY: {territory}")
@@ -4722,6 +4745,8 @@ Examples:
                 state_mgr.state["current_territory"] = territory
                 state_mgr.save()
                 state_mgr.add_event("domain_start", f"Entering Domain: {territory}")
+                # [L3-SEAM] Record territory start time for efficiency tuner
+                _territory_start_ms = time.monotonic() * 1000.0
 
                 from dataclasses import replace as _dc_replace
 
@@ -4948,6 +4973,13 @@ Examples:
                         # Phase 5 (RootHygieneAgent moved outside territory loop — Fix 4)
                         cert = execute_phase5_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
+                        # [L3-SEAM] Record territory duration for L3EfficiencyTuner
+                        _territory_elapsed_ms = time.monotonic() * 1000.0 - _territory_start_ms
+                        state_mgr.state["agent_execution_log"].append({
+                            "territory": territory,
+                            "agent": "__territory_total__",
+                            "duration_ms": round(_territory_elapsed_ms, 2),
+                        })
                     else:
                         logger.error(f"Phase 1 failed for {territory} - skipping")
                         state_mgr.add_event("error", f"Phase 1 failure in {territory}")

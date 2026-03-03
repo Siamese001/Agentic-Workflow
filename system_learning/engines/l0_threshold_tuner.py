@@ -184,7 +184,74 @@ def propose_l0_threshold_changes(
     )
 
 
+# ---------------------------------------------------------------------------
+# Proposer Adapter (Protocol-conforming wrapper for the pipeline)
+# ---------------------------------------------------------------------------
+
+
+class L0ProposerAdapter:
+    """Wraps ``propose_l0_threshold_changes`` to conform to the ``L0Proposer`` Protocol.
+
+    The pipeline calls ``proposer.propose(snapshot, metrics, config, now_utc,
+    history, cooldown, sample)``.  This adapter translates those args into the
+    keyword-only function call.
+    """
+
+    def propose(
+        self,
+        snapshot: Any,
+        metrics: Any,
+        config: Any,
+        now_utc: int,
+        history: Any,
+        cooldown: Any,
+        sample: Any,
+    ) -> L0ThresholdChangePackage | None:
+        """Propose L0 threshold changes.
+
+        Extracts ``snapshot_id`` from the snapshot object and delegates
+        to ``propose_l0_threshold_changes()``.
+        """
+        snapshot_id = getattr(snapshot, "snapshot_id", "unknown")
+
+        # Normalise metrics: must be dict[str, float]
+        if not isinstance(metrics, dict):
+            metrics = {}
+
+        # Normalise config: must be dict[str, float]
+        if not isinstance(config, dict):
+            config = {}
+
+        # Provide fallback escalation_rate from config if metrics is sparse
+        if "escalation_rate" not in metrics:
+            metrics = dict(metrics)
+
+        # Normalise history
+        if not isinstance(history, dict):
+            history = {}
+
+        # Normalise cooldown / sample to our policy types
+        if cooldown is None:
+            from system_learning.validators.dampening import CooldownPolicy
+            cooldown = CooldownPolicy(min_seconds_between_updates=3600)
+
+        if sample is None:
+            from system_learning.validators.dampening import SampleSizePolicy
+            sample = SampleSizePolicy(min_observations=10)
+
+        return propose_l0_threshold_changes(
+            snapshot_id=snapshot_id,
+            metrics=metrics,
+            current_config=config if isinstance(config, dict) else {},
+            now_utc=now_utc,
+            history=history,
+            cooldown_policy=cooldown,
+            sample_policy=sample,
+        )
+
+
 __all__ = [
     "L0ThresholdChangePackage",
+    "L0ProposerAdapter",
     "propose_l0_threshold_changes",
 ]

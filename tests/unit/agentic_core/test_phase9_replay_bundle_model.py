@@ -6,7 +6,7 @@ from __future__ import annotations
 
 import pytest
 
-from agentic_core.L4_state.types.replay_bundle import (
+from agentic_core.L4_state.types.replay_bundle_types import (
     ReplayBundle,
     build_replay_bundle,
 )

@@ -22,7 +22,7 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
-from agentic_core.L0_routing.types.guardian_contract import is_v15_enforced
+from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
 from agentic_core.utils.security_util import safe_git_execute
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -135,7 +135,7 @@ def _v15_build_mission_manifest(mode_name: str, target_layer: str = "L3"):
     from agentic_core.L0_routing.enforcement.traceability_contracts import (
         generate_trace_id,
     )
-    from agentic_core.L0_routing.types.determinism_contracts import (
+    from agentic_core.L0_routing.types.determinism_contracts_types import (
         require_manifest_hash_ok,
     )
     from agentic_core.L0_routing.types.determinism_types import (

@@ -16,8 +16,8 @@ from typing import Any
 from agentic_core.L4_state.enforcement.readonly_retrieval_scope import (
     read_only_retrieval_scope,
 )
-from agentic_core.L4_state.types.retrieval_anchor import AnchoredResult
-from agentic_core.L4_state.types.retrieval_boundary_snapshot import (
+from agentic_core.L4_state.types.retrieval_anchor_types import AnchoredResult
+from agentic_core.L4_state.types.retrieval_boundary_snapshot_types import (
     AnchorEntry,
     RetrievalBoundarySnapshot,
     create_retrieval_boundary_snapshot,

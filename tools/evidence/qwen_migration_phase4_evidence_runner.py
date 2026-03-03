@@ -23,10 +23,10 @@ from pathlib import Path
 EVIDENCE_PATH = Path("docs/reports/evidence/qwen_migration_phase_4_deterministic_replay.md")
 
 SCOPE_FILES = [
-    "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
-    "agentic_core/L2_execution/types/vllm_gateway_integration.py",
-    "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
-    "agentic_core/L2_execution/types/vllm_replay_validator.py",
+    "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint_types.py",
+    "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+    "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
+    "agentic_core/L2_execution/types/vllm_replay_validator_types.py",
     "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
     "tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py",
 ]
@@ -211,10 +211,10 @@ def main() -> None:
     h("## Scope Isolation Proof")
     h("PHASE_TOUCHED_FILES:")
     phase_files = [
-        "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint.py",
-        "agentic_core/L2_execution/types/vllm_gateway_integration.py",
-        "agentic_core/L2_execution/types/vllm_gateway_adapter.py",
-        "agentic_core/L2_execution/types/vllm_replay_validator.py",
+        "agentic_core/L2_execution/types/vllm_infrastructure_fingerprint_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_integration_types.py",
+        "agentic_core/L2_execution/types/vllm_gateway_adapter_types.py",
+        "agentic_core/L2_execution/types/vllm_replay_validator_types.py",
         "tests/agentic_core/L2_execution/types/test_vllm_infrastructure_fingerprint.py",
         "tests/agentic_core/L2_execution/types/test_vllm_replay_validator.py",
     ]
@@ -266,9 +266,9 @@ def main() -> None:
     # Proof: Identical replay_hash across two runs
     h("## Proof: Identical Replay Hash Across Two Runs")
     replay_proof_code = """
-from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
-from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_replay_validator_types import compute_replay_hash
 
 fp = VLLMInfrastructureFingerprint.deterministic_test_instance()
 ctrl1, reg1 = VLLMQueueController(), VLLMCircuitBreakerRegistry()
@@ -302,9 +302,9 @@ print('OK: identical replay_hash confirmed')
     # Proof: replay_hash changes when fingerprint changes
     h("## Proof: Replay Hash Changes When Fingerprint Changes")
     fingerprint_change_proof_code = """
-from agentic_core.L2_execution.types.vllm_gateway_integration import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
-from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint import VLLMInfrastructureFingerprint
-from agentic_core.L2_execution.types.vllm_replay_validator import compute_replay_hash
+from agentic_core.L2_execution.types.vllm_gateway_integration_types import VLLMQueueController, VLLMCircuitBreakerRegistry, evaluate_gateway_call
+from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
+from agentic_core.L2_execution.types.vllm_replay_validator_types import compute_replay_hash
 
 fp1 = VLLMInfrastructureFingerprint.deterministic_test_instance()
 fp2 = VLLMInfrastructureFingerprint(
