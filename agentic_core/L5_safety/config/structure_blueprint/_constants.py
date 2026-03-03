@@ -158,6 +158,9 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "seams": {
                 "purpose": "Cross-layer seam contracts and integration points.",
             },
+            "seam": {
+                "purpose": "Legacy single-seam audit module. Predates seams/; kept for backward compatibility.",
+            },
         },
     },
     "L1_cognition": {
@@ -166,6 +169,9 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         "extra_subfolders": {
             "engines": {
                 "purpose": "Cognitive engines and processing pipelines.",
+            },
+            "telemetry": {
+                "purpose": "Layer-level telemetry emitters and observability event reporters.",
             },
         },
         "reasoning_suffixes": [
@@ -203,6 +209,12 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         "extra_subfolders": {
             "audit": {
                 "purpose": "Execution audit trails and compliance logging.",
+            },
+            "capability": {
+                "purpose": "Capability token promotion and execution capability gates.",
+            },
+            "determinism": {
+                "purpose": "Determinism guards, replay guards, and canonical digest calculators.",
             },
             "engines": {
                 "purpose": "Execution engines and processing pipelines.",
@@ -242,8 +254,17 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
         "purpose": "The Conductor: Workflow Management, DAGs, and Coordination.",
         "notes": "LCD+ canonical skeleton. engine/orchestrators/routers/strategies/patterns/diagnostics DISSOLVED.",
         "extra_subfolders": {
+            "arbitration": {
+                "purpose": "Multi-advisor arbitration and decision arbitrator logic.",
+            },
             "engines": {
                 "purpose": "Orchestration engines and workflow processors.",
+            },
+            "ptc": {
+                "purpose": "Prompt-to-completion (PTC) tool registry, contract definitions, and invoker.",
+            },
+            "replay": {
+                "purpose": "Deterministic replay and state reconstruction for orchestration traces.",
             },
             "scripts": {
                 "purpose": "Orchestration-layer operational scripts.",
@@ -309,12 +330,18 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "caching": {
                 "purpose": "Caching layers and cache management strategies.",
             },
+            "engines": {
+                "purpose": "State management engines: ghost mutation detector, replay bundle emitter, readonly retrieval orchestrator.",
+            },
             "memory": {
                 "purpose": "Hot storage: vector stores, semantic caches, reasoning memory, experience buffers.",
                 "allowed_suffixes": ["_store.py", "_retriever.py", "_cache.py", "_memory.py", "_db.py"],
                 "subfolders": {
                     "semantic": {"purpose": "Semantic search stores (BM25, embeddings)."},
                 },
+            },
+            "storage": {
+                "purpose": "Persistent and filesystem-backed state storage implementations.",
             },
         },
         "routing_rules": {
@@ -337,14 +364,18 @@ LAYER_OVERRIDES: Final[Mapping[str, Mapping[str, Any]]] = {
             "core_kernel": {
                 "purpose": "Zero-dependency safety kernel and foundational primitives.",
             },
+            "static_checks": {
+                "purpose": "Static analysis invariant checks: determinism serialization, PowerShell ban, PTC invariants, write-gateway enforcement.",
+            },
+        },
+        "enforcement_subfolders": {
             "governance": {
-                "purpose": "Governance policies, rules, and compliance frameworks.",
+                "purpose": "Governance policies, audit hooks, and compliance frameworks nested under safety enforcement.",
             },
-            "runners": {
-                "purpose": "Safety runner orchestration and execution harnesses.",
-            },
-            "security": {
-                "purpose": "Security enforcement, threat detection, and access control.",
+        },
+        "config_subfolders": {
+            "structure_blueprint": {
+                "purpose": "SSOT structure blueprint module — _constants.py, territories.py, ssot.py, derived.py, and enforcement/ snapshot baseline files.",
             },
         },
         "config_suffixes": ["_config.py", "_blueprint.py", "_settings.py"],
@@ -514,6 +545,18 @@ def _build_layer_definition(layer_name: str) -> dict[str, Any]:
     if "extra_subfolders" in overrides:
         subfolders.update(overrides["extra_subfolders"])
 
+    # Allow layer overrides to declare subfolders of enforcement
+    if "enforcement_subfolders" in overrides:
+        if not isinstance(subfolders["enforcement"].get("subfolders"), dict):
+            subfolders["enforcement"]["subfolders"] = {}
+        subfolders["enforcement"]["subfolders"].update(overrides["enforcement_subfolders"])
+
+    # Allow layer overrides to declare subfolders of config
+    if "config_subfolders" in overrides:
+        if not isinstance(subfolders["config"].get("subfolders"), dict):
+            subfolders["config"]["subfolders"] = {}
+        subfolders["config"]["subfolders"].update(overrides["config_subfolders"])
+
     # Build the definition
     definition: dict[str, Any] = {
         "purpose": overrides.get("purpose", f"{layer_name} layer"),
@@ -619,6 +662,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "agentic_core/prompt_governance/meta_prompts",
                 ],
                 "subfolders": {
+                    "contracts": {
+                        "purpose": "Prompt governance contract definitions and interface agreements."
+                    },
                     "core": {"purpose": "Core prompt governance logic and shared primitives."},
                     "meta_prompts": {"purpose": "Meta-prompt definitions and persona templates."},
                     "optimization": {"purpose": "Prompt optimization strategies and tuning."},
