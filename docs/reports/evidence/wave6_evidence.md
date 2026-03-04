@@ -1464,3 +1464,8 @@ HITL_DECISION_46: Agent=SovereignDecisionEngine | File=location
 
 HITL_DECISION_47: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
   Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=FileClassificationAgent | File=C:\Users\amita\AppData\Local\Temp\pytest-of-amita\pytest-56\test_confidence_low_for_mixed_0\hybrid.py
+  Violation=AMBIGUOUS_CLASSIFICATION | Proposed=TYPES | Decision=FLAGGED_FOR_REVIEW
+  delta=0.125
+  top3=[('TYPES', 0.5), ('CONFIG', 0.375), ('VALIDATOR', 0.125)]
