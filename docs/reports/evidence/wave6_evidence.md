@@ -987,3 +987,339 @@ HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
 
 HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
   Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=HierarchyAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_7: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_8: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_9: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_10: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_11: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_12: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_13: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_14: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_15: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_16: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_17: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_18: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_19: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_20: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_21: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_22: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_23: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_24: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_25: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_26: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_27: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_28: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_29: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_30: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_31: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_32: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_33: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_34: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_35: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_36: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_37: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_38: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_39: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_40: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_41: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_42: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_43: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_44: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_45: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_46: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_47: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_48: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_49: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_50: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_51: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_52: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\adapters\l1_meta_adapter.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l1_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l0_threshold_tuner.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l0_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_5: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l1_model_proposer.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l1_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_6: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l3_efficiency_tuner.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l3_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_7: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_audit_reader.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_8: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_state_writer.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_9: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l4_version_store.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_10: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\system_learning\engines\l5_policy_proposer.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l5_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_11: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_12: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_13: Agent=SovereignDecisionEngine | File=HierarchyAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_14: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_15: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_16: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_17: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_18: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_19: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_20: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_21: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_22: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_23: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_24: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_25: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_26: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_27: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_28: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_29: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_30: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_31: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_32: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_33: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_34: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_35: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_36: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_37: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_38: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_39: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_40: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_41: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_42: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_43: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_44: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_45: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_46: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_47: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_48: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_49: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_50: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_51: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_52: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_53: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_54: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_55: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_56: Agent=SovereignDecisionEngine | File=LocationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_57: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_58: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_59: Agent=SovereignDecisionEngine | File=FileClassificationAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_60: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
