@@ -2064,35 +2064,36 @@ def execute_phase2_reconciliation(
                         raise RuntimeError(
                             f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
                         )
-            if not isinstance(fix_result, dict):
-                fix_result = {"raw_output": str(fix_result)}
 
-            fix_result["agent"] = agent_key
-            fix_result["violations_submitted"] = len(agent_violations)
-            fix_result["routing_reason"] = reason
+                if not isinstance(fix_result, dict):
+                    fix_result = {"raw_output": str(fix_result)}
 
-            if fix_result.get("success", True) is False:
-                raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
+                fix_result["agent"] = agent_key
+                fix_result["violations_submitted"] = len(agent_violations)
+                fix_result["routing_reason"] = reason
 
-            reconciliation_log.append(fix_result)
-            decision_engine.release_sovereignty_token(agent_key, success=True)
-            # [H3] Record healing action for Phase 2 reconciliation
-            _record_healing_action(
-                state_mgr,
-                agent=agent_key,
-                territory=territory,
-                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
-                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
-                outcome="SUCCESS",
-            )
-            logging.warning(
-                "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
-                agent_key,
-                list(fix_result.keys()),
-            )
-            pbar.update(1)
+                if fix_result.get("success", True) is False:
+                    raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
+
+                reconciliation_log.append(fix_result)
+                decision_engine.release_sovereignty_token(agent_key, success=True)
+                # [H3] Record healing action for Phase 2 reconciliation
+                _record_healing_action(
+                    state_mgr,
+                    agent=agent_key,
+                    territory=territory,
+                    routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                    routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                    confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                    fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
+                    outcome="SUCCESS",
+                )
+                logging.warning(
+                    "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
+                    agent_key,
+                    list(fix_result.keys()),
+                )
+                pbar.update(1)
 
             # guardian: allow-silent-swallow
             except Exception as e:
