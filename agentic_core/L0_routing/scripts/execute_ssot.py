@@ -102,19 +102,68 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         from system_learning.engines.in_memory_healing_outcome_intake_store import (
             InMemoryHealingOutcomeIntakeStore,
         )
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
         healing_actions = state_mgr.state.get("healing_actions", [])
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
+
+        # Attempt to load embedding helpers (guarded — no-op when unavailable)
+        _bmg_embed = None
+        _normalizer = None
+        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
+            try:
+                from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                    normalize_failure_signal,
+                )
+
+                _bmg_embed = bmg_embed_text
+                _normalizer = normalize_failure_signal
+            except ImportError:
+                pass
+
+        new_vectors: list[list[float]] = []
+
         for action in healing_actions:
-            from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+            failure_type_str: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
+            healer_id: str = action.get("agent", "unknown")
+            tier_str: str = action.get("tier") or action.get("routing_tier") or "L5"
+            success_flag: bool = action.get("outcome", "SUCCESS") == "SUCCESS"
+
+            # Gap 2: produce failure_vector when embeddings are enabled
+            failure_vector: tuple[float, ...] | None = None
+            novelty_flag: bool = False
+            if _bmg_embed is not None and _normalizer is not None:
+                try:
+                    normalized_text = _normalizer(action)
+                    vec = _bmg_embed(normalized_text)
+                    failure_vector = tuple(vec)
+                    new_vectors.append(vec)
+                    # Novelty: compare against recent vectors stored in L4 state
+                    recent = state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
+                    if recent:
+                        import numpy as _np
+
+                        q = _np.array(vec, dtype=_np.float32)
+                        mat = _np.array(recent, dtype=_np.float32)
+                        sims = mat @ q
+                        novelty_flag = bool(float(sims.max()) < 0.75)
+                    else:
+                        novelty_flag = True
+                except Exception:  # guardian: allow-silent-swallower
+                    pass
 
             aggregator.ingest(
                 HealingOutcomeEvent(
-                    healer_id=action.get("agent", "unknown"),
-                    tier=action.get("tier", "L5"),
-                    failure_type=action.get("type", "UNKNOWN"),
-                    success=action.get("status") not in ("plan_only", "skipped", "error", "failed"),
+                    healer_id=healer_id,
+                    tier=tier_str,
+                    failure_type=failure_type_str,
+                    success=success_flag,
                     timestamp_utc=0,
+                    routing_digest=action.get("routing_digest"),
+                    confidence_score=action.get("confidence"),
+                    failure_vector=failure_vector,
+                    novelty_flag=novelty_flag,
                 )
             )
 
@@ -124,6 +173,14 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         if healing_actions:
             record = adapter.build_record(aggregator=aggregator, created_utc=0, source="execute_ssot")
             adapter.persist_record(record)
+
+        # Gap 6: persist new failure vectors to L4 state (capped at 200) for cross-run novelty
+        if new_vectors:
+            ml_state = state_mgr.state.setdefault("meta_learning", {})
+            existing_vecs: list = ml_state.get("recent_failure_vectors", [])
+            merged = existing_vecs + new_vectors
+            ml_state["recent_failure_vectors"] = merged[-200:]
+
         state_mgr.update_meta_learning(
             {
                 "total_experiences": store.count(),
@@ -1240,6 +1297,58 @@ class SovereignDecisionEngine:
                 return 0.9
         return 0.5
 
+    def _compute_novelty_score(
+        self,
+        failure_type: "FailureType | None",
+        territory: str,
+        confidence: "ConfidenceScore",
+    ) -> int:
+        """Compute the novelty score N (0-3) for RoutingInputs.
+
+        When BMG_EMBEDDINGS_ENABLED=true and recent failure vectors exist in L4
+        state, embeds the current failure signal text and compares against stored
+        vectors to produce a true novelty score:
+          N=0  max_similarity >= 0.85  (seen before)
+          N=1  0.70 <= max_similarity < 0.85
+          N=2  0.50 <= max_similarity < 0.70
+          N=3  max_similarity < 0.50   (completely novel)
+
+        Falls back to the legacy heuristic (0 or 1 based on [BMG-GPU] in
+        reasoning) when embeddings are disabled or unavailable.
+        """
+        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() != "true":
+            return 1 if "[BMG-GPU]" in (confidence.reasoning or "") else 0
+
+        recent: list = []
+        if self.state_mgr is not None:
+            recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
+
+        if not recent:
+            return 1
+
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            ft_str = failure_type.value if failure_type is not None else "UNKNOWN"
+            signal_text = f"{ft_str} {territory}"
+            vec = bmg_embed_text(signal_text)
+
+            import numpy as _np
+
+            q = _np.array(vec, dtype=_np.float32)
+            mat = _np.array(recent, dtype=_np.float32)
+            max_sim = float((_np.dot(mat, q)).max())
+
+            if max_sim >= 0.85:
+                return 0
+            if max_sim >= 0.70:
+                return 1
+            if max_sim >= 0.50:
+                return 2
+            return 3
+        except Exception:  # guardian: allow-silent-swallower
+            return 1 if "[BMG-GPU]" in (confidence.reasoning or "") else 0
+
     def _route_decision(
         self,
         confidence: "ConfidenceScore",
@@ -1266,7 +1375,7 @@ class SovereignDecisionEngine:
         C = min(3, max(0, int(3 - confidence.value * 3)))
         B = 3 if territory.startswith("L5") else (2 if "agentic_core" in territory else 1)
         A = 0 if confidence.value >= 0.75 else (2 if confidence.value < 0.50 else 1)
-        N = 1 if "[BMG-GPU]" in (confidence.reasoning or "") else 0
+        N = self._compute_novelty_score(failure_type, territory, confidence)
         high_cost = {
             FailureType.LAYER_VIOLATION,
             FailureType.GATEWAY_BYPASS,

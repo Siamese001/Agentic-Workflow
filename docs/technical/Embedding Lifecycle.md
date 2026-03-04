@@ -3,7 +3,7 @@ STAGE PIPELINE                          HOSPITAL SYSTEM (ANALOGY)               
 ===========================================================================================================================================================
 
 RAW SIGNAL
-[L2 • L2.1]                             🏥 [ PATIENT ARRIVES ]                                 💥 [ SYSTEM INCIDENT OCCURS ]
+[L2]                                    🏥 [ PATIENT ARRIVES ]                                 💥 [ SYSTEM INCIDENT OCCURS ]
                                         (Individual patient case)                             (Specific runtime failure)
                                                 |                                                     |
                                                 v                                                     v
@@ -18,24 +18,30 @@ RAW SIGNAL
                                     +-------------------------------------------+       +-------------------------------------------+
 
 
-ENCODER
-[L2 • L2.2]                             +-------------------------------------------+       +-------------------------------------------+
+ENCODER  (METADATA EXTRACTED HERE; EMBEDDINGS NOT GENERATED HERE)
+[L2]                                    +-------------------------------------------+       +-------------------------------------------+
                                     |        🩻 Medical Imaging Device            |       |        🧹 Failure Normalization           |
                                     |                                           |       |                                           |
                                     | * X-ray                                   |       | * parse stack trace                      |
                                     | * MRI                                     |       | * extract error signature                |
                                     |                                           |       | * collect repo + execution context       |
                                     | -> produces scan signal                   |       | * normalize signal text                  |
+                                    |                                           |       |                                           |
+                                    | METADATA CAPTURED                          |       | METADATA CAPTURED                          |
+                                    | * patient history                          |       | * territory / invariant ids               |
+                                    | * age / risk factors                       |       | * repo context / file path                |
                                     +-------------------------------------------+       +-------------------------------------------+
 
 
-VECTOR  (EMBEDDINGS GENERATED HERE)
+VECTOR  (EMBEDDINGS GENERATED HERE; INPUT IS NORMALIZED TEXT, NOT METADATA)
 [L1]                                    +-------------------------------------------+       +-------------------------------------------+
                                     |        🧠 Diagnostic Encoding Model        |       |        🧠 Embedding Model (bge-m3)        |
                                     |        (Radiology Interpretation)         |       |                                           |
                                     |                                           |       | INPUT                                     |
                                     | INPUT                                     |       | "ImportError yaml config loader"         |
-                                    | "cough fever chest pain infection"        |       | + territory / invariant ids              |
+                                    | "cough fever chest pain infection"        |       |                                           |
+                                    |                                           |       | (territory / invariant ids are metadata   |
+                                    |                                           |       |  stored separately, not embedded)         |
                                     |                                           |       |                                           |
                                     | OUTPUT                                    |       | OUTPUT                                    |
                                     | symptom_vector = [v1..vN]                 |       | failure_vector = [v1..vN]                |
@@ -95,26 +101,50 @@ ORCHESTRATION  (EMBEDDINGS USED DOWNSTREAM VIA ROUTING OUTPUT)
                                     +-------------------------------------------+       +-------------------------------------------+
 
 
-SPECIALIST
-[L2 • L2.3]                             +-------------------------------------------+       +-------------------------------------------+
-                                    |      👨‍⚕️ Specialist Doctor Assigned       |       |        🤖 Healing Agent Assigned          |
+PRE-COMMIT
+[L2 • L2.1]                             +-------------------------------------------+       +-------------------------------------------+
+                                    |      📝 Pre-Procedure Setup               |       |        📝 Pre-Commit                       |
                                     |                                           |       |                                           |
-                                    | * cardiologist                            |       | * DependencyRepairAgent                  |
-                                    | * orthopedic                              |       | * ArchitectureGovernorAgent              |
-                                    | * infectious disease                      |       | * GravityRepairAgent                     |
-                                    |                                           |       | * TestRepairAgent                        |
-                                    |                                           |       |                                           |
-                                    | -> treatment applied                      |       | -> deterministic repair executed         |
-                                    |                                           |       |                                           |
-                                    | * antibiotics 💊                          |       | * pip install dependency 🔧              |
-                                    | * cast 🦴                                 |       | * modify configuration 🧩               |
-                                    | * surgery 🏥                              |       | * patch code 🧑‍💻                        |
+                                    | * prepare orders / scope                  |       | * plan repair scope                        |
+                                    | * confirm required resources              |       | * stage changes                             |
+                                    |                                           |       | * identify files/targets                    |
                                     +-------------------------------------------+       +-------------------------------------------+
 
 
-LEARNING LOOP  (EMBEDDINGS STORED HERE FOR FUTURE MEMORY SEARCH)
-[L2 • L2.4 | L4 storage | L6 telemetry feeds]      +-------------------------------------------+       +-------------------------------------------+
-                                    |      🗂️ Case Stored in Hospital DB        |       |      🗂️ Healing Event Stored in Memory    |
+VALIDATION
+[L2 • L2.2]                             +-------------------------------------------+       +-------------------------------------------+
+                                    |      ✅ Safety Checks Before Treatment     |       |        ✅ Validation                        |
+                                    |                                           |       |                                           |
+                                    | * allergies / contraindications           |       | * invariant violations check               |
+                                    | * confirm diagnosis criteria              |       | * territory violations check               |
+                                    | * confirm procedure is permitted          |       | * policy checks (fail-closed)              |
+                                    +-------------------------------------------+       +-------------------------------------------+
+
+
+EXECUTION
+[L2 • L2.3]                             +-------------------------------------------+       +-------------------------------------------+
+                                    |      🏥 Treatment Performed               |       |        🛠️ Execution                         |
+                                    |                                           |       |                                           |
+                                    | * antibiotics 💊                          |       | * apply change / run command               |
+                                    | * cast 🦴                                 |       | * run tests / build                         |
+                                    | * surgery 🏥                              |       | * perform system mutation                   |
+                                    +-------------------------------------------+       +-------------------------------------------+
+
+
+HEALING
+[L2 • L2.4]                             +-------------------------------------------+       +-------------------------------------------+
+                                    |      🩹 Complication Response             |       |        🤖 Healing                           |
+                                    |                                           |       |                                           |
+                                    | * adjust treatment                        |       | * DependencyRepairAgent                    |
+                                    | * escalate to specialist                   |       | * ArchitectureGovernorAgent                |
+                                    | * retry with new protocol                 |       | * GravityRepairAgent                       |
+                                    |                                           |       | * TestRepairAgent                          |
+                                    +-------------------------------------------+       +-------------------------------------------+
+
+
+LEARNING LOOP  (EMBEDDINGS STORED HERE FOR FUTURE MEMORY SEARCH; METADATA STORED WITH THE VECTOR)
+[L4 storage | L6 telemetry feeds]        +-------------------------------------------+       +-------------------------------------------+
+                                    |      🗂️ Case Stored in Hospital DB        |       |      🗂️ Healing Event Stored in State     |
                                     |                                           |       |                                           |
                                     | VECTOR STORED                             |       | VECTOR STORED                             |
                                     | symptom_vector                            |       | failure_vector                            |
@@ -150,10 +180,6 @@ SYSTEM LEARNING  (EMBEDDINGS CONSUMED FROM L4 STORAGE + L6 TELEMETRY)
                                     | the clinical workflow itself              |       | but must NOT be implemented               |
                                     |                                           |       | as an L6 observability component          |
                                     |                                           |       | (common mistake in agentic systems)      |
-                                    |                                           |       |                                           |
-                                    | OPTIONAL (rare)                           |       | OPTIONAL (rare)                           |
-                                    | new imaging model                         |       | new embedding model                       |
-                                    | requires re-baselining cases              |       | requires re-indexing vectors              |
                                     +-------------------------------------------+       +-------------------------------------------+
 
 ===========================================================================================================================================================

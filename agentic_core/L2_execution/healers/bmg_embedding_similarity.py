@@ -100,6 +100,35 @@ def bmg_cosine_similarity(unknown: str, candidates: list[str]) -> float:
     return max(0.0, min(1.0, max_sim))
 
 
+def bmg_embed_text(text: str) -> list[float]:
+    """Embed a single text string using BAAI/bge-m3.
+
+    Returns an L2-normalised embedding vector as a plain Python list of
+    floats.  Suitable for storage in ``HealingOutcomeEvent.failure_vector``
+    and subsequent cosine-similarity novelty checks.
+
+    Args:
+        text: The text to embed (e.g. a normalized failure signal string).
+
+    Returns:
+        L2-normalised float list of length equal to the model's output
+        dimension (~1024 for bge-m3).
+
+    Raises:
+        ImportError: If sentence-transformers is not installed.
+    """
+    import numpy as np  # noqa: PLC0415
+
+    model = _get_model()
+    vecs: np.ndarray = model.encode(  # type: ignore[attr-defined]
+        [text],
+        convert_to_numpy=True,
+        normalize_embeddings=True,
+        show_progress_bar=False,
+    )
+    return vecs[0].tolist()
+
+
 def clear_model_cache() -> None:
     """Invalidate the cached model (for tests and hot-reload)."""
     global _MODEL_CACHE  # noqa: PLW0603
@@ -108,5 +137,6 @@ def clear_model_cache() -> None:
 
 __all__ = [
     "bmg_cosine_similarity",
+    "bmg_embed_text",
     "clear_model_cache",
 ]

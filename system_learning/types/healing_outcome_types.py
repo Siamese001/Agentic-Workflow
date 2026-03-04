@@ -65,6 +65,11 @@ class HealingOutcomeEvent:
     timestamp_utc: int
     trace_id: str | None = None
     error_signature: str | None = None
+    failure_vector: tuple[float, ...] | None = None
+    routing_digest: str | None = None
+    confidence_score: float | None = None
+    novelty_flag: bool = False
+    files_touched: tuple[str, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
         if not self.healer_id:
