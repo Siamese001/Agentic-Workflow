@@ -16,6 +16,27 @@ import os
 # This defines the allowed folder structure and depth constraints.
 
 SOVEREIGN_REGISTRY: dict = {
+    "system_learning": {
+        "depth": 2,
+        "subfolders": [
+            "adapters",
+            "arbitration",
+            "confidence",
+            "config",
+            "constraints",
+            "correlation",
+            "enforcement",
+            "engines",
+            "fingerprinting",
+            "pipelines",
+            "ports",
+            "runtime",
+            "snapshots",
+            "stores",
+            "types",
+            "validators",
+        ],
+    },
     "agentic_core": {
         "depth": 3,
         "subfolders": [
