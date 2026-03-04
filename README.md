@@ -1,6 +1,6 @@
 # Agentic Workflow — Production-Grade Sovereign AI Architecture
 
-> A layered, self-healing agentic system engineered for correctness, auditability, and production safety.  
+> A layered, self-healing agentic system engineered for correctness, auditability, and production safety.
 > Built to prove that AI agents can be deterministic, observable, and architecturally governed — not just functional.
 
 ---
@@ -154,5 +154,3 @@ python -m pytest -q --color=no
 # Explore the architecture
 cat docs/technical/Healer-Validator\ Resolution\ Symmetry\ in\ Architecture.md
 ```
-
-
