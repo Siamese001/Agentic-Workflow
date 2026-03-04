@@ -1,171 +1,251 @@
 """Three-Tier Convergence Tests.
 
-Validates that execute_ssot converges with remediation_dispatcher
-through shared contracts without breaking existing functionality.
+Validates:
+  Tier 1 — UWG grant/revoke/record lifecycle round-trips.
+  Tier 2 — Threshold constants from healing_tier_config match execute_ssot defaults.
+  Tier 3 — adapt_heal_result() produces valid HealCheckResult from every input shape,
+            including absolute-path sanitisation.
 """
+
+from __future__ import annotations
+
+from pathlib import Path
 
 import pytest
 
-from agentic_core.L0_routing.scripts.heal_result_adapter import adapt_heal_result
-from agentic_core.L2_execution.types.heal_contract_types import (
-    HealStatus,
-)
+from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
+from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
 
 
-class TestTier1UWGIntegration:
-    """Tier 1: UniversalWriteGateway integration tests."""
+# ---------------------------------------------------------------------------
+# Tier 1 — UniversalWriteGateway lifecycle
+# ---------------------------------------------------------------------------
 
-    def test_uwg_permissions_granted_and_revoked(self) -> None:
-        """Verify UWG permissions are properly managed during agent execution."""
-        # This test would require integration setup with actual agent
-        # For now, we verify the import and basic functionality
-        from agentic_core.interfaces.write_gateway import get_write_gateway
 
-        uwg = get_write_gateway()
-        assert uwg is not None
+class TestTier1UWG:
+    """UWG permission + ledger lifecycle."""
 
-        # Test permission grant/revoke
-        test_path = "test_territory/"
+    def _fresh_uwg(self):
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+
+        return UniversalWriteGateway()
+
+    def test_grant_then_revoke_permission(self) -> None:
+        uwg = self._fresh_uwg()
+        # UWG stores exact normalized key; check_write_permission looks up that exact key.
+        test_path = "agentic_core/L2_execution/"
         uwg.grant_write_permission(test_path)
         assert uwg.check_write_permission(test_path)
-
         uwg.revoke_write_permission(test_path)
-        # After revocation, should be blocked (unless in allowed paths)
         assert not uwg.check_write_permission(test_path)
 
+    def test_record_mutation_appends_to_ledger(self) -> None:
+        uwg = self._fresh_uwg()
+        uwg.grant_write_permission("apps_rg/")
+        uwg.record_mutation(path="apps_rg/engines/foo.py", operation="heal_repository", permitted=True)
+        ledger = uwg.get_mutation_ledger()
+        assert len(ledger) == 1
+        assert ledger[0].operation == "heal_repository"
+        assert ledger[0].permitted is True
 
-class TestTier2HealingTierRouter:
-    """Tier 2: healing_tier_router threshold consistency tests."""
+    def test_revoke_without_prior_grant_is_safe(self) -> None:
+        """Revoking a path that was never granted must not raise."""
+        uwg = self._fresh_uwg()
+        uwg.revoke_write_permission("nonexistent/territory/")  # must not raise
 
-    def test_threshold_constants_imported(self) -> None:
-        """Verify canonical thresholds are imported from healing_tier_config."""
-        try:
-            from agentic_core.L2_execution.healers.healing_tier_config import (
-                HEALING_CONFIDENCE_X,
-                HEALING_CONFIDENCE_Y,
-            )
+    def test_replay_mode_skips_permission_changes(self) -> None:
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
-            # Verify expected values
-            assert HEALING_CONFIDENCE_X == 0.75
-            assert HEALING_CONFIDENCE_Y == 0.40
-        except ImportError:
-            pytest.skip("healing_tier_config not available")
+        uwg = UniversalWriteGateway(replay_mode=True)
+        uwg.grant_write_permission("apps_rg/")  # no-op in replay mode
+        # In replay mode all paths are allowed
+        assert uwg.check_write_permission("apps_rg/engines/foo.py")
 
-    def test_fallback_thresholds_when_config_missing(self) -> None:
-        """Verify fallback thresholds are used when config is unavailable."""
-        # This would be tested through integration with execute_ssot
-        # For now, verify the fallback values are correct
-        CONF_X = 0.75
-        CONF_Y = 0.40
-        assert CONF_X > CONF_Y
-        assert 0.0 <= CONF_Y <= CONF_X <= 1.0
+    def test_get_write_gateway_returns_uwg_instance(self) -> None:
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
+        from agentic_core.interfaces.write_gateway import get_write_gateway
+
+        assert isinstance(get_write_gateway(), UniversalWriteGateway)
 
 
-class TestTier3HealCheckResultAdapter:
-    """Tier 3: HealCheckResult adapter tests."""
+# ---------------------------------------------------------------------------
+# Tier 2 — Threshold SSOT consistency
+# ---------------------------------------------------------------------------
 
-    def test_adapt_dict_result_success(self) -> None:
-        """Test adapting successful dict result."""
-        raw_result = {
-            "success": True,
-            "files_healed": ["file1.py", "file2.py"],
-            "violations_fixed": 2,
-        }
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 2)
+class TestTier2Thresholds:
+    """Canonical thresholds in healing_tier_config must match execute_ssot defaults."""
 
-        assert adapted.check_id == "TestAgent"
-        assert adapted.status == HealStatus.HEALED
-        assert "file1.py" in adapted.changes_made
-        assert "file2.py" in adapted.changes_made
-        assert adapted.needs_llm_escalation is False
+    def test_threshold_values_are_canonical(self) -> None:
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_X,
+            HEALING_CONFIDENCE_Y,
+        )
 
-    def test_adapt_dict_result_failure(self) -> None:
-        """Test adapting failed dict result."""
-        raw_result = {
-            "success": False,
-            "error": "Complex rewrite required",
-            "files_healed": 0,
-        }
+        assert HEALING_CONFIDENCE_X == 0.75, "X threshold drifted from 0.75"
+        assert HEALING_CONFIDENCE_Y == 0.40, "Y threshold drifted from 0.40"
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 1)
+    def test_thresholds_are_ordered(self) -> None:
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_X,
+            HEALING_CONFIDENCE_Y,
+        )
 
-        assert adapted.status == HealStatus.FAILED
-        assert adapted.notes == "Complex rewrite required"
-        assert adapted.needs_llm_escalation is True  # Complex error triggers escalation
+        assert HEALING_CONFIDENCE_Y < HEALING_CONFIDENCE_X
+        assert 0.0 <= HEALING_CONFIDENCE_Y < HEALING_CONFIDENCE_X <= 1.0
 
-    def test_adapt_string_result(self) -> None:
-        """Test adapting string result."""
-        raw_result = "Fixed 3 files"
+    def test_healing_tier_config_validates_on_load(self) -> None:
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            load_default_healing_tier_config,
+        )
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 3)
+        cfg = load_default_healing_tier_config()
+        assert cfg.heal_confidence_x == 0.75
+        assert cfg.heal_confidence_y == 0.40
 
-        assert adapted.status == HealStatus.HEALED
-        assert "Fixed 3 files" in adapted.changes_made
 
-    def test_adapt_none_result(self) -> None:
-        """Test adapting None result."""
-        adapted = adapt_heal_result("TestAgent", None, 0)
+# ---------------------------------------------------------------------------
+# Tier 3 — adapt_heal_result contract coverage
+# ---------------------------------------------------------------------------
 
-        assert adapted.status == HealStatus.HEALED  # Default for backward compatibility
-        assert "No output returned" in adapted.changes_made
 
-    def test_adapt_partial_success(self) -> None:
-        """Test adapting partial success result."""
-        raw_result = {
-            "status": "PARTIAL",
-            "files_healed": ["file1.py"],
-            "violations_fixed": 1,
-        }
+REPO_ROOT = Path(__file__).resolve().parents[2]  # c:\Git\Agentic-Workflow
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 2)
 
-        assert adapted.status == HealStatus.PARTIAL
-        assert adapted.needs_llm_escalation is True  # Partial success triggers escalation
+class TestTier3Adapter:
+    """adapt_heal_result() produces a valid HealCheckResult for every input shape."""
 
-    def test_escalation_hint_construction(self) -> None:
-        """Test escalation hint includes relevant context."""
-        raw_result = {
-            "success": False,
-            "failure_type": "LAYER_VIOLATION",
-            "blast_radius": 0.8,
-            "error": RuntimeError("Complex architecture issue"),
-        }
+    # --- status extraction ---
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 1)
+    def test_success_bool_true(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"success": True}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.HEALED
 
-        assert adapted.needs_llm_escalation is True
-        assert "failure_type=LAYER_VIOLATION" in adapted.escalation_hint
-        assert "blast_radius=0.8" in adapted.escalation_hint
-        assert "agent=TestAgent" in adapted.escalation_hint
-        assert "status=FAILED" in adapted.escalation_hint
+    def test_success_bool_false(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"success": False}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.FAILED
 
-    def test_large_changes_trigger_escalation(self) -> None:
-        """Test that many changes trigger LLM escalation."""
-        raw_result = {
-            "success": True,
-            "changes_made": [f"file{i}.py" for i in range(15)],  # > 10 files
-        }
+    def test_explicit_status_healed(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "HEALED"}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.HEALED
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 15)
+    def test_explicit_status_partial(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "PARTIAL"}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.PARTIAL
 
-        assert adapted.status == HealStatus.HEALED
-        assert adapted.needs_llm_escalation is True  # Many changes trigger escalation
+    def test_explicit_status_skipped(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "SKIPPED"}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.SKIPPED
 
-    def test_canonical_output_format(self) -> None:
-        """Test adapted result can be converted to canonical dict format."""
-        raw_result = {
-            "success": True,
-            "files_healed": ["test.py"],
-        }
+    def test_status_success_alias(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "SUCCESS"}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.HEALED
 
-        adapted = adapt_heal_result("TestAgent", raw_result, 1)
-        canonical_dict = adapted.to_dict()
+    def test_error_key_implies_failed(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"error": "boom"}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.FAILED
 
-        # Verify canonical structure
-        assert "check_id" in canonical_dict
-        assert "status" in canonical_dict
-        assert "changes_made" in canonical_dict
-        assert canonical_dict["check_id"] == "TestAgent"
-        assert canonical_dict["status"] == "HEALED"
-        assert isinstance(canonical_dict["changes_made"], list)
+    def test_files_healed_zero_implies_skipped(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"files_healed": 0}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.SKIPPED
+
+    def test_files_healed_positive_implies_healed(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"files_healed": 3}, repo_root=REPO_ROOT)
+        assert hcr.status == HealStatus.HEALED
+
+    # --- string / None normalisation ---
+
+    def test_string_input_stored_in_changes_made(self) -> None:
+        hcr = adapt_heal_result("AgentA", "Fixed 3 files", repo_root=REPO_ROOT)
+        assert any("Fixed 3 files" in c for c in hcr.changes_made)
+
+    def test_none_input_stored_in_changes_made(self) -> None:
+        hcr = adapt_heal_result("AgentA", None, repo_root=REPO_ROOT)
+        assert any("No output returned" in c for c in hcr.changes_made)
+
+    # --- absolute path sanitisation (critical contract requirement) ---
+
+    def test_absolute_windows_path_sanitised(self) -> None:
+        """HealCheckResult rejects absolute paths — adapter must convert them."""
+        raw = {"success": True, "files_healed": [r"C:\Git\Agentic-Workflow\agentic_core\foo.py"]}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        for change in hcr.changes_made:
+            assert not change.startswith("C:"), f"Absolute path leaked: {change}"
+            assert not change.startswith("/"), f"Absolute path leaked: {change}"
+
+    def test_absolute_posix_path_sanitised(self) -> None:
+        raw = {"success": True, "changes_made": ["/home/user/repo/agentic_core/foo.py"]}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        for change in hcr.changes_made:
+            assert not change.startswith("/"), f"Absolute path leaked: {change}"
+
+    def test_relative_paths_pass_through(self) -> None:
+        raw = {"success": True, "files_healed": ["agentic_core/foo.py", "tests/bar.py"]}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        assert "agentic_core/foo.py" in hcr.changes_made
+        assert "tests/bar.py" in hcr.changes_made
+
+    # --- return type is always HealCheckResult ---
+
+    def test_return_type_is_heal_check_result(self) -> None:
+        hcr = adapt_heal_result("AgentA", {}, repo_root=REPO_ROOT)
+        assert isinstance(hcr, HealCheckResult)
+
+    def test_check_id_matches_agent_name(self) -> None:
+        hcr = adapt_heal_result("MySpecialAgent", {}, repo_root=REPO_ROOT)
+        assert hcr.check_id == "MySpecialAgent"
+
+    def test_empty_agent_name_raises(self) -> None:
+        with pytest.raises(ValueError, match="agent_name"):
+            adapt_heal_result("", {}, repo_root=REPO_ROOT)
+
+    # --- escalation logic ---
+
+    def test_partial_status_triggers_escalation(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "PARTIAL"}, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is True
+
+    def test_complex_error_triggers_escalation(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"success": False, "error": "complex rewrite required"}, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is True
+
+    def test_simple_failure_does_not_trigger_escalation(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"success": False, "error": "missing import"}, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is False
+
+    def test_large_change_set_triggers_escalation(self) -> None:
+        raw = {"success": True, "changes_made": [f"file{i}.py" for i in range(12)]}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is True
+
+    def test_explicit_escalation_flag_respected(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"needs_llm_escalation": True}, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is True
+
+    def test_explicit_no_escalation_flag_respected(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"status": "PARTIAL", "needs_llm_escalation": False}, repo_root=REPO_ROOT)
+        assert hcr.needs_llm_escalation is False
+
+    # --- escalation hint ---
+
+    def test_escalation_hint_present_when_needed(self) -> None:
+        raw = {"status": "PARTIAL", "failure_type": "LAYER_VIOLATION", "blast_radius": 0.9}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        assert hcr.escalation_hint is not None
+        assert "failure_type=LAYER_VIOLATION" in hcr.escalation_hint
+        assert "blast_radius=0.9" in hcr.escalation_hint
+
+    def test_escalation_hint_absent_when_not_needed(self) -> None:
+        hcr = adapt_heal_result("AgentA", {"success": True, "files_healed": 1}, repo_root=REPO_ROOT)
+        assert hcr.escalation_hint is None
+
+    # --- to_dict round-trip ---
+
+    def test_to_dict_round_trip(self) -> None:
+        raw = {"success": True, "files_healed": ["agentic_core/foo.py"]}
+        hcr = adapt_heal_result("AgentA", raw, repo_root=REPO_ROOT)
+        d = hcr.to_dict()
+        assert d["check_id"] == "AgentA"
+        assert d["status"] == "HEALED"
+        assert isinstance(d["changes_made"], list)
+        assert d["needs_llm_escalation"] is False
