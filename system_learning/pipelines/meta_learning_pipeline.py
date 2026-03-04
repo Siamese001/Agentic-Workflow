@@ -56,7 +56,6 @@ from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationP
 from system_learning.confidence.engine import HealingConfidenceScorer
 from system_learning.correlation.engine import RiskCorrelator
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
-from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.engines.healing_config_optimizer import HealingConfigOptimizer
 from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
@@ -72,6 +71,7 @@ from system_learning.engines.retrieval_profile_proposal import RetrievalProfileP
 from system_learning.engines.retrieval_profile_proposal_manager import RetrievalProfileProposalManager
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.engines.shadow_drift_analyzer import DriftSummary, ShadowDriftAnalyzer
+from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -680,6 +680,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
+            "vector_source": "disabled",
             **shadow_telemetry,  # W4-B: Include shadow telemetry even when disabled
         }
 
@@ -706,21 +707,32 @@ def _retrieve_semantic_context(
     # Create deterministic query string
     failure_signature = "|".join(sorted(query_components)) if query_components else "generic_failure"
 
-    # For W2, we use a simple hash-based approach since no embedder is available
-    # In a full implementation, this would use the pinned embedder from governance
     import hashlib
-
-    # Create a deterministic query vector from the signature hash
-    query_hash = hashlib.sha256(failure_signature.encode()).hexdigest()
-    # Use first 8 hex digits to create a simple 4D vector for demonstration
-    query_vector = []
-    for i in range(0, 8, 2):
-        val = int(query_hash[i : i + 2], 16) / 255.0  # Normalize to [0, 1]
-        query_vector.append(val)
+    import os
 
     import numpy as np
 
-    query_vector = np.array(query_vector, dtype=np.float32)
+    # C3: Use real bge-m3 embedding when BMG_EMBEDDINGS_ENABLED=true;
+    # fall back to 16-dim hash vector otherwise (generate_fallback_vector).
+    # The vector_source tag is propagated to all return dicts so downstream
+    # code can assert it never uses a hash-fallback for semantic decisions.
+    _vector_source = "hash-fallback"
+    if (
+        os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
+        and retrieval_profile.embeddings_enabled
+    ):
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            _live_vec = bmg_embed_text(failure_signature)
+            query_vector = np.array(_live_vec, dtype=np.float32)
+            _vector_source = "bge-m3"
+        except Exception:  # guardian: allow-silent-swallower
+            _vector_source = "hash-fallback"
+    if _vector_source == "hash-fallback":
+        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+
+        query_vector = np.array(generate_fallback_vector(failure_signature), dtype=np.float32)
 
     # W4-B: Compute shadow embedding if configured (non-influential telemetry)
     shadow_telemetry = {}
@@ -776,6 +788,7 @@ def _retrieve_semantic_context(
                 "embedding_topk_hashes": [],
                 "embedding_topk_scores_round6": [],
                 "retrieval_profile_id": retrieval_profile.profile_id,
+                "vector_source": _vector_source,
                 **shadow_telemetry,  # W4-B: Include shadow telemetry
             }
 
@@ -794,6 +807,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": topk_hashes,
             "embedding_topk_scores_round6": topk_scores,
             "retrieval_profile_id": retrieval_profile.profile_id,
+            "vector_source": _vector_source,
             **shadow_telemetry,  # W4-B: Include shadow telemetry
         }
 
@@ -807,6 +821,7 @@ def _retrieve_semantic_context(
             "embedding_topk_hashes": [],
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
+            "vector_source": "error",
             **shadow_telemetry,  # W4-B: Include shadow telemetry even on failure
         }
 
@@ -1310,8 +1325,12 @@ def run_pipeline(
                             f"Embedding enabled: {embedding_metadata.get('embedding_enabled_at_time', False)}",
                         ),
                         timestamp_utc=threshold_proposal.timestamp_utc,
-                        authority_sensitivity=threshold_proposal.authority_sensitivity if hasattr(threshold_proposal, 'authority_sensitivity') else "MEDIUM",
-                        target_surface=threshold_proposal.target_surface if hasattr(threshold_proposal, 'target_surface') else None,
+                        authority_sensitivity=threshold_proposal.authority_sensitivity
+                        if hasattr(threshold_proposal, "authority_sensitivity")
+                        else "MEDIUM",
+                        target_surface=threshold_proposal.target_surface
+                        if hasattr(threshold_proposal, "target_surface")
+                        else None,
                     )
 
         # Add to proposals if there are adjustments

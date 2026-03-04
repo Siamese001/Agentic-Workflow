@@ -5,12 +5,15 @@ Stored in L4, read by L1. No behavioral changes - only authority shift.
 
 W4-A: RetrievalProfile Authority (L4 Only)
 W4-B: Shadow Embedder wiring for drift detection (non-influential)
+D2: embeddings_enabled surfaces BMG_EMBEDDINGS_ENABLED kill-switch via config
+    rather than raw os.environ checks at call sites.
 """
 
 from __future__ import annotations
 
 import hashlib
 import json
+import os
 from dataclasses import asdict, dataclass
 
 
@@ -37,6 +40,7 @@ class RetrievalProfile:
     # Optional fields
     shadow_embedder_id: str | None = None
     hybrid_alpha: float | None = None
+    embeddings_enabled: bool = False
 
     def to_canonical_json(self) -> str:
         """Serialize to canonical JSON with deterministic ordering.
@@ -79,6 +83,7 @@ class RetrievalProfile:
         Returns:
             Default profile with current hardcoded values.
         """
+        _embeddings_on = os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
         return cls(
             profile_id="retrieval-profile-v2",
             primary_embedder_id="openai/text-embedding-3-large",
@@ -89,6 +94,7 @@ class RetrievalProfile:
             normalization_policy="l2",
             shadow_embedder_id=None,
             hybrid_alpha=None,
+            embeddings_enabled=_embeddings_on,
         )
 
 

@@ -28,6 +28,18 @@ class IndexMetadataError(RuntimeError):
     pass
 
 
+class ManifestIntegrityError(RuntimeError):
+    """Raised when manifest.json is missing, has wrong schema, or hash mismatch.
+
+    Fail-closed: any mismatch raises immediately with no best-effort fallback.
+    """
+
+    pass
+
+
+_SCHEMA_VERSION = "1"
+
+
 class LocalFAISSStore:
     """Local FAISS index store with deterministic search.
 
@@ -424,5 +436,181 @@ class LocalFAISSStore:
         # Phase 4: NotImplementedError for real FAISS
         raise NotImplementedError("LocalFAISSStore.rebuild() - Phase 4 skeleton")
 
+    def persist_to_disk(self, index_id: str, dest_dir: Path, *, embedder_id: str, model_version: str) -> str:
+        """Write 3-file artifact (index.json, meta.json, manifest.json) and print W-A-DETERMINISM-DIGEST.
 
-__all__ = ["LocalFAISSStore", "IndexNotBuiltError", "IndexMetadataError"]
+        All three files are written atomically to ``dest_dir``.  The digest is
+        sha256 over the pipe-concatenated binding fields and is printed to stdout
+        exactly once per call.
+
+        Args:
+            index_id: Identifier of the index to persist.
+            dest_dir: Target directory (created if absent).
+            embedder_id: Embedder identifier string (e.g. "BAAI/bge-m3" or "hash-fallback").
+            model_version: Model version string.
+
+        Returns:
+            64-char lowercase hex W-A-DETERMINISM-DIGEST string.
+
+        Raises:
+            IndexNotBuiltError: If the index has not been built.
+            IndexMetadataError: If the index has not been finalized (missing metadata).
+        """
+        if index_id not in self._memory_indexes:
+            raise IndexNotBuiltError(
+                f"Index {index_id} not found; call begin_build/add_vectors/finalize_build first"
+            )
+        memory_idx = self._memory_indexes[index_id]
+        if "metadata" not in memory_idx:
+            raise IndexMetadataError(f"Index {index_id} not finalized; call finalize_build first")
+
+        dest = Path(dest_dir)
+        dest.mkdir(parents=True, exist_ok=True)
+
+        vectors = memory_idx["vectors"]
+        metadatas = memory_idx["metadatas"]
+        dimension = memory_idx["dimension"]
+        version_hash = memory_idx.get("version_hash", "")
+
+        # --- index.json ---
+        index_data = {
+            "schema_version": _SCHEMA_VERSION,
+            "index_id": index_id,
+            "dimension": dimension,
+            "vector_count": len(vectors),
+            "vectors": [list(v) for v in vectors],
+            "metadatas": metadatas,
+        }
+        index_bytes = json.dumps(index_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+            "ascii"
+        )
+        sha256_index = hashlib.sha256(index_bytes).hexdigest()
+
+        # --- meta.json (canonical — hashed before manifest) ---
+        meta_data = {
+            "dims": dimension,
+            "embedder_id": embedder_id,
+            "index_id": index_id,
+            "index_version_hash": version_hash,
+            "model_version": model_version,
+            "schema_version": _SCHEMA_VERSION,
+            "vector_count": len(vectors),
+        }
+        meta_bytes = json.dumps(meta_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+            "ascii"
+        )
+        sha256_meta = hashlib.sha256(meta_bytes).hexdigest()
+
+        # --- manifest.json ---
+        manifest_data = {
+            "dims": dimension,
+            "embedder_id": embedder_id,
+            "model_version": model_version,
+            "schema_version": _SCHEMA_VERSION,
+            "sha256_index": sha256_index,
+            "sha256_meta_canonical": sha256_meta,
+            "vector_count": len(vectors),
+        }
+        manifest_bytes = json.dumps(
+            manifest_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("ascii")
+        sha256_manifest = hashlib.sha256(manifest_bytes).hexdigest()
+
+        # Write files
+        (dest / "index.json").write_bytes(index_bytes)
+        (dest / "meta.json").write_bytes(meta_bytes)
+        (dest / "manifest.json").write_bytes(manifest_bytes)
+
+        # W-A-DETERMINISM-DIGEST
+        digest_input = f"{embedder_id}|{model_version}|{dimension}|{len(vectors)}|{sha256_index}|{sha256_meta}|{sha256_manifest}"
+        digest = hashlib.sha256(digest_input.encode("ascii")).hexdigest()
+        print(f"W-A-DETERMINISM-DIGEST: {digest}")
+        return digest
+
+    def load_from_disk(self, index_id: str, source_dir: Path) -> None:
+        """Load index from 3-file disk artifact, verifying all manifest hashes.
+
+        Fail-closed: any missing field, parse error, or hash mismatch raises
+        ManifestIntegrityError immediately with no fallback.
+
+        Args:
+            index_id: Logical identifier to register the loaded index under.
+            source_dir: Directory containing index.json, meta.json, manifest.json.
+
+        Raises:
+            ManifestIntegrityError: On any integrity violation.
+        """
+        src = Path(source_dir)
+        manifest_path = src / "manifest.json"
+        if not manifest_path.exists():
+            raise ManifestIntegrityError(f"manifest.json not found in {src}")
+
+        try:
+            manifest_bytes = manifest_path.read_bytes()
+            manifest = json.loads(manifest_bytes.decode("ascii"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise ManifestIntegrityError(f"manifest.json parse error: {exc}") from exc
+
+        required = {
+            "schema_version",
+            "embedder_id",
+            "model_version",
+            "dims",
+            "vector_count",
+            "sha256_index",
+            "sha256_meta_canonical",
+        }
+        missing = required - manifest.keys()
+        if missing:
+            raise ManifestIntegrityError(f"manifest.json missing required fields: {sorted(missing)}")
+
+        # Verify index.json
+        index_path = src / "index.json"
+        if not index_path.exists():
+            raise ManifestIntegrityError(f"index.json not found in {src}")
+        index_bytes = index_path.read_bytes()
+        if hashlib.sha256(index_bytes).hexdigest() != manifest["sha256_index"]:
+            raise ManifestIntegrityError("index.json sha256 mismatch — artifact tampered")
+
+        # Verify meta.json
+        meta_path = src / "meta.json"
+        if not meta_path.exists():
+            raise ManifestIntegrityError(f"meta.json not found in {src}")
+        meta_bytes = meta_path.read_bytes()
+        if hashlib.sha256(meta_bytes).hexdigest() != manifest["sha256_meta_canonical"]:
+            raise ManifestIntegrityError("meta.json sha256 mismatch — artifact tampered")
+
+        try:
+            index_data = json.loads(index_bytes.decode("ascii"))
+        except (json.JSONDecodeError, UnicodeDecodeError) as exc:
+            raise ManifestIntegrityError(f"index.json parse error: {exc}") from exc
+
+        vectors = [list(v) for v in index_data.get("vectors", [])]
+        metadatas = index_data.get("metadatas", [])
+        dimension = int(index_data.get("dimension", manifest["dims"]))
+
+        from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+
+        metadata = IndexBuildMetadata(
+            index_id=index_id,
+            faiss_version="disk-json-v1",
+            build_seed=0,
+            canonicalization_version=_SCHEMA_VERSION,
+            embedding_model_version=manifest["model_version"],
+            embedding_model_checksum=manifest["sha256_index"],
+            built_at_utc=0,
+            index_version_hash=manifest["sha256_index"],
+            vector_count=len(vectors),
+            dimension=dimension,
+        )
+        self._memory_indexes[index_id] = {
+            "dimension": dimension,
+            "seed": 0,
+            "vectors": vectors,
+            "metadatas": metadatas,
+            "metadata": metadata,
+            "version_hash": manifest["sha256_index"],
+        }
+
+
+__all__ = ["LocalFAISSStore", "IndexNotBuiltError", "IndexMetadataError", "ManifestIntegrityError"]

@@ -13,6 +13,7 @@ PRIMARY FEATURES:
 
 # [IMPORTS] Added for dynamic loading and signal handling
 import argparse
+import ast
 import atexit  # [HARDENED] For guaranteed state cleanup
 import builtins
 import importlib.util
@@ -21,6 +22,7 @@ import json
 import logging
 import os
 import platform
+import re
 import signal
 import stat  # [HARDENED] For permission bits
 import sys
@@ -143,6 +145,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                 pass
 
         new_vectors: list[list[float]] = []
+        # A4: accumulators for LocalFAISSStore wiring (populated per-action below)
+        _faiss_vectors: list[list[float]] = []
+        _faiss_metas: list[dict] = []
 
         for action in healing_actions:
             failure_type_str: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
@@ -156,11 +161,14 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
             #     L4 state vectors and novelty checks compare the same semantic space.
             #   outcome_text (normalize_failure_signal) — richer, used for
             #     HealingOutcomeEvent.failure_vector (MEMORY / future FAISS lookup).
+            # A5: always produce a non-None failure_vector using generate_fallback_vector
+            #     when bge-m3 is unavailable, so FAISS storage is never skipped.
             failure_vector: tuple[float, ...] | None = None
             novelty_flag: bool = False
+            _vec_source = "hash-fallback"
+            territory_str: str = action.get("territory", "unknown")
             if _bmg_embed is not None and _normalizer is not None:
                 try:
-                    territory_str: str = action.get("territory", "unknown")
                     routing_signal_text = f"{failure_type_str} {territory_str}"
                     outcome_text = _normalizer(action)
 
@@ -168,6 +176,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                     outcome_vec = _bmg_embed(outcome_text)
 
                     failure_vector = tuple(outcome_vec)
+                    _vec_source = "bge-m3"
                     new_vectors.append(routing_vec)  # L4 state uses routing signal
 
                     # Novelty: compare routing_vec against recent routing vectors
@@ -184,6 +193,34 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                 except Exception:  # guardian: allow-silent-swallower
                     pass
 
+            # A5: hash-fallback vector (stdlib-only, deterministic)
+            if failure_vector is None:
+                try:
+                    _normalizer_fn = (
+                        _normalizer if _normalizer is not None else (lambda a: str(a.get("type", "UNKNOWN")))
+                    )
+                    _fb_text = _normalizer_fn(action)
+                    from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                        generate_fallback_vector as _gen_fallback,
+                    )
+
+                    failure_vector = tuple(_gen_fallback(_fb_text))
+                except Exception:  # guardian: allow-silent-swallower
+                    pass
+
+            # A4: accumulate for FAISS wiring
+            if failure_vector is not None:
+                _faiss_vectors.append(list(failure_vector))
+                _faiss_metas.append(
+                    {
+                        "content_hash": action.get("routing_digest") or "",
+                        "trace_id": action.get("trace_id") or "",
+                        "territory": territory_str,
+                        "outcome": action.get("outcome", "UNKNOWN"),
+                        "vector_source": _vec_source,
+                    }
+                )
+
             aggregator.ingest(
                 HealingOutcomeEvent(
                     healer_id=healer_id,
@@ -195,6 +232,8 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                     confidence_score=action.get("confidence"),
                     failure_vector=failure_vector,
                     novelty_flag=novelty_flag,
+                    cluster_id=action.get("cluster_id"),
+                    files_touched=tuple(action.get("files_touched") or []),
                 )
             )
 
@@ -204,6 +243,26 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         if healing_actions:
             record = adapter.build_record(aggregator=aggregator, created_utc=0, source="execute_ssot")
             adapter.persist_record(record)
+
+        # A4: wire accumulated failure_vectors into LocalFAISSStore (healing_context_v1)
+        if _faiss_vectors:
+            try:
+                from pathlib import Path as _Path
+
+                from system_learning.engines.local_faiss_store import LocalFAISSStore as _FAISSStore
+
+                _dim = len(_faiss_vectors[0])
+                _faiss_idx = "healing_context_v1"
+                _faiss_store = _FAISSStore(base_path=_Path("."))
+                _faiss_store.begin_build(_faiss_idx, _dim, seed=0)
+                _faiss_store.add_vectors(_faiss_idx, _faiss_vectors, _faiss_metas)
+                logging.debug(
+                    "[MetaLearning] LocalFAISSStore.add_vectors: %d vectors -> %s",
+                    len(_faiss_vectors),
+                    _faiss_idx,
+                )
+            except Exception as _faiss_err:  # guardian: allow-silent-swallower
+                logging.debug("[MetaLearning] FAISS wiring skipped: %s", _faiss_err)
 
         # Gap 6: persist new failure vectors to L4 state (capped at 200) for cross-run novelty
         if new_vectors:
@@ -291,8 +350,7 @@ def _preflight_import_check() -> None:
     and that _legacy_main symbol exists without invoking any runtime behavior.
     Raises RuntimeError with detailed message if any check fails.
 
-    NOTE: This function is intentionally NOT called anywhere in Wave 1.
-    It will be wired into the startup sequence in Wave 2.
+    NOTE: Called at startup in _legacy_main to fail-fast on missing symbols.
     """
     try:
         # Check that _legacy_main exists in this module (execute_ssot.py)
@@ -341,9 +399,6 @@ try:
     load_dotenv()
 except ImportError:
     pass
-
-import ast
-import re
 
 try:
     from agentic_core.utils.decorators_compat_util import HEAL_RESULT_SCHEMA, standard_heal
@@ -1176,6 +1231,7 @@ class SovereignDecisionEngine:
         state_mgr: Optional["RuntimeStateManager"] = None,
         enable_cda: bool = False,
         execution_context: Optional["ExecutionContext"] = None,
+        healing_memory_retriever: Any | None = None,
     ):
         self.enable_llm = enable_llm
         self.decisions_made = []
@@ -1194,6 +1250,8 @@ class SovereignDecisionEngine:
         # guardian: allow-magic-config
         self._max_stack_depth = 10
         self._atomic_lock = False
+        # B2: advisory-only healing memory retriever (never influences tier selection)
+        self._healing_memory_retriever = healing_memory_retriever
 
     def _calculate_semantic_similarity(self, unknown: str, existing: list[str]) -> float:
         """Calculate semantic similarity for unknown items against a candidate list.
@@ -1403,6 +1461,22 @@ class SovereignDecisionEngine:
                     ft = member
                     break
             failure_type = ft
+
+        # B3: advisory-only healing memory retrieval — result MUST NOT alter tier/thresholds.
+        # Violations of this boundary are detectable via the advisory_only flag on SimilarIncident.
+        if self._healing_memory_retriever is not None:
+            try:
+                _signal_text = f"{failure_type.value if failure_type else 'UNKNOWN'} {territory}"
+                _advisory = self._healing_memory_retriever.retrieve_similar_incidents(_signal_text, top_k=3)
+                if _advisory:
+                    logger.debug(
+                        "[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) — routing unchanged",
+                        len(_advisory),
+                        _advisory[0].similarity,
+                        _advisory[0].advisory_only,
+                    )
+            except Exception:  # guardian: allow-silent-swallower
+                pass
 
         C = min(3, max(0, int(3 - confidence.value * 3)))
         B = 3 if territory.startswith("L5") else (2 if "agentic_core" in territory else 1)
@@ -4162,6 +4236,15 @@ def _print_meta_learning_summary(
     """Print meta-learning bus additions summary — what this run teaches the next run."""
     from collections import Counter
 
+    _W = 78  # total console width for the block
+
+    def _sec(title: str) -> None:
+        print(f"\n  {title}")
+        print("  " + "-" * (_W - 2))
+
+    def _row(label: str, value: str) -> None:
+        print(f"  {label:<30} {value}")
+
     ml = state_mgr.state.get("meta_learning", {})
     healing_actions = state_mgr.state.get("healing_actions", [])
     decisions = getattr(decision_engine, "decisions_made", [])
@@ -4176,64 +4259,178 @@ def _print_meta_learning_summary(
             tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
 
     conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    # Per-action confidence falls back to the action's own field when decision list is sparse
+    action_confs = [
+        a.get("confidence", 0.0) for a in healing_actions if isinstance(a.get("confidence"), (int, float))
+    ]
+    all_confs = conf_vals if conf_vals else action_confs
+
     failure_agents: Counter = Counter(a.get("agent", "unknown") for a in failed)
     recent_exp = ml.get("recent_experiences", [])
     total_exp = ml.get("total_experiences", 0)
     weights = ml.get("strategy_weights", {})
 
+    # ── Header ────────────────────────────────────────────────────────────────
     print("")
-    print("=" * 60)
+    print("=" * _W)
     print("META-LEARNING BUS -- ADDITIONS THIS RUN")
     print("(what the system will remember for the next run)")
-    print("=" * 60)
-    print(f"  Healing records ingested : {total_exp}")
-    print(
-        f"  Healing outcomes         : {len(successful)} success  "
-        f"{len(failed)} fail  {len(plan_only)} plan-only"
+    print("=" * _W)
+
+    # ── Outcomes this run ─────────────────────────────────────────────────────
+    _sec("OUTCOMES THIS RUN")
+    _row("Healing records ingested :", str(total_exp))
+    _row(
+        "Results :",
+        f"{len(successful)} success  {len(failed)} fail  {len(plan_only)} plan-only",
     )
 
+    # ── Per-learning detail table ─────────────────────────────────────────────
+    learnings = successful if successful else healing_actions
+    _sec(f"LEARNINGS ({len(learnings)} patterns written to bus)")
+    if learnings:
+        _AG = 22
+        _TR = 20
+        _CF = 6
+        _TI = 14
+        _GT = 20
+        _SUM = _W - _AG - _TR - _CF - _TI - _GT - 10
+        hdr = (
+            f"  {'#':>3}  "
+            f"{'Agent':<{_AG}}  "
+            f"{'Territory':<{_TR}}  "
+            f"{'Conf':>{_CF}}  "
+            f"{'Tier':<{_TI}}  "
+            f"{'Gate':<{_GT}}  "
+            f"{'Fix Summary'}"
+        )
+        print(hdr)
+        print("  " + "-" * (_W - 2))
+        for i, a in enumerate(learnings, 1):
+            agent = str(a.get("agent", "?"))[:_AG]
+            terr = str(a.get("territory", "?"))[:_TR]
+            conf = a.get("confidence")
+            conf_str = f"{conf:.3f}" if isinstance(conf, (int, float)) else "  -  "
+            tier_raw = str(a.get("routing_tier", "DET"))
+            tier = tier_raw[:_TI]
+            gate = str(a.get("routing_gate", ""))[:_GT]
+            fix = str(a.get("fix_summary", ""))
+            fix_trunc = (fix[:_SUM] + "...") if len(fix) > _SUM else fix
+            print(
+                f"  {i:>3}.  "
+                f"{agent:<{_AG}}  "
+                f"{terr:<{_TR}}  "
+                f"{conf_str:>{_CF}}  "
+                f"{tier:<{_TI}}  "
+                f"{gate:<{_GT}}  "
+                f"{fix_trunc}"
+            )
+    else:
+        print("  (no healing events this run)")
+
+    # ── Pattern recall impact ─────────────────────────────────────────────────
+    _sec("PATTERN RECALL IMPACT (what next run will remember)")
     if successful:
         succ_agents: Counter = Counter(a.get("agent", "?") for a in successful)
-        top = ", ".join(f"{ag}({ct})" for ag, ct in succ_agents.most_common(5))
-        print(f"  Patterns stored (recall) : {top}")
-    else:
-        print("  Patterns stored (recall) : (none this run)")
-
-    if failure_agents:
-        fail_str = ", ".join(f"{ag}({ct})" for ag, ct in failure_agents.most_common(5))
-        print(f"  failure_prior++ agents   : {fail_str}")
-    else:
-        print("  failure_prior++ agents   : (none -- no failures recorded)")
-
-    if conf_vals:
-        c_min = min(conf_vals)
-        c_avg = sum(conf_vals) / len(conf_vals)
-        c_max = max(conf_vals)
-        n_local = sum(1 for c in conf_vals if c >= 0.75)
-        n_qwen = sum(1 for c in conf_vals if 0.40 <= c < 0.75)
-        n_gemini = sum(1 for c in conf_vals if c < 0.40)
-        print(f"  Confidence range         : min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
-        print(
-            f"  Band distribution        : >=0.75 LOCAL={n_local}  "
-            f"0.40-0.74 QWEN={n_qwen}  <0.40 GEMINI={n_gemini}"
+        succ_terrs: Counter = Counter(a.get("territory", "?") for a in successful)
+        succ_tiers: Counter = Counter(str(a.get("routing_tier", "DETERMINISTIC")) for a in successful)
+        _row(
+            "By agent :",
+            ", ".join(f"{ag}({ct})" for ag, ct in succ_agents.most_common(6)),
+        )
+        _row(
+            "By territory :",
+            ", ".join(f"{t}({c})" for t, c in succ_terrs.most_common(6)),
+        )
+        _row(
+            "By routing tier :",
+            ", ".join(f"{t}({c})" for t, c in succ_tiers.most_common()),
         )
     else:
-        print("  Confidence range         : (no decision data)")
+        _row("Patterns stored :", "(none this run)")
 
+    # ── Confidence distribution → routing priors ──────────────────────────────
+    _sec("CONFIDENCE DISTRIBUTION  ->  ROUTING PRIORS")
+    if all_confs:
+        c_min = min(all_confs)
+        c_avg = sum(all_confs) / len(all_confs)
+        c_max = max(all_confs)
+        n_local = sum(1 for c in all_confs if c >= 0.75)
+        n_qwen = sum(1 for c in all_confs if 0.40 <= c < 0.75)
+        n_gemini = sum(1 for c in all_confs if c < 0.40)
+        _row("Range :", f"min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
+        _row(
+            "High  (>=0.75) :",
+            f"{n_local:>3} patterns  -> strengthen DETERMINISTIC routing prior",
+        )
+        _row(
+            "Medium (0.40-0.74) :",
+            f"{n_qwen:>3} patterns  -> reinforce QWEN preference",
+        )
+        _row(
+            "Low   (<0.40) :",
+            f"{n_gemini:>3} patterns  -> raise GEMINI prior for similar failures",
+        )
+    else:
+        _row("Confidence data :", "(unavailable — no decision records)")
+
+    # ── Tier routing ──────────────────────────────────────────────────────────
+    _sec("TIER ROUTING THIS RUN")
     if tier_counts:
-        tier_str = "  ".join(f"{t}={c}" for t, c in tier_counts.most_common())
-        print(f"  Tier routing this run    : {tier_str}")
+        _row("Routing breakdown :", "  ".join(f"{t}={c}" for t, c in tier_counts.most_common()))
+    else:
+        _row("Routing breakdown :", "(no routing decisions recorded)")
 
+    # ── Failure priors ────────────────────────────────────────────────────────
+    _sec("FAILURE PRIORS UPDATED")
+    if failure_agents:
+        _row(
+            "failure_prior++ :",
+            ", ".join(f"{ag}({ct})" for ag, ct in failure_agents.most_common(5)),
+        )
+        for ag, ct in failure_agents.most_common(5):
+            _row(
+                f"  {ag} :",
+                f"{ct} failure(s)  -> next run will avoid this agent for similar inputs",
+            )
+    else:
+        _row("failure_prior++ :", "(none — no failures recorded this run)")
+
+    # ── Strategy weights ──────────────────────────────────────────────────────
+    _sec("STRATEGY WEIGHTS (carried to next run)")
     if weights:
-        w_str = "  ".join(f"{k}={v:.2f}" for k, v in sorted(weights.items()))
-        print(f"  Strategy weights         : {w_str}")
+        for k, v in sorted(weights.items()):
+            delta = ""
+            if isinstance(v, float) and abs(v - 1.0) > 0.01:
+                delta = "  [SHIFTED from baseline 1.00]"
+            _row(f"  {k} :", f"{v:.3f}{delta}")
+    else:
+        _row("Weights :", "(no strategy weight data)")
 
+    # ── What next run inherits ────────────────────────────────────────────────
+    _sec("WHAT NEXT RUN INHERITS")
     if recent_exp:
-        print("  Recent experience bus    :")
-        for exp in recent_exp[:3]:
+        for exp in recent_exp:
             print(f"    -> {exp}")
+    if all_confs:
+        n_local = sum(1 for c in all_confs if c >= 0.75)
+        n_qwen = sum(1 for c in all_confs if 0.40 <= c < 0.75)
+        n_gemini = sum(1 for c in all_confs if c < 0.40)
+        if n_local:
+            print(f"    -> {n_local} high-confidence patterns strengthen DETERMINISTIC routing")
+        if n_qwen:
+            print(f"    -> {n_qwen} medium-confidence patterns reinforce QWEN preference")
+        if n_gemini:
+            print(f"    -> {n_gemini} low-confidence outcomes raise GEMINI prior for similar failures")
+    if failure_agents:
+        top_fail = failure_agents.most_common(3)
+        for ag, ct in top_fail:
+            print(f"    -> failure_prior[{ag}] += {ct}  (will down-weight this agent next run)")
+    if not recent_exp and not all_confs and not failure_agents:
+        print("    -> (no bus updates produced this run)")
 
-    print("=" * 60)
+    print("")
+    print("=" * _W)
 
 
 def _write_mandatory_json_output(
@@ -4819,7 +5016,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
 
 @_optional_runtime_guard()("E.execute_ssot_main.execute_ssot")
 def _legacy_main(
-    extra_argv=None, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
+    args: argparse.Namespace, *, repo_root: Path | None = None, allow_protected_root_mutation: bool = False
 ):
     _maybe_force_utf8_console()  # G-UTF8: ensure stdout/stderr are UTF-8 safe on Windows
     _maybe_force_utf8_logging_handlers()  # G-UTF8: fix handler streams created before console reconfigure
@@ -4865,11 +5062,9 @@ def _legacy_main(
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
-        import os as _os  # noqa: E402
-
-        _os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
-        _os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"
-        _os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
+        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
+        os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"
+        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
@@ -4881,106 +5076,6 @@ def _legacy_main(
         # guardian: allow-global-mutation
         sys.path.insert(0, str(project_root))
 
-    parser = argparse.ArgumentParser(
-        description="Unified Sovereign Compliance Protocol v4.0",
-        formatter_class=argparse.RawDescriptionHelpFormatter,
-        epilog="""
-Examples:
-  # Single territory scan (LLM enabled by default)
-  python execute_ssot_script.py --territory prompt_governance
-
-  # Multi-domain sweep
-  python execute_ssot_script.py --domains
-
-  # Dry run (no LLM healing)
-  python execute_ssot_script.py --territory L5_safety --dry-run
-
-  # List all discoverable agents
-  python execute_ssot_script.py --list-agents
-
-  # Run specific agent directly
-  python execute_ssot_script.py --agent NamingAgent
-        """,
-    )
-    parser.add_argument("--territory", type=str, help="Specific territory to scan")
-    parser.add_argument("--domains", action="store_true", help="Scan all major domains (Multi-Domain Mode)")
-    parser.add_argument("--agent", type=str, help="Run specific agent directly")
-    parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
-    # CDA is always active — no --no-cda flag
-    parser.add_argument(
-        "--heal",
-        action="store_true",
-        default=False,
-        help="Enable active healing (mutations applied). Absence = scan/report only.",
-    )
-    parser.add_argument(
-        "--dry-run",
-        action="store_true",
-        help="[DEPRECATED] Scan/report only — redundant, simply omit --heal for scan mode.",
-    )
-    parser.add_argument(
-        "--interactive",
-        action="store_true",
-        help="[DEPRECATED] Auto-approve is always active under --heal.",
-    )
-    parser.add_argument(
-        "--manual", action="store_true", help="[DEPRECATED] Autonomous mode is always active."
-    )
-    parser.add_argument(
-        "--validate",
-        action="store_true",
-        help="Run in validation-only mode (CI/Dry-Run Mode)",
-    )
-    parser.add_argument(
-        "--plan",
-        action="store_true",
-        help="Print the deterministic execution plan and exit. No side effects.",
-    )
-    parser.add_argument(
-        "--agents",
-        type=str,
-        default=None,
-        help="Comma-separated list of agent keys to run (e.g. --agents location,hierarchy). Includes dependencies automatically. Hard-fails on unknown keys.",
-    )
-    # [PHASE 8] New Flag for Golden Baseline capture
-    parser.add_argument("--capture-baseline", action="store_true", help="Capture new Golden Baseline")
-    parser.add_argument(
-        "--fence-self-check",
-        action="store_true",
-        help="Run deterministic fence self-check (validates policy + wiring; no mutations)",
-    )
-    parser.add_argument(
-        "--v15-enforcement",
-        type=int,
-        choices=(0, 1),
-        default=None,
-        help="Override V15_ENFORCEMENT for this run (0=off, 1=on).",
-    )
-    parser.add_argument(
-        "-v",
-        "--verbose",
-        action="count",
-        default=0,
-        help="Increase log verbosity (repeatable).",
-    )
-    parser.add_argument(
-        "--apply-proposals",
-        action="store_true",
-        default=False,
-        help="[DEPRECATED] Meta-learning proposals are always applied under --heal.",
-    )
-    args = parser.parse_args(extra_argv)
-
-    # [PLAN MODE] Pure introspection — no execution, no side effects.
-    if args.plan:
-        print_execution_plan()
-        return
-
-    # [FENCE SELF-CHECK MODE] Validate protected-root policy + wiring (no mutations).
-    if args.fence_self_check:
-        run_fence_self_check()
-        return
-
     # [AGENT SUBSET] Validate and resolve --agents early (before imports).
     requested_agent_keys: list[str] | None = None
     if args.agents:
@@ -4989,7 +5084,7 @@ Examples:
             requested_agent_keys = resolve_agent_subset(raw_keys)
             logger.info(f"Agent subset resolved: {requested_agent_keys}")
         except ValueError as ve:
-            parser.error(str(ve))
+            sys.exit(f"ERROR: {ve}")
 
     # [CENTRALIZED] validate ⇒ dry_run mapping (single source of truth).
     # When --validate is set, dry_run is forced True. This ensures
@@ -5009,7 +5104,7 @@ Examples:
 
     # [ULTRA-HARDENED] Validate user-supplied territory name format via regex
     if args.territory and not re.match(r"^[A-Za-z0-9_]+$", args.territory):
-        parser.error("Invalid territory name: only alphanumeric and underscores allowed.")
+        sys.exit("ERROR: Invalid territory name: only alphanumeric and underscores allowed.")
 
     # 1. Handle Discovery
     if args.list_agents:

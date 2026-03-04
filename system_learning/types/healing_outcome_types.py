@@ -88,6 +88,7 @@ class HealingOutcomeEvent:
     routing_digest: str | None = None
     confidence_score: float | None = None
     novelty_flag: bool = False
+    cluster_id: str | None = None
     files_touched: tuple[str, ...] = field(default_factory=tuple)
 
     def __post_init__(self) -> None:
