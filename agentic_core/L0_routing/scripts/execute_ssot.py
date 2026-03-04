@@ -3929,12 +3929,12 @@ def _print_healing_heatmap(
         f"{'GEMINI_2_5_PRO':^{COL_W}} | TOTAL"
     )
 
-    logger.info("")
-    logger.info("=" * 60)
-    logger.info("HEALING HEATMAP")
-    logger.info(sep)
-    logger.info(header)
-    logger.info(sep)
+    print("")
+    print("=" * 60)
+    print("HEALING HEATMAP")
+    print(sep)
+    print(header)
+    print(sep)
 
     col_totals: dict[str, int] = defaultdict(int)
     if counts:
@@ -3943,7 +3943,7 @@ def _print_healing_heatmap(
             total = sum(row_vals.values())
             for t in TIER_COLS:
                 col_totals[t] += row_vals[t]
-            logger.info(
+            print(
                 f"{agent:<{AGEN_W}} | "
                 f"{(_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC'])):^{COL_W}} | "
                 f"{(_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM'])):^{COL_W}} | "
@@ -3951,18 +3951,18 @@ def _print_healing_heatmap(
                 f"{total}"
             )
     else:
-        logger.info(f"{'(no healing events this run)':<{AGEN_W}}")
+        print(f"{'(no healing events this run)':<{AGEN_W}}")
 
-    logger.info(sep)
+    print(sep)
     grand = sum(col_totals.values())
-    logger.info(
+    print(
         f"{'TOTAL':<{AGEN_W}} | "
         f"{str(col_totals['DETERMINISTIC']):^{COL_W}} | "
         f"{str(col_totals['QWEN_VLLM']):^{COL_W}} | "
         f"{str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | "
         f"{grand}"
     )
-    logger.info(sep)
+    print(sep)
 
 
 def _print_meta_learning_summary(
@@ -3997,13 +3997,13 @@ def _print_meta_learning_summary(
     total_exp = ml.get("total_experiences", 0)
     weights = ml.get("strategy_weights", {})
 
-    logger.info("")
-    logger.info("=" * 60)
-    logger.info("META-LEARNING BUS — ADDITIONS THIS RUN")
-    logger.info("(what the system will remember for the next run)")
-    logger.info("=" * 60)
-    logger.info(f"  Healing records ingested : {total_exp}")
-    logger.info(
+    print("")
+    print("=" * 60)
+    print("META-LEARNING BUS -- ADDITIONS THIS RUN")
+    print("(what the system will remember for the next run)")
+    print("=" * 60)
+    print(f"  Healing records ingested : {total_exp}")
+    print(
         f"  Healing outcomes         : {len(successful)} success  "
         f"{len(failed)} fail  {len(plan_only)} plan-only"
     )
@@ -4011,15 +4011,15 @@ def _print_meta_learning_summary(
     if successful:
         succ_agents: Counter = Counter(a.get("agent", "?") for a in successful)
         top = ", ".join(f"{ag}({ct})" for ag, ct in succ_agents.most_common(5))
-        logger.info(f"  Patterns stored (recall) : {top}")
+        print(f"  Patterns stored (recall) : {top}")
     else:
-        logger.info("  Patterns stored (recall) : (none this run)")
+        print("  Patterns stored (recall) : (none this run)")
 
     if failure_agents:
         fail_str = ", ".join(f"{ag}({ct})" for ag, ct in failure_agents.most_common(5))
-        logger.info(f"  failure_prior++ agents   : {fail_str}")
+        print(f"  failure_prior++ agents   : {fail_str}")
     else:
-        logger.info("  failure_prior++ agents   : (none — no failures recorded)")
+        print("  failure_prior++ agents   : (none -- no failures recorded)")
 
     if conf_vals:
         c_min = min(conf_vals)
@@ -4028,28 +4028,28 @@ def _print_meta_learning_summary(
         n_local = sum(1 for c in conf_vals if c >= 0.75)
         n_qwen  = sum(1 for c in conf_vals if 0.40 <= c < 0.75)
         n_gemini = sum(1 for c in conf_vals if c < 0.40)
-        logger.info(f"  Confidence range         : min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
-        logger.info(
+        print(f"  Confidence range         : min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
+        print(
             f"  Band distribution        : >=0.75 LOCAL={n_local}  "
             f"0.40-0.74 QWEN={n_qwen}  <0.40 GEMINI={n_gemini}"
         )
     else:
-        logger.info("  Confidence range         : (no decision data)")
+        print("  Confidence range         : (no decision data)")
 
     if tier_counts:
         tier_str = "  ".join(f"{t}={c}" for t, c in tier_counts.most_common())
-        logger.info(f"  Tier routing this run    : {tier_str}")
+        print(f"  Tier routing this run    : {tier_str}")
 
     if weights:
         w_str = "  ".join(f"{k}={v:.2f}" for k, v in sorted(weights.items()))
-        logger.info(f"  Strategy weights         : {w_str}")
+        print(f"  Strategy weights         : {w_str}")
 
     if recent_exp:
-        logger.info("  Recent experience bus    :")
+        print("  Recent experience bus    :")
         for exp in recent_exp[:3]:
-            logger.info(f"    -> {exp}")
+            print(f"    -> {exp}")
 
-    logger.info("=" * 60)
+    print("=" * 60)
 
 
 def run_pipeline(
