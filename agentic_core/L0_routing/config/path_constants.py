@@ -160,6 +160,9 @@ VARIABLE_DEPTH_SUBFOLDERS: Final[frozenset[str]] = frozenset(
     {
         "types",
         "config",
+        "unit",
+        "unit_min_deps",
+        "integration",
     }
 )
 

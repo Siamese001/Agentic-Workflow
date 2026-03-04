@@ -5279,8 +5279,6 @@ def _legacy_main(
 
     # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
     if ctx.auto_approve:
-        import os
-
         os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")  # guardian: allow-global-mutation
         os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")  # guardian: allow-global-mutation
 

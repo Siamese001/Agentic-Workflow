@@ -944,7 +944,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
 
     # Tests territory
     territories["tests"] = {
-        "depth": 3,
+        "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
             "_quarantine": {"purpose": "Quarantined tests pending triage or fix"},
