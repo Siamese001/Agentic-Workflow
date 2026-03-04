@@ -1,206 +1,48 @@
 """
 SSOT for Sovereign Registry configuration.
 
-This module contains the core registry data structures that define
-the sovereign territory structure of the codebase.
-
-SSOT Consolidation (Jan 20, 2026):
-Moved from agentic_core/L5_safety/validators/structure_blueprint.py
+SINGLE SOURCE OF TRUTH: SOVEREIGN_REGISTRY is now derived from
+SOVEREIGN_TERRITORIES (agentic_core/L5_safety/config/structure_blueprint/_constants.py).
+Do NOT add territory definitions here — add them to _constants.py instead.
 """
 
 import os
 
-# ============================================================================
-# SOVEREIGN REGISTRY - Core Territory Definitions
-# ============================================================================
-# This defines the allowed folder structure and depth constraints.
 
-SOVEREIGN_REGISTRY: dict = {
-    "system_learning": {
-        "depth": 2,
-        "subfolders": [
-            "adapters",
-            "arbitration",
-            "confidence",
-            "config",
-            "constraints",
-            "correlation",
-            "enforcement",
-            "engines",
-            "fingerprinting",
-            "pipelines",
-            "ports",
-            "runtime",
-            "snapshots",
-            "stores",
-            "types",
-            "validators",
-        ],
-    },
-    "agentic_core": {
-        "depth": 3,
-        "subfolders": [
-            "L0_routing",
-            "L1_cognition",
-            "L2_execution",
-            "L3_orchestration",
-            "L4_state",
-            "L5_safety",
-            "L6_observability",
-            "config",
-            "prompt_governance",
-            "runtime",
-            "utils",
-            "patterns",
-            "semantic_memory",
-            "knowledge",
-            "observability",
-            "common",
-        ],
-    },
-    "apps_rg": {
-        "depth": 2,
-        "subfolders": [
-            "logic_nodes",
-            "asset_library",
-            "system_flow",
-            "engines",
-            "templates",
-            "domain",
-        ],
-    },
-    "apps_lic": {
-        "depth": 2,
-        "subfolders": [
-            "logic_nodes",
-            "asset_library",
-            "system_flow",
-            "engines",
-            "templates",
-            "domain",
-            "core",
-        ],
-    },
-    "apps_shared": {
-        "depth": 3,
-        "subfolders": [
-            "base_definitions",
-            "common_utils",
-            "core_components",
-            "base_agents",
-            "models",
-            "utils",
-            "mixins",
-            "P1_core",
-            "config",
-            "data",
-            "domain",
-            "templates",
-        ],
-        "description": "Global utilities and shared logic accessible by all apps and core.",
-    },
-    "tests": {
-        "depth": 2,
-        "subfolders": [
-            "unit",
-            "unit_min_deps",
-            "integration",
-            "e2e",
-            "functional",
-            "fixtures",
-            "automation",
-            "core",
-            "data",
-            "performance",
-            "security",
-            "autogen",
-            "utils",
-            "guardian",
-            "adapters",
-            "agents",
-            "agents_dir",
-            "anomaly_tests",
-            "apps_lic",
-            "apps_rg",
-            "base",
-            "ci",
-            "config",
-            "consolidation",
-            "core_dashboard",
-            "dashboards",
-            "data_prompt_governance",
-            "dedup",
-            "docs",
-            "document_loaders",
-            "domain",
-            "enforcement",
-            "engine",
-            "engines",
-            "exceptions",
-            "file_classification_agent",
-            "flows",
-            "governance",
-            "gravity",
-            "guardrails",
-            "healers",
-            "healing",
-            "helpers",
-            "hops",
-            "human_review",
-            "l1_cognition",
-            "l2_execution",
-            "l3_orchestration",
-            "l6_observability",
-            "mcp",
-            "memory",
-            "meta_control",
-            "migrations",
-            "misc",
-            "models",
-            "ops_scripts",
-            "optimization",
-            "policy_engine",
-            "ports",
-            "reasoning",
-            "red_teaming",
-            "renderers",
-            "research_cache",
-            "retrieval",
-            "scenarios",
-            "scripts",
-            "sensors",
-            "sovereign_hardening",
-            "ssot_equivalence",
-            "static_index",
-            "stress",
-            "structure_blueprint",
-            "support",
-            "system_learning",
-            "thought_engine",
-            "tool_contract",
-            "tool_registry",
-            "tools",
-            "types",
-            "validation_context",
-            "validators",
-            "workflow_engines",
-            "L0_routing",
-            "L1_cognition",
-            "L2_execution",
-            "L4_state",
-            "L5_safety",
-            "L6_observability",
-            "agentic_core",
-        ],
-    },
-    "scripts": {"depth": 1, "subfolders": [], "purpose": "Standalone utility scripts"},
-    ".sovereign_healing_backup": {
-        "depth": 2,
-        "subfolders": ["filesystem", "location", "naming", "transactions", "import_fixes"],
-        "purpose": "Backup directory for healing operations",
-        "volatile": True,
-    },
-}
+def _derive_registry() -> dict:
+    """Build SOVEREIGN_REGISTRY from SOVEREIGN_TERRITORIES (the true SSOT).
+
+    Produces the flat {name: {depth, subfolders}} shape expected by
+    LocationHealerAgent._autonomous_void_violation_resolution().
+    """
+    from collections.abc import Mapping as _Mapping
+
+    from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        SOVEREIGN_TERRITORIES,
+    )
+
+    registry: dict = {}
+    for name, cfg in SOVEREIGN_TERRITORIES.items():
+        subfolders = cfg.get("subfolders", {})
+        if isinstance(subfolders, _Mapping):
+            subfolder_list = sorted(subfolders.keys())
+        elif isinstance(subfolders, (list, tuple, frozenset, set)):
+            subfolder_list = sorted(subfolders)
+        else:
+            subfolder_list = []
+        entry: dict = {
+            "depth": cfg.get("depth", 2),
+            "subfolders": subfolder_list,
+        }
+        if cfg.get("layer_prefix_exempt"):
+            entry["layer_prefix_exempt"] = True
+        if cfg.get("volatile"):
+            entry["volatile"] = True
+        registry[name] = entry
+    return registry
+
+
+SOVEREIGN_REGISTRY: dict = _derive_registry()
 
 # ============================================================================
 # HEALING CONFIGURATION

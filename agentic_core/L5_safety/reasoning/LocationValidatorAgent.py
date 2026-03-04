@@ -323,20 +323,21 @@ class LocationValidatorAgent(SovereignBaseAgent):
     def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
         from agentic_core.L5_safety.config.structure_blueprint_config import (
+            SOVEREIGN_TERRITORIES,
             check_forbidden_signals,
             has_forbidden_layer_prefix,
         )
 
-        # Forbidden layer prefixes
-        # system_learning legitimately uses l0_/l1_/.../l5_ prefixes to denote
-        # which agentic layer a module adapts for — exempt this territory.
+        # Forbidden layer prefixes — skip for territories declaring layer_prefix_exempt=True
+        # (e.g. system_learning uses l0_–l5_ prefixes intentionally to denote which
+        # agentic layer a module adapts for).
         try:
             _rel = file_path.relative_to(self.project_root)
             _root = _rel.parts[0] if _rel.parts else ""
         except (ValueError, IndexError):
             _root = ""
-        _LAYER_PREFIX_EXEMPT_ROOTS: frozenset[str] = frozenset({"system_learning"})
-        if _root not in _LAYER_PREFIX_EXEMPT_ROOTS:
+        _territory_cfg = SOVEREIGN_TERRITORIES.get(_root, {})
+        if not _territory_cfg.get("layer_prefix_exempt", False):
             forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
             if forbidden_prefix:
                 return (
