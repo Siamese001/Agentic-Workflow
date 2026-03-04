@@ -10,7 +10,7 @@ Tasks A1, A2, A3, A4, A5, B1, B2, B3, C1, C3, D1, D2 plus phase test suites (A-t
 
 ## EVIDENCE_COMMIT
 
-PENDING
+f31dddc1104bda407e65f4dd1e91e57c16928f77
 
 ## FILES_CHANGED_CODE
 
@@ -30,7 +30,7 @@ tests/unit/test_phase_b_memory_routing.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/embedding-lifecycle-hardening-evidence.md
 
 ## INSPECTED_FILES
 
