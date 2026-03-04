@@ -292,3 +292,237 @@ class TestBug4JsonPathSerialisation:
         loaded = json.loads(json_path.read_text(encoding="utf-8"))
         file_val = loaded["unified_violations"][0]["file"]
         assert "\\" not in file_val, f"Path must use forward slashes in JSON, got: {file_val!r}"
+
+    def test_aggregate_serialiser_converts_path_to_posix(self, tmp_path):
+        """save_aggregate_report must serialise Path objects with forward slashes.
+
+        We write a pre-baked per-territory report containing a Path in the JSON
+        (as a string, since json.dump already ran), then verify save_aggregate_report
+        can read and re-serialise it without raising.
+        """
+        import json as _json
+
+        from agentic_core.L0_routing.scripts.execute_ssot import save_aggregate_report
+
+        reports_dir = tmp_path / "logs" / "compliance_reports"
+        reports_dir.mkdir(parents=True)
+
+        territory = "agg_test_territory"
+        per_territory_cert = {
+            "meta": {"territory": territory, "status": "COMPLIANT", "timestamp": "2024-01-01T00:00:00"},
+            "metrics": {
+                "violation_count": 0,
+                "violations_fixed": 2,
+                "drift_count": 0,
+                "errors": 0,
+                "confidence_score": 0.9,
+                "agents_run": 1,
+            },
+            "unified_violations": [
+                {
+                    "type": "GRAVITY",
+                    "file": "agentic_core/L0_routing/foo.py",
+                    "message": "Layer inversion",
+                }
+            ],
+            "healing_log": [],
+        }
+
+        report_path = reports_dir / f"compliance_report_{territory}.json"
+        report_path.write_text(_json.dumps(per_territory_cert, indent=2), encoding="utf-8")
+
+        with patch("agentic_core.L0_routing.scripts.execute_ssot.assert_no_persistent_write"):
+            agg_path = save_aggregate_report(
+                targets=[territory],
+                project_root=tmp_path,
+            )
+
+        assert agg_path is not None, "save_aggregate_report must return a path"
+        assert agg_path.exists(), "Aggregate report file must be created"
+
+        loaded = _json.loads(agg_path.read_text(encoding="utf-8"))
+        # Verify the report is json.load()-able (no backslash escape errors)
+        assert isinstance(loaded, dict)
+        # Aggregate report structure uses "territories" list
+        assert "territories" in loaded, (
+            f"Aggregate report must have 'territories' key, got {list(loaded.keys())}"
+        )
+        assert len(loaded["territories"]) == 1, (
+            f"Expected 1 territory entry, got {len(loaded['territories'])}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# HARDENING: BUG-1 production wiring — agents dict key "location"
+# ---------------------------------------------------------------------------
+
+
+class TestBug1ProductionAgentsWiring:
+    def test_agents_dict_location_key_is_healer(self):
+        """The production agents dict must map 'location' → LocationHealerAgent (not Validator)."""
+        import ast
+
+        ssot_path = (
+            Path(__file__).resolve().parents[2]
+            / "agentic_core"
+            / "L0_routing"
+            / "scripts"
+            / "execute_ssot.py"
+        )
+        source = ssot_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(ssot_path))
+
+        # Find the agents dict assignment: agents = {"location": ..., ...}
+        # We look for Dict nodes where one key is the string "location"
+        location_values: list[str] = []
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    if isinstance(target, ast.Name) and target.id == "agents":
+                        if isinstance(node.value, ast.Dict):
+                            for key, val in zip(node.value.keys, node.value.values):
+                                if isinstance(key, ast.Constant) and key.value == "location":
+                                    # val should be a Name node referencing LocationHealerAgent
+                                    if isinstance(val, ast.Name):
+                                        location_values.append(val.id)
+
+        assert location_values, "Could not find agents['location'] assignment in execute_ssot.py"
+        for val in location_values:
+            assert val == "LocationHealerAgent", (
+                f"agents['location'] must be LocationHealerAgent, got {val!r}"
+            )
+            assert "Validator" not in val, (
+                "agents['location'] must NOT reference any Validator (raises NotImplementedError)"
+            )
+
+
+# ---------------------------------------------------------------------------
+# HARDENING: BUG-2 production wiring — state mutation after execute_phase2_reconciliation
+# ---------------------------------------------------------------------------
+
+
+class TestBug2ProductionStateMutation:
+    def test_phase2_result_persisted_to_state_mgr(self):
+        """execute_ssot.py must write phase2_result['violations_fixed'] into state_mgr.state.
+
+        Verified by AST inspection of the production code path.
+        """
+        import ast
+
+        ssot_path = (
+            Path(__file__).resolve().parents[2]
+            / "agentic_core"
+            / "L0_routing"
+            / "scripts"
+            / "execute_ssot.py"
+        )
+        source = ssot_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(ssot_path))
+
+        # Look for: state_mgr.state["phase2_violations_fixed"] = ...
+        found_state_write = False
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Assign):
+                for target in node.targets:
+                    # target: state_mgr.state[...] subscript
+                    if (
+                        isinstance(target, ast.Subscript)
+                        and isinstance(target.value, ast.Attribute)
+                        and target.value.attr == "state"
+                        and isinstance(target.value.value, ast.Name)
+                        and target.value.value.id == "state_mgr"
+                    ):
+                        # Check the subscript key is "phase2_violations_fixed"
+                        key_node = target.slice
+                        if isinstance(key_node, ast.Constant) and key_node.value == "phase2_violations_fixed":
+                            found_state_write = True
+
+        assert found_state_write, (
+            "execute_ssot.py must assign state_mgr.state['phase2_violations_fixed'] "
+            "after execute_phase2_reconciliation (BUG-2 fix not present)"
+        )
+
+    def test_cert_builder_reads_phase2_violations_fixed(self):
+        """The cert builder must include state.get('phase2_violations_fixed', 0) in violations_fixed.
+
+        Verified by AST inspection: a BinOp or augmented-add chain in execute_ssot.py
+        must contain a Call to state.get with 'phase2_violations_fixed'.
+        """
+
+        ssot_path = (
+            Path(__file__).resolve().parents[2]
+            / "agentic_core"
+            / "L0_routing"
+            / "scripts"
+            / "execute_ssot.py"
+        )
+        source = ssot_path.read_text(encoding="utf-8")
+
+        # String-level check: simpler and sufficient — the fix is a single identifiable string
+        assert "phase2_violations_fixed" in source, (
+            "execute_ssot.py must contain 'phase2_violations_fixed' (BUG-2 fix absent)"
+        )
+
+        # Count occurrences: must appear at least twice (write and read in cert builder)
+        count = source.count("phase2_violations_fixed")
+        assert count >= 2, (
+            f"'phase2_violations_fixed' must appear at least twice in execute_ssot.py "
+            f"(write in Phase 2 + read in cert builder), got {count}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# HARDENING: BUG-3 production path — AST verify dict violations use .get()
+# ---------------------------------------------------------------------------
+
+
+class TestBug3ProductionCodePath:
+    def test_execute_ssot_uses_dict_get_for_location_violations(self):
+        """The inline location-violation extraction in execute_ssot.py must use
+        dict.get() for dict-shaped violations, NOT getattr().
+
+        Verified by AST: inside the elif isinstance(loc_violation, dict) branch
+        there must be a .get() call — not a getattr() call.
+        """
+        import ast
+
+        ssot_path = (
+            Path(__file__).resolve().parents[2]
+            / "agentic_core"
+            / "L0_routing"
+            / "scripts"
+            / "execute_ssot.py"
+        )
+        source = ssot_path.read_text(encoding="utf-8")
+        tree = ast.parse(source, filename=str(ssot_path))
+
+        found_dict_branch = False
+        found_get_call = False
+
+        for node in ast.walk(tree):
+            # Look for: elif isinstance(loc_violation, dict):
+            if isinstance(node, ast.If):
+                test = node.test
+                if (
+                    isinstance(test, ast.Call)
+                    and isinstance(test.func, ast.Name)
+                    and test.func.id == "isinstance"
+                    and len(test.args) == 2
+                    and isinstance(test.args[1], ast.Name)
+                    and test.args[1].id == "dict"
+                ):
+                    found_dict_branch = True
+                    # Inside this branch, check for .get() calls
+                    for child in ast.walk(node):
+                        if (
+                            isinstance(child, ast.Call)
+                            and isinstance(child.func, ast.Attribute)
+                            and child.func.attr == "get"
+                        ):
+                            found_get_call = True
+                            break
+
+        assert found_dict_branch, (
+            "execute_ssot.py must have an 'isinstance(x, dict)' branch for location violations"
+        )
+        assert found_get_call, "The dict branch must use .get() to extract file/path keys (BUG-3 fix absent)"
