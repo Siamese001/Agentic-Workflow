@@ -36,6 +36,26 @@ from subprocess import DEVNULL
 from types import FrameType
 from typing import Any, Optional
 
+try:
+    from tqdm import tqdm
+except ImportError:
+    # Fallback if tqdm not available
+    class tqdm:
+        def __init__(self, iterable=None, total=None, desc=None, **kwargs):
+            self.iterable = iterable
+            self.n = 0
+            self.total = total
+        def __iter__(self):
+            return iter(self.iterable) if self.iterable else iter([])
+        def __enter__(self):
+            return self
+        def __exit__(self, *args):
+            pass
+        def update(self, n=1):
+            self.n += n
+        def set_description(self, desc):
+            pass
+
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 
@@ -1959,83 +1979,91 @@ def execute_phase2_reconciliation(
     for v in violations_list:
         by_agent[v.get("suggested_agent", "reconciler")].append(v)
 
-    for agent_key, agent_violations in by_agent.items():
-        violation_types = [v.get("type", "UNKNOWN") for v in agent_violations]
+    # Progress bar for agent healing
+    agent_items = list(by_agent.items())
+    with tqdm(total=len(agent_items), desc="Healing agents", unit="agent", ncols=100) as pbar:
+        for idx, (agent_key, agent_violations) in enumerate(agent_items, 1):
+            pbar.set_description(f"Agent: {agent_key[:20]:<20} ({idx}/{len(agent_items)})")
+            violation_types = [v.get("type", "UNKNOWN") for v in agent_violations]
 
-        agent_cls = agents.get(agent_key)
-        if agent_cls is None:
-            logging.warning(
-                f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
-            )
-            failed_fixes.extend(
-                {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
-                for v in agent_violations
-            )
-            continue
-
-        confidence = decision_engine.calculate_healing_confidence(
-            violations_count=len(agent_violations),
-            violation_types=violation_types,
-            territory=territory,
-            agent_name=agent_key,
-        )
-
-        allowed, reason = decision_engine.should_proceed_with_healing(
-            confidence, agent_key, territory=territory
-        )
-        if not allowed:
-            logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
-            failed_fixes.extend(
-                {"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations
-            )
-            continue
-
-        if ctx is None or not ctx.heal:
-            for v in agent_violations:
-                reconciliation_log.append(
-                    {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason}
+            agent_cls = agents.get(agent_key)
+            if agent_cls is None:
+                logging.warning(
+                    f"Phase 2: agent key '{agent_key}' not in registry — skipping {len(agent_violations)} violations"
                 )
-            continue
-
-        if not decision_engine.request_sovereignty_token(agent_key, violation_types[0]):
-            failed_fixes.extend(
-                {"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"}
-                for v in agent_violations
-            )
-            continue
-
-        try:
-            # Instantiate the agent class and call heal_repository() — the real mutation path
-            agent_instance = agent_cls(project_root=REPO_ROOT)
-            state_mgr.update_agent(
-                agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"
-            )
-
-            logging.warning(
-                "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
-                agent_key,
-                len(agent_violations),
-                reason.split("(")[0].strip(),
-            )
-
-            # [FIX-HANG] Run heal_repository with timeout to prevent indefinite hangs.
-            # Territory scoping reduces scan surface; timeout is the hard safety net.
-            _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
-            with ThreadPoolExecutor(max_workers=1) as _pool:
-                _future = _pool.submit(
-                    agent_instance.heal_repository,
-                    dry_run=False, execute=True,
+                failed_fixes.extend(
+                    {"violation": v, "reason": f"Agent '{agent_key}' not registered", "status": "blocked"}
+                    for v in agent_violations
                 )
-                try:
-                    fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
-                except FuturesTimeoutError:
-                    logging.error(
-                        "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
-                        agent_key, _HEAL_TIMEOUT_S,
+                pbar.update(1)
+                continue
+
+            confidence = decision_engine.calculate_healing_confidence(
+                violations_count=len(agent_violations),
+                violation_types=violation_types,
+                territory=territory,
+                agent_name=agent_key,
+            )
+
+            allowed, reason = decision_engine.should_proceed_with_healing(
+                confidence, agent_key, territory=territory
+            )
+            if not allowed:
+                logging.warning(f"Phase 2: BLOCKED {agent_key}: {reason}")
+                failed_fixes.extend(
+                    {"violation": v, "reason": reason, "status": "blocked"} for v in agent_violations
+                )
+                pbar.update(1)
+                continue
+
+            if ctx is None or not ctx.heal:
+                for v in agent_violations:
+                    reconciliation_log.append(
+                        {"action": "would_fix", "target": v.get("file"), "agent": agent_key, "reason": reason}
                     )
-                    raise RuntimeError(
-                        f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
+                pbar.update(1)
+                continue
+
+            if not decision_engine.request_sovereignty_token(agent_key, violation_types[0]):
+                failed_fixes.extend(
+                    {"violation": v, "reason": "Sovereignty Token Denied", "status": "locked"}
+                    for v in agent_violations
+                )
+                pbar.update(1)
+                continue
+
+            try:
+                # Instantiate the agent class and call heal_repository() — the real mutation path
+                agent_instance = agent_cls(project_root=REPO_ROOT)
+                state_mgr.update_agent(
+                    agent_key, f"[{reason.split('(')[0].strip()}] Healing {len(agent_violations)} violations"
+                )
+
+                logging.warning(
+                    "Phase 2: [%s] → calling heal_repository(dry_run=False, execute=True) for %d violations [routing: %s]",
+                    agent_key,
+                    len(agent_violations),
+                    reason.split("(")[0].strip(),
+                )
+
+                # [FIX-HANG] Run heal_repository with timeout to prevent indefinite hangs.
+                # Territory scoping reduces scan surface; timeout is the hard safety net.
+                _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
+                with ThreadPoolExecutor(max_workers=1) as _pool:
+                    _future = _pool.submit(
+                        agent_instance.heal_repository,
+                        dry_run=False, execute=True,
                     )
+                    try:
+                        fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
+                    except FuturesTimeoutError:
+                        logging.error(
+                            "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
+                            agent_key, _HEAL_TIMEOUT_S,
+                        )
+                        raise RuntimeError(
+                            f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
+                        )
             if not isinstance(fix_result, dict):
                 fix_result = {"raw_output": str(fix_result)}
 
@@ -2064,14 +2092,16 @@ def execute_phase2_reconciliation(
                 agent_key,
                 list(fix_result.keys()),
             )
+            pbar.update(1)
 
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
-            failed_fixes.extend(
-                {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
-            )
-            decision_engine.release_sovereignty_token(agent_key, success=False)
+            # guardian: allow-silent-swallow
+            except Exception as e:
+                logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
+                failed_fixes.extend(
+                    {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
+                )
+                decision_engine.release_sovereignty_token(agent_key, success=False)
+                pbar.update(1)
 
     return {
         "violations_found": len(violations_list),
