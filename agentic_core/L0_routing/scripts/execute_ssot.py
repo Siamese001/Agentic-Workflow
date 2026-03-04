@@ -2024,7 +2024,7 @@ def execute_phase2_reconciliation(
             with ThreadPoolExecutor(max_workers=1) as _pool:
                 _future = _pool.submit(
                     agent_instance.heal_repository,
-                    dry_run=False, execute=True, target_territory=territory,
+                    dry_run=False, execute=True,
                 )
                 try:
                     fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
