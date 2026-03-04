@@ -104,6 +104,12 @@ def _get_location_validator_agent():
     return LocationValidatorAgent
 
 
+def _get_location_healer_agent():
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+
+    return LocationHealerAgent
+
+
 def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
     """Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline after each run.
 
@@ -259,7 +265,7 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
     from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-    from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
         ObservabilityProbeExecutorAgent,
@@ -272,7 +278,7 @@ def _get_l5_agent_roster():
         FilesystemSSOTReconcilerAgent,
         GravityLeakRepairAgent,
         HierarchyAgent,
-        LocationValidatorAgent,
+        LocationHealerAgent,
         RootHygieneAgent,
         ObservabilityProbeExecutorAgent,
     )
@@ -3274,10 +3280,18 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     # Get LocationAgent violations from Phase 1 (stored in state)
     location_violations = state_mgr.state.get("location_violations", [])
     for loc_violation in location_violations:
-        # LocationAgent violations are tuples: (Path, message)
+        # LocationAgent violations arrive in three shapes:
+        # 1. tuple (Path, message) — from validate_sovereign_roots / validate_file_location
+        # 2. dict with "file" and "message" keys — from location_scan_result["violations"]
+        # 3. other objects — fallback
         if isinstance(loc_violation, tuple) and len(loc_violation) >= 2:
             file_path = str(loc_violation[0])
             message = str(loc_violation[1])
+        elif isinstance(loc_violation, dict):
+            # BUG-3 fix: dict violations must use .get(), not getattr
+            raw_fp = loc_violation.get("file") or loc_violation.get("path") or "unknown"
+            file_path = str(raw_fp)
+            message = str(loc_violation.get("message", loc_violation.get("msg", str(loc_violation))))
         else:
             file_path = str(getattr(loc_violation, "file", "unknown"))
             message = str(loc_violation)
@@ -3433,6 +3447,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
                 + state_mgr.state.get("location_fixed", 0)
                 + state_mgr.state.get("hierarchy_fixed", 0)
                 + state_mgr.state.get("gravity_fixed", 0)
+                + state_mgr.state.get("phase2_violations_fixed", 0)  # BUG-2 fix
             ),
             "agents_run": len(agents_executed),
             "agents_skipped": len(agents_skipped),
@@ -3637,9 +3652,14 @@ def save_comprehensive_reports(
         if len(_deduped) != len(detailed_cert.get("unified_violations", [])):
             detailed_cert = {**detailed_cert, "unified_violations": _deduped}
 
+        def _json_serialise(obj):  # BUG-4 fix: Path → posix string to avoid backslash escape errors
+            if isinstance(obj, Path):
+                return obj.as_posix()
+            return str(obj)
+
         with open(json_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(detailed_cert, f, indent=2, default=str, ensure_ascii=False)
+            json.dump(detailed_cert, f, indent=2, default=_json_serialise, ensure_ascii=False)
 
         # Save Markdown Executive Summary (using the md_path already defined above)
         with open(md_path, "w", encoding="utf-8") as f:
@@ -3787,10 +3807,15 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
             "violations": deduplicated_violations,
         }
 
+        def _agg_json_serialise(obj):  # BUG-4 fix: Path → posix string
+            if isinstance(obj, Path):
+                return obj.as_posix()
+            return str(obj)
+
         agg_path = reports_dir / "compliance_report_AGGREGATE.json"
         with open(agg_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
-            json.dump(aggregate, f, indent=2, default=str, ensure_ascii=False)
+            json.dump(aggregate, f, indent=2, default=_agg_json_serialise, ensure_ascii=False)
 
         logger.info(f"📊 Aggregate compliance report saved: {agg_path.relative_to(project_root)}")
         logger.info(
@@ -5145,14 +5170,14 @@ Examples:
         FilesystemSSOTReconcilerAgent,
         GravityLeakRepairAgent,
         HierarchyAgent,
-        LocationValidatorAgent,
+        LocationHealerAgent,
         RootHygieneAgent,
         ObservabilityProbeExecutorAgent,
     ) = _get_l5_agent_roster()
 
     agents = {
         "reconciler": FilesystemSSOTReconcilerAgent,
-        "location": LocationValidatorAgent,
+        "location": LocationHealerAgent,  # BUG-1 fix: was LocationValidatorAgent which raises NotImplementedError
         "hierarchy": HierarchyAgent,
         "arch_governor": ArchitectureGovernorAgent,
         "gravity_repair": GravityLeakRepairAgent,
@@ -5407,6 +5432,11 @@ Examples:
                             logger.info(f"✅ Phase 2: {len(raw['modifications'])} fixes applied")
                         if raw.get("failures"):
                             logger.warning(f"⚠️ Phase 2: {len(raw['failures'])} fixes failed")
+                        # BUG-2 fix: persist Phase 2 fix count into state so cert builder reads it
+                        _p2_fixed = phase2_result.get("violations_fixed", 0)
+                        state_mgr.state["phase2_violations_fixed"] = (
+                            state_mgr.state.get("phase2_violations_fixed", 0) + _p2_fixed
+                        )
 
                         # Phase 3: Final Validation (Post-heal AST checks)
                         # [FIX-B6] Use _phase1_violations built above, not p1_drift.get('violations', []) which is always []
