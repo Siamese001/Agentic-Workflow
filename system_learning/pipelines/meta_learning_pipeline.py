@@ -48,6 +48,7 @@ Invariants:
 
 from __future__ import annotations
 
+import hashlib
 from dataclasses import dataclass
 from typing import Any, Protocol
 
@@ -646,10 +647,8 @@ def _wc_digest(failure_sig: str, vector_source: str, profile_id: str, vector_cou
     Binds: failure_signature | vector_source | retrieval_profile_id | vector_count.
     Printed exactly once per call; 64-char lowercase SHA-256 hex.
     """
-    import hashlib as _hlib
-
     _inp = f"{failure_sig}|{vector_source}|{profile_id}|{vector_count}"
-    _dig = _hlib.sha256(_inp.encode("utf-8", errors="replace")).hexdigest()
+    _dig = hashlib.sha256(_inp.encode("utf-8", errors="replace")).hexdigest()
     print(f"W-C-DETERMINISM-DIGEST: {_dig}")
     return _dig
 

@@ -596,33 +596,33 @@
 agentic_core/L0_routing/enforcement/execution_gateway.py:341:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/enforcement/execution_gateway.py:367:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1270:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1351:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
-agentic_core/L0_routing/scripts/execute_ssot.py:1439:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1582:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1763:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:1786:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:193:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:208:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:2281:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-agentic_core/L0_routing/scripts/execute_ssot.py:2329:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:286:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:316:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:3808:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:3873:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4583:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4665:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4761:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4828:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5009:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5082:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5083:global_mutation:Global mutation: os.environ['BMG_EMBEDDINGS_ENABLED'] assignment modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5084:global_mutation:Global mutation: os.environ['AGENTIC_BYPASS_LONGPATHS_CHECK'] assignment modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5231:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5423:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5453:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5755:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1273:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1354:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
+agentic_core/L0_routing/scripts/execute_ssot.py:1492:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1635:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1816:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:1839:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:196:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:211:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:2334:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+agentic_core/L0_routing/scripts/execute_ssot.py:2382:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:267:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:319:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3861:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:3926:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4636:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4718:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4814:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4881:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5062:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5135:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5136:global_mutation:Global mutation: os.environ['BMG_EMBEDDINGS_ENABLED'] assignment modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5137:global_mutation:Global mutation: os.environ['AGENTIC_BYPASS_LONGPATHS_CHECK'] assignment modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5284:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5476:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5506:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5808:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/scripts/ssot_adapters.py:402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -670,8 +670,8 @@ agentic_core/L1_cognition/engines/query_planner.py:111:silent_swallower:Silent e
 agentic_core/L1_cognition/engines/query_planner.py:51:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/query_planner.py:74:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/query_planner.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/memory/healing_memory_retriever.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/memory/healing_memory_retriever.py:165:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/memory/healing_memory_retriever.py:166:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/memory/healing_memory_retriever.py:177:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py:109:type_erasure:Type erasure: ASTValidatorAgent.visit_ExceptHandler returns Any instead of structured type
 agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py:136:type_erasure:Type erasure: ASTValidatorAgent.visit_Call returns Any instead of structured type
 agentic_core/L1_cognition/reasoning/ASTValidatorAgent.py:187:magic_configuration:Magic configuration: Hardcoded max_depth=3
@@ -2140,16 +2140,16 @@ system_learning/pipelines/approval_gates.py:162:magic_configuration:Magic config
 system_learning/pipelines/approval_gates.py:163:magic_configuration:Magic configuration: Hardcoded max_delta_low=0.05
 system_learning/pipelines/approval_gates.py:164:magic_configuration:Magic configuration: Hardcoded max_delta_medium=0.1
 system_learning/pipelines/approval_gates.py:96:magic_configuration:Magic configuration: Hardcoded high_impact_threshold=3
-system_learning/pipelines/meta_learning_pipeline.py:1039:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:1062:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:1096:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:1228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:187:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:577:magic_configuration:Magic configuration: Hardcoded min_cluster_size=3 in function call
-system_learning/pipelines/meta_learning_pipeline.py:746:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-system_learning/pipelines/meta_learning_pipeline.py:836:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1038:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1061:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1095:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:1227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:188:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:230:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:578:magic_configuration:Magic configuration: Hardcoded min_cluster_size=3 in function call
+system_learning/pipelines/meta_learning_pipeline.py:745:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/pipelines/meta_learning_pipeline.py:835:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/pipelines/pipeline_factory.py:39:magic_configuration:Magic configuration: Hardcoded max_cpu_regression_pct=15.0 in function call
 system_learning/pipelines/pipeline_factory.py:39:magic_configuration:Magic configuration: Hardcoded max_error_rate_regression_abs=0.05 in function call
 system_learning/pipelines/pipeline_factory.py:39:magic_configuration:Magic configuration: Hardcoded max_mem_regression_pct=15.0 in function call

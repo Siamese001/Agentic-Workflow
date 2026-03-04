@@ -118,6 +118,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
     Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
     this is a safe no-op. After Wave 0B restoration the full pipeline activates.
     """
+    # Debt-4: sentinel so the pipeline try-block can reference adapter safely
+    # even if the intake try-block raised before assigning it.
+    adapter = None
     try:
         from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
         from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
@@ -301,7 +304,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         _ml_cfg = build_pipeline_config(proposal_only=not _apply_proposals)
         _ml_deps = build_pipeline_deps(
             repo_root=REPO_ROOT,
-            healing_outcome_intake_adapter=adapter if "adapter" in dir() else None,
+            healing_outcome_intake_adapter=adapter,
         )
         _ml_run_pipeline(
             now_utc=_now_utc,
@@ -1403,11 +1406,61 @@ class SovereignDecisionEngine:
           N=2  0.50 <= max_similarity < 0.70
           N=3  max_similarity < 0.50   (completely novel)
 
-        Falls back to the legacy heuristic (0 or 1 based on [BMG-GPU] in
-        reasoning) when embeddings are disabled or unavailable.
+        Falls back to a hash-fallback vector comparison when embeddings are
+        disabled, replacing the legacy [BMG-GPU] string heuristic.
+        Raises VectorSourceMismatchError if stored vectors and the fallback
+        vector have incompatible dimensions (e.g., bge-m3 vs hash-fallback).
         """
         if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() != "true":
-            return 1 if "[BMG-GPU]" in (confidence.reasoning or "") else 0
+            # Debt-1: deterministic hash-fallback novelty instead of [BMG-GPU] string heuristic.
+            try:
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                    VectorSourceMismatchError as _VectorSrcErr,
+                )
+                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                    generate_fallback_vector as _gen_fallback,
+                )
+
+                ft_str = failure_type.value if failure_type is not None else "UNKNOWN"
+                _signal_text = f"{ft_str} {territory}"
+                _fallback_vec = _gen_fallback(_signal_text)
+
+                _recent: list = []
+                if self.state_mgr is not None:
+                    _recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
+
+                if not _recent:
+                    return 1
+
+                import numpy as _np
+
+                _q = _np.array(_fallback_vec, dtype=_np.float32)
+                _mat = _np.array(_recent, dtype=_np.float32)
+
+                # Debt-2: dim mismatch between hash-fallback (16-dim) and bge-m3 vectors.
+                if _mat.shape[1] != _q.shape[0]:
+                    raise _VectorSrcErr(
+                        f"Cannot compare hash-fallback vector (dim={_q.shape[0]}) "
+                        f"against L4 state vectors (dim={_mat.shape[1]}): "
+                        "source mismatch -- stored vectors are likely bge-m3."
+                    )
+
+                _max_sim = float((_np.dot(_mat, _q)).max())
+                if _max_sim >= 0.85:
+                    return 0
+                if _max_sim >= 0.70:
+                    return 1
+                if _max_sim >= 0.50:
+                    return 2
+                return 3
+            except Exception as _fb_exc:  # guardian: allow-silent-swallower
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                    VectorSourceMismatchError as _VSMErr,
+                )
+
+                if isinstance(_fb_exc, _VSMErr):
+                    raise
+                return 1  # conservative default when fallback computation unavailable
 
         recent: list = []
         if self.state_mgr is not None:
@@ -1437,7 +1490,7 @@ class SovereignDecisionEngine:
                 return 2
             return 3
         except Exception:  # guardian: allow-silent-swallower
-            return 1 if "[BMG-GPU]" in (confidence.reasoning or "") else 0
+            return 1  # conservative default: mildly novel, not completely new
 
     def _route_decision(
         self,

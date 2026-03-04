@@ -286,3 +286,42 @@ def test_sovereignty_error_on_advisory_only_false():
     r = _TamperedRetriever(store=mock_store)
     with pytest.raises(SovereigntyError, match="advisory_only=False"):
         r.retrieve_similar_incidents("IMPORT_BOUNDARY tamper_agent", top_k=3)
+
+
+# ---------------------------------------------------------------------------
+# B-hardening — Deterministic sort tie-break
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.determinism
+def test_retrieve_similar_incidents_sort_is_deterministic(capsys):
+    """Results must be sorted: score DESC, content_hash ASC, trace_id ASC.
+
+    Two calls with the same store contents MUST produce identical ordering
+    regardless of the iteration order returned by the store.
+    """
+    from agentic_core.L1_cognition.memory.healing_memory_retriever import HealingMemoryRetriever
+
+    mock_store = MagicMock()
+    mock_store.search.return_value = [
+        ("hash_z", "trace_1", 0.80),
+        ("hash_a", "trace_2", 0.80),
+        ("hash_m", "trace_3", 0.90),
+    ]
+
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=[0.1] * 16,
+    ):
+        r = HealingMemoryRetriever(store=mock_store)
+        res1 = r.retrieve_similar_incidents("LAYER_VIOLATION territory", top_k=3)
+        _ = capsys.readouterr()
+        res2 = r.retrieve_similar_incidents("LAYER_VIOLATION territory", top_k=3)
+
+    assert [i.content_hash for i in res1] == [i.content_hash for i in res2], (
+        "Sort must be stable across calls"
+    )
+    assert res1[0].content_hash == "hash_m", "Highest score must be first"
+    assert res1[1].content_hash == "hash_a", "Tie-break: hash_a < hash_z"
+    assert res1[2].content_hash == "hash_z", "Tie-break: hash_z after hash_a"

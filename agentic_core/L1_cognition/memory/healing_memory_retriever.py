@@ -24,6 +24,18 @@ logger = logging.getLogger(__name__)
 _INDEX_ID = "healing_context_v1"
 
 
+class VectorSourceMismatchError(RuntimeError):
+    """Raised when vectors of incompatible sources are compared.
+
+    Phase C hardening: hash-fallback vectors (16-dim) MUST NOT be consumed
+    by novelty or cluster logic as if they were real semantic embeddings
+    (e.g., bge-m3 ~1024-dim).  Any dimension mismatch detected at comparison
+    time raises this error immediately -- no silent coercion.
+    """
+
+    pass
+
+
 class SovereigntyError(RuntimeError):
     """Raised when retrieval violates the advisory-only boundary.
 
@@ -178,6 +190,10 @@ class HealingMemoryRetriever:
                 )
             )
 
+        # B-hardening: deterministic sort — score DESC, then content_hash ASC, trace_id ASC.
+        # Tie-break ensures identical ordering across two calls with the same input.
+        results.sort(key=lambda inc: (-inc.similarity, inc.content_hash, inc.trace_id or ""))
+
         # B-hardening: runtime enforcement — any incident with advisory_only=False
         # is a sovereignty boundary violation; fail immediately.
         for _inc in results:
@@ -242,5 +258,6 @@ __all__ = [
     "NullHealingMemoryRetriever",
     "SimilarIncident",
     "SovereigntyError",
+    "VectorSourceMismatchError",
     "build_retriever",
 ]
