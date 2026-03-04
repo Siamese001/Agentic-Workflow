@@ -1563,6 +1563,8 @@ class SovereignDecisionEngine:
         try:
             from agentic_core.L2_execution.healers.healing_tier_config import (
                 HEALING_CONFIDENCE_X as _CONF_X,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_config import (
                 HEALING_CONFIDENCE_Y as _CONF_Y,
             )
         except ImportError:  # guardian: allow-silent-swallower
@@ -3624,6 +3626,17 @@ def save_comprehensive_reports(
         json_path = reports_dir / json_filename
         md_path = reports_dir / md_filename
 
+        # Deduplicate unified_violations by (type, file, message) before persisting
+        _seen_vkeys: set = set()
+        _deduped: list = []
+        for _v in detailed_cert.get("unified_violations", []):
+            _vk = (_v.get("type", ""), _v.get("file", ""), _v.get("message", ""))
+            if _vk not in _seen_vkeys:
+                _seen_vkeys.add(_vk)
+                _deduped.append(_v)
+        if len(_deduped) != len(detailed_cert.get("unified_violations", [])):
+            detailed_cert = {**detailed_cert, "unified_violations": _deduped}
+
         with open(json_path, "w", encoding="utf-8") as f:
             assert_no_persistent_write("L0", "json.dump")  # G-12-1: mutation prohibition guard
             json.dump(detailed_cert, f, indent=2, default=str, ensure_ascii=False)
@@ -4197,6 +4210,140 @@ def _print_meta_learning_summary(
             print(f"    -> {exp}")
 
     print("=" * 60)
+
+
+def _write_mandatory_json_output(
+    state_mgr: "SovereignStateMgr",
+    decision_engine: "SovereignDecisionEngine",
+) -> None:
+    """Write mandatory heal-run JSON output to logs/compliance_reports/heal_run_output.json.
+
+    This is always written at the end of every --heal run. It is the authoritative
+    machine-readable record of what the run did, what the meta-learning system learned,
+    and what the routing engine decided. No querying required after the run.
+    """
+    import datetime
+    from collections import Counter
+
+    healing_actions = state_mgr.state.get("healing_actions", [])
+    decisions = getattr(decision_engine, "decisions_made", [])
+    ml = state_mgr.state.get("meta_learning", {})
+
+    successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
+    failed_acts = [
+        a for a in healing_actions if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")
+    ]
+    plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
+
+    conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    tier_counts: Counter = Counter()
+    for d in decisions:
+        if d.get("decision"):
+            tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
+
+    # Heatmap data — agent x tier counts (mirrors _print_healing_heatmap)
+    TIER_ALIASES = {
+        "DETERMINISTIC": "DETERMINISTIC",
+        "QWEN": "QWEN_VLLM",
+        "QWEN_VLLM": "QWEN_VLLM",
+        "GEMINI": "GEMINI_2_5_PRO",
+        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
+    }
+    heatmap: dict = {}
+    for action in healing_actions:
+        agent = action.get("agent", "unknown")
+        tier = TIER_ALIASES.get(action.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        heatmap.setdefault(agent, {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0})
+        heatmap[agent][tier] += 1
+    seen_pairs = {
+        (a.get("agent"), TIER_ALIASES.get(a.get("routing_tier", ""), "DETERMINISTIC"))
+        for a in healing_actions
+    }
+    for d in getattr(decision_engine, "decisions_made", []):
+        if not d.get("decision"):
+            continue
+        agent = d.get("agent", "unknown")
+        tier = TIER_ALIASES.get(d.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        if (agent, tier) not in seen_pairs:
+            heatmap.setdefault(agent, {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0})
+            heatmap[agent][tier] += 1
+
+    output = {
+        "meta": {
+            "report_type": "HEAL_RUN_OUTPUT",
+            "timestamp": datetime.datetime.now().isoformat(),
+            "mandatory": True,
+        },
+        "healing_heatmap": {
+            "agents": {
+                agent: {
+                    **counts,
+                    "total": sum(counts.values()),
+                }
+                for agent, counts in sorted(heatmap.items())
+            },
+            "totals": {
+                "DETERMINISTIC": sum(v.get("DETERMINISTIC", 0) for v in heatmap.values()),
+                "QWEN_VLLM": sum(v.get("QWEN_VLLM", 0) for v in heatmap.values()),
+                "GEMINI_2_5_PRO": sum(v.get("GEMINI_2_5_PRO", 0) for v in heatmap.values()),
+                "grand_total": sum(sum(v.values()) for v in heatmap.values()),
+            },
+        },
+        "meta_learning": {
+            "records_ingested": ml.get("total_experiences", 0),
+            "outcomes": {
+                "success": len(successful),
+                "fail": len(failed_acts),
+                "plan_only": len(plan_only),
+            },
+            "patterns_stored": dict(Counter(a.get("agent", "?") for a in successful).most_common(10)),
+            "failure_prior_agents": dict(
+                Counter(a.get("agent", "unknown") for a in failed_acts).most_common(10)
+            ),
+            "confidence": {
+                "min": round(min(conf_vals), 4) if conf_vals else None,
+                "avg": round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None,
+                "max": round(max(conf_vals), 4) if conf_vals else None,
+                "band_local_gte075": sum(1 for c in conf_vals if c >= 0.75),
+                "band_qwen_040_074": sum(1 for c in conf_vals if 0.40 <= c < 0.75),
+                "band_gemini_lt040": sum(1 for c in conf_vals if c < 0.40),
+            },
+            "tier_routing": dict(tier_counts),
+            "strategy_weights": ml.get("strategy_weights", {}),
+            "recent_experiences": ml.get("recent_experiences", [])[:5],
+        },
+        "healing_actions": healing_actions,
+        "routing_decisions": [
+            {
+                "agent": d.get("agent"),
+                "territory": d.get("territory"),
+                "routing_tier": d.get("routing_tier"),
+                "routing_score": d.get("routing_score"),
+                "confidence": d.get("confidence"),
+                "routing_gate": d.get("routing_gate"),
+                "decision": d.get("decision"),
+                "model": d.get("model"),
+            }
+            for d in decisions
+        ],
+    }
+
+    try:
+        reports_dir = getattr(state_mgr, "project_root", None)
+        if reports_dir is None:
+            reports_dir = Path.cwd()
+        out_dir = Path(reports_dir) / "logs" / "compliance_reports"
+        out_dir.mkdir(parents=True, exist_ok=True)
+        out_path = out_dir / "heal_run_output.json"
+        with open(out_path, "w", encoding="utf-8") as _fh:
+            json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
+        print("")
+        print("=" * 60)
+        print("MANDATORY JSON OUTPUT")
+        print(f"  {out_path}")
+        print("=" * 60)
+    except Exception as _e:  # guardian: allow-silent-swallower
+        logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
 
 
 def run_pipeline(
@@ -5482,6 +5629,7 @@ Examples:
 
             _print_healing_heatmap(state_mgr, decision_engine)
             _print_meta_learning_summary(state_mgr, decision_engine)
+            _write_mandatory_json_output(state_mgr, decision_engine)
 
             return results
 
