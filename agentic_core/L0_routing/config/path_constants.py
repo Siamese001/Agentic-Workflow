@@ -96,6 +96,9 @@ LAYER_ROOTS: Final[frozenset[str]] = frozenset(
 
 ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
     {
+        ".backup",
+        ".github",
+        ".gravity_state",
         "agentic_core",
         "apps_lic",
         "apps_rg",
@@ -104,9 +107,11 @@ ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
         "artifacts",
         "data",
         "docs",
+        "logs",
         "ops_scripts",
         "system_learning",
         "tests",
+        "tools",
     }
 )
 
