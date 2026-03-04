@@ -350,9 +350,21 @@ class TestRLHFOptimizer:
         optimizer = DefaultRLHFOptimizer()
         batch = {
             "pairs": [
-                {"surface": "escalation_threshold", "chosen": {"threshold": 0.85}, "rejected": {"threshold": 0.80}},
-                {"surface": "escalation_threshold", "chosen": {"threshold": 0.86}, "rejected": {"threshold": 0.81}},
-                {"surface": "escalation_threshold", "chosen": {"threshold": 0.84}, "rejected": {"threshold": 0.79}},
+                {
+                    "surface": "escalation_threshold",
+                    "chosen": {"threshold": 0.85},
+                    "rejected": {"threshold": 0.80},
+                },
+                {
+                    "surface": "escalation_threshold",
+                    "chosen": {"threshold": 0.86},
+                    "rejected": {"threshold": 0.81},
+                },
+                {
+                    "surface": "escalation_threshold",
+                    "chosen": {"threshold": 0.84},
+                    "rejected": {"threshold": 0.79},
+                },
             ]
         }
         batch_bytes = json.dumps(batch).encode("utf-8")
@@ -649,8 +661,7 @@ class TestPhase11ProposerChangePackages:
         proposer = L5PolicyProposer()
         snapshot = self._make_snapshot()
         # l5_false_positive_rate=0.25 > threshold 0.15 triggers relaxation; min 5 obs
-        metrics = {"l5_false_positive_rate": 0.25, "l5_false_negative_rate": 0.05,
-                   "l5_observation_count": 10}
+        metrics = {"l5_false_positive_rate": 0.25, "l5_false_negative_rate": 0.05, "l5_observation_count": 10}
         cooldown = CooldownPolicy(min_seconds_between_updates=0)
         sample = SampleSizePolicy(min_observations=1)
         result = proposer.propose(
@@ -676,13 +687,13 @@ class TestPhase11ProposerChangePackages:
         snapshot = self._make_snapshot()
         cooldown = CooldownPolicy(min_seconds_between_updates=0)
         sample = SampleSizePolicy(min_observations=1)
-        common_kwargs = dict(
-            snapshot=snapshot,
-            now_utc=1_000_000,
-            history={"last_update_utc": 0},
-            cooldown=cooldown,
-            sample=sample,
-        )
+        common_kwargs = {
+            "snapshot": snapshot,
+            "now_utc": 1_000_000,
+            "history": {"last_update_utc": 0},
+            "cooldown": cooldown,
+            "sample": sample,
+        }
 
         results = {
             "l0": L0ProposerAdapter().propose(
@@ -705,8 +716,11 @@ class TestPhase11ProposerChangePackages:
                 **common_kwargs,
             ),
             "l5": L5PolicyProposer().propose(
-                metrics={"l5_false_positive_rate": 0.25, "l5_false_negative_rate": 0.05,
-                         "l5_observation_count": 10},
+                metrics={
+                    "l5_false_positive_rate": 0.25,
+                    "l5_false_negative_rate": 0.05,
+                    "l5_observation_count": 10,
+                },
                 config={"policy_strictness": 0.8},
                 **common_kwargs,
             ),

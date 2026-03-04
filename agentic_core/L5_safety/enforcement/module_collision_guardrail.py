@@ -22,6 +22,7 @@ from pathlib import Path
 ALLOWED_SHIM_PAIRS = {
     "agentic_core/base_agents/decorators.py": "agentic_core/utils/decorators.py",
     "system_learning/types/meta_learning_types.py": "agentic_core/L5_safety/types/meta_learning_types.py",
+    "agentic_core/L5_safety/enforcement/sealed_interface_check_enforcer.py": "agentic_core/enforcement/sealed_interface_check_enforcer.py",
 }
 
 # Normalize paths for comparison (convert to forward slashes for consistency)

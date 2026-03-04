@@ -54,9 +54,9 @@ def tokenize_simple(text: str) -> list[str]:
     """
     import re
 
-    # Split on whitespace and common punctuation
+    # Split on whitespace and common punctuation; keep only alpha tokens (lowercase)
     tokens = re.split(r"[\s\W]+", text.lower())
-    return [t for t in tokens if t]
+    return [t for t in tokens if t and t.isalpha()]
 
 
 def similarity_score(text_a: str, text_b: str) -> float:

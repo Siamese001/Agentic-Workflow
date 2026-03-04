@@ -1259,7 +1259,6 @@ class SovereignDecisionEngine:
     def _get_qwen_vllm_arbiter():
         """Lazy seam: return callable that invokes Qwen 14B via WSL vLLM subprocess."""
         import json
-        import subprocess
         from pathlib import Path
 
         WSL_PYTHON = "/home/amita/venvs/vllm/bin/python"
@@ -1291,7 +1290,7 @@ class SovereignDecisionEngine:
                     + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
                 ),
             ]
-            result = subprocess.run(
+            result = _get_safe_subprocess_run()(
                 cmd,
                 capture_output=True,
                 text=True,

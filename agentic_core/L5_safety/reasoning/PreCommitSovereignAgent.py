@@ -43,9 +43,20 @@ from agentic_core.L5_safety.enforcement.unified_validator import UnifiedSSOTVali
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from ops_scripts.maintenance.purge_cache import (
-    purge_all_cache as purge_repository_cache,  # Integrated Maintenance Hook
-)
+
+
+def purge_repository_cache(target_path=None) -> None:  # inline stub: avoids ops_scripts boundary violation
+    """Remove __pycache__ dirs and .pyc files under target_path."""
+    import shutil
+
+    root = target_path or __import__("pathlib").Path(".")
+    for d in __import__("pathlib").Path(root).rglob("__pycache__"):
+        shutil.rmtree(d, ignore_errors=True)
+    for f in __import__("pathlib").Path(root).rglob("*.pyc"):
+        try:
+            f.unlink()
+        except OSError:  # guardian: allow-silent-swallower
+            pass
 
 
 @dataclass

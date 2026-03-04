@@ -10,16 +10,58 @@
   ],
   "ceiling": {
     "_description": "Non-increasing ceilings. To raise: update ceiling value + add rationale to commit message.",
-    "total": 58,
+    "total": 75,
     "by_category": {
       "assertion_rot": 13,
-      "infra_required": 20,
-      "missing_dep": 7,
-      "missing_module": 11,
-      "runtime_error": 7
+      "infra_required": 22,
+      "missing_dep": 9,
+      "missing_module": 17,
+      "runtime_error": 14
     }
   },
   "entries": [
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_comprehensive.py",
+      "category": "assertion_rot",
+      "primary_dep": "execute_ssot_api",
+      "re_enable": "Update assertions to match current execute_ssot API"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_hardened.py",
+      "category": "assertion_rot",
+      "primary_dep": "execute_ssot_api",
+      "re_enable": "Update assertions to match current execute_ssot API"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py",
+      "category": "assertion_rot",
+      "primary_dep": "execute_ssot_api",
+      "re_enable": "Update assertions to match current execute_ssot API"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_ssot_orchestration.py",
+      "category": "assertion_rot",
+      "primary_dep": "execute_ssot_api",
+      "re_enable": "Update assertions to match current execute_ssot API"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py",
+      "category": "missing_module",
+      "primary_dep": "surgical_healing_adapter",
+      "re_enable": "Restore L5_safety.validators.surgical_healing_adapter module"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L5_safety/validators/test_agent_integrity_integration.py",
+      "category": "missing_module",
+      "primary_dep": "agent_integrity_report",
+      "re_enable": "Restore L5_safety.validators.agent_integrity_report module"
+    },
+    {
+      "path": "tests/_quarantine/integration/agentic_core/L5_safety_dir/core/test_location_hierarchy_integration.py",
+      "category": "missing_dep",
+      "primary_dep": "redis",
+      "re_enable": "Install redis and add to integration deps"
+    },
     {
       "path": "tests/_quarantine/integration/agentic_core/agents_dir/test_orphan_agent_e2e_integration.py",
       "category": "missing_module",
@@ -147,61 +189,7 @@
       "re_enable": "Generate dashboard HTML artifacts before running"
     },
     {
-      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_comprehensive.py",
-      "category": "assertion_rot",
-      "primary_dep": "execute_ssot_api",
-      "re_enable": "Update assertions to match current execute_ssot API"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_hardened.py",
-      "category": "assertion_rot",
-      "primary_dep": "execute_ssot_api",
-      "re_enable": "Update assertions to match current execute_ssot API"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_execute_ssot_lifecycle.py",
-      "category": "assertion_rot",
-      "primary_dep": "execute_ssot_api",
-      "re_enable": "Update assertions to match current execute_ssot API"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L0_maintenance_dir/test_ssot_orchestration.py",
-      "category": "assertion_rot",
-      "primary_dep": "execute_ssot_api",
-      "re_enable": "Update assertions to match current execute_ssot API"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L5_safety/core/test_surgical_healing_e2e.py",
-      "category": "missing_module",
-      "primary_dep": "surgical_healing_adapter",
-      "re_enable": "Restore L5_safety.validators.surgical_healing_adapter module"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L5_safety/validators/test_agent_integrity_integration.py",
-      "category": "missing_module",
-      "primary_dep": "agent_integrity_report",
-      "re_enable": "Restore L5_safety.validators.agent_integrity_report module"
-    },
-    {
-      "path": "tests/_quarantine/integration/agentic_core/L5_safety_dir/core/test_location_hierarchy_integration.py",
-      "category": "missing_dep",
-      "primary_dep": "redis",
-      "re_enable": "Install redis and add to integration deps"
-    },
-    {
       "path": "tests/_quarantine/integration/apps_lic_dir/engines/test_hop_pipeline_integration.py",
-      "category": "missing_dep",
-      "primary_dep": "redis",
-      "re_enable": "Install redis and add to integration deps"
-    },
-    {
-      "path": "tests/_quarantine/integration/apps_lic_dir/test_apps_lic_lcd_compliance.py",
-      "category": "runtime_error",
-      "primary_dep": "lcd_compliance_infra",
-      "re_enable": "Fix LCD compliance test infrastructure"
-    },
-    {
-      "path": "tests/_quarantine/integration/apps_lic_dir/test_lic_hop_pipeline_integration.py",
       "category": "missing_dep",
       "primary_dep": "redis",
       "re_enable": "Install redis and add to integration deps"
@@ -211,96 +199,6 @@
       "category": "missing_dep",
       "primary_dep": "redis",
       "re_enable": "Install redis and add to integration deps"
-    },
-    {
-      "path": "tests/_quarantine/integration/apps_rg_dir/test_apps_rg_lcd_compliance.py",
-      "category": "runtime_error",
-      "primary_dep": "lcd_compliance_infra",
-      "re_enable": "Fix LCD compliance test infrastructure"
-    },
-    {
-      "path": "tests/_quarantine/integration/apps_rg_dir/test_rg_resume_generation_integration.py",
-      "category": "missing_dep",
-      "primary_dep": "redis",
-      "re_enable": "Install redis and add to integration deps"
-    },
-    {
-      "path": "tests/_quarantine/integration/apps_shared_dir/test_shared_infrastructure_integration.py",
-      "category": "runtime_error",
-      "primary_dep": "shared_infra",
-      "re_enable": "Fix shared infrastructure test dependencies"
-    },
-    {
-      "path": "tests/_quarantine/integration/core/test_migration_e2e.py",
-      "category": "missing_module",
-      "primary_dep": "agentic_core.integration",
-      "re_enable": "Restore agentic_core.integration.component_factory module"
-    },
-    {
-      "path": "tests/_quarantine/integration/core/test_sovereign_compliance.py",
-      "category": "missing_module",
-      "primary_dep": "L0_routing.scripts",
-      "re_enable": "Restore L0_routing.scripts.execute_ssot import path"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_conversational_repair_ssot_integration.py",
-      "category": "runtime_error",
-      "primary_dep": "ssot_repair_infra",
-      "re_enable": "Fix conversational repair SSOT dependencies"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_l4_l5_distribution_simple.py",
-      "category": "runtime_error",
-      "primary_dep": "layer_distribution",
-      "re_enable": "Fix L4/L5 distribution test assertions"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_layer3_mock_compliance.py",
-      "category": "runtime_error",
-      "primary_dep": "layer3_mocks",
-      "re_enable": "Fix L3 mock compliance test infrastructure"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_meta_learning_e2e.py",
-      "category": "missing_module",
-      "primary_dep": "L1_cognition",
-      "re_enable": "Restore L1_cognition.reasoning module tree"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_meta_learning_full_integration.py",
-      "category": "missing_module",
-      "primary_dep": "L1_cognition",
-      "re_enable": "Restore L1_cognition.reasoning module tree"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_meta_learning_integration.py",
-      "category": "missing_module",
-      "primary_dep": "L1_cognition",
-      "re_enable": "Restore L1_cognition.reasoning module tree"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_mro_refactoring_integration.py",
-      "category": "runtime_error",
-      "primary_dep": "mro_refactoring",
-      "re_enable": "Fix MRO refactoring integration test assertions"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_sovereign_contract_guard.py",
-      "category": "infra_required",
-      "primary_dep": "validators_directory",
-      "re_enable": "Ensure validators directory exists at expected path"
-    },
-    {
-      "path": "tests/_quarantine/integration/core_dir/test_ssot_report_storage_integration.py",
-      "category": "missing_module",
-      "primary_dep": "ReportLocationAgent",
-      "re_enable": "Restore L5_safety.validators.ReportLocationAgent module"
-    },
-    {
-      "path": "tests/_quarantine/integration/L6_observability_dir/test_dashboard_suite.py",
-      "category": "infra_required",
-      "primary_dep": "dashboard_html",
-      "re_enable": "Generate dashboard HTML artifacts before running"
     },
     {
       "path": "tests/_quarantine/integration/test_fca_blueprint_consistency.py",
@@ -313,6 +211,36 @@
       "category": "missing_module",
       "primary_dep": "L5_safety.config",
       "re_enable": "Restore L5_safety.config.structure_blueprint_config import path"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_embedding_retention_scheduler_phase4.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and retention scheduler promoted to production"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_historical_ingestion_phase3.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_local_embedding_population_service_phase2.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_local_faiss_store_phase1_contract.py",
+      "category": "assertion_rot",
+      "primary_dep": "faiss",
+      "re_enable": "FAISS available in CI and phase migration complete"
+    },
+    {
+      "path": "tests/_quarantine/migrations/test_openai_embedder_stub_b5.py",
+      "category": "assertion_rot",
+      "primary_dep": "openai_provider",
+      "re_enable": "OpenAI provider removed from system_learning engines"
     },
     {
       "path": "tests/_quarantine/migrations/test_phase10_embedding_non_mutation.py",
@@ -339,34 +267,208 @@
       "re_enable": "Superseded by test_embedding_invariants.py INV-EMB-1"
     },
     {
-      "path": "tests/_quarantine/migrations/test_openai_embedder_stub_b5.py",
-      "category": "assertion_rot",
-      "primary_dep": "openai_provider",
-      "re_enable": "OpenAI provider removed from system_learning engines"
+      "path": "tests/_quarantine/test_apps_lic_lcd_compliance.py",
+      "category": "runtime_error",
+      "primary_dep": "lcd_compliance_infra",
+      "re_enable": "Fix LCD compliance test infrastructure"
     },
     {
-      "path": "tests/_quarantine/migrations/test_embedding_retention_scheduler_phase4.py",
-      "category": "assertion_rot",
-      "primary_dep": "faiss",
-      "re_enable": "FAISS available in CI and retention scheduler promoted to production"
+      "path": "tests/_quarantine/test_apps_lic_lcd_compliance_1.py",
+      "category": "runtime_error",
+      "primary_dep": "lcd_compliance_infra",
+      "re_enable": "Fix LCD compliance test infrastructure"
     },
     {
-      "path": "tests/_quarantine/migrations/test_local_faiss_store_phase1_contract.py",
-      "category": "assertion_rot",
-      "primary_dep": "faiss",
-      "re_enable": "FAISS available in CI and phase migration complete"
+      "path": "tests/_quarantine/test_apps_rg_lcd_compliance.py",
+      "category": "runtime_error",
+      "primary_dep": "lcd_compliance_infra",
+      "re_enable": "Fix LCD compliance test infrastructure"
     },
     {
-      "path": "tests/_quarantine/migrations/test_local_embedding_population_service_phase2.py",
-      "category": "assertion_rot",
-      "primary_dep": "faiss",
-      "re_enable": "FAISS available in CI and phase migration complete"
+      "path": "tests/_quarantine/test_apps_rg_lcd_compliance_1.py",
+      "category": "runtime_error",
+      "primary_dep": "lcd_compliance_infra",
+      "re_enable": "Fix LCD compliance test infrastructure"
     },
     {
-      "path": "tests/_quarantine/migrations/test_historical_ingestion_phase3.py",
-      "category": "assertion_rot",
-      "primary_dep": "faiss",
-      "re_enable": "FAISS available in CI and phase migration complete"
+      "path": "tests/_quarantine/test_conversational_repair_ssot_integration.py",
+      "category": "runtime_error",
+      "primary_dep": "ssot_repair_infra",
+      "re_enable": "Fix conversational repair SSOT dependencies"
+    },
+    {
+      "path": "tests/_quarantine/test_conversational_repair_ssot_integration_1.py",
+      "category": "runtime_error",
+      "primary_dep": "ssot_repair_infra",
+      "re_enable": "Fix conversational repair SSOT dependencies"
+    },
+    {
+      "path": "tests/_quarantine/test_dashboard_suite.py",
+      "category": "infra_required",
+      "primary_dep": "dashboard_html",
+      "re_enable": "Generate dashboard HTML artifacts before running"
+    },
+    {
+      "path": "tests/_quarantine/test_dashboard_suite_1.py",
+      "category": "infra_required",
+      "primary_dep": "dashboard_html",
+      "re_enable": "Generate dashboard HTML artifacts before running"
+    },
+    {
+      "path": "tests/_quarantine/test_l4_l5_distribution_simple.py",
+      "category": "runtime_error",
+      "primary_dep": "layer_distribution",
+      "re_enable": "Fix L4/L5 distribution test assertions"
+    },
+    {
+      "path": "tests/_quarantine/test_l4_l5_distribution_simple_1.py",
+      "category": "runtime_error",
+      "primary_dep": "layer_distribution",
+      "re_enable": "Fix L4/L5 distribution test assertions"
+    },
+    {
+      "path": "tests/_quarantine/test_layer3_mock_compliance.py",
+      "category": "runtime_error",
+      "primary_dep": "layer3_mocks",
+      "re_enable": "Fix L3 mock compliance test infrastructure"
+    },
+    {
+      "path": "tests/_quarantine/test_layer3_mock_compliance_1.py",
+      "category": "runtime_error",
+      "primary_dep": "layer3_mocks",
+      "re_enable": "Fix L3 mock compliance test infrastructure"
+    },
+    {
+      "path": "tests/_quarantine/test_lic_hop_pipeline_integration.py",
+      "category": "missing_dep",
+      "primary_dep": "redis",
+      "re_enable": "Install redis and add to integration deps"
+    },
+    {
+      "path": "tests/_quarantine/test_lic_hop_pipeline_integration_1.py",
+      "category": "missing_dep",
+      "primary_dep": "redis",
+      "re_enable": "Install redis and add to integration deps"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_e2e.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_e2e_1.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_full_integration.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_full_integration_1.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_integration.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_meta_learning_integration_1.py",
+      "category": "missing_module",
+      "primary_dep": "L1_cognition",
+      "re_enable": "Restore L1_cognition.reasoning module tree"
+    },
+    {
+      "path": "tests/_quarantine/test_migration_e2e.py",
+      "category": "missing_module",
+      "primary_dep": "agentic_core.integration",
+      "re_enable": "Restore agentic_core.integration.component_factory module"
+    },
+    {
+      "path": "tests/_quarantine/test_migration_e2e_1.py",
+      "category": "missing_module",
+      "primary_dep": "agentic_core.integration",
+      "re_enable": "Restore agentic_core.integration.component_factory module"
+    },
+    {
+      "path": "tests/_quarantine/test_mro_refactoring_integration.py",
+      "category": "runtime_error",
+      "primary_dep": "mro_refactoring",
+      "re_enable": "Fix MRO refactoring integration test assertions"
+    },
+    {
+      "path": "tests/_quarantine/test_mro_refactoring_integration_1.py",
+      "category": "runtime_error",
+      "primary_dep": "mro_refactoring",
+      "re_enable": "Fix MRO refactoring integration test assertions"
+    },
+    {
+      "path": "tests/_quarantine/test_rg_resume_generation_integration.py",
+      "category": "missing_dep",
+      "primary_dep": "redis",
+      "re_enable": "Install redis and add to integration deps"
+    },
+    {
+      "path": "tests/_quarantine/test_rg_resume_generation_integration_1.py",
+      "category": "missing_dep",
+      "primary_dep": "redis",
+      "re_enable": "Install redis and add to integration deps"
+    },
+    {
+      "path": "tests/_quarantine/test_shared_infrastructure_integration.py",
+      "category": "runtime_error",
+      "primary_dep": "shared_infra",
+      "re_enable": "Fix shared infrastructure test dependencies"
+    },
+    {
+      "path": "tests/_quarantine/test_shared_infrastructure_integration_1.py",
+      "category": "runtime_error",
+      "primary_dep": "shared_infra",
+      "re_enable": "Fix shared infrastructure test dependencies"
+    },
+    {
+      "path": "tests/_quarantine/test_sovereign_compliance.py",
+      "category": "missing_module",
+      "primary_dep": "L0_routing.scripts",
+      "re_enable": "Restore L0_routing.scripts.execute_ssot import path"
+    },
+    {
+      "path": "tests/_quarantine/test_sovereign_compliance_1.py",
+      "category": "missing_module",
+      "primary_dep": "L0_routing.scripts",
+      "re_enable": "Restore L0_routing.scripts.execute_ssot import path"
+    },
+    {
+      "path": "tests/_quarantine/test_sovereign_contract_guard.py",
+      "category": "infra_required",
+      "primary_dep": "validators_directory",
+      "re_enable": "Ensure validators directory exists at expected path"
+    },
+    {
+      "path": "tests/_quarantine/test_sovereign_contract_guard_1.py",
+      "category": "infra_required",
+      "primary_dep": "validators_directory",
+      "re_enable": "Ensure validators directory exists at expected path"
+    },
+    {
+      "path": "tests/_quarantine/test_ssot_report_storage_integration.py",
+      "category": "missing_module",
+      "primary_dep": "ReportLocationAgent",
+      "re_enable": "Restore L5_safety.validators.ReportLocationAgent module"
+    },
+    {
+      "path": "tests/_quarantine/test_ssot_report_storage_integration_1.py",
+      "category": "missing_module",
+      "primary_dep": "ReportLocationAgent",
+      "re_enable": "Restore L5_safety.validators.ReportLocationAgent module"
     }
   ]
 }
