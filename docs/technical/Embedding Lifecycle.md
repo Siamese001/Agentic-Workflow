@@ -164,22 +164,23 @@ LEARNING LOOP  (EMBEDDINGS STORED HERE FOR FUTURE MEMORY SEARCH; METADATA STORED
 
 SYSTEM LEARNING  (EMBEDDINGS CONSUMED FROM L4 STORAGE + L6 TELEMETRY)
 [CORE CAPABILITY • consumes L4 memory + L6 telemetry]
+
                                     +-------------------------------------------+       +-------------------------------------------+
-                                    |        🔬 Medical Research               |       |        🧠 Meta-Learning System             |
+                                    |        🔬 Medical Research (Analogy)      |       |        🧠 Meta-Learning System            |
+                                    |                                           |       |        (Execute_SSOT)                    |
+                                    | Doctors and researchers analyze           |       | System analyzes historical healing       |
+                                    | historical hospital records               |       | events and telemetry                     |
                                     |                                           |       |                                           |
-                                    | Uses vectors + metadata                   |       | Uses vectors + metadata                   |
-                                    | * cluster disease patterns                |       | * cluster failure patterns                |
-                                    | * best treatment per disease              |       | * best healer per failure cluster         |
-                                    | * best doctor per disease                 |       | * success rate per agent cluster          |
-                                    | * detect recurring conditions             |       | * detect recurring regressions            |
-                                    | * improve triage protocols                |       | * improve routing decisions               |
+                                    | Uses vectors + case metadata              |       | Uses vectors + incident metadata         |
                                     |                                           |       |                                           |
-                                    | ⚠️ ARCHITECTURE NOTE                      |       | ⚠️ ARCHITECTURE NOTE                      |
-                                    | Research uses hospital records            |       | Meta-learning reads signals from          |
-                                    | but does not operate inside               |       | observability (L6) + state (L4)           |
-                                    | the clinical workflow itself              |       | but must NOT be implemented               |
-                                    |                                           |       | as an L6 observability component          |
-                                    |                                           |       | (common mistake in agentic systems)      |
+                                    | * cluster disease patterns                |       | * cluster failure patterns               |
+                                    | * identify symptom clusters               |       | * identify recurring failure signatures  |
+                                    | * determine most effective treatments     |       | * determine best healer per failure type |
+                                    | * determine best specialist per disease   |       | * compute success rate per agent         |
+                                    | * detect emerging disease trends          |       | * detect recurring regressions           |
+                                    |                                           |       |                                           |
+                                    | Research findings update                  |       | Insights improve routing and             |
+                                    | medical guidelines and triage             |       | healing decision strategies              |
                                     +-------------------------------------------+       +-------------------------------------------+
 
 ===========================================================================================================================================================
