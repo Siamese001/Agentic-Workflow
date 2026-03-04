@@ -17,6 +17,17 @@ from typing import Any
 logger = logging.getLogger(__name__)
 
 
+class ActivationAuthorizationError(RuntimeError):
+    """Raised when pipeline activation is attempted without dual approval.
+
+    C-hardening: any attempt to invoke the pipeline with mutations enabled
+    (proposal_only=False) without explicit dual-approval tokens MUST raise
+    this error.  The default proposal_only=True is the safe no-op path.
+    """
+
+    pass
+
+
 class LiveRunPipelineAdapter:
     """Adapts the in-process healing outcome store for meta_learning_pipeline consumption.
 
@@ -79,6 +90,7 @@ class LiveRunPipelineAdapter:
         now_utc: int,
         window_start_utc: int,
         proposal_only: bool = True,
+        approval_token: str | None = None,
     ) -> None:
         """Run the meta_learning_pipeline end-to-end with this adapter's records.
 
@@ -86,12 +98,23 @@ class LiveRunPipelineAdapter:
             repo_root: pathlib.Path to the repository root.
             now_utc: Current Unix timestamp (caller-provided, no wall-clock read).
             window_start_utc: Window start for telemetry aggregation.
-            proposal_only: When True (default), pipeline produces proposals only.
+            proposal_only: When True (default), pipeline produces proposals only (safe).
+                           When False, mutations are enabled — requires approval_token.
+            approval_token: Required when proposal_only=False.  Any non-empty string is
+                            accepted as the dual-approval gate in local runs.  CI must
+                            supply a token; absence raises ActivationAuthorizationError.
 
         Raises:
+            ActivationAuthorizationError: If proposal_only=False and no approval_token.
             Any exception from run_pipeline() propagates; caller is responsible
             for catch/log if non-fatal behaviour is desired.
         """
+        # C-hardening: dual-approval gate — mutations forbidden without explicit token.
+        if not proposal_only and not approval_token:
+            raise ActivationAuthorizationError(
+                "proposal_only=False requires a non-empty approval_token; "
+                "pass approval_token=<token> to enable pipeline mutations."
+            )
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline
         from system_learning.pipelines.pipeline_factory import build_pipeline_config
 
@@ -111,4 +134,4 @@ class LiveRunPipelineAdapter:
         )
 
 
-__all__ = ["LiveRunPipelineAdapter"]
+__all__ = ["ActivationAuthorizationError", "LiveRunPipelineAdapter"]

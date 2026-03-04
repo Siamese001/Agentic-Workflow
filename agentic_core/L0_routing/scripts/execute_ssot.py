@@ -1466,8 +1466,19 @@ class SovereignDecisionEngine:
         # Violations of this boundary are detectable via the advisory_only flag on SimilarIncident.
         if self._healing_memory_retriever is not None:
             try:
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                    SovereigntyError as _SovereigntyError,
+                )
+
                 _signal_text = f"{failure_type.value if failure_type else 'UNKNOWN'} {territory}"
                 _advisory = self._healing_memory_retriever.retrieve_similar_incidents(_signal_text, top_k=3)
+                # B-hardening: hard-fail if any incident escapes advisory boundary.
+                for _inc in _advisory:
+                    if not getattr(_inc, "advisory_only", True):
+                        raise _SovereigntyError(
+                            f"advisory_only=False on incident {getattr(_inc, 'content_hash', '?')!r}; "
+                            "routing tier MUST NOT be influenced by retrieval results."
+                        )
                 if _advisory:
                     logger.debug(
                         "[B3-Advisory] top=%d sim=%.4f (advisory_only=%s) — routing unchanged",
@@ -1475,8 +1486,14 @@ class SovereignDecisionEngine:
                         _advisory[0].similarity,
                         _advisory[0].advisory_only,
                     )
-            except Exception:  # guardian: allow-silent-swallower
-                pass
+            except Exception as _exc:  # guardian: allow-silent-swallower
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                    SovereigntyError as _SE,
+                )
+
+                if isinstance(_exc, _SE):
+                    raise
+                # All other retrieval errors are non-fatal — routing proceeds unchanged.
 
         C = min(3, max(0, int(3 - confidence.value * 3)))
         B = 3 if territory.startswith("L5") else (2 if "agentic_core" in territory else 1)

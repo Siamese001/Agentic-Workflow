@@ -640,6 +640,20 @@ def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
 # =============================================================================
 
 
+def _wc_digest(failure_sig: str, vector_source: str, profile_id: str, vector_count: int) -> str:
+    """Compute, print, and return W-C-DETERMINISM-DIGEST.
+
+    Binds: failure_signature | vector_source | retrieval_profile_id | vector_count.
+    Printed exactly once per call; 64-char lowercase SHA-256 hex.
+    """
+    import hashlib as _hlib
+
+    _inp = f"{failure_sig}|{vector_source}|{profile_id}|{vector_count}"
+    _dig = _hlib.sha256(_inp.encode("utf-8", errors="replace")).hexdigest()
+    print(f"W-C-DETERMINISM-DIGEST: {_dig}")
+    return _dig
+
+
 def _retrieve_semantic_context(
     rca_report: Any,
     pattern_report: Any,
@@ -673,6 +687,7 @@ def _retrieve_semantic_context(
 
     # If disabled, return empty metadata (no telemetry, no placeholders)
     if embedding_service.is_disabled():
+        _wc_dig = _wc_digest("DISABLED", "disabled", retrieval_profile.profile_id, 0)
         return {
             "embedding_enabled_at_time": False,
             "embedding_replay_key": None,
@@ -681,6 +696,7 @@ def _retrieve_semantic_context(
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
             "vector_source": "disabled",
+            "wc_determinism_digest": _wc_dig,
             **shadow_telemetry,  # W4-B: Include shadow telemetry even when disabled
         }
 
@@ -781,6 +797,7 @@ def _retrieve_semantic_context(
         results = embedding_service.retrieve(query_vector=query_vector, k=top_k_cap, cutoff=similarity_cutoff)
 
         if results is None:
+            _wc_dig = _wc_digest(failure_signature, _vector_source, retrieval_profile.profile_id, 0)
             return {
                 "embedding_enabled_at_time": True,
                 "embedding_replay_key": getattr(embedding_service, "replay_key", None),
@@ -789,6 +806,7 @@ def _retrieve_semantic_context(
                 "embedding_topk_scores_round6": [],
                 "retrieval_profile_id": retrieval_profile.profile_id,
                 "vector_source": _vector_source,
+                "wc_determinism_digest": _wc_dig,
                 **shadow_telemetry,  # W4-B: Include shadow telemetry
             }
 
@@ -800,6 +818,9 @@ def _retrieve_semantic_context(
         result_data = f"{failure_signature}|{topk_hashes}|{topk_scores}"
         artifact_hash = hashlib.sha256(result_data.encode()).hexdigest()
 
+        _wc_dig = _wc_digest(
+            failure_signature, _vector_source, retrieval_profile.profile_id, len(topk_hashes)
+        )
         return {
             "embedding_enabled_at_time": True,
             "embedding_replay_key": getattr(embedding_service, "replay_key", None),
@@ -808,12 +829,14 @@ def _retrieve_semantic_context(
             "embedding_topk_scores_round6": topk_scores,
             "retrieval_profile_id": retrieval_profile.profile_id,
             "vector_source": _vector_source,
+            "wc_determinism_digest": _wc_dig,
             **shadow_telemetry,  # W4-B: Include shadow telemetry
         }
 
     except Exception:  # guardian: allow-silent_swallower
         # Embedding retrieval failure should not break pipeline
         # Return minimal metadata indicating failure
+        _wc_dig = _wc_digest("ERROR", "error", retrieval_profile.profile_id, 0)
         return {
             "embedding_enabled_at_time": True,
             "embedding_replay_key": None,
@@ -822,6 +845,7 @@ def _retrieve_semantic_context(
             "embedding_topk_scores_round6": [],
             "retrieval_profile_id": retrieval_profile.profile_id,
             "vector_source": "error",
+            "wc_determinism_digest": _wc_dig,
             **shadow_telemetry,  # W4-B: Include shadow telemetry even on failure
         }
 

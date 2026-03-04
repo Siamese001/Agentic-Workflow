@@ -166,3 +166,108 @@ def test_live_run_adapter_record_count_nonzero():
 
     adapter = LiveRunPipelineAdapter(intake_adapter=mock_intake, source_tag="test")
     assert adapter.record_count() == 3
+
+
+# ---------------------------------------------------------------------------
+# C-hardening — W-C-DETERMINISM-DIGEST in _retrieve_semantic_context return
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.determinism
+def test_retrieve_semantic_context_wc_digest_in_return_dict(capsys):
+    """W-C-DETERMINISM-DIGEST must be in return dict and printed exactly once."""
+    from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
+
+    mock_disabled_svc = MagicMock()
+    mock_disabled_svc.is_disabled.return_value = True
+
+    mock_profile = MagicMock()
+    mock_profile.profile_id = "test-profile"
+    mock_profile.shadow_embedder_id = None
+    mock_profile.embeddings_enabled = False
+
+    with (
+        patch("system_learning.pipelines.meta_learning_pipeline.EmbeddingServiceFactory") as mock_factory,
+        patch(
+            "system_learning.pipelines.meta_learning_pipeline.get_active_retrieval_profile"
+        ) as mock_profile_fn,
+    ):
+        mock_factory.get_or_disabled.return_value = mock_disabled_svc
+        mock_profile_fn.return_value = mock_profile
+
+        result = _retrieve_semantic_context(rca_report=MagicMock(), pattern_report=None, now_utc=0)
+
+    assert "wc_determinism_digest" in result, "wc_determinism_digest key must always be present"
+    digest = result["wc_determinism_digest"]
+    assert len(digest) == 64, f"Expected 64-char hex digest, got {len(digest)}: {digest!r}"
+
+    captured = capsys.readouterr()
+    lines = [ln for ln in captured.out.splitlines() if "W-C-DETERMINISM-DIGEST:" in ln]
+    assert len(lines) == 1, f"Expected exactly 1 W-C-DETERMINISM-DIGEST line, got {len(lines)}"
+
+
+@pytest.mark.unit
+@pytest.mark.determinism
+def test_wc_digest_is_deterministic(capsys):
+    """Two _retrieve_semantic_context calls with identical disabled inputs must produce identical digests."""
+    from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_context
+
+    mock_disabled_svc = MagicMock()
+    mock_disabled_svc.is_disabled.return_value = True
+
+    mock_profile = MagicMock()
+    mock_profile.profile_id = "det-profile"
+    mock_profile.shadow_embedder_id = None
+    mock_profile.embeddings_enabled = False
+
+    def _call_and_capture(capsys):
+        with (
+            patch("system_learning.pipelines.meta_learning_pipeline.EmbeddingServiceFactory") as mock_factory,
+            patch(
+                "system_learning.pipelines.meta_learning_pipeline.get_active_retrieval_profile"
+            ) as mock_profile_fn,
+        ):
+            mock_factory.get_or_disabled.return_value = mock_disabled_svc
+            mock_profile_fn.return_value = mock_profile
+            result = _retrieve_semantic_context(rca_report=MagicMock(), pattern_report=None, now_utc=0)
+        return result["wc_determinism_digest"]
+
+    dig1 = _call_and_capture(capsys)
+    _ = capsys.readouterr()
+    dig2 = _call_and_capture(capsys)
+
+    assert dig1 == dig2, "W-C digest must be identical across two runs with same inputs"
+
+
+# ---------------------------------------------------------------------------
+# C-hardening — W_C_NEGCTRL: ActivationAuthorizationError without approval
+# ---------------------------------------------------------------------------
+
+
+@pytest.mark.unit
+@pytest.mark.negative_control
+def test_activation_without_dual_approval_raises():
+    """C-NEGCTRL: proposal_only=False without approval_token must raise ActivationAuthorizationError."""
+    from pathlib import Path
+
+    from system_learning.adapters.live_run_pipeline_adapter import (
+        ActivationAuthorizationError,
+        LiveRunPipelineAdapter,
+    )
+
+    mock_store = MagicMock()
+    mock_store.count.return_value = 1
+    mock_intake = MagicMock()
+    mock_intake.store = mock_store
+
+    adapter = LiveRunPipelineAdapter(intake_adapter=mock_intake, source_tag="negctrl_test")
+
+    with pytest.raises(ActivationAuthorizationError, match="approval_token"):
+        adapter.run(
+            repo_root=Path("."),
+            now_utc=0,
+            window_start_utc=0,
+            proposal_only=False,
+            approval_token=None,
+        )

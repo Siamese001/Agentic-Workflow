@@ -13,6 +13,7 @@ Design invariants:
 
 from __future__ import annotations
 
+import hashlib
 import logging
 from dataclasses import dataclass
 from pathlib import Path
@@ -176,6 +177,27 @@ class HealingMemoryRetriever:
                     advisory_only=True,
                 )
             )
+
+        # B-hardening: runtime enforcement — any incident with advisory_only=False
+        # is a sovereignty boundary violation; fail immediately.
+        for _inc in results:
+            if not _inc.advisory_only:
+                raise SovereigntyError(
+                    f"advisory_only=False detected on incident {_inc.content_hash!r}; "
+                    "retrieval results MUST NOT be used to influence routing."
+                )
+
+        # W-B-DETERMINISM-DIGEST: printed exactly once per call.
+        # Binds: signal_normalized | effective_top_k | sorted_ids | scores_round6
+        _sorted_ids = "|".join(sorted(inc.content_hash for inc in results))
+        _scores_r6 = "|".join(
+            f"{inc.similarity:.6f}" for inc in sorted(results, key=lambda x: x.content_hash)
+        )
+        _signal_norm = signal_text.strip().lower()
+        _digest_input = f"{_signal_norm}|{effective_top_k}|{_sorted_ids}|{_scores_r6}"
+        _digest = hashlib.sha256(_digest_input.encode("utf-8", errors="replace")).hexdigest()
+        print(f"W-B-DETERMINISM-DIGEST: {_digest}")
+
         return results
 
 
