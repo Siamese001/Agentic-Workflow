@@ -18,11 +18,31 @@ class TestNormalizeFailureSignal:
     def test_full_action_produces_expected_text(self) -> None:
         action = {
             "type": "IMPORT_BOUNDARY_VIOLATION",
+            "routing_gate": "gate:import_boundary_check",
             "agent": "DependencyRepairAgent",
             "fix_summary": "yaml config loader",
         }
         result = normalize_failure_signal(action)
-        assert result == "IMPORT_BOUNDARY_VIOLATION DependencyRepairAgent yaml config loader"
+        assert result == (
+            "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check "
+            "DependencyRepairAgent yaml config loader"
+        )
+
+    def test_routing_gate_included_when_present(self) -> None:
+        action = {
+            "type": "LAYER_VIOLATION",
+            "routing_gate": "gate:layer_check",
+            "agent": "ArchGovernor",
+        }
+        result = normalize_failure_signal(action)
+        assert "gate:layer_check" in result
+        assert result.index("LAYER_VIOLATION") < result.index("gate:layer_check")
+
+    def test_routing_gate_na_omitted(self) -> None:
+        action = {"type": "LAYER_VIOLATION", "routing_gate": "N/A", "agent": "ArchGovernor"}
+        result = normalize_failure_signal(action)
+        assert "N/A" not in result
+        assert result == "LAYER_VIOLATION ArchGovernor"
 
     def test_failure_type_uppercased(self) -> None:
         action = {"type": "layer_violation", "agent": "ArchGovernor"}
@@ -53,7 +73,12 @@ class TestNormalizeFailureSignal:
         assert "unknown_agent" in result
 
     def test_deterministic_identical_inputs(self) -> None:
-        action = {"type": "LAYER_VIOLATION", "agent": "TestAgent", "fix_summary": "fixed"}
+        action = {
+            "type": "LAYER_VIOLATION",
+            "routing_gate": "gate:layer_check",
+            "agent": "TestAgent",
+            "fix_summary": "fixed",
+        }
         assert normalize_failure_signal(action) == normalize_failure_signal(action)
 
     def test_empty_action_does_not_raise(self) -> None:
@@ -65,6 +90,18 @@ class TestNormalizeFailureSignal:
         action = {"type": "  LAYER_VIOLATION  ", "agent": "  Agent  "}
         result = normalize_failure_signal(action)
         assert "  " not in result
+
+    def test_field_order_type_gate_agent_summary(self) -> None:
+        action = {
+            "type": "IMPORT_BOUNDARY_VIOLATION",
+            "routing_gate": "gate:X",
+            "agent": "AgentA",
+            "fix_summary": "summary text",
+        }
+        parts = normalize_failure_signal(action).split(" ")
+        assert parts[0] == "IMPORT_BOUNDARY_VIOLATION"
+        assert parts[1] == "gate:X"
+        assert parts[2] == "AgentA"
 
 
 class TestExtractFailureMetadata:

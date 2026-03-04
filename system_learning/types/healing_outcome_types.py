@@ -56,6 +56,25 @@ class HealingOutcomeEvent:
         Optional correlation ID for tracing.
     error_signature : str | None
         Optional deterministic hash/signature of the error (if already available).
+    failure_vector : tuple[float, ...] | None
+        L2-normalised bge-m3 embedding of the full outcome signal text
+        (``normalize_failure_signal`` output).  None when
+        ``BMG_EMBEDDINGS_ENABLED=false`` (default).  Used for MEMORY /
+        FAISS lookup in the meta-learning pipeline.
+    routing_digest : str | None
+        Determinism digest of the routing decision that selected this healer
+        (``RoutingDecision.determinism_digest``).  Enables replay-key
+        correlation between routing and outcome records.
+    confidence_score : float | None
+        Confidence score at routing time (0.0-1.0).  Forwarded from the
+        ``confidence`` field of the healing action dict.
+    novelty_flag : bool
+        True when the routing signal vector was dissimilar (cosine < 0.75)
+        to all recent failure vectors in L4 state — indicating a failure
+        pattern not previously seen.  Always False when embeddings disabled.
+    files_touched : tuple[str, ...]
+        Relative paths of files modified by this healing invocation.
+        Empty by default; populated by healers that track file mutations.
     """
 
     healer_id: str

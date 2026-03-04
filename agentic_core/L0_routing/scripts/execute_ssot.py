@@ -130,21 +130,32 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
             tier_str: str = action.get("tier") or action.get("routing_tier") or "L5"
             success_flag: bool = action.get("outcome", "SUCCESS") == "SUCCESS"
 
-            # Gap 2: produce failure_vector when embeddings are enabled
+            # Gap 2: produce failure_vector when embeddings are enabled.
+            # Two distinct embedding texts:
+            #   routing_signal_text — matches _compute_novelty_score exactly so
+            #     L4 state vectors and novelty checks compare the same semantic space.
+            #   outcome_text (normalize_failure_signal) — richer, used for
+            #     HealingOutcomeEvent.failure_vector (MEMORY / future FAISS lookup).
             failure_vector: tuple[float, ...] | None = None
             novelty_flag: bool = False
             if _bmg_embed is not None and _normalizer is not None:
                 try:
-                    normalized_text = _normalizer(action)
-                    vec = _bmg_embed(normalized_text)
-                    failure_vector = tuple(vec)
-                    new_vectors.append(vec)
-                    # Novelty: compare against recent vectors stored in L4 state
+                    territory_str: str = action.get("territory", "unknown")
+                    routing_signal_text = f"{failure_type_str} {territory_str}"
+                    outcome_text = _normalizer(action)
+
+                    routing_vec = _bmg_embed(routing_signal_text)
+                    outcome_vec = _bmg_embed(outcome_text)
+
+                    failure_vector = tuple(outcome_vec)
+                    new_vectors.append(routing_vec)  # L4 state uses routing signal
+
+                    # Novelty: compare routing_vec against recent routing vectors
                     recent = state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
                     if recent:
                         import numpy as _np
 
-                        q = _np.array(vec, dtype=_np.float32)
+                        q = _np.array(routing_vec, dtype=_np.float32)
                         mat = _np.array(recent, dtype=_np.float32)
                         sims = mat @ q
                         novelty_flag = bool(float(sims.max()) < 0.75)
@@ -1018,6 +1029,7 @@ def _record_healing_action(
     confidence: float = 0.0,
     fix_summary: str = "",
     outcome: str = "SUCCESS",
+    routing_digest: str | None = None,
 ):
     """[H2] Record a structured healing action for per-territory JSON and Markdown reports.
 
@@ -1035,6 +1047,7 @@ def _record_healing_action(
         "fix_summary": fix_summary,
         "outcome": outcome,
         "timestamp": datetime.now().isoformat(),
+        "routing_digest": routing_digest,
     }
     if "healing_actions" not in state_mgr.state:
         state_mgr.state["healing_actions"] = []

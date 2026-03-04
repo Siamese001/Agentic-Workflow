@@ -18,27 +18,39 @@ def normalize_failure_signal(action: dict) -> str:
     """Compose a normalized embedding-input text from a healing action dict.
 
     The normalized text encodes the *semantic content* of the failure —
-    the failure type and the agent that handled it. Territory and other
-    metadata are captured separately (not embedded) per the Embedding
-    Lifecycle architecture.
+    failure type, the gate that triggered it, and the agent that handled it.
+    Territory and other metadata are captured separately (not embedded) per
+    the Embedding Lifecycle architecture (territory is metadata, not content).
+
+    Field priority:
+      1. failure_type / routing_tier — stable category string (uppercased)
+      2. routing_gate   — specific check ID that triggered the failure;
+                          more structured and semantic than fix_summary alone
+      3. agent          — healer that processed the event
+      4. fix_summary    — optional human-readable description of the repair
 
     Args:
         action: A healing action dict as stored in
             state_mgr.state["healing_actions"].  Expected keys (all
             optional with safe defaults):
               - "type" / "routing_tier": failure category string
+              - "routing_gate": specific gate/check identifier (e.g. "gate:import_boundary_check")
               - "agent": healer identifier
               - "fix_summary": human-readable repair description
 
     Returns:
         A normalized ASCII text string for embedding, e.g.:
-        "IMPORT_BOUNDARY_VIOLATION DependencyRepairAgent yaml config loader"
+        "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
     """
     failure_type: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
+    routing_gate: str = action.get("routing_gate") or ""
     agent: str = action.get("agent") or "unknown_agent"
     fix_summary: str = action.get("fix_summary") or ""
 
-    parts = [failure_type.upper(), agent]
+    parts: list[str] = [failure_type.upper()]
+    if routing_gate and routing_gate != "N/A":
+        parts.append(routing_gate)
+    parts.append(agent)
     if fix_summary:
         parts.append(fix_summary)
 
