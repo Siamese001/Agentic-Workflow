@@ -23,7 +23,7 @@ import pytest
 # Helpers
 # ---------------------------------------------------------------------------
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = Path(__file__).resolve().parents[5]
 EXECUTE_SSOT_PATH = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 ENTRYPOINT_PATH = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
 
@@ -174,12 +174,12 @@ class TestFileClassificationAgentContract:
         assert "dry_run=True" in fca_agents[0].get("kwargs", "")
 
     def test_fca_in_phase2_5_sovereignty(self):
-        """Phase 2.5 must invoke file_classification.heal_repository."""
+        """Phase 3 (Structural Alignment) must invoke file_classification.heal_repository."""
         mod = _load_module()
         plan = mod.get_execution_plan()
-        phase25 = [p for p in plan if p["phase"] == "2.5"][0]
-        fca_agents = [a for a in phase25["agents"] if a["key"] == "file_classification"]
-        assert len(fca_agents) == 1, "FCA must be in Phase 2.5"
+        phase3 = [p for p in plan if p["phase"] == "3"][0]
+        fca_agents = [a for a in phase3["agents"] if a["key"] == "file_classification"]
+        assert len(fca_agents) == 1, "FCA must be in Phase 3"
         assert fca_agents[0]["method"] == "heal_repository"
 
     def test_validate_forces_dry_run(self):
@@ -193,8 +193,8 @@ class TestFileClassificationAgentContract:
         """heal_repository is only invoked when pascal_proceed and not dry_run."""
         source = EXECUTE_SSOT_PATH.read_text(encoding="utf-8")
         # Find the sovereignty purge block
-        idx = source.find("pascal_proceed and not dry_run")
-        assert idx != -1, "Sovereignty purge must be gated by 'pascal_proceed and not dry_run'"
+        idx = source.find("pascal_proceed and effective_ctx.heal")
+        assert idx != -1, "Sovereignty purge must be gated by 'pascal_proceed and effective_ctx.heal'"
         # heal_repository must appear after the gate
         heal_idx = source.find("heal_repository", idx)
         assert heal_idx != -1, "heal_repository must be invoked inside the gate block"

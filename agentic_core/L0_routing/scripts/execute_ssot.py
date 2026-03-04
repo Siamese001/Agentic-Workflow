@@ -27,7 +27,8 @@ import sys
 import tempfile
 import time
 import traceback
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
 from dataclasses import dataclass, field
 from datetime import datetime
 from functools import wraps
@@ -45,16 +46,22 @@ except ImportError:
             self.iterable = iterable
             self.n = 0
             self.total = total
+
         def __iter__(self):
             return iter(self.iterable) if self.iterable else iter([])
+
         def __enter__(self):
             return self
+
         def __exit__(self, *args):
             pass
+
         def update(self, n=1):
             self.n += n
+
         def set_description(self, desc):
             pass
+
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
@@ -133,13 +140,13 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)
 
     try:
+        import time as _time_mod
+
         from system_learning.pipelines.meta_learning_pipeline import run_pipeline as _ml_run_pipeline
         from system_learning.pipelines.pipeline_factory import (
             build_pipeline_config,
             build_pipeline_deps,
         )
-
-        import time as _time_mod
 
         _apply_proposals = state_mgr.state.get("apply_proposals", False)
         _now_utc = int(_time_mod.time())
@@ -170,9 +177,8 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
     from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-    from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+    from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
-    from agentic_core.L5_safety.reasoning.SystemArchitectAgent import SystemArchitectAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
         ObservabilityProbeExecutorAgent,
     )
@@ -184,9 +190,8 @@ def _get_l5_agent_roster():
         FilesystemSSOTReconcilerAgent,
         GravityLeakRepairAgent,
         HierarchyAgent,
-        LocationAgent,
+        LocationValidatorAgent,
         RootHygieneAgent,
-        SystemArchitectAgent,
         ObservabilityProbeExecutorAgent,
     )
 
@@ -996,9 +1001,9 @@ class HealContext:
       --heal OFF => scan/report only, everything passive
     """
 
-    heal: bool               # True = mutations active; False = scan/report only
-    auto_approve: bool       # True = no interactive prompts (always True when heal=True)
-    enable_telemetry: bool   # Active telemetry collection (always tied to heal)
+    heal: bool  # True = mutations active; False = scan/report only
+    auto_approve: bool  # True = no interactive prompts (always True when heal=True)
+    enable_telemetry: bool  # Active telemetry collection (always tied to heal)
     enable_meta_learning: bool  # Meta-learning pipeline runs (always tied to heal)
     # CDA (CognitiveDispositionAgent) is always active — no toggle
 
@@ -1028,25 +1033,30 @@ class HealContext:
           --apply-proposals => meta-learning always on under --heal
         """
         import warnings
+
         if getattr(args, "dry_run", False):
             warnings.warn(
                 "--dry-run is deprecated. Omit --heal for scan-only mode.",
-                DeprecationWarning, stacklevel=2,
+                DeprecationWarning,
+                stacklevel=2,
             )
         if getattr(args, "manual", False):
             warnings.warn(
                 "--manual is deprecated. Autonomous mode is always active.",
-                DeprecationWarning, stacklevel=2,
+                DeprecationWarning,
+                stacklevel=2,
             )
         if getattr(args, "interactive", False):
             warnings.warn(
                 "--interactive is deprecated. Auto-approve is always on under --heal.",
-                DeprecationWarning, stacklevel=2,
+                DeprecationWarning,
+                stacklevel=2,
             )
         if getattr(args, "apply_proposals", False):
             warnings.warn(
                 "--apply-proposals is deprecated. Meta-learning is always on under --heal.",
-                DeprecationWarning, stacklevel=2,
+                DeprecationWarning,
+                stacklevel=2,
             )
         # --heal is the single source of truth for ALL active-mode flags
         heal = getattr(args, "heal", False)
@@ -1059,17 +1069,22 @@ class HealContext:
 
 
 # ============================================================================
-# ENHANCED DECISION ENGINE WITH SEMANTIC SCORING & CYCLE DETECTION
+# SOVEREIGN DECISION ENGINE (unified flat class — formerly 3-class hierarchy)
 # ============================================================================
 
 
-class AutonomousDecisionEngine:
-    """Makes autonomous healing decisions based on confidence scores."""
+class SovereignDecisionEngine:
+    """
+    [HARDENED] Sovereign Decision Engine with strict token-based access control.
+    Synthesizes patterns from FileClassificationAgent for cycle detection and resource protection.
+    Unified flat class (formerly AutonomousDecisionEngine -> Enhanced -> Sovereign hierarchy).
+    """
 
     def __init__(
         self,
         enable_llm: bool = False,
         state_mgr: Optional["RuntimeStateManager"] = None,
+        enable_cda: bool = False,
         execution_context: Optional["ExecutionContext"] = None,
     ):
         self.enable_llm = enable_llm
@@ -1081,6 +1096,14 @@ class AutonomousDecisionEngine:
         self._healing_enabled: bool = True
         self._max_healing_operations: int = 100
         self._call_path: set[str] = set()
+        # CDA Integration (merged from EnhancedAutonomousDecisionEngine)
+        self.enable_cda = enable_cda
+        # Sovereignty Token State (merged from SovereignDecisionEngine)
+        self._sovereignty_token: str | None = None
+        self._operation_stack: list[str] = []
+        # guardian: allow-magic-config
+        self._max_stack_depth = 10
+        self._atomic_lock = False
 
     def _calculate_semantic_similarity(self, unknown: str, existing: list[str]) -> float:
         """Calculate semantic similarity for unknown items against a candidate list.
@@ -1184,7 +1207,7 @@ class AutonomousDecisionEngine:
                 text=True,
                 encoding="utf-8",
                 errors="replace",
-                timeout=300,
+                timeout=300,  # guardian: allow-magic-configuration
             )
             if result.returncode != 0:
                 raise RuntimeError(f"vLLM subprocess failed: {result.stderr[-500:]}")
@@ -1531,7 +1554,9 @@ class AutonomousDecisionEngine:
                     agent_name,
                     routing.score,
                 )
-                final_reason = f"QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
+                final_reason = (
+                    f"QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
+                )
 
             self._healing_count += 1
             self._call_path.add(agent_name)
@@ -1553,12 +1578,12 @@ class AutonomousDecisionEngine:
         )
         self._healing_count += 1
         self._call_path.add(agent_name)
-        _gemini_label = "RECOVERY-PRO" if confidence.value < 0.40 else (
-            "FLASH" if "flash" in target_model.lower() else "GEMINI"
+        _gemini_label = (
+            "RECOVERY-PRO"
+            if confidence.value < 0.40
+            else ("FLASH" if "flash" in target_model.lower() else "GEMINI")
         )
-        reason = (
-            f"LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
-        )
+        reason = f"LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
         decision_data["decision"] = True
         decision_data["reason"] = reason
         self.decisions_made.append(decision_data)
@@ -1612,28 +1637,6 @@ class AutonomousDecisionEngine:
             return False, f"HITL-REJECTED ({confidence.value:.2f})"
         else:
             return False, f"HITL-DEFER ({confidence.value:.2f})"
-
-
-# ============================================================================
-# ENHANCED DECISION ENGINE WITH COGNITIVE DISPOSITION AGENT INTEGRATION
-# ============================================================================
-
-
-class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
-    """Enhanced decision engine with CognitiveDispositionAgent integration."""
-
-    def __init__(
-        self,
-        enable_llm: bool = False,
-        state_mgr: Optional["RuntimeStateManager"] = None,
-        enable_cda: bool = False,
-        execution_context: Optional["ExecutionContext"] = None,
-    ):
-        super().__init__(enable_llm=enable_llm, state_mgr=state_mgr, execution_context=execution_context)
-        self.enable_cda = enable_cda
-        # Initialize decisions_made if not already present from parent
-        if not hasattr(self, "decisions_made"):
-            self.decisions_made = []
 
     async def analyze_violations_with_cognitive_disposition(
         self,
@@ -1693,27 +1696,6 @@ class EnhancedAutonomousDecisionEngine(AutonomousDecisionEngine):
             logger.error(f"Cognitive analysis failed: {e}")
             return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
 
-
-class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
-    """
-    [HARDENED] Sovereign Decision Engine with strict token-based access control.
-    Synthesizes patterns from FileClassificationAgent for cycle detection and resource protection.
-    """
-
-    def __init__(
-        self,
-        enable_llm: bool = False,
-        state_mgr: Optional["RuntimeStateManager"] = None,
-        enable_cda: bool = False,
-        execution_context: Optional["ExecutionContext"] = None,
-    ):
-        super().__init__(enable_llm, state_mgr, enable_cda, execution_context=execution_context)
-        self._sovereignty_token: str | None = None
-        self._operation_stack: list[str] = []
-        # guardian: allow-magic-config
-        self._max_stack_depth = 10  # Prevent infinite recursion
-        self._atomic_lock = False
-
     def request_sovereignty_token(self, agent_name: str, operation: str) -> bool:
         """
         Request permission to perform a state-mutating operation.
@@ -1753,6 +1735,11 @@ class SovereignDecisionEngine(EnhancedAutonomousDecisionEngine):
 
         if not success:
             logging.warning(f"Sovereignty released with FAILURE status for {agent_name}")
+
+
+# Backward-compatible aliases for the former 3-class hierarchy
+AutonomousDecisionEngine = SovereignDecisionEngine
+EnhancedAutonomousDecisionEngine = SovereignDecisionEngine
 
 
 # ============================================================================
@@ -2052,14 +2039,16 @@ def execute_phase2_reconciliation(
                 with ThreadPoolExecutor(max_workers=1) as _pool:
                     _future = _pool.submit(
                         agent_instance.heal_repository,
-                        dry_run=False, execute=True,
+                        dry_run=False,
+                        execute=True,
                     )
                     try:
                         fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
                     except FuturesTimeoutError:
                         logging.error(
                             "Phase 2: [%s] TIMEOUT after %ds — heal_repository hung. Skipping.",
-                            agent_key, _HEAL_TIMEOUT_S,
+                            agent_key,
+                            _HEAL_TIMEOUT_S,
                         )
                         raise RuntimeError(
                             f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
@@ -2787,6 +2776,8 @@ def execute_phase1_discovery_impl(
         # Store classification results for later phases
         state_mgr.state["classification_violations"] = classification_violations
         state_mgr.state["classification_scan_result"] = classification_scan_result
+        if hasattr(file_classifier, "file_registry") and file_classifier.file_registry:
+            state_mgr.state["classification_file_registry"] = [str(p) for p in file_classifier.file_registry]
 
         logger.info(f"📋 FileClassificationAgent early detection: {classification_count} issues found")
 
@@ -2802,22 +2793,22 @@ def execute_phase1_discovery_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase2_alignment(
+def execute_phase3_alignment(
     agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, auto_approve=True
 ):
-    """PHASE 2: STRUCTURAL ALIGNMENT (Retriable)"""
-    return execute_phase2_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
+    """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
+    return execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
 
 
-def execute_phase2_alignment_impl(
+def execute_phase3_alignment_impl(
     agents,
     territory,
     decision_engine,
     state_mgr,
     ctx: "HealContext" = None,
 ):
-    """PHASE 2: STRUCTURAL ALIGNMENT - Implementation"""
-    logger.info(f"=== PHASE 2: ALIGNMENT - {territory} ===")
+    """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
+    logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
 
     state_mgr.update_agent("HierarchyAgent", "L5 - Safety")
     hierarchy = agents["hierarchy"](project_root=REPO_ROOT)
@@ -2935,14 +2926,14 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase3_architectural_validation(agents, territory, state_mgr, ctx: "HealContext" = None):
-    """PHASE 3: ARCHITECTURAL VALIDATION (Retriable) - renamed to avoid shadowing execute_phase3_validation"""
-    return execute_phase3_validation_impl(agents, territory, state_mgr, ctx=ctx)
+def execute_phase4_architectural_validation(agents, territory, state_mgr, ctx: "HealContext" = None):
+    """PHASE 4: ARCHITECTURAL VALIDATION (Retriable)"""
+    return execute_phase4_validation_impl(agents, territory, state_mgr, ctx=ctx)
 
 
-def execute_phase3_validation_impl(agents, territory, state_mgr, ctx: "HealContext" = None):
-    """PHASE 3: ARCHITECTURAL VALIDATION - Implementation"""
-    logger.info(f"=== PHASE 3: VALIDATION - {territory} ===")
+def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealContext" = None):
+    """PHASE 4: ARCHITECTURAL VALIDATION - Implementation"""
+    logger.info(f"=== PHASE 4: VALIDATION - {territory} ===")
 
     state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Safety")
     arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
@@ -2974,34 +2965,25 @@ def execute_phase3_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
     # [FIX-B8] GravityLeakRepairAgent moved to _run_gravity_repair_global() — runs once before territory loop
 
-    state_mgr.update_agent("SystemArchitectAgent", "L5 - Safety")
-
-    # [FIX-B10] Only invoke SystemArchitectAgent for agentic_core L-layer territories
+    # [FIX-B10] Only run file-size check for agentic_core L-layer territories
     _ac_layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
     if territory != "agentic_core" and not any(territory.startswith(p) for p in _ac_layer_prefixes):
-        state_mgr.complete_agent("SystemArchitectAgent", True, f"Skipped for non-AC territory: {territory}")
         return gov_report, None
 
-    sys_arch = agents["system_architect"](project_root=REPO_ROOT)
-    arch_report = sys_arch.validate_core_architecture(f"agentic_core/{territory}")
+    size_violations = arch_gov.check_file_sizes(territory)
+    if size_violations:
+        for v in size_violations:
+            state_mgr.add_event("warning", v["message"])
+        logger.warning(f"check_file_sizes: {len(size_violations)} oversized file(s) in {territory}")
+    else:
+        logger.info(f"check_file_sizes: no oversized files in {territory}")
 
-    if arch_report is None:
-        state_mgr.complete_agent("SystemArchitectAgent", False, "Returned None")
-        return gov_report, None
-
-    if not arch_report.get("imports_valid", True):
-        circular = arch_report.get("circular_dependencies", [])
-        state_mgr.add_event("error", f"Circular dependencies detected: {circular}")
-        state_mgr.complete_agent("SystemArchitectAgent", False, "Circular Dependencies")
-        return gov_report, arch_report
-
-    state_mgr.complete_agent("SystemArchitectAgent", True, "Architecture Valid")
-    return gov_report, arch_report
+    return gov_report, None
 
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase4_healing(
+def execute_phase5_healing(
     agents,
     territory,
     gov_report,
@@ -3010,13 +2992,13 @@ def execute_phase4_healing(
     ctx: "HealContext" = None,
     auto_approve=True,
 ):
-    """PHASE 4: HEALING (Retriable)"""
+    """PHASE 5: HEALING (Retriable)"""
     # [STRICT SCOPE] Gatekeeper check
     if not gov_report:
         logger.warning("Skipping healing: No governance report available.")
         return None
 
-    return execute_phase4_healing_impl(
+    return execute_phase5_healing_impl(
         agents,
         territory,
         gov_report,
@@ -3026,7 +3008,7 @@ def execute_phase4_healing(
     )
 
 
-def execute_phase4_healing_impl(
+def execute_phase5_healing_impl(
     agents,
     territory,
     gov_report,
@@ -3034,8 +3016,8 @@ def execute_phase4_healing_impl(
     state_mgr,
     ctx: "HealContext" = None,
 ):
-    """PHASE 4: HEALING - Implementation"""
-    logger.info(f"=== PHASE 4: HEALING - {territory} ===")
+    """PHASE 5: HEALING - Implementation"""
+    logger.info(f"=== PHASE 5: HEALING - {territory} ===")
 
     if gov_report is None:
         logger.warning("No governance report - skipping healing")
@@ -3094,14 +3076,14 @@ def execute_phase4_healing_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase5_final(agents, territory, state_mgr, decision_engine=None):
-    """PHASE 5: CERTIFICATION (Retriable)"""
-    return execute_phase5_final_impl(agents, territory, state_mgr, decision_engine)
+def execute_phase7_final(agents, territory, state_mgr, decision_engine=None):
+    """PHASE 7: CERTIFICATION (Retriable)"""
+    return execute_phase7_final_impl(agents, territory, state_mgr, decision_engine)
 
 
-def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None):
-    """PHASE 5: CERTIFICATION - Implementation with Silent Aggregation"""
-    logger.info(f"=== PHASE 5: CERTIFICATION - {territory} ===")
+def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None):
+    """PHASE 7: CERTIFICATION - Implementation with Silent Aggregation"""
+    logger.info(f"=== PHASE 7: CERTIFICATION - {territory} ===")
 
     state_mgr.update_agent("SovereignCertifier", "L5 - Compliance")
 
@@ -3186,7 +3168,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
     # [FIX-B1] Gravity violations are global (not per-territory) — excluded from per-territory reports.
     # They are emitted only in save_aggregate_report() under "global_violations".
 
-    # Get DebateSynthesisAgent violations (already stored by Phase 4.5 — do not re-invoke)
+    # Get DebateSynthesisAgent violations (already stored by Phase 6 — do not re-invoke)
     conversational_violations = state_mgr.state.get("conversational_violations", [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
@@ -3247,8 +3229,7 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
 
     # [FIX-B4] Use decision_engine.decisions_made filtered by territory
     decisions_made = [
-        d for d in getattr(decision_engine, "decisions_made", [])
-        if d.get("territory") == territory
+        d for d in getattr(decision_engine, "decisions_made", []) if d.get("territory") == territory
     ]
 
     # Get location scan result from state manager
@@ -3288,7 +3269,8 @@ def execute_phase5_final_impl(agents, territory, state_mgr, decision_engine=None
         "unified_violations": all_violations,  # Use all_violations instead of just arch violations
         # [H4] Per-territory healing log with routing details
         "healing_log": [
-            a for a in state_mgr.state.get("healing_actions", [])
+            a
+            for a in state_mgr.state.get("healing_actions", [])
             if a.get("territory") == territory or a.get("territory") == "__global__"
         ],
         "agents_executed": agents_executed,
@@ -3592,7 +3574,9 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                         global_violations.append({**hv, "source": "RootHygieneAgent", "scope": "global"})
                 for gv in _rs.get("gravity_violations", []):
                     if isinstance(gv, dict):
-                        global_violations.append({**gv, "source": "GravityLeakRepairAgent", "scope": "global"})
+                        global_violations.append(
+                            {**gv, "source": "GravityLeakRepairAgent", "scope": "global"}
+                        )
             except Exception:  # guardian: allow-silent-swallower
                 pass
 
@@ -3717,7 +3701,7 @@ EXECUTION_PLAN = [
         ],
     },
     {
-        "phase": "2.5",
+        "phase": "3",
         "name": "Structural Alignment & Sovereignty",
         "agents": [
             {
@@ -3733,7 +3717,7 @@ EXECUTION_PLAN = [
         ],
     },
     {
-        "phase": "3",
+        "phase": "4",
         "name": "Architectural Validation",
         "agents": [
             {
@@ -3742,14 +3726,14 @@ EXECUTION_PLAN = [
                 "description": "territory audit",
             },
             {
-                "key": "system_architect",
-                "method": "validate_core_architecture",
-                "description": "architecture validation",
+                "key": "arch_governor",
+                "method": "check_file_sizes",
+                "description": "file-size check (AC-layer territories only)",
             },
         ],
     },
     {
-        "phase": "4",
+        "phase": "5",
         "name": "Healing",
         "agents": [
             {
@@ -3765,13 +3749,13 @@ EXECUTION_PLAN = [
         ],
     },
     {
-        "phase": "4.5",
+        "phase": "6",
         "name": "Additional Agents",
         "agents": [
             {
                 "key": "observability_probe",
                 "method": "scan_violations",
-                "description": "observability probe scan (renamed from conversational_repair)",
+                "description": "observability probe scan",
             },
             {
                 "key": "root_hygiene",
@@ -3781,7 +3765,7 @@ EXECUTION_PLAN = [
         ],
     },
     {
-        "phase": "5",
+        "phase": "7",
         "name": "Certification",
         "agents": [
             {"key": "*", "method": "aggregate", "description": "final aggregation and certification"},
@@ -3795,9 +3779,8 @@ AGENT_DEPENDENCIES: dict[str, list[str]] = {
     "hierarchy": ["reconciler", "location"],
     "file_classification": ["reconciler", "location"],
     "arch_governor": ["reconciler", "location", "hierarchy"],
-    "system_architect": ["reconciler", "location"],
+    "gravity_repair": ["reconciler"],
     "observability_probe": [],
-    "conversational_repair": [],  # DEPRECATED alias — kept for backward compat
     "root_hygiene": [],
     "reconciler": [],
     "location": ["reconciler"],
@@ -3812,10 +3795,9 @@ CANONICAL_ROSTER_KEYS = frozenset(
         "location",
         "hierarchy",
         "arch_governor",
-        "system_architect",
+        "gravity_repair",
         "file_classification",
         "observability_probe",
-        "conversational_repair",  # DEPRECATED alias — kept for backward compat
         "cognitive_disposition",
         "root_hygiene",
     },
@@ -3978,14 +3960,8 @@ def _print_meta_learning_summary(
     decisions = getattr(decision_engine, "decisions_made", [])
 
     successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
-    failed = [
-        a for a in healing_actions
-        if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")
-    ]
-    plan_only = [
-        a for a in healing_actions
-        if "plan" in str(a.get("outcome", "")).lower()
-    ]
+    failed = [a for a in healing_actions if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")]
+    plan_only = [a for a in healing_actions if "plan" in str(a.get("outcome", "")).lower()]
 
     tier_counts: Counter = Counter()
     for d in decisions:
@@ -4027,7 +4003,7 @@ def _print_meta_learning_summary(
         c_avg = sum(conf_vals) / len(conf_vals)
         c_max = max(conf_vals)
         n_local = sum(1 for c in conf_vals if c >= 0.75)
-        n_qwen  = sum(1 for c in conf_vals if 0.40 <= c < 0.75)
+        n_qwen = sum(1 for c in conf_vals if 0.40 <= c < 0.75)
         n_gemini = sum(1 for c in conf_vals if c < 0.40)
         print(f"  Confidence range         : min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
         print(
@@ -4606,7 +4582,9 @@ Examples:
         action="store_true",
         help="[DEPRECATED] Auto-approve is always active under --heal.",
     )
-    parser.add_argument("--manual", action="store_true", help="[DEPRECATED] Autonomous mode is always active.")
+    parser.add_argument(
+        "--manual", action="store_true", help="[DEPRECATED] Autonomous mode is always active."
+    )
     parser.add_argument(
         "--validate",
         action="store_true",
@@ -4797,8 +4775,8 @@ Examples:
     if ctx.auto_approve:
         import os
 
-        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
-        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
+        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")  # guardian: allow-global-mutation
+        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")  # guardian: allow-global-mutation
 
     # [HARDENED] Use Sovereign Decision Engine — wired from HealContext
     decision_engine = SovereignDecisionEngine(
@@ -4809,7 +4787,9 @@ Examples:
     )
 
     logger.info("UNIFIED SOVEREIGN PROTOCOL STARTED")
-    logger.info(f"  Mode: {'HEAL-ACTIVE (LLM + telemetry + meta-learning + auto-approve ON)' if ctx.heal else 'SCAN-ONLY (passive)'}")
+    logger.info(
+        f"  Mode: {'HEAL-ACTIVE (LLM + telemetry + meta-learning + auto-approve ON)' if ctx.heal else 'SCAN-ONLY (passive)'}"
+    )
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
     try:
@@ -4848,22 +4828,19 @@ Examples:
         FilesystemSSOTReconcilerAgent,
         GravityLeakRepairAgent,
         HierarchyAgent,
-        LocationAgent,
+        LocationValidatorAgent,
         RootHygieneAgent,
-        SystemArchitectAgent,
         ObservabilityProbeExecutorAgent,
     ) = _get_l5_agent_roster()
 
     agents = {
         "reconciler": FilesystemSSOTReconcilerAgent,
-        "location": LocationAgent,
+        "location": LocationValidatorAgent,
         "hierarchy": HierarchyAgent,
         "arch_governor": ArchitectureGovernorAgent,
         "gravity_repair": GravityLeakRepairAgent,
-        "system_architect": SystemArchitectAgent,
         "file_classification": FileClassificationAgent,
         "observability_probe": ObservabilityProbeExecutorAgent,
-        "conversational_repair": ObservabilityProbeExecutorAgent,  # DEPRECATED alias
         "cognitive_disposition": CognitiveDispositionAgent,
         "root_hygiene": RootHygieneAgent,
     }
@@ -5130,8 +5107,8 @@ Examples:
                             logger.warning(f"⚠️ Phase 3: {remaining_count} issues detected")
 
                         # Continue with existing phases
-                        # Phase 2.5: Structural Alignment (Hierarchy) - Legacy
-                        execute_phase2_alignment(
+                        # Phase 3: Structural Alignment (Hierarchy)
+                        execute_phase3_alignment(
                             agents,
                             territory,
                             decision_engine,
@@ -5139,7 +5116,7 @@ Examples:
                             effective_ctx,
                         )
 
-                        # [UNIVERSAL HEALING] Phase 2.5: Sovereignty Enforcement (Pascal/Header/Naming)
+                        # [UNIVERSAL HEALING] Phase 3: Sovereignty Enforcement (Pascal/Header/Naming)
                         # Now integrated with confidence-based decision engine
                         # [PHASE 2 ENHANCEMENT] Include classification violations in confidence calc
                         classification_violations = state_mgr.state.get("classification_violations", [])
@@ -5165,10 +5142,14 @@ Examples:
                             state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
                             pascal = agents["file_classification"](project_root=REPO_ROOT)
                             if hasattr(pascal, "heal_repository"):
+                                _cached = {
+                                    "file_registry": state_mgr.state.get("classification_file_registry", [])
+                                }
                                 res = pascal.heal_repository(
                                     target_territory=territory,
                                     dry_run=effective_ctx.dry_run,
                                     auto_approve=effective_ctx.auto_approve,
+                                    cached_scan=_cached,
                                 )
                                 healed = res.get("files_healed", 0) if isinstance(res, dict) else 0
                                 state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
@@ -5183,8 +5164,8 @@ Examples:
                         elif not effective_ctx.heal:
                             state_mgr.skip_agent("FileClassificationAgent", "scan-only mode (no --heal)")
 
-                        # Phase 3: Validation (Legacy)
-                        gov, arch = execute_phase3_architectural_validation(
+                        # Phase 4: Architectural Validation
+                        gov, arch = execute_phase4_architectural_validation(
                             agents, territory, state_mgr, ctx=effective_ctx
                         )
 
@@ -5192,8 +5173,8 @@ Examples:
                         state_mgr.state["compliance_report"] = gov
                         state_mgr.save()
 
-                        # Phase 4: Final Healing (Governor)
-                        execute_phase4_healing(
+                        # Phase 5: Final Healing (Governor)
+                        execute_phase5_healing(
                             agents,
                             territory,
                             gov,
@@ -5202,8 +5183,8 @@ Examples:
                             effective_ctx,
                         )
 
-                        # Phase 4.5: Additional Agent Execution (Conversational Repair & Root Hygiene)
-                        logger.info(f"=== PHASE 4.5: ADDITIONAL AGENTS - {territory} ===")
+                        # Phase 6: Additional Agent Execution (Observability Probe & Root Hygiene)
+                        logger.info(f"=== PHASE 6: ADDITIONAL AGENTS - {territory} ===")
 
                         # [FIX-B2] Reset per-territory conversational violations to prevent cross-territory accumulation
                         state_mgr.state["conversational_violations"] = []
@@ -5212,9 +5193,9 @@ Examples:
                         logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
                         state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
                         try:
-                            conversational_agent = agents.get(
-                                "observability_probe", agents.get("conversational_repair", lambda **_: None)
-                            )(project_root=REPO_ROOT, probe_type="debate")
+                            conversational_agent = agents.get("observability_probe", lambda **_: None)(
+                                project_root=REPO_ROOT, probe_type="debate"
+                            )
                             if hasattr(conversational_agent, "scan_violations"):
                                 conv_results = conversational_agent.scan_violations(
                                     target_territory=territory,
@@ -5260,16 +5241,18 @@ Examples:
                             logger.warning(f"CognitiveDispositionAgent failed: {e}")
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
 
-                        # Phase 5 (RootHygieneAgent moved outside territory loop — Fix 4)
-                        cert = execute_phase5_final(agents, territory, state_mgr, decision_engine)
+                        # Phase 7 (RootHygieneAgent moved outside territory loop — Fix 4)
+                        cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)
                         results.append(cert)
                         # [L3-SEAM] Record territory duration for L3EfficiencyTuner
                         _territory_elapsed_ms = time.monotonic() * 1000.0 - _territory_start_ms
-                        state_mgr.state["agent_execution_log"].append({
-                            "territory": territory,
-                            "agent": "__territory_total__",
-                            "duration_ms": round(_territory_elapsed_ms, 2),
-                        })
+                        state_mgr.state["agent_execution_log"].append(
+                            {
+                                "territory": territory,
+                                "agent": "__territory_total__",
+                                "duration_ms": round(_territory_elapsed_ms, 2),
+                            }
+                        )
                     else:
                         logger.error(f"Phase 1 failed for {territory} - skipping")
                         state_mgr.add_event("error", f"Phase 1 failure in {territory}")

@@ -1524,6 +1524,38 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         return audit_results
 
+    def check_file_sizes(
+        self, territory: str, max_lines: int = 1000
+    ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
+        """Check for Python files exceeding max_lines in the given territory.
+
+        Mirrors the file-size check previously performed by SystemArchitectAgent.
+        Returns a list of violation dicts (type FILE_SIZE, file, message, severity).
+        """
+        import os
+
+        max_lines = int(os.getenv("MAX_FILE_LINES", str(max_lines)))
+        territory_path = self.project_root / territory
+        if not territory_path.exists():
+            return []
+        violations: list[dict[str, Any]] = []
+        for py_file in territory_path.rglob("*.py"):
+            try:
+                line_count = len(py_file.read_text(encoding="utf-8", errors="replace").splitlines())
+                if line_count > max_lines:
+                    violations.append(
+                        {
+                            "type": "FILE_SIZE",
+                            "file": str(py_file.relative_to(self.project_root)),
+                            "message": f"{py_file.name}: {line_count} lines exceeds max {max_lines}",
+                            "severity": "medium",
+                            "recommended_action": "Split or refactor file to reduce line count",
+                        }
+                    )
+            except Exception:  # guardian: allow-silent-swallow
+                continue
+        return violations
+
     def generate_healing_plan(self, gov_report: dict[str, Any]) -> dict[str, Any]:
         """
         Generates a healing plan based on the governance report.

@@ -13,11 +13,9 @@ Tests cover all batches:
 import ast
 import importlib
 import inspect
-import json
 import re
-import textwrap
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import MagicMock
 
 import pytest
 
@@ -77,7 +75,10 @@ class TestBatch1TrivialFixes:
     @pytest.mark.unit
     def test_i2_no_dead_dict_literal(self, source_text):
         """I2: No standalone dict literal with has_test_functions/has_sovereign_class keys."""
-        assert '"has_test_functions"' not in source_text or "has_test_functions" in source_text.split("=")[0] is False
+        assert (
+            '"has_test_functions"' not in source_text
+            or "has_test_functions" in source_text.split("=")[0] is False
+        )
         # More precise: look for the specific dead dict pattern
         pattern = r'{\s*"has_test_functions".*?"is_in_docs".*?}'
         match = re.search(pattern, source_text, re.DOTALL)
@@ -133,8 +134,7 @@ class TestBatch2StateStorage:
         """B14: decision_data dict must contain a 'territory' field."""
         # Find the decision_data dict definition
         pattern = r'decision_data\s*=\s*\{[^}]*"territory"'
-        assert re.search(pattern, source_text, re.DOTALL), \
-            "decision_data dict missing 'territory' field"
+        assert re.search(pattern, source_text, re.DOTALL), "decision_data dict missing 'territory' field"
 
     @pytest.mark.unit
     def test_b3_location_fixed_stored(self, source_text):
@@ -156,8 +156,10 @@ class TestBatch2StateStorage:
         """B4+B5: decisions_made must be sourced from decision_engine.decisions_made
         filtered by territory, not from state_mgr.state."""
         # Should filter decision_engine.decisions_made by territory
-        assert "decision_engine.decisions_made" in source_text or \
-               'getattr(decision_engine, "decisions_made"' in source_text
+        assert (
+            "decision_engine.decisions_made" in source_text
+            or 'getattr(decision_engine, "decisions_made"' in source_text
+        )
 
     @pytest.mark.unit
     def test_b6_phase1_violations_passed(self, source_text):
@@ -166,11 +168,9 @@ class TestBatch2StateStorage:
         # Ensure p1_drift.get("violations", []) is NOT passed to execute_phase3_validation
         lines = source_text.split("\n")
         for i, line in enumerate(lines, 1):
-            if "execute_phase3_validation" in line or (
-                i > 1 and "execute_phase3_validation" in lines[i - 2]
-            ):
+            if "execute_phase3_validation" in line or (i > 1 and "execute_phase3_validation" in lines[i - 2]):
                 # Check nearby lines don't have p1_drift.get("violations", [])
-                context = "\n".join(lines[max(0, i - 3):min(len(lines), i + 3)])
+                context = "\n".join(lines[max(0, i - 3) : min(len(lines), i + 3)])
                 if 'p1_drift.get("violations", [])' in context and "execute_phase3_validation" in context:
                     pytest.fail("Phase 3 validation still receives p1_drift.get('violations', [])")
 
@@ -204,8 +204,8 @@ class TestBatch3HealingBehavior:
 
     @pytest.mark.unit
     def test_b12_non_ac_territories_enforced(self, source_text):
-        """B12: _NON_AC_TERRITORIES must be enforced in the territory loop."""
-        assert "[FIX-B12] Enforce scan-only for non-AC territories" in source_text
+        """B12: FIX-B12 was superseded; non-AC territories now respect --heal uniformly."""
+        assert "FIX-B12 removed" in source_text
 
     @pytest.mark.unit
     def test_b11_single_location_validator(self, source_text):
@@ -216,8 +216,8 @@ class TestBatch3HealingBehavior:
 
     @pytest.mark.unit
     def test_b10_system_architect_guard(self, source_text):
-        """B10: SystemArchitectAgent must be guarded for AC-only territories."""
-        assert "[FIX-B10] Only invoke SystemArchitectAgent for agentic_core" in source_text
+        """B10: file-size check (via arch_gov.check_file_sizes) must be guarded for AC-layer territories."""
+        assert "[FIX-B10] Only run file-size check for agentic_core L-layer territories" in source_text
 
     @pytest.mark.unit
     def test_b9_classification_scoped_to_territory(self, source_text):
@@ -234,12 +234,13 @@ class TestBatch3HealingBehavior:
     def test_b8_gravity_removed_from_phase3_impl(self, source_text):
         """B8: GravityLeakRepairAgent block must be removed from execute_phase3_validation_impl."""
         # Find the phase3 impl body
-        pattern = r'def execute_phase3_validation_impl\(.*?\n(.*?)(?=\ndef )'
+        pattern = r"def execute_phase3_validation_impl\(.*?\n(.*?)(?=\ndef )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
-            assert "gravity_agent" not in body, \
+            assert "gravity_agent" not in body, (
                 "GravityLeakRepairAgent still instantiated inside execute_phase3_validation_impl"
+            )
 
     @pytest.mark.unit
     def test_b8_gravity_called_before_territory_loop(self, source_text):
@@ -248,8 +249,9 @@ class TestBatch3HealingBehavior:
         loop_pos = source_text.find("for territory in targets:")
         assert gravity_call_pos != -1, "_run_gravity_repair_global call not found"
         assert loop_pos != -1, "territory loop not found"
-        assert gravity_call_pos < loop_pos, \
+        assert gravity_call_pos < loop_pos, (
             "_run_gravity_repair_global must be called BEFORE the territory loop"
+        )
 
 
 # ============================================================================
@@ -316,10 +318,14 @@ class TestBatch4HealingOutputEnrichment:
         mock_state_mgr.state = {"healing_actions": []}
 
         ssot_module._record_healing_action(
-            mock_state_mgr, agent="Agent1", territory="t1",
+            mock_state_mgr,
+            agent="Agent1",
+            territory="t1",
         )
         ssot_module._record_healing_action(
-            mock_state_mgr, agent="Agent2", territory="t2",
+            mock_state_mgr,
+            agent="Agent2",
+            territory="t2",
         )
 
         assert len(mock_state_mgr.state["healing_actions"]) == 2
@@ -357,7 +363,7 @@ class TestBatch5CodeQuality:
     def test_i1_save_removed_from_update_agent(self, source_text):
         """I1: update_agent must NOT call self.save()."""
         # Find the update_agent method body
-        pattern = r'def update_agent\(self.*?\n(.*?)(?=\n    def )'
+        pattern = r"def update_agent\(self.*?\n(.*?)(?=\n    def )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
@@ -369,7 +375,7 @@ class TestBatch5CodeQuality:
     @pytest.mark.unit
     def test_i1_save_removed_from_complete_agent(self, source_text):
         """I1: complete_agent must NOT call self.save()."""
-        pattern = r'def complete_agent\(self.*?\n(.*?)(?=\n    def )'
+        pattern = r"def complete_agent\(self.*?\n(.*?)(?=\n    def )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
@@ -380,7 +386,7 @@ class TestBatch5CodeQuality:
     @pytest.mark.unit
     def test_i1_save_removed_from_skip_agent(self, source_text):
         """I1: skip_agent must NOT call self.save()."""
-        pattern = r'def skip_agent\(self.*?\n(.*?)(?=\n    def )'
+        pattern = r"def skip_agent\(self.*?\n(.*?)(?=\n    def )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
@@ -391,7 +397,7 @@ class TestBatch5CodeQuality:
     @pytest.mark.unit
     def test_i1_save_kept_in_start_mission(self, source_text):
         """I1: start_mission must still call self.save()."""
-        pattern = r'def start_mission\(self.*?\n(.*?)(?=\n    def )'
+        pattern = r"def start_mission\(self.*?\n(.*?)(?=\n    def )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
@@ -400,7 +406,7 @@ class TestBatch5CodeQuality:
     @pytest.mark.unit
     def test_i1_save_kept_in_finish_mission(self, source_text):
         """I1: finish_mission must still call self.save()."""
-        pattern = r'def finish_mission\(self.*?\n(.*?)(?=\n    def )'
+        pattern = r"def finish_mission\(self.*?\n(.*?)(?=\n    def )"
         match = re.search(pattern, source_text, re.DOTALL)
         if match:
             body = match.group(1)
@@ -419,8 +425,9 @@ class TestBatch5CodeQuality:
             stripped = line.strip()
             if stripped.startswith("#"):
                 continue
-            assert "asyncio.get_event_loop()" not in stripped, \
+            assert "asyncio.get_event_loop()" not in stripped, (
                 f"Deprecated asyncio.get_event_loop() found in code: {stripped}"
+            )
         # Should have new_event_loop
         assert "asyncio.new_event_loop()" in source_text
 
@@ -484,7 +491,6 @@ class TestStructuralIntegrity:
             "[FIX-B9]",
             "[FIX-B10]",
             "[FIX-B11]",
-            "[FIX-B12]",
             "[FIX-B15]",
             "[FIX-I1]",
             "[FIX-I3]",

@@ -115,11 +115,11 @@ def get_python_files_fast(root: Path) -> list[Path]:
     Scans only sovereign territories with SSOT-defined structure requirements.
     Excludes volatile/output directories (logs, archives) and gitignored paths.
     """
-    from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
     from agentic_core.L5_safety.config.structure_blueprint_config import (
         ENFORCED_TERRITORIES,
         VOLATILE_TERRITORIES,
     )
+    from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
     # Domain-specific exclude directories for safety scanning
     # Combine volatile territories with gitignored/build artifacts
@@ -472,7 +472,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             return 1
 
         self.logger.info("Scanning repository (Fast One-Time Pass)...")
-        self.file_registry = get_python_files_fast(root)
+        if not self.file_registry:
+            self.file_registry = get_python_files_fast(root)
         self.stats["analyzed"] = len(self.file_registry)
 
         # [LCD+ P6] DUPLICATE FILE DETECTION (runs once before per-file loop)
@@ -3356,6 +3357,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 top3 = sorted_scores[:3]
                 try:
                     from system_learning.engines.hitl_decision_logger import log_hitl_decision
+
                     log_hitl_decision(
                         agent="FileClassificationAgent",
                         file_path=str(path),
@@ -3367,11 +3369,11 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "top3": str([(n, round(s / total, 3)) for n, s in top3]),
                         },
                     )
-                except Exception:
+                except Exception:  # guardian: allow-silent-swallow
                     pass
                 warnings.append(
                     f"HITL_FLAGGED: top-2 delta={delta:.3f}<0.15; "
-                    f"top3={[(n, round(s/total, 3)) for n, s in top3]}"
+                    f"top3={[(n, round(s / total, 3)) for n, s in top3]}"
                 )
 
         return ClassificationResult(
@@ -5506,6 +5508,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         _call_path: set[str] | None = None,
         target_territory: str | None = None,
         auto_approve: bool = True,
+        cached_scan: dict | None = None,
         **kwargs,
     ) -> dict[str, int]:
         """
@@ -5526,6 +5529,13 @@ class FileClassificationAgent(*BASE_CLASSES):
         """
         if _call_path is None:
             _call_path = set()
+
+        if cached_scan:
+            raw_registry = cached_scan.get("file_registry", [])
+            if raw_registry:
+                from pathlib import Path as _Path
+
+                self.file_registry = [_Path(p) for p in raw_registry]
 
         # Prevent cycles
         agent_id = f"FileClassificationAgent@{self.project_root}"
@@ -5556,8 +5566,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
             # UNIFIED HEALING RESULT CALCULATION
             total_violations = sum(
-                v if isinstance(v, int) else sum(v.values())
-                for v in self.stats["violations"].values()
+                v if isinstance(v, int) else sum(v.values()) for v in self.stats["violations"].values()
             )
             violations_fixed = (
                 self.action_counters["renames"]
