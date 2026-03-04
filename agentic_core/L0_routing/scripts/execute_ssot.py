@@ -64,6 +64,7 @@ except ImportError:
 
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.scripts.heal_result_adapter import adapt_heal_result
 
 
 def _get_safe_subprocess_run():
@@ -1542,11 +1543,17 @@ class SovereignDecisionEngine:
         tier = routing.tier
 
         # ── Qwen14B / confidence-band routing override ──────────────────────────
-        # DETERMINISTIC is only correct for high confidence (>= CONF_X = 0.75).
-        # Medium confidence: designated Qwen14B agents → QWEN; others → GEMINI.
-        # Low confidence (< CONF_Y = 0.40): always GEMINI (recovery path).
-        _CONF_X = 0.75
-        _CONF_Y = 0.40
+        # Tier 2: Use canonical healing_tier_router thresholds to eliminate drift
+        try:
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                HEALING_CONFIDENCE_X as _CONF_X,
+            )
+            from agentic_core.L2_execution.healers.healing_tier_config import (
+                HEALING_CONFIDENCE_Y as _CONF_Y,
+            )
+        except ImportError:  # guardian: allow-silent-swallower
+            _CONF_X = 0.75
+            _CONF_Y = 0.40
         _tier_overridden = False
         if confidence.value < _CONF_Y and tier not in (RoutingTier.FAIL_CLOSED,):
             tier = RoutingTier.GEMINI
@@ -2155,6 +2162,15 @@ def execute_phase2_reconciliation(
                     reason.split("(")[0].strip(),
                 )
 
+                # Tier 1: Wire UniversalWriteGateway for audit and replay capability
+                # All agent mutations now pass through UWG sovereign gate
+                uwg = get_write_gateway()
+                # Grant temporary write permissions for this agent's territory
+                from pathlib import Path
+
+                territory_prefix = str(Path(territory).as_posix()) + "/"  # guardian: allow-path-fragility
+                uwg.grant_write_permission(territory_prefix)
+
                 # [FIX-HANG] Run heal_repository with timeout to prevent indefinite hangs.
                 # Territory scoping reduces scan surface; timeout is the hard safety net.
                 _HEAL_TIMEOUT_S = int(os.environ.get("HEAL_TIMEOUT_SECONDS", "300"))
@@ -2175,6 +2191,9 @@ def execute_phase2_reconciliation(
                         raise RuntimeError(
                             f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for {agent_key}"
                         )
+                    finally:
+                        # Clean up temporary permissions
+                        uwg.revoke_write_permission(territory_prefix)
 
                 if not isinstance(fix_result, dict):
                     fix_result = {"raw_output": str(fix_result)}
@@ -2182,6 +2201,19 @@ def execute_phase2_reconciliation(
                 fix_result["agent"] = agent_key
                 fix_result["violations_submitted"] = len(agent_violations)
                 fix_result["routing_reason"] = reason
+
+                # Tier 3: Adapt to canonical HealCheckResult for unified processing
+                try:
+                    heal_check_result = adapt_heal_result(
+                        agent_name=agent_key,
+                        raw_result=fix_result,
+                        violations_submitted=len(agent_violations),
+                    )
+                    # Store canonical result alongside legacy dict for gradual migration
+                    fix_result["_canonical_heal_check_result"] = heal_check_result.to_dict()
+                except Exception as e:  # guardian: allow-silent-swallower
+                    # Adapter failure is non-fatal - continue with legacy dict
+                    logger.warning(f"Failed to adapt heal result for {agent_key}: {e}")
 
                 if fix_result.get("success", True) is False:
                     raise RuntimeError(f"Agent reported failure: {fix_result.get('error', 'Unknown')}")
