@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
 """
 V15-Native Entrypoint for execute_ssot.
 
@@ -72,13 +73,16 @@ Examples:
     parser.add_argument("--interactive", action="store_true", help="Enable human-in-the-loop prompts")
     parser.add_argument("--manual", action="store_true", help="Disable autonomous mode")
     parser.add_argument(
-        "--no-cda", action="store_true", help="Disable CognitiveDispositionAgent (on by default)"
-    )
-    parser.add_argument(
         "--allow-protected-root-mutation",
         action="store_true",
         default=True,
         help="Allow writes to protected root directories (default: True).",
+    )
+    parser.add_argument(
+        "--apply-proposals",
+        action="store_true",
+        default=False,
+        help="Apply approved meta-learning proposals (default: proposal_only mode).",
     )
     # --- Introspection flags ---
     parser.add_argument("--plan", action="store_true", help="Print execution plan and exit")
@@ -92,15 +96,7 @@ Examples:
         "--v15-enforcement", type=int, choices=(0, 1), default=None, help="Override V15_ENFORCEMENT"
     )
     parser.add_argument("-v", "--verbose", action="count", default=0, help="Increase log verbosity")
-    parser.add_argument(
-        "--apply-proposals",
-        action="store_true",
-        default=False,
-        help="Apply approved meta-learning proposals (default: proposal_only mode).",
-    )
-    # Keep --legacy for backward compat (silently accepted, no longer required)
     parser.add_argument("--legacy", action="store_true", help=argparse.SUPPRESS)
-
     args = parser.parse_args()
 
     # [FENCE SELF-CHECK MODE]
@@ -129,41 +125,9 @@ Examples:
     _apply_v15_enforcement_flag(args)
     _maybe_force_utf8_console()
 
-    # Build argv list for _legacy_main's internal parser (still needed for territory/agents/etc.)
-    # Only pass flags that _legacy_main's parser understands
-    inner_argv = []
-    if args.territory:
-        inner_argv += ["--territory", args.territory]
-    if args.domains:
-        inner_argv += ["--domains"]
-    if args.agent:
-        inner_argv += ["--agent", args.agent]
-    if args.list_agents:
-        inner_argv += ["--list-agents"]
-    if args.agents:
-        inner_argv += ["--agents", args.agents]
-    if args.capture_baseline:
-        inner_argv += ["--capture-baseline"]
-    if args.heal:
-        inner_argv += ["--heal"]
-    if args.dry_run:
-        inner_argv += ["--dry-run"]
-    if args.validate:
-        inner_argv += ["--validate"]
-    if args.interactive:
-        inner_argv += ["--interactive"]
-    if args.manual:
-        inner_argv += ["--manual"]
-    if args.no_cda:
-        inner_argv += ["--no-cda"]
-    if args.verbose:
-        inner_argv += ["-v"] * args.verbose
-    if args.apply_proposals:
-        inner_argv += ["--apply-proposals"]
-
     try:
         _legacy_main(
-            inner_argv,
+            args,
             repo_root=REPO_ROOT,
             allow_protected_root_mutation=args.allow_protected_root_mutation,
         )

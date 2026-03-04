@@ -1,4 +1,5 @@
 #!/usr/bin/env python3
+# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).
@@ -458,7 +459,7 @@ def run_fence_self_check() -> None:
     # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
-        if policy.immutable_roots != ("agentic_core", ".github"):
+        if policy.immutable_roots != ("agentic_core", "tests", ".github"):
             failed_checks.append("default_policy_immutable_roots")
     # guardian: allow-silent-swallow
     except Exception:
@@ -1582,6 +1583,21 @@ class SovereignDecisionEngine:
         return decision
 
     # guardian: allow-magic-config
+    def _classify_violation_type(self, message: str) -> str:
+        """Classify a violation message into a canonical violation type string."""
+        msg_lower = message.lower()
+        if "missing sovereign root" in msg_lower or "missing" in msg_lower and "director" in msg_lower:
+            return "MISSING_DIRECTORY"
+        if "forbidden keyword" in msg_lower:
+            return "FORBIDDEN_CONTENT"
+        if "forbidden extension" in msg_lower:
+            return "EXTENSION_MISMATCH"
+        if "test_" in msg_lower and "file" in msg_lower:
+            return "TEST_FILE_MISPLACED"
+        if "sovereign" in msg_lower:
+            return "SOVEREIGN_VIOLATION"
+        return "STRUCTURAL_VIOLATION"
+
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
         # Use operation-scoped call path to prevent bleeding across territories
@@ -1612,6 +1628,8 @@ class SovereignDecisionEngine:
         uses GPU-accelerated BAAI/bge-m3 cosine similarity instead of Jaccard pattern
         matching for the pattern_score component.
         """
+        if violations_count == 0:
+            return ConfidenceScore(value=1.0, reasoning="Zero violations")
         # 1. Base Score (Inverse of violations, capped at 10)
         base_score = max(0.0, 1.0 - (min(violations_count, 10) * 0.1))
 
@@ -1751,9 +1769,7 @@ class SovereignDecisionEngine:
         if tier == RoutingTier.DETERMINISTIC:
             self._healing_count += 1
             self._call_path.add(agent_name)
-            reason = (
-                f"SOVEREIGN-AUTO ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
-            )
+            reason = f"AUTO-HEAL: SOVEREIGN-AUTO ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
             decision_data["decision"] = True
             decision_data["reason"] = reason
             self.decisions_made.append(decision_data)
@@ -1761,6 +1777,8 @@ class SovereignDecisionEngine:
 
         if not self.enable_llm:
             approved, hitl_reason = self._hitl_gate(agent_name, confidence, tier.value)
+            if not approved:
+                hitl_reason = f"LLM Disabled ({hitl_reason})"
             decision_data["decision"] = approved
             decision_data["reason"] = hitl_reason
             self.decisions_made.append(decision_data)
@@ -1820,7 +1838,7 @@ class SovereignDecisionEngine:
             # Medium score: Qwen arbitrates. If Qwen says NO, fall through to
             # agent-native logic — healing is never blocked by a single NO.
             qwen_approved = True
-            qwen_reason = f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})"
+            qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score})"
             try:
                 arbiter = self._get_qwen_vllm_arbiter()
                 vllm_result = arbiter(
@@ -1832,9 +1850,7 @@ class SovereignDecisionEngine:
                 )
                 qwen_approved = vllm_result.get("decision", True)
                 raw_reason = vllm_result.get("reason", "")[:120]
-                qwen_reason = (
-                    f"LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
-                )
+                qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
                 logger.warning("[QWEN14B] %s -> decision=%s reason=%s", agent_name, qwen_approved, raw_reason)
             except Exception as _qwen_err:  # guardian: allow-silent-swallow
                 logger.warning("[QWEN14B] vLLM call failed, falling to agent-native: %s", _qwen_err)
@@ -1848,9 +1864,7 @@ class SovereignDecisionEngine:
                     agent_name,
                     routing.score,
                 )
-                final_reason = (
-                    f"QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
-                )
+                final_reason = f"LLM Override: QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
 
             self._healing_count += 1
             self._call_path.add(agent_name)
@@ -1877,7 +1891,7 @@ class SovereignDecisionEngine:
             if confidence.value < 0.40
             else ("FLASH" if "flash" in target_model.lower() else "GEMINI")
         )
-        reason = f"LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
+        reason = f"LLM Override: LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
         decision_data["decision"] = True
         decision_data["reason"] = reason
         self.decisions_made.append(decision_data)
@@ -2170,6 +2184,10 @@ class NonInteractiveGuard:
             return "y"
 
         self.blocked_count += 1
+        if self.blocked_count > self.max_blocked_prompts:
+            raise RecursionError(
+                f"Infinite Loop Protection: {self.blocked_count} prompts blocked (max={self.max_blocked_prompts})"
+            )
         logger.warning(
             f"BLOCKED PROMPT ({self.blocked_count}/{self.max_blocked_prompts}): Agent attempted input('{prompt}')",
         )
@@ -4622,7 +4640,7 @@ def _write_mandatory_json_output(
     try:
         reports_dir = getattr(state_mgr, "project_root", None)
         if reports_dir is None:
-            reports_dir = Path.cwd()
+            reports_dir = Path(__file__).resolve().parent.parent.parent.parent
         out_dir = Path(reports_dir) / "logs" / "compliance_reports"
         out_dir.mkdir(parents=True, exist_ok=True)
         out_path = out_dir / "heal_run_output.json"
@@ -4910,11 +4928,20 @@ def resolve_agent_subset(requested: list[str]) -> list[str]:
     return sorted(closed)
 
 
-def list_available_agents(project_root=None):
+def list_available_agents(project_root=None, dedupe=False):
     """Alias for discover_agents_from_registry (backward compat)."""
     if project_root is None:
         project_root = REPO_ROOT
-    return discover_agents_from_registry(project_root)
+    agents = discover_agents_from_registry(project_root)
+    if dedupe:
+        seen = set()
+        unique = []
+        for agent in agents:
+            if agent not in seen:
+                seen.add(agent)
+                unique.append(agent)
+        return unique
+    return agents
 
 
 # ============================================================================

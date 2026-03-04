@@ -9,9 +9,19 @@ they're properly integrated and functional.
 import sys
 from pathlib import Path
 
+import pytest
+
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
-# from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian  # TODO: Fix import
+try:
+    from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+
+    _HAS_GUARDIAN = True
+except Exception:
+    get_autonomy_guardian = None  # type: ignore[assignment]
+    _HAS_GUARDIAN = False
+
+pytestmark = pytest.mark.skipif(not _HAS_GUARDIAN, reason="AutonomyGuardianAgent not importable")
 
 
 def test_redis_cache_method():

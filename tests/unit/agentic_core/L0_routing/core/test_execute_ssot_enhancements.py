@@ -366,10 +366,11 @@ class TestRuntimeStateManager:
         assert state_mgr.state["end_time"] is not None
         assert state_mgr.state["current_agent"] is None
 
-    def test_atomic_save(self, tmp_path):
+    def test_atomic_save(self, tmp_path, monkeypatch):
         """Test that state is saved atomically."""
         import json
 
+        monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
         from agentic_core.L0_routing.scripts.execute_ssot import RuntimeStateManager
 
         state_mgr = RuntimeStateManager(tmp_path)
