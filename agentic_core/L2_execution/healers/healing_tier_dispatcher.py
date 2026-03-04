@@ -249,12 +249,6 @@ def dispatch_healing(
     if rollback_refiner is not None:
         _emit_rollback_refinement(rollback_refiner, healing_input, agent_name, timestamp_utc)
 
-    # Phase 3: C0 informational-only pattern advisor (cannot change tier)
-    pattern_advice = None
-    if pattern_advisor is not None:
-        pattern_advice = pattern_advisor.advise(healing_input)
-        # Note: pattern_advice is advisory-only and does NOT affect routing
-
     method_name = _TIER_TO_METHOD[decision.tier]
     method = getattr(invoker, method_name)
 
@@ -277,23 +271,34 @@ def dispatch_healing(
             )
         # Phase 2: Real-time write-back into meta-learning store
         if outcome_write_back_hook is not None:
-            outcome_write_back_hook.on_outcome(
-                healing_input=healing_input,
-                decision=decision,
-                record=record,
-                success=success,
-            )
-        # Phase 3: Emit pattern advice metadata (informational-only)
-        if pattern_advice is not None and timestamp_utc is not None:
-            _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
+            try:
+                outcome_write_back_hook.on_outcome(
+                    healing_input=healing_input,
+                    decision=decision,
+                    record=record,
+                    success=success,
+                )
+            except Exception:
+                logger.warning("outcome_write_back_hook raised — continuing", exc_info=True)
+        # Phase 3: C0 informational-only pattern advisor (cannot change tier)
+        if pattern_advisor is not None:
+            try:
+                pattern_advice = pattern_advisor.advise(healing_input)
+                if pattern_advice is not None and timestamp_utc is not None:
+                    _emit_pattern_advice(pattern_advice, healing_input, agent_name, timestamp_utc)
+            except Exception:
+                logger.warning("pattern_advisor raised — continuing", exc_info=True)
         # Phase 4: Publish outcome to MetaLearningBus (proposal_only=True)
         if meta_outcome_bus_hook is not None:
-            meta_outcome_bus_hook.publish_outcome(
-                healing_input=healing_input,
-                decision=decision,
-                record=record,
-                success=success,
-            )
+            try:
+                meta_outcome_bus_hook.publish_outcome(
+                    healing_input=healing_input,
+                    decision=decision,
+                    record=record,
+                    success=success,
+                )
+            except Exception:
+                logger.warning("meta_outcome_bus_hook raised — continuing", exc_info=True)
 
     return decision, record
 

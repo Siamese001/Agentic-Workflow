@@ -47,17 +47,16 @@ class MockMetaPriorProvider:
 class MockHealingProviderInvoker:
     """Mock invoker that always succeeds."""
 
-    def invoke_local_agent(self, healing_input, decision, config, agent_name=""):
+    def invoke_local(self, healing_input, decision, config, agent_name=""):
         from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 
         return InvocationRecord(
             tier=decision.tier,
-            method="invoke_local_agent",
-            start_time=0,
-            end_time=100,
-            success=True,
-            result="Mock success",
-            error=None,
+            method_called="invoke_local",
+            model_id="",
+            agent_name=agent_name,
+            trace_id=healing_input.trace_id,
+            heal_confidence=decision.heal_confidence,
         )
 
 
@@ -83,9 +82,8 @@ def test_full_integration_all_phases() -> None:
     mock_ml_client.retrieve_healing_patterns.return_value = mock_patterns
     pattern_advisor = DefaultHealingPatternAdvisor(mock_ml_client)
 
-    # Phase 4: Meta outcome bus hook
-    mock_bus = MagicMock()
-    meta_outcome_bus_hook = DefaultMetaOutcomeBusHook(mock_bus)
+    # Phase 4: Meta outcome bus hook (mock the hook directly to assert publish_outcome)
+    mock_bus_hook = MagicMock()
 
     config = HealingTierConfig()
     invoker = MockHealingProviderInvoker()
@@ -97,7 +95,6 @@ def test_full_integration_all_phases() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     decision, record = dispatch_healing(
@@ -109,25 +106,24 @@ def test_full_integration_all_phases() -> None:
         meta_prior_provider=meta_prior_provider,
         outcome_write_back_hook=outcome_write_back_hook,
         pattern_advisor=pattern_advisor,
-        meta_outcome_bus_hook=meta_outcome_bus_hook,
+        meta_outcome_bus_hook=mock_bus_hook,
     )
 
     # Phase 1: Should have used meta prior in routing
     assert decision.tier in HealingTier
-    assert any("historical_success=0.90" in code for code in decision.reason_codes)
+    assert any("historical_success_rate=0.9000" in code for code in decision.reason_codes)
 
     # Phase 2: Should have recorded outcome in store
     assert store.get_counts().get("test_sig", 0) == 1
 
     # Phase 3: Should have queried ML client for patterns
-    mock_ml_client.retrieve_healing_patterns.assert_called_once_with("test_sig")
+    mock_ml_client.retrieve_healing_patterns.assert_called_once_with(error_signature="test_sig")
 
     # Phase 4: Should have published outcome to meta bus
-    mock_bus.enqueue.assert_called_once()
+    mock_bus_hook.publish_outcome.assert_called_once()
 
     # Should have successful invocation record
     assert record.tier == decision.tier
-    assert record.success is True
 
 
 def test_full_integration_with_null_hooks() -> None:
@@ -142,7 +138,6 @@ def test_full_integration_with_null_hooks() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     decision, record = dispatch_healing(
@@ -158,7 +153,7 @@ def test_full_integration_with_null_hooks() -> None:
     )
 
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
 
 
 def test_full_integration_hooks_fail_gracefully() -> None:
@@ -182,7 +177,6 @@ def test_full_integration_hooks_fail_gracefully() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     with patch("system_learning.engines.default_healing_pattern_advisor.logger"):
@@ -200,7 +194,7 @@ def test_full_integration_hooks_fail_gracefully() -> None:
 
     # Should still succeed despite hook failures
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
 
     # All hooks should have been called
     failing_outcome_hook.on_outcome.assert_called_once()
@@ -212,13 +206,12 @@ def test_full_integration_invocation_failure() -> None:
     """Hooks are called even when invocation fails."""
 
     class FailingInvoker:
-        def invoke_local_agent(self, healing_input, decision, config, agent_name=""):
+        def invoke_local(self, healing_input, decision, config, agent_name=""):
             raise Exception("Invocation failed")
 
     store = HealingSuccessRateStore()
     outcome_hook = DefaultOutcomeWriteBackHook(store)
-    mock_bus = MagicMock()
-    bus_hook = DefaultMetaOutcomeBusHook(mock_bus)
+    mock_bus_hook = MagicMock()
 
     config = HealingTierConfig()
     invoker = FailingInvoker()
@@ -230,7 +223,6 @@ def test_full_integration_invocation_failure() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     # Should raise invocation exception
@@ -242,12 +234,12 @@ def test_full_integration_invocation_failure() -> None:
             agent_name="test-agent",
             timestamp_utc=1234567890,
             outcome_write_back_hook=outcome_hook,
-            meta_outcome_bus_hook=bus_hook,
+            meta_outcome_bus_hook=mock_bus_hook,
         )
 
     # Hooks should still have been called with failure info
     assert store.get_counts().get("test_sig", 0) == 1
-    mock_bus.enqueue.assert_called_once()
+    mock_bus_hook.publish_outcome.assert_called_once()
 
 
 def test_full_integration_backward_compatibility() -> None:
@@ -262,7 +254,6 @@ def test_full_integration_backward_compatibility() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     # Should work with all hooks as None
@@ -279,7 +270,7 @@ def test_full_integration_backward_compatibility() -> None:
     )
 
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
 
 
 def test_full_integration_phase_order() -> None:
@@ -319,7 +310,6 @@ def test_full_integration_phase_order() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     dispatch_healing(

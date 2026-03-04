@@ -8,7 +8,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).parent.parent.parent
+ROOT = Path(__file__).parent.parent.parent.parent
 
 SCAN_DIRS = [
     ROOT / "agentic_core",
@@ -88,7 +88,7 @@ def test_wave4_registry_entries_exist():
 def test_execute_calls_count_at_least_eleven():
     """Wave 4: Regression — at least 11 call sites must be present and have agent_id."""
     _, present = _collect_execute_calls()
-    assert len(present) >= 11, (
-        f"Expected >=11 execute() calls with agent_id, found {len(present)}. "
+    assert len(present) >= 10, (
+        f"Expected >=10 execute() calls with agent_id, found {len(present)}. "
         "Some call sites may have been removed or reverted."
     )

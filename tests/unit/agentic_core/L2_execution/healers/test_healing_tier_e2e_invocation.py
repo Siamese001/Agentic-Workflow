@@ -148,6 +148,7 @@ def _make_input(
     blast_radius: float = 0.0,
     retry_count: int = 0,
     trace_id: str = "trace-e2e",
+    failure_entropy_class: str = "MEDIUM",
 ) -> HealingInput:
     return HealingInput(
         failure_type=failure_type,
@@ -157,6 +158,7 @@ def _make_input(
         blast_radius_estimate=blast_radius,
         required_tools=(),
         violation_metadata_refs=(),
+        failure_entropy_class=failure_entropy_class,
     )
 
 
@@ -215,8 +217,8 @@ class TestE2EDispatchGemini:
     """confidence < Y -> GEMINI_2_5_PRO -> invoke_gemini only."""
 
     def test_gemini_dispatch(self, default_config, fake_invoker):
-        # unknown + blast=1.0 + retry=2 -> score=0.39 < Y=0.40
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2)
+        # unknown + blast=1.0 + retry=2 + HIGH entropy -> score=0.395 < Y=0.40
+        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
         decision, record = dispatch_healing(
             inp, default_config, invoker=fake_invoker, agent_name="GeminiTestAgent"
         )
@@ -228,7 +230,7 @@ class TestE2EDispatchGemini:
         assert len(fake_invoker.calls) == 1
 
     def test_no_other_provider_invoked(self, default_config, fake_invoker):
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2)
+        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
         dispatch_healing(inp, default_config, invoker=fake_invoker)
         methods = [c.method_called for c in fake_invoker.calls]
         assert methods == ["invoke_gemini"]
@@ -301,7 +303,7 @@ class TestAgentIntegrationE2E:
         scenarios = [
             ("syntax_error", 0.0, 0),  # -> LOCAL_AGENT
             ("runtime_error", 0.5, 0),  # -> QWEN_VLLM
-            ("unknown", 1.0, 2),  # -> GEMINI_2_5_PRO
+            ("unknown", 1.0, 3),  # -> GEMINI_2_5_PRO (retry >= max_heal_retries forces)
         ]
         for agent_name, _ in _ALLOWLIST_PARAMS[:3]:
             for ft, blast, retry in scenarios:
@@ -552,7 +554,7 @@ class TestDispatcherCoverage:
         scenarios = [
             ("syntax_error", 0.0, 0, "invoke_local"),
             ("runtime_error", 0.5, 0, "invoke_qwen_vllm"),
-            ("unknown", 1.0, 2, "invoke_gemini"),
+            ("unknown", 1.0, 3, "invoke_gemini"),
         ]
         for ft, blast, retry, expected_method in scenarios:
             fake = FakeInvoker()

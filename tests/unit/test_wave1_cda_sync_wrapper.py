@@ -7,7 +7,7 @@ import ast
 from pathlib import Path
 
 CDA_PATH = (
-    Path(__file__).parent.parent.parent.parent
+    Path(__file__).parent.parent.parent
     / "agentic_core"
     / "L5_safety"
     / "reasoning"

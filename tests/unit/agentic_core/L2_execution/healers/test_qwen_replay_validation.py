@@ -19,7 +19,6 @@ from agentic_core.L2_execution.healers.healing_tier_types import (
 def create_deterministic_healing_input() -> HealingInput:
     """Create a deterministic healing input for testing."""
     return HealingInput(
-        agent_id="test_agent",
         failure_type="syntax_error",
         error_signature="test_syntax_error_001",
         trace_id="test-trace-001",

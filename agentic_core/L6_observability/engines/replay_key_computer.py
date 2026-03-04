@@ -24,6 +24,9 @@ class ReplayKeyComponents:
     embedding_pack_hash: str
     embedding_model_version: str
 
+    # C0 context for drift detection
+    c0_context_hash: str
+
 
 def compute_replay_key(components: ReplayKeyComponents) -> str:
     """

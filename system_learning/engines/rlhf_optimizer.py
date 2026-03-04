@@ -89,6 +89,8 @@ class DefaultDeterministicRLHFOptimizer:
                 reason=("malformed_dpo_batch",),
                 timestamp_utc=0,  # Will be set by caller
                 embedding_context_hash=embedding_context_hash,
+                authority_sensitivity="MEDIUM",
+                target_surface="threshold_config",
             )
 
         # Parse current threshold config
@@ -103,6 +105,8 @@ class DefaultDeterministicRLHFOptimizer:
                 confidence=0.0,
                 reason=("malformed_threshold_config",),
                 timestamp_utc=0,  # Will be set by caller
+                authority_sensitivity="MEDIUM",
+                target_surface="threshold_config",
             )
 
         # Process DPO pairs in deterministic order
@@ -179,4 +183,6 @@ class DefaultDeterministicRLHFOptimizer:
             reason=tuple(reasons) if reasons else ("no_adjustments",),
             timestamp_utc=0,  # Will be set by caller
             embedding_context_hash=embedding_context_hash,
+            authority_sensitivity="MEDIUM",
+            target_surface="threshold_config",
         )

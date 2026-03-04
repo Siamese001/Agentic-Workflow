@@ -110,15 +110,29 @@ logger = logging.getLogger(__name__)
 # SSOT Integration with fast-fail pruning
 def get_python_files_fast(root: Path) -> list[Path]:
     """
-    Optimized repository scanner that prunes heavy/irrelevant directories
-    before they enter the pipeline.
+    Scoped repository scanner for territories with enforced structure.
+
+    Scans only sovereign territories with SSOT-defined structure requirements.
+    Excludes volatile/output directories (logs, archives) and gitignored paths.
     """
     from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
+        ENFORCED_TERRITORIES,
+        VOLATILE_TERRITORIES,
+    )
 
     # Domain-specific exclude directories for safety scanning
-    exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env", ".healing_backups"]
+    # Combine volatile territories with gitignored/build artifacts
+    exclude_dirs = [".git", "__pycache__", "node_modules", "venv", ".env", ".healing_backups"]
+    exclude_dirs.extend(VOLATILE_TERRITORIES)
 
-    return list(canonical_get_python_files(root, exclude_dirs=exclude_dirs))
+    all_files = []
+    for territory in sorted(ENFORCED_TERRITORIES):
+        territory_path = root / territory
+        if territory_path.exists():
+            all_files.extend(canonical_get_python_files(territory_path, exclude_dirs=exclude_dirs))
+
+    return all_files
 
 
 # FileType is now imported from agentic_core.L5_safety.core_kernel.classification_kernel (SSOT)

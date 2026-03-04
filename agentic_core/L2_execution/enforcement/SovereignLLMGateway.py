@@ -48,7 +48,50 @@ Logger = logging.getLogger(__name__)
 Provider = Literal["openai", "anthropic", "google"]
 
 
-@dataclass
+@dataclass(frozen=True, slots=True)
+class ProviderHealthState:
+    """Health state for LLM providers with degraded mode support.
+
+    Attributes:
+        provider: The provider name.
+        is_healthy: Whether the provider is healthy.
+        error_rate: Recent error rate (0.0 to 1.0).
+        last_check: Unix timestamp of last health check.
+        degraded_until: Unix timestamp until which provider is in degraded mode.
+        consecutive_failures: Number of consecutive failures.
+    """
+
+    provider: Provider
+    is_healthy: bool = True
+    error_rate: float = 0.0
+    last_check: int = 0
+    degraded_until: int = 0
+    consecutive_failures: int = 0
+
+    def is_degraded(self, current_time: int) -> bool:
+        """Check if provider is in degraded mode.
+
+        Args:
+            current_time: Current Unix timestamp.
+
+        Returns:
+            True if provider is in degraded mode.
+        """
+        return current_time < self.degraded_until
+
+    def should_degrade(self, error_threshold: float = 0.5, failure_threshold: int = 5) -> bool:
+        """Check if provider should be degraded.
+
+        Args:
+            error_threshold: Error rate threshold for degradation.
+            failure_threshold: Consecutive failures threshold.
+
+        Returns:
+            True if provider should be degraded.
+        """
+        return self.error_rate >= error_threshold or self.consecutive_failures >= failure_threshold
+
+
 @dataclass
 class SovereigntyViolation(Exception):
     """Raised when an agent violates its execution policy."""
@@ -100,6 +143,14 @@ class SovereignLLMGateway:
         self._openai_client: Any = None
         self._anthropic_client: Any = None
         self._google_client: Any = None
+
+        # Provider health monitoring
+        self._provider_health: dict[Provider, ProviderHealthState] = {
+            "openai": ProviderHealthState(provider="openai"),
+            "anthropic": ProviderHealthState(provider="anthropic"),
+            "google": ProviderHealthState(provider="google"),
+        }
+        self._degraded_mode_duration = 300  # 5 minutes in seconds
 
     @classmethod
     def reset_instance(cls):
@@ -176,6 +227,97 @@ class SovereignLLMGateway:
                 Logger.warning(f"Google client init failed: {e}")
                 raise
         return self._google_client
+
+    def _update_provider_health(self, provider: Provider, success: bool) -> None:
+        """Update provider health state based on operation result.
+
+        Args:
+            provider: The provider that was used.
+            success: Whether the operation was successful.
+        """
+        current_time = int(time.time())
+        health = self._provider_health[provider]
+
+        # Create new health state with updated values
+        if success:
+            # Reset consecutive failures on success
+            new_health = ProviderHealthState(
+                provider=provider,
+                is_healthy=True,
+                error_rate=max(0.0, health.error_rate - 0.1),  # Decay error rate
+                last_check=current_time,
+                degraded_until=health.degraded_until,
+                consecutive_failures=0,
+            )
+        else:
+            # Increase error metrics on failure
+            new_error_rate = min(1.0, health.error_rate + 0.2)
+            new_consecutive_failures = health.consecutive_failures + 1
+
+            # Check if should enter degraded mode
+            if health.should_degrade():
+                new_health = ProviderHealthState(
+                    provider=provider,
+                    is_healthy=False,
+                    error_rate=new_error_rate,
+                    last_check=current_time,
+                    degraded_until=current_time + self._degraded_mode_duration,
+                    consecutive_failures=new_consecutive_failures,
+                )
+                Logger.warning(f"Provider {provider} entered degraded mode for {self._degraded_mode_duration}s")
+            else:
+                new_health = ProviderHealthState(
+                    provider=provider,
+                    is_healthy=health.is_healthy,
+                    error_rate=new_error_rate,
+                    last_check=current_time,
+                    degraded_until=health.degraded_until,
+                    consecutive_failures=new_consecutive_failures,
+                )
+
+        self._provider_health[provider] = new_health
+
+    def _is_provider_available(self, provider: Provider) -> bool:
+        """Check if provider is available (not in degraded mode).
+
+        Args:
+            provider: The provider to check.
+
+        Returns:
+            True if provider is available.
+        """
+        current_time = int(time.time())
+        health = self._provider_health[provider]
+
+        # If provider is in degraded mode, check if the window has expired
+        if not health.is_healthy and health.degraded_until > 0:
+            if current_time >= health.degraded_until:
+                # Degraded period expired — reset to healthy
+                self._provider_health[provider] = ProviderHealthState(
+                    provider=provider,
+                    is_healthy=True,
+                    error_rate=0.0,
+                    last_check=current_time,
+                    degraded_until=0,
+                    consecutive_failures=0,
+                )
+                Logger.info(f"Provider {provider} exited degraded mode")
+                return True
+            # Still within degraded window — unavailable
+            return False
+
+        return health.is_healthy
+
+    def get_provider_health(self, provider: Provider) -> ProviderHealthState:
+        """Get the current health state of a provider.
+
+        Args:
+            provider: The provider to query.
+
+        Returns:
+            The provider's health state.
+        """
+        return self._provider_health[provider]
 
     async def generate(
         self,
@@ -265,6 +407,11 @@ class SovereignLLMGateway:
 
         last_error = None
         for current_provider in providers_to_try:
+            # Check if provider is available (not in degraded mode)
+            if not self._is_provider_available(current_provider):
+                Logger.warning(f"[LLM Gateway] Provider {current_provider} is in degraded mode, skipping")
+                continue
+
             start = time.time()
             try:
                 current_model = model
@@ -283,6 +430,9 @@ class SovereignLLMGateway:
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(current_model), True, latency, result.get("tokens", 0))
 
+                # Update provider health on success
+                self._update_provider_health(current_provider, True)
+
                 if current_provider != request.provider:
                     self.operation_stats["fallbacks"] += 1
                     Logger.info(f"[LLM Gateway] Fallback to {current_provider} succeeded")
@@ -300,6 +450,10 @@ class SovereignLLMGateway:
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)
                 last_error = e
+
+                # Update provider health on failure
+                self._update_provider_health(current_provider, False)
+
                 Logger.warning(f"[LLM Gateway] {current_provider} failed: {e}")
                 continue
 

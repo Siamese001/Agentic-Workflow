@@ -60,13 +60,16 @@ _DEFAULT_FAILURE_PRIOR = 0.40
 
 # ---------------------------------------------------------------------------
 # Weights for scoring components (sum to 1.0 for interpretability)
+# NOTE: These are informational constants only. The authoritative values
+# are the local variables inside compute_heal_confidence.
 # ---------------------------------------------------------------------------
 
-WEIGHT_FAILURE_PRIOR = 0.30
-WEIGHT_BLAST_RADIUS = 0.25
-WEIGHT_HISTORICAL_SUCCESS = 0.20
+WEIGHT_FAILURE_PRIOR = 0.25
+WEIGHT_BLAST_RADIUS = 0.20
+WEIGHT_HISTORICAL_SUCCESS = 0.15
 WEIGHT_TOOL_READINESS = 0.15
 WEIGHT_RETRY_DECAY = 0.10  # guardian: allow-magic-config
+WEIGHT_FAILURE_ENTROPY = 0.15  # HMD Item 3: entropy classification weight
 
 # ---------------------------------------------------------------------------
 # Versioned historical data surface - compile-time frozen
@@ -119,9 +122,7 @@ def get_historical_success_rate(
     if error_signature in _HISTORICAL_OVERRIDES:
         return _HISTORICAL_OVERRIDES[error_signature]
     if meta_prior_provider is not None:
-        live_prior = meta_prior_provider.get_prior(error_signature)
-        if live_prior != _NEUTRAL_PRIOR:
-            return live_prior
+        return meta_prior_provider.get_prior(error_signature)
     # Fall back to compile-time frozen data
     failure_type = error_signature.split(":")[0] if ":" in error_signature else error_signature
     return HISTORICAL_SUCCESS_RATES.get(failure_type, _NEUTRAL_PRIOR)
@@ -162,12 +163,13 @@ def compute_heal_confidence(
     Returns:
         Tuple of (confidence score in [0.0, 1.0], reason_codes tuple)
     """
-    # Fixed weights - no config loading
-    WEIGHT_FAILURE_PRIOR = 0.30
-    WEIGHT_BLAST_RADIUS = 0.25
-    WEIGHT_HISTORICAL_SUCCESS = 0.20
+    # Fixed weights - no config loading (adjusted to include entropy)
+    WEIGHT_FAILURE_PRIOR = 0.25
+    WEIGHT_BLAST_RADIUS = 0.20
+    WEIGHT_HISTORICAL_SUCCESS = 0.15
     WEIGHT_TOOL_READINESS = 0.15
     WEIGHT_RETRY_DECAY = 0.10  # guardian: allow-magic-config
+    WEIGHT_FAILURE_ENTROPY = 0.15
 
     # Failure class prior - compile-time frozen
     failure_prior = FAILURE_CLASS_PRIORS.get(healing_input.failure_type, _DEFAULT_FAILURE_PRIOR)
@@ -188,6 +190,11 @@ def compute_heal_confidence(
     # Retry decay - deterministic calculation
     retry_decay = max(0.0, 1.0 - (healing_input.retry_count * 0.1)) * WEIGHT_RETRY_DECAY
 
+    # Failure entropy class contribution - higher entropy lowers confidence
+    entropy_weights = {"LOW": 1.0, "MEDIUM": 0.7, "HIGH": 0.3}
+    entropy_weight = entropy_weights.get(healing_input.failure_entropy_class, 0.7)
+    failure_entropy = entropy_weight * WEIGHT_FAILURE_ENTROPY
+
     # Fixed precision arithmetic — weights sum to 1.0
     raw_confidence = (
         failure_prior * WEIGHT_FAILURE_PRIOR
@@ -195,6 +202,7 @@ def compute_heal_confidence(
         + historical_success
         + tool_readiness
         + retry_decay
+        + failure_entropy
     )
 
     # Fixed precision for mathematical determinism
@@ -206,6 +214,7 @@ def compute_heal_confidence(
         f"historical_success_rate={hist_rate:.4f}:weight={WEIGHT_HISTORICAL_SUCCESS}",
         f"tool_readiness={tool_readiness:.4f}:weight={WEIGHT_TOOL_READINESS}",
         f"retry_decay={retry_decay:.4f}:weight={WEIGHT_RETRY_DECAY}",
+        f"failure_entropy={failure_entropy:.4f}:weight={WEIGHT_FAILURE_ENTROPY}:class={healing_input.failure_entropy_class}",
         f"heal_confidence={score:.6f}",
     )
 
@@ -243,14 +252,17 @@ def route_healing_tier(
 
     # Frozen profile lookup — only when agent_id is known
     if healing_input.agent_id:
-        profile = get_execution_profile(healing_input.agent_id)
-        # DETERMINISTIC agents bypass the TIERING_ALLOWLIST and go straight to LOCAL_AGENT
-        if not profile.is_llm_allowed():
-            return HealingDecision(
-                heal_confidence=1.0,
-                tier=HealingTier.LOCAL_AGENT,
-                reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
-            )
+        try:
+            profile = get_execution_profile(healing_input.agent_id)
+            # DETERMINISTIC agents bypass the TIERING_ALLOWLIST and go straight to LOCAL_AGENT
+            if not profile.is_llm_allowed():
+                return HealingDecision(
+                    heal_confidence=1.0,
+                    tier=HealingTier.LOCAL_AGENT,
+                    reason_codes=("agent_execution_mode=DETERMINISTIC:FORCED_LOCAL_AGENT",),
+                )
+        except KeyError:
+            logger.debug("Agent '%s' not in registry — proceeding with tiering", healing_input.agent_id)
 
     # Structural NO_TIERING guard - skip when agent_id not provided (test/anonymous callers)
     # Only applies to LLM agents that passed the DETERMINISTIC check above

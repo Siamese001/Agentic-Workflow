@@ -179,26 +179,30 @@ class SystemArchitectAgent(SovereignBaseAgent):
         if not target.exists():
             return {"valid": False, "error": f"Target not found: {target_path}"}
 
-        # [STRICT SCOPE] Optimization: Only scan files relevant to the target
-        # If targeting a core component, we only care about agentic_core dependencies.
-        # We explicitly EXCLUDE apps_* from the graph build to prevent 6000+ file scan.
-        if "agentic_core" in target_path:
-            scan_root = self.project_root / "agentic_core"
-        else:
-            scan_root = target  # Fallback for app-level scans
+        # [EXPANDED SCOPE] Scan all code territories for comprehensive circular dependency detection
+        from agentic_core.L5_safety.config.structure_blueprint_config import CODE_TERRITORIES
+
+        # Build dependency graph across all code territories (not just agentic_core)
+        scan_roots = [self.project_root / territory for territory in sorted(CODE_TERRITORIES)
+                      if (self.project_root / territory).exists()]
+
+        # Create cache key from all scan roots
+        cache_key = tuple(sorted(str(r) for r in scan_roots))
 
         Logger.info(
-            f"SystemArchitect: Building scoped dependency graph for {target_path} (Scan root: {scan_root.name})",
+            f"SystemArchitect: Building dependency graph for {target_path} across {len(scan_roots)} territories",
         )
 
-        # Fix 11: reuse cached graph when scan_root is unchanged
-        if self._cached_scan_root == scan_root and self._cached_module_map is not None:
-            Logger.info(f"SystemArchitect: Reusing cached dependency graph for {scan_root.name}")
+        # Reuse cached graph when scan territories are unchanged
+        if self._cached_scan_root == cache_key and self._cached_module_map is not None:
+            Logger.info(f"SystemArchitect: Reusing cached dependency graph ({len(scan_roots)} territories)")
             module_map = self._cached_module_map
             dependency_graph = self._cached_dependency_graph
         else:
-            # Inline Scoped Graph Building (O(M) where M is files in scope)
-            python_files = list(scan_root.rglob("*.py"))
+            # Collect Python files from all code territories recursively
+            python_files = []
+            for scan_root in scan_roots:
+                python_files.extend(scan_root.rglob("*.py"))
 
             # 1. Map files to module names
             module_map = {}
@@ -229,7 +233,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 except Exception as e:
                     Logger.warning(f"Failed to parse {p}: {e}")
 
-            self._cached_scan_root = scan_root
+            self._cached_scan_root = cache_key
             self._cached_module_map = module_map
             self._cached_dependency_graph = dependency_graph
 

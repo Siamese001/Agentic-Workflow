@@ -39,6 +39,7 @@ class HealingInput:
         violation_metadata_refs: Paths to violation artifacts for context.
         replay_mode: Enable deterministic replay mode (timestamp excluded).
         agent_id: Optional identifier of the agent requesting healing (execution profile enforcement).
+        failure_entropy_class: Entropy classification of the failure (LOW/MEDIUM/HIGH).
     """
 
     failure_type: str
@@ -46,10 +47,11 @@ class HealingInput:
     trace_id: str
     retry_count: int
     blast_radius_estimate: float
-    required_tools: tuple[str, ...]
-    violation_metadata_refs: tuple[str, ...]
+    required_tools: tuple[str, ...] = ()
+    violation_metadata_refs: tuple[str, ...] = ()
     replay_mode: bool = False  # New: enables deterministic replay
     agent_id: str = ""  # Optional: agent identity for execution profile enforcement
+    failure_entropy_class: str = "MEDIUM"  # LOW, MEDIUM, HIGH
 
     def __post_init__(self) -> None:
         if not self.failure_type:

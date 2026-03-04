@@ -16,6 +16,8 @@ class ChangePackage:
         confidence: Confidence level (0.0 to 1.0).
         reason: Tuple of reason strings.
         timestamp_utc: UTC timestamp.
+        authority_sensitivity: Authority sensitivity level (LOW/MEDIUM/HIGH).
+        target_surface: Target surface identifier for mutation containment.
     """
 
     source: str
@@ -25,6 +27,8 @@ class ChangePackage:
     reason: tuple[str, ...]
     timestamp_utc: int
     embedding_context_hash: str | None = None
+    authority_sensitivity: str = "MEDIUM"  # LOW, MEDIUM, HIGH
+    target_surface: str | None = None
 
     @property
     def reasons(self) -> tuple[str, ...]:
@@ -44,6 +48,8 @@ class ChangePackage:
                 "reason": list(self.reason),
                 "timestamp_utc": self.timestamp_utc,
                 "embedding_context_hash": self.embedding_context_hash,
+                "authority_sensitivity": self.authority_sensitivity,
+                "target_surface": self.target_surface,
             },
             separators=(",", ":"),
             sort_keys=True,

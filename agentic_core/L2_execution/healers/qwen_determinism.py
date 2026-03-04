@@ -42,9 +42,12 @@ def canonicalize_qwen_output(output: str) -> str:
     normalized = unicodedata.normalize("NFC", output)
     # 2. Normalize newlines to "\n"
     normalized = normalized.replace("\r\n", "\n").replace("\r", "\n")
-    # 3. Strip trailing whitespace
+    # 3. Strip leading/trailing whitespace per line, then rejoin
+    lines = [line.strip() for line in normalized.split("\n")]
+    normalized = "\n".join(lines)
+    # 4. Strip trailing whitespace/blank lines from the whole output
     normalized = normalized.rstrip()
-    # 4. Encode UTF-8 and hash
+    # 5. Encode UTF-8 and hash
     encoded = normalized.encode("utf-8")
     return hashlib.sha256(encoded).hexdigest()
 

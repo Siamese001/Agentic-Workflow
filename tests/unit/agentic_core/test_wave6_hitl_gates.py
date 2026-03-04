@@ -14,7 +14,7 @@ from pathlib import Path
 
 import pytest
 
-ROOT = Path(__file__).parent.parent.parent
+ROOT = Path(__file__).parent.parent.parent.parent
 
 LOGGER_PATH = ROOT / "system_learning" / "engines" / "hitl_decision_logger.py"
 LOCATION_HEALER_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "LocationHealerAgent.py"

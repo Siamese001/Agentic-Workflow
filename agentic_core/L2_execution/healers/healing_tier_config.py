@@ -64,11 +64,11 @@ class HealingTierConfig:
             similarity instead of Jaccard for semantic scoring.
     """
 
-    heal_confidence_x: float
-    heal_confidence_y: float
-    max_heal_retries: int
-    model_qwen_vllm_id: str
-    model_gemini_2_5_pro_id: str
+    heal_confidence_x: float = HEALING_CONFIDENCE_X
+    heal_confidence_y: float = HEALING_CONFIDENCE_Y
+    max_heal_retries: int = 3
+    model_qwen_vllm_id: str = "Qwen/Qwen2.5-7B-Instruct"
+    model_gemini_2_5_pro_id: str = "gemini-2.5-pro"
     model_qwen_14b_vllm_id: str = QWEN_14B_MODEL_ID
     enable_bmg_embeddings: bool = False
 

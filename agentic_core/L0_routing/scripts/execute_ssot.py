@@ -969,15 +969,23 @@ def _record_healing_action(
 class HealContext:
     """Immutable healing configuration passed uniformly to every phase function.
 
-    Replaces the scattered (dry_run, auto_approve, enable_llm, enable_cda)
-    positional argument pattern. Constructed once in _legacy_main; all phase
-    functions receive ctx: HealContext instead of individual flags.
+    Single control surface: --heal drives ALL active-mode flags.
+
+      --heal ON  => heal, auto_approve, enable_llm, enable_telemetry,
+                    enable_meta_learning all True
+      --heal OFF => scan/report only, everything passive
     """
 
-    heal: bool  # True = mutations active; False = scan/report only
-    auto_approve: bool  # True = no interactive prompts
-    enable_llm: bool  # True = LLM arbitration enabled
-    enable_cda: bool  # True = CognitiveDispositionAgent enabled
+    heal: bool               # True = mutations active; False = scan/report only
+    auto_approve: bool       # True = no interactive prompts (always True when heal=True)
+    enable_telemetry: bool   # Active telemetry collection (always tied to heal)
+    enable_meta_learning: bool  # Meta-learning pipeline runs (always tied to heal)
+    # CDA (CognitiveDispositionAgent) is always active — no toggle
+
+    @property
+    def enable_llm(self) -> bool:
+        """LLM arbitration is always active when healing — not a separate flag."""
+        return self.heal
 
     @property
     def dry_run(self) -> bool:
@@ -986,13 +994,47 @@ class HealContext:
 
     @classmethod
     def from_args(cls, args: argparse.Namespace) -> "HealContext":
-        """Construct from parsed CLI args. Single construction point."""
-        heal = getattr(args, "heal", False) and not getattr(args, "dry_run", False)
+        """Construct from parsed CLI args. Single construction point.
+
+        Canonical flag semantics (--heal is the ONLY active-mode switch):
+          --heal ON  => heal, auto_approve, enable_llm, enable_telemetry,
+                        enable_meta_learning all True
+          --heal OFF => all passive/scan-only
+
+        Deprecated flags (kept for backward-compat, emit warnings):
+          --dry-run        => same as omitting --heal
+          --manual         => always autonomous now
+          --interactive    => auto_approve is always True under --heal
+          --apply-proposals => meta-learning always on under --heal
+        """
+        import warnings
+        if getattr(args, "dry_run", False):
+            warnings.warn(
+                "--dry-run is deprecated. Omit --heal for scan-only mode.",
+                DeprecationWarning, stacklevel=2,
+            )
+        if getattr(args, "manual", False):
+            warnings.warn(
+                "--manual is deprecated. Autonomous mode is always active.",
+                DeprecationWarning, stacklevel=2,
+            )
+        if getattr(args, "interactive", False):
+            warnings.warn(
+                "--interactive is deprecated. Auto-approve is always on under --heal.",
+                DeprecationWarning, stacklevel=2,
+            )
+        if getattr(args, "apply_proposals", False):
+            warnings.warn(
+                "--apply-proposals is deprecated. Meta-learning is always on under --heal.",
+                DeprecationWarning, stacklevel=2,
+            )
+        # --heal is the single source of truth for ALL active-mode flags
+        heal = getattr(args, "heal", False)
         return cls(
             heal=heal,
-            auto_approve=not getattr(args, "interactive", False),
-            enable_llm=heal,
-            enable_cda=not getattr(args, "no_cda", False),
+            auto_approve=heal,
+            enable_telemetry=heal,
+            enable_meta_learning=heal,
         )
 
 
@@ -1334,6 +1376,34 @@ class AutonomousDecisionEngine:
 
         tier = routing.tier
 
+        # ── Qwen14B / confidence-band routing override ──────────────────────────
+        # DETERMINISTIC is only correct for high confidence (>= CONF_X = 0.75).
+        # Medium confidence: designated Qwen14B agents → QWEN; others → GEMINI.
+        # Low confidence (< CONF_Y = 0.40): always GEMINI (recovery path).
+        _CONF_X = 0.75
+        _CONF_Y = 0.40
+        _tier_overridden = False
+        if confidence.value < _CONF_Y and tier not in (RoutingTier.FAIL_CLOSED,):
+            tier = RoutingTier.GEMINI
+            _tier_overridden = True
+        elif confidence.value < _CONF_X and tier == RoutingTier.DETERMINISTIC:
+            try:
+                from agentic_core.L2_execution.healers.healing_tier_config import (
+                    QWEN_14B_AGENT_KEYS as _q14b_keys,
+                )
+            except ImportError:  # guardian: allow-silent-swallower
+                _q14b_keys = frozenset()
+            if agent_name in _q14b_keys:
+                tier = RoutingTier.QWEN
+            else:
+                tier = RoutingTier.GEMINI
+            _tier_overridden = True
+        if _tier_overridden:
+            if tier == RoutingTier.QWEN:
+                decision_data["model"] = os.getenv("QWEN_14B_MODEL", "Qwen2.5-14B-Instruct-AWQ")
+            elif tier == RoutingTier.GEMINI:
+                decision_data["model"] = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+
         if tier == RoutingTier.FAIL_CLOSED:
             reason = f"FAIL-CLOSED ({routing.gate_applied}, S={routing.score})"
             decision_data["decision"] = False
@@ -1441,7 +1511,7 @@ class AutonomousDecisionEngine:
                     agent_name,
                     routing.score,
                 )
-                final_reason = f"AGENT-NATIVE ({confidence.value:.2f}, S={routing.score}): Qwen declined, agent logic governs"
+                final_reason = f"QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
 
             self._healing_count += 1
             self._call_path.add(agent_name)
@@ -1453,7 +1523,7 @@ class AutonomousDecisionEngine:
         # tier == RoutingTier.GEMINI
         # High score: most complex reasoning — Gemini 2.5 Pro arbitrates.
         # Gemini is the final gate; once reached, healing always proceeds.
-        target_model = routing.model_id
+        target_model = decision_data.get("model", routing.model_id)
         logger.info(
             "[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration",
             target_model,
@@ -1463,8 +1533,11 @@ class AutonomousDecisionEngine:
         )
         self._healing_count += 1
         self._call_path.add(agent_name)
+        _gemini_label = "RECOVERY-PRO" if confidence.value < 0.40 else (
+            "FLASH" if "flash" in target_model.lower() else "GEMINI"
+        )
         reason = (
-            f"LLM-ARBITRATED-GEMINI ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
+            f"LLM-ARBITRATED-{_gemini_label} ({confidence.value:.2f}, S={routing.score}, gate={routing.gate_applied})"
         )
         decision_data["decision"] = True
         decision_data["reason"] = reason
@@ -2524,7 +2597,7 @@ def execute_phase1_discovery_impl(
         logger.warning(f"Territory path does not exist: {territory_path}")
 
     # Enhanced confidence calculation with cognitive analysis
-    if hasattr(decision_engine, "enable_cda") and decision_engine.enable_cda and violations:
+    if violations:
         logger.info("🧠 Using CognitiveDispositionAgent for enhanced violation analysis...")
 
         # Create event loop for async cognitive analysis
@@ -2842,8 +2915,21 @@ def execute_phase3_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
     state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Safety")
     arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
+
+    # [EXPANDED SCOPE] Audit all ENFORCED_TERRITORIES for comprehensive validation
+    from agentic_core.L5_safety.config.structure_blueprint_config import ENFORCED_TERRITORIES
+
+    # If territory is in ENFORCED_TERRITORIES, audit all of them (not just current)
+    # This ensures comprehensive architectural validation across all territories
+    if territory in ENFORCED_TERRITORIES or territory == "agentic_core":
+        target_territories = sorted(ENFORCED_TERRITORIES)
+        logger.info(f"ArchitectureGovernorAgent: Auditing all {len(target_territories)} enforced territories")
+    else:
+        # For layer-specific scans (L0_routing, L1_cognition, etc.), audit just that layer
+        target_territories = [territory]
+
     gov_report = arch_gov.comprehensive_territory_audit(
-        target_territories=[territory],
+        target_territories=target_territories,
         check_layer_boundaries=True,
         check_naming_conventions=True,
     )
@@ -3757,6 +3843,185 @@ def _emit_pipeline_digest(
     )
 
 
+def _print_healing_heatmap(
+    state_mgr: "SovereignStateMgr",
+    decision_engine: "SovereignDecisionEngine",
+) -> None:
+    """Print a per-agent healing count heatmap at end of every run."""
+    from collections import defaultdict
+
+    TIER_COLS = ("DETERMINISTIC", "QWEN_VLLM", "GEMINI_2_5_PRO")
+    TIER_ALIASES: dict[str, str] = {
+        "DETERMINISTIC": "DETERMINISTIC",
+        "SOVEREIGN-AUTO": "DETERMINISTIC",
+        "QWEN": "QWEN_VLLM",
+        "QWEN_VLLM": "QWEN_VLLM",
+        "GEMINI": "GEMINI_2_5_PRO",
+        "GEMINI_2_5_PRO": "GEMINI_2_5_PRO",
+    }
+
+    counts: dict[str, dict[str, int]] = defaultdict(lambda: defaultdict(int))
+
+    healing_actions = state_mgr.state.get("healing_actions", [])
+    for action in healing_actions:
+        agent = action.get("agent", "unknown")
+        tier = TIER_ALIASES.get(action.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        counts[agent][tier] += 1
+
+    seen_pairs = {
+        (a.get("agent"), TIER_ALIASES.get(a.get("routing_tier", ""), "DETERMINISTIC"))
+        for a in healing_actions
+    }
+    for d in getattr(decision_engine, "decisions_made", []):
+        if not d.get("decision"):
+            continue
+        agent = d.get("agent", "unknown")
+        tier = TIER_ALIASES.get(d.get("routing_tier", "DETERMINISTIC"), "DETERMINISTIC")
+        if (agent, tier) not in seen_pairs:
+            counts[agent][tier] += 1
+
+    def _bar(n: int) -> str:
+        if n == 0:
+            return ".."
+        if n == 1:
+            return "o "
+        if n <= 3:
+            return ">>"
+        return "##"
+
+    AGEN_W = 34
+    COL_W = 15
+    sep = "-" * (AGEN_W + 3 * (COL_W + 3) + 8)
+    header = (
+        f"{'Agent':<{AGEN_W}} | "
+        f"{'DETERMINISTIC':^{COL_W}} | "
+        f"{'QWEN_VLLM':^{COL_W}} | "
+        f"{'GEMINI_2_5_PRO':^{COL_W}} | TOTAL"
+    )
+
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info("HEALING HEATMAP")
+    logger.info(sep)
+    logger.info(header)
+    logger.info(sep)
+
+    col_totals: dict[str, int] = defaultdict(int)
+    if counts:
+        for agent in sorted(counts):
+            row_vals = {t: counts[agent].get(t, 0) for t in TIER_COLS}
+            total = sum(row_vals.values())
+            for t in TIER_COLS:
+                col_totals[t] += row_vals[t]
+            logger.info(
+                f"{agent:<{AGEN_W}} | "
+                f"{(_bar(row_vals['DETERMINISTIC']) + ' ' + str(row_vals['DETERMINISTIC'])):^{COL_W}} | "
+                f"{(_bar(row_vals['QWEN_VLLM']) + ' ' + str(row_vals['QWEN_VLLM'])):^{COL_W}} | "
+                f"{(_bar(row_vals['GEMINI_2_5_PRO']) + ' ' + str(row_vals['GEMINI_2_5_PRO'])):^{COL_W}} | "
+                f"{total}"
+            )
+    else:
+        logger.info(f"{'(no healing events this run)':<{AGEN_W}}")
+
+    logger.info(sep)
+    grand = sum(col_totals.values())
+    logger.info(
+        f"{'TOTAL':<{AGEN_W}} | "
+        f"{str(col_totals['DETERMINISTIC']):^{COL_W}} | "
+        f"{str(col_totals['QWEN_VLLM']):^{COL_W}} | "
+        f"{str(col_totals['GEMINI_2_5_PRO']):^{COL_W}} | "
+        f"{grand}"
+    )
+    logger.info(sep)
+
+
+def _print_meta_learning_summary(
+    state_mgr: "SovereignStateMgr",
+    decision_engine: "SovereignDecisionEngine",
+) -> None:
+    """Print meta-learning bus additions summary — what this run teaches the next run."""
+    from collections import Counter
+
+    ml = state_mgr.state.get("meta_learning", {})
+    healing_actions = state_mgr.state.get("healing_actions", [])
+    decisions = getattr(decision_engine, "decisions_made", [])
+
+    successful = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SUCCESS"]
+    failed = [
+        a for a in healing_actions
+        if str(a.get("outcome", "")).upper() in ("FAIL", "FAILED", "ERROR")
+    ]
+    plan_only = [
+        a for a in healing_actions
+        if "plan" in str(a.get("outcome", "")).lower()
+    ]
+
+    tier_counts: Counter = Counter()
+    for d in decisions:
+        if d.get("decision"):
+            tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
+
+    conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
+    failure_agents: Counter = Counter(a.get("agent", "unknown") for a in failed)
+    recent_exp = ml.get("recent_experiences", [])
+    total_exp = ml.get("total_experiences", 0)
+    weights = ml.get("strategy_weights", {})
+
+    logger.info("")
+    logger.info("=" * 60)
+    logger.info("META-LEARNING BUS — ADDITIONS THIS RUN")
+    logger.info("(what the system will remember for the next run)")
+    logger.info("=" * 60)
+    logger.info(f"  Healing records ingested : {total_exp}")
+    logger.info(
+        f"  Healing outcomes         : {len(successful)} success  "
+        f"{len(failed)} fail  {len(plan_only)} plan-only"
+    )
+
+    if successful:
+        succ_agents: Counter = Counter(a.get("agent", "?") for a in successful)
+        top = ", ".join(f"{ag}({ct})" for ag, ct in succ_agents.most_common(5))
+        logger.info(f"  Patterns stored (recall) : {top}")
+    else:
+        logger.info("  Patterns stored (recall) : (none this run)")
+
+    if failure_agents:
+        fail_str = ", ".join(f"{ag}({ct})" for ag, ct in failure_agents.most_common(5))
+        logger.info(f"  failure_prior++ agents   : {fail_str}")
+    else:
+        logger.info("  failure_prior++ agents   : (none — no failures recorded)")
+
+    if conf_vals:
+        c_min = min(conf_vals)
+        c_avg = sum(conf_vals) / len(conf_vals)
+        c_max = max(conf_vals)
+        n_local = sum(1 for c in conf_vals if c >= 0.75)
+        n_qwen  = sum(1 for c in conf_vals if 0.40 <= c < 0.75)
+        n_gemini = sum(1 for c in conf_vals if c < 0.40)
+        logger.info(f"  Confidence range         : min={c_min:.3f}  avg={c_avg:.3f}  max={c_max:.3f}")
+        logger.info(
+            f"  Band distribution        : >=0.75 LOCAL={n_local}  "
+            f"0.40-0.74 QWEN={n_qwen}  <0.40 GEMINI={n_gemini}"
+        )
+    else:
+        logger.info("  Confidence range         : (no decision data)")
+
+    if tier_counts:
+        tier_str = "  ".join(f"{t}={c}" for t, c in tier_counts.most_common())
+        logger.info(f"  Tier routing this run    : {tier_str}")
+
+    if weights:
+        w_str = "  ".join(f"{k}={v:.2f}" for k, v in sorted(weights.items()))
+        logger.info(f"  Strategy weights         : {w_str}")
+
+    if recent_exp:
+        logger.info("  Recent experience bus    :")
+        for exp in recent_exp[:3]:
+            logger.info(f"    -> {exp}")
+
+    logger.info("=" * 60)
+
+
 def run_pipeline(
     adapters: "dict[str, object]",
     territory: str,
@@ -3793,9 +4058,10 @@ def run_pipeline(
             pass
 
         scan_ctx = _ScanCtx()
-        for _attr in ("heal", "enable_llm", "auto_approve", "enable_cda"):
+        for _attr in ("heal", "enable_llm", "auto_approve", "enable_telemetry", "enable_meta_learning"):
             setattr(scan_ctx, _attr, getattr(ctx, _attr, False))
         scan_ctx.heal = False
+        scan_ctx.enable_llm = False  # scan subphases never invoke LLM
 
     results: dict[str, AgentRunResult] = {}
 
@@ -4292,11 +4558,7 @@ Examples:
     parser.add_argument("--domains", action="store_true", help="Scan all major domains (Multi-Domain Mode)")
     parser.add_argument("--agent", type=str, help="Run specific agent directly")
     parser.add_argument("--list-agents", action="store_true", help="List discoverable agents")
-    parser.add_argument(
-        "--no-cda",
-        action="store_true",
-        help="Disable CognitiveDispositionAgent (enabled by default)",
-    )
+    # CDA is always active — no --no-cda flag
     parser.add_argument(
         "--heal",
         action="store_true",
@@ -4304,14 +4566,16 @@ Examples:
         help="Enable active healing (mutations applied). Absence = scan/report only.",
     )
     parser.add_argument(
-        "--dry-run", action="store_true", help="Scan/report only — no mutations (alias for omitting --heal)"
+        "--dry-run",
+        action="store_true",
+        help="[DEPRECATED] Scan/report only — redundant, simply omit --heal for scan mode.",
     )
     parser.add_argument(
         "--interactive",
         action="store_true",
-        help="Enable human-in-the-loop prompts (Default: Auto-Approve)",
+        help="[DEPRECATED] Auto-approve is always active under --heal.",
     )
-    parser.add_argument("--manual", action="store_true", help="Disable autonomous mode (legacy)")
+    parser.add_argument("--manual", action="store_true", help="[DEPRECATED] Autonomous mode is always active.")
     parser.add_argument(
         "--validate",
         action="store_true",
@@ -4353,7 +4617,7 @@ Examples:
         "--apply-proposals",
         action="store_true",
         default=False,
-        help="Apply approved meta-learning proposals (default: proposal_only mode).",
+        help="[DEPRECATED] Meta-learning proposals are always applied under --heal.",
     )
     args = parser.parse_args(extra_argv)
 
@@ -4492,11 +4756,11 @@ Examples:
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
 
-    # [META-LEARNING] Store apply_proposals flag so _fire_meta_learning_intake can read it
-    state_mgr.state["apply_proposals"] = getattr(args, "apply_proposals", False)
-
     # [HEAL CONTEXT] Single source of truth for all healing flags
     ctx = HealContext.from_args(args)
+
+    # [META-LEARNING] Tied to --heal: proposals always applied when healing is active
+    state_mgr.state["apply_proposals"] = ctx.heal
 
     # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
     if ctx.auto_approve:
@@ -4509,16 +4773,12 @@ Examples:
     decision_engine = SovereignDecisionEngine(
         enable_llm=ctx.enable_llm,
         state_mgr=state_mgr,
-        enable_cda=ctx.enable_cda,
+        enable_cda=True,
         execution_context=_exec_ctx,
     )
 
     logger.info("UNIFIED SOVEREIGN PROTOCOL STARTED")
-    logger.info(f"  Mode: {'AUTONOMOUS' if not args.manual else 'MANUAL'}")
-    logger.info(f"  LLM: {'ENABLED' if ctx.enable_llm else 'DISABLED'}")
-    logger.info(f"  CDA: {'ENABLED' if ctx.enable_cda else 'DISABLED'}")
-    logger.info(f"  HEALING: {'ACTIVE (--heal)' if ctx.heal else 'SCAN-ONLY (no --heal)'}")
-    logger.info(f"  APPROVAL: {'AUTO' if ctx.auto_approve else 'INTERACTIVE'}")
+    logger.info(f"  Mode: {'HEAL-ACTIVE (LLM + telemetry + meta-learning + auto-approve ON)' if ctx.heal else 'SCAN-ONLY (passive)'}")
 
     # [HARDENED] Mandatory Hard Imports for Total Awareness (via subprocess)
     try:
@@ -4602,7 +4862,7 @@ Examples:
                     print(f"[PROTECTED-ROOT] forcing scan-only (no mutations) for {domain}")
                     from dataclasses import replace as _dc_replace
 
-                    ctx = _dc_replace(ctx, heal=False, enable_llm=False)
+                    ctx = _dc_replace(ctx, heal=False, enable_telemetry=False, enable_meta_learning=False)
                     break
 
     # 5. Execute Mission
@@ -4752,10 +5012,9 @@ Examples:
 
                 effective_ctx = ctx
 
-                # [FIX-B12] Enforce scan-only for non-AC territories in multi-domain sweep
-                if territory in _NON_AC_TERRITORIES:
-                    effective_ctx = _dc_replace(effective_ctx, heal=False)
-                    logger.info(f"[SCAN-ONLY] Territory '{territory}' is outside agentic_core — mutations disabled")
+                # [EXPANDED SCOPE] All territories respect --heal flag uniformly
+                # FIX-B12 removed: non-AC territories no longer force heal=False
+                # when --heal is explicitly passed. Healing is now territory-agnostic.
 
                 # [FIX] Reset per-territory decision engine state so cycle detection
                 # does not bleed across territories (agent_name="Unknown" accumulates).
@@ -5036,6 +5295,9 @@ Examples:
             med_conf = sum(1 for d in decision_engine.decisions_made if 0.5 <= d["confidence"] <= 0.75)
             low_conf = sum(1 for d in decision_engine.decisions_made if d["confidence"] < 0.5)
             logger.info(f"  High confidence: {high_conf}, Medium: {med_conf}, Low: {low_conf}")
+
+            _print_healing_heatmap(state_mgr, decision_engine)
+            _print_meta_learning_summary(state_mgr, decision_engine)
 
             return results
 

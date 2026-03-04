@@ -80,6 +80,51 @@ STANDARD_LAYER_STRUCTURE: Final[list[str]] = [
     "utils",
 ]
 
+# ============================================================================
+# TERRITORY SCANNING SCOPE (SSOT for agent folder coverage)
+# ============================================================================
+
+# Territories with enforced SSOT structure requirements
+# Used by: FilesystemSSOTReconcilerAgent, FileClassificationAgent, HierarchyAgent, ArchitectureGovernorAgent
+ENFORCED_TERRITORIES: Final[frozenset[str]] = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "tests",
+        "ops_scripts",
+        "system_learning",
+        "tools",
+        "data",
+        "docs",
+    },
+)
+
+# Subset of enforced territories that contain Python code (excludes data/, docs/)
+# Used by: SystemArchitectAgent (circular dependency detection)
+CODE_TERRITORIES: Final[frozenset[str]] = frozenset(
+    {
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "tests",
+        "ops_scripts",
+        "system_learning",
+        "tools",
+    },
+)
+
+# Volatile/output territories excluded from structure enforcement
+# Used by: All scanning agents (exclusion list)
+VOLATILE_TERRITORIES: Final[frozenset[str]] = frozenset(
+    {
+        "logs",
+        "archives",
+    },
+)
+
 
 def is_layer_root(name: str) -> bool:
     """Return True if *name* is a canonical L0–L6 layer root."""

@@ -34,6 +34,7 @@ from typing import Any
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     ALLOWED_DUPLICATE_FILENAMES,
     CORE_SUBFOLDER_MAP,
+    ENFORCED_TERRITORIES,
     ROOT_PROTECTED_FILES,
     SOVEREIGN_EXCLUDED_FOLDERS,
     SOVEREIGN_TERRITORIES,
@@ -223,22 +224,62 @@ class HierarchyAgent(SovereignBaseAgent):
 
     def create_missing_structure(self, target_territory: str | None = None) -> dict[str, Any]:
         """
-        Create missing L2 (Layer) and L3 (Sub-territory) directories.
+        Create missing directories across all ENFORCED_TERRITORIES.
 
         Detection-First: Always scans and counts violations, only heals if healing_enabled=True.
 
-        [HARDENED] Accepts target_territory to optimize scoped creation.
+        [EXPANDED SCOPE] Now handles all enforced territories (ops_scripts, system_learning, tools, data, docs, etc.)
+        not just agentic_core.
 
-        Hierarchy: Project Root (L0) → agentic_core (L1) → Layer Folders (L2, e.g., L1_cognition)
-                   → Sub-territories (L3, e.g., thought_engine)
+        Args:
+            target_territory: If specified, restricts creation to that territory
 
         Returns:
             Dict with counts of created directories and violations found
         """
         results = {"created": [], "errors": [], "violations_found": 0}
 
-        Logger.info("HierarchyAgent: Enforcing L3 sub-territory subatomic structure per SSOT...")
+        Logger.info("HierarchyAgent: Enforcing directory structure per SSOT across all enforced territories...")
 
+        # Determine which territories to process
+        if target_territory:
+            territories_to_process = [target_territory] if target_territory in ENFORCED_TERRITORIES else ["agentic_core"]
+        else:
+            territories_to_process = sorted(ENFORCED_TERRITORIES)
+
+        for territory_name in territories_to_process:
+            territory_config = SOVEREIGN_TERRITORIES.get(territory_name, {})
+            if not territory_config:
+                continue
+
+            territory_path = self.project_root / territory_name
+
+            # Create root territory if missing
+            if not territory_path.exists():
+                results["violations_found"] += 1
+                Logger.warning(f"   [!] MISSING ROOT TERRITORY: {territory_name}")
+                if self.healing_enabled:
+                    self._create_dir_with_init(territory_path, results, territory_name)
+                continue
+
+            # Handle agentic_core specially (has L2/L3 layer structure)
+            if territory_name == "agentic_core":
+                self._create_agentic_core_structure(territory_path, target_territory, results)
+            else:
+                # Handle other territories (ops_scripts, system_learning, tools, data, docs, etc.)
+                self._create_territory_structure(territory_name, territory_path, territory_config, results)
+
+        if results["violations_found"] > 0:
+            Logger.info(
+                f"HierarchyAgent: [STRUCTURE] Found {results['violations_found']} missing directories",
+            )
+            if self.healing_enabled and results["created"]:
+                Logger.info(f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} directories")
+
+        return results
+
+    def _create_agentic_core_structure(self, territory_path: Path, target_territory: str | None, results: dict) -> None:
+        """Create L2/L3 layer structure for agentic_core."""
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
         approved_layers_l2 = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
 
@@ -287,14 +328,19 @@ class HierarchyAgent(SovereignBaseAgent):
                         f"agentic_core/{layer_l2_name}/{territory_l3_name}",
                     )
 
-        if results["violations_found"] > 0:
-            Logger.info(
-                f"HierarchyAgent: [STRUCTURE] Found {results['violations_found']} missing directories",
-            )
-            if self.healing_enabled and results["created"]:
-                Logger.info(f"HierarchyAgent: [STRUCTURE] Created {len(results['created'])} directories")
+    def _create_territory_structure(self, territory_name: str, territory_path: Path, territory_config: dict, results: dict) -> None:
+        """Create required subfolders for non-agentic_core territories (ops_scripts, system_learning, tools, data, docs, etc.)."""
+        required_subfolders = territory_config.get("required_subfolders", [])
+        if not required_subfolders:
+            return
 
-        return results
+        for subfolder_name in required_subfolders:
+            subfolder_path = territory_path / subfolder_name
+            if not subfolder_path.exists():
+                results["violations_found"] += 1
+                Logger.warning(f"   [!] MISSING REQUIRED SUBFOLDER: {territory_name}/{subfolder_name}")
+                if self.healing_enabled:
+                    self._create_dir_with_init(subfolder_path, results, f"{territory_name}/{subfolder_name}")
 
     def _create_dir_with_init(self, path: Path, results: dict, rel_label: str) -> None:
         """Helper to create directory and touch __init__.py sentinel."""

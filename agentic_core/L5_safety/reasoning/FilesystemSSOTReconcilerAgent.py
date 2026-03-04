@@ -387,7 +387,12 @@ class FilesystemSSOTReconcilerAgent(
                 roots_to_scan = ["agentic_core"]
             Logger.info(f"Filesystem scan restricted to roots: {roots_to_scan}")
         else:
-            roots_to_scan = ["agentic_core", "apps_shared", "apps_rg", "apps_lic", "tests"]
+            # Scan all territories with enforced structure (exclude volatile: logs, archives)
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                ENFORCED_TERRITORIES,
+            )
+
+            roots_to_scan = sorted(ENFORCED_TERRITORIES)
 
         for root in roots_to_scan:
             root_path = self.project_root / root

@@ -492,6 +492,38 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     for ex in _excluded
                 )
             ]
+            # SSOT scope gate: gravity violations only make sense in files that
+            # have a deterministic layer assignment (L0-L6 subdirs within agentic_core)
+            # or in apps_* roots (which can import across agentic_core layer boundaries).
+            # Exclude: agentic_core/base_agents, /runtime, /utils, /mixins, /config,
+            # /interfaces, /agents, /prompt_governance — these shared utilities have
+            # no layer affinity, so extract_layer_from_path returns "unknown" and all
+            # their cross-layer imports produce plan_only noise.
+            import re as _re
+            _LAYER_DIR_PATTERN = _re.compile(r"^L[0-6]_")
+            _APPS_ROOTS: frozenset[str] = frozenset(
+                {"apps_lic", "apps_rg", "apps_shared"}
+            )
+
+            def _in_sovereign_scope(v: object) -> bool:
+                fp = str(
+                    getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else "")
+                ).replace("\\", "/")
+                try:
+                    rel = fp.replace(str(self.project_root).replace("\\", "/") + "/", "", 1)
+                except Exception:
+                    rel = fp
+                parts = [p for p in rel.split("/") if p]
+                if not parts:
+                    return False
+                root = parts[0]
+                if root in _APPS_ROOTS:
+                    return True
+                if root == "agentic_core" and len(parts) > 1:
+                    return bool(_LAYER_DIR_PATTERN.match(parts[1]))
+                return False
+
+            violations = [v for v in violations if _in_sovereign_scope(v)]
         except Exception as e:
             self.logger.error(f"Failed to get violations from StructureEnforcerAgent: {e}")
             return {

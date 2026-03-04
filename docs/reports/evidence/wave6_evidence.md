@@ -936,3 +936,54 @@ HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
 
 HITL_DECISION_2: Agent=SovereignDecisionEngine | File=location
   Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=file_classification
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=observability_probe
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=SovereignDecisionEngine | File=cognitive_disposition
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_7: Agent=SovereignDecisionEngine | File=cognitive_disposition
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_8: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_9: Agent=SovereignDecisionEngine | File=file_classification
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:GEMINI_2_5_PRO | Proposed=GEMINI_2_5_PRO | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=arch_governor
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)

@@ -37,17 +37,16 @@ class MockMetaPriorProvider:
 class MockHealingProviderInvoker:
     """Mock invoker that always succeeds."""
 
-    def invoke_local_agent(self, healing_input, decision, config, agent_name=""):
+    def invoke_local(self, healing_input, decision, config, agent_name=""):
         from agentic_core.L2_execution.healers.healing_tier_dispatcher import InvocationRecord
 
         return InvocationRecord(
             tier=decision.tier,
-            method="invoke_local_agent",
-            start_time=0,
-            end_time=100,
-            success=True,
-            result="Mock success",
-            error=None,
+            method_called="invoke_local",
+            model_id="",
+            agent_name=agent_name,
+            trace_id=healing_input.trace_id,
+            heal_confidence=decision.heal_confidence,
         )
 
 
@@ -67,7 +66,6 @@ def test_dispatch_healing_phase2_integration() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     decision, record = dispatch_healing(
@@ -82,14 +80,13 @@ def test_dispatch_healing_phase2_integration() -> None:
 
     # Should have used meta prior in routing
     assert decision.tier in HealingTier
-    assert any("historical_success=0.90" in code for code in decision.reason_codes)
+    assert any("historical_success_rate=0.9000" in code for code in decision.reason_codes)
 
     # Should have recorded outcome in store
     assert store.get_counts().get("test_sig", 0) == 1
 
     # Should have successful invocation record
     assert record.tier == decision.tier
-    assert record.success is True
 
 
 def test_dispatch_healing_without_phase2_hooks() -> None:
@@ -104,7 +101,6 @@ def test_dispatch_healing_without_phase2_hooks() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     # Should not raise with None hooks
@@ -119,7 +115,7 @@ def test_dispatch_healing_without_phase2_hooks() -> None:
     )
 
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
 
 
 def test_dispatch_healing_null_hooks() -> None:
@@ -134,7 +130,6 @@ def test_dispatch_healing_null_hooks() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     decision, record = dispatch_healing(
@@ -148,7 +143,7 @@ def test_dispatch_healing_null_hooks() -> None:
     )
 
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
 
 
 def test_dispatch_healing_outcome_hook_failure() -> None:
@@ -166,7 +161,6 @@ def test_dispatch_healing_outcome_hook_failure() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     # Should not raise despite hook failure
@@ -180,7 +174,7 @@ def test_dispatch_healing_outcome_hook_failure() -> None:
     )
 
     assert decision.tier in HealingTier
-    assert record.success is True
+    assert record.tier == decision.tier
     failing_hook.on_outcome.assert_called_once()
 
 
@@ -188,7 +182,7 @@ def test_dispatch_healing_invocation_failure_still_calls_hook() -> None:
     """Outcome hook is called even when invocation fails."""
 
     class FailingInvoker:
-        def invoke_local_agent(self, healing_input, decision, config, agent_name=""):
+        def invoke_local(self, healing_input, decision, config, agent_name=""):
             raise Exception("Invocation failed")
 
     store = HealingSuccessRateStore()
@@ -204,7 +198,6 @@ def test_dispatch_healing_invocation_failure_still_calls_hook() -> None:
         required_tools=[],
         retry_count=0,
         trace_id="test-trace",
-        agent_id="test-agent",
     )
 
     # Should raise invocation exception but still call hook

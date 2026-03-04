@@ -1310,6 +1310,8 @@ def run_pipeline(
                             f"Embedding enabled: {embedding_metadata.get('embedding_enabled_at_time', False)}",
                         ),
                         timestamp_utc=threshold_proposal.timestamp_utc,
+                        authority_sensitivity=threshold_proposal.authority_sensitivity if hasattr(threshold_proposal, 'authority_sensitivity') else "MEDIUM",
+                        target_surface=threshold_proposal.target_surface if hasattr(threshold_proposal, 'target_surface') else None,
                     )
 
         # Add to proposals if there are adjustments

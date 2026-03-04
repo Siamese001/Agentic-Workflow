@@ -8,14 +8,14 @@ import ast
 from pathlib import Path
 
 RECONCILER_PATH = (
-    Path(__file__).parent.parent.parent.parent
+    Path(__file__).parent.parent.parent
     / "agentic_core"
     / "L5_safety"
     / "reasoning"
     / "FilesystemSSOTReconcilerAgent.py"
 )
 EXECUTE_SSOT_PATH = (
-    Path(__file__).parent.parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+    Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 )
 
 

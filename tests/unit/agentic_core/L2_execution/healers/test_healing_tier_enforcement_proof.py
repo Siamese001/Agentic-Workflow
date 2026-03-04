@@ -41,7 +41,7 @@ from agentic_core.L2_execution.healers.tiering_allowlist import (
     is_tiering_allowed_by_path,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[4]
+REPO_ROOT = Path(__file__).resolve().parents[5]
 ROUTER_MODULE = "agentic_core.L2_execution.healers.healing_tier_router"
 HEALING_TIER_SYSTEM_FILES = frozenset(
     {
@@ -77,6 +77,7 @@ def _make_input(
     blast_radius: float = 0.0,
     retry_count: int = 0,
     error_sig: str = "sig-001",
+    failure_entropy_class: str = "MEDIUM",
 ) -> HealingInput:
     return HealingInput(
         failure_type=failure_type,
@@ -86,6 +87,7 @@ def _make_input(
         blast_radius_estimate=blast_radius,
         required_tools=(),
         violation_metadata_refs=(),
+        failure_entropy_class=failure_entropy_class,
     )
 
 
@@ -112,8 +114,8 @@ class TestConfidenceBands:
         assert any("QWEN_VLLM" in r for r in decision.reason_codes)
 
     def test_below_y_routes_gemini(self, default_config):
-        # unknown prior=0.30, blast=1.0, retry=2 -> score=0.39 < Y=0.40
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2)
+        # unknown prior=0.30, blast=1.0, retry=2, HIGH entropy -> score=0.395 < Y=0.40
+        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
         decision = route_healing_tier(inp, default_config)
         conf = decision.heal_confidence
         assert conf < default_config.heal_confidence_y, (
