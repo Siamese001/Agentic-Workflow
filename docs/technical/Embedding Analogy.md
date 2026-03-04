@@ -1,5 +1,3 @@
-HOSPITAL SYSTEM (ANALOGY)                        EXECUTE_SSOT SYSTEM
- 
           [ PATIENT ARRIVES ]                        [ SYSTEM INCIDENT OCCURS ]
         (The individual entity)                        (The specific failure)
                    |                                             |
@@ -7,60 +5,103 @@ HOSPITAL SYSTEM (ANALOGY)                        EXECUTE_SSOT SYSTEM
 +----------------------------------------+    +----------------------------------------+
 |           Symptoms Reported            |    |       Failure Signals Collected        |
 |                                        |    |                                        |
-| * Cough, chest pain, fever             |    | * Stack traces (e.g., ImportError)     |
-| * Patient history                      |    | * Invariant & territory violations     |
+| * Cough, chest pain, fever             |    | * Stack traces (ImportError, etc.)    |
+| * Patient history                      |    | * Invariant violations                 |
+| * Age / risk factors                   |    | * Territory violations                 |
+|                                        |    | * Test failures                        |
+|                                        |    | * Repo context / file path             |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
 |    Medical Imaging (Symptom Scan)      |    |  Semantic Pattern Analysis (bge-m3)    |
 |                                        |    |                                        |
-| * X-ray / MRI scans                    |    | * Embedding model                      |
-| -> Generates symptom fingerprint       |    | -> Generates vector fingerprint        |
+| * X-ray / MRI                          |    | * Embedding model                      |
+|                                        |    |                                        |
+| INPUT TO EMBEDDING                     |    | INPUT TO EMBEDDING                     |
+|                                        |    |                                        |
+| "cough fever chest pain infection"     |    | "ImportError yaml config loader"      |
+|                                        |    |                                        |
+| OUTPUT                                 |    | OUTPUT                                 |
+|                                        |    |                                        |
+| symptom_vector = [v1..vN]               |    | failure_vector = [v1..vN]              |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
 |      Search Medical Case History       |    |  Search Similar Historical Incidents   |
 |                                        |    |                                        |
-| * Case A -> pneumonia  -> antibiotics  |    | * Inc. A -> yaml error -> Dependency   |
-| * Case B -> broken leg -> cast         |    | * Inc. B -> path issue -> ArchGovernor |
+| VECTOR SEARCH                          |    | VECTOR SEARCH                          |
+|                                        |    |                                        |
+| symptom_vector                         |    | failure_vector                         |
+|                                        |    |                                        |
+| RETURNS TOP MATCHES                    |    | RETURNS TOP MATCHES                    |
+|                                        |    |                                        |
+| Case A -> pneumonia                    |    | Incident A -> yaml dependency          |
+| Case B -> bronchitis                   |    | Incident B -> path issue               |
+| Case C -> infection                    |    | Incident C -> test config issue        |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
 |    Hospital Triage / Diagnostician     |    |        Healing Decision Engine         |
 |                                        |    |                                        |
-| * Evaluates symptom fingerprint        |    | * Evaluates vector fingerprint         |
-| * Determines Disease (Root Cause)      |    | * Determines Root Cause Category       |
-| * Routes to correct Specialist         |    | * Routes to correct Healing Agent      |
+| USES RETRIEVED METADATA                |    | USES RETRIEVED METADATA                |
+|                                        |    |                                        |
+| * disease label                        |    | * violation type                       |
+| * treatments used                      |    | * healer used                          |
+| * doctor success rate                  |    | * patch applied                        |
+| * patient outcomes                     |    | * success / failure                    |
+|                                        |    | * cluster statistics                   |
+|                                        |    |                                        |
+| Determines disease + specialist        |    | Determines root cause + healer         |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
 |   Specialist Doctor (Agent) Assigned   |    |  Healing Agent (Specialist) Assigned   |
 |                                        |    |                                        |
-| * Cardiologist -> Heart problems       |    | * DependencyRepairAgent -> missing lib |
-| * Orthopedic   -> Bone problems        |    | * GravityRepairAgent    -> physics bug |
-|                                        |    | * TestRepairAgent       -> config bug  |
-| -> Applies specific Treatment          |    | -> Executes deterministic Repair Patch |
+| * cardiologist                         |    | * DependencyRepairAgent                |
+| * orthopedic                           |    | * ArchitectureGovernorAgent            |
+| * infectious disease                   |    | * GravityRepairAgent                   |
+|                                        |    | * TestRepairAgent                      |
+|                                        |    |                                        |
+| Treatment applied                      |    | Deterministic repair executed          |
+|                                        |    |                                        |
+| * antibiotics                          |    | * pip install pyyaml                   |
+| * cast                                 |    | * modify config                        |
+| * surgery                              |    | * patch code                           |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
-|      Case Recorded in Hospital DB      |    |          Healing Event Logged          |
+|      Case Stored in Hospital DB        |    |      Healing Event Stored in Memory    |
 |                                        |    |                                        |
-| * Symptoms & Disease (Root cause)      |    | * Failure signals & Root Cause         |
-| * Doctor assigned                      |    | * Agent used                           |
-| * Treatment applied                    |    | * Patch applied (e.g., pip install)    |
-| * Success / Failure outcome            |    | * Success / Failure outcome            |
+| VECTOR STORED                          |    | VECTOR STORED                          |
+|                                        |    |                                        |
+| symptom_vector                         |    | failure_vector                         |
+|                                        |    |                                        |
+| METADATA STORED                        |    | METADATA STORED                        |
+|                                        |    |                                        |
+| * symptoms text                        |    | * failure text                         |
+| * diagnosis                            |    | * violation types                      |
+| * doctor assigned                      |    | * healer used                          |
+| * treatment                            |    | * repair action                        |
+| * success / failure                    |    | * success / failure                    |
+| * patient demographics                 |    | * repo location                        |
+|                                        |    | * commit / patch summary               |
+|                                        |    | * confidence score                     |
 +----------------------------------------+    +----------------------------------------+
                    |                                             |
                    v                                             v
 +----------------------------------------+    +----------------------------------------+
 |            Medical Research            |    |          Meta-Learning System          |
 |                                        |    |                                        |
-| * Cluster diseases over time           |    | * Cluster failure patterns             |
-| * Learn best doctor per disease        |    | * Learn best agent per problem type    |
-| * Improve future triage routing        |    | * Improve future Engine routing        |
+| Uses vectors + metadata                |    | Uses vectors + metadata                |
+|                                        |    |                                        |
+| * cluster disease patterns             |    | * cluster failure patterns             |
+| * best treatment per disease           |    | * best healer per failure type         |
+| * best doctor per disease              |    | * success rate per agent cluster       |
+| * detect recurring conditions          |    | * detect recurring regressions         |
+| * improve triage protocols             |    | * improve routing decisions            |
 +----------------------------------------+    +----------------------------------------+

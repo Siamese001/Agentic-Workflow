@@ -289,6 +289,12 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 if actual_depth >= 2:
                     return True, "OK"
 
+        # Territories with allow_root_py=True permit flat .py files at depth 1
+        # even when their canonical subfolder depth is higher.
+        territory_cfg = SOVEREIGN_TERRITORIES.get(root_folder, {})
+        if actual_depth == 1 and territory_cfg.get("allow_root_py") and rel_path.suffix == ".py":
+            return True, "OK"
+
         # Standard depth validation (non-variable subfolders)
         if expected_depth is not None and actual_depth != expected_depth:
             reason = "SHALLOW" if actual_depth < expected_depth else "DEEP"
@@ -322,12 +328,21 @@ class LocationValidatorAgent(SovereignBaseAgent):
         )
 
         # Forbidden layer prefixes
-        forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
-        if forbidden_prefix:
-            return (
-                False,
-                f"LAYER PREFIX VIOLATION: Filename has forbidden prefix '{forbidden_prefix}'",
-            )
+        # system_learning legitimately uses l0_/l1_/.../l5_ prefixes to denote
+        # which agentic layer a module adapts for — exempt this territory.
+        try:
+            _rel = file_path.relative_to(self.project_root)
+            _root = _rel.parts[0] if _rel.parts else ""
+        except (ValueError, IndexError):
+            _root = ""
+        _LAYER_PREFIX_EXEMPT_ROOTS: frozenset[str] = frozenset({"system_learning"})
+        if _root not in _LAYER_PREFIX_EXEMPT_ROOTS:
+            forbidden_prefix = has_forbidden_layer_prefix(file_path.name)
+            if forbidden_prefix:
+                return (
+                    False,
+                    f"LAYER PREFIX VIOLATION: Filename has forbidden prefix '{forbidden_prefix}'",
+                )
 
         # Broken backup files
         if file_path.name.endswith((".bak", ".backup", ".old", ".tmp")):
