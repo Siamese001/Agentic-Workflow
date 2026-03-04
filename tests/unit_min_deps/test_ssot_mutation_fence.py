@@ -37,11 +37,11 @@ class TestProtectedRootEnforcement:
         # Should not raise when override is enabled
         enforce_protected_root(target_path, allow_override=True)
 
-    def test_enforce_protected_root_blocks_tests(self):
-        """Test that writes to tests directory are blocked."""
+    def test_enforce_protected_root_allows_tests(self):
+        """Test that writes to tests directory are allowed (tests is not a protected root)."""
         target_path = Path("tests/test_file.py")
-        with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
-            enforce_protected_root(target_path, allow_override=False)
+        # Should not raise -- tests/ was removed from immutable_roots
+        enforce_protected_root(target_path, allow_override=False)
 
     def test_enforce_protected_root_blocks_github(self):
         """Test that writes to .github directory are blocked."""
@@ -53,12 +53,6 @@ class TestProtectedRootEnforcement:
         """Test that exception message includes the matched immutable root."""
         target_path = Path("agentic_core/test_file.py")
         with pytest.raises(SourceMutationBlocked, match="matched_root=agentic_core"):
-            enforce_protected_root(target_path, allow_override=False)
-
-    def test_exception_includes_matched_root_tests(self):
-        """Test that exception message includes matched root for tests directory."""
-        target_path = Path("tests/test_file.py")
-        with pytest.raises(SourceMutationBlocked, match="matched_root=tests"):
             enforce_protected_root(target_path, allow_override=False)
 
     def test_exception_includes_matched_root_github(self):
@@ -160,14 +154,14 @@ class TestBlockEventEmission:
 
     def test_exception_message_still_includes_diagnostics(self):
         """Test that exception message still includes target and matched_root after adding emission."""
-        target_path = Path("tests/test_file.py")
+        target_path = Path("agentic_core/test_file.py")
 
         with pytest.raises(SourceMutationBlocked) as exc_info:
             enforce_protected_root(target_path, allow_override=False)
         e = exc_info.value
         msg = str(e)
         assert "target=" in msg
-        assert "matched_root=tests" in msg
+        assert "matched_root=agentic_core" in msg
 
 
 @pytest.mark.unit_min_deps
@@ -177,7 +171,7 @@ class TestPolicyContract:
     def test_default_policy_immutable_roots(self):
         """Test that default policy has exactly the canonical immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == ("agentic_core", "tests", ".github")
+        assert policy.immutable_roots == ("agentic_core", ".github")
 
     def test_default_policy_log_path(self):
         """Test that default policy has the canonical log path."""

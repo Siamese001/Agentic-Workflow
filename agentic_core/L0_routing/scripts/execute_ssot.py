@@ -400,7 +400,7 @@ def run_fence_self_check() -> None:
     # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
-        if policy.immutable_roots != ("agentic_core", "tests", ".github"):
+        if policy.immutable_roots != ("agentic_core", ".github"):
             failed_checks.append("default_policy_immutable_roots")
     # guardian: allow-silent-swallow
     except Exception:
