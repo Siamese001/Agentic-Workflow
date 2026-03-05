@@ -190,14 +190,17 @@ class TestFileClassificationAgentContract:
         assert "args.dry_run = True" in source
 
     def test_fca_heal_only_when_not_dry_run(self):
-        """heal_repository is only invoked when pascal_proceed and not dry_run."""
+        """FCA healing is only invoked when pascal_proceed and effective_ctx.heal."""
         source = EXECUTE_SSOT_PATH.read_text(encoding="utf-8")
-        # Find the sovereignty purge block
+        # Find the sovereignty purge gate
         idx = source.find("pascal_proceed and effective_ctx.heal")
         assert idx != -1, "Sovereignty purge must be gated by 'pascal_proceed and effective_ctx.heal'"
-        # heal_repository must appear after the gate
-        heal_idx = source.find("heal_repository", idx)
-        assert heal_idx != -1, "heal_repository must be invoked inside the gate block"
+        # Remediation dispatcher (_rd_invoke) must appear inside the gate block
+        # (impl uses remediation_dispatcher instead of direct heal_repository)
+        rd_idx = source.find("_rd_invoke", idx)
+        assert rd_idx != -1, (
+            "_rd_invoke (remediation dispatcher) must be invoked inside the sovereignty purge gate block"
+        )
 
 
 # ===================================================================

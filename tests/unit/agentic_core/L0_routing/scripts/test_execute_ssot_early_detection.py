@@ -42,14 +42,14 @@ class TestPhase1EarlyDetection:
         assert 'state_mgr.state["classification_scan_result"]' in content
 
     def test_early_detection_uses_validate_only_mode(self):
-        """Verify early detection uses validate_only mode (no changes)."""
+        """Verify early detection uses validator agent (read-only, no mutations)."""
         execute_ssot_path = PROJECT_ROOT / "agentic_core/L0_routing/scripts/execute_ssot.py"
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
-        # Check validate_only mode is set
-        assert "file_classifier.validate_only = True" in content
-        assert "file_classifier.dry_run = True" in content
+        # Current impl uses FileClassificationValidatorAgent.to_check_dict() — read-only
+        assert "FileClassificationValidatorAgent" in content
+        assert "to_check_dict" in content
 
     def test_early_detection_handles_errors_gracefully(self):
         """Verify early detection handles errors without crashing."""
@@ -59,7 +59,7 @@ class TestPhase1EarlyDetection:
 
         # Check error handling
         assert "except Exception as e:" in content
-        assert "FileClassificationAgent early detection failed" in content
+        assert "FileClassificationHealerAgent early detection failed" in content
         assert 'state_mgr.state["classification_violations"] = []' in content
 
     def test_early_detection_updates_state_manager(self):
@@ -78,11 +78,10 @@ class TestPhase1EarlyDetection:
 
         content = execute_ssot_path.read_text(encoding="utf-8")
 
-        # Check violation extraction logic
-        assert 'file_classifier.stats.get("violations")' in content
+        # Current impl extracts from validator to_check_dict() evidence
         assert '"type": "CLASSIFICATION"' in content
-        assert '"subtype": vtype' in content
-        assert '"count": count' in content
+        assert 'classification_violations' in content
+        assert 'classification_scan_result' in content
 
 
 class TestPhase1EarlyDetectionIntegration:
