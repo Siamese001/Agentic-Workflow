@@ -25,7 +25,7 @@ This phase implements h2-h5, h8-h10 as code changes and h7 (CI) as documented be
 
 ## EVIDENCE_COMMIT
 
-PENDING
+b40617a9a9debd31d05a68a89c354b759572f0f8
 
 ## FILES_CHANGED_CODE
 
@@ -36,7 +36,7 @@ tests/system_learning/test_cross_agent_meta_learning_hardening.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/meta_learning_governance_hardening_evidence.md
 
 ## INSPECTED_FILES
 
