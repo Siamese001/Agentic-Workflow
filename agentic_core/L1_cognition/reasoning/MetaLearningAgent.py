@@ -8,6 +8,7 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+import json
 import logging
 from collections.abc import Callable
 from dataclasses import dataclass, field
@@ -46,6 +47,7 @@ class MetaLearningAgent(SovereignBaseAgent):
         self,
         replay_capacity: int = 1000,
         telemetry_callback: TelemetryCallback | None = None,
+        strategy_weights_file: Path | None = None,
     ) -> None:
         """Initialize the instance.
 
@@ -69,6 +71,11 @@ class MetaLearningAgent(SovereignBaseAgent):
 
         # Telemetry callback for dashboard observability (Phase 1.2)
         self.telemetry_callback = telemetry_callback
+
+        # Cross-run persistence for learned strategy weights (G_MLA fix)
+        self._strategy_weights_file: Path | None = strategy_weights_file
+        if self._strategy_weights_file is not None:
+            self._load_strategy_weights()
 
         # Initialize Mixins
         super().__init__()
@@ -141,7 +148,35 @@ class MetaLearningAgent(SovereignBaseAgent):
             for k in self.strategy_weights:
                 self.strategy_weights[k] = self.strategy_weights[k] / total * len(self.strategy_weights)
 
+        if self._strategy_weights_file is not None:
+            self._save_strategy_weights()
         return self.strategy_weights
+
+    def _load_strategy_weights(self) -> None:
+        """Load persisted strategy weights from disk if available."""
+        if self._strategy_weights_file is None or not Path(self._strategy_weights_file).exists():
+            return
+        try:
+            raw = json.loads(Path(self._strategy_weights_file).read_text(encoding="utf-8"))
+            loaded = raw.get("strategy_weights", {})
+            for key in self.strategy_weights:
+                if key in loaded and isinstance(loaded[key], (int, float)):
+                    self.strategy_weights[key] = float(loaded[key])
+        except (OSError, json.JSONDecodeError, ValueError):
+            pass  # Corrupt or absent file — keep defaults
+
+    def _save_strategy_weights(self) -> None:
+        """Persist strategy weights to disk atomically."""
+        if self._strategy_weights_file is None:
+            return
+        dest = Path(self._strategy_weights_file)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        payload = json.dumps(
+            {"strategy_weights": self.strategy_weights},
+            separators=(",", ":"),
+            sort_keys=True,
+        )
+        dest.write_text(payload, encoding="utf-8")
 
     def extract_patterns(self) -> list[dict[str, Any]]:
         """Identifies success/failure patterns from clustered experiences."""

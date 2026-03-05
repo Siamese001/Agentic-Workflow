@@ -199,8 +199,15 @@ def ingest_and_build_indexes_with_embedder(
     write_jsonl_records(telemetry_jsonl, telemetry_records)
     write_jsonl_records(dpo_jsonl, dpo_records)
 
-    # Build indexes
+    # Build indexes and persist each one to disk (G_HI fix: finalize_build alone is
+    # in-memory only; persist_to_disk writes the 3-file artifact so the index
+    # survives process exit and can be loaded by HealingMemoryRetriever).
     results = {}
+    _index_dirs = {
+        "healing_contexts_v1": layout.healing_contexts_index_dir(),
+        "telemetry_events_v1": layout.telemetry_events_index_dir(),
+        "dpo_pairs_v1": layout.dpo_pairs_index_dir(),
+    }
 
     # Build healing contexts index (dim=768)
     results["healing_contexts_v1"] = service.populate_from_jsonl(
@@ -208,6 +215,13 @@ def ingest_and_build_indexes_with_embedder(
         source_files=[healing_jsonl],
         dimension=768,
         built_at_utc=built_at_utc,
+    )
+    _index_dirs["healing_contexts_v1"].mkdir(parents=True, exist_ok=True)
+    store.persist_to_disk(
+        "healing_contexts_v1",
+        _index_dirs["healing_contexts_v1"],
+        embedder_id=embedding_model_checksum,
+        model_version=embedding_model_version,
     )
 
     # Build telemetry events index (dim=384)
@@ -217,6 +231,13 @@ def ingest_and_build_indexes_with_embedder(
         dimension=384,
         built_at_utc=built_at_utc,
     )
+    _index_dirs["telemetry_events_v1"].mkdir(parents=True, exist_ok=True)
+    store.persist_to_disk(
+        "telemetry_events_v1",
+        _index_dirs["telemetry_events_v1"],
+        embedder_id=embedding_model_checksum,
+        model_version=embedding_model_version,
+    )
 
     # Build DPO pairs index (dim=768)
     results["dpo_pairs_v1"] = service.populate_from_jsonl(
@@ -224,6 +245,13 @@ def ingest_and_build_indexes_with_embedder(
         source_files=[dpo_jsonl],
         dimension=768,
         built_at_utc=built_at_utc,
+    )
+    _index_dirs["dpo_pairs_v1"].mkdir(parents=True, exist_ok=True)
+    store.persist_to_disk(
+        "dpo_pairs_v1",
+        _index_dirs["dpo_pairs_v1"],
+        embedder_id=embedding_model_checksum,
+        model_version=embedding_model_version,
     )
 
     return results
