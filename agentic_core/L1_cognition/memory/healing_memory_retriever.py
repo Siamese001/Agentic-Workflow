@@ -245,9 +245,23 @@ def build_retriever(
     if base_path is None:
         return NullHealingMemoryRetriever()
     try:
-        from system_learning.engines.local_faiss_store import LocalFAISSStore
+        from system_learning.engines.local_faiss_store import (
+            LocalFAISSStore,
+            ManifestIntegrityError,
+        )
 
         store = LocalFAISSStore(base_path=Path(base_path))
+        # [CROSS-RUN PERSISTENCE] Load the persisted index from disk so
+        # retrieve_similar_incidents() can search failure vectors accumulated from prior
+        # runs.  If the disk artifact is absent or corrupt the store is left empty and
+        # retrieval silently returns [] — safe no-op (G7 fix).
+        disk_dir = Path(base_path) / index_id
+        if disk_dir.exists():
+            try:
+                store.load_from_disk(index_id, disk_dir)
+            # guardian: allow-silent-swallow
+            except (ManifestIntegrityError, Exception):
+                pass  # Corrupt or absent artifact — proceed with empty store
         return HealingMemoryRetriever(store=store, profile=profile, index_id=index_id)
     except ImportError:
         return NullHealingMemoryRetriever()
