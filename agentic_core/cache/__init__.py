@@ -22,16 +22,20 @@ from agentic_core.cache.redis_cache_client import (
     CacheDB,
     DeterministicRedisCache,
     canonical_json_bytes,
+    content_hash,
     get_coordination_cache,
     get_hot_cache,
+    reset_cache_singletons,
 )
 
 __all__ = [
     "DeterministicRedisCache",
     "CacheDB",
     "canonical_json_bytes",
+    "content_hash",
     "get_hot_cache",
     "get_coordination_cache",
+    "reset_cache_singletons",
     "build_route_decision_key",
     "build_routing_rule_surface_key",
     "build_cap_registry_key",

@@ -12,6 +12,32 @@ Key-construction rules (enforced by design):
 from __future__ import annotations
 
 # ---------------------------------------------------------------------------
+# Internal segment validator
+# ---------------------------------------------------------------------------
+
+
+def _require_safe_segment(name: str, value: str) -> None:
+    """Raise ``ValueError`` if *value* contains characters illegal in a key segment.
+
+    Cache keys use ``:`` as the segment delimiter.  Non-hash segments such as
+    ``trace_id``, ``template_id``, and ``embedder_version`` are supplied by
+    callers and may in principle contain a colon, which would corrupt the
+    key schema and create silent collision vulnerabilities.  This guard
+    prevents that at construction time.
+
+    Hash-typed segments (64-hex strings) are never affected — SHA-256
+    hexdigests contain only ``[0-9a-f]``.
+    """
+    if ":" in value:
+        raise ValueError(
+            f"Key segment {name!r} contains illegal ':' character: {value!r}. "
+            "Use a slug, version tag, or hex digest instead."
+        )
+    if not value:
+        raise ValueError(f"Key segment {name!r} must not be empty")
+
+
+# ---------------------------------------------------------------------------
 # L0 Routing
 # ---------------------------------------------------------------------------
 
@@ -96,6 +122,8 @@ def build_template_render_key(
     identifiers from the L4 template registry (not user-supplied free text).
     ``args_hash`` is the SHA-256 of the canonical-JSON of the render args.
     """
+    _require_safe_segment("template_id", template_id)
+    _require_safe_segment("template_version", template_version)
     return f"template_render:{template_id}:{template_version}:{args_hash}"
 
 
@@ -141,6 +169,7 @@ def build_orch_plan_key(
     plans from different traces never collide even when ``plan_hash`` is
     identical.
     """
+    _require_safe_segment("trace_id", trace_id)
     return f"orch_plan:{trace_id}:{plan_hash}:{tool_budget_hash}"
 
 
@@ -196,5 +225,6 @@ def build_rag_topk_key(
     This entry is strictly informational — it MUST NOT influence
     routing/safety/tier decisions.
     """
+    _require_safe_segment("embedder_version", embedder_version)
     cutoff_r6 = f"{cutoff:.6f}"
     return f"rag_topk:{u0_hash}:{embedder_version}:{seed_pack_manifest_hash}:{k}:{cutoff_r6}"

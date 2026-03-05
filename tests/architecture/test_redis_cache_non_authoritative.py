@@ -510,6 +510,333 @@ class TestIdempotencyStore:
 
 
 # ---------------------------------------------------------------------------
+# §11 — Regression: _BoundedLRU.set() must update value on overwrite
+# ---------------------------------------------------------------------------
+
+
+class TestBoundedLRUOverwrite:
+    """Regression for: _BoundedLRU.set() was moving position but not updating value."""
+
+    def test_overwrite_updates_value(self):
+        from agentic_core.cache.redis_cache_client import _BoundedLRU
+
+        lru = _BoundedLRU(maxsize=10)
+        lru.set("k", b"original")
+        lru.set("k", b"updated")
+        assert lru.get("k") == b"updated", "Overwrite must replace stored value"
+
+    def test_overwrite_via_cache_set(self):
+        cache = _make_offline_cache()
+        cache.set("k", b"v1")
+        cache.set("k", b"v2")
+        assert cache.get("k") == b"v2", "Second set must replace first"
+
+    def test_overwrite_via_set_json(self):
+        cache = _make_offline_cache()
+        cache.set_json("k", {"x": 1})
+        cache.set_json("k", {"x": 2})
+        result = cache.get_json("k")
+        assert result == {"x": 2}, "set_json overwrite must replace stored JSON"
+
+    def test_lru_eviction_order_after_overwrite(self):
+        from agentic_core.cache.redis_cache_client import _BoundedLRU
+
+        lru = _BoundedLRU(maxsize=3)
+        lru.set("a", b"1")
+        lru.set("b", b"2")
+        lru.set("c", b"3")
+        lru.set("a", b"1_updated")  # move 'a' to most-recently-used
+        lru.set("d", b"4")  # evicts 'b' (now LRU), not 'a'
+        assert lru.get("b") is None, "'b' should be evicted as LRU"
+        assert lru.get("a") == b"1_updated", "'a' should survive as recently used"
+
+
+# ---------------------------------------------------------------------------
+# §12 — Regression: get_json() must return None on corrupt stored bytes
+# ---------------------------------------------------------------------------
+
+
+class TestGetJsonCorruptData:
+    """Regression for: get_json() raised JSONDecodeError instead of returning None."""
+
+    def test_corrupt_json_returns_none(self):
+        cache = _make_offline_cache()
+        cache._fallback.set("bad", b"not-json{{{}")
+        result = cache.get_json("bad")
+        assert result is None, "Corrupt JSON bytes must return None, not raise"
+
+    def test_non_ascii_bytes_returns_none(self):
+        cache = _make_offline_cache()
+        cache._fallback.set("bad", b"\xff\xfe")
+        result = cache.get_json("bad")
+        assert result is None, "Non-ASCII bytes must return None, not raise"
+
+    def test_valid_json_still_works(self):
+        cache = _make_offline_cache()
+        cache.set_json("ok", {"status": "pass"})
+        assert cache.get_json("ok") == {"status": "pass"}
+
+
+# ---------------------------------------------------------------------------
+# §13 — Regression: _validate_key() must reject tab characters
+# ---------------------------------------------------------------------------
+
+
+class TestKeyValidationTabChar:
+    """Regression for: \t was not rejected as a control character."""
+
+    def test_tab_in_key_rejected(self):
+        cache = _make_offline_cache()
+        with pytest.raises(ValueError):
+            cache.get("key\tbad")
+
+    def test_tab_in_key_set_rejected(self):
+        cache = _make_offline_cache()
+        with pytest.raises(ValueError):
+            cache.set("key\tbad", b"value")
+
+    def test_newline_still_rejected(self):
+        cache = _make_offline_cache()
+        with pytest.raises(ValueError):
+            cache.get("key\nbad")
+
+
+# ---------------------------------------------------------------------------
+# §14 — Key segment colon injection prevention
+# ---------------------------------------------------------------------------
+
+
+class TestKeySegmentColonInjection:
+    """Validates _require_safe_segment() guard in cache_key_builders."""
+
+    def test_trace_id_with_colon_rejected(self):
+        from agentic_core.cache.cache_key_builders import build_orch_plan_key
+
+        with pytest.raises(ValueError, match="trace_id"):
+            build_orch_plan_key("trace:bad", "plan_h", "budget_h")
+
+    def test_template_id_with_colon_rejected(self):
+        from agentic_core.cache.cache_key_builders import build_template_render_key
+
+        with pytest.raises(ValueError, match="template_id"):
+            build_template_render_key("tmpl:bad", "v1", "args_h")
+
+    def test_template_version_with_colon_rejected(self):
+        from agentic_core.cache.cache_key_builders import build_template_render_key
+
+        with pytest.raises(ValueError, match="template_version"):
+            build_template_render_key("tmpl-id", "v1:bad", "args_h")
+
+    def test_embedder_version_with_colon_rejected(self):
+        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+
+        with pytest.raises(ValueError, match="embedder_version"):
+            build_rag_topk_key("u0h", "v1:bad", "manifest_h", 20, 0.5)
+
+    def test_safe_segments_still_work(self):
+        from agentic_core.cache.cache_key_builders import (
+            build_orch_plan_key,
+            build_template_render_key,
+        )
+
+        k1 = build_orch_plan_key("trace-abc-123", "plan_h", "budget_h")
+        assert k1.startswith("orch_plan:")
+        k2 = build_template_render_key("exec-strategy-v2", "v1.2.3", "args_h")
+        assert k2.startswith("template_render:")
+
+
+# ---------------------------------------------------------------------------
+# §15 — TemplateRenderCache.get() must return None on corrupt bytes
+# ---------------------------------------------------------------------------
+
+
+class TestTemplateRenderCacheCorruptBytes:
+    """Regression for: TemplateRenderCache.get() raised UnicodeDecodeError on corrupt bytes."""
+
+    def test_corrupt_utf8_returns_none(self):
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+            TemplateRenderCache,
+        )
+
+        inner = _make_offline_cache()
+        trc = TemplateRenderCache(cache=inner)
+        key_builder_key = "template_render:tmpl-id:v1:args_h"
+        inner._fallback.set(key_builder_key, b"\xff\xfe invalid utf-8")
+        result = trc.get("tmpl-id", "v1", "args_h")
+        assert result is None, "Corrupt UTF-8 bytes must return None, not raise"
+
+    def test_valid_roundtrip_still_works(self):
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+            TemplateRenderCache,
+        )
+
+        inner = _make_offline_cache()
+        trc = TemplateRenderCache(cache=inner)
+        trc.set("tmpl-exec", "v2", "args_h", "Hello, world!")
+        assert trc.get("tmpl-exec", "v2", "args_h") == "Hello, world!"
+
+    def test_replay_mode_bypass(self):
+        from agentic_core.L1_cognition.engines.prompt_artifact_cache import (
+            TemplateRenderCache,
+        )
+
+        inner = _make_offline_cache()
+        trc = TemplateRenderCache(cache=inner)
+        trc.set("tmpl-exec", "v2", "args_h", "Some rendered text")
+        assert trc.get("tmpl-exec", "v2", "args_h", replay_mode=True) is None
+
+
+# ---------------------------------------------------------------------------
+# §16 — L0 RoutingRuleSurfaceCache and CapabilityRegistryCache roundtrips
+# ---------------------------------------------------------------------------
+
+
+class TestL0SeamRoundtrips:
+    def test_routing_rule_surface_set_get(self):
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+            RoutingRuleSurfaceCache,
+        )
+
+        inner = _make_offline_cache()
+        rsc = RoutingRuleSurfaceCache(cache=inner)
+        ruleset = {"rules": [{"id": "r1", "condition": "low_risk"}]}
+        rsc.set("state_hash_abc", ruleset)
+        result = rsc.get("state_hash_abc")
+        assert result == ruleset
+
+    def test_routing_rule_surface_replay_bypass(self):
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+            RoutingRuleSurfaceCache,
+        )
+
+        inner = _make_offline_cache()
+        rsc = RoutingRuleSurfaceCache(cache=inner)
+        rsc.set("state_h", {"rules": []})
+        assert rsc.get("state_h", replay_mode=True) is None
+
+    def test_cap_registry_set_get(self):
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+            CapabilityRegistryCache,
+        )
+
+        inner = _make_offline_cache()
+        crc = CapabilityRegistryCache(cache=inner)
+        registry = {"tools": ["write_file", "read_file"], "rate_limit": 100}
+        crc.set("cap_hash_xyz", registry)
+        result = crc.get("cap_hash_xyz")
+        assert result == registry
+
+    def test_cap_registry_invalidate(self):
+        from agentic_core.L0_routing.seams.redis_decision_cache import (
+            CapabilityRegistryCache,
+        )
+
+        inner = _make_offline_cache()
+        crc = CapabilityRegistryCache(cache=inner)
+        crc.set("cap_h", {"tools": []})
+        crc.invalidate("cap_h")
+        assert crc.get("cap_h") is None
+
+
+# ---------------------------------------------------------------------------
+# §17 — C0/RAG retrieval cache seam
+# ---------------------------------------------------------------------------
+
+
+class TestRagRetrievalCache:
+    def test_set_get_roundtrip(self):
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+
+        inner = _make_offline_cache()
+        rac = RagRetrievalCache(cache=inner)
+        results = [{"chunk_id": "c1", "score": 0.9, "text": "foo"}]
+        rac.set("u0h", "text-embed-v3", "manifest_h", 5, 0.7, results)
+        cached = rac.get("u0h", "text-embed-v3", "manifest_h", 5, 0.7)
+        assert cached == results
+
+    def test_replay_mode_returns_none(self):
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+
+        inner = _make_offline_cache()
+        rac = RagRetrievalCache(cache=inner)
+        rac.set("u0h", "v1", "manifest_h", 10, 0.5, [{"chunk_id": "c1"}])
+        assert rac.get("u0h", "v1", "manifest_h", 10, 0.5, replay_mode=True) is None
+
+    def test_non_list_stored_returns_none(self):
+        from agentic_core.cache.cache_key_builders import build_rag_topk_key
+        from system_learning.engines.rag_retrieval_cache import RagRetrievalCache
+
+        inner = _make_offline_cache()
+        rac = RagRetrievalCache(cache=inner)
+        key = build_rag_topk_key("u0h", "v1", "manifest_h", 5, 0.5)
+        inner._fallback.set(key, b'{"not": "a list"}')
+        assert rac.get("u0h", "v1", "manifest_h", 5, 0.5) is None
+
+    def test_no_l4_import(self):
+        import ast
+        import importlib.util
+        import pathlib
+
+        spec = importlib.util.find_spec("system_learning.engines.rag_retrieval_cache")
+        assert spec is not None
+        source = pathlib.Path(spec.origin).read_text(encoding="utf-8")
+        tree = ast.parse(source)
+        violations = [
+            node.module
+            for node in ast.walk(tree)
+            if isinstance(node, ast.ImportFrom)
+            and node.module
+            and node.module.startswith("agentic_core.L4_state")
+        ]
+        assert not violations
+
+
+# ---------------------------------------------------------------------------
+# §18 — get_stats() returns complete and correct structure
+# ---------------------------------------------------------------------------
+
+
+class TestGetStats:
+    def test_stats_keys_present(self):
+        cache = _make_offline_cache()
+        stats = cache.get_stats()
+        expected_keys = {
+            "db",
+            "using_fallback",
+            "fallback_entries",
+            "hits",
+            "misses",
+            "fallback_hits",
+            "fallback_misses",
+            "errors",
+            "bypassed_replay",
+        }
+        assert expected_keys == set(stats.keys())
+
+    def test_stats_db_matches_instance(self):
+        from agentic_core.cache.redis_cache_client import CacheDB, DeterministicRedisCache
+
+        c = DeterministicRedisCache(db=CacheDB.COORDINATION)
+        c._use_fallback = True
+        assert c.get_stats()["db"] == int(CacheDB.COORDINATION)
+
+    def test_bypass_replay_counter_increments(self):
+        cache = _make_offline_cache()
+        cache.set("k", b"v")
+        cache.get("k", replay_mode=True)
+        cache.get("k", replay_mode=True)
+        assert cache.get_stats()["bypassed_replay"] == 2
+
+    def test_fallback_entries_count_accurate(self):
+        cache = _make_offline_cache()
+        cache.set("k1", b"v1")
+        cache.set("k2", b"v2")
+        assert cache.get_stats()["fallback_entries"] == 2
+        cache.delete("k1")
+        assert cache.get_stats()["fallback_entries"] == 1
+
+
+# ---------------------------------------------------------------------------
 # §10 — Singleton factories reset cleanly for testing
 # ---------------------------------------------------------------------------
 
@@ -547,3 +874,11 @@ class TestSingletonFactories:
         reset_cache_singletons()
         c = get_coordination_cache()
         assert c._db == CacheDB.COORDINATION
+
+    def test_content_hash_and_reset_exported_from_package(self):
+        from agentic_core.cache import content_hash, reset_cache_singletons
+
+        digest = content_hash(b"test-payload")
+        assert len(digest) == 64
+        assert all(c in "0123456789abcdef" for c in digest)
+        reset_cache_singletons()  # must not raise

@@ -99,7 +99,7 @@ class _BoundedLRU:
         else:
             if len(self._store) >= self._maxsize:
                 self._store.popitem(last=False)
-            self._store[key] = value
+        self._store[key] = value
 
     def delete(self, key: str) -> bool:
         return self._store.pop(key, None) is not None
@@ -219,7 +219,7 @@ class DeterministicRedisCache:
             raise ValueError("Cache key must be a non-empty string")
         if len(key) > _MAX_KEY_LEN:
             raise ValueError(f"Cache key exceeds {_MAX_KEY_LEN}-char limit: {key[:80]}…")
-        if any(c in key for c in ("\x00", "\n", "\r")):
+        if any(c in key for c in ("\x00", "\n", "\r", "\t")):
             raise ValueError(f"Cache key contains illegal control character: {key!r}")
 
     # ------------------------------------------------------------------
@@ -321,11 +321,14 @@ class DeterministicRedisCache:
         return self.set(key, canonical_json_bytes(obj), ttl_seconds=ttl_seconds)
 
     def get_json(self, key: str, *, replay_mode: bool = False) -> Any | None:
-        """Retrieve and deserialise a JSON value; returns ``None`` on miss."""
+        """Retrieve and deserialise a JSON value; returns ``None`` on miss or corrupt bytes."""
         raw = self.get(key, replay_mode=replay_mode)
         if raw is None:
             return None
-        return json.loads(raw.decode("ascii"))
+        try:
+            return json.loads(raw.decode("ascii"))
+        except (json.JSONDecodeError, UnicodeDecodeError, ValueError):
+            return None
 
     # ------------------------------------------------------------------
     # Lease / coordination helpers (DB 1 — L2 only)

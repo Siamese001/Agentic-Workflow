@@ -167,7 +167,10 @@ class TemplateRenderCache:
         raw = self._cache.get(key, replay_mode=replay_mode)
         if raw is None:
             return None
-        return raw.decode("utf-8")
+        try:
+            return raw.decode("utf-8")
+        except UnicodeDecodeError:
+            return None
 
     def set(
         self,
