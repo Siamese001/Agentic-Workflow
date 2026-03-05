@@ -20,7 +20,7 @@ Files changed (4):
 
 ## EVIDENCE_COMMIT
 
-PENDING
+1e912091b9bd29db3e68f9e3eeadaff7ace2dc18
 
 ## FILES_CHANGED_CODE
 
@@ -31,7 +31,7 @@ tests/system_learning/test_cross_agent_meta_learning_hardening.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/cross_agent_meta_learning_hardening_evidence.md
 
 ## INSPECTED_FILES
 
