@@ -38,7 +38,7 @@ class TestRgReflectionAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.RgReflectionAgent import RgReflectionAgent
+            from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent
 
             return RgReflectionAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -89,7 +89,7 @@ class TestRgReflectionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.RgReflectionAgent import RgReflectionAgent  # noqa: F401
+                from apps_rg.reasoning.RgReflectionAgent import RgReflectionAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

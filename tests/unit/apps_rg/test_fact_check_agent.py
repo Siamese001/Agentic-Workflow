@@ -36,7 +36,7 @@ class TestFactCheckAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.FactCheckAgent import FactCheckAgent
+            from apps_rg.reasoning.FactCheckAgent import FactCheckAgent
 
             return FactCheckAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestFactCheckAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.FactCheckAgent import FactCheckAgent  # noqa: F401
+                from apps_rg.reasoning.FactCheckAgent import FactCheckAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

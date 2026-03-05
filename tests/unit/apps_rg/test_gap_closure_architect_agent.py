@@ -34,7 +34,7 @@ class TestGapClosureArchitectAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.tools.gap_closure_architect_agent_types import (
+            from apps_rg.types.gap_closure_architect_agent_types import (
                 GapClosureArchitectAgent,
             )
 
@@ -75,7 +75,7 @@ class TestGapClosureArchitectAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.tools.gap_closure_architect_agent_types import (
+                from apps_rg.types.gap_closure_architect_agent_types import (
                     GapClosureArchitectAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

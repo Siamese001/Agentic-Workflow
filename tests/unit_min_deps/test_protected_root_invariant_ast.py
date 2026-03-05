@@ -127,8 +127,8 @@ class TestProtectedRootEnforcementInvariant:
         execute_ssot_path = Path("agentic_core/L0_routing/scripts/execute_ssot.py")
         content = execute_ssot_path.read_text(encoding="utf-8")
 
-        # Check for fence-self-check flag (which exists)
-        assert "--fence-self-check" in content, "execute_ssot.py must expose --fence-self-check flag"
+        # Check for fence self-check function (flag was removed when file was frozen)
+        assert "run_fence_self_check" in content, "execute_ssot.py must define run_fence_self_check()"
 
     def test_execute_ssot_entrypoint_exposes_fence_self_check_flag(self):
         """Test that execute_ssot_entrypoint.py exposes --fence-self-check flag."""

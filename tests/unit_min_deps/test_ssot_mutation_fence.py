@@ -37,11 +37,11 @@ class TestProtectedRootEnforcement:
         # Should not raise when override is enabled
         enforce_protected_root(target_path, allow_override=True)
 
-    def test_enforce_protected_root_allows_tests(self):
-        """Test that writes to tests directory are allowed (tests is not a protected root)."""
+    def test_enforce_protected_root_blocks_tests(self):
+        """Test that writes to tests directory are blocked (tests is a protected root)."""
         target_path = Path("tests/test_file.py")
-        # Should not raise -- tests/ was removed from immutable_roots
-        enforce_protected_root(target_path, allow_override=False)
+        with pytest.raises(SourceMutationBlocked, match="Protected root mutation blocked"):
+            enforce_protected_root(target_path, allow_override=False)
 
     def test_enforce_protected_root_blocks_github(self):
         """Test that writes to .github directory are blocked."""
@@ -171,7 +171,7 @@ class TestPolicyContract:
     def test_default_policy_immutable_roots(self):
         """Test that default policy has exactly the canonical immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == ("agentic_core", ".github")
+        assert policy.immutable_roots == ("agentic_core", "tests", ".github")
 
     def test_default_policy_log_path(self):
         """Test that default policy has the canonical log path."""

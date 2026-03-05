@@ -36,7 +36,7 @@ class TestSectionBalanceAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.SectionBalanceAgent import SectionBalanceAgent
+            from apps_rg.reasoning.SectionBalanceAgent import SectionBalanceAgent
 
             return SectionBalanceAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestSectionBalanceAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.SectionBalanceAgent import SectionBalanceAgent  # noqa: F401
+                from apps_rg.reasoning.SectionBalanceAgent import SectionBalanceAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

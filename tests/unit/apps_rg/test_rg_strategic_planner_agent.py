@@ -37,7 +37,7 @@ class TestRgStrategicPlannerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.RgStrategicPlannerAgent import RgStrategicPlannerAgent
+            from apps_rg.reasoning.RgStrategicPlannerAgent import RgStrategicPlannerAgent
 
             return RgStrategicPlannerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -88,7 +88,7 @@ class TestRgStrategicPlannerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.RgStrategicPlannerAgent import (
+                from apps_rg.reasoning.RgStrategicPlannerAgent import (
                     RgStrategicPlannerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

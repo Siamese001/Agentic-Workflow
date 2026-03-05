@@ -34,7 +34,7 @@ class TestProactiveAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.ProactiveAgent import ProactiveAgent
+            from apps_rg.reasoning.ProactiveAgent import ProactiveAgent
 
             return ProactiveAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -93,7 +93,7 @@ class TestProactiveAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.ProactiveAgent import ProactiveAgent  # noqa: F401
+                from apps_rg.reasoning.ProactiveAgent import ProactiveAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 
