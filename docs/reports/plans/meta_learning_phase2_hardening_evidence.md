@@ -17,7 +17,7 @@ Second-pass hardening addressing four critique gaps from the governance review:
 
 ## EVIDENCE_COMMIT
 
-PENDING
+e96429824
 
 ## FILES_CHANGED_CODE
 
@@ -28,7 +28,7 @@ tests/system_learning/test_cross_agent_meta_learning_hardening.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/meta_learning_phase2_hardening_evidence.md
 
 ## INSPECTED_FILES
 
