@@ -43,8 +43,16 @@ from agentic_core.interfaces.meta_learning import (
 Logger = logging.getLogger(__name__)
 
 
+try:
+    from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+except ImportError:
+
+    class SemanticCacheMixin:
+        pass
+
+
 @dataclass
-class RGAgentBase(AppBase):
+class RGAgentBase(SemanticCacheMixin, AppBase):
     """
     RGAgentBase: The Sovereign Foundation for all 'Resume Generation' Agents.
 
