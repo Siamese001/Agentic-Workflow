@@ -301,8 +301,8 @@ class DeterministicRedisCache:
             # guardian: allow-silent-swallow
             except Exception as exc:
                 self._mark_failed(exc)
-        self._fallback.delete(key)
-        return deleted
+        fallback_deleted = self._fallback.delete(key)
+        return deleted or fallback_deleted
 
     def exists(self, key: str) -> bool:
         """Return ``True`` if *key* is present in the cache (Redis or fallback)."""
