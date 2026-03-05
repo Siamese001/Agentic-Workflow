@@ -2995,7 +2995,7 @@ def execute_phase1_discovery_impl(
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
 
-    state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L5 - Safety (Validator)")
+    state_mgr.update_agent("FilesystemSSOTHealerAgent", "L5 - Safety (Validator)")
 
     from agentic_core.L5_safety.reasoning.FilesystemSSOTValidatorAgent import (
         FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
@@ -3006,7 +3006,7 @@ def execute_phase1_discovery_impl(
     drift_report = _fs_check["evidence"]
 
     if drift_report is None:
-        state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", False, "Returned None")
+        state_mgr.complete_agent("FilesystemSSOTHealerAgent", False, "Returned None")
         return None, None
 
     # Wave 3: route healing through HEALER_REGISTRY via _invoke_healer
@@ -3016,10 +3016,10 @@ def execute_phase1_discovery_impl(
         _rd_invoke("filesystem_ssot_drift", _fs_check, repo_root=REPO_ROOT, apply=True)
 
     violations_count = _fs_check.get("violations_count", 0)
-    state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", True, f"Drift violations: {violations_count}")
+    state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
 
     # Location Validation
-    state_mgr.update_agent("LocationAgent", "L5 - Safety")
+    state_mgr.update_agent("LocationHealerAgent", "L5 - Safety")
     # [FIX-B11] Single LocationValidatorAgent instance for both scanning and healing
     location_validator = _get_location_validator_agent()(project_root=REPO_ROOT)
 
@@ -3031,7 +3031,7 @@ def execute_phase1_discovery_impl(
     if not territory_path.is_relative_to(repo_root_resolved):
         logger.critical(f"SECURITY ALERT: Path traversal attempt detected for territory '{territory}'")
         state_mgr.add_event("security", "Path traversal blocked")
-        state_mgr.complete_agent("LocationAgent", False, "Traversal blocked")
+        state_mgr.complete_agent("LocationHealerAgent", False, "Traversal blocked")
         return drift_report, []
 
     violations = []
@@ -3082,7 +3082,7 @@ def execute_phase1_discovery_impl(
     # [AUTO-HEALING] If confidence is high enough, trigger LocationAgent healing
     if len(violations) > 0:
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "LocationAgent", territory=territory
+            confidence, "LocationHealerAgent", territory=territory
         )
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
@@ -3132,7 +3132,7 @@ def execute_phase1_discovery_impl(
                 if healed_count > 0:
                     _record_healing_action(
                         state_mgr,
-                        agent="LocationAgent",
+                        agent="LocationHealerAgent",
                         territory=territory,
                         routing_score=confidence.value,
                         routing_tier="DETERMINISTIC",
@@ -3141,34 +3141,34 @@ def execute_phase1_discovery_impl(
                         outcome="SUCCESS",
                     )
                 state_mgr.complete_agent(
-                    "LocationAgent",
+                    "LocationHealerAgent",
                     True,
                     f"Violations: {len(violations)} | Healed: {healed_count} | Conf: {confidence.value:.2f}",
                 )
             else:
                 logger.warning(
-                    "LocationAgent has no heal_violations method - violations detected but not healed",
+                    "LocationHealerAgent has no heal_violations method - violations detected but not healed",
                 )
                 state_mgr.complete_agent(
-                    "LocationAgent",
+                    "LocationHealerAgent",
                     True,
                     f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (no heal method)",
                 )
         else:
             state_mgr.complete_agent(
-                "LocationAgent",
+                "LocationHealerAgent",
                 True,
                 f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (healing skipped)",
             )
     else:
-        state_mgr.complete_agent("LocationAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
+        state_mgr.complete_agent("LocationHealerAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
 
     # [PHASE 1 ENHANCEMENT] Early File Classification Detection
     # Run FileClassificationAgent in discovery phase to catch naming violations early
     classification_violations = []
     classification_scan_result = {}
     try:
-        state_mgr.update_agent("FileClassificationAgent", "L5 - Safety (Validator)")
+        state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety (Validator)")
         from agentic_core.L5_safety.reasoning.FileClassificationValidatorAgent import (
             FileClassificationValidatorAgent as _FileClassificationValidatorAgent,
         )
@@ -3180,7 +3180,7 @@ def execute_phase1_discovery_impl(
         classification_violations = _fc_evidence.get("violations", [])
         classification_count = len(classification_violations)
         state_mgr.complete_agent(
-            "FileClassificationAgent",
+            "FileClassificationHealerAgent",
             True,
             f"Early detection: {classification_count} classification issues",
         )
@@ -3195,8 +3195,8 @@ def execute_phase1_discovery_impl(
 
     # guardian: allow-silent-swallow
     except Exception as e:
-        logger.warning(f"FileClassificationAgent early detection failed: {e}")
-        state_mgr.complete_agent("FileClassificationAgent", False, f"Early detection error: {e}")
+        logger.warning(f"FileClassificationHealerAgent early detection failed: {e}")
+        state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         state_mgr.state["classification_violations"] = []
         state_mgr.state["classification_scan_result"] = {}
         state_mgr.state["classification_check_dict"] = {}
@@ -3221,7 +3221,7 @@ def execute_phase3_alignment_impl(
     """PHASE 3: STRUCTURAL ALIGNMENT - Implementation"""
     logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
 
-    state_mgr.update_agent("HierarchyAgent", "L5 - Safety")
+    state_mgr.update_agent("HierarchyHealerAgent", "L5 - Safety")
     from agentic_core.L5_safety.reasoning.HierarchyValidatorAgent import (
         HierarchyValidatorAgent as _HierarchyValidatorAgent,
     )
@@ -3233,7 +3233,7 @@ def execute_phase3_alignment_impl(
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
         proceed, reason = decision_engine.should_proceed_with_healing(
-            confidence, "HierarchyAgent", territory=territory
+            confidence, "HierarchyHealerAgent", territory=territory
         )
 
         state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
@@ -3245,12 +3245,12 @@ def execute_phase3_alignment_impl(
             heal_result = _rd_invoke("hierarchy_violations", _hier_check, repo_root=REPO_ROOT, apply=True)
             healed = len(heal_result.changes_made) if heal_result else 0
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
-            state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
+            state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
             return {"total_healed": healed, "status": str(heal_result.status) if heal_result else "UNKNOWN"}
         else:
-            state_mgr.complete_agent("HierarchyAgent", False, "Skipped - Low Confidence")
+            state_mgr.complete_agent("HierarchyHealerAgent", False, "Skipped - Low Confidence")
     else:
-        state_mgr.complete_agent("HierarchyAgent", True, "No violations found")
+        state_mgr.complete_agent("HierarchyHealerAgent", True, "No violations found")
 
     return None
 
@@ -3258,7 +3258,7 @@ def execute_phase3_alignment_impl(
 # [FIX-B8] GravityLeakRepairAgent runs once globally before the territory loop.
 def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
     """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
-    state_mgr.update_agent("GravityLeakRepairAgent", "L5 - Safety")
+    state_mgr.update_agent("GravityLeakHealerAgent", "L5 - Safety")
     from agentic_core.L5_safety.reasoning.GravityValidatorAgent import (
         GravityValidatorAgent as _GravityValidatorAgent,
     )
@@ -3283,7 +3283,7 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
         if gravity_fixed > 0:
             _record_healing_action(
                 state_mgr,
-                agent="GravityLeakRepairAgent",
+                agent="GravityLeakHealerAgent",
                 territory="__global__",
                 routing_tier="DETERMINISTIC",
                 confidence=0.9,
@@ -3309,16 +3309,16 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
 
         if gravity_violations > 0:
             status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
-            state_mgr.complete_agent("GravityLeakRepairAgent", True, status_msg)
+            state_mgr.complete_agent("GravityLeakHealerAgent", True, status_msg)
             logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
         else:
-            state_mgr.complete_agent("GravityLeakRepairAgent", True, "No gravity violations found")
+            state_mgr.complete_agent("GravityLeakHealerAgent", True, "No gravity violations found")
             logger.info("No gravity violations detected")
 
     # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Gravity violation detection failed: {e}")
-        state_mgr.complete_agent("GravityLeakRepairAgent", False, f"Detection failed: {str(e)}")
+        state_mgr.complete_agent("GravityLeakHealerAgent", False, f"Detection failed: {str(e)}")
         state_mgr.state["gravity_violations"] = [
             {
                 "type": "GRAVITY_ERROR",
@@ -3576,7 +3576,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
         # Convert LocationAgent violation object to detailed dict
         violation_dict = {
             "type": "LOCATION",
-            "source": "LocationAgent",
+            "source": "LocationHealerAgent",
             "file": file_path,
             "message": message,
             "severity": "medium",
@@ -3620,7 +3620,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
             violation_dict = {
                 "type": "CLASSIFICATION",
                 "subtype": subtype,
-                "source": "FileClassificationAgent",
+                "source": "FileClassificationHealerAgent",
                 "file": class_violation.get("file", "multiple"),
                 "message": f"{subtype} violation: {count} file(s) need attention",
                 "severity": "medium",
@@ -4013,7 +4013,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                 for gv in _rs.get("gravity_violations", []):
                     if isinstance(gv, dict):
                         global_violations.append(
-                            {**gv, "source": "GravityLeakRepairAgent", "scope": "global"}
+                            {**gv, "source": "GravityLeakHealerAgent", "scope": "global"}
                         )
             except Exception:  # guardian: allow-silent-swallower
                 pass
@@ -5772,7 +5772,7 @@ def _legacy_main(
                             territory=territory,
                         )
                         pascal_proceed, pascal_reason = decision_engine.should_proceed_with_healing(
-                            pascal_confidence, "FileClassificationAgent"
+                            pascal_confidence, "FileClassificationHealerAgent"
                         )
 
                         state_mgr.add_event("decision", f"Sovereignty Healing: {pascal_reason}")
@@ -5780,7 +5780,7 @@ def _legacy_main(
 
                         if pascal_proceed and effective_ctx.heal:
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
-                            state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
+                            state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety")
                             from agentic_core.L2_execution.scripts.remediation_dispatcher import (
                                 _invoke_healer as _rd_invoke,
                             )
@@ -5798,11 +5798,15 @@ def _legacy_main(
                                 "file_classification", _fc_check, repo_root=REPO_ROOT, apply=True
                             )
                             healed = len(heal_result.changes_made) if heal_result else 0
-                            state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
+                            state_mgr.complete_agent(
+                                "FileClassificationHealerAgent", True, f"Healed: {healed}"
+                            )
                         elif not pascal_proceed:
-                            state_mgr.skip_agent("FileClassificationAgent", pascal_reason)
+                            state_mgr.skip_agent("FileClassificationHealerAgent", pascal_reason)
                         elif not effective_ctx.heal:
-                            state_mgr.skip_agent("FileClassificationAgent", "scan-only mode (no --heal)")
+                            state_mgr.skip_agent(
+                                "FileClassificationHealerAgent", "scan-only mode (no --heal)"
+                            )
 
                         # Phase 4: Architectural Validation
                         gov, arch = execute_phase4_architectural_validation(

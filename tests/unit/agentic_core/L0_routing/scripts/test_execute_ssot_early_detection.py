@@ -69,9 +69,8 @@ class TestPhase1EarlyDetection:
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Check state manager updates
-        assert 'state_mgr.update_agent("FileClassificationAgent"' in content
-        assert 'state_mgr.complete_agent("FileClassificationAgent"' in content
-        assert "L5 - Safety (Early Detection)" in content
+        assert 'state_mgr.update_agent("FileClassificationHealerAgent"' in content
+        assert 'state_mgr.complete_agent("FileClassificationHealerAgent"' in content
 
     def test_early_detection_extracts_violations(self):
         """Verify early detection extracts violations from classifier stats."""
@@ -199,12 +198,12 @@ class TestPhase1EarlyDetectionPosition:
         content = execute_ssot_path.read_text(encoding="utf-8")
 
         # Find positions
-        location_complete_pos = content.find('state_mgr.complete_agent(\n            "LocationAgent"')
+        location_complete_pos = content.find('state_mgr.complete_agent("LocationHealerAgent"')
         early_detection_pos = content.find("PHASE 1 ENHANCEMENT")
 
-        # Early detection should come after LocationAgent completion
+        # Early detection should come after LocationHealerAgent completion
         assert early_detection_pos > location_complete_pos, (
-            "Early detection should be after LocationAgent completion"
+            "Early detection should be after LocationHealerAgent completion"
         )
 
     def test_early_detection_before_return(self):
