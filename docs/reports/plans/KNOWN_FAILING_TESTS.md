@@ -22,6 +22,8 @@ consolidation itself).
 | `tests/integration/agentic_core/test_inspector_agents_runtime.py` | 1 | Inspector agent infra | Yes |
 | `tests/unit/agentic_core/agents/test_red_sentinel_agent.py` | 1 | Missing `RedSentinelAgent` | Yes — LCD refactor |
 | `tests/unit/agentic_core/core/test_pascal_sovereign_replacements.py` | 1 | PSF assertion rot | Yes — Phase 2b |
+| `tests/unit/test_red_sentinel_agent_agents.py` | 1 | Module-level skip; RedSentinelAgent relocated to L5 reasoning | Yes — test deprecation Phase 4a |
+| `tests/unit/agentic_core/L0_routing/scripts/test_security_compliance_minimal.py` | 1 | Partial import skip; L0 boot_sequence relocated | Yes — test deprecation Phase 4a |
 
 ## Quarantined Tests
 

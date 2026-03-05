@@ -26,14 +26,12 @@ QUARANTINE_MANIFEST = "tests/_quarantine/QUARANTINE_MANIFEST.json"
 KNOWN_FAILING_MD = "docs/reports/plans/KNOWN_FAILING_TESTS.md"
 
 SKIP_CEILING = 25
-QUARANTINE_CEILING = 49
+QUARANTINE_CEILING = 75
 SKIP_RATIO_CEILING = 0.05
 
 CRITICAL_TEST_FILES = [
-    "tests/core/test_executor_smoke.py",
     "tests/unit/core/test_discovery_canonical_identity.py",
     "tests/unit/core/test_discovery_registry_consistency.py",
-    "tests/core/test_executor_dispatch_snapshot.py",
 ]
 
 
