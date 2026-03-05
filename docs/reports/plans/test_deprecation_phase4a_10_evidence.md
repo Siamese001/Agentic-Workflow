@@ -17,7 +17,7 @@ Phases 4a through 10 of the hardened test deprecation plan:
 
 ## EVIDENCE_COMMIT
 
-PENDING
+c338cdf8c
 
 ## FILES_CHANGED_CODE
 
