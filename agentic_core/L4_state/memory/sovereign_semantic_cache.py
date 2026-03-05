@@ -1,11 +1,10 @@
-from __future__ import annotations
-
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-"""L4 State: Sovereign Semantic cache — Redis + Pinecone Hybrid Eternal
-Redis L4 local cache for lightning recall + Pinecone eternal vector store.
+"""L4 State: Sovereign Semantic cache — Redis + BGE vector store Hybrid.
+Redis L4 local cache for lightning recall + in-memory BGE vector store.
 Full AST + metadata sovereignty with mission-isolation.
 """
+
+from __future__ import annotations
+
 import ast
 import hashlib
 import json
@@ -14,6 +13,7 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -47,7 +47,6 @@ class SovereignSemanticCache(SovereignBaseAgent):
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
-            mcp_authority.record_breach(f"Redis MCP cache Failure: {str(e)}")
             self.redis = None
 
     def _cache_key(self, file_path: str) -> str:
@@ -105,8 +104,8 @@ class SovereignSemanticCache(SovereignBaseAgent):
             }
             if self.redis:
                 entry_json: Any = json.dumps(entry)
-                if len(entry_json.encode()) < MAX_REDIS_ENTRY_SIZE:
-                    await self.redis.set(key, entry_json, ttl=REDIS_CACHE_TTL)
+                if len(entry_json.encode()) < max_redis_entry_size:
+                    await self.redis.set(key, entry_json, ttl=redis_cache_ttl)
             self._vector_store[key] = {
                 "vector": vector,
                 "metadata": entry["metadata"],

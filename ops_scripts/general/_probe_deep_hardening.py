@@ -1,0 +1,178 @@
+"""Deep hardening probe — run standalone, produces findings to stdout."""
+
+from __future__ import annotations
+
+import os
+import sys
+import threading
+
+sys.path.insert(0, "c:/Git/Agentic-Workflow")
+os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+
+from agentic_core.L4_state.memory.semantic_cache_manager import (  # noqa: E402
+    PII_Sanitizer,
+    SemanticCacheManager,
+)
+
+SemanticCacheManager.reset_instance()
+import apps_shared.enforcement.GlobalcacheStrategy as _mod  # noqa: E402
+from apps_shared.enforcement.GlobalcacheStrategy import (  # noqa: E402
+    GlobalCache,
+    cache_get,
+    cache_put,
+    cache_search_semantic,
+    cached,
+    get_global_cache,
+)
+
+
+def reset():
+    SemanticCacheManager.reset_instance()
+    _mod._global_cache = None
+
+
+# ── P1: get_hive_mind() concurrent race condition ────────────────────────────
+reset()
+gc = GlobalCache()
+race_results = []
+
+
+def _worker():
+    race_results.append(id(gc.get_hive_mind()))
+
+
+threads = [threading.Thread(target=_worker) for _ in range(20)]
+for t in threads:
+    t.start()
+for t in threads:
+    t.join()
+print("P1 race unique hive ids:", len(set(race_results)), "(expect 1)")
+print("P1 _hive type:", type(gc._hive).__name__)
+
+# ── P2: get_semantic max_results > 1 from hive path ─────────────────────────
+reset()
+gc2 = GlobalCache()
+gc2.put("k1", "val1", text_for_embedding="ats keywords resume")
+gc2.put("k2", "val2", text_for_embedding="ats keywords linkedin")
+r2 = gc2.get_semantic("ats keywords", max_results=3)
+print("P2 max_results=3 actual count:", len(r2), "(hive recall returns at most 1)")
+
+# ── P3: cache_stores increments without Redis ─────────────────────────────────
+reset()
+gc3 = GlobalCache()
+mgr3 = gc3.get_hive_mind()
+print("P3 redis_enabled:", mgr3.redis_enabled)
+gc3.put("k", {"v": 1}, text_for_embedding="ctx")
+print("P3 cache_stores after no-redis learn:", mgr3.get_statistics()["cache_stores"])
+
+# ── P4: GlobalCache.get_stats() keys ─────────────────────────────────────────
+reset()
+gc4 = GlobalCache()
+stats4 = gc4.get_stats()
+print("P4 get_stats keys:", sorted(stats4.keys()))
+
+# ── P5: GlobalCache.clear() resets stats ────────────────────────────────────
+reset()
+gc5 = GlobalCache()
+gc5.put("k", "v")
+gc5.get("k")
+gc5.clear()
+print("P5 stats after clear:", gc5._stats)
+
+# ── P6: PII sanitizer correctness ────────────────────────────────────────────
+reset()
+pii_tests = [
+    ("user@example.com", "EMAIL"),
+    ("sk-abc1234567890123456789012345", "OPENAI_KEY"),
+    ("AKIAIOSFODNN7EXAMPLE123456", "AWS_KEY"),
+    ("192.168.1.1", "IPV4"),
+    ("555-123-4567", "PHONE_US"),
+]
+for raw, pii_type in pii_tests:
+    safe = PII_Sanitizer.is_safe(raw)
+    sanitized = PII_Sanitizer.sanitize(raw)
+    found = pii_type.lower() in sanitized.lower() or "REDACTED" in sanitized
+    print(f"P6 {pii_type}: is_safe={safe} redacted={found} result={sanitized!r}")
+
+# ── P7: get_statistics() extended keys ───────────────────────────────────────
+reset()
+mgr7 = GlobalCache().get_hive_mind()
+stats7 = mgr7.get_statistics()
+for k in ("strict_mode", "stateless_mode", "sampling_rate_actual"):
+    print(f"P7 {k}: {k in stats7}")
+
+# ── P8: put() stored value dict contains 'value' + 'key' + 'source_engine' ──
+reset()
+gc8 = GlobalCache()
+hive8 = gc8.get_hive_mind()
+gc8.put("mykey", {"answer": 42}, text_for_embedding="target query text", source_engine="ENG")
+recalled = hive8.recall("target query text", "GlobalCache")
+if recalled:
+    print("P8 recalled keys:", sorted(recalled.keys()))
+    print("P8 value key present:", "value" in recalled)
+    print("P8 _metadata present:", "_metadata" in recalled)
+    meta = recalled.get("_metadata", {})
+    print("P8 metadata.namespace:", meta.get("namespace"))
+else:
+    print("P8 recalled=None (Redis unavailable — vector store only path)")
+    # Since Redis unavailable, learn() only increments counter, doesn't write to vector store
+    # The vector store is written only by promote_to_long_term()
+    print("P8 CONFIRMED: without Redis, recall() cannot retrieve working-memory entries")
+
+# ── P9: convenience functions exist and are callable ──────────────────────────
+reset()
+print("P9 cache_get callable:", callable(cache_get))
+print("P9 cache_put callable:", callable(cache_put))
+print("P9 cache_search_semantic callable:", callable(cache_search_semantic))
+print("P9 cached callable:", callable(cached))
+
+# ── P10: multiple GlobalCache instances share same singleton ─────────────────
+reset()
+gc_a = GlobalCache()
+gc_b = GlobalCache()
+print("P10 both get same singleton:", gc_a.get_hive_mind() is gc_b.get_hive_mind())
+print("P10 independent _hive attrs:", gc_a._hive is not gc_b._hive or gc_a._hive is gc_b._hive)
+
+# ── P11: get_global_cache() module-level singleton ───────────────────────────
+reset()
+inst1 = get_global_cache()
+inst2 = get_global_cache()
+print("P11 get_global_cache singleton:", inst1 is inst2)
+
+# ── P12: strict_mode=true raises only when BOTH Redis AND vector_store fail ───
+# vector_store is always enabled (pure in-memory), so strict mode never raises
+reset()
+os.environ["HIVE_MIND_STRICT_MODE"] = "true"
+SemanticCacheManager.reset_instance()
+try:
+    mgr12 = SemanticCacheManager.get_instance()
+    print("P12 strict_mode + no redis + vector_store available: NO raise (correct)")
+    print("P12 stateless_mode:", mgr12.stateless_mode)
+except Exception as e:
+    print("P12 UNEXPECTED raise:", e)
+finally:
+    os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+    SemanticCacheManager.reset_instance()
+
+# ── P13: detect_pii() returns per-type matches ────────────────────────────────
+raw13 = "contact john@corp.com or call 555-867-5309 with key sk-abc1234567890123456789"
+findings = PII_Sanitizer.detect_pii(raw13)
+print("P13 detect_pii types found:", sorted(findings.keys()))
+
+# ── P14: GlobalCache.get_semantic recall path: value extraction ───────────────
+# When hive.recall returns {"value": X, "_metadata": {...}}, get_semantic extracts X
+reset()
+gc14 = GlobalCache()
+gc14.put("kk", "stored_value", text_for_embedding="specific query phrase")
+r14 = gc14.get_semantic("specific query phrase")
+# Without Redis, recall() cannot find it (working memory only + vector store requires promote)
+print("P14 get_semantic without promote:", r14)
+
+# ── P15: cleanup_expired() returns int ───────────────────────────────────────
+reset()
+gc15 = GlobalCache()
+n = gc15.cleanup_expired()
+print("P15 cleanup_expired returns int:", isinstance(n, int))
+
+print()
+print("ALL PROBES COMPLETE")

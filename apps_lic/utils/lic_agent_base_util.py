@@ -58,8 +58,16 @@ except ImportError:
         pass
 
 
+try:
+    from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+except ImportError:
+
+    class SemanticCacheMixin:
+        pass
+
+
 @dataclass
-class LICAgentBase(MetaLearningMixin, AppBase, HealerMixin):
+class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
     """
     LICAgentBase: Sovereign Foundation for 'Linked-In Canonical' (LIC).
 

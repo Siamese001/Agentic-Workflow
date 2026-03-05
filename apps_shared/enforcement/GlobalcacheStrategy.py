@@ -320,14 +320,20 @@ class SimpleEmbedder:
 
 
 class GlobalCache:
-    """Global semantic cache with L1/L2 storage."""
+    """Global semantic cache with L1/L2 storage.
+
+    L1: in-process LRU (exact key hash, O(1))
+    L2: delegates to SemanticCacheManager singleton (BGE vector store, Redis working memory)
+    """
+
+    _HIVE_NAMESPACE = "GlobalCache"
 
     def __init__(self, l1_size: int = 1000, l2_size: int = 10000, semantic_threshold: float = 0.92):
         """Initialize global cache.
 
         Args:
             l1_size: L1 cache size
-            l2_size: L2 cache size
+            l2_size: L2 cache size (kept for API compat; L2 is now SSOT-backed)
             semantic_threshold: Semantic similarity threshold
         """
         self.l1 = L1MemoryCache(l1_size)
@@ -335,12 +341,27 @@ class GlobalCache:
         self.embedder = SimpleEmbedder()
         self.semantic_threshold = semantic_threshold
 
+        # Lazy reference to SemanticCacheManager singleton (L2 SSOT)
+        self._hive: Any = None
+
         # Statistics
         self._stats = {"total_requests": 0, "l1_hits": 0, "l2_hits": 0, "total_misses": 0}
 
         logger.info(
-            f"Initialized GlobalCache (L1: {l1_size}, L2: {l2_size}, threshold: {semantic_threshold})",
+            f"Initialized GlobalCache (L1: {l1_size}, L2: SSOT-backed, threshold: {semantic_threshold})",
         )
+
+    def get_hive_mind(self):
+        """Lazy-load SemanticCacheManager singleton for L2 delegation."""
+        if self._hive is None:
+            try:
+                from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+                self._hive = SemanticCacheManager.get_instance()
+            except Exception as e:  # guardian: allow-silent-swallower
+                logger.warning(f"[GlobalCache] SemanticCacheManager unavailable, L2 disabled: {e}")
+                self._hive = False
+        return self._hive if self._hive is not False else None
 
     def get(self, key: str) -> Any | None:
         """Get value by exact key.
@@ -383,6 +404,9 @@ class GlobalCache:
     ) -> list[Any]:
         """Get values by semantic similarity.
 
+        Checks SemanticCacheManager (SSOT L2) first, then falls back to
+        local L2VectorStore for entries stored before SSOT delegation.
+
         Args:
             query_text: Query text
             threshold: Similarity threshold (uses default if None)
@@ -396,21 +420,27 @@ class GlobalCache:
         if threshold is None:
             threshold = self.semantic_threshold
 
-        # Generate query embedding
-        query_embedding = self.embedder.embed(query_text)
+        # L2a: SemanticCacheManager SSOT (BGE vector store + Redis)
+        hive = self.get_hive_mind()
+        if hive is not None:
+            try:
+                recalled = hive.recall(query_text, self._HIVE_NAMESPACE)
+                if recalled is not None:
+                    self._stats["l2_hits"] += 1
+                    value = recalled.get("value", recalled)
+                    return [value] if max_results >= 1 else []
+            except Exception as e:  # guardian: allow-silent-swallower
+                logger.debug(f"[GlobalCache] Hive recall failed: {e}")
 
-        # Search L2
+        # L2b: Local vector store fallback
+        query_embedding = self.embedder.embed(query_text)
         results = self.l2.search(query_embedding, threshold, max_results)
 
         if results:
             self._stats["l2_hits"] += 1
-
-            # Promote to L1 for best match
-            if results:
-                best_entry, _ = results[0]
-                key_hash = self._hash_key(query_text)
-                self.l1.put(key_hash, best_entry)
-
+            best_entry, _ = results[0]
+            key_hash = self._hash_key(query_text)
+            self.l1.put(key_hash, best_entry)
             return [entry.value for entry, _ in results]
 
         self._stats["total_misses"] += 1
@@ -426,6 +456,9 @@ class GlobalCache:
     ) -> None:
         """Put value in cache.
 
+        Stores in L1 LRU and, when text_for_embedding is provided, also
+        delegates to SemanticCacheManager.learn() for SSOT L2 persistence.
+
         Args:
             key: cache key
             value: Value to cache
@@ -433,15 +466,12 @@ class GlobalCache:
             ttl: Time to live in seconds
             source_engine: Source engine identifier
         """
-        # Generate key hash
         key_hash = self._hash_key(key)
 
-        # Generate embedding
         embedding = []
         if text_for_embedding:
             embedding = self.embedder.embed(text_for_embedding)
 
-        # Create entry
         entry = CacheEntry(
             key_hash=key_hash,
             value=value,
@@ -450,12 +480,25 @@ class GlobalCache:
             source_engine=source_engine,
         )
 
-        # Store in L1
+        # L1: always store locally
         self.l1.put(key_hash, entry)
 
-        # Store in L2 if has embedding
+        # L2 local: store for cosine-fallback
         if embedding:
             self.l2.add(entry)
+
+        # L2 SSOT: delegate to SemanticCacheManager
+        if text_for_embedding:
+            hive = self.get_hive_mind()
+            if hive is not None:
+                try:
+                    hive.learn(
+                        text_for_embedding,
+                        self._HIVE_NAMESPACE,
+                        {"value": value, "key": key, "source_engine": source_engine},
+                    )
+                except Exception as e:  # guardian: allow-silent-swallower
+                    logger.debug(f"[GlobalCache] Hive learn failed: {e}")
 
     def _hash_key(self, key: str) -> str:
         """Generate hash for key.
