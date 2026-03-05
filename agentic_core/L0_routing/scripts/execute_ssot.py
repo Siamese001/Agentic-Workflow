@@ -382,10 +382,10 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
 def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
-    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
-    from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import GravityLeakRepairAgent
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.FileClassificationHealerAgent import FileClassificationHealerAgent
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTHealerAgent import FilesystemSSOTHealerAgent
+    from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
+    from agentic_core.L5_safety.reasoning.HierarchyHealerAgent import HierarchyHealerAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
@@ -395,10 +395,10 @@ def _get_l5_agent_roster():
     return (
         ArchitectureGovernorAgent,
         CognitiveDispositionAgent,
-        FileClassificationAgent,
-        FilesystemSSOTReconcilerAgent,
-        GravityLeakRepairAgent,
-        HierarchyAgent,
+        FileClassificationHealerAgent,
+        FilesystemSSOTHealerAgent,
+        GravityLeakHealerAgent,
+        HierarchyHealerAgent,
         LocationHealerAgent,
         RootHygieneAgent,
         ObservabilityProbeExecutorAgent,
@@ -5460,22 +5460,22 @@ def _legacy_main(
     (
         ArchitectureGovernorAgent,
         CognitiveDispositionAgent,
-        FileClassificationAgent,
-        FilesystemSSOTReconcilerAgent,
-        GravityLeakRepairAgent,
-        HierarchyAgent,
+        FileClassificationHealerAgent,
+        FilesystemSSOTHealerAgent,
+        GravityLeakHealerAgent,
+        HierarchyHealerAgent,
         LocationHealerAgent,
         RootHygieneAgent,
         ObservabilityProbeExecutorAgent,
     ) = _get_l5_agent_roster()
 
     agents = {
-        "reconciler": FilesystemSSOTReconcilerAgent,
+        "reconciler": FilesystemSSOTHealerAgent,
         "location": LocationHealerAgent,  # BUG-1 fix: was LocationValidatorAgent which raises NotImplementedError
-        "hierarchy": HierarchyAgent,
+        "hierarchy": HierarchyHealerAgent,
         "arch_governor": ArchitectureGovernorAgent,
-        "gravity_repair": GravityLeakRepairAgent,
-        "file_classification": FileClassificationAgent,
+        "gravity_repair": GravityLeakHealerAgent,
+        "file_classification": FileClassificationHealerAgent,
         "observability_probe": ObservabilityProbeExecutorAgent,
         "cognitive_disposition": CognitiveDispositionAgent,
         "root_hygiene": RootHygieneAgent,
