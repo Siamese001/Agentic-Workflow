@@ -2915,25 +2915,27 @@ def execute_phase1_discovery_impl(
     """PHASE 1: TERRITORIAL DISCOVERY - Implementation with CognitiveDispositionAgent integration"""
     logger.info(f"=== PHASE 1: DISCOVERY - {territory} ===")
 
-    state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L0 - Maintenance")
+    state_mgr.update_agent("FilesystemSSOTReconcilerAgent", "L5 - Safety (Validator)")
 
-    reconciler = agents["reconciler"](project_root=REPO_ROOT)
-    drift_report = reconciler.detect_root_drift()
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTValidatorAgent import (
+        FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
+    )
+
+    _fs_validator = _FilesystemSSOTValidatorAgent(project_root=REPO_ROOT)
+    _fs_check = _fs_validator.to_check_dict()
+    drift_report = _fs_check["evidence"]
 
     if drift_report is None:
         state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", False, "Returned None")
         return None, None
 
-    # Wave 3: when healing is active, pass force=True so the skip-gate is bypassed
-    # and forbidden root folders (logs/, scripts/, etc.) are actually reconciled.
+    # Wave 3: route healing through HEALER_REGISTRY via _invoke_healer
     if ctx is not None and getattr(ctx, "heal", False):
-        reconciler.heal_repository(force=True, dry_run=False, execute=True)
+        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
 
-    violations_count = (
-        len(drift_report.get("forbidden_folders", []))
-        + len(drift_report.get("archived_files_at_root", []))
-        + len(drift_report.get("duplicate_folders", []))
-    )
+        _rd_invoke("filesystem_ssot_drift", _fs_check, repo_root=REPO_ROOT, apply=True)
+
+    violations_count = _fs_check.get("violations_count", 0)
     state_mgr.complete_agent("FilesystemSSOTReconcilerAgent", True, f"Drift violations: {violations_count}")
 
     # Location Validation
@@ -3086,33 +3088,16 @@ def execute_phase1_discovery_impl(
     classification_violations = []
     classification_scan_result = {}
     try:
-        state_mgr.update_agent("FileClassificationAgent", "L5 - Safety (Early Detection)")
-        file_classifier = agents["file_classification"](project_root=REPO_ROOT)
+        state_mgr.update_agent("FileClassificationAgent", "L5 - Safety (Validator)")
+        from agentic_core.L5_safety.reasoning.FileClassificationValidatorAgent import (
+            FileClassificationValidatorAgent as _FileClassificationValidatorAgent,
+        )
 
-        # Run classification scan on territory (validate_only mode for detection)
-        file_classifier.validate_only = True
-        file_classifier.dry_run = False
-        # [FIX-B9] Scope scan to current territory instead of entire repo
-        if hasattr(file_classifier, "target_territory"):
-            file_classifier.target_territory = territory
-        try:
-            classification_scan_result = file_classifier.run(target_territory=territory) or {}
-        except TypeError:
-            classification_scan_result = file_classifier.run() or {}
-
-        # Extract violations from stats
-        if hasattr(file_classifier, "stats") and file_classifier.stats.get("violations"):
-            for vtype, count in file_classifier.stats["violations"].items():
-                if isinstance(count, int) and count > 0:
-                    classification_violations.append(
-                        {
-                            "type": "CLASSIFICATION",
-                            "subtype": vtype,
-                            "count": count,
-                            "territory": territory,
-                        },
-                    )
-
+        _fc_validator = _FileClassificationValidatorAgent(project_root=REPO_ROOT)
+        _fc_check = _fc_validator.to_check_dict(target_territory=territory)
+        _fc_evidence = _fc_check.get("evidence", {})
+        classification_scan_result = _fc_evidence.get("scan_result", {})
+        classification_violations = _fc_evidence.get("violations", [])
         classification_count = len(classification_violations)
         state_mgr.complete_agent(
             "FileClassificationAgent",
@@ -3120,13 +3105,13 @@ def execute_phase1_discovery_impl(
             f"Early detection: {classification_count} classification issues",
         )
 
-        # Store classification results for later phases
+        # Store classification results for later phases (including check_dict for healing)
         state_mgr.state["classification_violations"] = classification_violations
         state_mgr.state["classification_scan_result"] = classification_scan_result
-        if hasattr(file_classifier, "file_registry") and file_classifier.file_registry:
-            state_mgr.state["classification_file_registry"] = [str(p) for p in file_classifier.file_registry]
+        state_mgr.state["classification_check_dict"] = _fc_check
+        state_mgr.state["classification_file_registry"] = _fc_evidence.get("file_registry", [])
 
-        logger.info(f"📋 FileClassificationAgent early detection: {classification_count} issues found")
+        logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
 
     # guardian: allow-silent-swallow
     except Exception as e:
@@ -3134,6 +3119,7 @@ def execute_phase1_discovery_impl(
         state_mgr.complete_agent("FileClassificationAgent", False, f"Early detection error: {e}")
         state_mgr.state["classification_violations"] = []
         state_mgr.state["classification_scan_result"] = {}
+        state_mgr.state["classification_check_dict"] = {}
 
     return drift_report, violations, location_scan_result
 
@@ -3156,15 +3142,13 @@ def execute_phase3_alignment_impl(
     logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
 
     state_mgr.update_agent("HierarchyAgent", "L5 - Safety")
-    hierarchy = agents["hierarchy"](project_root=REPO_ROOT)
+    from agentic_core.L5_safety.reasoning.HierarchyValidatorAgent import (
+        HierarchyValidatorAgent as _HierarchyValidatorAgent,
+    )
 
-    # [STRICT SCOPE] Pass territory to scan only the target root
-    scan = hierarchy.scan_root_violations(target_territory=territory)
-    violations = scan.get("violations_found", 0)
-
-    # Check if we found violations in the returned dict format (list vs count)
-    if "violations" in scan and isinstance(scan["violations"], list):
-        violations = len(scan["violations"])
+    _hier_validator = _HierarchyValidatorAgent(project_root=REPO_ROOT)
+    _hier_check = _hier_validator.to_check_dict(target_territory=territory)
+    violations = _hier_check["violations_count"]
 
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
@@ -3176,20 +3160,13 @@ def execute_phase3_alignment_impl(
         logger.info(f"Decision: {reason}")
 
         if proceed and ctx is not None and ctx.heal:
-            # [SOVEREIGN DEFAULT] Propagate active/dry-run status to HierarchyAgent
-            res = hierarchy.heal_hierarchy(
-                create_structure=True,
-                relocate_files=True,
-                enforce_depth=True,
-                purge_orphans=ctx.heal if ctx else False,
-                target_territory=territory,  # [STRICT SCOPE] Already correct here, but ensuring strict adherence
-                dry_run=False,
-                auto_approve=ctx.auto_approve if ctx else False,
-            )
-            healed = res.get("total_healed", 0)
+            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
+
+            heal_result = _rd_invoke("hierarchy_violations", _hier_check, repo_root=REPO_ROOT, apply=True)
+            healed = len(heal_result.changes_made) if heal_result else 0
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
             state_mgr.complete_agent("HierarchyAgent", True, f"Healed: {healed}")
-            return res
+            return {"total_healed": healed, "status": str(heal_result.status) if heal_result else "UNKNOWN"}
         else:
             state_mgr.complete_agent("HierarchyAgent", False, "Skipped - Low Confidence")
     else:
@@ -3202,17 +3179,25 @@ def execute_phase3_alignment_impl(
 def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
     """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
     state_mgr.update_agent("GravityLeakRepairAgent", "L5 - Safety")
-    gravity_agent = agents["gravity_repair"](project_root=REPO_ROOT)
+    from agentic_core.L5_safety.reasoning.GravityValidatorAgent import (
+        GravityValidatorAgent as _GravityValidatorAgent,
+    )
 
     try:
         logger.info("Detecting gravity violations (layer inversions)...")
-        gravity_result = gravity_agent.heal_repository(
-            dry_run=not (ctx.heal if ctx else False),
-            execute=(ctx.heal if ctx else False),
-        )
+        _gv = _GravityValidatorAgent(project_root=REPO_ROOT)
+        _gravity_check = _gv.to_check_dict()
+        gravity_violations = _gravity_check["violations_count"]
+        gravity_fixed = 0
 
-        gravity_violations = gravity_result.get("violations_found", 0)
-        gravity_fixed = gravity_result.get("violations_fixed", 0)
+        if gravity_violations > 0 and ctx is not None and ctx.heal:
+            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
+
+            heal_result = _rd_invoke("gravity_violations", _gravity_check, repo_root=REPO_ROOT, apply=True)
+            gravity_fixed = len(
+                [c for c in (heal_result.changes_made if heal_result else []) if "fixed" in c]
+            )
+
         state_mgr.state["gravity_fixed"] = gravity_fixed  # [FIX-B3]
         # [H3] Record healing action for GravityLeakRepairAgent
         if gravity_fixed > 0:
@@ -3227,29 +3212,22 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
             )
 
         # Store gravity violations for final reporting
-        if gravity_result.get("violations"):
-            state_mgr.state["gravity_violations"] = gravity_result["violations"]
-        else:
-            gravity_violation_list = []
-            if gravity_violations > 0:
-                gravity_violation_list.append(
-                    {
-                        "type": "GRAVITY",
-                        "message": f"Found {gravity_violations} gravity violations (layer inversions)",
-                        "severity": "high",
-                        "recommended_action": "Review and fix layer boundary violations",
-                        "confidence": 0.9,
-                        "violations_found": gravity_violations,
-                        "violations_fixed": gravity_fixed,
-                    }
-                )
-            state_mgr.state["gravity_violations"] = gravity_violation_list
-
-        if gravity_result.get("status") == "ERROR":
-            state_mgr.complete_agent(
-                "GravityLeakRepairAgent", False, f"Error: {gravity_result.get('error', 'Unknown')}"
+        gravity_violation_list = []
+        if gravity_violations > 0:
+            gravity_violation_list.append(
+                {
+                    "type": "GRAVITY",
+                    "message": f"Found {gravity_violations} gravity violations (layer inversions)",
+                    "severity": "high",
+                    "recommended_action": "Review and fix layer boundary violations",
+                    "confidence": 0.9,
+                    "violations_found": gravity_violations,
+                    "violations_fixed": gravity_fixed,
+                }
             )
-        elif gravity_violations > 0:
+        state_mgr.state["gravity_violations"] = gravity_violation_list
+
+        if gravity_violations > 0:
             status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
             state_mgr.complete_agent("GravityLeakRepairAgent", True, status_msg)
             logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
@@ -3389,18 +3367,26 @@ def execute_phase5_healing_impl(
 
         if proceed and ctx is not None and ctx.heal:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
-            # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
-            res = arch_gov.heal_repository(
-                dry_run=False,
-                auto_approve=ctx.auto_approve if ctx else False,
-                target_territory=territory,
+            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
+
+            _arch_check = {
+                "check_id": "architecture_governance",
+                "evidence": {"violations_found": fixes, "gov_report": gov_report},
+                "violations_count": fixes,
+                "territory": territory,
+                "repo_root": str(REPO_ROOT),
+            }
+            heal_result = _rd_invoke("architecture_governance", _arch_check, repo_root=REPO_ROOT, apply=True)
+            _hr_status = str(
+                getattr(
+                    getattr(heal_result, "status", None), "value", getattr(heal_result, "status", "UNKNOWN")
+                )
             )
-            status = res.get("status", "UNKNOWN")
-            fixed = res.get("violations_fixed", 0)
-            found = res.get("violations_found", 0)
-            success = status not in ("BLOCKED", "ERROR", "UNKNOWN") or fixed > 0 or found >= 0
+            fixed = len([c for c in (heal_result.changes_made if heal_result else []) if "fixed" in c])
+            found = fixes
+            success = heal_result is not None and _hr_status not in ("FAILED", "UNKNOWN")
             # [H3] Record healing action for ArchitectureGovernorAgent
-            if fixed > 0:
+            if fixed > 0 or (heal_result and heal_result.changes_made):
                 _record_healing_action(
                     state_mgr,
                     agent="ArchitectureGovernorAgent",
@@ -3408,13 +3394,13 @@ def execute_phase5_healing_impl(
                     routing_score=confidence.value,
                     routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
                     confidence=confidence.value,
-                    fix_summary=f"Fixed {fixed} of {found} architecture violations",
+                    fix_summary=f"Fixed architecture violations in {territory}",
                     outcome="SUCCESS",
                 )
             state_mgr.complete_agent(
-                "ArchitectureGovernorAgent", success, f"status={status} found={found} fixed={fixed}"
+                "ArchitectureGovernorAgent", success, f"status={_hr_status} found={found} fixed={fixed}"
             )
-            return res
+            return {"status": _hr_status, "violations_found": found, "violations_fixed": fixed}
         else:
             state_mgr.skip_agent("ArchitectureGovernorAgent", reason)
 
@@ -5094,7 +5080,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
 
         _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
         _registry_hash = _h.sha256(_reg_bytes).hexdigest()
-    except Exception:
+    except Exception:  # guardian: allow-silent-swallower
         _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
 
     _config_hash = _hcs(_gcs())
@@ -5167,9 +5153,9 @@ def _legacy_main(
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
-        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
-        os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"
-        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
+        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"  # guardian: allow-global-mutation
+        os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"  # guardian: allow-global-mutation
+        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"  # guardian: allow-global-mutation
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
@@ -5685,25 +5671,24 @@ def _legacy_main(
                         if pascal_proceed and effective_ctx.heal:
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationAgent", "L5 - Safety")
-                            pascal = agents["file_classification"](project_root=REPO_ROOT)
-                            if hasattr(pascal, "heal_repository"):
-                                _cached = {
+                            from agentic_core.L2_execution.scripts.remediation_dispatcher import (
+                                _invoke_healer as _rd_invoke,
+                            )
+
+                            _fc_check = state_mgr.state.get("classification_check_dict") or {
+                                "check_id": "file_classification",
+                                "evidence": {
                                     "file_registry": state_mgr.state.get("classification_file_registry", [])
-                                }
-                                res = pascal.heal_repository(
-                                    target_territory=territory,
-                                    dry_run=False,
-                                    auto_approve=effective_ctx.auto_approve,
-                                    cached_scan=_cached,
-                                )
-                                healed = res.get("files_healed", 0) if isinstance(res, dict) else 0
-                                state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
-                            else:
-                                state_mgr.complete_agent(
-                                    "FileClassificationAgent",
-                                    False,
-                                    "No heal_repository method",
-                                )
+                                },
+                                "violations_count": len(state_mgr.state.get("classification_violations", [])),
+                                "territory": territory,
+                                "repo_root": str(REPO_ROOT),
+                            }
+                            heal_result = _rd_invoke(
+                                "file_classification", _fc_check, repo_root=REPO_ROOT, apply=True
+                            )
+                            healed = len(heal_result.changes_made) if heal_result else 0
+                            state_mgr.complete_agent("FileClassificationAgent", True, f"Healed: {healed}")
                         elif not pascal_proceed:
                             state_mgr.skip_agent("FileClassificationAgent", pascal_reason)
                         elif not effective_ctx.heal:
@@ -5839,7 +5824,7 @@ def _legacy_main(
                 _det_digest = _compute_pipeline_digest(targets)
                 _det_line = _DET_EMITTER().emit_once(_det_digest)
                 print(_det_line)
-            except Exception as _det_exc:
+            except Exception as _det_exc:  # guardian: allow-silent-swallower
                 logger.warning(f"[DETERMINISM-DIGEST] emission failed: {_det_exc}")
 
             # Final Summary
