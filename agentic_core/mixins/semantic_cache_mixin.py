@@ -23,20 +23,17 @@ class SemanticCacheMixin:
                 result = self._compute(query)
                 self.semantic_learn(query, namespace, result)
                 return result
-    """
 
-    _semantic_cache = None
+    Note: `semantic_cache` always delegates to `SemanticCacheManager.get_instance()`.
+    No stale references — every call returns the live singleton.
+    """
 
     @property
     def semantic_cache(self):
-        """Lazy-load canonical SemanticCacheManager singleton."""
-        if self._semantic_cache is None:
-            from agentic_core.L4_state.memory.semantic_cache_manager import (
-                SemanticCacheManager,
-            )
+        """Return canonical SemanticCacheManager singleton (no instance caching)."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
 
-            self._semantic_cache = SemanticCacheManager.get_instance()
-        return self._semantic_cache
+        return SemanticCacheManager.get_instance()
 
     def semantic_recall(self, context: str, namespace: str) -> Any:
         """Recall from semantic cache (L1 Redis + L2 BGE vector store)."""
@@ -61,6 +58,15 @@ class SemanticCacheMixin:
     ) -> bool:
         """Promote high-value memory to long-term vector store."""
         return self.semantic_cache.promote_to_long_term(context, namespace, result, feedback_score)
+
+    def semantic_update_feedback(
+        self,
+        context: str,
+        namespace: str,
+        feedback_score: float,
+    ) -> bool:
+        """Update feedback score for existing memory; auto-promotes if above threshold."""
+        return self.semantic_cache.update_feedback_score(context, namespace, feedback_score)
 
     def semantic_stats(self) -> dict[str, Any]:
         """Return cache hit/miss statistics."""
