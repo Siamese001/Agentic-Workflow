@@ -38,6 +38,7 @@ logger = logging.getLogger(__name__)
 _MAX_KEY_LEN: int = 512
 _MAX_VALUE_BYTES: int = 10 * 1024 * 1024  # 10 MB safety cap
 _FALLBACK_MAX_ENTRIES: int = 4096
+_MAX_TTL_SECONDS: int = 86400  # 24 hours hard cap
 
 
 class CacheDB(IntEnum):
@@ -60,14 +61,29 @@ def canonical_json_bytes(obj: Any) -> bytes:
     - Separators ``(',', ':')`` — no trailing whitespace.
     - ``ensure_ascii=True`` — safe for SHA-256 and Redis storage.
     - ``allow_nan=False`` — NaN/Infinity in floats would break determinism.
+
+    Raises
+    ------
+    TypeError
+        If obj contains non-JSON-serializable types (bytes, set, custom classes).
+    ValueError
+        If obj contains NaN or Infinity floats.
     """
-    return json.dumps(
-        obj,
-        sort_keys=True,
-        separators=(",", ":"),
-        ensure_ascii=True,
-        allow_nan=False,
-    ).encode("ascii")
+    try:
+        return json.dumps(
+            obj,
+            sort_keys=True,
+            separators=(",", ":"),
+            ensure_ascii=True,
+            allow_nan=False,
+        ).encode("ascii")
+    except TypeError as exc:
+        raise TypeError(
+            f"Object contains non-JSON-serializable type: {exc}. "
+            "Only dict, list, str, int, float, bool, None are allowed."
+        ) from exc
+    except ValueError as exc:
+        raise ValueError(f"Object contains NaN or Infinity: {exc}") from exc
 
 
 def content_hash(data: bytes) -> str:
@@ -270,13 +286,17 @@ class DeterministicRedisCache:
         TypeError
             If *value* is not ``bytes``.
         ValueError
-            If the value exceeds the 10 MB safety cap.
+            If the value exceeds the 10 MB safety cap, or TTL is invalid.
         """
         self._validate_key(key)
         if not isinstance(value, bytes):
             raise TypeError(f"Cache value must be bytes, got {type(value).__name__}")
         if len(value) > _MAX_VALUE_BYTES:
             raise ValueError(f"Cache value too large ({len(value)} bytes > {_MAX_VALUE_BYTES})")
+        if ttl_seconds <= 0:
+            raise ValueError(f"TTL must be positive, got {ttl_seconds}")
+        if ttl_seconds > _MAX_TTL_SECONDS:
+            raise ValueError(f"TTL exceeds {_MAX_TTL_SECONDS}s limit, got {ttl_seconds}")
 
         conn = self._connect()
         if conn is not None:
@@ -362,8 +382,23 @@ class DeterministicRedisCache:
             Current semantic clock tick from ``SemanticClockSnapshot``.
         ttl_seconds:
             Lease TTL.  Coordination DB (DB 1) uses short TTLs.
+
+        Raises
+        ------
+        ValueError
+            If holder_id, nonce are empty, semantic_clock_tick < 0, or TTL invalid.
         """
         self._validate_key(key)
+        if not holder_id:
+            raise ValueError("holder_id must be non-empty")
+        if not nonce:
+            raise ValueError("nonce must be non-empty")
+        if semantic_clock_tick < 0:
+            raise ValueError(f"semantic_clock_tick must be >= 0, got {semantic_clock_tick}")
+        if ttl_seconds <= 0:
+            raise ValueError(f"Lease TTL must be positive, got {ttl_seconds}")
+        if ttl_seconds > _MAX_TTL_SECONDS:
+            raise ValueError(f"Lease TTL exceeds {_MAX_TTL_SECONDS}s limit, got {ttl_seconds}")
         payload = canonical_json_bytes(
             {
                 "holder_id": holder_id,
@@ -392,14 +427,25 @@ class DeterministicRedisCache:
 
         Verifies ``holder_id`` and ``nonce`` before deletion to prevent
         accidental release by a competing process.
+
+        Raises
+        ------
+        ValueError
+            If holder_id or nonce are empty.
         """
         self._validate_key(key)
+        if not holder_id:
+            raise ValueError("holder_id must be non-empty")
+        if not nonce:
+            raise ValueError("nonce must be non-empty")
         raw = self.get(key)
         if raw is None:
             return False
         try:
             stored = json.loads(raw.decode("ascii"))
         except (json.JSONDecodeError, UnicodeDecodeError):
+            return False
+        if not isinstance(stored, dict):
             return False
         if stored.get("holder_id") != holder_id or stored.get("nonce") != nonce:
             return False
