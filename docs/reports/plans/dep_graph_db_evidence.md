@@ -13,7 +13,7 @@ cbb949571cec5012f6588c14f463de79775ce283
 
 ## EVIDENCE_COMMIT
 
-PENDING
+8d073ce49fad14753a6d3269c54e75901fc87552
 
 ## FILES_CHANGED_CODE
 
@@ -30,7 +30,7 @@ agentic_core/utils/__init__.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/dep_graph_db_evidence.md
 
 ## INSPECTED_FILES
 
