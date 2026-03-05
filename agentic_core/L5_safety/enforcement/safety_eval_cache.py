@@ -1,0 +1,122 @@
+"""L5 Safety — policy-evaluation memoisation cache seam.
+
+Provides ``SafetyEvalCache`` which stores the memoised result of a safety
+evaluation for a given ``(compiled_prompt_hash, policy_hash, toolset_hash)``
+triple.
+
+Sovereignty contract
+--------------------
+* L5 remains the certifier.  Redis stores only the memoised *result* for
+  identical inputs; it never overrides a live evaluation.
+* Cache entries are invalidated purely by version-hash changes — when any
+  of the three input hashes changes a fresh evaluation is performed.
+* ``replay_mode=True`` bypasses the cache unconditionally so every replay
+  re-runs the full evaluation and records the result in the transcript.
+* Writing to this cache does NOT modify any L4 state.
+"""
+
+from __future__ import annotations
+
+import logging
+from typing import Any
+
+from agentic_core.cache.cache_key_builders import build_safety_eval_key
+from agentic_core.cache.redis_cache_client import (
+    DeterministicRedisCache,
+    get_hot_cache,
+)
+
+logger = logging.getLogger(__name__)
+
+_DEFAULT_SAFETY_EVAL_TTL: int = 1800  # 30 minutes
+
+
+class SafetyEvalCache:
+    """Memoises L5 safety-evaluation results for identical compiled artifacts.
+
+    The cached value is a dict with at least these fields::
+
+        {
+            "decision":          "allow" | "block",
+            "compliance_hash":   "<64-char hex>",
+            "remediation_hints": [...],
+        }
+
+    Callers must verify that all three hash inputs still match the current
+    execution context before accepting a cached result.
+
+    Parameters
+    ----------
+    ttl_seconds:
+        Redis TTL applied to every ``set`` call.
+    cache:
+        Override the shared hot-cache instance (useful for testing).
+    """
+
+    def __init__(
+        self,
+        ttl_seconds: int = _DEFAULT_SAFETY_EVAL_TTL,
+        cache: DeterministicRedisCache | None = None,
+    ) -> None:
+        self._ttl = ttl_seconds
+        self._cache = cache or get_hot_cache()
+
+    def get(
+        self,
+        compiled_prompt_hash: str,
+        policy_hash: str,
+        toolset_hash: str,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any] | None:
+        """Return the cached evaluation dict or ``None`` on miss/bypass.
+
+        Returns ``None`` (forcing a fresh L5 evaluation) when:
+        - The key is not present.
+        - Redis is unreachable and the fallback store has no entry.
+        - ``replay_mode=True``.
+        """
+        key = build_safety_eval_key(compiled_prompt_hash, policy_hash, toolset_hash)
+        return self._cache.get_json(key, replay_mode=replay_mode)
+
+    def set(
+        self,
+        compiled_prompt_hash: str,
+        policy_hash: str,
+        toolset_hash: str,
+        eval_result: dict[str, Any],
+    ) -> None:
+        """Store *eval_result* under the deterministic key.
+
+        *eval_result* must contain at minimum ``"decision"`` (``"allow"``
+        or ``"block"``) and ``"compliance_hash"`` (a 64-hex SHA-256
+        produced by the L5 evaluator).  ``"remediation_hints"`` is
+        optional but recommended for observability.
+        """
+        key = build_safety_eval_key(compiled_prompt_hash, policy_hash, toolset_hash)
+        self._cache.set_json(key, eval_result, ttl_seconds=self._ttl)
+
+    def invalidate(
+        self,
+        compiled_prompt_hash: str,
+        policy_hash: str,
+        toolset_hash: str,
+    ) -> None:
+        """Explicitly evict a safety-evaluation entry."""
+        key = build_safety_eval_key(compiled_prompt_hash, policy_hash, toolset_hash)
+        self._cache.delete(key)
+
+
+# ---------------------------------------------------------------------------
+# Module-level convenience singleton
+# ---------------------------------------------------------------------------
+
+_safety_eval_cache: SafetyEvalCache | None = None
+
+
+def get_safety_eval_cache() -> SafetyEvalCache:
+    """Return the process-global ``SafetyEvalCache`` instance."""
+    global _safety_eval_cache
+    if _safety_eval_cache is None:
+        _safety_eval_cache = SafetyEvalCache()
+    return _safety_eval_cache
