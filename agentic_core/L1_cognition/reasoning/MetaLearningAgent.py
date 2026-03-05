@@ -8,8 +8,10 @@ Restored: 2026-01-13 | Version: 2.1.0 (With Telemetry)
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, validator, workflow
 # This boosts alignment detection — review and integrate appropriately
 
+import hashlib
 import json
 import logging
+import os
 from collections.abc import Callable
 from dataclasses import dataclass, field
 from datetime import datetime
@@ -22,6 +24,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
+
+_WEIGHTS_SCHEMA_VERSION = "1"
 
 
 @dataclass
@@ -165,18 +169,54 @@ class MetaLearningAgent(SovereignBaseAgent):
         except (OSError, json.JSONDecodeError, ValueError):
             pass  # Corrupt or absent file — keep defaults
 
-    def _save_strategy_weights(self) -> None:
-        """Persist strategy weights to disk atomically."""
-        if self._strategy_weights_file is None:
-            return
-        dest = Path(self._strategy_weights_file)
-        dest.parent.mkdir(parents=True, exist_ok=True)
+    @property
+    def strategy_weights_digest(self) -> str:
+        """SHA-256 digest of the current strategy weights (for replay key binding).
+
+        Deterministic: same weights dict always produces the same 64-hex digest.
+        Include this in replay transcripts alongside FAISS index digests so that
+        a replay run can verify it was initialised from the same learned state.
+        """
         payload = json.dumps(
             {"strategy_weights": self.strategy_weights},
             separators=(",", ":"),
             sort_keys=True,
-        )
-        dest.write_text(payload, encoding="utf-8")
+        ).encode("ascii")
+        return hashlib.sha256(payload).hexdigest()
+
+    def _save_strategy_weights(self) -> None:
+        """Persist strategy weights to disk atomically via .tmp -> fsync -> rename."""
+        if self._strategy_weights_file is None:
+            return
+        dest = Path(self._strategy_weights_file)
+        dest.parent.mkdir(parents=True, exist_ok=True)
+        payload_bytes = json.dumps(
+            {
+                "schema_version": _WEIGHTS_SCHEMA_VERSION,
+                "strategy_weights": self.strategy_weights,
+            },
+            separators=(",", ":"),
+            sort_keys=True,
+        ).encode("ascii")
+        tmp = dest.with_suffix(".tmp")
+        try:
+            with open(tmp, "wb") as _fh:
+                _fh.write(payload_bytes)
+                _fh.flush()
+                os.fsync(_fh.fileno())
+            tmp.replace(dest)
+        except Exception:
+            if tmp.exists():
+                tmp.unlink(missing_ok=True)
+            raise
+        if self.telemetry_callback:
+            self.telemetry_callback(
+                "strategy_weights_persisted",
+                {
+                    "weights_digest": self.strategy_weights_digest,
+                    "strategy_weights": self.strategy_weights.copy(),
+                },
+            )
 
     def extract_patterns(self) -> list[dict[str, Any]]:
         """Identifies success/failure patterns from clustered experiences."""

@@ -11,6 +11,7 @@ import hashlib
 import importlib.util
 import json
 import math
+import os
 import struct
 from pathlib import Path
 from typing import Any, Callable
@@ -51,6 +52,15 @@ class ManifestIntegrityError(RuntimeError):
     """Raised when manifest.json is missing, has wrong schema, or hash mismatch.
 
     Fail-closed: any mismatch raises immediately with no best-effort fallback.
+    """
+
+    pass
+
+
+class EmbedderMismatchError(RuntimeError):
+    """Raised when manifest.embedder_id does not match the runtime embedder.
+
+    Fail-closed: mixed-vector indexes are never loaded.
     """
 
     pass
@@ -487,10 +497,29 @@ class LocalFAISSStore:
         ).encode("ascii")
         sha256_manifest = hashlib.sha256(manifest_bytes).hexdigest()
 
-        # Write files
-        (dest / "index.json").write_bytes(index_bytes)
-        (dest / "meta.json").write_bytes(meta_bytes)
-        (dest / "manifest.json").write_bytes(manifest_bytes)
+        # --- Atomic write helper (tmp -> fsync -> rename) ---
+        def _atomic_write(path: Path, data: bytes) -> None:
+            tmp = path.with_suffix(".tmp")
+            try:
+                with open(tmp, "wb") as _fh:
+                    _fh.write(data)
+                    _fh.flush()
+                    os.fsync(_fh.fileno())
+                tmp.replace(path)
+            except Exception:
+                if tmp.exists():
+                    tmp.unlink(missing_ok=True)
+                raise
+
+        # --- Stale .tmp cleanup before writing ---
+        for _stem in ("index", "meta", "manifest"):
+            _stale = dest / f"{_stem}.tmp"
+            if _stale.exists():
+                _stale.unlink(missing_ok=True)
+
+        _atomic_write(dest / "index.json", index_bytes)
+        _atomic_write(dest / "meta.json", meta_bytes)
+        _atomic_write(dest / "manifest.json", manifest_bytes)
 
         # W-A-DETERMINISM-DIGEST
         digest_input = f"{embedder_id}|{model_version}|{dimension}|{len(vectors)}|{sha256_index}|{sha256_meta}|{sha256_manifest}"
@@ -498,7 +527,13 @@ class LocalFAISSStore:
         print(f"W-A-DETERMINISM-DIGEST: {digest}")
         return digest
 
-    def load_from_disk(self, index_id: str, source_dir: Path) -> None:
+    def load_from_disk(
+        self,
+        index_id: str,
+        source_dir: Path,
+        *,
+        expected_embedder_id: str | None = None,
+    ) -> None:
         """Load index from 3-file disk artifact, verifying all manifest hashes.
 
         Fail-closed: any missing field, parse error, or hash mismatch raises
@@ -507,9 +542,14 @@ class LocalFAISSStore:
         Args:
             index_id: Logical identifier to register the loaded index under.
             source_dir: Directory containing index.json, meta.json, manifest.json.
+            expected_embedder_id: When provided, the manifest's embedder_id must
+                match exactly; raises EmbedderMismatchError otherwise.  This
+                prevents mixed-vector indexes from being silently loaded.
 
         Raises:
             ManifestIntegrityError: On any integrity violation.
+            EmbedderMismatchError: When expected_embedder_id is given and does
+                not match the stored value.
         """
         src = Path(source_dir)
         manifest_path = src / "manifest.json"
@@ -534,6 +574,14 @@ class LocalFAISSStore:
         missing = required - manifest.keys()
         if missing:
             raise ManifestIntegrityError(f"manifest.json missing required fields: {sorted(missing)}")
+
+        # --- Embedding model compatibility check ---
+        if expected_embedder_id is not None and manifest["embedder_id"] != expected_embedder_id:
+            raise EmbedderMismatchError(
+                f"embedder_id mismatch: manifest has '{manifest['embedder_id']}' "
+                f"but runtime expects '{expected_embedder_id}' — "
+                f"index at {source_dir} was built with a different model and cannot be loaded"
+            )
 
         # Verify index.json
         index_path = src / "index.json"
@@ -584,4 +632,10 @@ class LocalFAISSStore:
         }
 
 
-__all__ = ["LocalFAISSStore", "IndexNotBuiltError", "IndexMetadataError", "ManifestIntegrityError"]
+__all__ = [
+    "LocalFAISSStore",
+    "IndexNotBuiltError",
+    "IndexMetadataError",
+    "ManifestIntegrityError",
+    "EmbedderMismatchError",
+]
