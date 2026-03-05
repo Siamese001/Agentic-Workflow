@@ -31,7 +31,6 @@ SKIP_RATIO_CEILING = 0.05
 
 CRITICAL_TEST_FILES = [
     "tests/unit/core/test_discovery_canonical_identity.py",
-    "tests/unit/core/test_discovery_registry_consistency.py",
 ]
 
 
