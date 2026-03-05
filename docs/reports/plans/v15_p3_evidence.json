@@ -6,17 +6,17 @@
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_routing/enforcement/v15_execution_gateway.py"
+      "file": "agentic_core/L0_routing/enforcement/execution_gateway.py"
     },
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_routing/enforcement/v15_runtime_guard.py"
+      "file": "agentic_core/L0_routing/enforcement/runtime_guard.py"
     },
     {
       "check": "forbidden_mutation_pattern",
       "detail": "No forbidden mutation patterns found",
-      "file": "agentic_core/L0_routing/enforcement/v15_p4_contracts.py"
+      "file": "agentic_core/L0_routing/enforcement/traceability_contracts.py"
     },
     {
       "check": "forbidden_mutation_pattern",
@@ -26,7 +26,7 @@
     {
       "check": "semantic_clock_wiring",
       "detail": "SemanticClock imported, _clock.tick() called, prepare_commit=True",
-      "file": "v15_execution_gateway.py"
+      "file": "execution_gateway.py"
     },
     {
       "check": "state_hash_fn_present",
@@ -36,7 +36,7 @@
   ],
   "phase": "P3",
   "spec_section": "\u00a713.1",
-  "timestamp": "2026-02-15T12:48:12.468288+00:00",
+  "timestamp": "2026-03-04T19:54:07.581512+00:00",
   "total_checks": 6,
   "violation_details": [],
   "violations": 0

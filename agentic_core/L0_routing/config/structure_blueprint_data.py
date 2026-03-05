@@ -192,42 +192,6 @@ AST_PLACEMENT_SIGNALS: Final[Sequence[str]] = [
 ]
 
 # ============================================================================
-# SOVEREIGN TERRITORIES
-# ============================================================================
-
-SOVEREIGN_TERRITORIES: Final[Mapping[str, Mapping[str, str]]] = {
-    "agentic_core": {
-        "description": "Core framework and shared utilities",
-        "layer": "L0_routing",
-    },
-    "apps_rg": {
-        "description": "Research and development applications",
-        "layer": "L1_cognition",
-    },
-    "apps_lic": {
-        "description": "Licensed commercial applications",
-        "layer": "L2_execution",
-    },
-    "apps_shared": {
-        "description": "Shared application components",
-        "layer": "L3_orchestration",
-    },
-    "archives": {
-        "description": "Archived code and documentation",
-        "layer": "L4_state",
-    },
-    "docs": {
-        "description": "Documentation and reports",
-        "layer": "L5_safety",
-    },
-    "ops_scripts": {
-        "description": "Operational scripts and tools",
-        "layer": "L6_observability",
-    },
-}
-
-# ============================================================================
-# ============================================================================
 # FORENSIC DISCOVERY CONSTANTS
 # ============================================================================
 
@@ -343,6 +307,5 @@ __all__ = [
     "LAYER_KEYWORD_AFFINITY",
     "LAYER_PREFIX_PATTERN",
     "SCRIPTS_FORBIDDEN_PATTERNS",
-    "SOVEREIGN_TERRITORIES",
     "SUFFIX_TO_FOLDER",
 ]
