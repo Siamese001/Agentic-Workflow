@@ -26,6 +26,7 @@ Usage::
 
 from __future__ import annotations
 
+import hashlib
 import json
 from dataclasses import dataclass
 
@@ -98,4 +99,52 @@ class MetaLearningReplayBinding:
         )
 
 
-__all__ = ["MetaLearningReplayBinding"]
+def compute_replay_key(
+    *,
+    trace_id: str,
+    transcript_hash: str,
+    strategy_weights_digest: str,
+    faiss_index_digests: dict[str, str],
+) -> str:
+    """Compute a deterministic replay key binding all execution-state digests.
+
+    The replay key is the SHA-256 of the pipe-concatenated canonical components:
+
+        trace_id | transcript_hash | strategy_weights_digest | <sorted faiss digests>
+
+    FAISS index digests are sorted by ``index_id`` before concatenation so the
+    result is independent of insertion order.
+
+    Args:
+        trace_id: Unique trace/run identifier (e.g. UUID or timestamp string).
+        transcript_hash: SHA-256 hex of the raw replay transcript bytes.
+        strategy_weights_digest: SHA-256 hex from MetaLearningAgent.strategy_weights_digest.
+        faiss_index_digests: Mapping of index_id -> W-A-DETERMINISM-DIGEST hex.
+                             Must contain at least one entry.
+
+    Returns:
+        64-char lowercase hex SHA-256 replay key.
+
+    Raises:
+        ValueError: If faiss_index_digests is empty or any digest is not 64 hex chars.
+    """
+    if not faiss_index_digests:
+        raise ValueError("faiss_index_digests must contain at least one entry")
+    if len(strategy_weights_digest) != 64:
+        raise ValueError(f"strategy_weights_digest must be 64-hex chars, got {len(strategy_weights_digest)}")
+    sorted_faiss = "|".join(f"{k}:{v}" for k, v in sorted(faiss_index_digests.items()))
+    binding = json.dumps(
+        {
+            "faiss_index_digests_sorted": sorted_faiss,
+            "strategy_weights_digest": strategy_weights_digest,
+            "trace_id": trace_id,
+            "transcript_hash": transcript_hash,
+        },
+        separators=(",", ":"),
+        sort_keys=True,
+        ensure_ascii=True,
+    ).encode("ascii")
+    return hashlib.sha256(binding).hexdigest()
+
+
+__all__ = ["MetaLearningReplayBinding", "compute_replay_key"]

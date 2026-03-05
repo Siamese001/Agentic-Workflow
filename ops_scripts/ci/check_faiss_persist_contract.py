@@ -55,6 +55,7 @@ _EXCLUDE_DIRS = {
 _FINALIZE_NAMES = {"finalize_build", "rebuild"}
 _PERSIST_NAME = "persist_to_disk"
 _GUARDIAN_COMMENT = "guardian: faiss-no-persist"
+_GUARDIAN_REASON_RE = "reason="
 
 
 def _collect_files(roots: list[Path]) -> list[Path]:
@@ -109,6 +110,21 @@ def _line_has_guardian(source_lines: list[str], lineno: int) -> bool:
     return False
 
 
+def _line_guardian_has_reason(source_lines: list[str], lineno: int) -> bool:
+    """Return True if the guardian comment also includes 'reason=<text>'."""
+    idx = lineno - 1
+    if 0 <= idx < len(source_lines):
+        line = source_lines[idx]
+        if _GUARDIAN_COMMENT not in line:
+            return False
+        reason_start = line.find(_GUARDIAN_REASON_RE)
+        if reason_start == -1:
+            return False
+        reason_value = line[reason_start + len(_GUARDIAN_REASON_RE) :].strip()
+        return bool(reason_value)
+    return False
+
+
 class _Violation:
     def __init__(self, path: Path, lineno: int, rule: str, detail: str) -> None:
         self.path = path
@@ -146,7 +162,8 @@ def _check_file(path: Path, source_lines: list[str]) -> list[_Violation]:
             call = stmt.value
             for finalize_name in _FINALIZE_NAMES:
                 if _has_call_name(call, finalize_name):
-                    if not has_persist and not _line_has_guardian(source_lines, stmt.lineno):
+                    has_guardian = _line_has_guardian(source_lines, stmt.lineno)
+                    if not has_persist and not has_guardian:
                         violations.append(
                             _Violation(
                                 path=path,
@@ -156,7 +173,20 @@ def _check_file(path: Path, source_lines: list[str]) -> list[_Violation]:
                                     f"Call to {finalize_name}() in function "
                                     f"'{node.name}' has no downstream persist_to_disk() "
                                     f"in the same scope. Add persist_to_disk() or annotate "
-                                    f"the line with '# {_GUARDIAN_COMMENT}'"
+                                    f"the line with '# {_GUARDIAN_COMMENT} reason=<explanation>'"
+                                ),
+                            )
+                        )
+                    elif has_guardian and not _line_guardian_has_reason(source_lines, stmt.lineno):
+                        violations.append(
+                            _Violation(
+                                path=path,
+                                lineno=stmt.lineno,
+                                rule="R2",
+                                detail=(
+                                    f"Guardian comment '# {_GUARDIAN_COMMENT}' on {finalize_name}() "
+                                    f"in function '{node.name}' is missing required justification. "
+                                    f"Use: '# {_GUARDIAN_COMMENT} reason=<explanation>'"
                                 ),
                             )
                         )

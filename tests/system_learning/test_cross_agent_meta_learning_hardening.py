@@ -1230,8 +1230,23 @@ class TestFaissPersistContractChecker:
 
     @pytest.mark.unit_min_deps
     def test_checker_accepts_guardian_comment(self, tmp_path):
-        """finalize_build() line annotated with guardian comment must not produce violation."""
+        """finalize_build() with guardian comment AND reason= must not produce violation."""
         src = tmp_path / "guarded.py"
+        src.write_text(
+            "def build_index(store):\n"
+            "    store.begin_build('x', 16)\n"
+            "    store.finalize_build('x')  # guardian: faiss-no-persist reason=in-memory-only test fixture\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import _run
+
+        violations = _run([src])
+        assert violations == [], f"Guardian comment with reason= must suppress violation, got: {violations}"
+
+    @pytest.mark.unit_min_deps
+    def test_checker_rejects_guardian_without_reason(self, tmp_path):
+        """finalize_build() with guardian comment but no reason= must produce R2 violation."""
+        src = tmp_path / "bare_guardian.py"
         src.write_text(
             "def build_index(store):\n"
             "    store.begin_build('x', 16)\n"
@@ -1241,7 +1256,10 @@ class TestFaissPersistContractChecker:
         from ops_scripts.ci.check_faiss_persist_contract import _run
 
         violations = _run([src])
-        assert violations == [], f"Guardian comment must suppress violation, got: {violations}"
+        assert len(violations) == 1
+        assert violations[0].rule == "R2", (
+            f"Expected R2 violation for missing reason=, got: {violations[0].rule}"
+        )
 
     @pytest.mark.unit_min_deps
     def test_checker_passes_on_rebuild_with_persist(self, tmp_path):
@@ -1283,3 +1301,395 @@ class TestFaissPersistContractChecker:
         from ops_scripts.ci.check_faiss_persist_contract import main
 
         assert main([str(src)]) == 1
+
+
+# ===========================================================================
+# p3-2: compute_replay_key() deterministic binding
+# ===========================================================================
+
+
+class TestComputeReplayKey:
+    """p3-2: compute_replay_key() produces deterministic, sensitive replay keys."""
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_is_64_hex(self):
+        """compute_replay_key() must return a 64-char lowercase hex string."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        key = compute_replay_key(
+            trace_id="run-001",
+            transcript_hash="a" * 64,
+            strategy_weights_digest="b" * 64,
+            faiss_index_digests={"hc_v1": "c" * 64},
+        )
+        assert len(key) == 64
+        assert key == key.lower()
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_is_deterministic(self):
+        """Two calls with identical inputs must produce identical replay keys."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        kwargs = {
+            "trace_id": "run-abc",
+            "transcript_hash": "1" * 64,
+            "strategy_weights_digest": "2" * 64,
+            "faiss_index_digests": {"idx_a": "3" * 64, "idx_b": "4" * 64},
+        }
+        assert compute_replay_key(**kwargs) == compute_replay_key(**kwargs)
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_changes_on_different_trace_id(self):
+        """Different trace_id must produce different replay key."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        common = {
+            "transcript_hash": "a" * 64,
+            "strategy_weights_digest": "b" * 64,
+            "faiss_index_digests": {"x": "c" * 64},
+        }
+        k1 = compute_replay_key(trace_id="run-1", **common)
+        k2 = compute_replay_key(trace_id="run-2", **common)
+        assert k1 != k2
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_changes_on_different_weights(self):
+        """Different strategy_weights_digest must produce different replay key."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        common = {
+            "trace_id": "run-x",
+            "transcript_hash": "a" * 64,
+            "faiss_index_digests": {"x": "c" * 64},
+        }
+        k1 = compute_replay_key(strategy_weights_digest="1" * 64, **common)
+        k2 = compute_replay_key(strategy_weights_digest="2" * 64, **common)
+        assert k1 != k2
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_independent_of_faiss_dict_insertion_order(self):
+        """Replay key must be identical regardless of faiss_index_digests dict ordering."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        base = {
+            "trace_id": "run-order",
+            "transcript_hash": "a" * 64,
+            "strategy_weights_digest": "b" * 64,
+        }
+        k1 = compute_replay_key(faiss_index_digests={"idx_a": "1" * 64, "idx_b": "2" * 64}, **base)
+        k2 = compute_replay_key(faiss_index_digests={"idx_b": "2" * 64, "idx_a": "1" * 64}, **base)
+        assert k1 == k2
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_raises_on_empty_faiss_dict(self):
+        """Empty faiss_index_digests must raise ValueError."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        with pytest.raises(ValueError, match="faiss_index_digests must contain at least one entry"):
+            compute_replay_key(
+                trace_id="x",
+                transcript_hash="a" * 64,
+                strategy_weights_digest="b" * 64,
+                faiss_index_digests={},
+            )
+
+    @pytest.mark.unit_min_deps
+    def test_replay_key_raises_on_short_weights_digest(self):
+        """strategy_weights_digest shorter than 64 chars must raise ValueError."""
+        from system_learning.engines.meta_learning_replay_binding import compute_replay_key
+
+        with pytest.raises(ValueError, match="strategy_weights_digest must be 64-hex chars"):
+            compute_replay_key(
+                trace_id="x",
+                transcript_hash="a" * 64,
+                strategy_weights_digest="tooshort",
+                faiss_index_digests={"x": "c" * 64},
+            )
+
+
+# ===========================================================================
+# p3-4: startup integrity sweep — verify_all_indexes_in_dir()
+# ===========================================================================
+
+
+class TestStartupIntegritySweep:
+    """p3-4: verify_all_indexes_in_dir() sweeps and fails closed on any mismatch."""
+
+    def _build_valid_index_dir(self, base: Path, index_id: str) -> None:
+        """Helper: build a valid 3-file FAISS artifact under base/<index_id>/."""
+        import hashlib
+        import json
+
+        idx_dir = base / index_id
+        idx_dir.mkdir(parents=True, exist_ok=True)
+
+        index_data = {
+            "schema_version": "1",
+            "index_id": index_id,
+            "dimension": 4,
+            "vector_count": 1,
+            "vectors": [[0.1, 0.2, 0.3, 0.4]],
+            "metadatas": [{"content_hash": "abc"}],
+        }
+        index_bytes = json.dumps(index_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+            "ascii"
+        )
+        meta_data = {
+            "dims": 4,
+            "embedder_id": "test-embedder",
+            "index_id": index_id,
+            "index_version_hash": "v1",
+            "model_version": "m1",
+            "schema_version": "1",
+            "vector_count": 1,
+        }
+        meta_bytes = json.dumps(meta_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+            "ascii"
+        )
+        manifest_data = {
+            "dims": 4,
+            "embedder_id": "test-embedder",
+            "model_version": "m1",
+            "schema_version": "1",
+            "sha256_index": hashlib.sha256(index_bytes).hexdigest(),
+            "sha256_meta_canonical": hashlib.sha256(meta_bytes).hexdigest(),
+            "vector_count": 1,
+        }
+        manifest_bytes = json.dumps(
+            manifest_data, sort_keys=True, separators=(",", ":"), ensure_ascii=True
+        ).encode("ascii")
+
+        (idx_dir / "index.json").write_bytes(index_bytes)
+        (idx_dir / "meta.json").write_bytes(meta_bytes)
+        (idx_dir / "manifest.json").write_bytes(manifest_bytes)
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_empty_dir_returns_empty_dict(self, tmp_path):
+        """Empty base_dir must return empty dict (no indexes present)."""
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+
+        result = verify_all_indexes_in_dir(tmp_path)
+        assert result == {}
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_valid_index_returns_digest(self, tmp_path):
+        """Valid persisted index must appear in returned dict with a 64-hex digest."""
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+
+        self._build_valid_index_dir(tmp_path, "hc_v1")
+        result = verify_all_indexes_in_dir(tmp_path)
+        assert "hc_v1" in result
+        assert len(result["hc_v1"]) == 64
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_multiple_valid_indexes(self, tmp_path):
+        """Multiple valid indexes must all appear in result."""
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+
+        for name in ("hc_v1", "tel_v1", "dpo_v1"):
+            self._build_valid_index_dir(tmp_path, name)
+        result = verify_all_indexes_in_dir(tmp_path)
+        assert set(result.keys()) == {"hc_v1", "tel_v1", "dpo_v1"}
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_raises_on_corrupted_index(self, tmp_path):
+        """Corrupted index.json (wrong bytes) must raise StartupIntegrityError."""
+        from system_learning.engines.faiss_startup_integrity import (
+            StartupIntegrityError,
+            verify_all_indexes_in_dir,
+        )
+
+        self._build_valid_index_dir(tmp_path, "hc_v1")
+        (tmp_path / "hc_v1" / "index.json").write_bytes(b"corrupted content")
+        with pytest.raises(StartupIntegrityError, match="SHA-256 mismatch"):
+            verify_all_indexes_in_dir(tmp_path)
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_raises_on_missing_manifest(self, tmp_path):
+        """Missing manifest.json must raise StartupIntegrityError."""
+        from system_learning.engines.faiss_startup_integrity import (
+            StartupIntegrityError,
+            verify_all_indexes_in_dir,
+        )
+
+        idx_dir = tmp_path / "hc_v1"
+        idx_dir.mkdir()
+        (idx_dir / "index.json").write_bytes(b"{}")
+        (idx_dir / "meta.json").write_bytes(b"{}")
+        (idx_dir / "manifest.json").write_bytes(b"{}")
+        with pytest.raises(StartupIntegrityError):
+            verify_all_indexes_in_dir(tmp_path)
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_raises_on_embedder_mismatch(self, tmp_path):
+        """Wrong expected_embedder_id must raise StartupIntegrityError."""
+        from system_learning.engines.faiss_startup_integrity import (
+            StartupIntegrityError,
+            verify_all_indexes_in_dir,
+        )
+
+        self._build_valid_index_dir(tmp_path, "hc_v1")
+        with pytest.raises(StartupIntegrityError, match="embedder_id mismatch"):
+            verify_all_indexes_in_dir(tmp_path, expected_embedder_id="wrong-embedder")
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_accepts_correct_embedder_id(self, tmp_path):
+        """Correct expected_embedder_id must not raise."""
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+
+        self._build_valid_index_dir(tmp_path, "hc_v1")
+        result = verify_all_indexes_in_dir(tmp_path, expected_embedder_id="test-embedder")
+        assert "hc_v1" in result
+
+    @pytest.mark.unit_min_deps
+    def test_sweep_raises_on_nonexistent_base_dir(self, tmp_path):
+        """Non-existent base_dir must raise ValueError."""
+        from system_learning.engines.faiss_startup_integrity import verify_all_indexes_in_dir
+
+        with pytest.raises(ValueError, match="does not exist"):
+            verify_all_indexes_in_dir(tmp_path / "nonexistent")
+
+
+# ===========================================================================
+# p3-5: FAISS telemetry events
+# ===========================================================================
+
+
+class TestFaissTelemetryEvents:
+    """p3-5: LocalFAISSStore emits faiss_index_rebuilt/persisted/manifest_verified telemetry."""
+
+    @pytest.mark.unit_min_deps
+    def test_finalize_build_emits_rebuilt_event(self, tmp_path):
+        """finalize_build() must emit faiss_index_rebuilt telemetry event."""
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+
+        events: list[tuple[str, dict]] = []
+        store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
+        store.begin_build("idx", 16, 42)
+        store.add_vectors(
+            "idx",
+            [[float(i)] * 16 for i in range(3)],
+            [{"content_hash": f"h{i}", "trace_id": f"t{i}"} for i in range(3)],
+        )
+        store.finalize_build(
+            "idx",
+            built_at_utc=0,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+
+        rebuilt = [e for e in events if e[0] == "faiss_index_rebuilt"]
+        assert len(rebuilt) == 1
+        assert rebuilt[0][1]["index_id"] == "idx"
+        assert rebuilt[0][1]["vector_count"] == 3
+        assert "index_version_hash" in rebuilt[0][1]
+
+    @pytest.mark.unit_min_deps
+    def test_persist_to_disk_emits_persisted_event(self, tmp_path):
+        """persist_to_disk() must emit faiss_index_persisted telemetry event."""
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+
+        events: list[tuple[str, dict]] = []
+        store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
+        store.begin_build("idx", 16, 0)
+        store.add_vectors("idx", [[0.1] * 16], [{"content_hash": "h0", "trace_id": "t0"}])
+        store.finalize_build(
+            "idx",
+            built_at_utc=0,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+        store.persist_to_disk("idx", tmp_path / "out", embedder_id="test-emb", model_version="v1")
+
+        persisted = [e for e in events if e[0] == "faiss_index_persisted"]
+        assert len(persisted) == 1
+        data = persisted[0][1]
+        assert data["index_id"] == "idx"
+        assert data["vector_count"] == 1
+        assert len(data["digest"]) == 64
+        assert data["embedder_id"] == "test-emb"
+        assert data["model_version"] == "v1"
+
+    @pytest.mark.unit_min_deps
+    def test_load_from_disk_emits_manifest_verified_event(self, tmp_path):
+        """load_from_disk() must emit faiss_manifest_verified telemetry event."""
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+
+        events: list[tuple[str, dict]] = []
+        store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
+        store.begin_build("idx", 16, 0)
+        store.add_vectors("idx", [[0.5] * 16], [{"content_hash": "h0", "trace_id": "t0"}])
+        store.finalize_build(
+            "idx",
+            built_at_utc=0,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+        out_dir = tmp_path / "persisted"
+        store.persist_to_disk("idx", out_dir, embedder_id="test-emb", model_version="v1")
+
+        events.clear()
+
+        store2 = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
+        store2.load_from_disk("idx", out_dir)
+
+        verified = [e for e in events if e[0] == "faiss_manifest_verified"]
+        assert len(verified) == 1
+        data = verified[0][1]
+        assert data["index_id"] == "idx"
+        assert data["vector_count"] == 1
+        assert "digest" in data
+
+    @pytest.mark.unit_min_deps
+    def test_no_telemetry_when_callback_is_none(self, tmp_path):
+        """Store without telemetry_callback must not raise when persisting."""
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+
+        store = LocalFAISSStore(tmp_path)
+        store.begin_build("idx", 16, 0)
+        store.add_vectors("idx", [[0.1] * 16], [{"content_hash": "h0", "trace_id": "t0"}])
+        store.finalize_build(
+            "idx",
+            built_at_utc=0,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+        store.persist_to_disk("idx", tmp_path / "out", embedder_id="e", model_version="v1")
+
+    @pytest.mark.unit_min_deps
+    def test_rebuild_emits_rebuilt_event(self, tmp_path):
+        """rebuild() must emit faiss_index_rebuilt telemetry event."""
+        from system_learning.engines.local_faiss_store import LocalFAISSStore
+
+        events: list[tuple[str, dict]] = []
+        store = LocalFAISSStore(tmp_path, telemetry_callback=lambda e, d: events.append((e, d)))
+        store.begin_build("idx", 16, 0)
+        store.add_vectors(
+            "idx",
+            [[0.1] * 16, [0.2] * 16],
+            [{"content_hash": f"h{i}", "trace_id": f"t{i}"} for i in range(2)],
+        )
+        store.finalize_build(
+            "idx",
+            built_at_utc=0,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+        store.prune("idx", lambda m: m["content_hash"] == "h0")
+        events.clear()
+        store.rebuild(
+            "idx",
+            built_at_utc=1,
+            canonicalization_version="1",
+            embedding_model_version="m1",
+            embedding_model_checksum="chk",
+        )
+
+        rebuilt = [e for e in events if e[0] == "faiss_index_rebuilt"]
+        assert len(rebuilt) == 1
+        assert rebuilt[0][1]["vector_count"] == 1

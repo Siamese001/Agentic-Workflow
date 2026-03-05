@@ -80,13 +80,23 @@ class LocalFAISSStore:
     INVARIANT: Fallback path enables unit_min_deps tests without faiss.
     """
 
-    def __init__(self, base_path: Path) -> None:
+    def __init__(
+        self,
+        base_path: Path,
+        *,
+        telemetry_callback: Callable[[str, dict[str, Any]], None] | None = None,
+    ) -> None:
         """Initialize store with base path for indexes.
 
         Args:
             base_path: Base directory for index storage.
+            telemetry_callback: Optional callback for observability events.
+                Signature: ``callback(event_type: str, data: dict) -> None``.
+                Events emitted: ``faiss_index_rebuilt``, ``faiss_index_persisted``,
+                ``faiss_manifest_verified``.
         """
         self.base_path = base_path
+        self._telemetry_callback = telemetry_callback
         # Per-index state dict keyed by index_id.
         # Each entry holds either a live FAISS index or plain Python lists.
         self._indexes: dict[str, dict[str, Any]] = {}
@@ -285,6 +295,15 @@ class LocalFAISSStore:
 
         idx["metadata"] = metadata
         idx["version_hash"] = index_version_hash
+        if self._telemetry_callback:
+            self._telemetry_callback(
+                "faiss_index_rebuilt",
+                {
+                    "index_id": index_id,
+                    "vector_count": len(vectors),
+                    "index_version_hash": index_version_hash,
+                },
+            )
         return metadata
 
     def prune(self, index_id: str, predicate: Callable[[dict[str, Any]], bool]) -> int:
@@ -391,6 +410,15 @@ class LocalFAISSStore:
         idx["metadata"] = metadata
         idx["version_hash"] = index_version_hash
         self._rebuild_required[index_id] = False
+        if self._telemetry_callback:
+            self._telemetry_callback(
+                "faiss_index_rebuilt",
+                {
+                    "index_id": index_id,
+                    "vector_count": len(vectors),
+                    "index_version_hash": index_version_hash,
+                },
+            )
         return metadata
 
     # ------------------------------------------------------------------
@@ -525,6 +553,17 @@ class LocalFAISSStore:
         digest_input = f"{embedder_id}|{model_version}|{dimension}|{len(vectors)}|{sha256_index}|{sha256_meta}|{sha256_manifest}"
         digest = hashlib.sha256(digest_input.encode("ascii")).hexdigest()
         print(f"W-A-DETERMINISM-DIGEST: {digest}")
+        if self._telemetry_callback:
+            self._telemetry_callback(
+                "faiss_index_persisted",
+                {
+                    "index_id": index_id,
+                    "vector_count": len(vectors),
+                    "digest": digest,
+                    "embedder_id": embedder_id,
+                    "model_version": model_version,
+                },
+            )
         return digest
 
     def load_from_disk(
@@ -630,6 +669,17 @@ class LocalFAISSStore:
             "metadata": metadata,
             "version_hash": manifest["sha256_index"],
         }
+        if self._telemetry_callback:
+            self._telemetry_callback(
+                "faiss_manifest_verified",
+                {
+                    "index_id": index_id,
+                    "vector_count": len(vectors),
+                    "digest": manifest["sha256_index"],
+                    "embedder_id": manifest["embedder_id"],
+                    "model_version": manifest["model_version"],
+                },
+            )
 
 
 __all__ = [
