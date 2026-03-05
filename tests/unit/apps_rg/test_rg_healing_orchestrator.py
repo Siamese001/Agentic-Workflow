@@ -35,7 +35,7 @@ class TestRgHealingOrchestratorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.RgHealingOrchestrator import RgHealingOrchestrator
+            from apps_rg.reasoning.RgHealingOrchestrator import RgHealingOrchestrator
 
             return RgHealingOrchestrator
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -86,7 +86,7 @@ class TestRgHealingOrchestratorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.RgHealingOrchestrator import (
+                from apps_rg.reasoning.RgHealingOrchestrator import (
                     RgHealingOrchestrator,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

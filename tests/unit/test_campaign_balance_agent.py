@@ -37,7 +37,7 @@ class TestCampaignBalanceAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.CampaignBalanceAgent import CampaignBalanceAgent
+            from apps_lic.reasoning.CampaignBalanceAgent import CampaignBalanceAgent
 
             return CampaignBalanceAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -88,7 +88,7 @@ class TestCampaignBalanceAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.CampaignBalanceAgent import CampaignBalanceAgent  # noqa: F401
+                from apps_lic.reasoning.CampaignBalanceAgent import CampaignBalanceAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

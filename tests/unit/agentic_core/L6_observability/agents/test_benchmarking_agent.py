@@ -36,7 +36,7 @@ class TestBenchmarkingAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L6_observability.BenchmarkingAgent import BenchmarkingAgent
+            from agentic_core.L5_safety.reasoning.BenchmarkingAgent import BenchmarkingAgent
 
             return BenchmarkingAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -97,7 +97,7 @@ class TestBenchmarkingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L6_observability.BenchmarkingAgent import (
+                from agentic_core.L5_safety.reasoning.BenchmarkingAgent import (
                     BenchmarkingAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -181,7 +181,7 @@ def test_boot_sequence_integrity_failure():
                     mock_instance.discover_all.return_value = []
                     mock_registry.return_value = mock_instance
 
-                    from agentic_core.L0_routing.boot.boot_sequence import BootSequence
+                    from agentic_core.L0_routing.enforcement.boot_sequence import BootSequence
 
                     boot = BootSequence(strict_mode=True)
                     result = boot.execute_boot()
@@ -206,7 +206,7 @@ def test_boot_sequence_successful_boot():
                     mock_instance.discover_all.return_value = []
                     mock_registry.return_value = mock_instance
 
-                    from agentic_core.L0_routing.boot.boot_sequence import BootSequence
+                    from agentic_core.L0_routing.enforcement.boot_sequence import BootSequence
 
                     boot = BootSequence(strict_mode=True)
                     result = boot.execute_boot()

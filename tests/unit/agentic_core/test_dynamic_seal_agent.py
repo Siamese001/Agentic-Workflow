@@ -35,7 +35,7 @@ class TestDynamicSealAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.DynamicSealAgent import DynamicSealAgent
+            from agentic_core.L5_safety.reasoning.DynamicSealAgent import DynamicSealAgent
 
             return DynamicSealAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -88,7 +88,7 @@ class TestDynamicSealAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.DynamicSealAgent import (
+                from agentic_core.L5_safety.reasoning.DynamicSealAgent import (
                     DynamicSealAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

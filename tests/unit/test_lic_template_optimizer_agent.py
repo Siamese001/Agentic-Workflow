@@ -32,7 +32,7 @@ class TestLicTemplateOptimizerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
+            from apps_lic.reasoning.LicTemplateOptimizerAgent import LicTemplateOptimizerAgent
 
             return LicTemplateOptimizerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -79,7 +79,7 @@ class TestLicTemplateOptimizerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LicTemplateOptimizerAgent import (
+                from apps_lic.reasoning.LicTemplateOptimizerAgent import (
                     LicTemplateOptimizerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

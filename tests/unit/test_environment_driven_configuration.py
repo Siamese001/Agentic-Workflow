@@ -28,7 +28,7 @@ except (ImportError, NameError, AttributeError):
     NegotiationConfig = None
 
 try:
-    from apps_rg.tools.validation_result_validator import SectionIntegratorConfig
+    from apps_rg.validators.validation_result_validator import SectionIntegratorConfig
 except (ImportError, NameError, AttributeError):
     SectionIntegratorConfig = None
 

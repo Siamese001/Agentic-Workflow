@@ -32,7 +32,7 @@ class TestDispatchOutreachToolsAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.DispatchOutreachToolsAgent import DispatchOutreachToolsAgent
+            from apps_lic.reasoning.DispatchOutreachToolsAgent import DispatchOutreachToolsAgent
 
             return DispatchOutreachToolsAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -85,7 +85,7 @@ class TestDispatchOutreachToolsAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.DispatchOutreachToolsAgent import (
+                from apps_lic.reasoning.DispatchOutreachToolsAgent import (
                     DispatchOutreachToolsAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

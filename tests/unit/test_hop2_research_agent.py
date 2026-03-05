@@ -36,7 +36,7 @@ class TestHOP2ResearchAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
+            from apps_lic.reasoning.Hop2ResearchAgent import HOP2ResearchAgent
 
             return HOP2ResearchAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -85,7 +85,7 @@ class TestHOP2ResearchAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent  # noqa: F401
+                from apps_lic.reasoning.Hop2ResearchAgent import HOP2ResearchAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

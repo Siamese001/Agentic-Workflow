@@ -35,7 +35,7 @@ class TestIntelligenceLibrarianAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
+            from apps_lic.reasoning.IntelligenceLibrarianAgent import IntelligenceLibrarianAgent
 
             return IntelligenceLibrarianAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -82,7 +82,7 @@ class TestIntelligenceLibrarianAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.IntelligenceLibrarianAgent import (
+                from apps_lic.reasoning.IntelligenceLibrarianAgent import (
                     IntelligenceLibrarianAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -37,7 +37,7 @@ class TestHOP3SenderGroundingAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
+            from apps_lic.reasoning.HOP3SenderGroundingAgent import HOP3SenderGroundingAgent
 
             return HOP3SenderGroundingAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -80,7 +80,7 @@ class TestHOP3SenderGroundingAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP3SenderGroundingAgent import (
+                from apps_lic.reasoning.HOP3SenderGroundingAgent import (
                     HOP3SenderGroundingAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

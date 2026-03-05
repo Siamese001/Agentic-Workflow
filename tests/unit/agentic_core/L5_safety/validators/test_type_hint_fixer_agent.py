@@ -34,7 +34,7 @@ class TestTypeHintFixerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.TypeHintFixerAgent import TypeHintFixerAgent
+            from agentic_core.L5_safety.reasoning.TypeHintFixerAgent import TypeHintFixerAgent
 
             return TypeHintFixerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -89,7 +89,7 @@ class TestTypeHintFixerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.TypeHintFixerAgent import (
+                from agentic_core.L5_safety.reasoning.TypeHintFixerAgent import (
                     TypeHintFixerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

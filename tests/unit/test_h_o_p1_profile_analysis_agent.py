@@ -36,7 +36,7 @@ class TestHOP1ProfileAnalysisAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+            from apps_lic.reasoning.Hop1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
             return HOP1ProfileAnalysisAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -83,7 +83,7 @@ class TestHOP1ProfileAnalysisAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP1ProfileAnalysisAgent import (
+                from apps_lic.reasoning.Hop1ProfileAnalysisAgent import (
                     HOP1ProfileAnalysisAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -35,7 +35,7 @@ class TestSubatomicHopAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.SubatomicHopAgent import SubatomicHopAgent
+            from agentic_core.L3_orchestration.reasoning.SubatomicHopAgent import SubatomicHopAgent
 
             return SubatomicHopAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -84,7 +84,7 @@ class TestSubatomicHopAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.SubatomicHopAgent import (
+                from agentic_core.L3_orchestration.reasoning.SubatomicHopAgent import (
                     SubatomicHopAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

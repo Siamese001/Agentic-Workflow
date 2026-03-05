@@ -38,7 +38,7 @@ class TestHOP5GenerationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent
+            from apps_lic.reasoning.HOP5GenerationAgent import HOP5GenerationAgent
 
             return HOP5GenerationAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -81,7 +81,7 @@ class TestHOP5GenerationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP5GenerationAgent import HOP5GenerationAgent  # noqa: F401
+                from apps_lic.reasoning.HOP5GenerationAgent import HOP5GenerationAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

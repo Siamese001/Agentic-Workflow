@@ -32,7 +32,7 @@ class TestDeliverabilityAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent
+            from apps_lic.reasoning.DeliverabilityAgent import DeliverabilityAgent
 
             return DeliverabilityAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -83,7 +83,7 @@ class TestDeliverabilityAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
+                from apps_lic.reasoning.DeliverabilityAgent import DeliverabilityAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

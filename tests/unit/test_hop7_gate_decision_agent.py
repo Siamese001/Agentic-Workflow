@@ -36,7 +36,7 @@ class TestHOP7GateDecisionAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP7GateDecisionAgent import HOP7GateDecisionAgent
+            from apps_lic.reasoning.HOP7GateDecisionAgent import HOP7GateDecisionAgent
 
             return HOP7GateDecisionAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -79,7 +79,7 @@ class TestHOP7GateDecisionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP7GateDecisionAgent import (
+                from apps_lic.reasoning.HOP7GateDecisionAgent import (
                     HOP7GateDecisionAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

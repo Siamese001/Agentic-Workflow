@@ -35,7 +35,7 @@ class TestSprawlInspectorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.SprawlInspectorAgent import SprawlInspectorAgent
+            from agentic_core.L5_safety.reasoning.SprawlInspectorAgent import SprawlInspectorAgent
 
             return SprawlInspectorAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -86,7 +86,7 @@ class TestSprawlInspectorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.SprawlInspectorAgent import (
+                from agentic_core.L5_safety.reasoning.SprawlInspectorAgent import (
                     SprawlInspectorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

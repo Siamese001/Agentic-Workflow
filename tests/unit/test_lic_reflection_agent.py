@@ -37,7 +37,7 @@ class TestLicReflectionAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.LicReflectionAgent import LicReflectionAgent
+            from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent
 
             return LicReflectionAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -84,7 +84,7 @@ class TestLicReflectionAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LicReflectionAgent import LicReflectionAgent  # noqa: F401
+                from apps_lic.reasoning.LicReflectionAgent import LicReflectionAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

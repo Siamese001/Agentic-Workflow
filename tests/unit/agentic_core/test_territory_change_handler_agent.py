@@ -34,7 +34,7 @@ class TestTerritoryChangeHandlerAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.TerritoryChangeHandlerAgent import (
+            from agentic_core.L5_safety.reasoning.TerritoryChangeHandlerAgent import (
                 TerritoryChangeHandlerAgent,
             )
 
@@ -83,7 +83,7 @@ class TestTerritoryChangeHandlerAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.TerritoryChangeHandlerAgent import (
+                from agentic_core.L5_safety.reasoning.TerritoryChangeHandlerAgent import (
                     TerritoryChangeHandlerAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

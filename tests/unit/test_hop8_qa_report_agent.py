@@ -36,7 +36,7 @@ class TestHOP8QAReportAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent
+            from apps_lic.reasoning.HOP8QAReportAgent import HOP8QAReportAgent
 
             return HOP8QAReportAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -79,7 +79,7 @@ class TestHOP8QAReportAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.HOP8QAReportAgent import HOP8QAReportAgent  # noqa: F401
+                from apps_lic.reasoning.HOP8QAReportAgent import HOP8QAReportAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

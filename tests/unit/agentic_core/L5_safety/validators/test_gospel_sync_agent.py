@@ -34,7 +34,7 @@ class TestGospelSyncAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.GospelSyncAgent import GospelSyncAgent
+            from agentic_core.L5_safety.reasoning.GospelSyncAgent import GospelSyncAgent
 
             return GospelSyncAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestGospelSyncAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.GospelSyncAgent import (
+                from agentic_core.L5_safety.reasoning.GospelSyncAgent import (
                     GospelSyncAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

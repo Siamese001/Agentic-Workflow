@@ -36,7 +36,7 @@ class TestTypeMechanicAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.TypeMechanicAgent import TypeMechanicAgent
+            from agentic_core.L5_safety.reasoning.TypeMechanicAgent import TypeMechanicAgent
 
             return TypeMechanicAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -87,7 +87,7 @@ class TestTypeMechanicAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.TypeMechanicAgent import (
+                from agentic_core.L5_safety.reasoning.TypeMechanicAgent import (
                     TypeMechanicAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

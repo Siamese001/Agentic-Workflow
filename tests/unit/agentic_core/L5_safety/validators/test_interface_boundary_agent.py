@@ -34,7 +34,7 @@ class TestInterfaceBoundaryAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.InterfaceBoundaryAgent import (
+            from agentic_core.L5_safety.reasoning.InterfaceBoundaryAgent import (
                 InterfaceBoundaryAgent,
             )
 
@@ -87,7 +87,7 @@ class TestInterfaceBoundaryAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.InterfaceBoundaryAgent import (
+                from agentic_core.L5_safety.reasoning.InterfaceBoundaryAgent import (
                     InterfaceBoundaryAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -36,7 +36,7 @@ class TestMessageComplianceAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.MessageComplianceAgent import MessageComplianceAgent
+            from apps_lic.reasoning.MessageComplianceAgent import MessageComplianceAgent
 
             return MessageComplianceAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -83,7 +83,7 @@ class TestMessageComplianceAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.MessageComplianceAgent import (
+                from apps_lic.reasoning.MessageComplianceAgent import (
                     MessageComplianceAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

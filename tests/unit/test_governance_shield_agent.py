@@ -32,7 +32,7 @@ class TestGovernanceShieldAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.GovernanceShieldAgent import GovernanceShieldAgent
+            from apps_lic.reasoning.GovernanceShieldAgent import GovernanceShieldAgent
 
             return GovernanceShieldAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -91,7 +91,7 @@ class TestGovernanceShieldAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.GovernanceShieldAgent import (
+                from apps_lic.reasoning.GovernanceShieldAgent import (
                     GovernanceShieldAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

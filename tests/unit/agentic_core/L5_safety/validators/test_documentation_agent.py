@@ -36,7 +36,7 @@ class TestDocumentationAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.DocumentationAgent import DocumentationAgent
+            from agentic_core.L5_safety.reasoning.DocumentationAgent import DocumentationAgent
 
             return DocumentationAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -89,7 +89,7 @@ class TestDocumentationAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.DocumentationAgent import (
+                from agentic_core.L5_safety.reasoning.DocumentationAgent import (
                     DocumentationAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -35,7 +35,7 @@ class TestPredictiveCostAuditorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.PredictiveCostAuditorAgent import (
+            from agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent import (
                 PredictiveCostAuditorAgent,
             )
 
@@ -86,7 +86,7 @@ class TestPredictiveCostAuditorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.PredictiveCostAuditorAgent import (
+                from agentic_core.L5_safety.reasoning.PredictiveCostAuditorAgent import (
                     PredictiveCostAuditorAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

@@ -35,7 +35,7 @@ class TestContentStrategyAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
+            from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent
 
             return ContentStrategyAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -78,7 +78,7 @@ class TestContentStrategyAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
+                from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent  # noqa: F401
             except (ImportError, NameError, AttributeError):
                 pass
 

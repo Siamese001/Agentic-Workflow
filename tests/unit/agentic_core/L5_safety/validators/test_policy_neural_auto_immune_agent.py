@@ -32,7 +32,7 @@ class TestPolicyNeuralAutoImmuneAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.PolicyNeuralAutoImmuneAgent import (
+            from agentic_core.L5_safety.reasoning.PolicyNeuralAutoImmuneAgent import (
                 PolicyNeuralAutoImmuneAgent,
             )
 
@@ -87,7 +87,7 @@ class TestPolicyNeuralAutoImmuneAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.PolicyNeuralAutoImmuneAgent import (
+                from agentic_core.L5_safety.reasoning.PolicyNeuralAutoImmuneAgent import (
                     PolicyNeuralAutoImmuneAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

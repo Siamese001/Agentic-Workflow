@@ -34,7 +34,7 @@ class TestLicHealingOrchestratorAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.LicHealingOrchestrator import LicHealingOrchestrator
+            from apps_lic.reasoning.LicHealingOrchestrator import LicHealingOrchestrator
 
             return LicHealingOrchestrator
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -81,7 +81,7 @@ class TestLicHealingOrchestratorAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.LicHealingOrchestrator import (
+                from apps_lic.reasoning.LicHealingOrchestrator import (
                     LicHealingOrchestrator,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

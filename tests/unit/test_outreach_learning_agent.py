@@ -35,7 +35,7 @@ class TestOutreachLearningAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from apps_lic.engines.OutreachLearningAgent import OutreachLearningAgent
+            from apps_lic.reasoning.OutreachLearningAgent import OutreachLearningAgent
 
             return OutreachLearningAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
@@ -90,7 +90,7 @@ class TestOutreachLearningAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from apps_lic.engines.OutreachLearningAgent import (
+                from apps_lic.reasoning.OutreachLearningAgent import (
                     OutreachLearningAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):

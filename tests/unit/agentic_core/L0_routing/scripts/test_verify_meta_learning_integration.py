@@ -14,7 +14,7 @@ import pytest
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
 try:
-    from agentic_core.L5_safety.validators.AutonomyGuardianAgent import get_autonomy_guardian
+    from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import get_autonomy_guardian
 
     _HAS_GUARDIAN = True
 except Exception:

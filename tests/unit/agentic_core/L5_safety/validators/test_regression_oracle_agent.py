@@ -35,7 +35,7 @@ class TestRegressionOracleAgent:
     def agent_class(self):
         """Import agent class with mocked dependencies."""
         try:
-            from agentic_core.L5_safety.validators.RegressionOracleAgent import (
+            from agentic_core.L5_safety.reasoning.RegressionOracleAgent import (
                 RegressionOracleAgent,
             )
 
@@ -90,7 +90,7 @@ class TestRegressionOracleAgent:
 
         with patch("requests.get", track_call), patch("requests.post", track_call):
             try:
-                from agentic_core.L5_safety.validators.RegressionOracleAgent import (
+                from agentic_core.L5_safety.reasoning.RegressionOracleAgent import (
                     RegressionOracleAgent,  # noqa: F401
                 )
             except (ImportError, NameError, AttributeError):
