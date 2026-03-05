@@ -11,7 +11,7 @@ Remove all live Pinecone import edges from the SSOT codebase.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+12ea08963fcec74f2d7b13c73570a7cd242cebfd
 
 ## FILES_CHANGED_CODE
 
@@ -28,7 +28,7 @@ tests/unit/test_l4_state_agent_inventory_contract.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/pinecone_wave1_evidence.md
 
 ## INSPECTED_FILES
 
