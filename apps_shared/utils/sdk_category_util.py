@@ -154,14 +154,6 @@ SDK_REGISTRY: dict[str, SDKEntry] = {
         fallback="chromadb",
         description="Production vector DB, filtering, hybrid search",
     ),
-    "pinecone": SDKEntry(
-        name="pinecone",
-        category=SDKCategory.VECTOR_STORE,
-        module="pinecone",
-        env_var="PINECONE_API_KEY",
-        fallback="chromadb",
-        description="Managed vector DB, serverless scaling",
-    ),
     # Caching & State
     "redis": SDKEntry(
         name="redis",

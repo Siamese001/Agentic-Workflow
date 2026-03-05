@@ -27,9 +27,6 @@ class EnvironmentConfig(BaseModel):
     ANTHROPIC_API_KEY: str = Field(..., min_length=1, description="Anthropic API key")
     GEMINI_API_KEY: str = Field(..., min_length=1, description="Google Gemini API key")
 
-    # Vector Database (Required)
-    PINECONE_API_KEY: str = Field(..., min_length=1, description="Pinecone API key")
-
     # Redis Configuration (Required)
     REDIS_HOST: str = Field(default="localhost", description="Redis host")
     REDIS_PORT: int = Field(default=6379, description="Redis port")

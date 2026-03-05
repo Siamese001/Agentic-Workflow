@@ -23,7 +23,6 @@ REQUIRED_ENV_VARS = {
     "OPENAI_API_KEY": "test-openai-key",
     "ANTHROPIC_API_KEY": "test-anthropic-key",
     "GEMINI_API_KEY": "test-gemini-key",
-    "PINECONE_API_KEY": "test-pinecone-key",
 }
 
 
@@ -36,12 +35,10 @@ class TestEnvironmentConfig:
             OPENAI_API_KEY="test-openai-key",
             ANTHROPIC_API_KEY="test-anthropic-key",
             GEMINI_API_KEY="test-gemini-key",
-            PINECONE_API_KEY="test-pinecone-key",
         )
         assert config.OPENAI_API_KEY == "test-openai-key"
         assert config.ANTHROPIC_API_KEY == "test-anthropic-key"
         assert config.GEMINI_API_KEY == "test-gemini-key"
-        assert config.PINECONE_API_KEY == "test-pinecone-key"
 
     def test_environment_config_with_defaults(self):
         """Test EnvironmentConfig applies default values."""
@@ -49,7 +46,6 @@ class TestEnvironmentConfig:
             OPENAI_API_KEY="test-key",
             ANTHROPIC_API_KEY="test-key",
             GEMINI_API_KEY="test-key",
-            PINECONE_API_KEY="test-key",
         )
         assert config.REDIS_HOST == "localhost"
         assert config.REDIS_PORT == 6379
@@ -83,11 +79,10 @@ class TestEnvironmentValidator:
         try:
             result = EnvironmentValidator.validate(raise_on_missing=False)
             assert result.valid is False
-            assert len(result.missing_required) == 4
+            assert len(result.missing_required) == 3
             assert "OPENAI_API_KEY" in result.missing_required
             assert "ANTHROPIC_API_KEY" in result.missing_required
             assert "GEMINI_API_KEY" in result.missing_required
-            assert "PINECONE_API_KEY" in result.missing_required
         finally:
             # Restore original values
             for k, v in original_env.items():
@@ -234,7 +229,6 @@ class TestEnvironmentThresholds:
             OPENAI_API_KEY="test-key",
             ANTHROPIC_API_KEY="test-key",
             GEMINI_API_KEY="test-key",
-            PINECONE_API_KEY="test-key",
         )
         assert 0.0 <= config.SOVEREIGN_HIGH_CONFIDENCE <= 1.0
         assert 0.0 <= config.SOVEREIGN_MEDIUM_CONFIDENCE <= 1.0
@@ -247,7 +241,6 @@ class TestEnvironmentThresholds:
             OPENAI_API_KEY="test-key",
             ANTHROPIC_API_KEY="test-key",
             GEMINI_API_KEY="test-key",
-            PINECONE_API_KEY="test-key",
         )
         assert config.HIVE_MIND_STRICT_MODE is False
         assert config.HIVE_MIND_MIN_CONFIDENCE == 0.98

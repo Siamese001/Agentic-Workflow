@@ -33,7 +33,6 @@ class EnvironmentValidator:
         "OPENAI_API_KEY",
         "ANTHROPIC_API_KEY",
         "GEMINI_API_KEY",
-        "PINECONE_API_KEY",
     ]
 
     OPTIONAL_VARS: Final[list[str]] = [
