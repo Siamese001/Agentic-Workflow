@@ -292,7 +292,6 @@ def build_seed_embedding_pack(
 
 
 __all__ = [
-    "SeedEmbeddingPackBuilder",
     "DeterministicHashEmbedder",
     "build_seed_embedding_pack",
 ]

@@ -385,7 +385,6 @@ __all__ = [
     "PermsArtifact",
     "PolicyConfigSnapshot",
     "ResultArtifact",
-    "RoutDecisionArtifact",
     "RoutePath",
     "RouteDecisionArtifact",
     "RoutingRationale",

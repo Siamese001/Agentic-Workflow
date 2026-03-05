@@ -1,7 +1,7 @@
 """Runtime Agents - Agent classes for runtime operations."""
 
-from .ast_relocator import *
+from .ast_relocator import AstRelocator
 
-__all__ = [  # noqa: F405
+__all__ = [
     "AstRelocator",
 ]

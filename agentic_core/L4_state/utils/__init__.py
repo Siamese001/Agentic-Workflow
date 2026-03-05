@@ -12,6 +12,24 @@ Note: Use direct imports to avoid circular dependencies:
     from agentic_core.L4_state.utils.layer_gravity_util import is_gravity_violation
 """
 
+from agentic_core.L4_state.utils.complexity_analyzer_util import (
+    calculate_mccabe_complexity,
+    check_function_complexity,
+)
+from agentic_core.L4_state.utils.layer_gravity_util import (
+    GRAVITY_RULES,
+    LAYER_ORDER,
+    extract_layer_from_module,
+    extract_layer_from_path,
+    is_gravity_violation,
+)
+
+try:
+    from agentic_core.L4_state.utils.context_util import L4ContextManager, get_context_manager
+except ImportError:
+    L4ContextManager = None  # type: ignore[assignment,misc]
+    get_context_manager = None  # type: ignore[assignment]
+
 __all__ = [
     "calculate_mccabe_complexity",
     "check_function_complexity",

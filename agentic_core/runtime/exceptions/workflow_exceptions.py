@@ -68,6 +68,6 @@ __all__ = [
     "AgenticWorkflowError",
     "HopExecutionError",
     "ValidationError",
-    "APIError",
+    "ApiError",
     "CircuitBreakerOpenError",
 ]

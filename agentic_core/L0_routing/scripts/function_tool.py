@@ -8,7 +8,7 @@ from typing import Any
 
 from .base import tool_registry
 
-__all__ = ["BaseTool", "tool_registry", "FunctionTool"]
+__all__ = ["tool_registry", "FunctionTool"]
 
 
 class FunctionTool(BaseTool):

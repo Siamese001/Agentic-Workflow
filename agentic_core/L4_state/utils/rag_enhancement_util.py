@@ -183,13 +183,13 @@ class FewShotInjector:
 __all__ = [
     "semantic_cache",
     "CacheSufficiencyResult",
-    "SelfRAGProcessor",
+    "SelfRagProcessor",
     "KnowledgeGap",
     "GapType",
     "EpisodicMemory",
     "Episode",
     "KnowledgeGraphInjector",
-    "KGContext",
+    "KgContext",
     "FewShotInjector",
     "FewShotExample",
 ]
