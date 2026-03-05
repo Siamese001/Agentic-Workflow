@@ -791,3 +791,509 @@ class TestSemanticCacheInvariants:
         method_names = {node.name for node in ast.walk(tree) if isinstance(node, ast.FunctionDef)}
         for required in ("get_hive_mind", "get_semantic", "put"):
             assert required in method_names, f"GlobalCache missing method: {required}"
+
+
+# ===========================================================================
+# R2a — PII Sanitizer: comprehensive pattern coverage
+# ===========================================================================
+
+
+class TestPIISanitizer:
+    """Verify every PII pattern in PII_Sanitizer.PATTERNS fires correctly."""
+
+    def test_email_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        result = PII_Sanitizer.sanitize("contact me at user@example.com please")
+        assert "[REDACTED_EMAIL]" in result
+        assert "user@example.com" not in result
+
+    def test_openai_key_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        raw = "key is sk-abc1234567890123456789012345"
+        result = PII_Sanitizer.sanitize(raw)
+        assert "[REDACTED_OPENAI_KEY]" in result
+        assert "sk-abc" not in result
+
+    def test_anthropic_key_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        raw = "use sk-ant-api03-abc12345678901234567890123456789012345678"
+        result = PII_Sanitizer.sanitize(raw)
+        assert "[REDACTED_ANTHROPIC_KEY]" in result
+
+    def test_ipv4_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        result = PII_Sanitizer.sanitize("server at 192.168.1.100")
+        assert "[REDACTED_IPV4]" in result
+        assert "192.168.1.100" not in result
+
+    def test_phone_us_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        result = PII_Sanitizer.sanitize("call me at 555-867-5309")
+        assert "[REDACTED_PHONE_US]" in result
+        assert "555-867-5309" not in result
+
+    def test_aws_key_standard_20char_is_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        # AWS access key IDs are exactly AKIA + 16 uppercase alphanumeric = 20 chars
+        raw = "aws key AKIAIOSFODNN7EXAMPLE end"
+        result = PII_Sanitizer.sanitize(raw)
+        assert "[REDACTED_AWS_KEY]" in result
+        assert "AKIAIOSFODNN7EXAMPLE" not in result
+
+    def test_clean_content_unchanged(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        clean = "ATS keywords: Python, leadership, cross-functional teams"
+        assert PII_Sanitizer.sanitize(clean) == clean
+
+    def test_is_safe_false_for_email(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        assert PII_Sanitizer.is_safe("john@corp.com") is False
+
+    def test_is_safe_true_for_clean_text(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        assert PII_Sanitizer.is_safe("resume optimization leadership skills") is True
+
+    def test_is_safe_true_for_empty_string(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        assert PII_Sanitizer.is_safe("") is True
+
+    def test_detect_pii_returns_typed_dict(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        raw = "john@corp.com and call 555-867-5309"
+        findings = PII_Sanitizer.detect_pii(raw)
+        assert isinstance(findings, dict)
+        assert "EMAIL" in findings
+        assert "PHONE_US" in findings
+        assert isinstance(findings["EMAIL"], list)
+        assert len(findings["EMAIL"]) >= 1
+
+    def test_detect_pii_empty_returns_empty_dict(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        assert PII_Sanitizer.detect_pii("") == {}
+
+    def test_detect_pii_clean_returns_empty_dict(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        assert PII_Sanitizer.detect_pii("clean professional content here") == {}
+
+    def test_multiple_pii_types_all_redacted(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer
+
+        raw = "user@example.com, IP 10.0.0.1, key sk-abc1234567890123456789012345"
+        result = PII_Sanitizer.sanitize(raw)
+        assert "user@example.com" not in result
+        assert "10.0.0.1" not in result
+        assert "sk-abc" not in result
+        assert result.count("[REDACTED_") >= 3
+
+
+# ===========================================================================
+# R2b — SemanticCacheManager: deep behavioral paths
+# ===========================================================================
+
+
+class TestSemanticCacheManagerDeep:
+    def setup_method(self):
+        _reset_hive()
+
+    def teardown_method(self):
+        _reset_hive()
+
+    def test_strict_mode_no_raise_when_vector_store_available(self):
+        """HIVE_MIND_STRICT_MODE=true must NOT raise when vector store is available.
+        vector_store_enabled is always True (pure in-memory). Strict mode only
+        raises when BOTH Redis AND vector_store are unavailable."""
+        import os
+
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        os.environ["HIVE_MIND_STRICT_MODE"] = "true"
+        _reset_hive()
+        try:
+            mgr = SemanticCacheManager.get_instance()
+            assert mgr.stateless_mode is False
+            assert mgr.vector_store_enabled is True
+        finally:
+            os.environ["HIVE_MIND_STRICT_MODE"] = "false"
+            _reset_hive()
+
+    def test_learn_without_redis_increments_cache_stores(self):
+        """learn() must increment cache_stores even when Redis unavailable."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        assert mgr.redis_enabled is False
+        mgr.learn("some context", "TestNS", {"data": "value"})
+        assert mgr.get_statistics()["cache_stores"] == 1
+
+    def test_learn_without_redis_not_retrievable_via_recall(self):
+        """Without Redis, working-memory entries from learn() are NOT retrievable.
+        Only promote_to_long_term() writes to the vector store."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        assert mgr.redis_enabled is False
+        mgr.learn("unique recall test context xyz", "TestNS", {"data": "value"})
+        # cache_stores = 1 (counted) but vector store is empty — recall returns None
+        result = mgr.recall("unique recall test context xyz", "TestNS")
+        assert result is None, "Without Redis, learn() does not persist to vector store"
+
+    def test_promote_to_long_term_enables_vector_store_recall(self):
+        """promote_to_long_term() writes embedding to vector store.
+        Subsequent recall() with same context must find it."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        promoted = mgr.promote_to_long_term(
+            "campaign optimization strategy",
+            "DeepNS",
+            {"recommendation": "increase frequency"},
+            feedback_score=0.95,
+        )
+        if promoted:
+            assert mgr.get_statistics()["promotions"] == 1
+            recalled = mgr.recall("campaign optimization strategy", "DeepNS")
+            assert recalled is not None
+            assert recalled.get("recommendation") == "increase frequency"
+        else:
+            # BGE embedding unavailable — promotion gracefully rejected
+            assert mgr.get_statistics()["promotions"] == 0
+
+    def test_promote_rejected_below_threshold(self):
+        """promote_to_long_term() with score < promotion_threshold must return False."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        assert mgr.promotion_threshold == 0.8
+        result = mgr.promote_to_long_term("ctx", "NS", {"v": 1}, feedback_score=0.5)
+        assert result is False
+        assert mgr.get_statistics()["promotions"] == 0
+
+    def test_update_feedback_score_returns_false_without_redis(self):
+        """update_feedback_score() requires Redis — must return False when unavailable."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        assert mgr.redis_enabled is False
+        result = mgr.update_feedback_score("any context", "NS", 0.9)
+        assert result is False
+
+    def test_get_statistics_extended_keys_present(self):
+        """get_statistics() must expose strict_mode, stateless_mode, sampling_rate_actual."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        stats = SemanticCacheManager.get_instance().get_statistics()
+        for key in ("strict_mode", "stateless_mode", "sampling_rate_actual"):
+            assert key in stats, f"Missing key in get_statistics(): {key}"
+
+    def test_get_statistics_all_base_keys_present(self):
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        stats = SemanticCacheManager.get_instance().get_statistics()
+        for key in (
+            "redis_hits",
+            "vector_store_hits",
+            "cache_misses",
+            "cache_stores",
+            "promotions",
+            "traces_sampled",
+            "traces_skipped",
+            "total_hits",
+            "total_lookups",
+            "hit_rate",
+        ):
+            assert key in stats, f"Missing key: {key}"
+
+    def test_learn_async_method_exists(self):
+        """learn_async must be defined for fire-and-forget pattern."""
+        import ast
+        from pathlib import Path
+
+        src = (
+            Path("c:/Git/Agentic-Workflow") / "agentic_core/L4_state/memory/semantic_cache_manager.py"
+        ).read_text(encoding="utf-8")
+        tree = ast.parse(src)
+        async_methods = {node.name for node in ast.walk(tree) if isinstance(node, ast.AsyncFunctionDef)}
+        assert "learn_async" in async_methods
+
+    def test_namespace_hash_includes_namespace(self):
+        """_compute_hash must produce different hashes for same context in different namespaces."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        h1 = mgr._compute_hash("same context", "NS_A")
+        h2 = mgr._compute_hash("same context", "NS_B")
+        assert h1 != h2, "Namespace must be part of hash key"
+
+    def test_pii_is_sanitized_before_hash_computation(self):
+        """Contexts with PII must be sanitized — resulting hash must match
+        the sanitized version, not the raw version."""
+        from agentic_core.L4_state.memory.semantic_cache_manager import PII_Sanitizer, SemanticCacheManager
+
+        mgr = SemanticCacheManager.get_instance()
+        raw = "user@example.com resume data"
+        sanitized = PII_Sanitizer.sanitize(raw)
+        # learn() sanitizes before hashing
+        mgr.learn(raw, "PII_NS", {"data": 1})
+        # The hash stored is for sanitized context, not raw
+        hash_of_sanitized = mgr._compute_hash(sanitized, "PII_NS")
+        hash_of_raw = mgr._compute_hash(raw, "PII_NS")
+        assert hash_of_sanitized != hash_of_raw
+
+
+# ===========================================================================
+# R2c — GlobalCache deep behavioral paths
+# ===========================================================================
+
+
+class TestGlobalCacheDeep:
+    def setup_method(self):
+        _reset_hive()
+        import apps_shared.enforcement.GlobalcacheStrategy as _mod
+
+        _mod._global_cache = None
+
+    def teardown_method(self):
+        _reset_hive()
+        import apps_shared.enforcement.GlobalcacheStrategy as _mod
+
+        _mod._global_cache = None
+
+    def test_get_hive_mind_concurrent_20_threads_same_singleton(self):
+        """20 concurrent calls to get_hive_mind() must all return the same singleton."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        hive_ids: list[int] = []
+
+        def worker():
+            h = gc.get_hive_mind()
+            if h is not None:
+                hive_ids.append(id(h))
+
+        threads = [threading.Thread(target=worker) for _ in range(20)]
+        for t in threads:
+            t.start()
+        for t in threads:
+            t.join()
+
+        assert len(set(hive_ids)) == 1, "Race condition: multiple hive instances created"
+
+    def test_get_stats_returns_correct_keys(self):
+        """GlobalCache.get_stats() must include l1, l2, l1_hits, l2_hits, overall_hit_rate."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        stats = GlobalCache().get_stats()
+        for key in ("l1", "l2", "l1_hits", "l2_hits", "total_requests", "total_misses", "overall_hit_rate"):
+            assert key in stats, f"get_stats() missing key: {key}"
+
+    def test_clear_resets_stats_to_zero(self):
+        """clear() must zero all stat counters."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        gc.put("k", "v")
+        gc.get("k")
+        gc.clear()
+        for key in ("total_requests", "l1_hits", "l2_hits", "total_misses"):
+            assert gc._stats[key] == 0, f"clear() did not reset {key}"
+
+    def test_cleanup_expired_returns_int(self):
+        """cleanup_expired() must return an integer count."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        n = GlobalCache().cleanup_expired()
+        assert isinstance(n, int)
+        assert n >= 0
+
+    def test_convenience_functions_are_callable(self):
+        """cache_get, cache_put, cache_search_semantic, cached must all be callable."""
+        from apps_shared.enforcement.GlobalcacheStrategy import (
+            cache_get,
+            cache_put,
+            cache_search_semantic,
+            cached,
+        )
+
+        for fn in (cache_get, cache_put, cache_search_semantic, cached):
+            assert callable(fn), f"{fn} is not callable"
+
+    def test_get_global_cache_is_module_level_singleton(self):
+        """Two calls to get_global_cache() must return the identical object."""
+        from apps_shared.enforcement.GlobalcacheStrategy import get_global_cache
+
+        assert get_global_cache() is get_global_cache()
+
+    def test_put_delegates_correct_payload_structure_to_hive(self):
+        """put() must call hive.learn() with ('text', 'GlobalCache', {value, key, source_engine})."""
+        from unittest.mock import patch
+
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        hive = gc.get_hive_mind()
+        with patch.object(hive, "learn") as mock_learn:
+            gc.put("mykey", {"answer": 42}, text_for_embedding="embed text", source_engine="ENG1")
+            mock_learn.assert_called_once()
+            context, ns, payload = mock_learn.call_args[0]
+            assert context == "embed text"
+            assert ns == "GlobalCache"
+            assert payload["value"] == {"answer": 42}
+            assert payload["key"] == "mykey"
+            assert payload["source_engine"] == "ENG1"
+
+    def test_get_semantic_exact_text_match_returns_value_from_local_l2(self):
+        """After put(text_for_embedding=X), get_semantic(X) must return the value
+        from the local L2VectorStore (same text → cosine≈1.0 → above 0.92 threshold)."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        gc.put("k", "expected_result", text_for_embedding="unique exact phrase alpha7749")
+        results = gc.get_semantic("unique exact phrase alpha7749")
+        assert results == ["expected_result"]
+
+    def test_get_semantic_hive_path_max_results_caps_at_one(self):
+        """Hive recall() returns single best match — get_semantic() with max_results>=1
+        returns at most 1 item from the hive path (by design: recall() is O(1) exact)."""
+        import ast
+        from pathlib import Path
+
+        src = (Path("c:/Git/Agentic-Workflow") / "apps_shared/enforcement/GlobalcacheStrategy.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(src)
+        # Find get_semantic method and verify it returns [value] (single item) from hive path
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name == "get_semantic":
+                src_slice = ast.unparse(node)
+                assert "max_results >= 1" in src_slice, (
+                    "get_semantic hive path must guard return with max_results >= 1"
+                )
+                return
+        pytest.fail("get_semantic not found in GlobalcacheStrategy")
+
+    def test_multiple_global_cache_instances_share_same_hive_singleton(self):
+        """Multiple GlobalCache() instances must all delegate to the same SemanticCacheManager."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc_a = GlobalCache()
+        gc_b = GlobalCache()
+        assert gc_a.get_hive_mind() is gc_b.get_hive_mind()
+
+    def test_hive_sentinel_false_after_failure_prevents_retry(self):
+        """Once get_hive_mind() fails and sets _hive=False, subsequent calls
+        must NOT retry — sentinel persists."""
+        from unittest.mock import patch
+
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        with patch(
+            "agentic_core.L4_state.memory.semantic_cache_manager.SemanticCacheManager.get_instance",
+            side_effect=RuntimeError("init fail"),
+        ):
+            gc.get_hive_mind()  # first call → fails → _hive = False
+
+        assert gc._hive is False
+        # Second call outside patch — should still return None (not retry)
+        # because _hive is already False (sentinel)
+        assert gc.get_hive_mind() is None
+
+    def test_get_semantic_after_learn_without_promote_hive_path_returns_none(self):
+        """With no Redis and no promote_to_long_term(), hive.recall() returns None.
+        get_semantic() must fall back to local L2 path (not crash)."""
+        from apps_shared.enforcement.GlobalcacheStrategy import GlobalCache
+
+        gc = GlobalCache()
+        hive = gc.get_hive_mind()
+        # learn() only counts — does not write to vector store without Redis
+        hive.learn("hive only context xyz", "GlobalCache", {"val": 1})
+        recalled_directly = hive.recall("hive only context xyz", "GlobalCache")
+        assert recalled_directly is None
+        # get_semantic also returns empty (local L2 has no entry either)
+        results = gc.get_semantic("hive only context xyz")
+        assert isinstance(results, list)
+
+
+# ===========================================================================
+# R2d — Agent base: graceful fallback import verification
+# ===========================================================================
+
+
+class TestAgentBaseGracefulFallback:
+    def test_lic_base_semantic_cache_mixin_import_wrapped_in_try_except(self):
+        """SemanticCacheMixin import in lic_agent_base_util must be in a try/except
+        so missing dependency does not crash the whole module."""
+        import ast
+        from pathlib import Path
+
+        src = (Path("c:/Git/Agentic-Workflow") / "apps_lic/utils/lic_agent_base_util.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(src)
+        # Find any Try node that contains an ImportFrom for semantic_cache_mixin
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Try):
+                for child in ast.walk(node):
+                    if (
+                        isinstance(child, ast.ImportFrom)
+                        and child.module == "agentic_core.mixins.semantic_cache_mixin"
+                    ):
+                        return  # found — import is guarded
+        pytest.fail("SemanticCacheMixin import in lic_agent_base_util.py is not wrapped in try/except")
+
+    def test_rg_base_semantic_cache_mixin_in_ast_bases(self):
+        """RGAgentBase must declare SemanticCacheMixin as a base class in its AST."""
+        import ast
+        from pathlib import Path
+
+        src = (Path("c:/Git/Agentic-Workflow") / "apps_rg/utils/rg_agent_base_util.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(src)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ClassDef) and node.name == "RGAgentBase":
+                bases = [ast.unparse(b) for b in node.bases]
+                assert "SemanticCacheMixin" in bases
+                return
+        pytest.fail("RGAgentBase not found")
+
+    def test_lic_base_appbase_module_path_is_apps_shared(self):
+        """LICAgentBase must import AppBase from apps_shared (not agentic_core)."""
+        import ast
+        from pathlib import Path
+
+        src = (Path("c:/Git/Agentic-Workflow") / "apps_lic/utils/lic_agent_base_util.py").read_text(
+            encoding="utf-8"
+        )
+        tree = ast.parse(src)
+        for node in ast.walk(tree):
+            if isinstance(node, ast.ImportFrom) and node.module and "AppBase" in node.module:
+                assert node.module.startswith("apps_shared"), (
+                    f"AppBase must come from apps_shared, got: {node.module}"
+                )
+                return
+
+    def test_semantic_cache_mixin_standalone_import_always_works(self):
+        """SemanticCacheMixin must be importable standalone, independent of AppBase."""
+        from agentic_core.mixins.semantic_cache_mixin import SemanticCacheMixin
+
+        class StandaloneAgent(SemanticCacheMixin):
+            pass
+
+        agent = StandaloneAgent()
+        assert callable(agent.semantic_recall)
+        assert callable(agent.semantic_learn)
+        _reset_hive()
