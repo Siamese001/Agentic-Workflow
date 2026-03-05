@@ -17,7 +17,7 @@ c6285ac0f89208384cbf883644d565149402b625
 
 ## EVIDENCE_COMMIT
 
-PENDING
+d27d9c844d9c803bd9287040d73fda53bc012dfa
 
 ## FILES_CHANGED_CODE
 
@@ -27,7 +27,7 @@ tests/architecture/test_redis_cache_non_authoritative.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/redis_cache_second_hardening_evidence.md
 
 ## INSPECTED_FILES
 
