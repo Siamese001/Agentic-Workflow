@@ -113,6 +113,20 @@ class TestManifestEntrySchema:
                     bad.append(f"  {entry.get('path', '???')}: {field} is empty")
         assert not bad, f"Found {len(bad)} entries with empty required fields:\n" + "\n".join(bad)
 
+    def test_governance_fields_present(self) -> None:
+        manifest = _load_manifest()
+        bad = []
+        for entry in manifest["entries"]:
+            for field in ("introduced_commit", "owner_agent"):
+                val = entry.get(field, "")
+                if not val or not val.strip():
+                    bad.append(f"  {entry.get('path', '???')}: {field} is missing or empty")
+        assert not bad, (
+            f"Found {len(bad)} entries missing governance fields (introduced_commit/owner_agent):\n"
+            + "\n".join(bad)
+            + "\nBackfill using: python ops_scripts/general/backfill_quarantine_governance.py"
+        )
+
 
 class TestManifestBidirectionalSync:
     """Disk and manifest must be in exact 1:1 correspondence."""
