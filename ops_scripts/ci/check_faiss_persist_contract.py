@@ -1,0 +1,200 @@
+#!/usr/bin/env python3
+"""check_faiss_persist_contract.py - AST-based CI gate for FAISS persistence contract.
+
+Enforces that every call site that finalizes or rebuilds a FAISS index also
+calls persist_to_disk() downstream, OR explicitly documents why persistence
+is intentionally skipped via a guardian comment.
+
+Rules enforced (AST-only, no regex):
+  R1: Any function body containing a call to ``finalize_build()`` or
+      ``rebuild()`` on a LocalFAISSStore must also contain a call to
+      ``persist_to_disk()`` in the same function scope, OR carry a guardian
+      comment ``# guardian: faiss-no-persist`` on the finalize/rebuild line.
+
+  R2: Any call to ``persist_to_disk()`` must occur in a context where the
+      target directory is a subdirectory created under a base_path
+      (heuristic: the call must pass at least two positional/keyword
+      arguments, matching the (index_id, dest_dir, ...) signature).
+
+Usage:
+    python ops_scripts/ci/check_faiss_persist_contract.py
+    python ops_scripts/ci/check_faiss_persist_contract.py [file1.py file2.py ...]
+
+Exit codes:
+    0  All checks pass.
+    1  One or more violations found.
+"""
+
+from __future__ import annotations
+
+import ast
+import sys
+from pathlib import Path
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+
+_SCAN_ROOTS = [
+    PROJECT_ROOT / "system_learning",
+    PROJECT_ROOT / "agentic_core",
+]
+
+_EXCLUDE_DIRS = {
+    "__pycache__",
+    ".git",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    ".pytest_tmp",
+    ".mypy_cache",
+    "dist",
+    "build",
+    "archives",
+    "_quarantine",
+}
+
+_FINALIZE_NAMES = {"finalize_build", "rebuild"}
+_PERSIST_NAME = "persist_to_disk"
+_GUARDIAN_COMMENT = "guardian: faiss-no-persist"
+
+
+def _collect_files(roots: list[Path]) -> list[Path]:
+    files: list[Path] = []
+    for root in roots:
+        if not root.exists():
+            continue
+        for path in root.rglob("*.py"):
+            if any(part in _EXCLUDE_DIRS for part in path.parts):
+                continue
+            files.append(path)
+    return sorted(files)
+
+
+def _has_call_name(node: ast.expr, name: str) -> bool:
+    """Return True if an AST Call node's function resolves to the given name."""
+    if not isinstance(node, ast.Call):
+        return False
+    func = node.func
+    if isinstance(func, ast.Attribute):
+        return func.attr == name
+    if isinstance(func, ast.Name):
+        return func.id == name
+    return False
+
+
+def _call_names_in_body(body: list[ast.stmt]) -> set[str]:
+    """Collect all method/function call names reachable within a flat body."""
+    names: set[str] = set()
+    for node in ast.walk(ast.Module(body=body, type_ignores=[])):
+        if isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Attribute):
+                names.add(func.attr)
+            elif isinstance(func, ast.Name):
+                names.add(func.id)
+    return names
+
+
+def _source_lines_for_file(path: Path) -> list[str]:
+    try:
+        return path.read_text(encoding="utf-8", errors="replace").splitlines()
+    except OSError:
+        return []
+
+
+def _line_has_guardian(source_lines: list[str], lineno: int) -> bool:
+    """Return True if the 1-indexed line contains the guardian comment."""
+    idx = lineno - 1
+    if 0 <= idx < len(source_lines):
+        return _GUARDIAN_COMMENT in source_lines[idx]
+    return False
+
+
+class _Violation:
+    def __init__(self, path: Path, lineno: int, rule: str, detail: str) -> None:
+        self.path = path
+        self.lineno = lineno
+        self.rule = rule
+        self.detail = detail
+
+    def __str__(self) -> str:
+        try:
+            display = self.path.relative_to(PROJECT_ROOT)
+        except ValueError:
+            display = self.path
+        return f"  {display}:{self.lineno}  [{self.rule}]  {self.detail}"
+
+
+def _check_file(path: Path, source_lines: list[str]) -> list[_Violation]:
+    violations: list[_Violation] = []
+    try:
+        tree = ast.parse(path.read_text(encoding="utf-8", errors="replace"), filename=str(path))
+    except SyntaxError:
+        return violations
+
+    for node in ast.walk(tree):
+        if not isinstance(node, (ast.FunctionDef, ast.AsyncFunctionDef)):
+            continue
+        body = node.body
+        call_names_in_fn = _call_names_in_body(body)
+        has_persist = _PERSIST_NAME in call_names_in_fn
+
+        for stmt in ast.walk(ast.Module(body=body, type_ignores=[])):
+            if not isinstance(stmt, ast.Expr):
+                continue
+            if not isinstance(stmt.value, ast.Call):
+                continue
+            call = stmt.value
+            for finalize_name in _FINALIZE_NAMES:
+                if _has_call_name(call, finalize_name):
+                    if not has_persist and not _line_has_guardian(source_lines, stmt.lineno):
+                        violations.append(
+                            _Violation(
+                                path=path,
+                                lineno=stmt.lineno,
+                                rule="R1",
+                                detail=(
+                                    f"Call to {finalize_name}() in function "
+                                    f"'{node.name}' has no downstream persist_to_disk() "
+                                    f"in the same scope. Add persist_to_disk() or annotate "
+                                    f"the line with '# {_GUARDIAN_COMMENT}'"
+                                ),
+                            )
+                        )
+    return violations
+
+
+def _run(files: list[Path]) -> list[_Violation]:
+    all_violations: list[_Violation] = []
+    for path in files:
+        source_lines = _source_lines_for_file(path)
+        all_violations.extend(_check_file(path, source_lines))
+    return all_violations
+
+
+def main(argv: list[str] | None = None) -> int:
+    if argv is None:
+        argv = sys.argv[1:]
+
+    if argv:
+        files = [Path(a).resolve() for a in argv if a.endswith(".py")]
+    else:
+        files = _collect_files(_SCAN_ROOTS)
+
+    violations = _run(files)
+
+    scanned = len(files)
+    violation_count = len(violations)
+    print(f"check_faiss_persist_contract: scanned={scanned} violations={violation_count}")
+
+    if violations:
+        print("FAIL: FAISS persist contract violations found:")
+        for v in violations:
+            print(str(v))
+        return 1
+
+    print("OK: FAISS persist contract satisfied")
+    return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

@@ -720,6 +720,9 @@ class TestMetaLearningStateDigest:
             embedding_model_version="v1",
         )
         captured = capsys.readouterr()
+        digest_lines = [
+            line for line in captured.out.splitlines() if line.startswith("META_LEARNING_STATE_DIGEST:")
+        ]
         assert f"META_LEARNING_STATE_DIGEST: {digest}" in captured.out
 
 
@@ -894,3 +897,389 @@ class TestStrategyWeightsHardening:
         agent.update_strategy_weights()
         raw_bytes = weights_file.read_bytes()
         assert all(b < 0x80 for b in raw_bytes), "All bytes must be < 0x80 (ASCII)"
+
+
+# ===========================================================================
+# hA: Strict-mode weights corruption (META_LEARNING_STRICT_WEIGHTS=1)
+# ===========================================================================
+
+
+class TestStrictWeightsMode:
+    """hA: corrupt weights raise in strict mode; emit telemetry in non-strict mode."""
+
+    @staticmethod
+    def _make_agent(weights_file, telemetry_callback=None):
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+
+        with patch.object(SovereignBaseAgent, "__init__", return_value=None):
+            return MetaLearningAgent(
+                strategy_weights_file=weights_file,
+                telemetry_callback=telemetry_callback,
+            )
+
+    @pytest.mark.unit
+    def test_strict_mode_raises_on_corrupt_file(self, tmp_path, monkeypatch):
+        """META_LEARNING_STRICT_WEIGHTS=1: corrupt file must raise RuntimeError."""
+        monkeypatch.setenv("META_LEARNING_STRICT_WEIGHTS", "1")
+        weights_file = tmp_path / "w.json"
+        weights_file.write_text("NOT JSON {{{{", encoding="utf-8")
+
+        with pytest.raises(RuntimeError, match="META_LEARNING_STRICT_WEIGHTS=1"):
+            self._make_agent(weights_file)
+
+    @pytest.mark.unit
+    def test_strict_mode_off_by_default(self, tmp_path, monkeypatch):
+        """Without META_LEARNING_STRICT_WEIGHTS=1, corrupt file uses defaults silently."""
+        monkeypatch.delenv("META_LEARNING_STRICT_WEIGHTS", raising=False)
+        weights_file = tmp_path / "w.json"
+        weights_file.write_text("NOT JSON {{{{", encoding="utf-8")
+
+        agent = self._make_agent(weights_file)
+        assert agent.strategy_weights["cot"] == pytest.approx(1.0)
+
+    @pytest.mark.unit
+    def test_nonstrict_corrupt_emits_telemetry(self, tmp_path, monkeypatch):
+        """In non-strict mode, corrupt file must emit strategy_weights_load_failed_fallback event."""
+        monkeypatch.delenv("META_LEARNING_STRICT_WEIGHTS", raising=False)
+        weights_file = tmp_path / "w.json"
+        weights_file.write_text("{bad json", encoding="utf-8")
+
+        events = []
+        self._make_agent(weights_file, telemetry_callback=lambda e, d: events.append((e, d)))
+
+        fallback_events = [e for e in events if e[0] == "strategy_weights_load_failed_fallback"]
+        assert len(fallback_events) == 1, "Must emit exactly one fallback telemetry event"
+        payload = fallback_events[0][1]
+        assert "file" in payload
+        assert "exc_type" in payload
+
+    @pytest.mark.unit
+    def test_strict_mode_value_1_only(self, tmp_path, monkeypatch):
+        """Only '1' activates strict mode; '0', 'true', 'yes' must not activate it."""
+        weights_file = tmp_path / "w.json"
+        weights_file.write_text("NOT JSON", encoding="utf-8")
+
+        for val in ("0", "true", "yes", "TRUE", ""):
+            monkeypatch.setenv("META_LEARNING_STRICT_WEIGHTS", val)
+            agent = self._make_agent(weights_file)
+            assert agent.strategy_weights["cot"] == pytest.approx(1.0), (
+                f"val={val!r} should not activate strict mode"
+            )
+
+    @pytest.mark.unit
+    def test_strict_mode_valid_file_loads_normally(self, tmp_path, monkeypatch):
+        """META_LEARNING_STRICT_WEIGHTS=1 must not affect loading a valid weights file."""
+        monkeypatch.setenv("META_LEARNING_STRICT_WEIGHTS", "1")
+        weights_file = tmp_path / "w.json"
+
+        agent1 = self._make_agent(weights_file)
+        for _ in range(15):
+            agent1.store_experience({}, "cot", {}, 1.0)
+        agent1.update_strategy_weights()
+        saved = dict(agent1.strategy_weights)
+
+        agent2 = self._make_agent(weights_file)
+        assert agent2.strategy_weights == pytest.approx(saved, rel=1e-5)
+
+
+# ===========================================================================
+# hB: Determinism proof — two independent runs produce identical digest
+# ===========================================================================
+
+
+class TestDeterminismProof:
+    """hB: META_LEARNING_STATE_DIGEST is stable across two independent runs."""
+
+    @pytest.mark.unit_min_deps
+    def test_digest_identical_across_two_runs(self, tmp_path, capsys):
+        """Two builds from identical inputs must emit the same META_LEARNING_STATE_DIGEST."""
+        from system_learning.engines.meta_learning_state_digest import (
+            emit_meta_learning_state_digest,
+        )
+
+        def _run(base: Path) -> str:
+            store = _build_store(base, "hc_v1", n=4)
+            faiss_digest = store.persist_to_disk(
+                "hc_v1",
+                base / "hc_v1",
+                embedder_id="hash-fallback",
+                model_version="v1",
+            )
+            digest = emit_meta_learning_state_digest(
+                faiss_index_digests={"hc_v1": faiss_digest},
+                strategy_weights_digest="a" * 64,
+                embedding_model_version="hash-fallback-v1",
+            )
+            return digest
+
+        d1 = _run(tmp_path / "run1")
+        d2 = _run(tmp_path / "run2")
+        assert d1 == d2, "META_LEARNING_STATE_DIGEST must be identical across two identical runs"
+
+    @pytest.mark.unit_min_deps
+    def test_digest_emitted_exactly_once_per_run(self, tmp_path, capsys):
+        """emit_meta_learning_state_digest must print the digest line exactly once per call."""
+        from system_learning.engines.meta_learning_state_digest import (
+            emit_meta_learning_state_digest,
+        )
+
+        capsys.readouterr()
+        store = _build_store(tmp_path, "hc_v1", n=2)
+        faiss_digest = store.persist_to_disk(
+            "hc_v1",
+            tmp_path / "hc_v1",
+            embedder_id="hash-fallback",
+            model_version="v1",
+        )
+        capsys.readouterr()  # flush prior prints
+
+        digest = emit_meta_learning_state_digest(
+            faiss_index_digests={"hc_v1": faiss_digest},
+            strategy_weights_digest="b" * 64,
+            embedding_model_version="v1",
+        )
+        captured = capsys.readouterr()
+        digest_lines = [
+            ln for ln in captured.out.splitlines() if ln.startswith("META_LEARNING_STATE_DIGEST:")
+        ]
+        assert len(digest_lines) == 1, f"Expected exactly 1 digest line, got {len(digest_lines)}"
+        assert digest_lines[0] == f"META_LEARNING_STATE_DIGEST: {digest}"
+
+    @pytest.mark.unit_min_deps
+    def test_digest_changes_when_faiss_content_changes(self, tmp_path):
+        """Different FAISS content must yield different META_LEARNING_STATE_DIGEST."""
+        from system_learning.engines.meta_learning_state_digest import (
+            compute_meta_learning_state_digest,
+        )
+
+        store_a = _build_store(tmp_path / "a", "hc_v1", n=3)
+        d_a = store_a.persist_to_disk("hc_v1", tmp_path / "a" / "hc_v1", embedder_id="e", model_version="v1")
+
+        store_b = _build_store(tmp_path / "b", "hc_v1", n=5)
+        d_b = store_b.persist_to_disk("hc_v1", tmp_path / "b" / "hc_v1", embedder_id="e", model_version="v1")
+
+        digest_a = compute_meta_learning_state_digest(
+            faiss_index_digests={"hc_v1": d_a},
+            strategy_weights_digest="c" * 64,
+            embedding_model_version="v1",
+        )
+        digest_b = compute_meta_learning_state_digest(
+            faiss_index_digests={"hc_v1": d_b},
+            strategy_weights_digest="c" * 64,
+            embedding_model_version="v1",
+        )
+        assert digest_a != digest_b
+
+
+# ===========================================================================
+# hC: Replay binding struct
+# ===========================================================================
+
+
+class TestReplayBinding:
+    """hC: MetaLearningReplayBinding contains all three digest fields and is deterministic."""
+
+    @pytest.mark.unit_min_deps
+    def test_binding_has_all_three_keys(self):
+        """to_dict() must contain faiss_index_digests, strategy_weights_digest, embedding_model_version."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        b = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64},
+            strategy_weights_digest="b" * 64,
+            embedding_model_version="hash-fallback-v1",
+        )
+        d = b.to_dict()
+        assert "faiss_index_digests" in d
+        assert "strategy_weights_digest" in d
+        assert "embedding_model_version" in d
+
+    @pytest.mark.unit_min_deps
+    def test_binding_emit_prints_replay_binding_line(self, capsys):
+        """emit() must print exactly one REPLAY-BINDING: line."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        b = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64},
+            strategy_weights_digest="b" * 64,
+            embedding_model_version="v1",
+        )
+        b.emit()
+        out = capsys.readouterr().out
+        lines = [ln for ln in out.splitlines() if ln.startswith("REPLAY-BINDING:")]
+        assert len(lines) == 1
+
+    @pytest.mark.unit_min_deps
+    def test_binding_round_trips_via_from_line(self):
+        """from_line(to_line()) must reproduce an equal binding."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        original = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64, "tel_v1": "b" * 64},
+            strategy_weights_digest="c" * 64,
+            embedding_model_version="BAAI/bge-m3-v1",
+        )
+        restored = MetaLearningReplayBinding.from_line(original.to_line())
+        assert restored.faiss_index_digests == original.faiss_index_digests
+        assert restored.strategy_weights_digest == original.strategy_weights_digest
+        assert restored.embedding_model_version == original.embedding_model_version
+
+    @pytest.mark.unit_min_deps
+    def test_binding_digest_changes_when_weights_change(self):
+        """Binding with different strategy_weights_digest must not equal original."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        b1 = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64},
+            strategy_weights_digest="1" * 64,
+            embedding_model_version="v1",
+        )
+        b2 = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64},
+            strategy_weights_digest="2" * 64,
+            embedding_model_version="v1",
+        )
+        assert b1.to_line() != b2.to_line()
+
+    @pytest.mark.unit_min_deps
+    def test_binding_raises_on_empty_faiss_dict(self):
+        """Empty faiss_index_digests must raise ValueError."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        with pytest.raises(ValueError, match="faiss_index_digests must contain at least one entry"):
+            MetaLearningReplayBinding(
+                faiss_index_digests={},
+                strategy_weights_digest="a" * 64,
+                embedding_model_version="v1",
+            )
+
+    @pytest.mark.unit_min_deps
+    def test_binding_raises_on_short_digest(self):
+        """strategy_weights_digest shorter than 64 chars must raise ValueError."""
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        with pytest.raises(ValueError, match="strategy_weights_digest must be 64-hex chars"):
+            MetaLearningReplayBinding(
+                faiss_index_digests={"hc_v1": "a" * 64},
+                strategy_weights_digest="tooshort",
+                embedding_model_version="v1",
+            )
+
+    @pytest.mark.unit
+    def test_binding_built_from_live_agent(self, tmp_path):
+        """Binding constructed from a live MetaLearningAgent must include its live digest."""
+        from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+        from system_learning.engines.meta_learning_replay_binding import MetaLearningReplayBinding
+
+        with patch.object(SovereignBaseAgent, "__init__", return_value=None):
+            agent = MetaLearningAgent(strategy_weights_file=tmp_path / "w.json")
+
+        for _ in range(10):
+            agent.store_experience({}, "cot", {}, 1.0)
+        agent.update_strategy_weights()
+
+        binding = MetaLearningReplayBinding(
+            faiss_index_digests={"hc_v1": "a" * 64},
+            strategy_weights_digest=agent.strategy_weights_digest,
+            embedding_model_version="hash-fallback-v1",
+        )
+        d = binding.to_dict()
+        assert d["strategy_weights_digest"] == agent.strategy_weights_digest
+        assert len(d["strategy_weights_digest"]) == 64
+
+
+# ===========================================================================
+# h7: CI checker — check_faiss_persist_contract.py
+# ===========================================================================
+
+
+class TestFaissPersistContractChecker:
+    """h7: AST-based CI checker correctly identifies persist contract violations."""
+
+    @pytest.mark.unit_min_deps
+    def test_checker_passes_on_compliant_code(self, tmp_path):
+        """A function with finalize_build() followed by persist_to_disk() must pass."""
+        src = tmp_path / "good.py"
+        src.write_text(
+            "def build_index(store, path):\n"
+            "    store.begin_build('x', 16)\n"
+            "    store.finalize_build('x')\n"
+            "    store.persist_to_disk('x', path, embedder_id='e', model_version='v1')\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import _run
+
+        violations = _run([src])
+        assert violations == [], f"Expected no violations, got: {violations}"
+
+    @pytest.mark.unit_min_deps
+    def test_checker_fails_on_finalize_without_persist(self, tmp_path):
+        """A function with finalize_build() but no persist_to_disk() must produce R1 violation."""
+        src = tmp_path / "bad.py"
+        src.write_text(
+            "def build_index(store):\n    store.begin_build('x', 16)\n    store.finalize_build('x')\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import _run
+
+        violations = _run([src])
+        assert len(violations) == 1
+        assert violations[0].rule == "R1"
+
+    @pytest.mark.unit_min_deps
+    def test_checker_accepts_guardian_comment(self, tmp_path):
+        """finalize_build() line annotated with guardian comment must not produce violation."""
+        src = tmp_path / "guarded.py"
+        src.write_text(
+            "def build_index(store):\n"
+            "    store.begin_build('x', 16)\n"
+            "    store.finalize_build('x')  # guardian: faiss-no-persist\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import _run
+
+        violations = _run([src])
+        assert violations == [], f"Guardian comment must suppress violation, got: {violations}"
+
+    @pytest.mark.unit_min_deps
+    def test_checker_passes_on_rebuild_with_persist(self, tmp_path):
+        """rebuild() followed by persist_to_disk() must not produce a violation."""
+        src = tmp_path / "rebuild_ok.py"
+        src.write_text(
+            "def prune_and_persist(store, path):\n"
+            "    store.rebuild('x', keep_ids=[])\n"
+            "    store.persist_to_disk('x', path, embedder_id='e', model_version='v1')\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import _run
+
+        violations = _run([src])
+        assert violations == []
+
+    @pytest.mark.unit_min_deps
+    def test_checker_exit_zero_on_clean_code(self, tmp_path):
+        """main() must return 0 when no violations found."""
+        src = tmp_path / "clean.py"
+        src.write_text(
+            "def build(store, path):\n"
+            "    store.finalize_build('x')\n"
+            "    store.persist_to_disk('x', path, embedder_id='e', model_version='v1')\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import main
+
+        assert main([str(src)]) == 0
+
+    @pytest.mark.unit_min_deps
+    def test_checker_exit_one_on_violation(self, tmp_path):
+        """main() must return 1 when violations found."""
+        src = tmp_path / "violation.py"
+        src.write_text(
+            "def build(store):\n    store.finalize_build('x')\n",
+            encoding="utf-8",
+        )
+        from ops_scripts.ci.check_faiss_persist_contract import main
+
+        assert main([str(src)]) == 1

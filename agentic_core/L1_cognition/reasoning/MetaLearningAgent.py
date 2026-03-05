@@ -20,12 +20,16 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
-# from agentic_core.utils.sovereign_index import SovereignIndex  # Archived - not needed
-
 # Type alias for telemetry callback
 TelemetryCallback = Callable[[str, dict[str, Any]], None]
 
+_STRICT_WEIGHTS_ENV = "META_LEARNING_STRICT_WEIGHTS"
 _WEIGHTS_SCHEMA_VERSION = "1"
+
+
+def _strict_weights_mode() -> bool:
+    """Return True when META_LEARNING_STRICT_WEIGHTS=1 is set in the environment."""
+    return os.environ.get(_STRICT_WEIGHTS_ENV, "").strip() == "1"
 
 
 @dataclass
@@ -157,17 +161,41 @@ class MetaLearningAgent(SovereignBaseAgent):
         return self.strategy_weights
 
     def _load_strategy_weights(self) -> None:
-        """Load persisted strategy weights from disk if available."""
+        """Load persisted strategy weights from disk.
+
+        Strict mode (META_LEARNING_STRICT_WEIGHTS=1):
+            Any parse or validation error raises RuntimeError immediately.
+            Use in CI and replay runs to prevent silently divergent state.
+
+        Non-strict mode (default):
+            Parse errors fall back to default weights and emit a
+            ``strategy_weights_load_failed_fallback`` telemetry event so the
+            failure is observable without halting execution.
+        """
         if self._strategy_weights_file is None or not Path(self._strategy_weights_file).exists():
             return
+        strict = _strict_weights_mode()
         try:
             raw = json.loads(Path(self._strategy_weights_file).read_text(encoding="utf-8"))
             loaded = raw.get("strategy_weights", {})
             for key in self.strategy_weights:
                 if key in loaded and isinstance(loaded[key], (int, float)):
                     self.strategy_weights[key] = float(loaded[key])
-        except (OSError, json.JSONDecodeError, ValueError):
-            pass  # Corrupt or absent file — keep defaults
+        except (OSError, json.JSONDecodeError, ValueError) as exc:
+            if strict:
+                raise RuntimeError(
+                    f"META_LEARNING_STRICT_WEIGHTS=1: corrupt strategy weights file "
+                    f"'{self._strategy_weights_file}' — {type(exc).__name__}: {exc}"
+                ) from exc
+            if self.telemetry_callback:
+                self.telemetry_callback(
+                    "strategy_weights_load_failed_fallback",
+                    {
+                        "file": str(self._strategy_weights_file),
+                        "exc_type": type(exc).__name__,
+                        "exc_str": str(exc),
+                    },
+                )
 
     @property
     def strategy_weights_digest(self) -> str:
