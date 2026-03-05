@@ -62,7 +62,7 @@ def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
     """Derive APPS_*_SUBFOLDER_MAP from SOVEREIGN_TERRITORIES."""
     result: dict[str, list[str]] = {}
     territory = SOVEREIGN_TERRITORIES.get(territory_name, {})
-    if not isinstance(territory, dict):
+    if not isinstance(territory, Mapping):
         return result
 
     subfolders = territory.get("subfolders", {})
@@ -72,13 +72,13 @@ def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
             result[sf_name] = []
         return result
 
-    if not isinstance(subfolders, dict):
+    if not isinstance(subfolders, Mapping):
         return result
 
     for sf_name, sf_def in subfolders.items():
-        if isinstance(sf_def, dict):
+        if isinstance(sf_def, Mapping):
             nested = sf_def.get("subfolders", {})
-            if isinstance(nested, dict):
+            if isinstance(nested, Mapping):
                 result[sf_name] = list(nested.keys())
             elif isinstance(nested, (list, tuple)):
                 result[sf_name] = list(nested)

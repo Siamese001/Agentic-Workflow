@@ -869,10 +869,16 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "*_validator.py": "validators",
     }
 
+    apps_rg_subfolders = apps_lcd_subfolders.copy()
+    apps_rg_subfolders["domain"] = {
+        "purpose": "Domain objects (entities, models, value_objects)",
+        "subfolders": {"entities": [], "models": [], "value_objects": []},
+    }
+
     territories["apps_rg"] = {
         "depth": 2,
         "purpose": "Resume Generation Application domain.",
-        "subfolders": apps_lcd_subfolders.copy(),
+        "subfolders": apps_rg_subfolders,
         "routing_rules": apps_routing_rules,
         "ast_signals": {"apps_rg/engines": {"keyword_signals": ["resume", "cv", "formatting"], "weight": 90}},
     }
@@ -880,6 +886,10 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     apps_lic_subfolders = apps_lcd_subfolders.copy()
     # reports removed — never materialized on disk, add back when needed
     apps_lic_subfolders["tools"] = {"purpose": "Tool implementations", "subfolders": []}
+    apps_lic_subfolders["domain"] = {
+        "purpose": "Domain objects (config, utils, models)",
+        "subfolders": {"config": [], "utils": [], "models": []},
+    }
 
     territories["apps_lic"] = {
         "depth": 2,
@@ -900,7 +910,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "core_components",
             "enforcement",
             "tools",
-            "common_utils",
             "mixins",
             "integration",
             "llm",
@@ -922,7 +931,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "purpose": "Shared constraint execution, guardrails, and strategy gates (optional)"
             },
             "tools": {"purpose": "Shared tool implementations and wrappers (optional)"},
-            "common_utils": {"purpose": "Legacy common utilities (optional, consolidate into utils/)"},
             "mixins": {"purpose": "Shared capability mixins (optional)"},
             "integration": {"purpose": "Integration adapters for external services (optional)"},
             "spine": {"purpose": "Shared spine adapters bridging app domains to core services (optional)"},

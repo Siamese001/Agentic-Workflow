@@ -14,7 +14,7 @@ from typing import Any
 Logger: Any = logging.getLogger(__name__)
 
 
-def test_import(package_name: Any, min_version: Any = None) -> Any:
+def _test_import(package_name: Any, min_version: Any = None) -> Any:
     """Test if a package can be imported and optionally check version"""
     try:
         importlib.import_module(package_name)

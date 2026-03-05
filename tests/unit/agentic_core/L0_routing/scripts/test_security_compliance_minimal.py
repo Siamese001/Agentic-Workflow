@@ -6,6 +6,12 @@ from unittest.mock import Mock, patch
 
 import pytest
 
+pytestmark = pytest.mark.skip(
+    reason="Depends on agentic_core.L0_routing.security, ManifestGuardian, "
+    "agentic_core.L0_routing.scripts.compliance_gate, and "
+    "agentic_core.L0_routing.boot.boot_sequence — none of which exist yet."
+)
+
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 

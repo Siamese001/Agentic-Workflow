@@ -113,6 +113,16 @@ Examples:
         print_execution_plan(arbitrate_plan=args.arbitrate_plan, ptc_plan=args.ptc_plan)
         return 0
 
+    if not args.legacy:
+        import sys as _sys
+
+        print(
+            "ERROR: --legacy flag required to run the healing pipeline.\n"
+            "Use: python -m agentic_core.L0_routing.scripts.execute_ssot_entrypoint --legacy",
+            file=_sys.stderr,
+        )
+        return 1
+
     from agentic_core.L0_routing.scripts.execute_ssot import (
         REPO_ROOT,
         _apply_v15_enforcement_flag,

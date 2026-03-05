@@ -33,6 +33,7 @@ def dirty_repo(tmp_path):
 def test_hygiene_enforcement(dirty_repo, monkeypatch):
     """Test that scripts are moved to correct locations and root is cleaned."""
     monkeypatch.chdir(dirty_repo)
+    monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
 
     # Run Enforcer
     enforce_root_hygiene()
@@ -55,6 +56,7 @@ def test_hygiene_enforcement(dirty_repo, monkeypatch):
 def test_purge_cache_refiling(dirty_repo, monkeypatch):
     """Test the specific rule for purge_cache.py reorganization."""
     monkeypatch.chdir(dirty_repo)
+    monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
 
     # Setup purge_cache in illegal scripts folder
     (dirty_repo / "scripts" / "purge_cache.py").write_text("print('clean')")

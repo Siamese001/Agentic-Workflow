@@ -42,6 +42,9 @@ from __future__ import annotations
 # The canonical __all__ lives in the package __init__.py; this shim mirrors it.
 from agentic_core.L5_safety.config.structure_blueprint import *  # noqa: F401,F403
 from agentic_core.L5_safety.config.structure_blueprint import __all__ as _pkg_all
+from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
+    SOVEREIGN_TERRITORIES as SOVEREIGN_REGISTRY,
+)
 from agentic_core.L5_safety.config.structure_blueprint.artifacts import (  # noqa: F401
     get_app_specific_patterns_compiled,
 )

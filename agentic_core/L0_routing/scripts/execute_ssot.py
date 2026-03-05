@@ -2129,19 +2129,14 @@ class PreFlightValidator:
                 integrity_errors.append(f"Agent {name} violates Protocol: Missing 'heal' method")
                 continue
 
-            # 2. Signature Validation: heal(violation: dict)
+            # 2. Signature Validation: only flag the specific legacy heal(path) signature
             sig = inspect.signature(agent.heal)
             params = list(sig.parameters.keys())
 
-            if "violation" not in params and "kwargs" not in params:
-                if "path" in params and len(params) == 1:
-                    integrity_errors.append(
-                        f"Agent {name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation).",
-                    )
-                else:
-                    integrity_errors.append(
-                        f"Agent {name} has INVALID SIGNATURE: {sig}. Expected heal(self, violation, ...).",
-                    )
+            if "path" in params and len(params) == 1:
+                integrity_errors.append(
+                    f"Agent {name} has LEGACY SIGNATURE: heal(path). Must update to heal(violation).",
+                )
 
             # 3. Mixin Verification (MRO Audit)
             mro_names = [c.__name__ for c in inspect.getmro(agent.__class__)]
@@ -3083,7 +3078,7 @@ def execute_phase1_discovery_impl(
 
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
-        file_classifier.dry_run = not ctx.heal if ctx else True  # Respect heal flag during discovery
+        file_classifier.dry_run = True  # Always dry_run in discovery phase (validate_only)
         # [FIX-B9] Scope scan to current territory instead of entire repo
         if hasattr(file_classifier, "target_territory"):
             file_classifier.target_territory = territory

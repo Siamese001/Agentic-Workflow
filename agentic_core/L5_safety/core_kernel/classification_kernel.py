@@ -139,6 +139,10 @@ def classify_file_standalone(path: Path) -> FileType:
     Returns:
         A FileType string literal.
     """
+    # Early exit for test files — before resolve() to avoid stat() calls
+    _name = path.name
+    if _name.startswith("test_") or _name.endswith("_test.py") or "tests" in path.parts:
+        return "TEST"
     # Resolve to absolute path for consistent cache keys
     try:
         resolved = path.resolve()
