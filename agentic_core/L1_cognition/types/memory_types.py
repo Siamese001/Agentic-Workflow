@@ -13,7 +13,7 @@ from dataclasses import dataclass, field
 from typing import Any, Final
 
 # Constants
-EMBEDDING_DIMENSION: Final[int] = 1536  # OpenAI ada-002 dimension
+EMBEDDING_DIMENSION: Final[int] = 1024  # BAAI/bge-m3 dimension
 MAX_TEXT_LENGTH: Final[int] = 8000  # Token limit approximation
 
 

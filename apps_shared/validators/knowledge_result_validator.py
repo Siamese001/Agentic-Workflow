@@ -159,8 +159,16 @@ class L5ConsolidatedKnowledge:
         return self._fallback_templates.get(template_type)
 
     def _embed_query(self, query: str) -> list[float]:
-        """Create embedding for query (placeholder)."""
-        return [0.1] * 384
+        """Create embedding for query using BGE-m3."""
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            result = bmg_embed_text(query)
+            if result:
+                return result
+        except Exception:
+            pass
+        return [0.0] * 1024
 
     def _get_profile_source(self) -> str:
         """Get source of profile retrieval."""

@@ -17,7 +17,7 @@ class LateInteractionReranker:
     and document, providing superior ranking accuracy compared to bi-encoders.
     """
 
-    def __init__(self, model_name: str = "ms-marco-MiniLM-L-6-v2", lazy_load: bool = True):
+    def __init__(self, model_name: str = "BAAI/bge-reranker-v2-m3", lazy_load: bool = True):
         """Initialize the Late Interaction Reranker.
 
         Args:
@@ -260,7 +260,7 @@ class LateInteractionReranker:
 def rerank_documents(
     query: str,
     documents: list[str],
-    model_name: str = "ms-marco-MiniLM-L-6-v2",
+    model_name: str = "BAAI/bge-reranker-v2-m3",
     top_k: int = 5,
 ) -> list[str]:
     """Rerank documents using default settings.

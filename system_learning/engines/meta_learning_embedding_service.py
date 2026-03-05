@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import hashlib
 import json
-import math
 import struct
 from pathlib import Path
 from typing import Any, Protocol
@@ -241,26 +240,31 @@ class MetaLearningEmbeddingService:
         Returns:
             List of candidates with similarity scores.
         """
+        if not embeddings_matrix:
+            return []
+
+        import numpy as np
+
+        q = np.array(query_vec, dtype=np.float32)
+        q_norm = np.linalg.norm(q)
+        if q_norm == 0:
+            return []
+        q_unit = q / q_norm
+
+        matrix = np.array(embeddings_matrix, dtype=np.float32)
+        norms = np.linalg.norm(matrix, axis=1, keepdims=True)
+        # Zero-norm guard: keep rows with non-zero norms
+        valid_mask = (norms[:, 0] > 0)
+        matrix_unit = np.where(norms > 0, matrix / np.maximum(norms, 1e-12), 0.0)
+        scores = matrix_unit @ q_unit
+
         candidates = []
-
-        # Compute query norm once
-        query_norm = math.sqrt(sum(x * x for x in query_vec))
-        if query_norm == 0:
-            return candidates
-
-        for i, (row, embedding) in enumerate(zip(row_data, embeddings_matrix)):
-            # Compute embedding norm
-            embed_norm = math.sqrt(sum(x * x for x in embedding))
-            if embed_norm == 0:
+        for i, row in enumerate(row_data):
+            if not valid_mask[i]:
                 continue
-
-            # Compute cosine similarity
-            dot_product = sum(q * e for q, e in zip(query_vec, embedding))
-            cosine_sim = dot_product / (query_norm * embed_norm)
-
             candidates.append(
                 {
-                    "score": cosine_sim,
+                    "score": float(scores[i]),
                     "trace_id": row["trace_id"],
                     "content_hash": row["content_hash"],
                     "row_id": row["row_id"],

@@ -22,7 +22,7 @@ Logger = logging.getLogger(__name__)
 class SubAtomicEngineImpl:
     """Hardens the LLM interaction using Sovereign Gateways."""
 
-    def __init__(self, redis_client=None, pinecone_index=None):
+    def __init__(self, redis_client=None):
         from agentic_core.L2_execution.reasoning.EmbeddingSovereignAgent import get_embedding_gateway
 
         self.llm_gateway = get_llm_gateway()
@@ -32,11 +32,11 @@ class SubAtomicEngineImpl:
 
     async def get_embedding(self, text: str) -> list[float]:
         try:
-            return await self.embedding_gateway.get_embedding(text, provider="gemini")
+            return await self.embedding_gateway.get_embedding(text, provider="bge-m3")
         # guardian: allow-silent-swallow
         except Exception as e:
             Logger.error(f"Embedding failed: {e}")
-            return [0.0] * 768
+            return [0.0] * 1024
 
     async def resilient_mutation(self, *args, **kwargs) -> str:
         """Gateway-backed mutation."""

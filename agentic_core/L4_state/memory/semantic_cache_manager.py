@@ -246,7 +246,7 @@ class SemanticCacheManager:
         Raises:
             CriticalInfrastructureError: If STRICT_MODE and infrastructure unavailable
         """
-        self.api_key = api_key or os.environ.get("GEMINI_API_KEY")
+        self.api_key = api_key  # unused; BGE embeddings require no API key
         self.similarity_threshold = 0.98  # Strict threshold for auto-action
 
         # configuration from environment
@@ -274,18 +274,15 @@ class SemanticCacheManager:
         self.redis_enabled = False
         self._init_redis()
 
-        # Layer 2: Pinecone (Long-Term Memory - DNA)
-        self.pinecone_index = None
-        self.pinecone_enabled = False
-        self._init_pinecone()
-
-        # Embedding client (lazy-loaded)
-        self._embedding_client = None
+        # Layer 2: InMemoryVectorStore (Long-Term Memory - DNA)
+        self._vector_store: dict[str, dict] = {}
+        self.vector_store_enabled = True
+        self._init_vector_store()
 
         # Statistics
         self.stats = {
             "redis_hits": 0,
-            "pinecone_hits": 0,
+            "vector_store_hits": 0,
             "cache_misses": 0,
             "cache_stores": 0,
             "traces_sampled": 0,
@@ -294,7 +291,7 @@ class SemanticCacheManager:
         }
 
         # Check infrastructure and apply compliance policy
-        infrastructure_available = self.redis_enabled or self.pinecone_enabled
+        infrastructure_available = self.redis_enabled or self.vector_store_enabled
 
         if not infrastructure_available:
             if self.strict_mode:
@@ -313,10 +310,7 @@ class SemanticCacheManager:
         else:
             Logger.warning("[HiveMind] Working Memory (Redis) unavailable")
 
-        if self.pinecone_enabled:
-            Logger.info("[HiveMind] Connected to Long-Term Memory (Pinecone)")
-        else:
-            Logger.warning("[HiveMind] Long-Term Memory (Pinecone) unavailable")
+        Logger.info("[HiveMind] Connected to Long-Term Memory (InMemoryVectorStore+BGE)")
 
         Logger.info(
             f"[HiveMind] Config: strict_mode={self.strict_mode}, "
@@ -346,59 +340,11 @@ class SemanticCacheManager:
             Logger.warning(f"[HiveMind] Redis connection failed: {e}")
             return e
 
-    def _init_pinecone(self) -> Exception | None:
-        """
-        Initialize Pinecone connection for semantic matching.
-
-        Returns:
-            Exception if connection failed, None if successful
-        """
-        pinecone_key = os.environ.get("PINECONE_API_KEY")
-        if not pinecone_key:
-            Logger.debug("[HiveMind] PINECONE_API_KEY not set")
-            return Exception("PINECONE_API_KEY not set")
-
-        try:
-            from pinecone import Pinecone, ServerlessSpec
-
-            pc = Pinecone(api_key=pinecone_key)
-            index_name = "agentic-hive-mind"
-
-            # Check if index exists
-            existing_indexes = [idx.name for idx in pc.list_indexes()]
-
-            if index_name not in existing_indexes:
-                Logger.info(f"[HiveMind] Creating Pinecone index: {index_name}")
-                pc.create_index(
-                    name=index_name,
-                    dimension=768,  # text-embedding-004 dimension
-                    metric="cosine",
-                    spec=ServerlessSpec(cloud="aws", region="us-east-1"),
-                )
-
-            self.pinecone_index = pc.Index(index_name)
-            self.pinecone_enabled = True
-            return None
-
-        except ImportError as e:
-            Logger.debug("[HiveMind] pinecone package not installed")
-            return e
-        except Exception as e:
-            Logger.error(f"[HiveMind] Pinecone connection failed: {e}")
-            return e
-
-    def _get_embedding_client(self):
-        """Lazy-load the embedding client (thread-safe)."""
-        with self._lock:
-            if self._embedding_client is None and self.api_key:
-                try:
-                    from google import genai
-
-                    self._embedding_client = genai.Client(api_key=self.api_key)
-                    Logger.debug("[HiveMind] Embedding client initialized")
-                except Exception as e:
-                    Logger.warning(f"[HiveMind] Embedding client failed: {e}")
-        return self._embedding_client
+    def _init_vector_store(self) -> None:
+        """Initialize in-memory vector store for semantic matching (BGE-m3 backend)."""
+        self._vector_store = {}
+        self.vector_store_enabled = True
+        Logger.debug("[HiveMind] In-memory vector store initialized (BGE-m3 backend)")
 
     def _compute_hash(self, context: str, namespace: str) -> str:
         """Compute SHA256 hash for exact matching."""
@@ -406,36 +352,14 @@ class SemanticCacheManager:
         return hashlib.sha256(key.encode()).hexdigest()
 
     def _get_embedding(self, text: str) -> list[float] | None:
-        """
-        Generate embedding vector for semantic matching.
+        """Generate BGE-m3 embedding for semantic matching."""
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-        Includes retry logic for transient API failures.
-        """
-        client = self._get_embedding_client()
-        if not client:
+            return bmg_embed_text(text[:2000])
+        except Exception as e:
+            Logger.warning(f"[HiveMind] BGE embedding failed: {e}")
             return None
-
-        truncated = text[:2000]
-        max_retries = 3
-
-        for attempt in range(max_retries):
-            try:
-                result = client.models.embed_content(
-                    model="text-embedding-004",
-                    contents=truncated,
-                )
-                return result.embeddings[0].values
-            except Exception as e:
-                is_last_attempt = attempt == max_retries - 1
-                log_level = logging.WARNING if is_last_attempt else logging.DEBUG
-                Logger.log(
-                    log_level,
-                    f"[HiveMind] Embedding failed (attempt {attempt + 1}/{max_retries}): {e}",
-                )
-                if not is_last_attempt:
-                    time.sleep(1 * (attempt + 1))  # Simple backoff
-
-        return None
 
     def recall(
         self,
@@ -466,27 +390,31 @@ class SemanticCacheManager:
             except Exception as e:
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
 
-        # Layer 2: Semantic Match (Pinecone)
-        if self.pinecone_enabled:
+        # Layer 2: Semantic Match (InMemoryVectorStore+BGE)
+        if self.vector_store_enabled and self._vector_store:
             vector = self._get_embedding(context)
             if vector:
                 try:
-                    results = self.pinecone_index.query(
-                        vector=vector,
-                        top_k=1,
-                        include_metadata=True,
-                        filter={"namespace": namespace},
-                    )
+                    import numpy as np
 
-                    if results.matches and results.matches[0].score >= self.similarity_threshold:
-                        score = results.matches[0].score
-                        Logger.info(f"[HiveMind] Pinecone HIT ({score:.2f}) for {namespace}")
+                    q = np.array(vector, dtype=np.float32)
+                    q_norm = q / (np.linalg.norm(q) + 1e-8)
+                    best_score, best_payload = 0.0, None
+                    for entry in self._vector_store.values():
+                        if entry.get("namespace") != namespace:
+                            continue
+                        v = np.array(entry["vector"], dtype=np.float32)
+                        v_norm = v / (np.linalg.norm(v) + 1e-8)
+                        score = float(np.dot(q_norm, v_norm))
+                        if score > best_score:
+                            best_score, best_payload = score, entry.get("payload")
+                    if best_payload and best_score >= self.similarity_threshold:
+                        Logger.info(f"[HiveMind] VectorStore HIT ({best_score:.2f}) for {namespace}")
                         with self._lock:
-                            self.stats["pinecone_hits"] += 1
-                        return json.loads(results.matches[0].metadata["payload"])
-
+                            self.stats["vector_store_hits"] += 1
+                        return json.loads(best_payload)
                 except Exception as e:
-                    Logger.debug(f"[HiveMind] Pinecone recall failed: {e}")
+                    Logger.debug(f"[HiveMind] VectorStore recall failed: {e}")
 
         with self._lock:
             self.stats["cache_misses"] += 1
@@ -656,8 +584,8 @@ class SemanticCacheManager:
             )
             return False
 
-        if not self.pinecone_enabled:
-            Logger.warning("[HiveMind] Cannot promote: Pinecone not available")
+        if not self.vector_store_enabled:
+            Logger.warning("[HiveMind] Cannot promote: vector store not available")
             return False
 
         # Sanitize content
@@ -684,20 +612,12 @@ class SemanticCacheManager:
             return False
 
         try:
-            self.pinecone_index.upsert(
-                vectors=[
-                    {
-                        "id": ctx_hash,
-                        "values": vector,
-                        "metadata": {
-                            "namespace": namespace,
-                            "payload": payload_json,
-                            "feedback_score": feedback_score,
-                            "promoted": True,
-                        },
-                    },
-                ],
-            )
+            self._vector_store[ctx_hash] = {
+                "vector": vector,
+                "namespace": namespace,
+                "payload": payload_json,
+                "feedback_score": feedback_score,
+            }
 
             # Also extend Redis TTL for promoted memories
             if self.redis_enabled:
@@ -789,7 +709,7 @@ class SemanticCacheManager:
     def get_statistics(self) -> dict[str, Any]:
         """Get cache statistics."""
         with self._lock:
-            total_hits = self.stats["redis_hits"] + self.stats["pinecone_hits"]
+            total_hits = self.stats["redis_hits"] + self.stats["vector_store_hits"]
             total_lookups = total_hits + self.stats["cache_misses"]
             total_traces = self.stats["traces_sampled"] + self.stats["traces_skipped"]
 

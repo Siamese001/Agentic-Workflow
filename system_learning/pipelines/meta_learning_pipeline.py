@@ -590,49 +590,59 @@ def _analyze_historical_patterns(
 
 
 def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
-    """Create deterministic embedding from failure signature.
+    """Create embedding from failure signature using BGE-m3 with 4-dim hash fallback.
 
-    W3 requires deterministic embeddings for reproducible clustering.
+    Primary: real BGE-m3 1024-dim embedding when BMG_EMBEDDINGS_ENABLED=true.
+    Fallback: deterministic 4-dim hash vector (stdlib-only, reproducible).
 
     Args:
         failure_signature: Failure signature object
 
     Returns:
-        Deterministic 4-dimensional embedding vector
+        Embedding vector (1024-dim BGE or 4-dim hash)
     """
+    import os
+
+    # Primary path: real BGE-m3 embedding when enabled
+    if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            text_parts = []
+            if hasattr(failure_signature, "component"):
+                text_parts.append(failure_signature.component)
+            if hasattr(failure_signature, "failure_type"):
+                text_parts.append(failure_signature.failure_type)
+            if hasattr(failure_signature, "healer_name"):
+                text_parts.append(failure_signature.healer_name)
+            text = " ".join(text_parts) if text_parts else "unknown_failure"
+            return bmg_embed_text(text)
+        except Exception:  # guardian: allow-silent-swallower
+            pass
+
+    # Fallback: deterministic 4-dim hash vector (stdlib-only)
     import hashlib
 
-    # Extract deterministic features from failure signature
     components = []
-
-    # Component name (hashed)
     if hasattr(failure_signature, "component"):
         comp_hash = hashlib.sha256(failure_signature.component.encode()).hexdigest()
         components.append(int(comp_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-
-    # Failure type (hashed)
     if hasattr(failure_signature, "failure_type"):
         type_hash = hashlib.sha256(failure_signature.failure_type.encode()).hexdigest()
         components.append(int(type_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-
-    # Healer name (hashed)
     if hasattr(failure_signature, "healer_name"):
         healer_hash = hashlib.sha256(failure_signature.healer_name.encode()).hexdigest()
         components.append(int(healer_hash[:8], 16) / 2**32)
     else:
         components.append(0.0)
-
-    # Timestamp (normalized)
     if hasattr(failure_signature, "timestamp_utc"):
-        # Normalize to [0, 1] range using last 32 bits
         components.append((failure_signature.timestamp_utc & 0xFFFFFFFF) / 2**32)
     else:
         components.append(0.0)
-
     return components
 
 

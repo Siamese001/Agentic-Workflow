@@ -152,7 +152,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
     async def get_embedding(
         self,
         content: str,
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
         use_cache: bool = True,
     ) -> list[float]:
         """
@@ -211,7 +211,7 @@ class EmbeddingSovereignAgent(RedisCacheMixin, SovereignBaseAgent):
     async def get_embeddings_batch(
         self,
         contents: list[str],
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
         use_cache: bool = True,
     ) -> list[list[float]]:
         """

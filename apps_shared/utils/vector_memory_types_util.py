@@ -1,7 +1,8 @@
 """
 Vector Memory Store - Unified vector storage for apps_lic and apps_rg.
 
-Provides semantic search and retrieval capabilities using Pinecone.
+Provides semantic search and retrieval capabilities using an in-memory
+numpy store (BGE-m3, 1024-dim). Pinecone dependency removed.
 Phase 2A.2 - Missing Shared Dependencies
 """
 
@@ -20,7 +21,7 @@ class VectorMemoryConfig:
     """Configuration for vector memory store."""
 
     index_name: str
-    dimension: int = 1536  # OpenAI embedding dimension
+    dimension: int = 1024  # BGE-m3 embedding dimension
     metric: str = "cosine"
     namespace: str | None = None
     top_k: int = 10
@@ -42,6 +43,7 @@ class VectorMemoryStore:
     Unified vector memory store for semantic search and retrieval.
 
     Supports both apps_lic and apps_rg with namespace isolation.
+    Uses an in-memory numpy store backed by BGE-m3 (1024-dim) embeddings.
     """
 
     def __init__(self, config: VectorMemoryConfig):
@@ -52,50 +54,17 @@ class VectorMemoryStore:
             config: Vector memory configuration
         """
         self.config = config
-        self._client = None
-        self._index = None
-        self._initialized = False
+        # namespace -> {id -> {"embedding": list[float], "metadata": dict}}
+        self._store: dict[str, dict[str, dict]] = {}
+        self._initialized = True
 
     def _ensure_initialized(self) -> None:
-        """Ensure the vector store is initialized."""
-        if self._initialized:
-            return
+        """Ensure the vector store is initialized (no-op for in-memory store)."""
+        pass
 
-        try:
-            from pinecone import Pinecone
-
-            # Initialize Pinecone client
-            api_key = self._get_api_key()
-            self._client = Pinecone(api_key=api_key)
-
-            # Get or create index
-            if self.config.index_name not in self._client.list_indexes().names():
-                logger.info(f"Creating Pinecone index: {self.config.index_name}")
-                self._client.create_index(
-                    name=self.config.index_name,
-                    dimension=self.config.dimension,
-                    metric=self.config.metric,
-                )
-
-            self._index = self._client.Index(self.config.index_name)
-            self._initialized = True
-            logger.info(f"Vector memory store initialized: {self.config.index_name}")
-
-        except ImportError:
-            logger.warning("Pinecone not installed, vector memory disabled")
-            self._initialized = False
-        except Exception as e:
-            logger.error(f"Failed to initialize vector memory: {e}")
-            self._initialized = False
-
-    def _get_api_key(self) -> str:
-        """Get Pinecone API key from environment."""
-        import os
-
-        api_key = os.getenv("PINECONE_API_KEY")
-        if not api_key:
-            raise ValueError("PINECONE_API_KEY environment variable not set")
-        return api_key
+    def _namespace_key(self) -> str:
+        """Return the active namespace key."""
+        return self.config.namespace or "__default__"
 
     def store(
         self,
@@ -116,28 +85,16 @@ class VectorMemoryStore:
         Returns:
             ID of stored vector
         """
-        self._ensure_initialized()
-
-        if not self._initialized or self._index is None:
-            logger.warning("Vector memory not initialized, skipping storage")
-            return ""
-
-        # Generate ID if not provided
         if id is None:
             id = self._generate_id(text)
 
-        # Prepare metadata
         meta = metadata or {}
         meta["text"] = text
 
-        # Store in Pinecone
-        try:
-            self._index.upsert(vectors=[(id, embedding, meta)], namespace=self.config.namespace)
-            logger.debug(f"Stored vector: {id}")
-            return id
-        except Exception as e:
-            logger.error(f"Failed to store vector: {e}")
-            return ""
+        ns = self._namespace_key()
+        self._store.setdefault(ns, {})[id] = {"embedding": embedding, "metadata": meta}
+        logger.debug(f"Stored vector: {id}")
+        return id
 
     def search(
         self,
@@ -151,40 +108,44 @@ class VectorMemoryStore:
         Args:
             embedding: Query embedding
             top_k: Number of results to return
-            filter: Optional metadata filter
+            filter: Optional metadata filter (keys matched against metadata dict)
 
         Returns:
             List of search results
         """
-        self._ensure_initialized()
-
-        if not self._initialized or self._index is None:
-            logger.warning("Vector memory not initialized, returning empty results")
-            return []
+        import numpy as np
 
         k = top_k or self.config.top_k
+        ns = self._namespace_key()
+        entries = self._store.get(ns, {})
+
+        if not entries:
+            return []
 
         try:
-            response = self._index.query(
-                vector=embedding,
-                top_k=k,
-                namespace=self.config.namespace,
-                filter=filter,
-                include_metadata=True,
-            )
+            q = np.array(embedding, dtype=np.float32)
+            q_norm = q / (np.linalg.norm(q) + 1e-12)
 
-            results = []
-            for match in response.matches:
-                if match.score >= self.config.similarity_threshold:
-                    results.append(
-                        VectorSearchResult(
-                            id=match.id,
-                            score=match.score,
-                            metadata=match.metadata,
-                            text=match.metadata.get("text"),
-                        ),
-                    )
+            scored: list[tuple[float, str, dict]] = []
+            for vec_id, item in entries.items():
+                if filter and not all(item["metadata"].get(k2) == v for k2, v in filter.items()):
+                    continue
+                v = np.array(item["embedding"], dtype=np.float32)
+                v_norm = v / (np.linalg.norm(v) + 1e-12)
+                score = float(np.dot(q_norm, v_norm))
+                if score >= self.config.similarity_threshold:
+                    scored.append((score, vec_id, item["metadata"]))
 
+            scored.sort(key=lambda x: x[0], reverse=True)
+            results = [
+                VectorSearchResult(
+                    id=vec_id,
+                    score=score,
+                    metadata=meta,
+                    text=meta.get("text"),
+                )
+                for score, vec_id, meta in scored[:k]
+            ]
             logger.debug(f"Found {len(results)} results above threshold")
             return results
 
@@ -202,19 +163,12 @@ class VectorMemoryStore:
         Returns:
             True if successful
         """
-        self._ensure_initialized()
-
-        if not self._initialized or self._index is None:
-            logger.warning("Vector memory not initialized, skipping deletion")
-            return False
-
-        try:
-            self._index.delete(ids=ids, namespace=self.config.namespace)
-            logger.debug(f"Deleted {len(ids)} vectors")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to delete vectors: {e}")
-            return False
+        ns = self._namespace_key()
+        ns_store = self._store.get(ns, {})
+        for vec_id in ids:
+            ns_store.pop(vec_id, None)
+        logger.debug(f"Deleted {len(ids)} vectors")
+        return True
 
     def clear_namespace(self) -> bool:
         """
@@ -223,19 +177,10 @@ class VectorMemoryStore:
         Returns:
             True if successful
         """
-        self._ensure_initialized()
-
-        if not self._initialized or self._index is None:
-            logger.warning("Vector memory not initialized, skipping clear")
-            return False
-
-        try:
-            self._index.delete(delete_all=True, namespace=self.config.namespace)
-            logger.info(f"Cleared namespace: {self.config.namespace}")
-            return True
-        except Exception as e:
-            logger.error(f"Failed to clear namespace: {e}")
-            return False
+        ns = self._namespace_key()
+        self._store[ns] = {}
+        logger.info(f"Cleared namespace: {self.config.namespace}")
+        return True
 
     def _generate_id(self, text: str) -> str:
         """Generate deterministic ID from text."""
@@ -248,20 +193,13 @@ class VectorMemoryStore:
         Returns:
             Dictionary with stats
         """
-        self._ensure_initialized()
-
-        if not self._initialized or self._index is None:
-            return {"initialized": False}
-
-        try:
-            stats = self._index.describe_index_stats()
-            return {
-                "initialized": True,
-                "total_vectors": stats.total_vector_count,
-                "dimension": stats.dimension,
-                "index_fullness": stats.index_fullness,
-                "namespaces": stats.namespaces,
-            }
-        except Exception as e:
-            logger.error(f"Failed to get stats: {e}")
-            return {"initialized": True, "error": str(e)}
+        ns = self._namespace_key()
+        ns_count = len(self._store.get(ns, {}))
+        total = sum(len(v) for v in self._store.values())
+        return {
+            "initialized": True,
+            "total_vectors": total,
+            "namespace_vectors": ns_count,
+            "dimension": self.config.dimension,
+            "namespaces": list(self._store.keys()),
+        }

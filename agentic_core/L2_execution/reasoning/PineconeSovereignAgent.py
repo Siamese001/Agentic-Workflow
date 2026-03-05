@@ -1,3 +1,7 @@
+# DEPRECATED: PineconeSovereignAgent is superseded by BGE+FAISS embedding stack.
+# Migration target: InMemoryVectorStore + EmbeddingSovereignAgent (BAAI/bge-m3, 1024-dim).
+# This file is retained for backward compatibility only. Do not add new Pinecone calls.
+# Removal tracked in: M4 (bge-faiss-complete-embedding-plan).
 # SEMANTIC SIGNAL AUTO-INSERTED (NamingAgent Enhancement)
 # File appears to be a sovereign component but missing canon high-signal keywords.
 # Suggested keywords to add in docstring/code: orchestrator, workflow
@@ -31,15 +35,13 @@ except ImportError as _err:
         "numpy is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 from agentic_core.config.agent_defaults import AgentDefaults
+from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
+    RedisSovereignAgent,
+)
 from pinecone import Pinecone
 
 from agentic_core.config.core.env_loader import get_env
 from agentic_core.utils.timeout_decorator_util import timeout
-
-
-from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
-    RedisSovereignAgent,
-)
 
 Logger = logging.getLogger(__name__)
 

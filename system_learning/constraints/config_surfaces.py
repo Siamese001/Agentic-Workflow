@@ -120,7 +120,7 @@ L1_MODEL_POINTER_CONSTRAINTS: dict[str, PointerConstraint] = {
         allowlist=frozenset({"gpt-4o", "gpt-4o-mini", "claude-3.5-sonnet"}),
     ),
     "embedding_model": PointerConstraint(
-        allowlist=frozenset({"text-embedding-3-small", "text-embedding-3-large"}),
+        allowlist=frozenset({"text-embedding-3-small", "text-embedding-3-large", "BAAI/bge-m3"}),
     ),
 }
 
@@ -156,7 +156,7 @@ EMBEDDING_GOVERNANCE_BOOL: dict[str, bool] = {
 
 EMBEDDING_GOVERNANCE_POINTER: dict[str, PointerConstraint] = {
     "active_embedder_id": PointerConstraint(
-        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small"})
+        allowlist=frozenset({"text-embedding-3-large", "text-embedding-3-small", "BAAI/bge-m3"})
     ),
     "vector_pack_hash": PointerConstraint(
         allowlist=frozenset({"5d94b5b12ec92312d0240be9984ff92b9478f74ed6f1335511a202c5351520d9"})

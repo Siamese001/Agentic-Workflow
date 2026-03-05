@@ -11,7 +11,7 @@ from typing import Any, Literal
 #     EmbeddingSovereignAgent,
 # )
 
-EmbeddingProvider = Literal["gemini", "openai"]
+EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
 
 
 class EmbeddingMixin:
@@ -50,7 +50,7 @@ class EmbeddingMixin:
     async def get_embedding(
         self,
         content: str,
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
         use_cache: bool = True,
     ) -> list[float]:
         """Get embedding through gateway."""
@@ -59,7 +59,7 @@ class EmbeddingMixin:
     async def get_embeddings_batch(
         self,
         contents: list[str],
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
     ) -> list[list[float]]:
         """Get batch embeddings through gateway."""
         return await self.embedding_gateway.get_embeddings_batch(contents, provider)

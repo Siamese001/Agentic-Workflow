@@ -22,9 +22,9 @@ class TestRetrievalProfile:
         """Test default profile creation with expected values."""
         profile = RetrievalProfile.create_default()
 
-        assert profile.profile_id == "retrieval-profile-v2"
-        assert profile.primary_embedder_id == "openai/text-embedding-3-large"
-        assert profile.embedding_dim == 1536
+        assert profile.profile_id == "retrieval-profile-v3"
+        assert profile.primary_embedder_id == "BAAI/bge-m3"
+        assert profile.embedding_dim == 1024
         assert profile.similarity_cutoff == 0.75
         assert profile.top_k == 10
         assert profile.influence_cap == 0.25
@@ -46,7 +46,7 @@ class TestRetrievalProfile:
         # Check it's valid JSON
         import json
         parsed = json.loads(json1)
-        assert parsed["profile_id"] == "retrieval-profile-v2"
+        assert parsed["profile_id"] == "retrieval-profile-v3"
         assert parsed["similarity_cutoff"] == 0.75  # Rounded to 6 decimal places
 
     def test_profile_digest_stability(self):
@@ -184,7 +184,7 @@ class TestRetrievalProfileManager:
         profile = get_active_retrieval_profile(now_utc=1234567890)
 
         assert isinstance(profile, RetrievalProfile)
-        assert profile.profile_id == "retrieval-profile-v2"
+        assert profile.profile_id == "retrieval-profile-v3"
 
     def test_manager_caching(self):
         """Test manager caches active profile."""
@@ -237,7 +237,7 @@ class TestRetrievalProfileManager:
 
         # Should have created and activated default profile
         assert isinstance(profile, RetrievalProfile)
-        assert profile.profile_id == "retrieval-profile-v2"
+        assert profile.profile_id == "retrieval-profile-v3"
 
         # Should have called L4 writer
         mock_writer.write_l4c_retrieval_profile.assert_called_once_with(

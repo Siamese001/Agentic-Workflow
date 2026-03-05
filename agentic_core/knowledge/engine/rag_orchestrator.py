@@ -17,6 +17,11 @@ from agentic_core.utils.timeout_decorator_util import timeout
 
 # Internal imports referencing the mandated structure
 try:
+    from agentic_core.semantic_memory.embeddings.core_embedder import (
+        _embedding_cache,
+        clear_embedding_cache,  # noqa: F401
+    )
+
     from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
     from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
     from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
@@ -24,10 +29,6 @@ try:
     from agentic_core.knowledge.research_cache.cache_store_util import ResearchCache
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
-    from agentic_core.semantic_memory.embeddings.core_embedder import (
-        _embedding_cache,
-        clear_embedding_cache,  # noqa: F401
-    )
 except ImportError:
     # Fallback to avoid mission failure if sub-modules are mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
@@ -36,6 +37,9 @@ except ImportError:
     PDFDocumentLoader = None
     HTMLDocumentLoader = None
     CSVDocumentLoader = None
+    ResearchCache = None
+    _embedding_cache = {}
+    clear_embedding_cache = lambda: None  # noqa: E731
 
 
 class SovereignRagOrchestrator:
@@ -54,7 +58,7 @@ class SovereignRagOrchestrator:
     def __init__(self, project_root: Path):
         self.project_root = project_root
         self.cache_dir = project_root / "agentic_core" / "knowledge" / "research_cache"
-        self.cache = ResearchCache(self.cache_dir)
+        self.cache = ResearchCache(self.cache_dir) if ResearchCache is not None else None
         self.static_knowledge = self._load_static_index()
 
         # Optional: Expose embedding cache stats
@@ -66,16 +70,46 @@ class SovereignRagOrchestrator:
         except:
             self.embedding_cache_stats = lambda: {"size": 0, "maxsize": 0}
 
-        # Optional: Initialize vector store, embedder, and BM25 if available
+        # BGE-m3 embedder + in-memory vector store (replaces ghost semantic_memory imports)
         try:
-            from agentic_core.semantic_memory.embeddings.GeminiEmbedder import GeminiEmbedder
-            from agentic_core.semantic_memory.store.Bm25Store import get_bm25_store
-            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-            self.embedder = GeminiEmbedder()
-            self.vector_store = PineconeVectorStore()
-            self.Bm25Store = get_bm25_store()
-        except (ImportError, ValueError):
+            class _BGEEmbedder:
+                def embed_texts(self, texts):
+                    return [bmg_embed_text(t) or [] for t in texts]
+
+                def embed_query(self, text):
+                    return bmg_embed_text(text)
+
+            class _InMemVectorStore:
+                def __init__(self):
+                    self._store: dict = {}
+
+                def upsert(self, vectors):
+                    for vec_id, emb, meta in vectors:
+                        self._store[vec_id] = {"id": vec_id, "embedding": emb, "metadata": meta}
+
+                def query(self, query_emb, top_k=5):
+                    import numpy as np
+                    if not self._store or query_emb is None:
+                        return []
+                    q = np.array(query_emb, dtype=np.float32)
+                    q_norm = q / (np.linalg.norm(q) + 1e-8)
+                    scored = []
+                    for entry in self._store.values():
+                        v = np.array(entry["embedding"], dtype=np.float32)
+                        v_norm = v / (np.linalg.norm(v) + 1e-8)
+                        scored.append((float(np.dot(q_norm, v_norm)), entry))
+                    scored.sort(key=lambda x: x[0], reverse=True)
+                    return [
+                        {"id": e["id"], "score": s, "metadata": e["metadata"]}
+                        for s, e in scored[:top_k]
+                    ]
+
+            self.embedder = _BGEEmbedder()
+            self.vector_store = _InMemVectorStore()
+            self.Bm25Store = None
+        except (ImportError, Exception):
             # Vector search unavailable - will fall back to keyword/static only
             self.embedder = None
             self.vector_store = None

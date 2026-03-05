@@ -123,15 +123,15 @@ class HealingMemoryEmbedder:
         """
         text = signature.to_text()
 
-        if self._embedding_agent:
-            try:
-                embedding = self._embedding_agent.embed_text(text[: self.max_text_length])
-                if embedding:
-                    self.stats["embeddings_generated"] += 1
-                    return embedding
-            except Exception as e:
-                Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
-                self.stats["errors"] += 1
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            embedding = bmg_embed_text(text[: self.max_text_length])
+            if embedding:
+                self.stats["embeddings_generated"] += 1
+                return embedding
+        except Exception as e:
+            Logger.warning(f"[HealingMemoryEmbedder] Embedding failed: {e}")
+            self.stats["errors"] += 1
 
         # Fallback: return None (caller should use hash-based matching)
         self.stats["fallback_hashes"] += 1
@@ -162,15 +162,15 @@ class HealingMemoryEmbedder:
 
         full_text = (text + result_summary)[: self.max_text_length]
 
-        if self._embedding_agent:
-            try:
-                embedding = self._embedding_agent.embed_text(full_text)
-                if embedding:
-                    self.stats["embeddings_generated"] += 1
-                    return embedding
-            except Exception as e:
-                Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
-                self.stats["errors"] += 1
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            embedding = bmg_embed_text(full_text)
+            if embedding:
+                self.stats["embeddings_generated"] += 1
+                return embedding
+        except Exception as e:
+            Logger.warning(f"[HealingMemoryEmbedder] Pattern embedding failed: {e}")
+            self.stats["errors"] += 1
 
         self.stats["fallback_hashes"] += 1
         return None

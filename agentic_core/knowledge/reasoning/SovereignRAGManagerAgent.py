@@ -28,30 +28,47 @@ class SovereignRAGManager(SovereignBaseAgent):
         self.vector_store = None
         self.bm25_store = None
 
-        # Best-effort dependency init (must not crash core agents)
+        # BGE-m3 embedder + in-memory vector store (replaces ghost semantic_memory imports)
         try:
-            from agentic_core.semantic_memory.embeddings.gemini_embedder import GeminiEmbedder
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-            self.embedder = GeminiEmbedder()
+            class _BGEEmbedder:
+                def embed_texts(self, texts):
+                    return [bmg_embed_text(t) or [] for t in texts]
+
+                def embed_query(self, text):
+                    return bmg_embed_text(text)
+
+            class _InMemVectorStore:
+                def __init__(self):
+                    self._store: dict = {}
+
+                def upsert(self, vectors):
+                    for vec_id, emb, meta in vectors:
+                        self._store[vec_id] = {"id": vec_id, "embedding": emb, "metadata": meta}
+
+                def query(self, query_emb, top_k=5):
+                    import numpy as np
+                    if not self._store or query_emb is None:
+                        return []
+                    q = np.array(query_emb, dtype=np.float32)
+                    q_norm = q / (np.linalg.norm(q) + 1e-8)
+                    scored = []
+                    for entry in self._store.values():
+                        v = np.array(entry["embedding"], dtype=np.float32)
+                        v_norm = v / (np.linalg.norm(v) + 1e-8)
+                        scored.append((float(np.dot(q_norm, v_norm)), entry))
+                    scored.sort(key=lambda x: x[0], reverse=True)
+                    return [
+                        {"id": e["id"], "score": s, "metadata": e["metadata"]}
+                        for s, e in scored[:top_k]
+                    ]
+
+            self.embedder = _BGEEmbedder()
+            self.vector_store = _InMemVectorStore()
         # guardian: allow-silent-swallow
         except Exception as e:
-            self.logger.warning(f"GeminiEmbedder unavailable: {e}")
-
-        try:
-            from agentic_core.semantic_memory.store.pinecone_store import PineconeVectorStore
-
-            self.vector_store = PineconeVectorStore()
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            self.logger.warning(f"PineconeVectorStore unavailable: {e}")
-
-        try:
-            from agentic_core.semantic_memory.store.bm25_store import get_bm25_store
-
-            self.bm25_store = get_bm25_store()
-        # guardian: allow-silent-swallow
-        except Exception as e:
-            self.logger.warning(f"Bm25Store unavailable: {e}")
+            self.logger.warning(f"BGE embedder/vector store unavailable: {e}")
 
         self.static_knowledge: dict[str, Any] = self._load_static_index()
 

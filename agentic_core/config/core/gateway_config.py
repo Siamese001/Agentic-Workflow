@@ -29,7 +29,7 @@ from typing import Any, Literal
 
 # Type aliases
 LLMProvider = Literal["openai", "anthropic", "google"]
-EmbeddingProvider = Literal["gemini", "openai"]
+EmbeddingProvider = Literal["gemini", "openai", "bge-m3"]
 
 
 @dataclass
@@ -171,17 +171,17 @@ class _StubEmbeddingGateway:
     async def get_embedding(
         self,
         content: str,
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
         use_cache: bool = True,
     ) -> list[float]:
-        return [0.0] * 1536
+        return [0.0] * 1024
 
     async def get_embeddings_batch(
         self,
         contents: list[str],
-        provider: EmbeddingProvider = "gemini",
+        provider: EmbeddingProvider = "bge-m3",
     ) -> list[list[float]]:
-        return [[0.0] * 1536 for _ in contents]
+        return [[0.0] * 1024 for _ in contents]
 
 
 class _StubValidatorOrchestrator:

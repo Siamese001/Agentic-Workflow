@@ -12,8 +12,8 @@ from dataclasses import dataclass, field
 class EmbeddingConfig:
     """Embedding model configuration."""
 
-    model_name: str = "all-MiniLM-L6-v2"
-    dimension: int = 384  # Default to legacy 384, override via env
+    model_name: str = "BAAI/bge-m3"
+    dimension: int = 1024  # BAAI/bge-m3 dimension
     batch_size: int = 32
     cache_enabled: bool = True
     cache_maxsize: int = 10000
@@ -23,11 +23,11 @@ class EmbeddingConfig:
 class VectorStoreConfig:
     """Vector store configuration."""
 
-    provider: str = "pinecone"  # pinecone | chroma | faiss
+    provider: str = "faiss"  # faiss | chroma | pinecone
     index_name: str = "sovereign-rag"
     namespace: str = "sovereign-core"
     metric: str = "cosine"
-    dimension: int = 384
+    dimension: int = 1024
     batch_size: int = 100  # Defensive batching
     latency_threshold_ms: float = 500.0  # Warn if exceeded
 
@@ -100,6 +100,6 @@ class SovereignRagConfig:
     def from_env(cls) -> SovereignRagConfig:
         """Load configuration from environment variables."""
         config = cls()
-        config.vector_store.dimension = int(os.getenv("EMBEDDING_DIMENSION", "384"))
+        config.vector_store.dimension = int(os.getenv("EMBEDDING_DIMENSION", "1024"))
         config.embedding.dimension = config.vector_store.dimension
         return config

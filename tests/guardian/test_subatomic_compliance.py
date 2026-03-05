@@ -308,7 +308,6 @@ class TestSubatomicCompliance:
                 "GovernanceAgent",
                 "GovernanceShieldAgent",
                 "GravityLeakRepairAgent",
-                "GravityStateAgent",
                 "HierarchyAgent",
                 "IAgent",
                 "IOrchestratorAgent",

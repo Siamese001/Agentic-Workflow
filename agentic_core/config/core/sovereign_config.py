@@ -43,11 +43,13 @@ class SovereignConfigManager:
     DEFAULT_ANTHROPIC_MODEL: str = "claude-3-5-sonnet-20241022"
     DEFAULT_GOOGLE_MODEL: str = "gemini-3-flash-preview"
     DEFAULT_GOOGLE_PRO_MODEL: str = "gemini-2.5-pro"
-    DEFAULT_EMBEDDING_MODEL: str = "text-embedding-3-small"
+    DEFAULT_EMBEDDING_MODEL: str = "BAAI/bge-m3"
+    DEFAULT_BGE_EMBEDDING_MODEL: str = "BAAI/bge-m3"
 
     # Dimensions (Phase 4)
     EMBEDDING_DIM_OPENAI: int = 1536
     EMBEDDING_DIM_GEMINI: int = 768
+    EMBEDDING_DIM_BGE: int = 1024
 
     def __new__(cls):
         """Singleton constructor."""

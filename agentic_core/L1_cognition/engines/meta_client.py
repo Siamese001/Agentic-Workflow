@@ -25,11 +25,6 @@ def _get_redis_sovereign_agent():
     return RedisSovereignAgent
 
 
-def _get_pinecone_sovereign_agent():
-    from agentic_core.interfaces.execution_agents import PineconeSovereignAgent
-
-    return PineconeSovereignAgent
-
 
 def _get_embedding_sovereign_agent():
     from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
@@ -49,7 +44,6 @@ from agentic_core.L1_cognition.types.client_types import (
     DEFAULT_SIMILARITY_THRESHOLD,
     DEFAULT_TTL_SECONDS,
     MAX_HEALING_DEPTH,
-    PINECONE_NAMESPACE_PREFIX,
     CacheEntry,
     HealingPattern,
 )
@@ -100,8 +94,7 @@ class MetaLearningClient:
 
     # State
     _redis_client: Any = field(default=None, init=False)
-    _pinecone_client: Any = field(default=None, init=False)
-    _pinecone_index: Any = field(default=None, init=False)
+    _vector_store: dict = field(default_factory=dict, init=False)
     _local_cache: dict[str, CacheEntry] = field(default_factory=dict, init=False)
     _healing_depth_tracker: dict[str, int] = field(default_factory=dict, init=False)
 
@@ -125,9 +118,9 @@ class MetaLearningClient:
         return _singleton_instance
 
     def __post_init__(self) -> None:
-        """Initialize Redis and Pinecone connections."""
+        """Initialize Redis and FAISS vector store."""
         self._initialize_redis()
-        self._initialize_pinecone()
+        self._initialize_vector_store()
         Logger.info("[MetaLearningClient] Initialized with domain isolation")
 
     @classmethod
@@ -148,21 +141,10 @@ class MetaLearningClient:
             Logger.warning(f"[MetaLearningClient] Redis unavailable, using local cache: {e}")
             self._redis_client = None
 
-    def _initialize_pinecone(self) -> None:
-        """Initialize Pinecone connection."""
-        try:
-            from pathlib import Path
-
-            pinecone_agent = _get_pinecone_sovereign_agent()(Path.cwd())
-            if pinecone_agent.status == "ONLINE":
-                self._pinecone_client = pinecone_agent.pc
-                self._pinecone_index = pinecone_agent.index
-                Logger.info("[MetaLearningClient] Pinecone connection established")
-            else:
-                Logger.warning(f"[MetaLearningClient] Pinecone status: {pinecone_agent.status}")
-        except Exception as e:
-            Logger.warning(f"[MetaLearningClient] Pinecone unavailable: {e}")
-            self._pinecone_client = None
+    def _initialize_vector_store(self) -> None:
+        """Initialize in-memory FAISS-backed vector store for healing patterns."""
+        self._vector_store = {}
+        Logger.info("[MetaLearningClient] In-memory vector store initialized")
 
     def _get_cache_key(self, key: str, domain: str = "agentic_core") -> str:
         """Generate namespaced cache key."""
@@ -332,28 +314,20 @@ class MetaLearningClient:
             },
         )
 
-        # Store in Pinecone if available
-        if self._pinecone_index:
+        # Store in FAISS-backed in-memory vector store
+        embedding = self._generate_embedding(violation)
+        if embedding:
             try:
-                # Generate embedding for the pattern
-                embedding = self._generate_embedding(violation)
-                if embedding:
-                    self._pinecone_index.upsert(
-                        vectors=[
-                            {
-                                "id": pattern_id,
-                                "values": embedding,
-                                "metadata": pattern.to_dict(),
-                            },
-                        ],
-                        namespace=f"{PINECONE_NAMESPACE_PREFIX}:{domain}",
-                    )
-                    self.stats["pattern_stores"] += 1
-                    self._update_domain_stats(domain, "pattern_stores")
-                    Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
-                    return pattern_id
+                self._vector_store[pattern_id] = {
+                    "embedding": embedding,
+                    "metadata": pattern.to_dict(),
+                }
+                self.stats["pattern_stores"] += 1
+                self._update_domain_stats(domain, "pattern_stores")
+                Logger.info(f"[MetaLearningClient] Stored pattern: {pattern_id}")
+                return pattern_id
             except Exception as e:
-                Logger.warning(f"[MetaLearningClient] Pinecone store failed: {e}")
+                Logger.warning(f"[MetaLearningClient] Vector store failed: {e}")
 
         # Fallback: store in Redis cache
         cache_key = f"pattern:{error_signature}"
@@ -379,7 +353,7 @@ class MetaLearningClient:
         Returns:
             List of similar healing patterns sorted by similarity
         """
-        if not self._pinecone_index:
+        if not self._vector_store:
             return []
 
         # Generate embedding for current violation
@@ -397,26 +371,50 @@ class MetaLearningClient:
             DEFAULT_SIMILARITY_THRESHOLD,
         )
 
-        # Query Pinecone with namespace
-        namespace = f"{PINECONE_NAMESPACE_PREFIX}_{domain}"
-
+        # Search in-memory store with FAISS (fallback: pure-Python cosine)
         try:
-            results = self._pinecone_index.query(
-                vector=embedding,
-                top_k=top_k,
-                namespace=namespace,
-                include_metadata=True,
-            )
+            ids = list(self._vector_store.keys())
+            stored_vecs = [self._vector_store[pid]["embedding"] for pid in ids]
+
+            ranked: list[tuple[str, float]] = []
+            try:
+                import faiss
+                import numpy as np
+
+                vecs_arr = np.array(stored_vecs, dtype=np.float32)
+                q_arr = np.array([embedding], dtype=np.float32)
+                faiss.normalize_L2(vecs_arr)
+                faiss.normalize_L2(q_arr)
+                index = faiss.IndexFlatIP(len(embedding))
+                index.add(vecs_arr)
+                k = min(top_k, len(ids))
+                scores_arr, indices_arr = index.search(q_arr, k)
+                ranked = [
+                    (ids[int(idx)], float(scores_arr[0][i]))
+                    for i, idx in enumerate(indices_arr[0])
+                    if idx >= 0
+                ]
+            except ImportError:
+                import math
+
+                q_mag = math.sqrt(sum(x * x for x in embedding))
+                sims = []
+                for pid, vec in zip(ids, stored_vecs):
+                    dot = sum(a * b for a, b in zip(embedding, vec))
+                    v_mag = math.sqrt(sum(x * x for x in vec))
+                    sim = dot / (q_mag * v_mag) if q_mag * v_mag > 0 else 0.0
+                    sims.append((pid, sim))
+                sims.sort(key=lambda x: x[1], reverse=True)
+                ranked = sims[:top_k]
 
             patterns = []
-            for match in results.matches:
-                # Apply similarity threshold guardrail
-                if match.score >= effective_threshold:
-                    pattern_data = match.metadata
-                    pattern_data["embedding"] = match.values if hasattr(match, "values") else None
-                    pattern = HealingPattern.from_dict(pattern_data)
-                    pattern.similarity_score = match.score
-                    patterns.append(pattern)
+            for pid, score in ranked:
+                if score >= effective_threshold:
+                    entry = self._vector_store.get(pid)
+                    if entry:
+                        pattern = HealingPattern.from_dict(entry["metadata"])
+                        pattern.similarity_score = score
+                        patterns.append(pattern)
 
             self.stats["pattern_retrievals"] += 1
             self._update_domain_stats(domain, "pattern_retrievals")
@@ -433,16 +431,15 @@ class MetaLearningClient:
             return []
 
     def _generate_embedding(self, violation: dict[str, Any]) -> list[float] | None:
-        """Generate embedding for a violation using the embedding service."""
+        """Generate embedding for a violation using BGE-m3."""
         try:
-            from pathlib import Path
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-            embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             v_type = violation.get("type", "")
             v_msg = violation.get("message", "")
             v_path = violation.get("path", "")
             text = f"{v_type} {v_msg} {v_path}"
-            return embedding_agent.embed_text(text)
+            return bmg_embed_text(text)
         except Exception as e:
             Logger.warning(f"[MetaLearningClient] Embedding generation failed: {e}")
             return None

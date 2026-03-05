@@ -37,7 +37,6 @@ ENTRYPOINTS = [
 # from the exactly-one-ClassDef check but still validated for agent suffix.
 SHIM_ALLOWLIST: set[str] = {
     "CheckpointManagerAgent.py",  # 3 ClassDefs: Checkpoint, RecoveryResult, CheckpointManagerAgent
-    "GravityStateAgent.py",  # 2 ClassDefs: HealingRecord, GravityStateAgent
 }
 
 # Agents that are NOT reachable from the strict entrypoint list but are
@@ -62,15 +61,11 @@ UNREACHABLE_ALLOWLIST: dict[str, str] = {
         "Renamed from checkpoint_manager.py per PascalCase+Agent naming convention. "
         "Used by SubAtomicRegistryAgent, autonomous_execution_engine, and 15+ files."
     ),
-    "GravityStateAgent": (
-        "Renamed from gravity_state_store.py per PascalCase+Agent naming convention. "
-        "Used by test fixtures for gravity-aware state persistence."
-    ),
 }
 
 # Budget: the maximum allowed count of *Agent.py files under L4_state/**
-# Baseline: 5 (Redis + Pinecone + CachedStateLedger + CheckpointManager + GravityState)
-AGENT_FILE_BUDGET = 5
+# Baseline: 4 (Redis + Pinecone + CachedStateLedger + CheckpointManager)
+AGENT_FILE_BUDGET = 4
 
 
 # ---------------------------------------------------------------------------

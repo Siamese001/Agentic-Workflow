@@ -45,7 +45,7 @@ class MetaLearningStorage:
             with cls._memory_lock:
                 if cls._memory is None:
                     try:
-                        from agentic_core.L4_state.memory.semantic_cache_manager_config import (
+                        from agentic_core.L4_state.memory.semantic_cache_manager import (
                             SemanticCacheManager,
                         )
 

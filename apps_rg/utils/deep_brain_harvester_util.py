@@ -1,8 +1,8 @@
 """
-⚛️ Deep Brain Harvest - Pinecone Pattern Storage
+⚛️ Deep Brain Harvest - In-Memory Pattern Storage
 
-This script extracts the Subatomic Flattening Pattern and stores it in Pinecone
-for global retrieval and application across the codebase.
+This script extracts the Subatomic Flattening Pattern and stores it in an
+in-memory vector store (BGE-m3, 1024-dim) for local retrieval.
 
 Usage:
     python scripts/deep_brain_harvest.py --pattern flattening --namespace structural_patterns
@@ -10,95 +10,70 @@ Usage:
 
 import argparse
 import logging
-import os
 import sys
 from pathlib import Path
 from typing import Any
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
-try:
-    from pinecone import Pinecone
-
-    PINECONE_AVAILABLE = True
-except ImportError:
-    PINECONE_AVAILABLE = False
-    print("⚠️  Pinecone not available. Install with: pip install pinecone-client")
 
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
 
 class DeepBrainHarvester:
-    """Harvests and stores patterns in Pinecone Deep Brain."""
+    """Harvests and stores patterns in an in-memory vector store (BGE-m3, 1024-dim)."""
 
     def __init__(self, api_key: str = None, index_name: str = "canon-healing-patterns"):
         """
         Initialize Deep Brain Harvester.
 
         Args:
-            api_key: Pinecone API key (defaults to env var)
-            index_name: Pinecone index name
+            api_key: Unused — retained for API compatibility.
+            index_name: Logical name for the in-memory index.
         """
-        if not PINECONE_AVAILABLE:
-            raise ImportError("Pinecone client not available")
-        self.api_key = api_key or os.getenv("PINECONE_API_KEY")
-        if not self.api_key:
-            raise ValueError("PINECONE_API_KEY not found in environment")
         self.index_name = index_name
-        self.pc = Pinecone(api_key=self.api_key)
-        self._ensure_index_exists()
-        self.index = self.pc.Index(self.index_name)
-        Logger.info(f"✅ Connected to Pinecone index: {self.index_name}")
+        # namespace -> {id -> {"values": list[float], "metadata": dict}}
+        self._store: dict[str, dict[str, dict]] = {}
+        Logger.info(f"DeepBrainHarvester: in-memory index ready: {self.index_name}")
 
     def _ensure_index_exists(self):
-        """Ensure the Pinecone index exists, create if not."""
-        existing_indexes = [idx.name for idx in self.pc.list_indexes()]
-        if self.index_name not in existing_indexes:
-            Logger.info(f"Creating new index: {self.index_name}")
-            self.pc.create_index(
-                name=self.index_name,
-                dimension=1536,
-                Metric="cosine",
-                spec=ServerlessSpec(cloud="aws", region="us-east-1"),
-            )
-            Logger.info(f"✅ Created index: {self.index_name}")
-        else:
-            Logger.info(f"✅ Index already exists: {self.index_name}")
+        """Ensure the in-memory index exists, create if not."""
+        pass
 
     def _generate_embedding(self, text: str) -> list[float]:
         """
-        Generate embedding for text using OpenAI.
+        Generate embedding for text using BGE-m3.
 
         Args:
             text: Text to embed
 
         Returns:
-            Embedding vector
+            Embedding vector (1024-dim)
         """
         try:
-            from system_learning.engines.embedding_service_factory import (
-                EmbeddingServiceFactory,
-            )
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-            return EmbeddingServiceFactory().embed_text(text)
+            result = bmg_embed_text(text)
+            if result:
+                return result
         except Exception as e:
             Logger.error(f"Error generating embedding: {e}")
-            return [0.0] * 1536
+        return [0.0] * 1024
 
     def harvest_flattening_pattern(self, namespace: str = "structural_patterns") -> dict:
         """
-        Harvest the Subatomic Flattening Pattern and store in Pinecone.
+        Harvest the Subatomic Flattening Pattern and store in in-memory vector store.
 
         Args:
-            namespace: Pinecone namespace for pattern storage
+            namespace: Namespace for pattern storage
 
         Returns:
             Upsert result
         """
-        Logger.info("🌾 Harvesting Subatomic Flattening Pattern...")
+        Logger.info(" Harvesting Subatomic Flattening Pattern...")
         pattern: Any = get_flattening_pattern()
         pattern_text: Any = self._create_pattern_text(pattern)
-        Logger.info("🧠 Generating embedding...")
+        Logger.info(" Generating embedding...")
         embedding: Any = self._generate_embedding(pattern_text)
         metadata: Any = {
             "pattern_type": "subatomic_flattening",
@@ -112,18 +87,14 @@ class DeepBrainHarvester:
             "trigger": pattern["reusable_pattern"]["trigger"],
             "pattern_text": pattern_text[:1000],
         }
-        Logger.info(f"📤 Upserting to Pinecone namespace: {namespace}")
-        result: Any = self.index.upsert(
-            vectors=[
-                {
-                    "id": "flattening_pattern_agent_logic_2025_12_19",
-                    "values": embedding,
-                    "metadata": metadata,
-                },
-            ],
-            namespace=namespace,
-        )
-        Logger.info(f"✅ Pattern harvested successfully: {result}")
+        Logger.info(f"Upserting to in-memory namespace: {namespace}")
+        vec_id = "flattening_pattern_agent_logic_2025_12_19"
+        self._store.setdefault(namespace, {})[vec_id] = {
+            "values": embedding,
+            "metadata": metadata,
+        }
+        result: Any = {"upserted_count": 1}
+        Logger.info(f"Pattern harvested successfully: {result}")
         return result
 
     def _create_pattern_text(self, pattern: dict) -> str:
@@ -188,7 +159,7 @@ class DeepBrainHarvester:
 
     def query_pattern(self, query: str, namespace: str = "structural_patterns", top_k: int = 3) -> list[dict]:
         """
-        Query Pinecone for similar patterns.
+        Query in-memory store for similar patterns.
 
         Args:
             query: Query text
@@ -198,26 +169,38 @@ class DeepBrainHarvester:
         Returns:
             List of matching patterns
         """
-        Logger.info(f"🔍 Querying pattern: {query}")
+        import numpy as np
+
+        Logger.info(f"Querying pattern: {query}")
         query_embedding: Any = self._generate_embedding(query)
-        results: Any = self.index.query(
-            vector=query_embedding,
-            top_k=top_k,
-            namespace=namespace,
-            include_metadata=True,
-        )
-        Logger.info(f"✅ Found {len(results.matches)} matches")
-        return [
-            {"id": match.id, "score": match.score, "metadata": match.metadata} for match in results.matches
-        ]
+        entries = self._store.get(namespace, {})
+
+        if not entries:
+            Logger.info("Found 0 matches (empty namespace)")
+            return []
+
+        q = np.array(query_embedding, dtype=np.float32)
+        q_norm = q / (np.linalg.norm(q) + 1e-12)
+
+        scored: list[tuple[float, str, dict]] = []
+        for vec_id, item in entries.items():
+            v = np.array(item["values"], dtype=np.float32)
+            v_norm = v / (np.linalg.norm(v) + 1e-12)
+            score = float(np.dot(q_norm, v_norm))
+            scored.append((score, vec_id, item["metadata"]))
+
+        scored.sort(key=lambda x: x[0], reverse=True)
+        matches = [{"id": vec_id, "score": score, "metadata": meta} for score, vec_id, meta in scored[:top_k]]
+        Logger.info(f"Found {len(matches)} matches")
+        return matches
 
 
 def main() -> Any:
     """Main entry point for Deep Brain Harvest."""
-    parser: Any = argparse.ArgumentParser(description="Harvest patterns into Pinecone Deep Brain")
+    parser: Any = argparse.ArgumentParser(description="Harvest patterns into in-memory vector store")
     parser.add_argument("--pattern", choices=["flattening"], default="flattening", help="Pattern to harvest")
-    parser.add_argument("--namespace", default="structural_patterns", help="Pinecone namespace")
-    parser.add_argument("--index", default="canon-healing-patterns", help="Pinecone index name")
+    parser.add_argument("--namespace", default="structural_patterns", help="Namespace for pattern storage")
+    parser.add_argument("--index", default="canon-healing-patterns", help="Logical name for the in-memory index")
     parser.add_argument("--query", help="Query for existing patterns instead of upserting")
     args: Any = parser.parse_args()
     try:
@@ -234,7 +217,7 @@ def main() -> Any:
             print("\n✅ Flattening pattern harvested successfully!")
             print(f"   Namespace: {args.namespace}")
             print(f"   Index: {args.index}")
-            print(f"   Upserted: {result.upserted_count} vectors")
+            print(f"   Upserted: {result.get('upserted_count', 1)} vectors")
     except Exception as e:
         Logger.error(f"❌ Error: {e}")
         sys.exit(1)

@@ -13,17 +13,25 @@ logger = logging.getLogger(__name__)
 class EmbeddingProvider:
     """Provider for embeddings."""
 
-    def __init__(self, model: str = "default"):
+    def __init__(self, model: str = "BAAI/bge-m3"):
         self.model = model
 
     def embed(self, text: str) -> list[float]:
-        return [0.0] * 384  # Default embedding size
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            result = bmg_embed_text(text)
+            if result:
+                return result
+        except Exception:
+            pass
+        return [0.0] * 1024  # BGE-m3 fallback dimension
 
 
 class VectorIndex:
     """Index for vector storage and retrieval."""
 
-    def __init__(self, dimension: int = 384):
+    def __init__(self, dimension: int = 1024):
         self.dimension = dimension
         self._vectors: dict[str, list[float]] = {}
 
@@ -31,7 +39,22 @@ class VectorIndex:
         self._vectors[key] = vector
 
     def search(self, query: list[float], top_k: int = 5) -> list[str]:
-        return list(self._vectors.keys())[:top_k]
+        if not self._vectors:
+            return []
+        try:
+            import numpy as np
+
+            q = np.array(query, dtype=np.float32)
+            q_norm = q / (np.linalg.norm(q) + 1e-8)
+            scored = []
+            for key, vec in self._vectors.items():
+                v = np.array(vec, dtype=np.float32)
+                v_norm = v / (np.linalg.norm(v) + 1e-8)
+                scored.append((float(np.dot(q_norm, v_norm)), key))
+            scored.sort(reverse=True)
+            return [k for _, k in scored[:top_k]]
+        except Exception:
+            return list(self._vectors.keys())[:top_k]
 
 
 class SemanticEntry:
@@ -63,16 +86,25 @@ class SemanticMemory:
         return memory["value"] if memory else None
 
     def search(self, query_embedding: list[float], top_k: int = 5) -> list[dict[str, Any]]:
-        """Search memories by embedding similarity."""
-        # Simplified cosine similarity search
-        results = []
-        for key, embedding in self._embeddings.items():
-            if key in self._memories:
-                # Simple dot product as similarity (not normalized)
-                similarity = sum(a * b for a, b in zip(query_embedding, embedding, strict=False))
-                results.append({"key": key, "value": self._memories[key]["value"], "similarity": similarity})
-        results.sort(key=lambda x: x["similarity"], reverse=True)
-        return results[:top_k]
+        """Search memories by embedding similarity (normalized cosine)."""
+        if not self._embeddings:
+            return []
+        try:
+            import numpy as np
+
+            q = np.array(query_embedding, dtype=np.float32)
+            q_norm = q / (np.linalg.norm(q) + 1e-8)
+            results = []
+            for key, embedding in self._embeddings.items():
+                if key in self._memories:
+                    v = np.array(embedding, dtype=np.float32)
+                    v_norm = v / (np.linalg.norm(v) + 1e-8)
+                    similarity = float(np.dot(q_norm, v_norm))
+                    results.append({"key": key, "value": self._memories[key]["value"], "similarity": similarity})
+            results.sort(key=lambda x: x["similarity"], reverse=True)
+            return results[:top_k]
+        except Exception:
+            return []
 
     def delete(self, key: str) -> None:
         """Delete a memory."""

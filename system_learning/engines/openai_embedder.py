@@ -20,6 +20,8 @@ _MODEL_DIMENSIONS = {
     "text-embedding-3-large": 1536,
     "text-embedding-3-small": 1536,
     "text-embedding-ada-002": 1536,
+    "BAAI/bge-m3": 1024,
+    "BAAI/bge-large-en-v1.5": 1024,
 }
 
 
@@ -76,4 +78,48 @@ class OpenAIEmbedder:
         return hashlib.sha256(self.model.encode()).hexdigest()[:16]
 
 
-__all__ = ["OpenAIEmbedder"]
+class BGEEmbedder:
+    """BGE-m3 embedder — SentenceTransformer wrapper.
+
+    Implements the same embed_batch interface as OpenAIEmbedder.
+    Uses BAAI/bge-m3 (1024-dim) via bmg_embed_text.
+    """
+
+    def __init__(self, model: str = "BAAI/bge-m3"):
+        self.model = model
+        self._dim = _MODEL_DIMENSIONS.get(model, 1024)
+
+    def embed_batch(self, texts: list[str], *, dimensions: int | None = None) -> list[list[float]]:
+        """Embed a batch of texts using BGE-m3.
+
+        Args:
+            texts: List of texts to embed.
+            dimensions: Ignored — BGE output dimension is fixed at 1024.
+
+        Returns:
+            List of embedding vectors as lists of floats.
+        """
+        from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+        results = []
+        for text in texts:
+            vec = bmg_embed_text(text)
+            if vec:
+                results.append(vec)
+            else:
+                results.append([0.0] * self._dim)
+        return results
+
+    def get_model_info(self) -> dict:
+        """Return model information including dimensions."""
+        return {
+            "model": self.model,
+            "dimensions": self._dim,
+        }
+
+    def get_model_checksum(self) -> str:
+        """Return a deterministic 16-char hex checksum for the model name."""
+        return hashlib.sha256(self.model.encode()).hexdigest()[:16]
+
+
+__all__ = ["OpenAIEmbedder", "BGEEmbedder"]

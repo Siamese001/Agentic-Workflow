@@ -81,7 +81,7 @@ def build_pipeline_deps(
     PipelineDependencies
         Fully-wired dependencies ready for ``run_pipeline()``.
     """
-    from system_learning.engines.l4_state_writer import InMemoryL4StateWriter
+    from system_learning.engines.l4_state_writer import FileBackedL4StateWriter
     from system_learning.engines.rag_proposer import RAGParameterProposer
     from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
     from system_learning.stores.audit_store import FileBackedAuditStore
@@ -97,6 +97,12 @@ def build_pipeline_deps(
 
     reports_dir = repo_root / "logs" / "compliance_reports"
     runtime_state_path = repo_root / "runtime_state.json"
+    # [CROSS-RUN PERSISTENCE] L4B healing snapshots and L4C proposals written by
+    # run_pipeline() are now stored to disk under logs/l4_state/ so they survive
+    # process boundaries and are available to future runs (REQ-071: Stage 8 INTAKE
+    # MUST persist to L4; process-map: L4B write-once, content-hash keyed).
+    l4_state_dir = repo_root / "logs" / "l4_state"
+    l4_state_dir.mkdir(parents=True, exist_ok=True)
 
     audit_store = FileBackedAuditStore(reports_dir=reports_dir)
     telemetry_store = InMemoryTelemetryStore()
@@ -104,7 +110,7 @@ def build_pipeline_deps(
         runtime_state_path=runtime_state_path,
     )
     baseline_metrics = InMemoryBaselineMetricsProvider()
-    l4_writer = InMemoryL4StateWriter()
+    l4_writer = FileBackedL4StateWriter(base_dir=l4_state_dir)
 
     # Concrete proposers — all four layers wired
     l0_proposer = L0ProposerAdapter()

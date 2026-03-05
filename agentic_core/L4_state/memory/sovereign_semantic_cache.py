@@ -15,7 +15,6 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
-from agentic_core.L4_state.reasoning.PineconeSovereignAgent import PineconeSovereignAgent
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.decorators_compat_util import standard_heal
@@ -33,13 +32,13 @@ class SovereignSemanticCache(SovereignBaseAgent):
         self,
         mission_id: str,
         engine=None,
-        pinecone_agent: PineconeSovereignAgent | None = None,
+        pinecone_agent=None,
     ):
         super().__init__()
         self.mission_id = mission_id
         self._mcp_audit("init", payload={"mission_id": mission_id})
         self.engine = engine
-        self.pinecone = pinecone_agent or PineconeSovereignAgent(Path("."))
+        self._vector_store: dict[str, dict] = {}
         self.index_name = "canon-semantic-v1"
         self.namespace = "canon-files"
         try:
@@ -108,11 +107,11 @@ class SovereignSemanticCache(SovereignBaseAgent):
                 entry_json: Any = json.dumps(entry)
                 if len(entry_json.encode()) < MAX_REDIS_ENTRY_SIZE:
                     await self.redis.set(key, entry_json, ttl=REDIS_CACHE_TTL)
-            self.pinecone.upsert(
-                index=self.index_name,
-                vectors=[(key, vector, entry["metadata"])],
-                namespace=self.namespace,
-            )
+            self._vector_store[key] = {
+                "vector": vector,
+                "metadata": entry["metadata"],
+                "namespace": self.namespace,
+            }
             Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
         # guardian: allow-silent-swallow
         except Exception as e:
@@ -128,12 +127,8 @@ class SovereignSemanticCache(SovereignBaseAgent):
             # guardian: allow-silent-swallow
             except:
                 pass
-        try:
-            self.pinecone.delete(ids=[key], namespace=self.namespace)
-            Logger.info(f"[L4 PURGE] Purged semantic trail for {Path(file_path).name}")
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        self._vector_store.pop(key, None)
+        Logger.info(f"[L4 PURGE] Purged semantic trail for {Path(file_path).name}")
 
     @standard_heal
     # guardian: allow-type-erasure

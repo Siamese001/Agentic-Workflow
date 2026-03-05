@@ -230,9 +230,9 @@ def build_seed_embedding_pack(
         if hasattr(embedder, "dimensions"):
             dimensions = embedder.dimensions
         else:
-            # For OpenAI embedder, we need to get dimensions from model info
+            # For BGE embedder, get dimensions from model info
             # This is a fallback - in production, dimensions should be determined by the model
-            dimensions = 3072  # Default for text-embedding-3-large
+            dimensions = 1024  # Default for BAAI/bge-m3
         vectors = embedder.embed_batch(texts, dimensions=dimensions)
         embeddings_path = temp_path / "embeddings.f32"
         matrix_hash = _write_embeddings_f32(vectors, embeddings_path)

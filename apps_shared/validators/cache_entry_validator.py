@@ -50,7 +50,7 @@ class ContrastiveSemanticCache:
 
     def __init__(
         self,
-        model_name: str = "all-MiniLM-L6-v2",
+        model_name: str = "BAAI/bge-m3",
         similarity_threshold: float = 0.92,
         max_entries: int = 1000,
         lazy_load: bool = True,
@@ -115,6 +115,7 @@ class ContrastiveSemanticCache:
 
         try:
             # Import required libraries
+            from sentence_transformers import SentenceTransformer
 
             logger.info(f"Loading SentenceTransformer model: {self.model_name}")
             start_time = time.time()

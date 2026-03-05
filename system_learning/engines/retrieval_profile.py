@@ -85,9 +85,9 @@ class RetrievalProfile:
         """
         _embeddings_on = os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
         return cls(
-            profile_id="retrieval-profile-v2",
-            primary_embedder_id="openai/text-embedding-3-large",
-            embedding_dim=1536,
+            profile_id="retrieval-profile-v3",
+            primary_embedder_id="BAAI/bge-m3",
+            embedding_dim=1024,
             similarity_cutoff=0.75,
             top_k=10,
             influence_cap=0.25,
