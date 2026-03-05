@@ -84,11 +84,13 @@ class TestDepGraphRegression:
             "A new import path to Pinecone was introduced."
         )
 
-    def test_pinecone_importer_count_not_growing(self) -> None:
-        """Sealed baseline is 92. Must not grow."""
-        count = len(self._dg.pinecone_importers())
-        assert count <= 92, (
-            f"Pinecone reach grew to {count} (baseline 92). Do not add new imports of Pinecone modules."
+    def test_no_new_pinecone_nodes(self) -> None:
+        """Direct Pinecone nodes (files that directly reference a Pinecone marker)
+        must not grow. Sealed baseline: 4 nodes."""
+        count = len(self._dg.pinecone_nodes())
+        assert count <= 4, (
+            f"Pinecone node count grew to {count} (baseline 4). "
+            "A new file directly imports Pinecone — remove it."
         )
 
 

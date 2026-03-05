@@ -96,7 +96,7 @@ def _is_intra_repo(dep: str) -> bool:
 # ---------------------------------------------------------------------------
 
 
-def _build_graph() -> tuple[nx.DiGraph, dict[str, str]]:
+def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
     """Parse all SSOT Python files and return (DiGraph, module_to_file)."""
     g: nx.DiGraph = nx.DiGraph()
     module_to_file: dict[str, str] = {}
@@ -216,10 +216,9 @@ class DepGraph:
 
     def blast_radius(self, module: str) -> set[str]:
         """All modules that (transitively) import `module`."""
-        try:
-            return set(nx.ancestors(self._g.reverse(copy=False), module))
-        except nx.NodeNotFound:
+        if module not in self._g:
             return set()
+        return set(nx.ancestors(self._g.reverse(copy=False), module))
 
     def dependencies(self, module: str) -> set[str]:
         """All modules that `module` (transitively) imports."""
@@ -230,10 +229,14 @@ class DepGraph:
 
     def direct_dependents(self, module: str) -> list[str]:
         """Modules that directly import `module` (1-hop)."""
+        if module not in self._g:
+            return []
         return list(self._g.predecessors(module))
 
     def direct_dependencies(self, module: str) -> list[str]:
         """Modules that `module` directly imports (1-hop)."""
+        if module not in self._g:
+            return []
         return list(self._g.successors(module))
 
     # ── path queries ─────────────────────────────────────────────────────────
@@ -247,9 +250,11 @@ class DepGraph:
 
     def all_paths(self, src: str, dst: str, cutoff: int = 6) -> list[list[str]]:
         """All simple directed paths from src to dst (up to cutoff length)."""
+        if src not in self._g or dst not in self._g:
+            return []
         try:
             return list(nx.all_simple_paths(self._g, src, dst, cutoff=cutoff))
-        except (nx.NetworkXNoPath, nx.NodeNotFound):
+        except nx.NodeNotFound:
             return []
 
     # ── Pinecone ─────────────────────────────────────────────────────────────
