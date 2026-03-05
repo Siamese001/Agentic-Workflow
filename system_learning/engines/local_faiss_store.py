@@ -1,19 +1,38 @@
 """LocalFAISSStore - Plan A deterministic FAISS index storage.
 
 Read-only contract surfaces for Plan B consumption.
-FAISS import is lazy to support unit_min_deps environments without optional dependencies.
+FAISS (IndexFlatIP with L2-normalised vectors) is the primary path.
+Pure-Python cosine similarity is the fallback when faiss is not installed.
 """
 
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import json
 import math
 import struct
 from pathlib import Path
-from typing import Any
+from typing import Any, Callable
 
 from system_learning.types.index_build_metadata_types import IndexBuildMetadata
+
+
+def _faiss_available() -> bool:
+    return importlib.util.find_spec("faiss") is not None
+
+
+def _import_faiss() -> Any:
+    import faiss  # noqa: PLC0415
+
+    return faiss
+
+
+def _l2_normalize(vec: list[float]) -> list[float]:
+    norm = math.sqrt(sum(x * x for x in vec))
+    if norm == 0.0:
+        return vec
+    return [x / norm for x in vec]
 
 
 class IndexNotBuiltError(RuntimeError):
@@ -43,9 +62,12 @@ _SCHEMA_VERSION = "1"
 class LocalFAISSStore:
     """Local FAISS index store with deterministic search.
 
+    Primary path  : FAISS IndexFlatIP with L2-normalised vectors (cosine similarity).
+    Fallback path : pure-Python cosine when faiss is not installed.
+
     INVARIANT: FAISS is imported lazily inside methods only.
     INVARIANT: search() post-sorts results deterministically: (score_round6 DESC, content_hash ASC).
-    INVARIANT: In-memory fallback enables unit_min_deps tests without faiss.
+    INVARIANT: Fallback path enables unit_min_deps tests without faiss.
     """
 
     def __init__(self, base_path: Path) -> None:
@@ -55,10 +77,18 @@ class LocalFAISSStore:
             base_path: Base directory for index storage.
         """
         self.base_path = base_path
-        # In-memory fallback for unit_min_deps
-        self._memory_indexes: Dict[str, Dict[str, Any]] = {}
+        # Per-index state dict keyed by index_id.
+        # Each entry holds either a live FAISS index or plain Python lists.
+        self._indexes: dict[str, dict[str, Any]] = {}
         # Track rebuild requirement
-        self._rebuild_required: Dict[str, bool] = {}
+        self._rebuild_required: dict[str, bool] = {}
+
+    # ------------------------------------------------------------------
+    # Compat shim: old attribute name used in a few tests
+    # ------------------------------------------------------------------
+    @property
+    def _memory_indexes(self) -> dict[str, dict[str, Any]]:
+        return self._indexes
 
     def open(self, index_id: str) -> tuple[Any, str, IndexBuildMetadata]:
         """Open an index and return handle with metadata.
@@ -73,25 +103,26 @@ class LocalFAISSStore:
             IndexNotBuiltError: If index has not been built or needs rebuild.
             IndexMetadataError: If metadata is missing or invalid.
         """
-        # Check if rebuild is required
         if self._rebuild_required.get(index_id, False):
             raise IndexNotBuiltError(f"Index {index_id} requires rebuild after pruning")
 
-        # Check in-memory store first (populated by LocalEmbeddingPopulationService)
-        if index_id in self._memory_indexes:
-            memory_idx = self._memory_indexes[index_id]
-            return (memory_idx["vectors"], memory_idx["version_hash"], memory_idx["metadata"])
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} has not been built")
 
-        # No in-memory index: FAISS would be required for disk-based access
-        raise RuntimeError("FAISS is required but not installed. Install faiss-cpu or faiss-gpu.")
+        idx = self._indexes[index_id]
+        if "metadata" not in idx:
+            raise IndexMetadataError(f"Index {index_id} not finalized")
+
+        handle = idx.get("faiss_index") or idx["vectors"]
+        return (handle, idx["version_hash"], idx["metadata"])
 
     def search(
         self,
         index_id: str,
-        query_vector: List[float],
+        query_vector: list[float],
         top_k: int,
         cutoff: float,
-    ) -> List[Tuple[str, str, float]]:
+    ) -> list[tuple[str, str, float]]:
         """Search index for similar vectors.
 
         Args:
@@ -107,47 +138,45 @@ class LocalFAISSStore:
         Raises:
             IndexNotBuiltError: If index has not been built or needs rebuild.
         """
-        # Check if rebuild is required
         if self._rebuild_required.get(index_id, False):
             raise IndexNotBuiltError(f"Index {index_id} requires rebuild after pruning")
 
-        # Check in-memory store first
-        if index_id not in self._memory_indexes:
-            raise RuntimeError("FAISS is required but not installed. Install faiss-cpu or faiss-gpu.")
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} has not been built")
 
-        if True:  # always use fallback in Phase 1
-            if False:  # placeholder, index already confirmed above
-                pass
+        idx = self._indexes[index_id]
+        metadatas = idx["metadatas"]
+        q_norm = _l2_normalize(query_vector)
 
-            memory_idx = self._memory_indexes[index_id]
-            vectors = memory_idx["vectors"]
-            metadatas = memory_idx["metadatas"]
+        if _faiss_available() and "faiss_index" in idx:
+            import numpy as np
 
-            # Normalize query vector
-            query_norm = math.sqrt(sum(x * x for x in query_vector))
-            if query_norm == 0:
-                query_vec = query_vector
-            else:
-                query_vec = [x / query_norm for x in query_vector]
-
-            # Compute cosine similarities
-            results = []
-            for i, vec in enumerate(vectors):
-                # Dot product (vectors are normalized)
-                score = sum(q * v for q, v in zip(query_vec, vec))
+            faiss = _import_faiss()
+            q_arr = np.array([q_norm], dtype=np.float32)
+            faiss.normalize_L2(q_arr)
+            k = min(top_k, idx["faiss_index"].ntotal)
+            if k == 0:
+                return []
+            scores_arr, indices_arr = idx["faiss_index"].search(q_arr, k)
+            raw: list[tuple[str, str, float]] = []
+            for score, i in zip(scores_arr[0], indices_arr[0]):
+                if i < 0:
+                    continue
+                s = float(score)
+                if s >= cutoff:
+                    meta = metadatas[i]
+                    raw.append((meta.get("content_hash", ""), meta.get("trace_id", ""), round(s, 6)))
+        else:
+            # Pure-Python cosine fallback
+            raw = []
+            for i, vec in enumerate(idx["vectors"]):
+                score = sum(q * v for q, v in zip(q_norm, vec))
                 if score >= cutoff:
-                    metadata = metadatas[i]
-                    content_hash = metadata.get("content_hash", "")
-                    trace_id = metadata.get("trace_id", "")
-                    score_round6 = round(score, 6)
-                    results.append((content_hash, trace_id, score_round6))
+                    meta = metadatas[i]
+                    raw.append((meta.get("content_hash", ""), meta.get("trace_id", ""), round(score, 6)))
 
-            # Post-sort deterministically
-            results.sort(key=lambda x: (-x[2], x[0]))  # score DESC, content_hash ASC
-            return results[:top_k]
-
-        # Phase 1: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.search() - Phase 1 skeleton")
+        raw.sort(key=lambda x: (-x[2], x[0]))
+        return raw[:top_k]
 
     def begin_build(self, index_id: str, dimension: int, seed: int) -> None:
         """Begin building a new index.
@@ -157,25 +186,17 @@ class LocalFAISSStore:
             dimension: Embedding dimension.
             seed: Random seed for deterministic builds.
         """
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
-
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            self._memory_indexes[index_id] = {
-                "dimension": dimension,
-                "seed": seed,
-                "vectors": [],
-                "metadatas": [],
-            }
-            return
-
-        # Phase 2: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.begin_build() - Phase 2 skeleton")
+        entry: dict[str, Any] = {
+            "dimension": dimension,
+            "seed": seed,
+            "vectors": [],
+            "metadatas": [],
+        }
+        if _faiss_available():
+            faiss = _import_faiss()
+            entry["faiss_index"] = faiss.IndexFlatIP(dimension)
+        self._indexes[index_id] = entry
+        self._rebuild_required[index_id] = False
 
     def add_vectors(self, index_id: str, vectors: list[list[float]], metadatas: list[dict[str, Any]]) -> None:
         """Add vectors to the index being built.
@@ -188,25 +209,19 @@ class LocalFAISSStore:
         Raises:
             IndexNotBuiltError: If index build has not been started.
         """
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} build not started")
 
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} build not started (in-memory fallback)")
+        idx = self._indexes[index_id]
+        normed = [_l2_normalize(v) for v in vectors]
+        idx["vectors"].extend(normed)
+        idx["metadatas"].extend(metadatas)
 
-            memory_idx = self._memory_indexes[index_id]
-            memory_idx["vectors"].extend(vectors)
-            memory_idx["metadatas"].extend(metadatas)
-            return
+        if _faiss_available() and "faiss_index" in idx:
+            import numpy as np
 
-        # Phase 2: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.add_vectors() - Phase 2 skeleton")
+            arr = np.array(normed, dtype=np.float32)
+            idx["faiss_index"].add(arr)
 
     def finalize_build(
         self,
@@ -232,71 +247,37 @@ class LocalFAISSStore:
         Raises:
             IndexNotBuiltError: If index build has not been started.
         """
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} build not started")
 
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} build not started (in-memory fallback)")
+        idx = self._indexes[index_id]
+        vectors = idx["vectors"]
+        metadatas = idx["metadatas"]
 
-            memory_idx = self._memory_indexes[index_id]
-            vectors = memory_idx["vectors"]
-            metadatas = memory_idx["metadatas"]
+        index_version_hash = self._compute_version_hash(vectors, metadatas)
 
-            # Compute deterministic index_version_hash
-            hash_input = []
-            for i, (vec, meta) in enumerate(zip(vectors, metadatas)):
-                # Convert vector to little-endian float32 bytes
-                vector_bytes = b"".join(struct.pack("<f", x) for x in vec)
-                # Create canonical entry
-                entry = {
-                    "content_hash": meta.get("content_hash", ""),
-                    "trace_id": meta.get("trace_id", ""),
-                    "vector_bytes": vector_bytes.hex(),  # Store as hex for JSON serialization
-                }
-                entry_bytes = json.dumps(
-                    entry,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                    ensure_ascii=True,
-                ).encode("ascii")
-                hash_input.append(entry_bytes)
+        faiss_ver = (
+            "faiss-IndexFlatIP-v1" if _faiss_available() and "faiss_index" in idx else "memory-fallback-v1"
+        )
 
-            # Compute SHA-256 over all entries
-            hasher = hashlib.sha256()
-            for entry_bytes in sorted(hash_input):  # Sort for determinism
-                hasher.update(entry_bytes)
-            index_version_hash = hasher.hexdigest()
+        metadata = IndexBuildMetadata(
+            index_id=index_id,
+            faiss_version=faiss_ver,
+            build_seed=idx["seed"],
+            canonicalization_version=canonicalization_version,
+            embedding_model_version=embedding_model_version,
+            embedding_model_checksum=embedding_model_checksum,
+            built_at_utc=built_at_utc,
+            index_version_hash=index_version_hash,
+            vector_count=len(vectors),
+            dimension=idx["dimension"],
+        )
 
-            # Create metadata
-            metadata = IndexBuildMetadata(
-                index_id=index_id,
-                faiss_version="memory-fallback-v1",
-                build_seed=memory_idx["seed"],
-                canonicalization_version=canonicalization_version,
-                embedding_model_version=embedding_model_version,
-                embedding_model_checksum=embedding_model_checksum,
-                built_at_utc=built_at_utc,
-                index_version_hash=index_version_hash,
-                vector_count=len(vectors),
-                dimension=memory_idx["dimension"],
-            )
+        idx["metadata"] = metadata
+        idx["version_hash"] = index_version_hash
+        return metadata
 
-            # Store metadata in memory
-            memory_idx["metadata"] = metadata
-            memory_idx["version_hash"] = index_version_hash
-
-            return metadata
-
-        # Phase 2: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.finalize_build() - Phase 2 skeleton")
-
-    def prune(self, index_id: str, predicate: Callable[[Dict[str, Any]], bool]) -> int:
+    def prune(self, index_id: str, predicate: Callable[[dict[str, Any]], bool]) -> int:
         """Prune vectors from index based on predicate.
 
         Args:
@@ -309,43 +290,33 @@ class LocalFAISSStore:
         Raises:
             IndexNotBuiltError: If index has not been built.
         """
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} not built")
 
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} not built (in-memory fallback)")
+        idx = self._indexes[index_id]
+        vectors = idx["vectors"]
+        metadatas = idx["metadatas"]
 
-            memory_idx = self._memory_indexes[index_id]
-            vectors = memory_idx["vectors"]
-            metadatas = memory_idx["metadatas"]
+        to_keep = [i for i, meta in enumerate(metadatas) if not predicate(meta)]
+        removed_count = len(metadatas) - len(to_keep)
 
-            # Find items to prune
-            to_keep = []
-            removed_count = 0
+        if removed_count > 0:
+            idx["vectors"] = [vectors[i] for i in to_keep]
+            idx["metadatas"] = [metadatas[i] for i in to_keep]
+            self._rebuild_required[index_id] = True
 
-            for i, metadata in enumerate(metadatas):
-                if predicate(metadata):
-                    removed_count += 1
-                else:
-                    to_keep.append(i)
+            if _faiss_available() and "faiss_index" in idx:
+                import numpy as np
 
-            # Rebuild arrays without pruned items
-            if removed_count > 0:
-                memory_idx["vectors"] = [vectors[i] for i in to_keep]
-                memory_idx["metadatas"] = [metadatas[i] for i in to_keep]
-                # Mark rebuild as required
-                self._rebuild_required[index_id] = True
+                faiss = _import_faiss()
+                dim = idx["dimension"]
+                new_index = faiss.IndexFlatIP(dim)
+                if idx["vectors"]:
+                    arr = np.array(idx["vectors"], dtype=np.float32)
+                    new_index.add(arr)
+                idx["faiss_index"] = new_index
 
-            return removed_count
-
-        # Phase 4: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.prune() - Phase 4 skeleton")
+        return removed_count
 
     def rebuild(
         self,
@@ -371,70 +342,70 @@ class LocalFAISSStore:
         Raises:
             IndexNotBuiltError: If index has not been built.
         """
-        # Lazy import FAISS only when needed
-        try:
-            import importlib.util
+        if index_id not in self._indexes:
+            raise IndexNotBuiltError(f"Index {index_id} not built")
 
-            if importlib.util.find_spec("faiss") is None:
-                raise ImportError("FAISS not available")
-            # Real FAISS implementation would go here
-        except ImportError:
-            # Use in-memory fallback
-            if index_id not in self._memory_indexes:
-                raise IndexNotBuiltError(f"Index {index_id} not built (in-memory fallback)")
+        idx = self._indexes[index_id]
+        vectors = idx["vectors"]
+        metadatas = idx["metadatas"]
 
-            memory_idx = self._memory_indexes[index_id]
-            vectors = memory_idx["vectors"]
-            metadatas = memory_idx["metadatas"]
+        if _faiss_available():
+            import numpy as np
 
-            # Compute deterministic index_version_hash for remaining items
-            hash_input = []
-            for i, (vec, meta) in enumerate(zip(vectors, metadatas)):
-                # Convert vector to little-endian float32 bytes
-                vector_bytes = b"".join(struct.pack("<f", x) for x in vec)
-                # Create canonical entry
-                entry = {
-                    "content_hash": meta.get("content_hash", ""),
-                    "trace_id": meta.get("trace_id", ""),
-                    "vector_bytes": vector_bytes.hex(),  # Store as hex for JSON serialization
-                }
-                entry_bytes = json.dumps(
-                    entry,
-                    sort_keys=True,
-                    separators=(",", ":"),
-                    ensure_ascii=True,
-                ).encode("ascii")
-                hash_input.append(entry_bytes)
+            faiss = _import_faiss()
+            dim = idx["dimension"]
+            new_index = faiss.IndexFlatIP(dim)
+            if vectors:
+                arr = np.array(vectors, dtype=np.float32)
+                new_index.add(arr)
+            idx["faiss_index"] = new_index
+            faiss_ver = "faiss-IndexFlatIP-v1"
+        else:
+            faiss_ver = "memory-fallback-v1"
 
-            # Compute SHA-256 over all entries
-            hasher = hashlib.sha256()
-            for entry_bytes in sorted(hash_input):  # Sort for determinism
-                hasher.update(entry_bytes)
-            index_version_hash = hasher.hexdigest()
+        index_version_hash = self._compute_version_hash(vectors, metadatas)
 
-            # Create metadata
-            metadata = IndexBuildMetadata(
-                index_id=index_id,
-                faiss_version="memory-fallback-v1",
-                build_seed=memory_idx["seed"],
-                canonicalization_version=canonicalization_version,
-                embedding_model_version=embedding_model_version,
-                embedding_model_checksum=embedding_model_checksum,
-                built_at_utc=built_at_utc,
-                index_version_hash=index_version_hash,
-                vector_count=len(vectors),
-                dimension=memory_idx["dimension"],
+        metadata = IndexBuildMetadata(
+            index_id=index_id,
+            faiss_version=faiss_ver,
+            build_seed=idx["seed"],
+            canonicalization_version=canonicalization_version,
+            embedding_model_version=embedding_model_version,
+            embedding_model_checksum=embedding_model_checksum,
+            built_at_utc=built_at_utc,
+            index_version_hash=index_version_hash,
+            vector_count=len(vectors),
+            dimension=idx["dimension"],
+        )
+
+        idx["metadata"] = metadata
+        idx["version_hash"] = index_version_hash
+        self._rebuild_required[index_id] = False
+        return metadata
+
+    # ------------------------------------------------------------------
+    # Internal helpers
+    # ------------------------------------------------------------------
+
+    @staticmethod
+    def _compute_version_hash(vectors: list, metadatas: list) -> str:
+        """Compute deterministic SHA-256 hash over (vector, metadata) pairs."""
+        hash_input = []
+        for vec, meta in zip(vectors, metadatas):
+            vector_bytes = b"".join(struct.pack("<f", x) for x in vec)
+            entry = {
+                "content_hash": meta.get("content_hash", ""),
+                "trace_id": meta.get("trace_id", ""),
+                "vector_bytes": vector_bytes.hex(),
+            }
+            entry_bytes = json.dumps(entry, sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode(
+                "ascii"
             )
-
-            # Update stored metadata and clear rebuild flag
-            memory_idx["metadata"] = metadata
-            memory_idx["version_hash"] = index_version_hash
-            self._rebuild_required[index_id] = False
-
-            return metadata
-
-        # Phase 4: NotImplementedError for real FAISS
-        raise NotImplementedError("LocalFAISSStore.rebuild() - Phase 4 skeleton")
+            hash_input.append(entry_bytes)
+        hasher = hashlib.sha256()
+        for eb in sorted(hash_input):
+            hasher.update(eb)
+        return hasher.hexdigest()
 
     def persist_to_disk(self, index_id: str, dest_dir: Path, *, embedder_id: str, model_version: str) -> str:
         """Write 3-file artifact (index.json, meta.json, manifest.json) and print W-A-DETERMINISM-DIGEST.
