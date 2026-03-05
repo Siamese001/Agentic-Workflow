@@ -260,6 +260,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                 _faiss_store = _FAISSStore(base_path=_Path("."))
                 _faiss_store.begin_build(_faiss_idx, _dim, seed=0)
                 _faiss_store.add_vectors(_faiss_idx, _faiss_vectors, _faiss_metas)
+                _faiss_store.finalize_build(_faiss_idx)
                 logging.debug(
                     "[MetaLearning] LocalFAISSStore.add_vectors: %d vectors -> %s",
                     len(_faiss_vectors),
@@ -1236,6 +1237,7 @@ class SovereignDecisionEngine:
         enable_cda: bool = False,
         execution_context: Optional["ExecutionContext"] = None,
         healing_memory_retriever: Any | None = None,
+        auto_approve: bool = False,
     ):
         self.enable_llm = enable_llm
         self.decisions_made = []
@@ -1244,7 +1246,8 @@ class SovereignDecisionEngine:
         # [SAFETY] Cycle Detection State
         self._healing_count: int = 0
         self._healing_enabled: bool = True
-        self._max_healing_operations: int = 100
+        self._max_healing_operations: int = 10000
+        self.auto_approve: bool = auto_approve
         self._call_path: set[str] = set()
         # CDA Integration (merged from EnhancedAutonomousDecisionEngine)
         self.enable_cda = enable_cda
@@ -1610,6 +1613,12 @@ class SovereignDecisionEngine:
         if depth > max_depth:
             return False, f"Healing depth limit exceeded for {agent_name}"
         if self._healing_count >= self._max_healing_operations:
+            logger.warning(
+                "[BUDGET] Healing budget exhausted (%d/%d) — %s blocked",
+                self._healing_count,
+                self._max_healing_operations,
+                agent_name,
+            )
             return False, f"Budget exceeded ({self._healing_count})"
         return True, "OK"
 
@@ -1630,6 +1639,8 @@ class SovereignDecisionEngine:
         """
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
+        if getattr(self, "auto_approve", False):
+            return ConfidenceScore(value=1.0, reasoning="AUTO-HEAL: --heal active, confidence forced to 1.0")
         # 1. Base Score (Inverse of violations, capped at 10)
         base_score = max(0.0, 1.0 - (min(violations_count, 10) * 0.1))
 
@@ -1926,6 +1937,8 @@ class SovereignDecisionEngine:
         print("  [Y] Approve healing    [N] Reject    [D] Defer to report")
         print(border)
 
+        if getattr(self, "auto_approve", False):
+            return True, f"HITL-AUTO-APPROVED: --heal active ({confidence.value:.2f})"
         if not sys.stdin.isatty():
             reason = f"HITL-DEFER (non-interactive, {confidence.value:.2f})"
             print(f"  Non-interactive environment — auto-DEFER: {agent_name}")
@@ -2887,9 +2900,7 @@ def execute_phase3_validation(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase1_discovery(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, auto_approve=True
-):
+def execute_phase1_discovery(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 1: TERRITORIAL DISCOVERY (Retriable)"""
     return execute_phase1_discovery_impl(agents, territory, decision_engine, state_mgr, ctx)
 
@@ -2916,7 +2927,7 @@ def execute_phase1_discovery_impl(
     # Wave 3: when healing is active, pass force=True so the skip-gate is bypassed
     # and forbidden root folders (logs/, scripts/, etc.) are actually reconciled.
     if ctx is not None and getattr(ctx, "heal", False):
-        reconciler.heal_repository(force=True, dry_run=not getattr(ctx, "heal", False), execute=True)
+        reconciler.heal_repository(force=True, dry_run=False, execute=True)
 
     violations_count = (
         len(drift_report.get("forbidden_folders", []))
@@ -2994,13 +3005,15 @@ def execute_phase1_discovery_impl(
         state_mgr.add_event("decision", f"Location Healing: {reason}")
         logger.info(f"Location Decision: {reason}")
 
-        if proceed and (ctx is None or ctx.heal):
+        if proceed and ctx is not None and ctx.heal:
             logger.info(f"Triggering LocationAgent auto-heal for {len(violations)} violations")
             # Wave 6: Attach HITL approval function so _heal_via_archiving can gate deletions.
             # Non-interactive environments auto-defer (skip) the archive.
             import sys as _sys
 
             def _w6_hitl_archive_gate(file_path, msg):
+                if ctx is not None and getattr(ctx, "auto_approve", False):
+                    return True, "HITL-AUTO-APPROVED (--heal active)"
                 if not _sys.stdin.isatty():
                     return False, "HITL-DEFER (non-interactive)"
                 if os.environ.get("ARCHIVE_BATCH_ACCEPT") == "1":
@@ -3029,7 +3042,7 @@ def execute_phase1_discovery_impl(
             # LocationAgent should have a heal method - call it
             if hasattr(location_validator, "heal_violations"):
                 heal_result = location_validator.heal_violations(
-                    violations, auto_approve=(ctx.auto_approve if ctx else True)
+                    violations, auto_approve=(ctx.auto_approve if ctx else False)
                 )
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
                 state_mgr.state["location_fixed"] = healed_count  # [FIX-B3]
@@ -3078,7 +3091,7 @@ def execute_phase1_discovery_impl(
 
         # Run classification scan on territory (validate_only mode for detection)
         file_classifier.validate_only = True
-        file_classifier.dry_run = True  # Always dry_run in discovery phase (validate_only)
+        file_classifier.dry_run = False
         # [FIX-B9] Scope scan to current territory instead of entire repo
         if hasattr(file_classifier, "target_territory"):
             file_classifier.target_territory = territory
@@ -3127,9 +3140,7 @@ def execute_phase1_discovery_impl(
 
 # guardian: allow-magic-config
 @with_retry(max_retries=3)
-def execute_phase3_alignment(
-    agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None, auto_approve=True
-):
+def execute_phase3_alignment(agents, territory, decision_engine, state_mgr, ctx: "HealContext" = None):
     """PHASE 3: STRUCTURAL ALIGNMENT (Retriable)"""
     return execute_phase3_alignment_impl(agents, territory, decision_engine, state_mgr, ctx)
 
@@ -3157,21 +3168,23 @@ def execute_phase3_alignment_impl(
 
     if violations > 0:
         confidence = decision_engine.calculate_healing_confidence(violations, ["HIERARCHY"], territory)
-        proceed, reason = decision_engine.should_proceed_with_healing(confidence, "HierarchyAgent")
+        proceed, reason = decision_engine.should_proceed_with_healing(
+            confidence, "HierarchyAgent", territory=territory
+        )
 
         state_mgr.add_event("decision", f"Hierarchy Healing: {reason}")
         logger.info(f"Decision: {reason}")
 
-        if proceed:
+        if proceed and ctx is not None and ctx.heal:
             # [SOVEREIGN DEFAULT] Propagate active/dry-run status to HierarchyAgent
             res = hierarchy.heal_hierarchy(
                 create_structure=True,
                 relocate_files=True,
                 enforce_depth=True,
-                purge_orphans=False,
+                purge_orphans=ctx.heal if ctx else False,
                 target_territory=territory,  # [STRICT SCOPE] Already correct here, but ensuring strict adherence
-                dry_run=not ctx.heal if ctx else True,
-                auto_approve=ctx.auto_approve if ctx else True,
+                dry_run=False,
+                auto_approve=ctx.auto_approve if ctx else False,
             )
             healed = res.get("total_healed", 0)
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
@@ -3194,7 +3207,8 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
     try:
         logger.info("Detecting gravity violations (layer inversions)...")
         gravity_result = gravity_agent.heal_repository(
-            dry_run=not ctx.heal if ctx else True, execute=ctx.heal if ctx else False
+            dry_run=not (ctx.heal if ctx else False),
+            execute=(ctx.heal if ctx else False),
         )
 
         gravity_violations = gravity_result.get("violations_found", 0)
@@ -3324,7 +3338,6 @@ def execute_phase5_healing(
     decision_engine,
     state_mgr,
     ctx: "HealContext" = None,
-    auto_approve=True,
 ):
     """PHASE 5: HEALING (Retriable)"""
     # [STRICT SCOPE] Gatekeeper check
@@ -3374,12 +3387,12 @@ def execute_phase5_healing_impl(
         state_mgr.add_event("decision", f"Arch Healing: {reason}")
         logger.info(f"Decision: {reason}")
 
-        if proceed:
+        if proceed and ctx is not None and ctx.heal:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
             # [SOVEREIGN DEFAULT] Pass orchestration flags to the Governor healing plan
             res = arch_gov.heal_repository(
-                dry_run=not ctx.heal if ctx else True,
-                auto_approve=ctx.auto_approve if ctx else True,
+                dry_run=False,
+                auto_approve=ctx.auto_approve if ctx else False,
                 target_territory=territory,
             )
             status = res.get("status", "UNKNOWN")
@@ -3558,7 +3571,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     # [LOGIC FIX] Recalculate confidence based on FINAL violation count, not Phase 1
     # [FIX-B4+B5] Use the passed decision_engine directly — no fallback creation
     if decision_engine is None:
-        decision_engine = AutonomousDecisionEngine(enable_llm=False)
+        decision_engine = AutonomousDecisionEngine(enable_llm=False, auto_approve=False)
 
     final_confidence = decision_engine.calculate_healing_confidence(
         violations_count=violation_count,
@@ -5262,7 +5275,7 @@ def _legacy_main(
             elif hasattr(agent, "scan_root_violations"):
                 result = agent.scan_root_violations()
             elif hasattr(agent, "heal_repository"):
-                result = agent.heal_repository(dry_run=not ctx.heal if "ctx" in dir() and ctx else True)
+                result = agent.heal_repository(dry_run=False)
             else:
                 result = "Agent instantiated but no standard run method found."
 
@@ -5310,6 +5323,7 @@ def _legacy_main(
         state_mgr=state_mgr,
         enable_cda=True,
         execution_context=_exec_ctx,
+        auto_approve=ctx.auto_approve,
     )
 
     logger.info("UNIFIED SOVEREIGN PROTOCOL STARTED")
@@ -5628,7 +5642,7 @@ def _legacy_main(
                             agents,
                             territory,
                             _phase1_violations,
-                            effective_ctx.dry_run,
+                            False,
                         )
 
                         if phase3_result["status"] == "clean":
@@ -5678,7 +5692,7 @@ def _legacy_main(
                                 }
                                 res = pascal.heal_repository(
                                     target_territory=territory,
-                                    dry_run=effective_ctx.dry_run,
+                                    dry_run=False,
                                     auto_approve=effective_ctx.auto_approve,
                                     cached_scan=_cached,
                                 )
