@@ -209,8 +209,8 @@ def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
             "FileClassification",
             "ObservabilityProbe",
             "CognitiveDisposition",
-            "LocationAgent",
-            "HierarchyAgent",
+            "LocationHealerAgent",
+            "HierarchyHealerAgent",
         )
     ]
 
@@ -355,13 +355,13 @@ def _build_report(run_meta: dict, stdout_text: str, stderr_text: str) -> dict:
         ],
         "agents_roster": {
             "registered": [
-                "reconciler (FilesystemSSOTReconcilerAgent)",
-                "location (LocationAgent)",
-                "hierarchy (HierarchyAgent)",
+                "reconciler (FilesystemSSOTHealerAgent)",
+                "location (LocationHealerAgent)",
+                "hierarchy (HierarchyHealerAgent)",
                 "arch_governor (ArchitectureGovernorAgent)",
-                "gravity_repair (GravityLeakRepairAgent)",
+                "gravity_repair (GravityLeakHealerAgent)",
                 "system_architect (SystemArchitectAgent)",
-                "file_classification (FileClassificationAgent)",
+                "file_classification (FileClassificationHealerAgent)",
                 "conversational_repair (ObservabilityProbeExecutorAgent)",
                 "cognitive_disposition (CognitiveDispositionAgent)",
                 "root_hygiene (RootHygieneAgent)",

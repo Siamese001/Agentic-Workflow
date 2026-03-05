@@ -102,3 +102,46 @@ class TestRosterUsesCanonicalHealerNames:
                 assert hasattr(mod, name), f"Module {module_path} does not export '{name}'"
             except ImportError as e:
                 pytest.fail(f"Cannot import {module_path}: {e}")
+
+    def test_tools_evidence_scripts_use_canonical_names(self):
+        """Verify tools/evidence/ scripts use canonical healer names in display strings."""
+        tools_evidence = REPO_ROOT / "tools" / "evidence"
+
+        # Scripts that reference agent roster
+        scripts_to_check = [
+            tools_evidence / "_summarize_ssot_run.py",
+            tools_evidence / "_run_ssot_healing.py",
+        ]
+
+        for script in scripts_to_check:
+            if not script.exists():
+                continue
+
+            content = script.read_text(encoding="utf-8")
+
+            # Check for canonical healer names
+            assert "FilesystemSSOTHealerAgent" in content, (
+                f"{script.name} must use 'FilesystemSSOTHealerAgent', not 'FilesystemSSOTReconcilerAgent'"
+            )
+            assert "FileClassificationHealerAgent" in content, (
+                f"{script.name} must use 'FileClassificationHealerAgent', not 'FileClassificationAgent'"
+            )
+            assert "HierarchyHealerAgent" in content, (
+                f"{script.name} must use 'HierarchyHealerAgent', not 'HierarchyAgent'"
+            )
+            assert "GravityLeakHealerAgent" in content, (
+                f"{script.name} must use 'GravityLeakHealerAgent', not 'GravityLeakRepairAgent'"
+            )
+            assert "LocationHealerAgent" in content, (
+                f"{script.name} must use 'LocationHealerAgent', not 'LocationAgent'"
+            )
+
+            # Check for legacy names (should NOT appear in agent roster strings)
+            # Allow them in comments/other contexts, but not in roster display
+            if "agents_roster" in content or '"registered"' in content:
+                assert "FilesystemSSOTReconcilerAgent)" not in content, (
+                    f"{script.name} agent roster must not use legacy 'FilesystemSSOTReconcilerAgent)'"
+                )
+                assert "FileClassificationAgent)" not in content, (
+                    f"{script.name} agent roster must not use legacy 'FileClassificationAgent)'"
+                )
