@@ -16,7 +16,7 @@ f636f712463d0d153100f5faed7e5e3723aef341
 
 ## EVIDENCE_COMMIT
 
-PENDING
+c6d5213363c1dbdda1465a8c2464903eb53e9a00
 
 ## FILES_CHANGED_CODE
 
@@ -25,7 +25,7 @@ tests/unit/test_semantic_cache_activation.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/semantic_cache_hardening_r2_evidence.md
 
 ## INSPECTED_FILES
 
