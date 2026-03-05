@@ -40,7 +40,7 @@ class TestATSValidatorStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create ATSValidatorStrategy instance."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSValidatorStrategy
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSValidatorStrategy
 
         return ATSValidatorStrategy(config)
 
@@ -185,7 +185,7 @@ class TestATSCompatibilityAgentFacade:
 
             # Mock the parent class initialization
             with patch("apps_rg.utils.RGAgentBaseAgent.RGAgentBase.__post_init__"):
-                from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+                from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
                 agent = ATSCompatibilityAgent()
                 agent.log = Mock()
@@ -207,7 +207,7 @@ class TestATSCompatibilityAgentFacade:
     def test_unified_strategy_initialized(self, agent):
         """Test unified strategy is initialized."""
         assert agent._unified_strategy is not None
-        from apps_rg.engines.ATSCompatibilityAgent import ATSValidatorStrategy
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSValidatorStrategy
 
         assert isinstance(agent._unified_strategy, ATSValidatorStrategy)
 
@@ -263,7 +263,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert ATSCompatibilityAgent is not None
 
@@ -271,14 +271,15 @@ class TestLegacyCompatibility:
         """Test class is still a dataclass."""
         from dataclasses import is_dataclass
 
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert is_dataclass(ATSCompatibilityAgent)
 
     def test_inherits_from_rg_base(self):
         """Test class still inherits from RGAgentBase."""
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
         from apps_rg.utils.RGAgentBaseAgent import RGAgentBase
+
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert issubclass(ATSCompatibilityAgent, RGAgentBase)
 
@@ -286,7 +287,7 @@ class TestLegacyCompatibility:
         """Test execute method is still async."""
         import asyncio
 
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         assert asyncio.iscoroutinefunction(ATSCompatibilityAgent.execute)
 
@@ -294,7 +295,7 @@ class TestLegacyCompatibility:
         """Test heal_repository has correct signature."""
         import inspect
 
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         sig = inspect.signature(ATSCompatibilityAgent.heal_repository)
         params = list(sig.parameters.keys())
@@ -307,7 +308,7 @@ class TestLegacyCompatibility:
         """Test heal has correct signature."""
         import inspect
 
-        from apps_rg.engines.ATSCompatibilityAgent import ATSCompatibilityAgent
+        from apps_rg.reasoning.ATSCompatibilityAgent import ATSCompatibilityAgent
 
         sig = inspect.signature(ATSCompatibilityAgent.heal)
         params = list(sig.parameters.keys())

@@ -40,9 +40,8 @@ PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
-from agentic_core.L0_routing.enforcement.core_integrity_util import CoreIntegrityVerifier
-
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.utils.core_integrity_util import CoreIntegrityVerifier
 from tests.guardian.guardian_report import (
     FixAction,
     GuardianReportBuilder,
@@ -502,14 +501,14 @@ def test_sovereign_seal_integrity(monkeypatch: pytest.MonkeyPatch):
 
     # Prefer known sealed agents if present.
     try:
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+        from apps_lic.reasoning.Hop1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         sealed_instances.append(("apps_lic.engines.HOP1ProfileAnalysisAgent", HOP1ProfileAnalysisAgent()))
     except Exception:
         pass
 
     try:
-        from apps_lic.engines.HOP2ResearchAgent import HOP2ResearchAgent
+        from apps_lic.reasoning.Hop2ResearchAgent import HOP2ResearchAgent
 
         sealed_instances.append(("apps_lic.engines.HOP2ResearchAgent", HOP2ResearchAgent()))
     except Exception:

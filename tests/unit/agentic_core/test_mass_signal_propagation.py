@@ -33,15 +33,14 @@ def test_case_1_long_chain_propagation():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
-            L2ExecutionBase,
-        )
-        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
-            L3OrchestrationBase,
-        )
-
         from agentic_core.base_agents.L1CognitionBase import (
             L1CognitionBase,
+        )
+        from agentic_core.base_agents.L2ExecutionBase import (
+            L2ExecutionBase,
+        )
+        from agentic_core.base_agents.L3OrchestrationBase import (
+            L3OrchestrationBase,
         )
 
         # Step 1: Create Orchestrator
@@ -122,10 +121,10 @@ def test_case_2_multi_agent_cycle_persistence():
     print("=" * 70)
 
     try:
-        from agentic_core.L2_execution.reasoning.L2ExecutionBase import (
+        from agentic_core.base_agents.L2ExecutionBase import (
             L2ExecutionBase,
         )
-        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
+        from agentic_core.base_agents.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
 
@@ -215,10 +214,11 @@ def test_case_3_gatekeeper_automation_sweep():
         print(f"✓ Approval granted without stdin prompt: {approval}")
 
         # Step 3: Test with multiple agents
-        from agentic_core.L3_orchestration.reasoning.L3OrchestrationBase import (
+        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
+
+        from agentic_core.base_agents.L3OrchestrationBase import (
             L3OrchestrationBase,
         )
-        from agentic_core.L5_safety.validators.l5_safety_base_agent import L5SafetyBase
 
         orchestrator = L3OrchestrationBase()
         safety_agent = L5SafetyBase()

@@ -34,7 +34,7 @@ class TestRGSovereignSocket:
 
     def test_campaign_planner_hardening(self):
         """Verify CampaignPlannerAgent follows V2.5 standards."""
-        from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
+        from apps_rg.reasoning.CampaignPlannerAgent import CampaignPlannerAgent
 
         # Dataclass Check
         assert is_dataclass(CampaignPlannerAgent), "CampaignPlanner must be a dataclass"
@@ -50,9 +50,8 @@ class TestRGSovereignSocket:
 
     def test_content_strategy_inheritance(self):
         """Verify ContentStrategyAgent connects to the bridge."""
-        from apps_rg.engines.ContentStrategyAgent import ContentStrategyAgent
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent as RGAgentBase
+        from apps_rg.reasoning.ContentStrategyAgent import ContentStrategyAgent
 
         assert issubclass(ContentStrategyAgent, RGAgentBase)
         agent = ContentStrategyAgent()

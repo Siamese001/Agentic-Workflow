@@ -27,13 +27,13 @@ class TestGlobalSystemIntegrity:
         Verify they share the same Core DNA but maintain isolation.
         """
         # 1. Boot RG Agent (Already Hardened)
-        from apps_rg.engines.CampaignPlannerAgent import CampaignPlannerAgent
+        from apps_rg.reasoning.CampaignPlannerAgent import CampaignPlannerAgent
 
         rg_agent = CampaignPlannerAgent()
 
         # 2. Boot LIC Agent (Retrofitted)
         # Using HOP1ProfileAnalysisAgent as test pilot
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+        from apps_lic.reasoning.Hop1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         lic_agent = HOP1ProfileAnalysisAgent()
 
@@ -118,9 +118,8 @@ class TestGlobalSystemIntegrity:
         """
         Verify MRO Root Injection Pattern is working correctly.
         """
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
-
         from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+        from apps_lic.reasoning.Hop1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         # Create agent instance
         agent = HOP1ProfileAnalysisAgent()
@@ -163,7 +162,7 @@ class TestGlobalSystemIntegrity:
         """
         Verify heal_repository methods have Phase 20 signature.
         """
-        from apps_lic.engines.HOP1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
+        from apps_lic.reasoning.Hop1ProfileAnalysisAgent import HOP1ProfileAnalysisAgent
 
         agent = HOP1ProfileAnalysisAgent()
 

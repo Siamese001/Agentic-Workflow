@@ -52,7 +52,7 @@ class TestInstructionalInjectionMixin:
 
     def test_mixin_can_be_imported(self):
         """Verify instructional_injection_mixin can be imported."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
 
@@ -60,7 +60,7 @@ class TestInstructionalInjectionMixin:
 
     def test_mixin_has_30_patterns(self):
         """Verify all 30 patterns are defined."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             INSTRUCTIONAL_PATTERNS,
         )
 
@@ -68,7 +68,7 @@ class TestInstructionalInjectionMixin:
 
     def test_patterns_cover_all_layers(self):
         """Verify patterns cover all 6 layers."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             INSTRUCTIONAL_PATTERNS,
             InjectionLayer,
         )
@@ -83,7 +83,7 @@ class TestInstructionalInjectionMixin:
 
     def test_mixin_has_inject_methods(self):
         """Verify mixin has all inject_*_layer methods."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
 
@@ -105,37 +105,34 @@ class TestInstructionalInjectionMixin:
 
     def test_healer_mixin_inherits_injection(self):
         """Verify HealerMixin inherits instructional_injection_mixin."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.healer_mixin import HealerMixin
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
-
-        from agentic_core.mixins.healer_mixin import HealerMixin
 
         assert issubclass(HealerMixin, instructional_injection_mixin)
 
     def test_subatomic_testing_mixin_inherits_injection(self):
         """Verify SubatomicTestingMixin inherits instructional_injection_mixin."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
-
         from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
         assert issubclass(SubatomicTestingMixin, instructional_injection_mixin)
 
     def test_mcp_hardened_mixin_inherits_injection(self):
         """Verify MCPHardenedMixin inherits instructional_injection_mixin."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
-
         from agentic_core.mixins.mcp_hardened_mixin import MCPHardenedMixin
 
         assert issubclass(MCPHardenedMixin, instructional_injection_mixin)
 
     def test_inject_safety_layer_works(self):
         """Verify inject_safety_layer actually injects patterns."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
 
@@ -150,7 +147,7 @@ class TestInstructionalInjectionMixin:
 
     def test_inject_output_layer_works(self):
         """Verify inject_output_layer actually injects patterns."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
 
@@ -165,7 +162,7 @@ class TestInstructionalInjectionMixin:
 
     def test_get_injection_summary(self):
         """Verify get_injection_summary returns correct structure."""
-        from agentic_core.base_agents.instructional_injection_mixin import (
+        from agentic_core.mixins.instructional_injection_mixin import (
             instructional_injection_mixin,
         )
 
@@ -208,7 +205,7 @@ class TestAgentInstructionalInjection:
 
     def test_ddd_alignment_agent_has_injection(self):
         """Verify DDDAlignmentAgent has instructional injection."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         assert hasattr(DDDAlignmentAgent, "inject_safety_layer")
 

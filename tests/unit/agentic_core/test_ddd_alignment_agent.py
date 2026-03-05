@@ -41,25 +41,25 @@ class TestDDDAlignmentAgent:
 
     def test_agent_can_be_imported(self):
         """Verify DDDAlignmentAgent can be imported."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         assert DDDAlignmentAgent is not None
 
     def test_agent_has_heal_repository(self):
         """Verify DDDAlignmentAgent has heal_repository method."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         assert hasattr(DDDAlignmentAgent, "heal_repository")
 
     def test_agent_has_run_method(self):
         """Verify DDDAlignmentAgent has run method."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         assert hasattr(DDDAlignmentAgent, "run")
 
     def test_agent_can_be_instantiated(self, project_root: Path):
         """Verify DDDAlignmentAgent can be instantiated."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         agent = DDDAlignmentAgent(project_root=project_root)
         assert agent.project_root == project_root.resolve()
@@ -80,7 +80,7 @@ class TestDDDAlignmentAgent:
 
     def test_bounded_contexts_defined(self):
         """Verify BOUNDED_CONTEXTS is properly defined."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import BOUNDED_CONTEXTS
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import BOUNDED_CONTEXTS
 
         # Must have L0-L6 contexts
         required_contexts = [
@@ -100,7 +100,7 @@ class TestDDDAlignmentAgent:
 
     def test_get_alignment_score(self, project_root: Path):
         """Verify alignment score calculation."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import DDDAlignmentAgent
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import DDDAlignmentAgent
 
         agent = DDDAlignmentAgent(project_root=project_root)
         # Before running, score should be 100 (no violations)
@@ -108,7 +108,7 @@ class TestDDDAlignmentAgent:
 
     def test_validate_ddd_alignment_function(self, project_root: Path):
         """Verify convenience function works."""
-        from agentic_core.L5_safety.validators.DDDAlignmentAgent import validate_ddd_alignment
+        from agentic_core.L5_safety.reasoning.DDDAlignmentAgent import validate_ddd_alignment
 
         score, messages = validate_ddd_alignment(str(project_root / "agentic_core" / "config"))
         assert isinstance(score, float)

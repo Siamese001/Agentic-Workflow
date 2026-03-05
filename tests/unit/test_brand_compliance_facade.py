@@ -36,7 +36,7 @@ class TestBrandValidatorStrategy:
     @pytest.fixture
     def strategy(self, config):
         """Create BrandValidatorStrategy instance."""
-        from apps_rg.engines.BrandComplianceAgent import BrandValidatorStrategy
+        from apps_rg.reasoning.BrandComplianceAgent import BrandValidatorStrategy
 
         return BrandValidatorStrategy(config)
 
@@ -174,7 +174,7 @@ class TestBrandComplianceAgentFacade:
 
             # Mock the parent class initialization
             with patch("apps_rg.utils.RGAgentBaseAgent.RGAgentBase.__post_init__"):
-                from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+                from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
                 agent = BrandComplianceAgent()
                 agent.log = Mock()
@@ -196,7 +196,7 @@ class TestBrandComplianceAgentFacade:
     def test_unified_strategy_initialized(self, agent):
         """Test unified strategy is initialized."""
         assert agent._unified_strategy is not None
-        from apps_rg.engines.BrandComplianceAgent import BrandValidatorStrategy
+        from apps_rg.reasoning.BrandComplianceAgent import BrandValidatorStrategy
 
         assert isinstance(agent._unified_strategy, BrandValidatorStrategy)
 
@@ -259,7 +259,7 @@ class TestLegacyCompatibility:
 
     def test_import_compatibility(self):
         """Test original import still works."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         assert BrandComplianceAgent is not None
 
@@ -267,14 +267,15 @@ class TestLegacyCompatibility:
         """Test class is still a dataclass."""
         from dataclasses import is_dataclass
 
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         assert is_dataclass(BrandComplianceAgent)
 
     def test_inherits_from_rg_base(self):
         """Test class still inherits from RGAgentBase."""
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
         from apps_rg.utils.RGAgentBaseAgent import RGAgentBase
+
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         assert issubclass(BrandComplianceAgent, RGAgentBase)
 
@@ -282,7 +283,7 @@ class TestLegacyCompatibility:
         """Test execute method is still async."""
         import asyncio
 
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         assert asyncio.iscoroutinefunction(BrandComplianceAgent.execute)
 
@@ -290,7 +291,7 @@ class TestLegacyCompatibility:
         """Test heal_repository has correct signature."""
         import inspect
 
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         sig = inspect.signature(BrandComplianceAgent.heal_repository)
         params = list(sig.parameters.keys())
@@ -303,7 +304,7 @@ class TestLegacyCompatibility:
         """Test heal has correct signature."""
         import inspect
 
-        from apps_rg.engines.BrandComplianceAgent import BrandComplianceAgent
+        from apps_rg.reasoning.BrandComplianceAgent import BrandComplianceAgent
 
         sig = inspect.signature(BrandComplianceAgent.heal)
         params = list(sig.parameters.keys())
