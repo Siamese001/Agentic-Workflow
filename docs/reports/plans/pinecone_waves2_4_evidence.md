@@ -8,11 +8,11 @@ SDK registry entry, and test fixture references.
 
 ## CODE_COMMIT
 
-92390b1d8b8a6c2e9f1d4a7b3e5f8c0d2a4b6e8f
+92390b1d8
 
 ## EVIDENCE_COMMIT
 
-PENDING
+73ca23ef3a5ed4dfc0421aa083dbd5a0f277499f
 
 ## FILES_CHANGED_CODE
 
@@ -25,7 +25,7 @@ tests/unit/test_environment.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/pinecone_waves2_4_evidence.md
 
 ## INSPECTED_FILES
 
