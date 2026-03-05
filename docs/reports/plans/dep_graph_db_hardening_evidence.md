@@ -11,7 +11,7 @@ ea655ba19bb1e21d98cd6c10ce8e7fc3c3c2d3b6
 
 ## EVIDENCE_COMMIT
 
-PENDING
+4cbdefed71c1bb33aa24cf20455a091304c09cc9
 
 ## FILES_CHANGED_CODE
 
@@ -24,7 +24,7 @@ tools/dep_graph_db.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/dep_graph_db_hardening_evidence.md
 
 ## INSPECTED_FILES
 
