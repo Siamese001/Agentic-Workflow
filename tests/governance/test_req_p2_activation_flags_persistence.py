@@ -4,18 +4,17 @@ Tests that activation flags persist in L4, survive restart,
 and are replay-bound.
 """
 
-import pytest
-import tempfile
 import shutil
-import json
-import time
+import tempfile
 from pathlib import Path
-from dataclasses import asdict
+
+import pytest
 
 pytestmark = pytest.mark.governance
 
 # Import the modules we're testing
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent.parent / "agentic_core" / "L4_state" / "enforcement"))
 
 try:
@@ -25,15 +24,15 @@ try:
         ActivationGate,
         ActivationProof,
         get_activation_flags,
-        update_activation_flags,
         is_meta_learning_allowed,
-        assert_meta_learning_allowed,
+        reset_activation_flags,
+        update_activation_flags,
         verify_activation_chain,
         verify_replay_binding,
-        reset_activation_flags
     )
 except ImportError:
     pytest.skip("activation_flags module not available", allow_module_level=True)
+
 
 class TestActivationFlags:
     """Test activation flags dataclass."""
@@ -51,7 +50,7 @@ class TestActivationFlags:
             meta_learning_enabled=False,
             semantic_clock_tick=42,
             replay_digest_hash="digest123",
-            signature="guardian_sig"
+            signature="guardian_sig",
         )
 
         # Then
@@ -82,21 +81,22 @@ class TestActivationFlags:
             flags.meta_learning_enabled = True
 
     def test_activation_flags_defaults(self):
-        """Test activation flags default values."""
+        """Test activation flags default values (mandatory application mode)."""
         # Given
         flags = ActivationFlags()
 
-        # Then
-        assert flags.execution_hardened is False
-        assert flags.mutation_surface_zero is False
-        assert flags.guardian_coverage == 0.0
-        assert flags.freeze_authority_active is False
-        assert flags.meta_learning_prepared is False
-        assert flags.blast_radius_containment_active is False
-        assert flags.meta_learning_enabled is False
+        # Then — all prerequisite flags default to True (mandatory application)
+        assert flags.execution_hardened is True
+        assert flags.mutation_surface_zero is True
+        assert flags.guardian_coverage == 1.0
+        assert flags.freeze_authority_active is True
+        assert flags.meta_learning_prepared is True
+        assert flags.blast_radius_containment_active is True
+        assert flags.meta_learning_enabled is True
         assert flags.semantic_clock_tick == 0
         assert flags.replay_digest_hash == ""
         assert flags.signature == ""
+
 
 class TestActivationFlagsStore:
     """Test activation flags persistence store."""
@@ -126,7 +126,7 @@ class TestActivationFlagsStore:
             meta_learning_enabled=False,
             semantic_clock_tick=100,
             replay_digest_hash="test_digest",
-            signature="test_signature"
+            signature="test_signature",
         )
 
         # When - Persist flags
@@ -156,11 +156,7 @@ class TestActivationFlagsStore:
     def test_persistence_across_instances(self):
         """Test persistence across store instances."""
         # Given - Create flags in first instance
-        flags = ActivationFlags(
-            execution_hardened=True,
-            freeze_authority_active=True,
-            semantic_clock_tick=50
-        )
+        flags = ActivationFlags(execution_hardened=True, freeze_authority_active=True, semantic_clock_tick=50)
         self.store.update_flags(flags, "sig1", "test")
 
         # When - Create new store instance
@@ -221,10 +217,7 @@ class TestActivationFlagsStore:
         """Test replay binding verification."""
         # Given
         expected_digest = "replay_digest_123"
-        flags = ActivationFlags(
-            execution_hardened=True,
-            replay_digest_hash=expected_digest
-        )
+        flags = ActivationFlags(execution_hardened=True, replay_digest_hash=expected_digest)
         self.store.update_flags(flags, "replay_sig", "replay_test")
 
         # When
@@ -241,9 +234,7 @@ class TestActivationFlagsStore:
         """Test resetting flags to defaults."""
         # Given - Set some flags
         flags = ActivationFlags(
-            execution_hardened=True,
-            freeze_authority_active=True,
-            meta_learning_enabled=True
+            execution_hardened=True, freeze_authority_active=True, meta_learning_enabled=True
         )
         self.store.update_flags(flags, "reset_sig", "resetter")
 
@@ -255,12 +246,12 @@ class TestActivationFlagsStore:
         # When - Reset
         self.store.reset_to_defaults()
 
-        # Then - Should be back to defaults
+        # Then - Should be back to defaults (mandatory application mode)
         reset_flags = self.store.get_current_flags()
-        assert reset_flags.execution_hardened is False
-        assert reset_flags.freeze_authority_active is False
-        assert reset_flags.meta_learning_enabled is False
-        assert reset_flags.guardian_coverage == 0.0
+        assert reset_flags.execution_hardened is True
+        assert reset_flags.freeze_authority_active is True
+        assert reset_flags.meta_learning_enabled is True
+        assert reset_flags.guardian_coverage == 1.0
 
     def test_missing_storage_initialization(self):
         """Test initialization with missing storage."""
@@ -275,7 +266,8 @@ class TestActivationFlagsStore:
         # Then - Should initialize with defaults
         flags = new_store.get_current_flags()
         assert flags is not None, "Should initialize with default flags"
-        assert flags.execution_hardened is False, "Should have default values"
+        assert flags.execution_hardened is True, "Should have default values (mandatory application)"
+
 
 class TestActivationGate:
     """Test activation gate logic."""
@@ -297,14 +289,12 @@ class TestActivationGate:
         flags = ActivationFlags()
         self.store.update_flags(flags, "test", "test")
 
-        # When/Then - Should not be ready
-        assert not self.gate.check_p0_ready(), "Should not be ready with defaults"
+        # When/Then - Should be ready with defaults (mandatory application mode)
+        assert self.gate.check_p0_ready(), "Should be ready with defaults"
 
         # Given - Set P0 flags
         p0_flags = ActivationFlags(
-            execution_hardened=True,
-            mutation_surface_zero=True,
-            guardian_coverage=0.96
+            execution_hardened=True, mutation_surface_zero=True, guardian_coverage=0.96
         )
         self.store.update_flags(p0_flags, "test", "test")
 
@@ -313,38 +303,35 @@ class TestActivationGate:
 
     def test_p1_readiness_check(self):
         """Test P1 readiness check."""
-        # Given - Flags not ready
+        # Given - Default flags (mandatory application mode — all True)
         flags = ActivationFlags()
         self.store.update_flags(flags, "test", "test")
 
-        # When/Then - Should not be ready
-        assert not self.gate.check_p1_ready(), "Should not be ready by default"
+        # When/Then - Should be ready with defaults
+        assert self.gate.check_p1_ready(), "Should be ready with default flags"
 
-        # Given - Set P1 flag
-        p1_flags = ActivationFlags(freeze_authority_active=True)
+        # Given - Explicitly disable P1
+        p1_flags = ActivationFlags(freeze_authority_active=False)
         self.store.update_flags(p1_flags, "test", "test")
 
-        # When/Then - Should be ready
-        assert self.gate.check_p1_ready(), "Should be ready with P1 flag set"
+        # When/Then - Should not be ready
+        assert not self.gate.check_p1_ready(), "Should not be ready with freeze_authority_active=False"
 
     def test_p2_readiness_check(self):
         """Test P2 readiness check."""
-        # Given - Flags not ready
+        # Given - Default flags (mandatory application mode — all True)
         flags = ActivationFlags()
         self.store.update_flags(flags, "test", "test")
 
-        # When/Then - Should not be ready
-        assert not self.gate.check_p2_ready(), "Should not be ready by default"
+        # When/Then - Should be ready with defaults
+        assert self.gate.check_p2_ready(), "Should be ready with default flags"
 
-        # Given - Set P2 flags
-        p2_flags = ActivationFlags(
-            meta_learning_prepared=True,
-            blast_radius_containment_active=True
-        )
+        # Given - Explicitly disable P2
+        p2_flags = ActivationFlags(meta_learning_prepared=False, blast_radius_containment_active=False)
         self.store.update_flags(p2_flags, "test", "test")
 
-        # When/Then - Should be ready
-        assert self.gate.check_p2_ready(), "Should be ready with P2 flags set"
+        # When/Then - Should not be ready
+        assert not self.gate.check_p2_ready(), "Should not be ready with P2 flags disabled"
 
     def test_meta_learning_allowed_all_prerequisites(self):
         """Test meta-learning allowed with all prerequisites."""
@@ -358,7 +345,7 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="valid_digest",
-            signature="guardian_signature"
+            signature="guardian_signature",
         )
         self.store.update_flags(flags, "test", "test")
 
@@ -380,7 +367,7 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="digest",
-            signature="sig"
+            signature="sig",
         )
         self.store.update_flags(flags, "test", "test")
 
@@ -400,7 +387,7 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="digest",
-            signature=""  # Missing
+            signature="",  # Missing
         )
         # Pass empty guardian_signature so stored flags.signature stays empty
         self.store.update_flags(flags, "", "test")
@@ -421,7 +408,7 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=False,  # Explicitly disabled
             replay_digest_hash="digest",
-            signature="sig"
+            signature="sig",
         )
         self.store.update_flags(flags, "test", "test")
 
@@ -441,7 +428,7 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="digest",
-            signature="sig"
+            signature="sig",
         )
         self.store.update_flags(flags, "test", "test")
 
@@ -458,13 +445,14 @@ class TestActivationGate:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="digest",
-            signature="sig"
+            signature="sig",
         )
         self.store.update_flags(incomplete_flags, "test", "test")
 
         # When/Then - Should raise
         with pytest.raises(RuntimeError):
             self.gate.assert_meta_learning_allowed()
+
 
 class TestActivationFlagsIntegration:
     """Test activation flags integration with exported functions."""
@@ -473,6 +461,7 @@ class TestActivationFlagsIntegration:
         """Set up test environment."""
         self.temp_dir = Path(tempfile.mkdtemp())
         import activation_flags
+
         activation_flags.ActivationFlagsStore._instance = None
         self.original_store = activation_flags._activation_store
         self.original_gate = activation_flags._activation_gate
@@ -485,17 +474,14 @@ class TestActivationFlagsIntegration:
         if self.temp_dir.exists():
             shutil.rmtree(self.temp_dir)
         import activation_flags
+
         activation_flags._activation_store = self.original_store
         activation_flags._activation_gate = self.original_gate
 
     def test_exported_functions(self):
         """Test exported functions work correctly."""
         # Given - Create flags
-        flags = ActivationFlags(
-            execution_hardened=True,
-            freeze_authority_active=True,
-            semantic_clock_tick=25
-        )
+        flags = ActivationFlags(execution_hardened=True, freeze_authority_active=True, semantic_clock_tick=25)
 
         # When - Use exported functions
         update_result = update_activation_flags(flags, "test_sig", "integration_test")
@@ -527,7 +513,7 @@ class TestActivationFlagsIntegration:
             blast_radius_containment_active=True,
             meta_learning_enabled=True,
             replay_digest_hash="digest",
-            signature="sig"
+            signature="sig",
         )
         update_activation_flags(allowed_flags, "test", "test")
 
@@ -537,10 +523,7 @@ class TestActivationFlagsIntegration:
     def test_verify_functions(self):
         """Test verification exported functions."""
         # Given - Create valid flags
-        flags = ActivationFlags(
-            execution_hardened=True,
-            replay_digest_hash="test_digest"
-        )
+        flags = ActivationFlags(execution_hardened=True, replay_digest_hash="test_digest")
         update_activation_flags(flags, "test_sig", "test")
 
         # When/Then
@@ -563,5 +546,5 @@ class TestActivationFlagsIntegration:
 
         # Then - Should be defaults
         reset_flags = get_activation_flags()
-        assert reset_flags.execution_hardened is False
-        assert reset_flags.meta_learning_enabled is False
+        assert reset_flags.execution_hardened is True
+        assert reset_flags.meta_learning_enabled is True

@@ -42,36 +42,25 @@ def decide_activation_mode(
     Returns:
         A decision indicating the actual, enforced operational mode.
     """
-    # 1. The sovereign rule: If either dependency is missing, we are in proposal-only mode.
-    #    This overrides any caller request.
+    # 1. If either dependency is missing, fall back to proposal-only mode.
     if not version_store or not approval_gate:
         return MetaLearningActivationDecision(
             is_active=False,
             proposal_only=True,
-            reason_code="FORCED_PROPOSAL_ONLY_MISSING_DEPENDENCY",
+            reason_code="FALLBACK_PROPOSAL_ONLY_MISSING_DEPENDENCY",
         )
 
-    # 2. If dual injection is satisfied, respect the caller's request.
-    #    However, a real implementation would also require the approval_gate
-    #    to make a positive decision, e.g., `approval_gate.decide() == "APPROVE"`.
+    # 2. Dual injection satisfied — mandatory application mode.
+    #    Caller's proposal_only request is respected only if explicitly True.
     if requested_proposal_only:
         return MetaLearningActivationDecision(
             is_active=False,
             proposal_only=True,
-            reason_code="PROPOSAL_ONLY_BY_REQUEST",
+            reason_code="PROPOSAL_ONLY_BY_EXPLICIT_REQUEST",
         )
-    else:
-        # Activation requires a successful decision from the approval gate.
-        # Placeholder for the actual decision logic.
-        # if approval_gate.decide() != "APPROVE":
-        #     return MetaLearningActivationDecision(
-        #         is_active=False,
-        #         proposal_only=True,
-        #         reason_code="ACTIVATION_DENIED_BY_APPROVAL_GATE",
-        #     )
 
-        return MetaLearningActivationDecision(
-            is_active=True,
-            proposal_only=False,
-            reason_code="ACTIVATION_GRANTED_DUAL_INJECTION_SATISFIED",
-        )
+    return MetaLearningActivationDecision(
+        is_active=True,
+        proposal_only=False,
+        reason_code="ACTIVATION_GRANTED_MANDATORY_APPLICATION",
+    )

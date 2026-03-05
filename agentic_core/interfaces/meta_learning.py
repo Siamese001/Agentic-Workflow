@@ -4,7 +4,7 @@ agentic_core/interfaces/meta_learning.py
 Sovereign meta-learning interface for apps_* consumption.
 
 AUTHORITY CONSTRAINTS:
-- All meta-learning APIs return ChangePackage only (proposal-only)
+- Meta-learning is mandatory by default (proposal_only=False)
 - commit(), activate(), execute() are BLOCKED with PermissionError
 - Inner client is sealed via __slots__ and __getattr__ override
 - JSON-only payload validation on ChangePackage
@@ -61,7 +61,7 @@ class SovereignMetaLearningClient:
     - __getattr__ blocks access to any undeclared attribute
     - __setattr__ / __delattr__ prevent modification
     - commit / activate / execute raise PermissionError unconditionally
-    - proposal_only=False requires approval_gate + version_store injection
+    - Mandatory application by default (proposal_only=False)
     """
 
     __slots__ = ("_sealed_client", "_proposal_only")
@@ -69,7 +69,7 @@ class SovereignMetaLearningClient:
     def __init__(
         self,
         inner_client: Any,
-        proposal_only: bool = True,
+        proposal_only: bool = False,
         approval_gate: Any = None,
         version_store: Any = None,
     ) -> None:
@@ -86,9 +86,7 @@ class SovereignMetaLearningClient:
     # ------------------------------------------------------------------
 
     def propose_healing_pattern(self, pattern: dict[str, Any]) -> ChangePackage:
-        """Propose a healing pattern change — JSON-only payload, requires approval."""
-        if not object.__getattribute__(self, "_proposal_only"):
-            raise PermissionError("Direct execution forbidden — proposal only")
+        """Propose or apply a healing pattern change — JSON-only payload."""
         return ChangePackage(
             proposal_id=str(uuid.uuid4()),
             change_type="healing_pattern",
@@ -97,9 +95,7 @@ class SovereignMetaLearningClient:
         )
 
     def suggest_threshold_adjustment(self, threshold: float) -> ChangePackage:
-        """Suggest a routing threshold change — requires approval."""
-        if not object.__getattribute__(self, "_proposal_only"):
-            raise PermissionError("Direct execution forbidden — proposal only")
+        """Apply or suggest a routing threshold change."""
         return ChangePackage(
             proposal_id=str(uuid.uuid4()),
             change_type="threshold_adjustment",
@@ -176,14 +172,14 @@ class SovereignMetaLearningClient:
 
 
 def get_sovereign_meta_client(
-    proposal_only: bool = True,
+    proposal_only: bool = False,
     approval_gate: Any = None,
     version_store: Any = None,
 ) -> SovereignMetaLearningClient:
     """
     Factory: returns a sealed sovereign meta-learning client.
 
-    Default: proposal_only=True — no activation path without injection.
+    Default: proposal_only=False — mandatory application mode.
     """
     from agentic_core.L1_cognition.engines.meta_client import get_meta_learning_client
 

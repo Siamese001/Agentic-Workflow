@@ -40,7 +40,7 @@ W4-E Integration:
 - Deterministic digest for proposal verification
 
 Invariants:
-  - Default proposal_only=True (zero execution authority)
+  - Default proposal_only=False (mandatory application)
   - No wall-clock reads (now_utc injected)
   - Fail-closed on validation failure
   - Stage A commit + Stage B activation only via injected interfaces
@@ -277,7 +277,7 @@ class PipelineConfig:
     require_shadow_validation : bool
         Whether to require shadow validation (default True).
     proposal_only : bool
-        If True, only generate proposals without commit/activation (default True).
+        If True, only generate proposals without commit/activation (default False).
     """
 
     engine_version: str
@@ -289,7 +289,7 @@ class PipelineConfig:
     enabled_proposers: tuple[str, ...]
     require_replay_validation: bool = True
     require_shadow_validation: bool = True
-    proposal_only: bool = True
+    proposal_only: bool = False
 
 
 # =============================================================================

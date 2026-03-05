@@ -832,8 +832,8 @@ agentic_core/L3_orchestration/types/telepathy_interface_types.py:144:silent_swal
 agentic_core/L3_orchestration/types/telepathy_interface_types.py:174:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/types/workflow_loader_types.py:117:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/caching/redis_mcp_client.py:103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/activation_flags.py:102:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/enforcement/activation_flags.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/activation_flags.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/enforcement/activation_flags.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/blast_radius.py:103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/blast_radius.py:25:magic_configuration:Magic configuration: Hardcoded max_bytes=10000000
 agentic_core/L4_state/enforcement/blast_radius.py:25:magic_configuration:Magic configuration: Hardcoded max_radius=1000

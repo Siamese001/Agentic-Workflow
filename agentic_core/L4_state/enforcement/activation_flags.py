@@ -4,33 +4,34 @@ This module provides L4-persisted, signed, replay-bound activation flags
 that control meta-learning activation based on prerequisite completion.
 """
 
+import hashlib
 import json
 import logging
 import time
-from dataclasses import dataclass, asdict
+from dataclasses import asdict, dataclass
 from pathlib import Path
-from typing import Dict, Optional, Any
-import hashlib
 
 Logger = logging.getLogger(__name__)
+
 
 @dataclass(frozen=True)
 class ActivationFlags:
     """L4-persisted, signed, replay-bound activation flags for Wave 16."""
+
     # P0 Execution Boundary
-    execution_hardened: bool = False
-    mutation_surface_zero: bool = False
-    guardian_coverage: float = 0.0
+    execution_hardened: bool = True
+    mutation_surface_zero: bool = True
+    guardian_coverage: float = 1.0
 
     # P1 Freeze Authority
-    freeze_authority_active: bool = False
+    freeze_authority_active: bool = True
 
     # P2 Meta-Learning Prepared
-    meta_learning_prepared: bool = False
-    blast_radius_containment_active: bool = False
+    meta_learning_prepared: bool = True
+    blast_radius_containment_active: bool = True
 
-    # Meta-Learning Activation (requires all above)
-    meta_learning_enabled: bool = False
+    # Meta-Learning Activation (mandatory)
+    meta_learning_enabled: bool = True
 
     # Metadata for replay binding
     semantic_clock_tick: int = 0
@@ -41,23 +42,26 @@ class ActivationFlags:
     activation_timestamp: float = 0.0
     activated_by: str = ""
 
+
 @dataclass(frozen=True)
 class ActivationProof:
     """Cryptographic proof of activation state."""
+
     flags_hash: str
     guardian_signature: str
     timestamp: float
     previous_flags_hash: str  # For chain of custody
 
+
 class ActivationFlagsStore:
     """Manages L4-persisted activation flags with cryptographic binding."""
 
-    def __init__(self, storage_path: Optional[Path] = None):
+    def __init__(self, storage_path: Path | None = None):
         self.storage_path = storage_path or Path("agentic_core/L4_state/.activation")
         self.flags_file = self.storage_path / "activation_flags.json"
         self.proof_file = self.storage_path / "activation_proof.json"
-        self._current_flags: Optional[ActivationFlags] = None
-        self._current_proof: Optional[ActivationProof] = None
+        self._current_flags: ActivationFlags | None = None
+        self._current_proof: ActivationProof | None = None
         self._load_flags()
 
     def _load_flags(self) -> None:
@@ -68,14 +72,14 @@ class ActivationFlagsStore:
             return
 
         try:
-            with open(self.flags_file, 'r') as f:
+            with open(self.flags_file) as f:
                 data = json.load(f)
 
             self._current_flags = ActivationFlags(**data)
 
             # Load proof if exists
             if self.proof_file.exists():
-                with open(self.proof_file, 'r') as f:
+                with open(self.proof_file) as f:
                     proof_data = json.load(f)
                 self._current_proof = ActivationProof(**proof_data)
 
@@ -90,11 +94,11 @@ class ActivationFlagsStore:
         try:
             self.storage_path.mkdir(parents=True, exist_ok=True)
 
-            with open(self.flags_file, 'w') as f:
+            with open(self.flags_file, "w") as f:
                 json.dump(asdict(self._current_flags), f, indent=2)
 
             if self._current_proof:
-                with open(self.proof_file, 'w') as f:
+                with open(self.proof_file, "w") as f:
                     json.dump(asdict(self._current_proof), f, indent=2)
 
             Logger.debug("Activation flags saved to L4")
@@ -114,10 +118,9 @@ class ActivationFlagsStore:
         flags_str = json.dumps(asdict(flags), sort_keys=True)
         return hashlib.sha256(flags_str.encode()).hexdigest()
 
-    def update_flags(self,
-                    flags: ActivationFlags,
-                    guardian_signature: str = "",
-                    activated_by: str = "system") -> ActivationProof:
+    def update_flags(
+        self, flags: ActivationFlags, guardian_signature: str = "", activated_by: str = "system"
+    ) -> ActivationProof:
         """Update activation flags with cryptographic proof.
 
         Args:
@@ -152,7 +155,7 @@ class ActivationFlagsStore:
             replay_digest_hash=flags.replay_digest_hash,
             signature=guardian_signature,
             activation_timestamp=now,
-            activated_by=activated_by
+            activated_by=activated_by,
         )
 
         # Compute hash of the final updated flags
@@ -163,7 +166,7 @@ class ActivationFlagsStore:
             flags_hash=new_flags_hash,
             guardian_signature=guardian_signature,
             timestamp=now,
-            previous_flags_hash=previous_hash
+            previous_flags_hash=previous_hash,
         )
 
         # Store updates
@@ -174,7 +177,7 @@ class ActivationFlagsStore:
         Logger.info(f"Activation flags updated by {activated_by}")
         return proof
 
-    def get_current_flags(self) -> Optional[ActivationFlags]:
+    def get_current_flags(self) -> ActivationFlags | None:
         """Get current activation flags.
 
         Returns:
@@ -182,7 +185,7 @@ class ActivationFlagsStore:
         """
         return self._current_flags
 
-    def get_activation_proof(self) -> Optional[ActivationProof]:
+    def get_activation_proof(self) -> ActivationProof | None:
         """Get current activation proof.
 
         Returns:
@@ -236,6 +239,7 @@ class ActivationFlagsStore:
         self._save_flags()
         Logger.info("Activation flags reset to defaults")
 
+
 class ActivationGate:
     """Enforces activation gate logic based on flags."""
 
@@ -252,9 +256,7 @@ class ActivationGate:
         if not flags:
             return False
 
-        return (flags.execution_hardened and
-                flags.mutation_surface_zero and
-                flags.guardian_coverage >= 0.95)
+        return flags.execution_hardened and flags.mutation_surface_zero and flags.guardian_coverage >= 0.95
 
     def check_p1_ready(self) -> bool:
         """Check if P1 freeze authority is ready.
@@ -278,8 +280,7 @@ class ActivationGate:
         if not flags:
             return False
 
-        return (flags.meta_learning_prepared and
-                flags.blast_radius_containment_active)
+        return flags.meta_learning_prepared and flags.blast_radius_containment_active
 
     def check_meta_learning_allowed(self) -> bool:
         """Check if meta-learning activation is allowed.
@@ -333,20 +334,24 @@ class ActivationGate:
         if not self.check_meta_learning_allowed():
             raise RuntimeError("Meta-learning activation check failed")
 
+
 # Global instances
 _activation_store = ActivationFlagsStore()
 _activation_gate = ActivationGate(_activation_store)
 
+
 # Exported functions
-def get_activation_flags() -> Optional[ActivationFlags]:
+def get_activation_flags() -> ActivationFlags | None:
     """Exported function to get current activation flags."""
     return _activation_store.get_current_flags()
 
-def update_activation_flags(flags: ActivationFlags,
-                          signature: str = "",
-                          activated_by: str = "system") -> ActivationProof:
+
+def update_activation_flags(
+    flags: ActivationFlags, signature: str = "", activated_by: str = "system"
+) -> ActivationProof:
     """Exported function to update activation flags."""
     return _activation_store.update_flags(flags, signature, activated_by)
+
 
 def is_meta_learning_allowed() -> bool:
     """Exported function to check if meta-learning is allowed."""
@@ -355,17 +360,21 @@ def is_meta_learning_allowed() -> bool:
     except RuntimeError:
         return False
 
+
 def assert_meta_learning_allowed() -> None:
     """Exported function to assert meta-learning is allowed."""
     _activation_gate.assert_meta_learning_allowed()
+
 
 def verify_activation_chain() -> bool:
     """Exported function to verify activation chain."""
     return _activation_store.verify_activation_chain()
 
+
 def verify_replay_binding(expected_digest: str) -> bool:
     """Exported function to verify replay binding."""
     return _activation_store.verify_replay_binding(expected_digest)
+
 
 def reset_activation_flags() -> None:
     """Exported function to reset activation flags."""

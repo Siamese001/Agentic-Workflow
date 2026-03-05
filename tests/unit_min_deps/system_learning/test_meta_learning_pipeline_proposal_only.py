@@ -259,8 +259,8 @@ class TestProposalOnlyMode:
         # Assert: activator.activate was NOT called
         assert len(activator.activations) == 0
 
-    def test_proposal_only_default_is_true(self):
-        """PipelineConfig.proposal_only defaults to True."""
+    def test_proposal_only_default_is_false(self):
+        """PipelineConfig.proposal_only defaults to False (mandatory application)."""
         cfg = PipelineConfig(
             engine_version="v1",
             config_surface_version="v1",
@@ -277,7 +277,7 @@ class TestProposalOnlyMode:
             enabled_proposers=(),
         )
 
-        assert cfg.proposal_only is True
+        assert cfg.proposal_only is False
 
 
 class TestDeterminism:
