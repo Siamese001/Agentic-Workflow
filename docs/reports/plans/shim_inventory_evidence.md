@@ -14,7 +14,7 @@ positives from `try/except` import blocks and annotated assignments).
 
 ## EVIDENCE_COMMIT
 
-PENDING
+550f80b1786febc3af94f8be1832a4c685615971
 
 ## FILES_CHANGED_CODE
 
@@ -44,7 +44,7 @@ ops_scripts/hooks/landmine_baseline.txt
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/shim_inventory_evidence.md
 
 ## INSPECTED_FILES
 
