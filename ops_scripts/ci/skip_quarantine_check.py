@@ -27,6 +27,7 @@ KNOWN_FAILING_MD = "docs/reports/plans/KNOWN_FAILING_TESTS.md"
 
 SKIP_CEILING = 25
 QUARANTINE_CEILING = 49
+SKIP_RATIO_CEILING = 0.05
 
 CRITICAL_TEST_FILES = [
     "tests/core/test_executor_smoke.py",
@@ -101,6 +102,7 @@ def main() -> int:
     known_files = documented | quarantined
 
     total_skips = 0
+    total_test_files = 0
     files_with_skips: list[tuple[str, int]] = []
 
     for scan_root in SCAN_ROOTS:
@@ -110,6 +112,8 @@ def main() -> int:
         for pyfile in root_path.rglob("*.py"):
             if "__pycache__" in str(pyfile) or "_quarantine" in str(pyfile):
                 continue
+            if pyfile.name.startswith("test_"):
+                total_test_files += 1
             skips, xfails, skipifs = _count_skips_in_file(pyfile)
             if skips > 0:
                 rel = str(pyfile.relative_to(project_root)).replace("\\", "/")
@@ -127,6 +131,15 @@ def main() -> int:
             violations.append(f"Critical test {crit_rel} has {skips} skip(s) — must be 0")
         if xfails > 0:
             violations.append(f"Critical test {crit_rel} has {xfails} xfail(s) — must be 0")
+
+    # Check skip ratio (Guard 2: skip explosion detector)
+    skip_ratio = total_skips / total_test_files if total_test_files > 0 else 0.0
+    print(f"  skip_ratio={skip_ratio:.3f}  ratio_ceiling={SKIP_RATIO_CEILING}  test_files={total_test_files}")
+    if skip_ratio > SKIP_RATIO_CEILING:
+        violations.append(
+            f"Skip ratio {skip_ratio:.3f} exceeds ceiling {SKIP_RATIO_CEILING} "
+            f"({total_skips} skips / {total_test_files} test files)",
+        )
 
     # Check ceiling
     if total_skips > SKIP_CEILING:
