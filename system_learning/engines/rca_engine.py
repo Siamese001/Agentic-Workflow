@@ -61,6 +61,13 @@ CLASSIFICATION_RULES = [
         re.compile(r"AuthorityViolation"),
         lambda line: "AuthorityViolation",
     ),
+    # RUNTIME errors
+    ("RUNTIME", re.compile(r"RuntimeError:"), lambda line: "RuntimeError"),
+    ("RUNTIME", re.compile(r"AttributeError:"), lambda line: "AttributeError"),
+    ("RUNTIME", re.compile(r"TypeError:"), lambda line: "TypeError"),
+    ("RUNTIME", re.compile(r"ValueError:"), lambda line: "ValueError"),
+    ("RUNTIME", re.compile(r"KeyError:"), lambda line: "KeyError"),
+    ("RUNTIME", re.compile(r"IndexError:"), lambda line: "IndexError"),
     # TIMEOUT errors
     ("TIMEOUT", re.compile(r"TimeoutError"), lambda line: "TimeoutError"),
     ("TIMEOUT", re.compile(r"timeout"), lambda line: "timeout"),
