@@ -675,9 +675,17 @@ class TestAgentBaseMixinInheritance:
 
 class TestStatelessMode:
     def setup_method(self):
+        from unittest.mock import patch
+
+        self._redis_patcher = patch(
+            "agentic_core.L4_state.memory.semantic_cache_manager.SemanticCacheManager._init_redis",
+            return_value=Exception("Redis blocked for TestStatelessMode"),
+        )
+        self._redis_patcher.start()
         _reset_hive()
 
     def teardown_method(self):
+        self._redis_patcher.stop()
         _reset_hive()
 
     def test_stateless_mode_learn_is_noop(self):
@@ -906,9 +914,17 @@ class TestPIISanitizer:
 
 class TestSemanticCacheManagerDeep:
     def setup_method(self):
+        from unittest.mock import patch
+
+        self._redis_patcher = patch(
+            "agentic_core.L4_state.memory.semantic_cache_manager.SemanticCacheManager._init_redis",
+            return_value=Exception("Redis blocked for TestSemanticCacheManagerDeep"),
+        )
+        self._redis_patcher.start()
         _reset_hive()
 
     def teardown_method(self):
+        self._redis_patcher.stop()
         _reset_hive()
 
     def test_strict_mode_no_raise_when_vector_store_available(self):
@@ -1060,12 +1076,20 @@ class TestSemanticCacheManagerDeep:
 
 class TestGlobalCacheDeep:
     def setup_method(self):
+        from unittest.mock import patch
+
+        self._redis_patcher = patch(
+            "agentic_core.L4_state.memory.semantic_cache_manager.SemanticCacheManager._init_redis",
+            return_value=Exception("Redis blocked for TestGlobalCacheDeep"),
+        )
+        self._redis_patcher.start()
         _reset_hive()
         import apps_shared.enforcement.GlobalcacheStrategy as _mod
 
         _mod._global_cache = None
 
     def teardown_method(self):
+        self._redis_patcher.stop()
         _reset_hive()
         import apps_shared.enforcement.GlobalcacheStrategy as _mod
 
