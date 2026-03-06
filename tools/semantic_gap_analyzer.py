@@ -11,16 +11,30 @@ Usage:
 from __future__ import annotations
 
 import ast
+import hashlib
 import logging
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any
+from typing import Any, Iterable
 
 REPO_ROOT = Path(__file__).parent.parent
 AGENTIC_CORE = REPO_ROOT / "agentic_core"
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
+
+PRIORITY_RANK = {"HIGH": 0, "MEDIUM": 1, "LOW": 2}
+PYTHON_FILE_GLOB = "*.py"
+EXCLUDED_DIR_NAMES = {
+    "__pycache__",
+    ".pytest_cache",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".venv",
+    "venv",
+    "site-packages",
+}
+EXCLUDED_FILE_SUFFIXES = {".pyi"}
 
 
 @dataclass
@@ -62,6 +76,35 @@ class SemanticGap:
     recommended_fix: str = ""
 
 
+@dataclass(frozen=True)
+class ParseFailure:
+    """Represents a file that could not be analyzed."""
+
+    file_path: Path
+    error_type: str
+    message: str
+
+
+@dataclass
+class FileAnalysis:
+    """Typed analysis result for a single file."""
+
+    file_path: Path
+    imports: list[ImportTrace] = field(default_factory=list)
+    calls: list[tuple[str, int]] = field(default_factory=list)
+    cache_reads: list[int] = field(default_factory=list)
+    cache_writes: list[int] = field(default_factory=list)
+    l4_state_accesses: list[int] = field(default_factory=list)
+    imported_module_names: set[str] = field(default_factory=set)
+    imported_symbol_names: set[str] = field(default_factory=set)
+    used_names: set[str] = field(default_factory=set)
+    parse_failure: ParseFailure | None = None
+
+    @property
+    def ok(self) -> bool:
+        return self.parse_failure is None
+
+
 class ASTAnalyzer:
     """AST-based code analyzer for tracing execution flows."""
 
@@ -69,69 +112,129 @@ class ASTAnalyzer:
         self.root = root
         self.import_graph: dict[str, list[ImportTrace]] = {}
         self.function_calls: dict[str, list[tuple[str, int]]] = {}
+        self.parse_failures: list[ParseFailure] = []
 
-    def analyze_file(self, file_path: Path) -> dict[str, Any]:
+    def analyze_file(self, file_path: Path) -> FileAnalysis:
         """Analyze a Python file and extract imports, calls, and patterns."""
+        analysis = FileAnalysis(file_path=file_path)
+
         try:
             content = file_path.read_text(encoding="utf-8")
             tree = ast.parse(content, filename=str(file_path))
         except (SyntaxError, UnicodeDecodeError, OSError) as e:
+            failure = ParseFailure(
+                file_path=file_path,
+                error_type=type(e).__name__,
+                message=str(e),
+            )
+            self.parse_failures.append(failure)
             logger.warning(f"Failed to parse {file_path}: {e}")
-            return {}
+            analysis.parse_failure = failure
+            return analysis
 
-        imports = []
-        calls = []
-        cache_reads = []
-        cache_writes = []
-        l4_state_accesses = []
+        analysis.used_names = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    imports.append(
-                        ImportTrace(
-                            module=alias.name,
-                            imported_names=[alias.asname or alias.name],
-                            file_path=file_path,
-                            line_number=node.lineno,
-                        )
+                    imported_name = alias.asname or alias.name.split(".")[-1]
+                    trace = ImportTrace(
+                        module=alias.name,
+                        imported_names=[imported_name],
+                        file_path=file_path,
+                        line_number=node.lineno,
                     )
+                    trace.is_used = imported_name in analysis.used_names
+                    analysis.imports.append(trace)
+                    analysis.imported_module_names.add(alias.name)
+                    analysis.imported_symbol_names.add(imported_name)
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
-                    imports.append(
-                        ImportTrace(
-                            module=node.module,
-                            imported_names=[alias.name for alias in node.names],
-                            file_path=file_path,
-                            line_number=node.lineno,
-                        )
+                    imported_names: list[str] = []
+                    for alias in node.names:
+                        imported_name = alias.asname or alias.name
+                        imported_names.append(imported_name)
+                        analysis.imported_symbol_names.add(imported_name)
+
+                    trace = ImportTrace(
+                        module=node.module,
+                        imported_names=imported_names,
+                        file_path=file_path,
+                        line_number=node.lineno,
                     )
+                    trace.is_used = any(name in analysis.used_names for name in imported_names)
+                    analysis.imports.append(trace)
+                    analysis.imported_module_names.add(node.module)
             elif isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Attribute):
                     call_name = node.func.attr
-                    calls.append((call_name, node.lineno))
+                elif isinstance(node.func, ast.Name):
+                    call_name = node.func.id
+                else:
+                    continue
 
-                    # Detect cache patterns
-                    if call_name in ("get_json", "get", "hget"):
-                        cache_reads.append(node.lineno)
-                    elif call_name in ("set_json", "set", "hset"):
-                        cache_writes.append(node.lineno)
+                analysis.calls.append((call_name, node.lineno))
 
-                    # Detect L4 state accesses
-                    if "ledger" in call_name.lower() or "blob" in call_name.lower():
-                        l4_state_accesses.append(node.lineno)
+                # Detect cache patterns
+                if call_name in {"get_json", "get", "hget", "mget"}:
+                    analysis.cache_reads.append(node.lineno)
+                elif call_name in {"set_json", "set", "hset", "mset"}:
+                    analysis.cache_writes.append(node.lineno)
 
-        return {
-            "imports": imports,
-            "calls": calls,
-            "cache_reads": cache_reads,
-            "cache_writes": cache_writes,
-            "l4_state_accesses": l4_state_accesses,
-        }
+                # Detect probable L4 state accesses
+                lowered = call_name.lower()
+                if any(token in lowered for token in ("ledger", "blob", "state", "memory", "registry")):
+                    analysis.l4_state_accesses.append(node.lineno)
+
+        return analysis
 
     def find_hot_paths(self, layer_dir: Path, pattern: str) -> list[Path]:
         """Find files matching a pattern in a layer directory."""
-        return list(layer_dir.rglob(pattern))
+        if not layer_dir.exists():
+            return []
+
+        paths = (
+            path
+            for path in layer_dir.rglob(pattern)
+            if path.is_file()
+            and path.suffix not in EXCLUDED_FILE_SUFFIXES
+            and not any(part in EXCLUDED_DIR_NAMES for part in path.parts)
+        )
+        return sorted(paths, key=lambda p: str(p.relative_to(self.root)).lower())
+
+
+def _stable_relpath(path: Path) -> str:
+    try:
+        return str(path.relative_to(REPO_ROOT)).replace("\\", "/")
+    except ValueError:
+        return str(path).replace("\\", "/")
+
+
+def _stable_gap_id(prefix: str, file_path: Path) -> str:
+    digest = hashlib.sha1(_stable_relpath(file_path).encode("utf-8")).hexdigest()[:10]
+    return f"{prefix}-{digest}"
+
+
+def _priority_sort_key(gap: SemanticGap) -> tuple[int, str]:
+    return (PRIORITY_RANK.get(gap.priority, 99), gap.gap_id)
+
+
+def _contains_module_reference(analysis: FileAnalysis, module_hint: str) -> bool:
+    return any(module_hint in module_name for module_name in analysis.imported_module_names)
+
+
+def _contains_symbol_reference(analysis: FileAnalysis, symbol_hint: str) -> bool:
+    return any(symbol_hint in symbol_name for symbol_name in analysis.imported_symbol_names)
+
+
+def _analysis_mentions_cache(
+    analysis: FileAnalysis, module_hint: str, symbol_hint: str | None = None
+) -> bool:
+    if _contains_module_reference(analysis, module_hint):
+        return True
+    if symbol_hint and _contains_symbol_reference(analysis, symbol_hint):
+        return True
+    return False
 
 
 class SemanticGapAnalyzer:
@@ -141,6 +244,7 @@ class SemanticGapAnalyzer:
         self.ast_analyzer = ASTAnalyzer(AGENTIC_CORE)
         self.gaps: list[SemanticGap] = []
         self.cache_opportunities: list[CacheOpportunity] = []
+        self.parse_failures: list[ParseFailure] = []
 
     def analyze_l0_routing_gate(self) -> list[SemanticGap]:
         """Analyze L0 routing gate for semantic gaps."""
@@ -151,10 +255,14 @@ class SemanticGapAnalyzer:
         discovery_py = AGENTIC_CORE / "utils" / "full_agent_discovery.py"
         if discovery_py.exists():
             analysis = self.ast_analyzer.analyze_file(discovery_py)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                return gaps
 
-            # Check if discovery_cache is imported
-            cache_imported = any("discovery_cache" in imp.module for imp in imports)
+            cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="discovery_cache",
+                symbol_hint="AgentDiscoveryCache",
+            )
 
             if not cache_imported:
                 gaps.append(
@@ -166,7 +274,7 @@ class SemanticGapAnalyzer:
                         reality="full_agent_discovery.py does not import or use discovery_cache.py",
                         impact="Every agent discovery call re-scans filesystem and re-parses Python files",
                         priority="HIGH",
-                        evidence_files=[str(discovery_py)],
+                        evidence_files=[_stable_relpath(discovery_py)],
                         recommended_fix="Import AgentDiscoveryCache and wrap get_all_agents() with cache.get_or_fetch()",
                     )
                 )
@@ -175,9 +283,14 @@ class SemanticGapAnalyzer:
         policy_engine = AGENTIC_CORE / "L0_routing" / "engines" / "reasoning_policy_engine.py"
         if policy_engine.exists():
             analysis = self.ast_analyzer.analyze_file(policy_engine)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                return gaps
 
-            policy_cache_imported = any("policy_registry_cache" in imp.module for imp in imports)
+            policy_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="policy_registry_cache",
+                symbol_hint="PolicyRegistryCache",
+            )
 
             if not policy_cache_imported:
                 gaps.append(
@@ -189,7 +302,7 @@ class SemanticGapAnalyzer:
                         reality="reasoning_policy_engine.py does not use policy_registry_cache.py",
                         impact="Policy config fetched from L4 state on every request",
                         priority="MEDIUM",
-                        evidence_files=[str(policy_engine)],
+                        evidence_files=[_stable_relpath(policy_engine)],
                         recommended_fix="Wrap policy_config retrieval with PolicyRegistryCache.get_or_fetch()",
                     )
                 )
@@ -205,9 +318,14 @@ class SemanticGapAnalyzer:
         cognitive_engine = AGENTIC_CORE / "L1_cognition" / "engines" / "cognitive_engine.py"
         if cognitive_engine.exists():
             analysis = self.ast_analyzer.analyze_file(cognitive_engine)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                return gaps
 
-            tool_cache_imported = any("tool_embedding_cache" in imp.module for imp in imports)
+            tool_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="tool_embedding_cache",
+                symbol_hint="ToolEmbeddingCache",
+            )
 
             if not tool_cache_imported:
                 gaps.append(
@@ -219,30 +337,35 @@ class SemanticGapAnalyzer:
                         reality="cognitive_engine.py does not use tool_embedding_cache.py",
                         impact="Tool embeddings recomputed on every cognition cycle",
                         priority="HIGH",
-                        evidence_files=[str(cognitive_engine)],
+                        evidence_files=[_stable_relpath(cognitive_engine)],
                         recommended_fix="Import ToolEmbeddingCache and wrap embedding generation with cache.get_or_fetch()",
                     )
                 )
 
         # Check for prompt artifact cache usage
-        prompt_files = list((AGENTIC_CORE / "L1_cognition").rglob("*prompt*.py"))
+        prompt_files = self.ast_analyzer.find_hot_paths(AGENTIC_CORE / "L1_cognition", "*prompt*.py")
         for prompt_file in prompt_files:
             analysis = self.ast_analyzer.analyze_file(prompt_file)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                continue
 
-            prompt_cache_imported = any("prompt_artifact_cache" in imp.module for imp in imports)
+            prompt_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="prompt_artifact_cache",
+                symbol_hint="PromptArtifactCache",
+            )
 
             if not prompt_cache_imported and "cache" not in prompt_file.name:
                 gaps.append(
                     SemanticGap(
-                        gap_id=f"L1-GAP-PROMPT-{prompt_file.stem}",
+                        gap_id=_stable_gap_id("L1-GAP-PROMPT", prompt_file),
                         layer="L1",
                         artery="Prompt Artifact Retrieval",
                         intent="Cache parsed prompt templates to avoid repeated file I/O and parsing",
                         reality=f"{prompt_file.name} does not use prompt_artifact_cache",
                         impact="Prompt templates re-read and re-parsed on every request",
                         priority="MEDIUM",
-                        evidence_files=[str(prompt_file)],
+                        evidence_files=[_stable_relpath(prompt_file)],
                         recommended_fix="Wrap prompt loading with prompt_artifact_cache.get_or_fetch()",
                     )
                 )
@@ -255,27 +378,32 @@ class SemanticGapAnalyzer:
         gaps = []
 
         # Check for schema validator cache usage
-        validator_files = list((AGENTIC_CORE / "L2_execution").rglob("*validator*.py"))
+        validator_files = self.ast_analyzer.find_hot_paths(AGENTIC_CORE / "L2_execution", "*validator*.py")
         for validator_file in validator_files:
             if "cache" in validator_file.name:
                 continue
 
             analysis = self.ast_analyzer.analyze_file(validator_file)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                continue
 
-            schema_cache_imported = any("schema_validator_cache" in imp.module for imp in imports)
+            schema_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="schema_validator_cache",
+                symbol_hint="SchemaValidatorCache",
+            )
 
             if not schema_cache_imported:
                 gaps.append(
                     SemanticGap(
-                        gap_id=f"L2-GAP-VALIDATOR-{validator_file.stem}",
+                        gap_id=_stable_gap_id("L2-GAP-VALIDATOR", validator_file),
                         layer="L2",
                         artery="Schema Validation Hot Path",
                         intent="Cache compiled JSON schema validators to avoid repeated compilation",
                         reality=f"{validator_file.name} does not use schema_validator_cache",
                         impact="Schema validators recompiled on every validation request",
                         priority="HIGH",
-                        evidence_files=[str(validator_file)],
+                        evidence_files=[_stable_relpath(validator_file)],
                         recommended_fix="Wrap validator compilation with schema_validator_cache.get_or_fetch()",
                     )
                 )
@@ -291,9 +419,14 @@ class SemanticGapAnalyzer:
         orchestrator = AGENTIC_CORE / "L3_orchestration" / "engines" / "orchestrator_engine.py"
         if orchestrator.exists():
             analysis = self.ast_analyzer.analyze_file(orchestrator)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                return gaps
 
-            plan_cache_imported = any("orchestration_plan_cache" in imp.module for imp in imports)
+            plan_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="orchestration_plan_cache",
+                symbol_hint="OrchestrationPlanCache",
+            )
 
             if not plan_cache_imported:
                 gaps.append(
@@ -305,7 +438,7 @@ class SemanticGapAnalyzer:
                         reality="orchestrator_engine.py does not use orchestration_plan_cache",
                         impact="Orchestration plans recomputed on every request",
                         priority="MEDIUM",
-                        evidence_files=[str(orchestrator)],
+                        evidence_files=[_stable_relpath(orchestrator)],
                         recommended_fix="Wrap plan construction with orchestration_plan_cache.get_or_fetch()",
                     )
                 )
@@ -321,7 +454,9 @@ class SemanticGapAnalyzer:
         blob_storage = AGENTIC_CORE / "L4_state" / "memory" / "blob_storage_provider.py"
         if blob_storage.exists():
             analysis = self.ast_analyzer.analyze_file(blob_storage)
-            l4_accesses = analysis.get("l4_state_accesses", [])
+            if not analysis.ok:
+                return gaps
+            l4_accesses = analysis.l4_state_accesses
 
             if len(l4_accesses) > 10:
                 gaps.append(
@@ -333,7 +468,7 @@ class SemanticGapAnalyzer:
                         reality=f"blob_storage_provider.py has {len(l4_accesses)} direct state accesses",
                         impact="Repeated blob fetches increase latency and L4 state pressure",
                         priority="HIGH",
-                        evidence_files=[str(blob_storage)],
+                        evidence_files=[_stable_relpath(blob_storage)],
                         recommended_fix="Add read-through cache layer for frequently accessed blobs",
                     )
                 )
@@ -346,27 +481,35 @@ class SemanticGapAnalyzer:
         gaps = []
 
         # Check safety enforcement for policy cache usage
-        enforcement_files = list((AGENTIC_CORE / "L5_safety" / "enforcement").rglob("*.py"))
+        enforcement_files = self.ast_analyzer.find_hot_paths(
+            AGENTIC_CORE / "L5_safety" / "enforcement",
+            PYTHON_FILE_GLOB,
+        )
         for enf_file in enforcement_files:
             if "cache" in enf_file.name:
                 continue
 
             analysis = self.ast_analyzer.analyze_file(enf_file)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                continue
 
-            policy_cache_imported = any("policy_registry_cache" in imp.module for imp in imports)
+            policy_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="policy_registry_cache",
+                symbol_hint="PolicyRegistryCache",
+            )
 
             if not policy_cache_imported and "policy" in enf_file.name.lower():
                 gaps.append(
                     SemanticGap(
-                        gap_id=f"L5-GAP-POLICY-{enf_file.stem}",
+                        gap_id=_stable_gap_id("L5-GAP-POLICY", enf_file),
                         layer="L5",
                         artery="Safety Policy Enforcement",
                         intent="Cache immutable safety policies to avoid repeated L4 lookups",
                         reality=f"{enf_file.name} does not use policy_registry_cache",
                         impact="Safety policies fetched from L4 on every enforcement check",
                         priority="MEDIUM",
-                        evidence_files=[str(enf_file)],
+                        evidence_files=[_stable_relpath(enf_file)],
                         recommended_fix="Wrap policy retrieval with policy_registry_cache.get_or_fetch()",
                     )
                 )
@@ -379,29 +522,52 @@ class SemanticGapAnalyzer:
         gaps = []
 
         # Check telemetry engine for config caching
-        telemetry_files = list((AGENTIC_CORE / "L6_observability").rglob("*telemetry*.py"))
+        telemetry_files = self.ast_analyzer.find_hot_paths(
+            AGENTIC_CORE / "L6_observability", "*telemetry*.py"
+        )
         for telem_file in telemetry_files:
             analysis = self.ast_analyzer.analyze_file(telem_file)
-            imports = analysis.get("imports", [])
+            if not analysis.ok:
+                continue
 
-            config_cache_imported = any("config_file_cache" in imp.module for imp in imports)
+            config_cache_imported = _analysis_mentions_cache(
+                analysis,
+                module_hint="config_file_cache",
+                symbol_hint="ConfigFileCache",
+            )
 
             if not config_cache_imported:
                 gaps.append(
                     SemanticGap(
-                        gap_id=f"L6-GAP-CONFIG-{telem_file.stem}",
+                        gap_id=_stable_gap_id("L6-GAP-CONFIG", telem_file),
                         layer="L6",
                         artery="Telemetry Configuration",
                         intent="Cache parsed telemetry config files to avoid repeated I/O",
                         reality=f"{telem_file.name} does not use config_file_cache",
                         impact="Config files re-read and re-parsed on every telemetry event",
                         priority="LOW",
-                        evidence_files=[str(telem_file)],
+                        evidence_files=[_stable_relpath(telem_file)],
                         recommended_fix="Wrap config loading with config_file_cache.get_or_fetch()",
                     )
                 )
 
         return gaps
+
+    def _dedupe_gaps(self, gaps: Iterable[SemanticGap]) -> list[SemanticGap]:
+        """Deduplicate gaps deterministically by semantic identity."""
+        deduped: dict[tuple[str, str, str], SemanticGap] = {}
+        for gap in gaps:
+            key = (
+                gap.layer,
+                gap.artery,
+                tuple(sorted(gap.evidence_files))[0] if gap.evidence_files else gap.gap_id,
+            )
+            existing = deduped.get(key)
+            if existing is None or PRIORITY_RANK.get(gap.priority, 99) < PRIORITY_RANK.get(
+                existing.priority, 99
+            ):
+                deduped[key] = gap
+        return sorted(deduped.values(), key=_priority_sort_key)
 
     def run_analysis(self) -> dict[str, Any]:
         """Run full semantic gap analysis across all layers."""
@@ -416,25 +582,31 @@ class SemanticGapAnalyzer:
         all_gaps.extend(self.analyze_l5_safety())
         all_gaps.extend(self.analyze_l6_observability())
 
-        self.gaps = all_gaps
+        self.gaps = self._dedupe_gaps(all_gaps)
+        self.parse_failures = sorted(
+            self.ast_analyzer.parse_failures,
+            key=lambda pf: _stable_relpath(pf.file_path).lower(),
+        )
 
         # Categorize by priority
-        high_priority = [g for g in all_gaps if g.priority == "HIGH"]
-        medium_priority = [g for g in all_gaps if g.priority == "MEDIUM"]
-        low_priority = [g for g in all_gaps if g.priority == "LOW"]
+        high_priority = [g for g in self.gaps if g.priority == "HIGH"]
+        medium_priority = [g for g in self.gaps if g.priority == "MEDIUM"]
+        low_priority = [g for g in self.gaps if g.priority == "LOW"]
 
         logger.info("\nAnalysis Complete:")
-        logger.info(f"  Total Gaps: {len(all_gaps)}")
+        logger.info(f"  Total Gaps: {len(self.gaps)}")
         logger.info(f"  HIGH Priority: {len(high_priority)}")
         logger.info(f"  MEDIUM Priority: {len(medium_priority)}")
         logger.info(f"  LOW Priority: {len(low_priority)}")
+        logger.info(f"  Parse Failures: {len(self.parse_failures)}")
 
         return {
-            "total_gaps": len(all_gaps),
+            "total_gaps": len(self.gaps),
             "high_priority": len(high_priority),
             "medium_priority": len(medium_priority),
             "low_priority": len(low_priority),
-            "gaps": all_gaps,
+            "parse_failures": self.parse_failures,
+            "gaps": self.gaps,
         }
 
     def generate_report(self, output_path: Path) -> None:
@@ -457,6 +629,7 @@ class SemanticGapAnalyzer:
         h(f"**High Priority:** {len([g for g in self.gaps if g.priority == 'HIGH'])}")
         h(f"**Medium Priority:** {len([g for g in self.gaps if g.priority == 'MEDIUM'])}")
         h(f"**Low Priority:** {len([g for g in self.gaps if g.priority == 'LOW'])}")
+        h(f"**Parse Failures:** {len(self.parse_failures)}")
         blank()
         h("## Analysis Methodology")
         blank()
@@ -469,7 +642,18 @@ class SemanticGapAnalyzer:
         h("2. AST scan for import statements and cache usage patterns")
         h("3. Identify missing wirings between cache modules and consumers")
         h("4. Categorize gaps by layer, artery, and priority")
+        h("5. Surface parse failures explicitly instead of silently dropping files from analysis")
         blank()
+
+        if self.parse_failures:
+            h("## Parse Failures")
+            blank()
+            h("| File | Error Type | Message |")
+            h("|------|------------|---------|")
+            for failure in self.parse_failures:
+                message = failure.message.replace("\n", " ").replace("|", "\\|")
+                h(f"| `{_stable_relpath(failure.file_path)}` | {failure.error_type} | {message} |")
+            blank()
 
         # Group gaps by layer
         layers = {}
@@ -482,7 +666,7 @@ class SemanticGapAnalyzer:
             h(f"## {layer} Layer Gaps")
             blank()
 
-            for gap in sorted(layers[layer], key=lambda g: (g.priority, g.gap_id)):
+            for gap in sorted(layers[layer], key=_priority_sort_key):
                 h(f"### {gap.gap_id}: {gap.artery}")
                 blank()
                 h(f"**Priority:** {gap.priority}")
@@ -496,8 +680,8 @@ class SemanticGapAnalyzer:
                 h("**Impact:**")
                 h(f"{gap.impact}")
                 blank()
-                h("**Evidence Files:**")
-                for ef in gap.evidence_files:
+                h("**Evidence Files:")
+                for ef in sorted(set(gap.evidence_files)):
                     h(f"- `{ef}`")
                 blank()
                 h("**Recommended Fix:**")
@@ -524,6 +708,7 @@ class SemanticGapAnalyzer:
         h("1. **High Priority Gaps:** Address immediately - these cause repeated expensive operations")
         h("2. **Medium Priority Gaps:** Schedule for next sprint - moderate latency impact")
         h("3. **Low Priority Gaps:** Backlog - minor optimizations")
+        h("4. **Parse Failures:** Fix or explicitly waive broken files so analysis coverage is auditable")
         blank()
         h("## Validation")
         blank()
@@ -532,6 +717,7 @@ class SemanticGapAnalyzer:
         h("- `get_or_fetch` pattern is used consistently")
         h("- Replay mode tests pass with warm cache (no redundant fetches)")
         h("- Side-effect envelope tests confirm cache-first behavior")
+        h("- Parse failure count is zero or intentionally documented")
         blank()
 
         content = "\n".join(lines)
@@ -543,6 +729,7 @@ class SemanticGapAnalyzer:
 def main() -> None:
     """Main entry point."""
     import argparse
+    import sys
 
     parser = argparse.ArgumentParser(description="Semantic Gap Analyzer")
     parser.add_argument(
@@ -551,11 +738,20 @@ def main() -> None:
         default=REPO_ROOT / "docs" / "reports" / "plans" / "semantic_gap_analysis.md",
         help="Output path for the analysis report",
     )
+    parser.add_argument(
+        "--fail-on-parse-errors",
+        action="store_true",
+        help="Exit non-zero if any file fails AST analysis.",
+    )
     args = parser.parse_args()
 
     analyzer = SemanticGapAnalyzer()
-    analyzer.run_analysis()
+    result = analyzer.run_analysis()
     analyzer.generate_report(args.output)
+
+    if args.fail_on_parse_errors and result["parse_failures"]:
+        logger.error("Parse failures detected. Failing due to --fail-on-parse-errors.")
+        sys.exit(2)
 
 
 if __name__ == "__main__":
