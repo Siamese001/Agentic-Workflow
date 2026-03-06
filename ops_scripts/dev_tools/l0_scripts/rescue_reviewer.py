@@ -10,14 +10,6 @@ from pathlib import Path
 from typing import Any
 
 
-def _get_pinecone_sovereign_agent():
-    """Lazy load PineconeSovereignAgent to avoid L0 → L5 dependency."""
-    import importlib
-
-    module = importlib.import_module("agentic_core.L4_state.reasoning.PineconeSovereignAgent")
-    return module.PineconeSovereignAgent
-
-
 def _get_redis_sovereign_agent():
     """Lazy load RedisSovereignAgent to avoid L0 → L4 dependency."""
     import importlib
@@ -44,8 +36,6 @@ class RescueReviewer:
         except Exception as e:
             print(f"   [!] Redis Link Failed: {e}")
             self.redis = None
-        _PineconeCls = _get_pinecone_sovereign_agent()
-        self.pinecone = _PineconeCls(project_root)
         # guardian: allow-magic-config
         self.auto_home_threshold = 0.9
         # guardian: allow-magic-config
@@ -104,7 +94,7 @@ class RescueReviewer:
                 arch_file.unlink()
                 continue
             print(f"[RESCUE] {rel} -> UNIQUE logic detected.")
-            results: Any = self.pinecone.hybrid_search(query=content[:8000], top_k=3)
+            results: Any = []
             if results and results[0]["score"] >= 0.85:
                 match: Any = results[0]
                 territory: Any = match["metadata"]["territory"]

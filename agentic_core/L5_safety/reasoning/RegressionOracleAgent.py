@@ -53,18 +53,8 @@ class RegressionOracleAgent(SovereignBaseAgent):
         super().__init__(ctx)
         self.test_dir = Path("tests/autogen")
         _wg.ensure_dir(self.test_dir)
-        pinecone_available = PINECONE_AVAILABLE
+        pinecone_available = False
         pinecone_index = None
-        if PINECONE_AVAILABLE:
-            api_key = self.ctx.get_env("PINECONE_API_KEY") if hasattr(self.ctx, "get_env") else None
-            if api_key:
-                try:
-                    pc = Pinecone(api_key=api_key)
-                    pinecone_index = pc.Index("canon-healing-patterns")
-                    Logger.info("[OK] Regression Oracle connected to Pinecone")
-                except Exception as e:
-                    Logger.warning(f"[!]  Could not connect to Pinecone: {e}")
-                    pinecone_available = False
         genai_available = GENAI_AVAILABLE
         genai_client = None
         if GENAI_AVAILABLE:

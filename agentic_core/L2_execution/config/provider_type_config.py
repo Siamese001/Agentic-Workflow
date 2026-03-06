@@ -15,7 +15,6 @@ class ProviderType(Enum):
     REDIS = "redis"
     CHROMADB = "chromadb"
     QDRANT = "qdrant"
-    PINECONE = "pinecone"
     OPENAI = "openai"
     ANTHROPIC = "anthropic"
     GOOGLE = "google"
@@ -28,7 +27,6 @@ DEFAULT_PROVIDER_MODULES: dict[str, str] = {
     "redis": "redis",
     "chromadb": "chromadb",
     "qdrant": "qdrant_client",
-    "pinecone": "pinecone",
     "openai": "openai",
     "anthropic": "anthropic",
     "google": "google.genai",
@@ -41,7 +39,6 @@ DEFAULT_PROVIDER_CLASSES: dict[str, str] = {
     "redis": "Redis",
     "chromadb": "Client",
     "qdrant": "QdrantClient",
-    "pinecone": "Pinecone",
     "openai": "OpenAI",
     "anthropic": "Anthropic",
     "google": "GenerativeModel",

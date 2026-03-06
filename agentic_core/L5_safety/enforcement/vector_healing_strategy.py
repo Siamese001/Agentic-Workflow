@@ -10,18 +10,7 @@ import logging
 from datetime import datetime
 from typing import Any
 
-# from agentic_core.L4_state.semantic_memory.pinecone  # Refactored to dynamic import to avoid upward dependency
 
-
-def _get_pinecone_client():
-    """Lazy load Pinecone client to avoid L0 → L4 dependency."""
-    import importlib
-
-    module = importlib.import_module("agentic_core.L4_state.semantic_memory.pinecone")
-    return module
-
-
-# from _mcp_client import get_pinecone_mcp_client  # Commented out - appears to be incomplete/broken import
 def get_filesystem_client():  # P1_core deprecated; stub until MCP client is relocated
     raise NotImplementedError("P1_core.filesystem_mcp_client_1 was removed; see RCA_P1_core_dead_imports.md")
 
@@ -46,7 +35,6 @@ class VectorHealingStrategy:
         """Initialize vector healing strategy with MCP clients."""
         self.name = "VectorHealing"
         self.priority = 2
-        self.pinecone_client = get_pinecone_mcp_client()
         self.fs_client = get_filesystem_client()
         self.processed_today = 0
         Logger.info("[L0 VECTOR HEALING] Strategy initialized")

@@ -40,10 +40,6 @@ class SovereignEnv:
         self.REDIS_URL = self._require("REDIS_URL")
         self.REDIS_PASSWORD = os.getenv("REDIS_PASSWORD")
         self.REDIS_SSL = os.getenv("REDIS_SSL", "false").lower() == "true"
-        self.PINECONE_API_KEY = self._require("PINECONE_API_KEY")
-        self.PINECONE_INDEX_NAME = os.getenv("PINECONE_INDEX_NAME", "canon-sovereign-territory")
-        self.PINECONE_CLOUD = os.getenv("PINECONE_CLOUD", "aws")
-        self.PINECONE_REGION = os.getenv("PINECONE_REGION", "us-east-1")
         self.EMBEDDING_DIMENSION = int(os.getenv("EMBEDDING_DIMENSION", "1536"))
         self.NEO4J_URI = os.getenv("NEO4J_URI", "bolt://localhost:7687")
         self.NEO4J_USERNAME = os.getenv("NEO4J_USERNAME", "neo4j")

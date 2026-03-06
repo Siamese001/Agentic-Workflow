@@ -10,7 +10,6 @@ Tests surgical healing integration for agents with 1-2 violations:
 - CodeValidatorAgent (1)
 - NamingAgent (1)
 - NervousSystemAgent (1)
-- PineconeSovereignAgent (2)
 - PreCommitSovereignAgent (1)
 - ReportLocationAgent (1)
 - RootHygieneAgent (1)
@@ -278,37 +277,6 @@ class TestNervousSystemAgentIntegration:
             temp_path.unlink()
 
 
-class TestPineconeSovereignAgentIntegration:
-    """Tests for PineconeSovereignAgent surgical healing."""
-
-    def test_adapter_with_pinecone_operations(self):
-        """Test Pinecone operations."""
-        source = "class PineconeSovereignAgent: pass\n"
-
-        with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False, encoding="utf-8") as f:
-            f.write(source)
-            temp_path = Path(f.name)
-
-        try:
-            adapter = SurgicalHealingAdapter(agent_name="PineconeSovereignAgent")
-
-            detection_results = [
-                {"type": "pinecone_op", "line": 1, "message": "Pinecone op 1"},
-                {"type": "pinecone_op", "line": 1, "message": "Pinecone op 2"},
-            ]
-
-            context = adapter.create_batch_context(
-                file_path=temp_path,
-                detection_results=detection_results,
-                detection_method="pinecone_operations",
-            )
-
-            assert context is not None
-            assert len(context.violations) == 2
-        finally:
-            temp_path.unlink()
-
-
 class TestPreCommitSovereignAgentIntegration:
     """Tests for PreCommitSovereignAgent surgical healing."""
 
@@ -509,7 +477,6 @@ class TestLowTierGenericTemplate:
             "CodeValidatorAgent",
             "NamingAgent",
             "NervousSystemAgent",
-            "PineconeSovereignAgent",
             "PreCommitSovereignAgent",
             "ReportLocationAgent",
             "RootHygieneAgent",

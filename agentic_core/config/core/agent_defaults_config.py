@@ -23,8 +23,7 @@ class AgentDefaults:
     All values have sensible defaults that match previous hardcoded behavior.
     """
 
-    # === Pinecone / Vector Search Thresholds ===
-    PINECONE_RELEVANCE_THRESHOLD: float = 0.75
+    # === Vector Search Thresholds ===
     RAG_SIMILARITY_THRESHOLD: float = 0.8
     SEMANTIC_CACHE_THRESHOLD: float = 0.92
 

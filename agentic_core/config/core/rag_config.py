@@ -31,10 +31,6 @@ class VectorStoreConfig:
     batch_size: int = 100  # Defensive batching
     latency_threshold_ms: float = 500.0  # Warn if exceeded
 
-    # Pinecone-specific
-    pinecone_cloud: str = "aws"
-    pinecone_region: str = "us-east-1"
-
 
 @dataclass
 class RetrievalConfig:

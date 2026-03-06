@@ -865,7 +865,7 @@ agentic_core/L4_state/memory/semantic_cache_manager.py:416:silent_swallower:Sile
 agentic_core/L4_state/memory/semantic_cache_manager.py:494:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/memory/semantic_cache_manager.py:551:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/memory/semantic_cache_manager.py:630:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L4_state/memory/sovereign_memory_store.py:189:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L4_state/memory/sovereign_memory_store.py:132:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/storage/filesystem_store.py:163:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/types/cycle_types.py:254:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/types/validation_context_types.py:108:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1100,13 +1100,12 @@ agentic_core/L5_safety/reasoning/RedTeamAgent.py:195:silent_swallower:Silent exc
 agentic_core/L5_safety/reasoning/RedTeamAgent.py:205:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/RedTeamAgent.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/RedTeamAgent.py:313:type_erasure:Type erasure: RedTeamAgent.heal returns dict instead of structured type
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:163:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:229:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:240:magic_configuration:Magic configuration: Hardcoded max_actions=50
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:286:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:65:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:97:type_erasure:Type erasure: RegressionOracleAgent.execute returns Any instead of structured type
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:153:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:219:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:230:magic_configuration:Magic configuration: Hardcoded max_actions=50
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:87:type_erasure:Type erasure: RegressionOracleAgent.execute returns Any instead of structured type
 agentic_core/L5_safety/reasoning/ResourceManagerAgent.py:154:magic_configuration:Magic configuration: Hardcoded warning_threshold=0.8
 agentic_core/L5_safety/reasoning/ResourceManagerAgent.py:334:type_erasure:Type erasure: ResourceManagerAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py:276:type_erasure:Type erasure: SafetyDetectorAgent.heal returns dict instead of structured type
