@@ -40,7 +40,7 @@ W4-E Integration:
 - Deterministic digest for proposal verification
 
 Invariants:
-  - Default proposal_only=False (mandatory application)
+  - Default proposal_only=True (proposal-only by default; commit requires explicit False)
   - No wall-clock reads (now_utc injected)
   - Fail-closed on validation failure
   - Stage A commit + Stage B activation only via injected interfaces
@@ -73,6 +73,7 @@ from system_learning.engines.retrieval_profile_proposal_manager import Retrieval
 from system_learning.engines.rlhf_optimizer import RLHFOptimizer
 from system_learning.engines.shadow_drift_analyzer import DriftSummary, ShadowDriftAnalyzer
 from system_learning.fingerprinting.engine import FailureFingerprinter
+from system_learning.invariants.freeze_gate import FreezeStateReader
 from system_learning.snapshots.snapshot_factory import create_snapshot
 from system_learning.types.snapshot_types import MetaLearningSnapshot
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
@@ -277,7 +278,7 @@ class PipelineConfig:
     require_shadow_validation : bool
         Whether to require shadow validation (default True).
     proposal_only : bool
-        If True, only generate proposals without commit/activation (default False).
+        If True, only generate proposals without commit/activation (default True).
     """
 
     engine_version: str
@@ -289,7 +290,7 @@ class PipelineConfig:
     enabled_proposers: tuple[str, ...]
     require_replay_validation: bool = True
     require_shadow_validation: bool = True
-    proposal_only: bool = False
+    proposal_only: bool = True
 
 
 # =============================================================================
@@ -508,6 +509,7 @@ class PipelineDependencies:
     risk_correlator: RiskCorrelator | None = None
     arbitration_engine: ArbitrationEngine | None = None
     arbitration_policy: ArbitrationPolicy | None = None
+    freeze_reader: FreezeStateReader | None = None
 
 
 # =============================================================================
@@ -766,10 +768,12 @@ def _retrieve_semantic_context(
         shadow_signature = f"{failure_signature}|shadow:{retrieval_profile.shadow_embedder_id}"
         shadow_hash = hashlib.sha256(shadow_signature.encode()).hexdigest()
 
-        # Create shadow vector (same dimension, different seed)
+        # Create shadow vector (same dimension as query_vector, different seed)
+        _qdim = query_vector.shape[0]
         shadow_vector = []
-        for i in range(0, 8, 2):
-            val = int(shadow_hash[i : i + 2], 16) / 255.0  # Normalize to [0, 1]
+        for _si in range(_qdim):
+            _hex_start = (_si * 2) % (len(shadow_hash) - 1)
+            val = int(shadow_hash[_hex_start : _hex_start + 2], 16) / 255.0
             shadow_vector.append(val)
 
         shadow_vector = np.array(shadow_vector, dtype=np.float32)
@@ -913,6 +917,14 @@ def run_pipeline(
     if window_start_utc >= window_end_utc:
         raise PipelineError(f"Invalid window: start={window_start_utc} >= end={window_end_utc}")
 
+    # GAP-014: Freeze gate -- if system freeze is active, meta-learning must not run
+    if deps.freeze_reader is not None and deps.freeze_reader.is_frozen():
+        raise PipelineError("meta-learning pipeline disabled: system freeze is active (L2 FREEZ)")
+
+    # GAP-015: Clear module-level telemetry batch at pipeline entry to prevent cross-run contamination
+    global _shadow_telemetry_batch
+    _shadow_telemetry_batch = []
+
     # Step 1: Pull audit slice (read-only)
     audit_slice = deps.audit_store.read_audit_slice(window_start_utc, window_end_utc)
 
@@ -1026,6 +1038,7 @@ def run_pipeline(
             proposals.append(pkg)
 
     # Step 6b: Process Phase 9 artifacts (ResourcePrediction and RollbackRefinementDecision)
+    # These must be added to proposals BEFORE Stage 7 validation loop
     if deps.resource_predictor_bytes is not None:
         try:
             # Deserialize ResourcePrediction and create proposal
@@ -1073,6 +1086,8 @@ def run_pipeline(
             pass
 
     # Step 6c: Process DPO batch (Path D - HITL + Deterministic DPO Loop)
+    # GAP-003: DPO proposals must enter proposals list BEFORE Stage 7 loop
+    # so they are subject to replay/shadow/cooldown/oscillation validation.
     if deps.dpo_batch_bytes is not None and deps.rlhf_optimizer is not None:
         try:
             import json as _json_dpo
@@ -1101,6 +1116,8 @@ def run_pipeline(
                 except (AttributeError, TypeError):
                     pass
 
+            # DPO proposal enters proposals list here, before Stage 7, so it
+            # flows through all validators (replay, shadow, cooldown, oscillation).
             proposals.append(dpo_proposal)
         except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
@@ -1150,8 +1167,15 @@ def run_pipeline(
             last_update_utc = None
 
         # Dampening gates: sample size
+        # GAP-004: derive real observation count from audit_slice line count
+        # (proxy for number of auditable events in the window)
         if hasattr(cfg.sample_policy, "min_observations"):
-            n_observations = 1000  # Placeholder
+            _audit_text = (
+                audit_slice.decode("utf-8", errors="replace")
+                if isinstance(audit_slice, (bytes, bytearray))
+                else str(audit_slice)
+            )
+            n_observations = max(1, sum(1 for ln in _audit_text.splitlines() if ln.strip()))
             assert_min_sample_size(
                 n_observations=n_observations,
                 sample_policy=cfg.sample_policy,
@@ -1194,6 +1218,10 @@ def run_pipeline(
             p for i, p in enumerate(validated_proposals) if getattr(p, "proposal_id", str(i)) in winner_ids
         ]
 
+    # GAP-016: initialize intake_record to None before Stage 8 block to prevent
+    # NameError in Stage 8.5 when healing_outcome_intake_adapter is None.
+    intake_record = None
+
     # Step 8: Persist healing outcome intake record (optional)
     # This runs before proposal_only check to ensure intake is always captured
     if deps.healing_outcome_intake_adapter is not None:
@@ -1220,7 +1248,12 @@ def run_pipeline(
         deps.healing_outcome_intake_adapter.persist_record(intake_record)
 
     # Step 8.5: Run healing config optimizer if available
-    if deps.healing_config_optimizer is not None and hasattr(intake_record, "snapshot"):
+    # GAP-016: guard uses intake_record is not None (safe after initialization above)
+    if (
+        deps.healing_config_optimizer is not None
+        and intake_record is not None
+        and hasattr(intake_record, "snapshot")
+    ):
         # Create aggregate snapshot from intake
         aggregate_snapshot = deps.healing_config_optimizer.create_snapshot_from_intake(
             intake_record, created_utc=now_utc
@@ -1248,19 +1281,34 @@ def run_pipeline(
                 _detection_signal_bytes = deps.l4_state_writer.read_latest_detection_signal()
             if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
                 _drift_snapshot_bytes = deps.l4_state_writer.read_latest_drift_snapshot()
-        pattern_report = _analyze_historical_patterns(
-            deps,
-            aggregate_snapshot,
-            now_utc=now_utc,
-            detection_signal_bytes=_detection_signal_bytes,
-            drift_snapshot_bytes=_drift_snapshot_bytes,
-        )
+        _8_5_aggregate_snapshot = aggregate_snapshot
+    else:
+        _8_5_aggregate_snapshot = None
 
-        # Step 8.7: Retrieve semantic context (W2 - C0 informational only)
-        embedding_metadata = _retrieve_semantic_context(
-            rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
-        )
+    # Step 8.6: Pattern analysis — independent of Stage 8.5 success (GAP-005)
+    # Runs whenever pattern_analysis_engine is available, regardless of optimizer.
+    _detection_signal_bytes_86: bytes | None = None
+    _drift_snapshot_bytes_86: bytes | None = None
+    if deps.l4_state_writer is not None:
+        if hasattr(deps.l4_state_writer, "read_latest_detection_signal"):
+            _detection_signal_bytes_86 = deps.l4_state_writer.read_latest_detection_signal()
+        if hasattr(deps.l4_state_writer, "read_latest_drift_snapshot"):
+            _drift_snapshot_bytes_86 = deps.l4_state_writer.read_latest_drift_snapshot()
+    pattern_report = _analyze_historical_patterns(
+        deps,
+        _8_5_aggregate_snapshot,
+        now_utc=now_utc,
+        detection_signal_bytes=_detection_signal_bytes_86,
+        drift_snapshot_bytes=_drift_snapshot_bytes_86,
+    )
 
+    # Step 8.7: Retrieve semantic context (W2 - C0 informational only) — independent of 8.5
+    embedding_metadata = _retrieve_semantic_context(
+        rca_report=rca_report, pattern_report=pattern_report, now_utc=now_utc
+    )
+
+    # Re-enter 8.5 block for 8.8-8.10 steps that depend on aggregate_snapshot
+    if _8_5_aggregate_snapshot is not None:
         # Step 8.8: W4-C Shadow drift analysis (informational only)
         # Get active profile ID for drift analysis
         from system_learning.engines.retrieval_profile_manager import get_active_retrieval_profile
@@ -1305,70 +1353,47 @@ def run_pipeline(
             profile_proposal.emit_digest()
 
         # Generate threshold adjustment proposals with patterns and semantic context
+        # GAP-011: C0 embedding_metadata is informational only -- must NOT be appended
+        # to ChangePackage.changes bytes. Use embedding_context_hash field instead.
         if deps.healing_config_optimizer is not None:
             if hasattr(
                 deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns_and_embeddings"
             ):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns_and_embeddings(
-                        aggregate_snapshot, pattern_report, embedding_metadata
+                        _8_5_aggregate_snapshot, pattern_report, embedding_metadata
                     )
                 )
             elif hasattr(deps.healing_config_optimizer, "propose_threshold_adjustments_with_patterns"):
                 threshold_proposal = (
                     deps.healing_config_optimizer.propose_threshold_adjustments_with_patterns(
-                        aggregate_snapshot, pattern_report
+                        _8_5_aggregate_snapshot, pattern_report
                     )
                 )
             else:
                 threshold_proposal = deps.healing_config_optimizer.propose_threshold_adjustments(
-                    aggregate_snapshot
+                    _8_5_aggregate_snapshot
                 )
         else:
             threshold_proposal = None
 
-        # Add embedding metadata to ChangePackage for auditability (C0 informational only)
-        if threshold_proposal and hasattr(threshold_proposal, "embedding_metadata"):
-            # Update the ChangePackage to include embedding metadata
-            # This is for audit purposes only and must not be used for execution
-            if hasattr(threshold_proposal, "changes"):
-                # Serialize embedding metadata and append to changes
-                import json
+        # GAP-011: C0 embedding metadata is audit-only.
+        # Attach only via embedding_context_hash field; never mutate changes bytes.
+        if threshold_proposal is not None and embedding_metadata:
+            _artifact_hash = embedding_metadata.get("embedding_artifact_hash") or embedding_metadata.get(
+                "content_hash"
+            )
+            if _artifact_hash and hasattr(threshold_proposal, "embedding_context_hash"):
+                from dataclasses import replace as _dc_replace_ec
 
-                embedding_metadata_json = json.dumps(
-                    embedding_metadata, separators=(",", ":"), sort_keys=True
-                )
-                if isinstance(threshold_proposal.changes, bytes):
-                    # Append metadata to existing changes
-                    combined_changes = (
-                        threshold_proposal.changes
-                        + b"\nEMBEDDING_METADATA:"
-                        + embedding_metadata_json.encode()
-                    )
-                    # Create new proposal with combined changes (immutable pattern)
-                    from system_learning.engines.change_package_impl import ChangePackage
+                threshold_proposal = _dc_replace_ec(threshold_proposal, embedding_context_hash=_artifact_hash)
 
-                    threshold_proposal = ChangePackage(
-                        source=threshold_proposal.source,
-                        target=threshold_proposal.target,
-                        changes=combined_changes,
-                        confidence=threshold_proposal.confidence,
-                        reason=threshold_proposal.reason
-                        + (
-                            f"Embedding enabled: {embedding_metadata.get('embedding_enabled_at_time', False)}",
-                        ),
-                        timestamp_utc=threshold_proposal.timestamp_utc,
-                        authority_sensitivity=threshold_proposal.authority_sensitivity
-                        if hasattr(threshold_proposal, "authority_sensitivity")
-                        else "MEDIUM",
-                        target_surface=threshold_proposal.target_surface
-                        if hasattr(threshold_proposal, "target_surface")
-                        else None,
-                    )
-
-        # Add to proposals if there are adjustments
-        if threshold_proposal and threshold_proposal.adjustments:
-            proposals.append(threshold_proposal)
+        # Add to proposals if there are adjustments (type-safe check)
+        if (
+            threshold_proposal is not None
+            and hasattr(threshold_proposal, "adjustments")
+            and threshold_proposal.adjustments
+        ):
             validated_proposals.append(threshold_proposal)
 
     # Step 9: If proposal_only, return without commit/activate
@@ -1376,33 +1401,45 @@ def run_pipeline(
         return tuple(validated_proposals)
 
     # Step 9: If not proposal_only, commit and activate
-    if not cfg.proposal_only:
-        # Require version_store and approval_gate
-        if deps.version_store is None:
-            raise PipelineError("version_store required when proposal_only=False")
-        if deps.approval_gate is None:
-            raise PipelineError("approval_gate required when proposal_only=False")
+    # GAP-008: Pre-flight dual injection guard — both must be present or both absent.
+    # Checking them independently would allow entering the loop with partial injection.
+    _vs_present = deps.version_store is not None
+    _ag_present = deps.approval_gate is not None
+    if _vs_present and not _ag_present:
+        raise PipelineError(
+            "partial injection: approval_gate required when version_store is present; "
+            "both must be injected together when proposal_only=False"
+        )
+    if _ag_present and not _vs_present:
+        raise PipelineError(
+            "partial injection: version_store required when approval_gate is present; "
+            "both must be injected together when proposal_only=False"
+        )
+    if not _vs_present:
+        raise PipelineError("version_store required when proposal_only=False")
+    if not _ag_present:
+        raise PipelineError("approval_gate required when proposal_only=False")
 
-        committed_versions = []
-        for pkg in validated_proposals:
-            # Check approval
-            decision = deps.approval_gate.decide(pkg, rca_report, snapshot)
+    # Import here to avoid circular dependency
+    from system_learning.pipelines.approval_gates import ApprovalDecision
 
-            # Import here to avoid circular dependency
-            from system_learning.pipelines.approval_gates import ApprovalDecision
+    committed_versions = []
+    for pkg in validated_proposals:
+        # Check approval
+        decision = deps.approval_gate.decide(pkg, rca_report, snapshot)
 
-            if decision == ApprovalDecision.REJECT:
-                # Skip this package
-                continue
+        if decision == ApprovalDecision.REJECT:
+            # Skip this package
+            continue
 
-            # Stage A: Commit
-            version_id = deps.version_store.commit_change_package(pkg)
-            committed_versions.append((pkg, version_id))
+        # Stage A: Commit
+        version_id = deps.version_store.commit_change_package(pkg)
+        committed_versions.append((pkg, version_id))
 
-            # Stage B: Activate (only if activator provided)
-            if deps.activator is not None:
-                # Extract component from package (would be in real ChangePackage)
-                component = "placeholder"
-                deps.activator.activate(component, version_id)
+        # Stage B: Activate (only if activator provided)
+        # GAP-009: Extract component from package, not hardcoded "placeholder"
+        if deps.activator is not None:
+            component = getattr(pkg, "target_surface", None) or getattr(pkg, "target", "unknown")
+            deps.activator.activate(component, version_id)
 
     return tuple(validated_proposals)

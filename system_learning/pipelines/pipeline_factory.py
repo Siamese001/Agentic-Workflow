@@ -11,6 +11,7 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     RUNTIME_STATE_JSON,
 )
@@ -47,7 +48,7 @@ def build_pipeline_config(*, proposal_only: bool = True) -> Any:
             forbid_any_safety_violation_increase=True,
         ),
         cooldown_policy=CooldownPolicy(min_seconds_between_updates=3600),
-        sample_policy=SampleSizePolicy(min_observations=10),
+        sample_policy=SampleSizePolicy(min_observations=10),  # guardian: allow-magic-config
         oscillation_policy=OscillationPolicy(
             window=5,
             epsilon=0.01,
@@ -128,7 +129,7 @@ def build_pipeline_deps(
 
         pattern_engine = PatternAnalysisEngine()
     except ImportError:
-        logger.debug("PatternAnalysisEngine not available; skipping.")
+        logger.warning("PatternAnalysisEngine not available; Stage 8.6 will be skipped.")
 
     optimizer = healing_config_optimizer
     if optimizer is None:
@@ -138,6 +139,66 @@ def build_pipeline_deps(
             optimizer = HealingConfigOptimizer()
         except ImportError:
             logger.debug("HealingConfigOptimizer not available; skipping.")
+
+    # GAP-013: Wire Stage 5 extension surfaces
+    confidence_scorer = None
+    try:
+        from system_learning.confidence.engine import HealingConfidenceScorer
+
+        confidence_scorer = HealingConfidenceScorer()
+    except ImportError:
+        logger.debug("HealingConfidenceScorer not available; skipping.")
+
+    failure_fingerprinter = None
+    try:
+        from system_learning.fingerprinting.engine import FailureFingerprinter
+
+        failure_fingerprinter = FailureFingerprinter()
+    except ImportError:
+        logger.debug("FailureFingerprinter not available; skipping.")
+
+    risk_correlator = None
+    try:
+        from system_learning.correlation.engine import RiskCorrelator
+
+        risk_correlator = RiskCorrelator()
+    except ImportError:
+        logger.debug("RiskCorrelator not available; skipping.")
+
+    # GAP-013: Wire Stage 7 arbitration surfaces
+    arbitration_engine = None
+    arbitration_policy = None
+    try:
+        from system_learning.arbitration.engine import ArbitrationEngine
+        from system_learning.arbitration.types import ArbitrationPolicy
+
+        arbitration_engine = ArbitrationEngine()
+        arbitration_policy = ArbitrationPolicy(
+            weights={"generic": 1.0},
+            caps={"max_winners": 5},
+            thresholds={"min_score": 0.0},
+            allowed_kinds={"generic"},
+        )
+    except (ImportError, TypeError):
+        logger.debug("ArbitrationEngine/Policy not available; skipping.")
+
+    # GAP-013: Wire DPO/RLHF optimizer
+    rlhf_optimizer = None
+    try:
+        from system_learning.engines.rlhf_optimizer import DefaultDeterministicRLHFOptimizer
+
+        rlhf_optimizer = DefaultDeterministicRLHFOptimizer()
+    except ImportError:
+        logger.debug("RLHFOptimizer not available; skipping.")
+
+    # GAP-014: Wire freeze reader from runtime_state.json
+    freeze_reader = None
+    try:
+        from system_learning.invariants.freeze_gate import JsonFileBackedFreezeReader
+
+        freeze_reader = JsonFileBackedFreezeReader(runtime_state_path)
+    except ImportError:
+        logger.debug("FreezeStateReader not available; skipping.")
 
     return PipelineDependencies(
         audit_store=audit_store,
@@ -152,6 +213,13 @@ def build_pipeline_deps(
         healing_config_optimizer=optimizer,
         l4_state_writer=l4_writer,
         pattern_analysis_engine=pattern_engine,
+        healing_confidence_scorer=confidence_scorer,
+        failure_fingerprinter=failure_fingerprinter,
+        risk_correlator=risk_correlator,
+        arbitration_engine=arbitration_engine,
+        arbitration_policy=arbitration_policy,
+        rlhf_optimizer=rlhf_optimizer,
+        freeze_reader=freeze_reader,
     )
 
 
