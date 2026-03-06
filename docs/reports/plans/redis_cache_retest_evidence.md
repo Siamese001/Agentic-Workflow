@@ -30,7 +30,7 @@ Gap analysis identified 10 missing coverage classes. 40 new tests added (78 tota
 
 ## EVIDENCE_COMMIT
 
-PENDING
+e75d631f4f9d2dfd6aa585fb9a622a02dc3849bf
 
 ## FILES_CHANGED_CODE
 
@@ -42,7 +42,10 @@ tests/architecture/test_new_cache_opportunities.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+```
+docs/reports/plans/redis_cache_retest_evidence.md
+tools/evidence_redis_retest.py
+```
 
 ## INSPECTED_FILES
 
@@ -174,13 +177,13 @@ tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_non_calla
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_replay_mode_bypasses_cache PASSED [  8%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_empty_list_is_valid PASSED [ 10%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_content_hash_changes_invalidate PASSED [ 11%]
-tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_handles_cache_get_exception
+tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_handles_cache_get_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache read failed: Redis connection lost
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache read failed: Redis connection lost
 PASSED                                                                   [ 12%]
-tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_handles_cache_set_exception
+tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_handles_cache_set_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache write failed: Redis write failed
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache write failed: Redis write failed
 PASSED                                                                   [ 14%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_fetch_called_exactly_once PASSED [ 15%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_invalidate_all_is_noop PASSED [ 16%]
@@ -190,19 +193,19 @@ tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_hit_side_
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_file_not_found_no_set_json_side_effect PASSED [ 21%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_broad_except_does_not_swallow_custom_sentinel PASSED [ 23%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_stale_cache_path_returns_fresh_after_miss PASSED [ 24%]
-tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_malformed_plausible_path_object
+tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_malformed_plausible_path_object 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Hash computation failed: [Errno 13] Permission denied: 'C:\\Users\\amita\\AppData\\Local\\Temp\\tmps9_cmctn'
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache write failed: [Errno 13] Permission denied: 'C:\\Users\\amita\\AppData\\Local\\Temp\\tmps9_cmctn'
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Hash computation failed: [Errno 13] Permission denied: 'C:\\Users\\amita\\AppData\\Local\\Temp\\tmpgxiodz6t'
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.discovery_cache: [Discovery cache] Cache write failed: [Errno 13] Permission denied: 'C:\\Users\\amita\\AppData\\Local\\Temp\\tmpgxiodz6t'
 PASSED                                                                   [ 25%]
 tests/architecture/test_discovery_cache.py::test_agent_discovery_cache_distinct_files_produce_distinct_keys PASSED [ 26%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_has_get_or_fetch PASSED [ 28%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_miss_calls_fetch PASSED [ 29%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_empty_tools_raises PASSED [ 30%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_replay_mode_bypasses PASSED [ 32%]
-tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_handles_cache_exception
+tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_handles_cache_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.tool_embedding_cache: [Tool embedding cache] Cache read failed: Redis down
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.tool_embedding_cache: [Tool embedding cache] Cache read failed: Redis down
 PASSED                                                                   [ 33%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_fingerprint_changes_invalidate PASSED [ 34%]
 tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_has_get_or_fetch PASSED [ 35%]
@@ -210,31 +213,31 @@ tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_
 tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_empty_schema_raises PASSED [ 38%]
 tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_replay_mode_bypasses PASSED [ 39%]
 tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_schema_changes_invalidate PASSED [ 41%]
-tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_handles_cache_exception
+tests/architecture/test_new_cache_opportunities.py::test_schema_validator_cache_handles_cache_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.schema_validator_cache: [Schema validator cache] Cache read failed: Redis down
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.schema_validator_cache: [Schema validator cache] Cache read failed: Redis down
 PASSED                                                                   [ 42%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_has_get_or_fetch PASSED [ 43%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_miss_calls_fetch PASSED [ 44%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_empty_policy_id_raises PASSED [ 46%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_replay_mode_bypasses PASSED [ 47%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_invalidate_calls_delete PASSED [ 48%]
-tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_handles_cache_exception
+tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_handles_cache_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.policy_registry_cache: [Policy cache] Cache read failed: Redis down
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.policy_registry_cache: [Policy cache] Cache read failed: Redis down
 PASSED                                                                   [ 50%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_has_get_or_fetch PASSED [ 51%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_miss_calls_fetch PASSED [ 52%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_file_not_found_propagates PASSED [ 53%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_replay_mode_bypasses PASSED [ 55%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_content_changes_invalidate PASSED [ 56%]
-tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_handles_cache_exception
+tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_handles_cache_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.config_file_cache: [Config cache] Cache read failed: Redis down
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.config_file_cache: [Config cache] Cache read failed: Redis down
 PASSED                                                                   [ 57%]
-tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_handles_set_exception
+tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_handles_set_exception 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.config_file_cache: [Config cache] Cache write failed: Redis write failed
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.config_file_cache: [Config cache] Cache write failed: Redis write failed
 PASSED                                                                   [ 58%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_same_tools_identical_key_twice PASSED [ 60%]
 tests/architecture/test_new_cache_opportunities.py::test_tool_embedding_cache_input_order_invariant PASSED [ 61%]
@@ -260,9 +263,9 @@ tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_e
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_whitespace_id_no_cache_side_effect PASSED [ 87%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_stale_path_refetch_on_miss PASSED [ 88%]
 tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_broad_except_does_not_swallow_fetch_error PASSED [ 89%]
-tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_invalidate_exception_does_not_propagate
+tests/architecture/test_new_cache_opportunities.py::test_policy_registry_cache_invalidate_exception_does_not_propagate 
 -------------------------------- live log call --------------------------------
-2026-03-05 22:05:33 [ WARNING] agentic_core.cache.policy_registry_cache: [Policy cache] Invalidation failed: Redis unavailable
+2026-03-05 22:06:02 [ WARNING] agentic_core.cache.policy_registry_cache: [Policy cache] Invalidation failed: Redis unavailable
 PASSED                                                                   [ 91%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_same_file_identical_key_twice PASSED [ 92%]
 tests/architecture/test_new_cache_opportunities.py::test_config_file_cache_replay_warm_get_json_never_called PASSED [ 93%]
@@ -402,10 +405,8 @@ $ git status --short
  M apps_shared/scripts/meta_learning_operator.py
  M apps_shared/types/ssot_relocator_types.py
  M apps_shared/utils/sleeping_giant_util.py
-AM docs/reports/plans/redis_cache_retest_evidence.md
  M system_learning/pipelines/pipeline_factory.py
  M tests/guardian/test_manual_verification.py
-AM tools/evidence_redis_retest.py
 ?? docs/reports/infrastructure/
 ?? "docs/technical/Drilldown - Archive/"
 ?? "docs/technical/L5 Validator Suite.md"
