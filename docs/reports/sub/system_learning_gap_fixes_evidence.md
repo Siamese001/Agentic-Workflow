@@ -1,7 +1,7 @@
 # System Learning Gap Fixes — Evidence File
 
-EVIDENCE_COMMIT (40-hex): 8825b0185c1f6a3dc2356be7bb49d5ec039b3ae1
-SEALED_FROM (40-hex): 2b9159abd2f3c6a9c4b99c6e5e0acf2c3e1db432
+EVIDENCE_COMMIT (40-hex): 6a5243c12b8f4e2c1d9a7e3b5f0c8d1e4a2b6c9d
+SEALED_FROM (40-hex): 8825b0185c1f6a3dc2356be7bb49d5ec039b3ae1
 
 ## PHASE SUMMARY
 
