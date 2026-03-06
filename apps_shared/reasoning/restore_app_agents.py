@@ -18,9 +18,12 @@ import re
 import shutil
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-ARCHIVE_DIR = PROJECT_ROOT / "archives" / "hierarchy_violations" / "apps_depth"
+ARCHIVE_DIR = PROJECT_ROOT / ARCHIVES_DIR / "hierarchy_violations" / "apps_depth"
 
 
 def extract_original_path(file_path: Path) -> str:

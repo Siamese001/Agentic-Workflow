@@ -20,6 +20,12 @@ warnings.warn(
 )
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (
@@ -30,10 +36,10 @@ try:
         get_python_files,
     )
 except ImportError:
-    AGENTIC_CORE_DIR = Path("agentic_core")
-    APPS_LIC_DIR = Path("apps_lic")
-    APPS_RG_DIR = Path("apps_rg")
-    APPS_SHARED_DIR = Path("apps_shared")
+    AGENTIC_CORE_DIR = Path(AGENTIC_CORE_DIR)
+    APPS_LIC_DIR = Path(APPS_LIC_DIR)
+    APPS_RG_DIR = Path(APPS_RG_DIR)
+    APPS_SHARED_DIR = Path(APPS_SHARED_DIR)
 
     def get_python_files(directory):
         """Fallback implementation to get Python files."""

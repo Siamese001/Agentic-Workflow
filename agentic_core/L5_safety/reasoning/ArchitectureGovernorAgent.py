@@ -63,6 +63,9 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -106,7 +109,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
         self.python_files: list[str] = []
 
         # Sovereign Data Locations for Phase 8
-        self.baseline_dir = self.project_root / "agentic_core" / "config" / "baselines"
+        self.baseline_dir = self.project_root / AGENTIC_CORE_DIR / "config" / "baselines"
         self.audit_log_dir = self.project_root / "logs" / "sovereign_audit"
 
         self._structure_validator = None  # Lazy-loaded
@@ -315,7 +318,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 if target_territory in sovereign_territories and target_territory != "agentic_core":
                     target_roots = [target_territory]
                 else:
-                    target_roots = ["agentic_core"]
+                    target_roots = [AGENTIC_CORE_DIR]
                 Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
             else:
                 target_roots = list(sovereign_territories.keys())
@@ -534,7 +537,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                 scan_targets = []
                 for t in target_territories:
                     # Logic to resolve path (same as above, just ensuring it's robust)
-                    p_core = self.project_root / "agentic_core" / t
+                    p_core = self.project_root / AGENTIC_CORE_DIR / t
                     p_root = self.project_root / t
 
                     if p_core.exists():

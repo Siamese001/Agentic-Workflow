@@ -14,13 +14,17 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 
 def _resolve_repo_root() -> Path:
     """Walk upward from this file until repo markers are found."""
     cur = Path(__file__).resolve()
     for p in (cur, *cur.parents):
-        if (p / "agentic_core").is_dir() and (p / "ops_scripts").is_dir():
+        if (p / AGENTIC_CORE_DIR).is_dir() and (p / OPS_SCRIPTS_DIR).is_dir():
             return p
     raise RuntimeError(f"Unable to resolve repo root from: {cur}")
 

@@ -27,6 +27,9 @@ except ImportError as _err:
 from pydantic import BaseModel
 
 from agentic_core.L1_cognition.reasoning.MetaLearningAgent import MetaLearningAgent
+from agentic_core.L0_routing.config import (
+    RUNTIME_STATE_JSON,
+)
 
 # ARCHIVED: pinecone_telemetry import removed # PineconeTelemetryWrapper
 
@@ -42,7 +45,7 @@ app.add_middleware(
 )
 
 # Runtime state file path
-RUNTIME_STATE_FILE = Path("runtime_state.json")
+RUNTIME_STATE_FILE = Path(RUNTIME_STATE_JSON)
 
 # Initialize telemetry-enabled clients
 meta_agent = MetaLearningAgent()

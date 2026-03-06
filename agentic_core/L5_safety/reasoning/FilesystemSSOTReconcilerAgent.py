@@ -95,6 +95,9 @@ except ImportError:
 
 
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -384,7 +387,7 @@ class FilesystemSSOTReconcilerAgent(
             if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":
                 roots_to_scan = [target_territory]
             else:
-                roots_to_scan = ["agentic_core"]
+                roots_to_scan = [AGENTIC_CORE_DIR]
             Logger.info(f"Filesystem scan restricted to roots: {roots_to_scan}")
         else:
             # Scan all territories with enforced structure (exclude volatile: logs, archives)
@@ -459,7 +462,7 @@ class FilesystemSSOTReconcilerAgent(
                 Logger.warning(f"[SSOT] Failed to load discovery JSON: {e}")
 
         # Fallback: scan only agentic_core (not project root)
-        agentic_core = self.project_root / "agentic_core"
+        agentic_core = self.project_root / AGENTIC_CORE_DIR
 
         # Sub-20: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery_validator import get_agent_files
@@ -1356,8 +1359,8 @@ class FilesystemSSOTReconcilerAgent(
 
         # 3. Check for duplicate folders
         ssot_locations = {
-            "scripts": self.project_root / "agentic_core" / "L0_routing" / "scripts",
-            "logs": self.project_root / "agentic_core" / "L0_routing" / "logs",
+            "scripts": self.project_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts",
+            "logs": self.project_root / AGENTIC_CORE_DIR / "L0_routing" / "logs",
         }
 
         for folder_name, ssot_path in ssot_locations.items():

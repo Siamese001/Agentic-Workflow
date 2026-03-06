@@ -13,8 +13,13 @@ import ast
 import re
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
-APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
+APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 
 
 def get_all_classes_in_codebase(dirs: list[str]) -> dict[str, list[str]]:

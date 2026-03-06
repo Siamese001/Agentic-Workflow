@@ -6,6 +6,12 @@ Only extracts content that doesn't exist in current codebase.
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 def build_codebase_index(dirs: list[str]) -> tuple[set[str], set[str]]:
@@ -104,7 +110,7 @@ def main():
 
     # Build codebase index
     print("\n[1/3] Building codebase index...")
-    current_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
+    current_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
     existing_classes, existing_functions = build_codebase_index(current_dirs)
     print(f"  Indexed: {len(existing_classes)} classes, {len(existing_functions)} functions")
 

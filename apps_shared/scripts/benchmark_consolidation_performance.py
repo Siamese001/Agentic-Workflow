@@ -20,6 +20,10 @@ import sys
 import time
 import tracemalloc
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -72,7 +76,7 @@ def measure_registry_init() -> tuple[float, int]:
 
 def count_UnifiedAgents() -> dict[str, int]:
     """Count unified agents by category."""
-    unified_dir = PROJECT_ROOT / "agentic_core"
+    unified_dir = PROJECT_ROOT / AGENTIC_CORE_DIR
 
     counts = {
         "L3_orchestration_unified": 0,
@@ -105,7 +109,7 @@ def count_UnifiedAgents() -> dict[str, int]:
 
 def count_archived_agents() -> int:
     """Count archived legacy agents."""
-    archive_dir = PROJECT_ROOT / "archives" / "legacy_agents"
+    archive_dir = PROJECT_ROOT / ARCHIVES_DIR / "legacy_agents"
     if not archive_dir.exists():
         return 0
 

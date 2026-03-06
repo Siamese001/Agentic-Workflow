@@ -14,6 +14,9 @@ import ast
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -285,7 +288,7 @@ def analyze_file(file_path: Path) -> SleepingGiant | None:
 
 
 def main():
-    root = Path(__file__).parent.parent / "agentic_core"
+    root = Path(__file__).parent.parent / AGENTIC_CORE_DIR
 
     print("=" * 80)
     print("PARANOID MODE AUDIT: Sleeping Giant Detection")

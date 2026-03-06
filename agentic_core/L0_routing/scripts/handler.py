@@ -9,6 +9,9 @@ import socketserver
 import threading
 import time
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 project_root = Path(__file__).parent.parent
 
@@ -23,7 +26,7 @@ def debug_dashboard():
 
     # Start HTTP Server
     PORT = 8765
-    dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
+    dashboard_dir = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 
     class Handler(http.server.SimpleHTTPRequestHandler):
         def __init__(self, *args, **kwargs):

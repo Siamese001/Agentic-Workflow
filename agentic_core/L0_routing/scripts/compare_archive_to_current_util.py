@@ -3,6 +3,12 @@
 
 import hashlib
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 def file_hash(path: Path) -> str:
@@ -30,48 +36,48 @@ def main():
         # apps_lic candidates
         (
             "archives/apps_lic/L1_cognition/P1_retrieve/check_outreach/check_outreach_policy.py",
-            "apps_lic",
+            APPS_LIC_DIR,
         ),
         (
             "archives/apps_lic/L1_cognition/P1_retrieve/get_info/build_message_filters.py",
-            "apps_lic",
+            APPS_LIC_DIR,
         ),
         (
             "archives/apps_lic/L1_cognition/P1_retrieve/get_info/build_personalization_query.py",
-            "apps_lic",
+            APPS_LIC_DIR,
         ),
-        ("archives/apps_lic/L1_cognition/P1_retrieve/get_info/extract_contact_info.py", "apps_lic"),
+        ("archives/apps_lic/L1_cognition/P1_retrieve/get_info/extract_contact_info.py", APPS_LIC_DIR),
         (
             "archives/apps_lic/L1_cognition/P1_retrieve/get_info/fetch_recipient_interactions.py",
-            "apps_lic",
+            APPS_LIC_DIR,
         ),
         (
             "archives/apps_lic/L1_cognition/P1_retrieve/get_info/match_recipient_patterns.py",
-            "apps_lic",
+            APPS_LIC_DIR,
         ),
-        ("archives/apps_lic/L1_cognition/P1_retrieve/get_info/query_past_campaigns.py", "apps_lic"),
+        ("archives/apps_lic/L1_cognition/P1_retrieve/get_info/query_past_campaigns.py", APPS_LIC_DIR),
         # apps_rg candidates
         (
             "archives/apps_rg/L1_cognition/P1_retrieve/check_resume/check_resume_policy.py",
-            "apps_rg",
+            APPS_RG_DIR,
         ),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/build_search_filters.py", "apps_rg"),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/build_skill_query.py", "apps_rg"),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/fetch_user_preferences.py", "apps_rg"),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/match_job_patterns.py", "apps_rg"),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/parse_job_description.py", "apps_rg"),
-        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/query_past_generations.py", "apps_rg"),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/build_search_filters.py", APPS_RG_DIR),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/build_skill_query.py", APPS_RG_DIR),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/fetch_user_preferences.py", APPS_RG_DIR),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/match_job_patterns.py", APPS_RG_DIR),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/parse_job_description.py", APPS_RG_DIR),
+        ("archives/apps_rg/L1_cognition/P1_retrieve/get_info/query_past_generations.py", APPS_RG_DIR),
         # apps_shared candidates
-        ("archives/apps_shared/cache/semantic_cache.py", "apps_shared"),
-        ("archives/apps_shared/core/meta_ranking.py", "apps_shared"),
+        ("archives/apps_shared/cache/semantic_cache.py", APPS_SHARED_DIR),
+        ("archives/apps_shared/core/meta_ranking.py", APPS_SHARED_DIR),
         # Reachout Engine Archive candidates
-        ("archives/Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py", "apps_lic"),
-        ("archives/Reachout Engine Archive/Agentic LIC/models_LIC.py", "apps_shared"),
-        ("archives/Reachout Engine Archive/Agentic LIC/workflow_LIC.py", "apps_lic"),
-        ("archives/Reachout Engine Archive/Agentic LIC/state_manager_LIC.py", "apps_shared"),
+        ("archives/Reachout Engine Archive/Agentic LIC/hop_agents_LIC.py", APPS_LIC_DIR),
+        ("archives/Reachout Engine Archive/Agentic LIC/models_LIC.py", APPS_SHARED_DIR),
+        ("archives/Reachout Engine Archive/Agentic LIC/workflow_LIC.py", APPS_LIC_DIR),
+        ("archives/Reachout Engine Archive/Agentic LIC/state_manager_LIC.py", APPS_SHARED_DIR),
     ]
 
-    current_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
+    current_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
 
     print("=" * 80)
     print("ARCHIVE vs CURRENT CODEBASE COMPARISON")

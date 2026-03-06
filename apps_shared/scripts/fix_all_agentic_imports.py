@@ -11,6 +11,9 @@ Fix all import issues in agentic_core after bulk hierarchy heal.
 import re
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -61,7 +64,7 @@ def main() -> Any:
     total: Any = 0
     # Phase 6.9: Use ssot_discovery instead of rglob
 
-    for py_file in get_python_files(Path("agentic_core")):
+    for py_file in get_python_files(Path(AGENTIC_CORE_DIR)):
         total += 1
         if fix_file_imports(py_file):
             fixed += 1

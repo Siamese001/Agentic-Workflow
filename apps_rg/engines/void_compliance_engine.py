@@ -14,6 +14,9 @@ from pathlib import Path
 from typing import Any
 
 from apps_rg.engines.base_rg_engine import BaseRGEngine
+from agentic_core.L0_routing.config import (
+    APPS_RG_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -27,7 +30,7 @@ class VoidComplianceEngine(BaseRGEngine):
 
     def __init__(self, ctx: Any) -> None:
         super().__init__(ctx, node_id="SAFETY.VOID")
-        self.root_path = Path("apps_rg")
+        self.root_path = Path(APPS_RG_DIR)
 
     async def execute(self) -> dict[str, Any]:
         """

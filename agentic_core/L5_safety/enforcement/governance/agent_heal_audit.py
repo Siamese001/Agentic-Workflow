@@ -13,6 +13,12 @@ import ast
 import json
 from pathlib import Path, PurePosixPath
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 class AgentHealAuditScanner:
@@ -130,10 +136,10 @@ class AgentHealAuditScanner:
     def scan_repository(self) -> dict[str, Any]:
         """Scan entire repository for Agent classes."""
         scan_paths = [
-            self.repo_root / "agentic_core",
-            self.repo_root / "apps_lic",
-            self.repo_root / "apps_rg",
-            self.repo_root / "apps_shared",
+            self.repo_root / AGENTIC_CORE_DIR,
+            self.repo_root / APPS_LIC_DIR,
+            self.repo_root / APPS_RG_DIR,
+            self.repo_root / APPS_SHARED_DIR,
         ]
 
         all_agents = []

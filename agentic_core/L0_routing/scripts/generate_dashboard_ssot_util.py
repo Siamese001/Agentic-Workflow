@@ -30,6 +30,9 @@ from datetime import datetime
 from pathlib import Path
 
 import yaml
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # Paths
 PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
@@ -37,7 +40,7 @@ YAML_CONFIG = PROJECT_ROOT / "L6_observability" / "dashboards" / "dashboard_ssot
 PYTHON_OUTPUT = PROJECT_ROOT / "scripts" / "dashboard_ssot_definitions.py"
 JS_OUTPUT = (
     PROJECT_ROOT
-    / "agentic_core"
+    / AGENTIC_CORE_DIR
     / "L6_observability"
     / "dashboards"
     / "js"

@@ -14,6 +14,9 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -151,7 +154,7 @@ def main():
         if not file_path.exists():
             # Try with different path variations
             alt_paths = [
-                PROJECT_ROOT / "agentic_core" / path,
+                PROJECT_ROOT / AGENTIC_CORE_DIR / path,
                 PROJECT_ROOT / path.replace("\\", "/"),
             ]
             for alt in alt_paths:

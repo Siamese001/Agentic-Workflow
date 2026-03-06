@@ -39,7 +39,13 @@ from typing import Any
 from agentic_core.utils.ssot_discovery_validator import get_agent_paths
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config import get_validated_project_root
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    get_validated_project_root,
+)
 from agentic_core.L0_routing.enforcement.runtime_guard import (
     runtime_guard,
 )
@@ -63,7 +69,7 @@ Logger = logging.getLogger(__name__)
 # [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports.
 # This mirrors the L5 execute_ssot.py security standard to prevent
 # arbitrary code execution during agent discovery/import.
-ALLOWED_MODULE_PREFIXES = ("agentic_core", "apps_shared", "apps_lic", "apps_rg")
+ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
 
 
 class L3OrchestrationStrategy(OrchestrationStrategy):

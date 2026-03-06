@@ -10,6 +10,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.P1_core.filesystem_mcp_client_1 import get_filesystem_client
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -73,7 +76,7 @@ class DeepWikiHealingStrategy:
         try:
             documented_paths = await self._get_documented_paths()
             undocumented = []
-            agentic_core_path = Path("agentic_core")
+            agentic_core_path = Path(AGENTIC_CORE_DIR)
             if agentic_core_path.exists():
                 # Phase 6.7: Use ssot_discovery instead of rglob
                 from agentic_core.utils.ssot_discovery_validator import get_python_files

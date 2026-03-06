@@ -31,6 +31,9 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 GUARDIAN_ID = "cross_layer_mutation_guard"
 
@@ -74,7 +77,7 @@ def _layer_from_module_string(module: str) -> str | None:
 
 def _collect_files(repo_root: Path) -> list[Path]:
     result: list[Path] = []
-    agentic = repo_root / "agentic_core"
+    agentic = repo_root / AGENTIC_CORE_DIR
     if not agentic.exists():
         return result
     for dirpath, dirnames, filenames in __import__("os").walk(agentic):

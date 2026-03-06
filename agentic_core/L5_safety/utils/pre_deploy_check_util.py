@@ -22,6 +22,9 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.utils.security_util import safe_execute
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 
@@ -73,8 +76,8 @@ def check_ssot_files_exist() -> bool:
         PROJECT_ROOT / "scripts" / "dashboard_ssot_definitions.py",
         PROJECT_ROOT / "scripts" / "territory_ssot_definitions.py",
         PROJECT_ROOT / "scripts" / "regenerate_dashboard_data.py",
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js",
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "agent_data.js",
+        PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js",
+        PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "agent_data.js",
     ]
 
     all_exist = True
@@ -94,7 +97,7 @@ def check_data_freshness() -> bool:
 
     discovery_json = PROJECT_ROOT / "agent_discovery_full.json"
     dashboard_data = (
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+        PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     )
 
     if not discovery_json.exists() or not dashboard_data.exists():

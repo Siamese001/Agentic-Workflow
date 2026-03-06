@@ -9,6 +9,9 @@ Classifies lazy seams into reason categories based on their imports and context.
 import json
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class LazySeamClassifier:
@@ -164,7 +167,7 @@ class LazySeamClassifier:
 def main():
     """Main execution."""
     root_path = Path.cwd()
-    allowlist_path = root_path / "agentic_core" / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
+    allowlist_path = root_path / AGENTIC_CORE_DIR / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
 
     classifier = LazySeamClassifier(allowlist_path)
     classifier.classify_all_seams()

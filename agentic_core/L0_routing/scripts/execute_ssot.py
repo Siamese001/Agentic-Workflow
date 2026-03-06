@@ -618,7 +618,7 @@ def resolve_repo_root(start=None):
     """
     cur = Path(start or __file__).resolve()
     for p in (cur, *cur.parents):
-        if (p / "agentic_core").is_dir() and (p / "ops_scripts").is_dir():
+        if (p / AGENTIC_CORE_DIR).is_dir() and (p / OPS_SCRIPTS_DIR).is_dir():
             return p
     raise RuntimeError(f"Unable to resolve repo root from: {cur}")
 
@@ -812,6 +812,15 @@ class ConfidenceScore:
 
 import enum as _enum
 import hashlib as _hashlib
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L5_SAFETY_DIR,
+    OPS_SCRIPTS_DIR,
+    RUNTIME_STATE_JSON,
+)
 
 
 class FailureType(_enum.Enum):
@@ -2164,7 +2173,7 @@ class PreFlightValidator:
                 logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
 
         # 2. Critical Directory Structure (SSOT Integrity)
-        required_dirs = ["agentic_core", "agentic_core/L5_safety", "agentic_core/prompt_governance"]
+        required_dirs = [AGENTIC_CORE_DIR, L5_SAFETY_DIR, "agentic_core/prompt_governance"]
         for d in required_dirs:
             if not (self.project_root / d).exists():
                 errors.append(f"Critical directory missing: {d}")
@@ -2551,7 +2560,7 @@ RUNTIME_STATE_FILE = "runtime_state.json"
 
 # [ULTRA-HARDENED] Whitelist of allowed module prefixes for dynamic imports
 # Prevents loading agents from unexpected packages (defense-in-depth against tampered discovery/cache)
-ALLOWED_MODULE_PREFIXES = ("agentic_core", "apps_shared", "apps_lic", "apps_rg")
+ALLOWED_MODULE_PREFIXES = (AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, APPS_RG_DIR)
 
 # Logging: configured once in _configure_logging() called from main().
 logger = logging.getLogger("UnifiedSovereign")
@@ -4003,7 +4012,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         # [FIX-B1] Collect global violations (hygiene + gravity) for aggregate-only reporting
         global_violations = []
         # Read runtime_state.json for global violation data if available
-        runtime_state_path = project_root / "runtime_state.json"
+        runtime_state_path = project_root / RUNTIME_STATE_JSON
         if runtime_state_path.exists():
             try:
                 _rs = json.loads(runtime_state_path.read_text(encoding="utf-8"))
@@ -5123,7 +5132,7 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     targets = []
     # Add agentic_core sub-layers first (they have specialised agent scoping)
     for sub in agentic_core_sublayers:
-        sub_path = project_root / "agentic_core" / sub
+        sub_path = project_root / AGENTIC_CORE_DIR / sub
         if sub_path.exists():
             targets.append(sub)
 
@@ -5226,7 +5235,7 @@ def _legacy_main(
             )
 
             # Attempt to write to agentic_core/.tmp_fence_probe
-            probe_path = REPO_ROOT / "agentic_core" / ".tmp_fence_probe"
+            probe_path = REPO_ROOT / AGENTIC_CORE_DIR / ".tmp_fence_probe"
             fence_active = False
 
             try:
@@ -5500,7 +5509,7 @@ def _legacy_main(
     if args.domains and not allow_protected_root_mutation:
         for domain in ["L0_routing", "L2_execution", "L3_orchestration", "L5_safety"]:
             if domain in targets:
-                domain_path = project_root / "agentic_core" / domain
+                domain_path = project_root / AGENTIC_CORE_DIR / domain
                 if domain_path.exists():
                     logger.warning(f"[PROTECTED-ROOT] forcing scan-only for {domain}")
                     print(f"[PROTECTED-ROOT] forcing scan-only (no mutations) for {domain}")
@@ -5992,7 +6001,7 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
 
     # Define search paths relative to project root
     search_paths = [
-        project_root / "agentic_core",
+        project_root / AGENTIC_CORE_DIR,
         # Add other apps_* folders if needed, e.g., apps_private
     ]
 

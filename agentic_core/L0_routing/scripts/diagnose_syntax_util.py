@@ -8,6 +8,9 @@ Usage:
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 def check_syntax(root: Path) -> int:
@@ -46,7 +49,7 @@ if __name__ == "__main__":
 
     # Check agentic_core
     print("Checking agentic_core...")
-    agentic_errors = check_syntax(root / "agentic_core")
+    agentic_errors = check_syntax(root / AGENTIC_CORE_DIR)
 
     # Check scripts
     print("\nChecking scripts...")

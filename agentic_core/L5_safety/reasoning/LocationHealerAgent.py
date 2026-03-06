@@ -53,6 +53,11 @@ from agentic_core.L5_safety.utils.location_utils_util import (
 )
 from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -371,10 +376,10 @@ class LocationHealerAgent(SovereignBaseAgent):
             if correct_folder:
                 # Determine the layer from the violation context or current location
                 try:
-                    rel = src_path.relative_to(self.project_root / "agentic_core")
+                    rel = src_path.relative_to(self.project_root / AGENTIC_CORE_DIR)
                     layer = rel.parts[0] if len(rel.parts) > 1 else None
                     if layer:
-                        return self.project_root / "agentic_core" / layer / correct_folder
+                        return self.project_root / AGENTIC_CORE_DIR / layer / correct_folder
                 except ValueError:
                     pass
         except Exception:
@@ -474,7 +479,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         """Initialize backup directory for safe mutations."""
         backup_dir = (
             self.project_root
-            / "archives"
+            / ARCHIVES_DIR
             / "healing_backups"
             / "location"
             / datetime.now().strftime("%Y%m%d_%H%M%S")
@@ -968,7 +973,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         )
         if target_match:
             territory = target_match.group(1)
-            target_path = self.project_root / "agentic_core" / territory / file_path.name
+            target_path = self.project_root / AGENTIC_CORE_DIR / territory / file_path.name
             move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
             if move_result.get("applied") and not dry_run:
                 affected_paths.extend([file_path, target_path])
@@ -1131,7 +1136,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             elif choice == "3":
                 # OPTION 3: Archive (last resort)
-                archives_root = self.project_root / "archives"
+                archives_root = self.project_root / ARCHIVES_DIR
                 return self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
 
             else:
@@ -1215,7 +1220,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             # Step 1: Update SOVEREIGN_REGISTRY in structure_blueprint.py
             blueprint_path = (
-                self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
+                self.project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "structure_blueprint.py"
             )
 
             if not blueprint_path.exists():
@@ -1354,7 +1359,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             Logger.warning(
                 f"  ⚠️  Low confidence ({confidence_score:.2f}) - Archiving to prevent misplacement",
             )
-            archives_root = self.project_root / "archives"
+            archives_root = self.project_root / ARCHIVES_DIR
             archive_result = self._heal_via_archiving(file_path, msg, archives_root, dry_run, affected_paths)
             archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
             return archive_result
@@ -1467,7 +1472,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             # Update SOVEREIGN_REGISTRY in structure_blueprint.py
             blueprint_path = (
-                self.project_root / "agentic_core" / "L5_safety" / "validators" / "structure_blueprint.py"
+                self.project_root / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "structure_blueprint.py"
             )
 
             if not blueprint_path.exists():
@@ -2264,7 +2269,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                     )
                                     continue
 
-                                target = self.project_root / "apps_shared" / "utils" / path.name
+                                target = self.project_root / APPS_SHARED_DIR / "utils" / path.name
                                 move_result = self.safe_move(path, target, dry_run=False)
                                 self.state_guard.increment_metric("upgrade_count")
                                 additional_moves.append(move_result)

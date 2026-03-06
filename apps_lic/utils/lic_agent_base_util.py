@@ -38,6 +38,9 @@ from agentic_core.interfaces.meta_learning import (
 from agentic_core.interfaces.meta_learning import (
     get_sovereign_meta_client as get_meta_learning_client,
 )
+from agentic_core.L0_routing.config import (
+    APPS_LIC_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -82,7 +85,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
     """
 
     # Domain-specific LIC configuration
-    domain_root: Path = field(default_factory=lambda: Path("apps_lic"))
+    domain_root: Path = field(default_factory=lambda: Path(APPS_LIC_DIR))
     _lic_version: Final[str] = "2.5.0-hardened"
 
     # [PHASE 25] Infrastructure Config (STRICTER)

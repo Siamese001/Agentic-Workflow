@@ -15,6 +15,9 @@ from pathlib import Path
 
 # SSOT Integration
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class DebrisHunter:
@@ -56,7 +59,7 @@ class DebrisHunter:
 
     def scan_for_known_redundancies(self):
         """Targeted cleanup for known migration artifacts."""
-        legacy_fixer = self.root / "agentic_core" / "L0_routing" / "scripts" / "pascal_sovereignty_fixer.py"
+        legacy_fixer = self.root / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "pascal_sovereignty_fixer.py"
         if legacy_fixer.exists():
             self.debris_found.append(legacy_fixer)
             print(f"[REDUNDANT] Found legacy fixer: {legacy_fixer}")

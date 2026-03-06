@@ -49,7 +49,7 @@ except ImportError:
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent))
 # guardian: allow-global-mutation
-sys.path.insert(0, str(Path(__file__).parent.parent / "agentic_core" / "L0_routing" / "scripts"))
+sys.path.insert(0, str(Path(__file__).parent.parent / AGENTIC_CORE_DIR / "L0_routing" / "scripts"))
 try:
     from territory_ssot_definitions import get_territory_from_path, refine_territory_by_ast
 except ImportError:

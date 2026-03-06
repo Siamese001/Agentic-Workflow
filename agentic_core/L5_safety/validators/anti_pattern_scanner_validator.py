@@ -39,6 +39,12 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -115,10 +121,10 @@ class AntiPatternScanner:
 
     # Default directories to scan
     DEFAULT_SCAN_DIRS = [
-        "agentic_core",
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
+        AGENTIC_CORE_DIR,
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
     ]
 
     # Default exclude patterns

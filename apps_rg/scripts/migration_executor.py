@@ -11,6 +11,9 @@ import os
 import re
 import shutil
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    APPS_RG_DIR,
+)
 
 # Configure logging
 logging.basicConfig(
@@ -21,7 +24,7 @@ logger = logging.getLogger(__name__)
 
 # Define Root relative to this script (scripts/ -> root)
 BASE_DIR = Path(__file__).resolve().parent.parent
-APPS_RG_DIR = BASE_DIR / "apps_rg"
+APPS_RG_DIR = BASE_DIR / APPS_RG_DIR
 MANIFEST_PATH = APPS_RG_DIR / "RG_AUDIT_MANIFEST.json"
 
 # Approved Sovereign Structure

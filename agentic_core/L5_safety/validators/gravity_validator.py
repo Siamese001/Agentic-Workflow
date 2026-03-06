@@ -29,6 +29,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,  # [RECONCILED 2026-01-27] Use unified schema
 )
 from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import SSOTScanner
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -332,7 +335,7 @@ class UnifiedSSOTValidator:
         violations = []
 
         # Scan agentic_core Python files for imports
-        agentic_core = self.project_root / "agentic_core"
+        agentic_core = self.project_root / AGENTIC_CORE_DIR
         if not agentic_core.exists():
             return violations
 
@@ -421,7 +424,7 @@ class UnifiedSSOTValidator:
         violations = []
 
         # Check agentic_core subfolders against blueprint
-        agentic_core = self.project_root / "agentic_core"
+        agentic_core = self.project_root / AGENTIC_CORE_DIR
         if not agentic_core.exists():
             return violations
 

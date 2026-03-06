@@ -20,6 +20,11 @@ from agentic_core.L1_cognition.types.domain_types import (
     DomainContext,
     SharingPolicy,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -67,7 +72,7 @@ class DomainContextManager:
             domain="agentic_core",
             parent_domain=None,
             sharing_policy=SharingPolicy.BIDIRECTIONAL,
-            allowed_sources=["apps_lic", "apps_rg"],
+            allowed_sources=[APPS_LIC_DIR, APPS_RG_DIR],
         )
 
         # apps_lic inherits from agentic_core, can read from core
@@ -75,7 +80,7 @@ class DomainContextManager:
             domain="apps_lic",
             parent_domain="agentic_core",
             sharing_policy=SharingPolicy.SELECTIVE,
-            allowed_sources=["agentic_core"],
+            allowed_sources=[AGENTIC_CORE_DIR],
             pattern_types_shared=["healing_pattern", "compliance_rule"],
         )
 
@@ -84,7 +89,7 @@ class DomainContextManager:
             domain="apps_rg",
             parent_domain="agentic_core",
             sharing_policy=SharingPolicy.SELECTIVE,
-            allowed_sources=["agentic_core"],
+            allowed_sources=[AGENTIC_CORE_DIR],
             pattern_types_shared=["healing_pattern", "quality_pattern"],
         )
 

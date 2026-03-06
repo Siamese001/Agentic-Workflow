@@ -33,6 +33,9 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -384,7 +387,7 @@ class StructureEnforcerAgent(SovereignBaseAgent):
 
         if not dry_run:
             # Backup first
-            backup_dir = self.project_root / "archives" / "healing_backups" / "naming"
+            backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "naming"
             _wg.ensure_dir(backup_dir)
             backup_path = backup_dir / f"{file_path.name}.{datetime.now().strftime('%Y%m%d_%H%M%S')}"
             _wg.copy_file(file_path, backup_path)

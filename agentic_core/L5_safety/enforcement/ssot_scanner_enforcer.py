@@ -11,6 +11,9 @@ Performance: <1 second for full scan (vs 15-18s for registry rebuild)
 import ast
 from dataclasses import dataclass
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 
 @dataclass
@@ -225,7 +228,7 @@ class SSOTScanner:
             ".git",
             ".pytest_cache",
             "vendor",
-            "archives",
+            ARCHIVES_DIR,
         ]
 
         path_str = str(file_path)

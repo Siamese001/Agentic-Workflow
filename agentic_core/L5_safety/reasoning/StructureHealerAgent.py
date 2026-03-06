@@ -39,6 +39,9 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     StructureHealingStrategy,
 )
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -118,7 +121,7 @@ class StructureHealerAgent(SovereignBaseAgent):
         self._actions: list[StructureHealingAction] = []
 
         if self._agent_config.backup_dir is None:
-            self._agent_config.backup_dir = self.project_root / "archives" / "healing_backups" / "structure"
+            self._agent_config.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "structure"
 
         # [PHASE 1] Initialize unified structure healing strategy
         self._unified_strategy: StructureHealingStrategy | None = StructureHealingStrategy(

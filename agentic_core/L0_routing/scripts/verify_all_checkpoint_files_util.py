@@ -2,6 +2,9 @@ from pathlib import Path
 
 """Verify archival status of all files mentioned in checkpoint summary."""
 import os
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 edited_files = [
@@ -36,7 +39,7 @@ for file_path in all_files:
     full_path = PROJECT_ROOT / file_path
     exists_active = full_path.exists()
     filename = Path(file_path).name
-    archives_path = PROJECT_ROOT / "archives"
+    archives_path = PROJECT_ROOT / ARCHIVES_DIR
     exists_archived = False
     if archives_path.exists():
         for root, _dirs, files in os.walk(archives_path):

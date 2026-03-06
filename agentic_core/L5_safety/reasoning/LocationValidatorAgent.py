@@ -19,6 +19,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -406,7 +409,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
             # Territory inference from path
             try:
-                rel_parts = file_path.relative_to(self.project_root / "agentic_core").parts
+                rel_parts = file_path.relative_to(self.project_root / AGENTIC_CORE_DIR).parts
                 current_l1 = rel_parts[0] if len(rel_parts) > 1 else None
                 current_l2 = rel_parts[1] if len(rel_parts) > 2 else None
                 current_territory = f"{current_l1}/{current_l2}" if current_l2 else current_l1
@@ -809,7 +812,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         # [STRICT SCOPE] Target specific roots or all
         if target_territory:
             target_roots = (
-                [target_territory] if target_territory in SOVEREIGN_TERRITORIES else ["agentic_core"]
+                [target_territory] if target_territory in SOVEREIGN_TERRITORIES else [AGENTIC_CORE_DIR]
             )
         else:
             target_roots = list(SOVEREIGN_TERRITORIES.keys())

@@ -1,0 +1,91 @@
+============================= test session starts =============================
+platform win32 -- Python 3.12.10, pytest-9.0.2, pluggy-1.6.0
+rootdir: C:\Git\Agentic-Workflow
+configfile: pytest.ini (WARNING: ignoring pytest config in pyproject.toml!)
+testpaths: tests/unit_min_deps, tests/integration/agentic_core, tests/architecture, tests/enforcement, tests/governance, tests/system_learning, tests/unit, tests/sovereign_hardening
+plugins: anyio-4.12.1, asyncio-1.3.0, cov-7.0.0
+asyncio: mode=Mode.STRICT, debug=False, asyncio_default_fixture_loop_scope=None, asyncio_default_test_loop_scope=function
+
+----------------------------- live log collection -----------------------------
+2026-03-05 22:48:07 [    INFO] agentic_core.L2_execution.healers.tiering_allowlist: Validating compile-time frozen TIERING_ALLOWLIST...
+2026-03-05 22:48:07 [    INFO] agentic_core.L2_execution.healers.tiering_allowlist: TIERING_ALLOWLIST validated: 11 agents, 11 unique names
+2026-03-05 22:48:08 [    INFO] agentic_core.cache.redis_cache_client: Redis health OK: url=redis://localhost:6379 mem=1.07M
+collected 6739 items / 4 errors
+
+=================================== ERRORS ====================================
+_ ERROR collecting tests/unit/agentic_core/L0_routing/scripts/test_hardened_routing_ssot.py _
+tests\unit\agentic_core\L0_routing\scripts\test_hardened_routing_ssot.py:33: in <module>
+    from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
+agentic_core\L0_routing\scripts\execute_ssot.py:626: in <module>
+    REPO_ROOT = resolve_repo_root()  # noqa: N816
+                ^^^^^^^^^^^^^^^^^^^
+agentic_core\L0_routing\scripts\execute_ssot.py:621: in resolve_repo_root
+    if (p / AGENTIC_CORE_DIR).is_dir() and (p / OPS_SCRIPTS_DIR).is_dir():
+            ^^^^^^^^^^^^^^^^
+E   NameError: name 'AGENTIC_CORE_DIR' is not defined
+___ ERROR collecting tests/unit/agentic_core/test_hardened_routing_ssot.py ____
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\unit\agentic_core\test_hardened_routing_ssot.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\unit\agentic_core\test_hardened_routing_ssot.py:33: in <module>
+    from agentic_core.L0_routing.scripts.execute_ssot import (  # noqa: E402
+agentic_core\L0_routing\scripts\execute_ssot.py:40: in <module>
+    from types import FrameType
+E   ImportError: cannot import name 'FrameType' from 'types' (C:\Git\Agentic-Workflow\tests\unit\agentic_core\L5_safety\types\__init__.py)
+_ ERROR collecting tests/unit/file_classification_agent/test_phase2_orchestrator_hardening.py _
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\python.py:507: in importtestmodule
+    mod = import_path(
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\pathlib.py:549: in import_path
+    mod = _import_module_using_spec(
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\pathlib.py:725: in _import_module_using_spec
+    spec.loader.exec_module(mod)  # type: ignore[union-attr]
+    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+C:\Users\amita\AppData\Local\Programs\Python\Python312\Lib\site-packages\_pytest\assertion\rewrite.py:197: in exec_module
+    exec(co, module.__dict__)
+tests\unit\file_classification_agent\test_phase2_orchestrator_hardening.py:25: in <module>
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
+E     File "C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py", line 2075
+E       if not path.name.endswith(".py") or path.name.startswith("__"):
+E   IndentationError: unexpected indent
+__ ERROR collecting tests/sovereign_hardening/test_ssot_pipeline_protocol.py __
+ImportError while importing test module 'C:\Git\Agentic-Workflow\tests\sovereign_hardening\test_ssot_pipeline_protocol.py'.
+Hint: make sure your test modules/packages have valid Python names.
+Traceback:
+tests\sovereign_hardening\test_ssot_pipeline_protocol.py:19: in <module>
+    from agentic_core.L0_routing.scripts.execute_ssot import (
+agentic_core\L0_routing\scripts\execute_ssot.py:40: in <module>
+    from types import FrameType
+E   ImportError: cannot import name 'FrameType' from 'types' (C:\Git\Agentic-Workflow\tests\unit\agentic_core\L5_safety\types\__init__.py)
+============================== warnings summary ===============================
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/L2_execution/enforcement/test_boundary_end_to_end.py)
+    class TestKeySource(KeySource):
+
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/L2_execution/types/test_l5_certification.py)
+    class TestKeySource(KeySource):
+
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/L2_execution/types/test_sandbox_envelope_budget.py)
+    class TestKeySource(KeySource):
+
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/test_boundary_end_to_end.py)
+    class TestKeySource(KeySource):
+
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/test_l5_certification.py)
+    class TestKeySource(KeySource):
+
+agentic_core\L2_execution\enforcement\key_source.py:31
+  C:\Git\Agentic-Workflow\agentic_core\L2_execution\enforcement\key_source.py:31: PytestCollectionWarning: cannot collect test class 'TestKeySource' because it has a __init__ constructor (from: tests/unit/agentic_core/test_sandbox_envelope_budget.py)
+    class TestKeySource(KeySource):
+
+-- Docs: https://docs.pytest.org/en/stable/how-to/capture-warnings.html
+=========================== short test summary info ===========================
+ERROR tests/unit/agentic_core/L0_routing/scripts/test_hardened_routing_ssot.py
+ERROR tests/unit/agentic_core/test_hardened_routing_ssot.py
+ERROR tests/unit/file_classification_agent/test_phase2_orchestrator_hardening.py
+ERROR tests/sovereign_hardening/test_ssot_pipeline_protocol.py
+!!!!!!!!!!!!!!!!!!! Interrupted: 4 errors during collection !!!!!!!!!!!!!!!!!!!
+======================== 6 warnings, 4 errors in 2.72s ========================

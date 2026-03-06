@@ -10,11 +10,14 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from pathlib import Path
 
 root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / "agentic_core"
+core: Any = ROOT / AGENTIC_CORE_DIR
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint_config import CORE_SUBFOLDER_MAP
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 core_map: Any = CORE_SUBFOLDER_MAP
 external_map: Any = {

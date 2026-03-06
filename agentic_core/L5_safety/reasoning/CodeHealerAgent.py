@@ -50,6 +50,9 @@ from agentic_core.L5_safety.types.surgical_context_types import (
 )
 from agentic_core.mixins.circuit_breaker_mixin import CircuitBreakerMixin
 from agentic_core.mixins.cst_healer_mixin import SurgicalCSTHealerMixin
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -201,7 +204,7 @@ class CodeHealerAgent(
         self._actions: list[HealingAction] = []
 
         if self._agent_config.backup_dir is None:
-            self._agent_config.backup_dir = self.project_root / "archives" / "healing_backups" / "code"
+            self._agent_config.backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "code"
 
         # [PHASE 4] Initialize unified healing strategy
         self._unified_strategy: CodeHealingStrategy | None = CodeHealingStrategy(

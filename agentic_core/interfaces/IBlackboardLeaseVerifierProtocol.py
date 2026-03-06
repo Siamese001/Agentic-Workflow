@@ -25,6 +25,9 @@ from agentic_core.L2_execution.types.tool_args_types import (
     WriteFileArgs,
 )
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 # Define a Protocol for the Blackboard interface required by this module
@@ -77,7 +80,7 @@ def get_project_root() -> Path:
     """Get the project root directory."""
     current = Path(__file__).resolve()
     while current.parent != current:
-        if (current / "agentic_core").exists() or (current / ".git").exists():
+        if (current / AGENTIC_CORE_DIR).exists() or (current / ".git").exists():
             return current
         current = current.parent
     return Path.cwd()

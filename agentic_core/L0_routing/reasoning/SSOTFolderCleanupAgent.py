@@ -91,6 +91,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from L0 config."""
         from agentic_core.L0_routing.config import (
+            AGENTIC_CORE_DIR,
             L4_APPROVED_FOLDERS,
             VARIABLE_DEPTH_SUBFOLDERS,
         )
@@ -253,7 +254,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         non_approved_files = []
 
         # Scan agentic_core for non-approved files
-        agentic_core = self.project_root / "agentic_core"
+        agentic_core = self.project_root / AGENTIC_CORE_DIR
         if not agentic_core.exists():
             return non_approved_files
 
@@ -301,7 +302,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             if correct_folder and file_type != "UTILITY":
                 # Determine layer from current location
                 try:
-                    rel = file_path.relative_to(self.project_root / "agentic_core")
+                    rel = file_path.relative_to(self.project_root / AGENTIC_CORE_DIR)
                     layer = rel.parts[0] if len(rel.parts) > 1 else "L5_safety"
                     target = f"agentic_core/{layer}/{correct_folder}"
                     return {
@@ -489,7 +490,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         Returns:
             Number of folders deleted
         """
-        start_path = start_path or (self.project_root / "agentic_core")
+        start_path = start_path or (self.project_root / AGENTIC_CORE_DIR)
         deleted_count = 0
 
         # Walk bottom-up to delete empty folders

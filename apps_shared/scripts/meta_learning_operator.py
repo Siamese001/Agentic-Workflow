@@ -44,10 +44,13 @@ from system_learning.types.offline_replay_types import (
 from system_learning.types.rollout_types import (
     MetaLearningRollbackArtifact,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # Default store root for config_store reads.
 _DEFAULT_STORE_ROOT = (
-    Path(__file__).resolve().parents[2] / "agentic_core" / "L0_routing" / "meta_control" / "config_store"
+    Path(__file__).resolve().parents[2] / AGENTIC_CORE_DIR / "L0_routing" / "meta_control" / "config_store"
 )
 
 # =============================================================================

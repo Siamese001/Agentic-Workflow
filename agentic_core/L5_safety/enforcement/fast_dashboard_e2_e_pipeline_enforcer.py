@@ -26,6 +26,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     get_validated_project_root,
 )
 from agentic_core.utils.security_util import safe_execute
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class FastDashboardE2EPipeline:
@@ -253,7 +256,7 @@ class FastDashboardE2EPipeline:
         self.print_step("STEP 3: Regenerating dashboard HTML...")
 
         dashboard_script = (
-            self.project_root / "agentic_core" / "L6_observability" / "dashboards" / "generate_dashboard.py"
+            self.project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "generate_dashboard.py"
         )
 
         try:

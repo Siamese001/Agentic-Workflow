@@ -2,10 +2,13 @@ from pathlib import Path
 
 """Comprehensive check of ALL agents that might have been archived in entire chat history."""
 import os
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 l4_active = PROJECT_ROOT / "agentic_core/L4_state/memory/L4Agent.py"
-archives_path = PROJECT_ROOT / "archives"
+archives_path = PROJECT_ROOT / ARCHIVES_DIR
 l4_archived = []
 if archives_path.exists():
     for root, _dirs, files in os.walk(archives_path):

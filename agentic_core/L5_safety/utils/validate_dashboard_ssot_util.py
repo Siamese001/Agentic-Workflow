@@ -13,6 +13,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 # Patterns that indicate hardcoded dashboard paths
 HARDCODED_PATTERNS = [
@@ -29,7 +32,7 @@ EXCLUDE_PATTERNS = [
     ".venv",
     "venv",
     "node_modules",
-    "archives",
+    ARCHIVES_DIR,
     "legacy_",
     ".pytest_cache",
     "structure_blueprint.py",  # SSOT definition file itself

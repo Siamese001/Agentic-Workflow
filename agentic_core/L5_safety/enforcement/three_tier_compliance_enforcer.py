@@ -35,6 +35,9 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
 )
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+)
 
 # Guardian test patterns that provide architectural coverage
 GUARDIAN_TEST_PATTERNS: Final[list[str]] = [

@@ -39,6 +39,9 @@ from agentic_core.interfaces.meta_learning import (
 from agentic_core.interfaces.meta_learning import (
     get_sovereign_meta_client as get_meta_learning_client,
 )
+from agentic_core.L0_routing.config import (
+    APPS_RG_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -66,7 +69,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
     """
 
     # Domain-specific RG configuration
-    domain_root: Path = field(default_factory=lambda: Path("apps_rg"))
+    domain_root: Path = field(default_factory=lambda: Path(APPS_RG_DIR))
     _rg_version: Final[str] = "2.5.0"
 
     # [PHASE 25] Infrastructure Config

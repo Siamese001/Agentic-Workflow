@@ -19,6 +19,10 @@ from dataclasses import dataclass
 from datetime import datetime
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+)
 
 # Configure logging
 logging.basicConfig(level=logging.INFO)
@@ -87,7 +91,7 @@ class SSOTRelocator:
 
         # Setup logging
         if log_file is None:
-            log_dir = project_root / "agentic_core" / "L0_routing" / "logs"
+            log_dir = project_root / AGENTIC_CORE_DIR / "L0_routing" / "logs"
             log_dir.mkdir(parents=True, exist_ok=True)
             log_file = log_dir / "enforcement_history.log"
 
@@ -100,7 +104,7 @@ class SSOTRelocator:
         logger.addHandler(file_handler)
 
         # Archive root
-        self.archive_root = project_root / "archives" / "unmapped_drift"
+        self.archive_root = project_root / ARCHIVES_DIR / "unmapped_drift"
         if not dry_run:
             self.archive_root.mkdir(parents=True, exist_ok=True)
 

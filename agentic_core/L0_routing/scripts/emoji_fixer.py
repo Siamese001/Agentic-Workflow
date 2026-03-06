@@ -3,6 +3,10 @@ Prevents Windows encoding issues.
 """
 
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+)
 
 try:
     from agentic_core.L0_routing.scripts.full_agent_discovery import (
@@ -11,8 +15,8 @@ try:
         get_python_files,
     )
 except ImportError:
-    AGENTIC_CORE_DIR = Path("agentic_core")
-    APPS_SHARED_DIR = Path("apps_shared")
+    AGENTIC_CORE_DIR = Path(AGENTIC_CORE_DIR)
+    APPS_SHARED_DIR = Path(APPS_SHARED_DIR)
 
     def get_python_files(directory):
         return directory.rglob("*.py")

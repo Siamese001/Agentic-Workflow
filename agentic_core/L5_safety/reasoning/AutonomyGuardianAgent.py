@@ -38,6 +38,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     TESTS_DIR,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 log = logging.getLogger(__name__)
 
@@ -311,7 +314,7 @@ class AutonomyGuardianAgent(SovereignBaseAgent):
             # Fallback: only scan agentic_core (NOT .sovereign_healing_backup)
             if not agent_paths:
                 log.warning("[AutonomyGuardian] Fallback to agentic_core scan (discovery JSON unavailable)")
-                agentic_core_dir = self.project_root / "agentic_core"
+                agentic_core_dir = self.project_root / AGENTIC_CORE_DIR
                 # Phase 6.7: Use ssot_discovery instead of rglob
                 from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
