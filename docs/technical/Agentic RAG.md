@@ -103,7 +103,7 @@
 |     high missing_condition/scope rate (>0.3)              → propose lexical_exact_match_boost                                             |
 |     insufficient observations (<min_observations)         → no proposals emitted (dampening gate)                                         |
 ======================================================================================================================================================================
-  [ L7 EVALUATION SPINE — QUALITY & OPTIMIZATION ]  [+]
+  [ EVALUATION SPINE — QUALITY & OPTIMIZATION ]  [+]
 ======================================================================================================================================================================
 +--------------------------------------------------+   +--------------------------------------------------+   +--------------------------------------------------+
 | METRICS                                          |   | RETRIEVAL PIPELINE                               |   | CHUNKING                                         |
@@ -122,7 +122,7 @@
 | EmbeddingDriftMonitor  → L4 persist              |   | EvaluatorProposerBridge → ImprovementProposal    |   | ReplayEvaluationRunner   → DeltaReport → L4      |
 | AnswerQualityMonitor   → L4 persist              |   |   → Meta Learning Bus                            |   | ShadowEvaluationRunner   → ShadowEvaluationResult|
 | RetrievalCompletenessMonitor  [+] → L4G          |   | CompletenessReviewRubric  [+]                    |   |                                                  |
-| ParentExpansionMissMonitor    [+]                |   | CompletenessFeedbackExample  [+]                 |   | All L7 outputs: INFORMATIONAL. No route/tier/    |
+| ParentExpansionMissMonitor    [+]                |   | CompletenessFeedbackExample  [+]                 |   | All outputs: INFORMATIONAL. No route/tier/       |
 | HighSimilarityWrongAnswerMonitor  [+]            |   | ReviewRubric.quality_score() + failure dims      |   | safety mutation permitted.                       |
 | ConditionLossDriftMonitor  [+] → L4G             |   |                                                  |   |                                                  |
 +--------------------------------------------------+   +--------------------------------------------------+   +--------------------------------------------------+
