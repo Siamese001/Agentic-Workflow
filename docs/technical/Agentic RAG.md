@@ -53,4 +53,9 @@
 ======================================================================================================================================================================
 | [11] EmbeddingResult (L2 RAG Out)       : [content_hash, score_round6:float[0..1], row_idx:int, embedding_artifact_hash(sha256)] -> C0 info only.      |
 | [12] SeedEmbeddingPackManifest (Plan B) : [seed_index_version_hash, embedding_model_version, vector_count, dimensions, matrix_hash, row_index_hash]     |
+| [13] RagQuery (IRagProvider)            : [query_text, top_k, filters, metadata] -> Unified RAG query interface                                         |
+| [14] RagResult (IRagProvider)           : [documents: list[RagDocument], metadata, query_id] -> Unified RAG response                                    |
+| [15] RagDocument                        : [content, score, metadata, document_id] -> Single retrieved document                                          |
+| [16] AnchoredResult (L4 Retrieval)      : [anchor: RetrievalAnchor, documents, confidence] -> Anchored retrieval with drift tracking                    |
+| [17] RetrievalAnchor                    : [anchor_id, anchor_type, timestamp, version_hash] -> Knowledge drift anchor point                             |
 ======================================================================================================================================================================

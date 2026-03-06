@@ -45,6 +45,16 @@
 | - [STOP] HARD STOP REJECTION (Violations block execution & re-route to L1).             |             ||
 | - P4: CERTIFY Audit Logs & Hashes.                                                      |             ||
 | - [STMP] COMPLIANCE HASH/STAMP (Immutable cryptographic approval proof).                |             ||
+|                                                                                         |             ||
+| GOVERNANCE VALIDATORS:                                                                  |             ||
+| - GovernanceShieldValidator: scan_risk_level, detect_privacy_language,                  |             ||
+|   check_forbidden_patterns, generate_safety_protocol, audit_content_compliance          |             ||
+|   Returns: GovernanceResult [passed, issues, risk_level, score, protocol, metadata]     |             ||
+| - SSOTStructureValidator: validate_agent, validate_structure, generate_report           |             ||
+|   Validates: base_agent_location, layer_assignment, depth, territory, forbidden_patterns|             ||
+|   Returns: StructureValidationResult [total_agents, compliant_agents, violations]       |             ||
+| - LazySeamEnforcer: Governs upward imports (L_lower → L_higher)                         |             ||
+|   scan_file, scan_codebase, enforce, LazyUpwardImport detection                         |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           |                                                                             ||
                           v (Pass / Approve - Emits Hash-Stamped Plan)                                  ||
@@ -64,11 +74,22 @@
 |-----------------------------------------------------------------------------------------|             ||
 | - Receives Auth Stamp and Governed Payload.                                             |             ||
 | - Safely executes the validated DAG within established blast radius.                    |             ||
+|                                                                                         |             ||
+| L2 ENFORCEMENT LAYER:                                                                   |             ||
+| - CapabilityChokepoint: Central control for capability access and authorization         |             ||
+|   Methods: issue_token, authorize_and_execute, freeze, decisions                        |             ||
+| - L2BoundaryVerifier: Validates cross-layer boundaries and L5 certification             |             ||
+|   Methods: verify_instruction_packet, verify_l5_certification, verify_sandbox_envelope  |             ||
+|   verify_packet, verify_envelope, is_packet_valid, is_l5_certified, is_envelope_valid   |             ||
 +-----------------------------------------------------------------------------------------+             ||
 ======================================================================================================================================================================
   CORE GOVERNANCE & SAFETY DATA CONTRACTS
 ======================================================================================================================================================================
-| [STMP] Compliance Hash  : Immutable cryptographically signed stamp proving the exact plan hash passed the exact policy hash at a specific semantic time.             |
-| [2] SandboxEnvelope     : [InstructionPacket, ToolBudget] -> Cannot be generated without L5 [AUTH] Stamp.                                                          |
-| [5] HumanDecision       : MODIFY_DIFF MUST reference original plan_hash, use allowlist tools, and re-clear L5 before execution.                                    |
+| [STMP] Compliance Hash       : Immutable cryptographically signed stamp proving the exact plan hash passed the exact policy hash at a specific semantic time.      |
+| [2] SandboxEnvelope          : [InstructionPacket, ToolBudget] -> Cannot be generated without L5 [AUTH] Stamp.                                                   |
+| [5] HumanDecision            : MODIFY_DIFF MUST reference original plan_hash, use allowlist tools, and re-clear L5 before execution.                             |
+| [18] GovernanceResult        : [passed:bool, issues:list[str], risk_level:str, score:float, protocol:str, metadata:dict] -> Risk classification output          |
+| [19] StructureViolation      : [agent_class, agent_path, violation_type, message, severity, suggested_fix] -> SSOT structure violation                          |
+| [20] StructureValidationResult: [total_agents, compliant_agents, violations, base_agent_violations, layer_violations, depth_violations, territory_violations]   |
+| [21] LazyUpwardImport        : [source_file, source_layer, target_layer, import_statement, line_number, context] -> Upward import detection                     |
 ======================================================================================================================================================================

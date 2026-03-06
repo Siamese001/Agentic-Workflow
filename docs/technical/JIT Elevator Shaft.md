@@ -31,6 +31,14 @@
 |-----------------------------------------------------------------------------------------|             ||
 | - Proposes sequenced DAG execution plan or patched `MODIFY_DIFF`.                       |             ||
 | - Resolves simultaneous escalations before handing off to Safety.                       |             ||
+|                                                                                         |             ||
+| L3 ORCHESTRATION ENGINES:                                                               |             ||
+| - DAGManager: Manages execution DAG with dependency resolution                          |             ||
+| - Orchestrator: Central nervous system (modes: HEALING, REASONING, VALIDATION, UNIFIED) |             ||
+| - DecompositionOrchestrator: Multi-agent task decomposition engine                      |             ||
+| - AutonomousExecutionEngine: Executes action nodes with tool invocation                 |             ||
+| - ActionNode: Individual DAG node with tool intent and dependencies                     |             ||
+| - ToolIntentExecutor: Executes tool calls with capability token validation              |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           |                                                                             ||
                           v (Passes DAG / Patches to Safety Guard)                                      ||
@@ -70,4 +78,7 @@
 | [JIT] State Invariant   : Context loaded on-demand via the Elevator Shaft MUST match the SemanticClock of the active request.                                      |
 | [2] SandboxEnvelope     : [InstructionPacket, ToolBudget] -> Bound to the specific CapabilityToken pulled during the JIT sync.                                     |
 | [TRTH] Knowledge Anchor : RAG Embeddings ([C0]) pulled down the shaft are strictly Informational ONLY. Never mutates routes/safety/tiers.                          |
+| [25] ActionNode         : [node_id, tool_intent, dependencies, status, result] -> Individual DAG execution node                                                    |
+| [26] OrchestratorMode   : Enum[HEALING, REASONING, VALIDATION, UNIFIED] -> Orchestration mode selector                                                             |
+| [27] WorkflowContext    : [workflow_id, current_phase, state_snapshot] -> Execution context for orchestration                                                      |
 ======================================================================================================================================================================

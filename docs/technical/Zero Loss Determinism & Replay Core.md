@@ -46,11 +46,17 @@
 | THE SEMANTIC CLOCK (TIME ISOLATION)                                                     |             ||
 | - Wall-clock (`time.time()`, `datetime.now()`) is FORBIDDEN.                            |             ||
 | - `SemanticClock` acts as the SOLE temporal authority (Advances via exec steps).        |             ||
+| - SemanticClockValidator: Validates semantic clock consistency across replay runs       |             ||
 |                                                                                         |             ||
 | NETWORK & I/O INTERCEPTOR                                                               |             ||
 | - Captures external API responses into an immutable ledger.                             |             ||
 | - explicitly seeds all pseudo-random number generators.                                 |             ||
 | - [!] Un-transcripted network calls -> HARD FAIL.                                       |             ||
+|                                                                                         |             ||
+| REPLAY GUARD (Context Manager)                                                          |             ||
+| - Patches non-deterministic stdlib surfaces during replay (time, random, uuid)          |             ||
+| - Ensures deterministic execution by intercepting stdlib calls                          |             ||
+| - Context manager: with ReplayGuard(replay_envelope): ...                               |             ||
 +-----------------------------------------------------------------------------------------+             ||
                           | (Passes strictly governed State Diffs & Transcripts)                        ||
                           v                                                                             ||
@@ -61,10 +67,17 @@
 | - Generates exactly ONE stable artifact: [W<n>-DETERMINISM-DIGEST]                      |             ||
 |   (provider + model + gateway + sem_clock).                                             |             ||
 |                                                                                         |             ||
+| DIGEST CALCULATION & EMISSION:                                                          |             ||
+| - DigestCalculator: Computes SHA-256 digest from replay envelope components             |             ||
+| - DeterminismDigestEmitter: Ensures exactly ONE digest per execution (singleton guard)  |             ||
+| - LLM Replay Strategy: Captures raw LLM I/O for replay verification                     |             ||
+| - Deterministic Replay Engine: Executes replay cases and computes replay digest         |             ||
+|                                                                                         |             ||
 | STRICT REPLAY EXECUTION (replay_mode = True)                                            |             ||
 | 1. Re-runs execution using identical payload.                                           |             ||
 | 2. UWG strictly simulates diffs (No real I/O).                                          |             ||
-| 3. Compares Run 2 Digest vs Run 1 Digest.                                               |             ||
+| 3. ReplayGuard patches stdlib non-determinism.                                          |             ||
+| 4. Compares Run 2 Digest vs Run 1 Digest.                                               |             ||
 |    - Match  => mathematically proven zero-loss.                                         |             ||
 |    - Mismatch => FAIL (Multiple competing digests).                                     |             ||
 +-----------------------------------------------------------------------------------------+             ||
@@ -75,4 +88,8 @@
 | [UWG] Sovereignty Proof : Any un-transcripted network call -> HARD FAIL. Transcript must fully reconstruct all side-effects.                                       |
 | [4] ExecutionTrace      : [trace_id, plan_hash, actor, target, diff, policy_hash, timestamp, prev_hash(chaining), replay_key(trace_id+plan_hash+transcript_hash)]  |
 | [DIGEST] Proof Standard : W<n>-DETERMINISM-DIGEST -> MUST include [provider_id + model_id + gateway_version + semantic_clock_vector]. MUST print exactly once.     |
+| [28] ReplayEnvelope     : [provider_config_hash, historical_data_hash, embedding_config_hash, policy_snapshot_hash, semantic_clock_state] -> Seals full surface    |
+| [29] ReplayGuard        : Context manager that patches stdlib (time, random, uuid) for deterministic replay                                                        |
+| [30] DeterminismDigestEmitter: Singleton guard ensuring exactly one digest emission per execution                                                                  |
+| [31] LLMReplayStrategy  : Captures raw LLM I/O (prompt, response, model_id, temperature) for replay verification                                                   |
 ======================================================================================================================================================================

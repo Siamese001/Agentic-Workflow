@@ -164,10 +164,40 @@
                                                                                                         +----------------------------------------------------------+
 
 ==============================================================================================================================================================================================================================================================================
-  SUMMARY: FOUR-LAYER DEFENSE PREVENTS VALIDATOR/HEALER DRIFT
+  LAYER 5: L5 ENFORCEMENT GATES — ADDITIONAL SAFETY MECHANISMS
 ==============================================================================================================================================================================================================================================================================
-  LAYER 1: SHARED SSOT      → Both read identical structure_blueprint (163 names), no schema drift
+------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
+                              +----------------------------------------------------------+          +----------------------------------------------------------+          +----------------------------------------------------------+
+                              | ARCHIVAL GATEKEEPER (Destructive Operations)             |          | CIRCUIT BREAKER (Exponential Backoff)                    |          | OSCILLATION FIREWALL (Tier Freeze)                       |
+                              |----------------------------------------------------------|          |----------------------------------------------------------|          |----------------------------------------------------------|
+                              | Singleton service for file operations:                   |          | Config: CircuitBreakerConfig                             |          | Config: OscillationFirewallConfig                        |
+                              |   • safe_move(source, dest, agent, reason)              |          |   • failure_threshold: 5                                 |          |   • cooldown_window: int                                 |
+                              |   • safe_archive(path, agent, reason)                    |          |   • success_threshold: 3                                 |          |   • freeze_cycles: int                                   |
+                              |   • safe_delete(path, agent, reason)                     |          |   • reset_timeout_seconds: float                         |          |                                                          |
+                              |   • restore_from_archive(path)                           |          |   • max_reset_timeout_seconds: float                     |          | Methods:                                                 |
+                              |                                                          |          |   • backoff_multiplier: float                            |          |   • record_tier_decision(trace_id, tier)                 |
+                              | Returns: ArchivalResult                                  |          |   • half_open_max_calls: int                             |          |   • assert_no_oscillation(trace_id)                      |
+                              |   • success: bool                                        |          |   • execution_timeout_seconds: float                     |          |   • is_tier_frozen(trace_id) -> bool                     |
+                              |   • operation: ArchivalOperation                         |          |                                                          |          |   • get_frozen_tiers() -> set[str]                       |
+                              |   • source_path, destination_path                        |          | States: CLOSED, OPEN, HALF_OPEN                          |          |                                                          |
+                              |   • requester_agent, reason                              |          | Metrics: CircuitBreakerMetrics                           |          | Exceptions:                                              |
+                              |   • timestamp, error, approval_status                    |          |   • total_calls, successful_calls, failed_calls          |          |   • OscillationFirewallTripped                           |
+                              |                                                          |          |   • rejected_calls, timed_out_calls                      |          |                                                          |
+                              | L4 Ledger Hook: _notify_l4_ledger()                      |          |   • state_transitions, current_backoff                   |          | Prevents: Tier oscillation (A→B→A→B)                     |
+                              | Approval: _request_approval() for batch mode            |          |                                                          |          | Enforces: Tier freeze after N oscillations               |
+                              |                                                          |          | Exceptions:                                              |          |                                                          |
+                              | ✅ PREVENTS: Unauthorized file deletion/archival         |          |   • CircuitBreakerOpenError                              |          | ✅ PREVENTS: Infinite healing tier oscillation           |
+                              +----------------------------------------------------------+          |   • CircuitBreakerTimeoutError                           |          +----------------------------------------------------------+
+                                                                                                        |                                                          |
+                                                                                                        | ✅ PREVENTS: Cascading failures via exponential backoff  |
+                                                                                                        +----------------------------------------------------------+
+
+==============================================================================================================================================================================================================================================================================
+  SUMMARY: FIVE-LAYER DEFENSE PREVENTS VALIDATOR/HEALER DRIFT
+==============================================================================================================================================================================================================================================================================
+  LAYER 1: SHARED SSOT          → Both read identical structure_blueprint (163 names), no schema drift
   LAYER 2: LINEAGE VERSIONING   → ChangePackage V1→V2→V3 chain enforced, no temporal drift
   LAYER 3: REPLAY VALIDATION    → SHA-256 hash verification, no data corruption
   LAYER 4: WRITE GATEWAY        → Healer cannot bypass validator approval, no unauthorized mutations
+  LAYER 5: L5 ENFORCEMENT GATES → ArchivalGatekeeper, CircuitBreaker, OscillationFirewall prevent destructive operations, cascading failures, and tier oscillation
 ==============================================================================================================================================================================================================================================================================

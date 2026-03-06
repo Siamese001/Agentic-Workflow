@@ -20,6 +20,7 @@ import argparse
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config import ROOT_WHITELIST
 from agentic_core.L0_routing.types.guardian_contract_types import (
     IGNORE_PATTERNS,
     MAX_FOLDER_DEPTH,
