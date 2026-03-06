@@ -39,6 +39,7 @@ _MAX_KEY_LEN: int = 512
 _MAX_VALUE_BYTES: int = 10 * 1024 * 1024  # 10 MB safety cap
 _FALLBACK_MAX_ENTRIES: int = 4096
 _MAX_TTL_SECONDS: int = 86400  # 24 hours hard cap
+_HEALTH_CHECK_TIMEOUT_S: float = 0.5  # probe timeout; keeps health checks fast
 
 
 class CacheDB(IntEnum):
@@ -498,3 +499,75 @@ def reset_cache_singletons() -> None:
     global _hot_cache, _coordination_cache
     _hot_cache = None
     _coordination_cache = None
+
+
+# ---------------------------------------------------------------------------
+# Redis health-check helper (F4 — infrastructure verification)
+# ---------------------------------------------------------------------------
+
+
+def check_redis_health(redis_url: str | None = None) -> dict[str, object]:
+    """Probe Redis availability and return a structured health report.
+
+    Does NOT raise on failure — returns a dict with ``"healthy": False`` so
+    callers can decide how to react.  Emits a clear actionable log message
+    when Redis is unreachable, including the WSL2 start command.
+
+    Args:
+        redis_url: Override URL (default: ``REDIS_URL`` env var or
+            ``redis://localhost:6379``).
+
+    Returns:
+        ``dict`` with keys:
+            - ``"healthy"`` (bool): True when Redis responded to PING.
+            - ``"url"`` (str): The URL that was probed.
+            - ``"using_fallback"`` (bool): True when the singleton is on LRU.
+            - ``"error"`` (str | None): Error message when not healthy.
+            - ``"fix"`` (str | None): Actionable remediation hint.
+    """
+    url = redis_url or os.environ.get("REDIS_URL", "redis://localhost:6379")
+    result: dict[str, object] = {
+        "healthy": False,
+        "url": url,
+        "using_fallback": True,
+        "error": None,
+        "fix": None,
+    }
+    try:
+        import redis as _redis  # noqa: PLC0415
+
+        parsed = urllib.parse.urlparse(url)
+        conn = _redis.Redis(
+            host=parsed.hostname or "localhost",
+            port=int(parsed.port or 6379),
+            db=0,
+            socket_timeout=_HEALTH_CHECK_TIMEOUT_S,
+            socket_connect_timeout=_HEALTH_CHECK_TIMEOUT_S,
+        )
+        conn.ping()
+        info = conn.info("memory")
+        result["healthy"] = True
+        result["using_fallback"] = False
+        result["used_memory_human"] = info.get("used_memory_human", "unknown")
+        result["maxmemory_human"] = info.get("maxmemory_human", "0B")
+        logger.info("Redis health OK: url=%s mem=%s", url, result["used_memory_human"])
+    except ImportError:
+        result["error"] = "redis package not installed"
+        result["fix"] = "pip install redis"
+        logger.error("Redis health FAIL: redis package not installed. Fix: pip install redis")
+    except Exception as exc:  # guardian: allow-silent_swallower
+        result["error"] = str(exc)
+        result["fix"] = (
+            "Start Redis before launching the agent stack.\n"
+            "  WSL2:    sudo apt install redis-server && redis-server --daemonize yes\n"
+            "  Windows: winget install Redis.Redis\n"
+            "  Docker:  docker run -d -p 6379:6379 redis:7-alpine\n"
+            "  Env var: set REDIS_URL=redis://localhost:6379"
+        )
+        logger.error(
+            "Redis health FAIL: url=%s error=%s\n%s",
+            url,
+            exc,
+            result["fix"],
+        )
+    return result

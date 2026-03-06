@@ -21,6 +21,8 @@ from __future__ import annotations
 import argparse
 import json
 
+from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+
 
 def _build_prompt(
     agent_name: str,
@@ -30,7 +32,9 @@ def _build_prompt(
     gate: str,
 ) -> str:
     violations_str = ", ".join(violation_types) if violation_types else "UNKNOWN"
-    band = "low (agent-native)" if score <= 13 else ("medium (Qwen-advised)" if score <= 26 else "high (Gemini)")
+    band = (
+        "low (agent-native)" if score <= 13 else ("medium (Qwen-advised)" if score <= 26 else "high (Gemini)")
+    )
     return (
         f"You are a healing-plan advisor for an agentic codebase pipeline.\n"
         f"Score-based routing has already dispatched this to you: score={score} ({band}), gate={gate}.\n"
@@ -62,7 +66,7 @@ def main() -> None:
         quantization="awq",
         dtype="float16",
         max_model_len=512,
-        gpu_memory_utilization=0.7,
+        gpu_memory_utilization=QWEN_GPU_MEM_UTIL,
     )
 
     prompt = _build_prompt(args.agent_name, args.violation_types, args.territory, args.score, args.gate)

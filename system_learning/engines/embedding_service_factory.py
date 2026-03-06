@@ -13,6 +13,7 @@ W1 implementation with:
 from __future__ import annotations
 
 import hashlib
+import importlib.util
 import logging
 import os
 import threading
@@ -228,6 +229,46 @@ class EmbeddingServiceFactory:
         # It must be explicitly set to "true" to be enabled.
         return os.environ.get("EMBEDDING_ENABLED", "false").lower() == "true"
 
+    @staticmethod
+    def _faiss_gpu_available() -> bool:
+        """Return True only when faiss-gpu is installed and a CUDA device is present."""
+        if importlib.util.find_spec("faiss") is None:
+            return False
+        try:
+            import faiss  # noqa: PLC0415
+
+            return hasattr(faiss, "StandardGpuResources")
+        except Exception:  # guardian: allow-silent_swallower
+            return False
+
+    @staticmethod
+    def _embedding_device() -> str:
+        """Return 'cuda' or 'cpu' based on EMBEDDING_DEVICE env var (default: cpu)."""
+        return os.environ.get("EMBEDDING_DEVICE", "cpu").lower()
+
+    @staticmethod
+    def _build_gpu_index(cpu_matrix: np.ndarray) -> Any:
+        """Move a normalised float32 matrix into a GPU FAISS IndexFlatIP.
+
+        Args:
+            cpu_matrix: Shape (N, D) float32 normalised embedding matrix.
+
+        Returns:
+            faiss GpuIndex on device 0, or None if construction fails.
+        """
+        try:
+            import faiss  # noqa: PLC0415
+
+            res = faiss.StandardGpuResources()
+            dim = cpu_matrix.shape[1]
+            cpu_index = faiss.IndexFlatIP(dim)
+            cpu_index.add(cpu_matrix)
+            gpu_index = faiss.index_cpu_to_gpu(res, 0, cpu_index)
+            return gpu_index
+        except Exception as exc:
+            logger.warning("faiss-gpu index construction failed, staying on CPU: %s", exc)
+            return None
+
     def _get_blas_fingerprint(self) -> str:
         """Get BLAS implementation fingerprint for replay key."""
         try:
@@ -287,6 +328,18 @@ class EmbeddingServiceFactory:
 
         norms = np.maximum(norms, eps)
         self._normalized = (self._raw / norms).astype(np.float32)
+
+        # Optionally promote to GPU FAISS index for VRAM-resident similarity search.
+        # Only activated when EMBEDDING_DEVICE=cuda AND faiss-gpu is installed.
+        # Falls back to CPU numpy dot-product silently on any failure.
+        self._gpu_index: Any = None
+        if self._embedding_device() == "cuda" and self._faiss_gpu_available():
+            self._gpu_index = self._build_gpu_index(self._normalized)
+            if self._gpu_index is not None and self._is_embedding_enabled():
+                logger.info(
+                    "Embedding service: GPU FAISS index active (device=cuda, ntotal=%d)",
+                    self._gpu_index.ntotal,
+                )
 
         # Compute streaming normalized hash
         self._normalized_pack_hash = self._compute_streaming_hash(self._normalized)

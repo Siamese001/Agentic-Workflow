@@ -29,6 +29,11 @@ QWEN_14B_MIN_VRAM_GB: float = 16.0  # Int4-quantized 14B fits in 16 GB
 QWEN_14B_MIN_CUDA = "12.0"
 QWEN_14B_MIN_COMPUTE: float = 8.0  # Ada Lovelace baseline (RTX 4090/5090)
 
+# Canonical GPU memory utilization fraction shared by ALL vLLM launch sites.
+# 0.70 reserves ~30 % headroom for the KV cache under concurrent load.
+# MUST NOT be overridden per-call-site — change only here.
+QWEN_GPU_MEM_UTIL: float = 0.70
+
 # Agents that must be routed through the Qwen 14B tier (medium confidence)
 # when local-GPU inference is available.  The resolver checks this set at
 # dispatch time; agents absent from this set keep their existing routing.
@@ -172,6 +177,7 @@ __all__ = [
     "QWEN_14B_AGENT_KEYS",
     "BMG_EMBEDDING_MODEL_ID",
     "BMG_EMBEDDING_AGENT_KEYS",
+    "QWEN_GPU_MEM_UTIL",
     "HealingTierConfig",
     "load_default_healing_tier_config",
     "validate_qwen_startup_state",

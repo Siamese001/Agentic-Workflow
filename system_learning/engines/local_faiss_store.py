@@ -681,6 +681,37 @@ class LocalFAISSStore:
                 },
             )
 
+    @staticmethod
+    def verify_indexes_at_boot(
+        base_dir: Path,
+        *,
+        expected_embedder_id: str | None = None,
+    ) -> dict[str, str]:
+        """Run boot-time integrity sweep over all persisted FAISS index artifacts.
+
+        Delegates to ``faiss_startup_integrity.verify_all_indexes_in_dir``.
+        Returns ``dict[index_id -> digest]`` on success.
+        Raises ``StartupIntegrityError`` immediately on the first violation.
+
+        Call this once at process startup before any ``load_from_disk`` calls.
+        If ``base_dir`` does not exist, returns an empty dict (no indexes yet built).
+
+        Args:
+            base_dir: Root directory under which per-index subdirectories live.
+            expected_embedder_id: If provided, every manifest must match exactly.
+
+        Returns:
+            Mapping of index_id to W-A-DETERMINISM-DIGEST for every verified index.
+        """
+        from system_learning.engines.faiss_startup_integrity import (  # noqa: PLC0415
+            verify_all_indexes_in_dir,
+        )
+
+        base = Path(base_dir)
+        if not base.exists():
+            return {}
+        return verify_all_indexes_in_dir(base, expected_embedder_id=expected_embedder_id)
+
 
 __all__ = [
     "LocalFAISSStore",

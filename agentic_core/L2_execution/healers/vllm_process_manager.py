@@ -11,6 +11,8 @@ import logging
 import subprocess
 import time
 
+from agentic_core.L2_execution.healers.healing_tier_config import QWEN_GPU_MEM_UTIL
+
 logger = logging.getLogger(__name__)
 
 
@@ -44,7 +46,7 @@ class VLLMProcessManager:
             "--max-model-len",
             "8192",
             "--gpu-memory-utilization",
-            "0.85",
+            str(QWEN_GPU_MEM_UTIL),
         ]
 
         logger.info(f"Starting vLLM server with command: {' '.join(cmd)}")
@@ -151,11 +153,15 @@ vllm_process_manager = VLLMProcessManager()
 def get_model_config(model_size: str = "7B") -> dict:
     """Get model configuration for specified model size."""
     configs = {
-        "7B": {"model_id": "Qwen/Qwen2.5-7B-Instruct", "max_model_len": 8192, "gpu_memory_utilization": 0.85},
+        "7B": {
+            "model_id": "Qwen/Qwen2.5-7B-Instruct",
+            "max_model_len": 8192,
+            "gpu_memory_utilization": QWEN_GPU_MEM_UTIL,
+        },
         "14B": {
             "model_id": "Qwen/Qwen2.5-14B-Instruct",
             "max_model_len": 4096,
-            "gpu_memory_utilization": 0.85,
+            "gpu_memory_utilization": QWEN_GPU_MEM_UTIL,
         },
     }
 
