@@ -18,7 +18,7 @@ paths in ARCHITECTURE_COMPONENT_RULES. N=6 files declared.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+52800d50d
 
 ## FILES_CHANGED_CODE
 
@@ -31,7 +31,10 @@ tools/semantic_gap_analyzer.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+```
+docs/reports/plans/wave1_phase1_evidence.md
+tools/evidence/wave1_phase1_runner.py
+```
 
 ## INSPECTED_FILES
 
@@ -90,29 +93,29 @@ tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_all_
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_all_architecture_component_rule_paths_parse_cleanly PASSED [ 68%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_reports_no_missing_component_files 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:06:45 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
+2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 72%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_write_gateway_finding_shows_present 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:06:45 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
+2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 77%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_meta_learning_pipeline_finding_shows_present 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:06:45 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
+2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 81%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_no_component_finding_shows_missing_file 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:06:45 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
+2026-03-05 23:07:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Architecture Component Presence...
 PASSED                                                                   [ 86%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_ast_parse_ok_returns_true_for_valid_source PASSED [ 90%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_ast_parse_ok_returns_false_for_broken_source PASSED [ 95%]
 tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_ast_parse_ok_empty_file_is_valid PASSED [100%]
 
 ============================ slowest 10 durations =============================
-0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_write_gateway_finding_shows_present
-0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_meta_learning_pipeline_finding_shows_present
-0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_no_component_finding_shows_missing_file
 0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_reports_no_missing_component_files
+0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_meta_learning_pipeline_finding_shows_present
+0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_write_gateway_finding_shows_present
+0.02s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_analyzer_no_component_finding_shows_missing_file
 0.01s call     tests/architecture/test_wave1_phase1_parse_failures_and_ssot_paths.py::test_all_architecture_component_rule_paths_parse_cleanly
 
 (5 durations < 0.005s hidden.  Use -vv to show these durations.)
