@@ -360,8 +360,13 @@ class ASTAnalyzer:
                         layer_token = layer_path.name
                         if layer_token in alias.name:
                             analysis.imported_layer_refs.add(layer_name)
-                    if any(pattern in alias.name.lower() for pattern in DIRECT_PROVIDER_IMPORT_PATTERNS):
-                        analysis.direct_provider_imports.add(alias.name)
+                    if not alias.name.startswith("agentic_core."):
+                        mod_lower = alias.name.lower()
+                        if any(
+                            mod_lower == p or mod_lower.startswith(p + ".")
+                            for p in DIRECT_PROVIDER_IMPORT_PATTERNS
+                        ):
+                            analysis.direct_provider_imports.add(alias.name)
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
                     imported_names: list[str] = []
@@ -383,8 +388,13 @@ class ASTAnalyzer:
                         layer_token = layer_path.name
                         if layer_token in node.module:
                             analysis.imported_layer_refs.add(layer_name)
-                    if any(pattern in node.module.lower() for pattern in DIRECT_PROVIDER_IMPORT_PATTERNS):
-                        analysis.direct_provider_imports.add(node.module)
+                    if not node.module.startswith("agentic_core."):
+                        mod_lower = node.module.lower()
+                        if any(
+                            mod_lower == p or mod_lower.startswith(p + ".")
+                            for p in DIRECT_PROVIDER_IMPORT_PATTERNS
+                        ):
+                            analysis.direct_provider_imports.add(node.module)
             elif isinstance(node, ast.Call):
                 if isinstance(node.func, ast.Attribute):
                     call_name = node.func.attr
