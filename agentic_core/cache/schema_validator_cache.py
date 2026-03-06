@@ -71,6 +71,7 @@ class SchemaValidatorCache:
                     return cached
             except ValueError:
                 raise  # Propagate validation errors
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Schema validator cache] Cache read failed: {e}")
 
@@ -84,6 +85,7 @@ class SchemaValidatorCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except ValueError:
                 pass  # Already validated above
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Schema validator cache] Cache write failed: {e}")
 

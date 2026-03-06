@@ -67,6 +67,7 @@ class ConfigFileCache:
                     return cached
             except FileNotFoundError:
                 raise
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Config cache] Cache read failed: {e}")
 
@@ -80,6 +81,7 @@ class ConfigFileCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:
                 pass  # File may have been deleted after fetch
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Config cache] Cache write failed: {e}")
 

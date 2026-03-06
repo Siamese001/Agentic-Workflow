@@ -71,6 +71,7 @@ class ToolEmbeddingCache:
                     return cached["embeddings"], cached["tool_names"]
             except ValueError:
                 raise  # Propagate validation errors
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Tool embedding cache] Cache read failed: {e}")
 
@@ -88,6 +89,7 @@ class ToolEmbeddingCache:
                 )
             except ValueError:
                 pass  # Already validated above
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Tool embedding cache] Cache write failed: {e}")
 

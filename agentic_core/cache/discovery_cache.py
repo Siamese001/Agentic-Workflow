@@ -74,7 +74,9 @@ class AgentDiscoveryCache:
                     if cached is not None:
                         logger.debug("[Discovery cache] HIT")
                         return cached
+                # guardian: allow-silent-swallow
                 except Exception as e:
+                    # Intentional cache resilience: log and continue
                     logger.warning(f"[Discovery cache] Cache read failed: {e}")
                     # Fall through to fetch
 
@@ -88,6 +90,7 @@ class AgentDiscoveryCache:
                 self._cache.set_json(cache_key, result, ttl_seconds=self._ttl)
             except FileNotFoundError:
                 pass  # File may have been deleted after fetch
+            # guardian: allow-silent-swallow
             except Exception as e:
                 logger.warning(f"[Discovery cache] Cache write failed: {e}")
                 # Cache write failure is non-fatal
