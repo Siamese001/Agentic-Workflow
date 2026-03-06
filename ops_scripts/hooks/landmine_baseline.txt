@@ -1281,7 +1281,7 @@ agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent excep
 agentic_core/base_agents/L4StateBase.py:46:type_erasure:Type erasure: L4StateBase.get_state returns Any instead of structured type
 agentic_core/base_agents/SovereignBaseAgent.py:122:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/SovereignBaseAgent.py:515:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/cache/redis_cache_client.py:558:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/cache/redis_cache_client.py:586:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/config/core/reflection_config.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:279:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

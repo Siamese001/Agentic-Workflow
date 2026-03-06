@@ -183,6 +183,23 @@ class DeterministicRedisCache:
     # Connection management
     # ------------------------------------------------------------------
 
+    @staticmethod
+    def _tcp_reachable(host: str, port: int) -> bool:
+        """Fast TCP pre-check bounded by _REDIS_SOCKET_TIMEOUT_S.
+
+        redis-py's socket_connect_timeout is bypassed by the OS TCP stack on
+        Windows when no listener is present (no RST, so the kernel timer governs
+        instead).  A raw socket.create_connection() honours the Python timeout
+        correctly and fails fast.
+        """
+        import socket as _socket  # noqa: PLC0415
+
+        try:
+            with _socket.create_connection((host, port), timeout=_REDIS_SOCKET_TIMEOUT_S):
+                return True
+        except OSError:
+            return False
+
     def _connect(self) -> Any:
         """Return a live redis.Redis connection, falling back gracefully."""
         if self._use_fallback:
@@ -193,9 +210,20 @@ class DeterministicRedisCache:
             import redis as _redis  # noqa: PLC0415
 
             parsed = urllib.parse.urlparse(self._redis_url)
+            host = parsed.hostname or "localhost"
+            port = int(parsed.port or 6379)
+
+            # Raw socket pre-check: fail fast before redis-py even attempts the
+            # handshake.  On Windows, the OS TCP timeout ignores redis-py's
+            # socket_connect_timeout for closed ports, causing multi-second hangs.
+            if not self._tcp_reachable(host, port):
+                raise OSError(
+                    f"TCP pre-check failed: {host}:{port} unreachable within {_REDIS_SOCKET_TIMEOUT_S}s"
+                )
+
             params: dict[str, Any] = {
-                "host": parsed.hostname or "localhost",
-                "port": int(parsed.port or 6379),
+                "host": host,
+                "port": port,
                 "db": int(self._db),
                 "decode_responses": False,  # we handle bytes ourselves
                 "socket_timeout": _REDIS_SOCKET_TIMEOUT_S,
