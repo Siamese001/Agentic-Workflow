@@ -14,7 +14,13 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L4_state.caching.redis_mcp_client import get_redis_client
+from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
+
+
+def get_redis_client():
+    """Shim: redirect legacy callers to the canonical DeterministicRedisCache client."""
+    return _get_hot_cache()
+
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.utils.decorators_compat_util import standard_heal

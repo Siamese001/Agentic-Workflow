@@ -97,6 +97,44 @@ class RouteDecisionCache:
         key = build_route_decision_key(intent_hash, policy_hash, routing_state_hash)
         self._cache.set_json(key, artifact_dict, ttl_seconds=self._ttl)
 
+    def get_or_fetch(
+        self,
+        intent_hash: str,
+        policy_hash: str,
+        routing_state_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached result or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable that returns the
+        ``RouteDecisionArtifact`` dict by re-deriving it from L4.  It is
+        called **only** on a cache miss.  The result is stored before return.
+
+        This is the canonical wiring point for L0 routing engines.  Engines
+        should call this instead of calling ``get()`` and L4 separately.
+
+        Parameters
+        ----------
+        intent_hash, policy_hash, routing_state_hash:
+            Hash inputs that fully determine the routing decision.
+        fetch_from_l4:
+            Zero-argument callable returning ``dict[str, Any]``.
+        replay_mode:
+            Pass ``True`` during replay to force re-derivation from L4.
+        """
+        if not replay_mode:
+            cached = self.get(intent_hash, policy_hash, routing_state_hash)
+            if cached is not None:
+                logger.debug("[L0 cache] route_decision HIT")
+                return cached
+        logger.debug("[L0 cache] route_decision MISS — fetching from L4")
+        result = fetch_from_l4()
+        if not replay_mode:
+            self.set(intent_hash, policy_hash, routing_state_hash, result)
+        return result
+
     def invalidate(
         self,
         intent_hash: str,
@@ -149,6 +187,29 @@ class RoutingRuleSurfaceCache:
         key = build_routing_rule_surface_key(routing_state_hash)
         self._cache.set_json(key, ruleset, ttl_seconds=self._ttl)
 
+    def get_or_fetch(
+        self,
+        routing_state_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached ruleset or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable returning the current
+        ruleset dict from L4.  Called only on a cache miss; result is stored.
+        """
+        if not replay_mode:
+            cached = self.get(routing_state_hash)
+            if cached is not None:
+                logger.debug("[L0 cache] rule_surface HIT")
+                return cached
+        logger.debug("[L0 cache] rule_surface MISS — fetching from L4")
+        result = fetch_from_l4()
+        if not replay_mode:
+            self.set(routing_state_hash, result)
+        return result
+
     def invalidate(self, routing_state_hash: str) -> None:
         """Evict the cached ruleset."""
         key = build_routing_rule_surface_key(routing_state_hash)
@@ -197,6 +258,29 @@ class CapabilityRegistryCache:
         """Store *registry* (canonical JSON dict from L4) in the mirror."""
         key = build_cap_registry_key(cap_registry_hash)
         self._cache.set_json(key, registry, ttl_seconds=self._ttl)
+
+    def get_or_fetch(
+        self,
+        cap_registry_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached registry or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable returning the current
+        capability registry dict from L4.  Called only on a cache miss.
+        """
+        if not replay_mode:
+            cached = self.get(cap_registry_hash)
+            if cached is not None:
+                logger.debug("[L0 cache] cap_registry HIT")
+                return cached
+        logger.debug("[L0 cache] cap_registry MISS — fetching from L4")
+        result = fetch_from_l4()
+        if not replay_mode:
+            self.set(cap_registry_hash, result)
+        return result
 
     def invalidate(self, cap_registry_hash: str) -> None:
         """Evict the cached registry snapshot."""

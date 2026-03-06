@@ -96,6 +96,39 @@ class SafetyEvalCache:
         key = build_safety_eval_key(compiled_prompt_hash, policy_hash, toolset_hash)
         self._cache.set_json(key, eval_result, ttl_seconds=self._ttl)
 
+    def get_or_fetch(
+        self,
+        compiled_prompt_hash: str,
+        policy_hash: str,
+        toolset_hash: str,
+        fetch_from_l5: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached eval or call *fetch_from_l5*.
+
+        *fetch_from_l5* is a zero-argument callable that runs the full L5
+        safety evaluation and returns the result dict.  Called only on a
+        cache miss.
+
+        This is the canonical wiring point for L5 evaluator engines.  The
+        evaluator should call this instead of running a live evaluation on
+        every request.
+
+        The returned dict must include at minimum ``"decision"`` and
+        ``"compliance_hash"`` — the same contract as ``set()``.
+        """
+        if not replay_mode:
+            cached = self.get(compiled_prompt_hash, policy_hash, toolset_hash)
+            if cached is not None:
+                logger.debug("[L5 cache] safety_eval HIT")
+                return cached
+        logger.debug("[L5 cache] safety_eval MISS — running live evaluation")
+        result = fetch_from_l5()
+        if not replay_mode:
+            self.set(compiled_prompt_hash, policy_hash, toolset_hash, result)
+        return result
+
     def invalidate(
         self,
         compiled_prompt_hash: str,

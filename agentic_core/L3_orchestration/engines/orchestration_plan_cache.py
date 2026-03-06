@@ -98,6 +98,32 @@ class OrchestrationPlanCache:
         key = build_orch_plan_key(trace_id, plan_hash, tool_budget_hash)
         self._cache.set_json(key, plan, ttl_seconds=self._ttl)
 
+    def get_or_fetch(
+        self,
+        trace_id: str,
+        plan_hash: str,
+        tool_budget_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached plan or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable that returns the resolved
+        orchestration plan dict from L4.  Called only on a cache miss.
+
+        This is the canonical wiring point for L3 orchestration engines.
+        Engines should call this instead of calling ``get()`` and L4 directly.
+        """
+        cached = self.get(trace_id, plan_hash, tool_budget_hash, replay_mode=replay_mode)
+        if cached is not None:
+            logger.debug("[L3 cache] orch_plan HIT")
+            return cached
+        logger.debug("[L3 cache] orch_plan MISS — fetching from L4")
+        result = fetch_from_l4()
+        self.set(trace_id, plan_hash, tool_budget_hash, result)
+        return result
+
     def invalidate(
         self,
         trace_id: str,

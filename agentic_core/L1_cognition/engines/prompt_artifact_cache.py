@@ -112,6 +112,40 @@ class CompiledPromptCache:
         key = build_compiled_prompt_key(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash)
         self._cache.set_json(key, artifact, ttl_seconds=self._ttl)
 
+    def get_or_fetch(
+        self,
+        prompt_bom_hash: str,
+        s0_hash: str,
+        i0_hash: str,
+        d0_hash: str,
+        c0_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> dict[str, Any]:
+        """Read-through helper: return cached artifact or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable that returns the compiled
+        prompt artifact dict from L4.  Called only on a cache miss.
+
+        This is the canonical wiring point for L1 prompt-assembly engines.
+        """
+        cached = self.get(
+            prompt_bom_hash,
+            s0_hash,
+            i0_hash,
+            d0_hash,
+            c0_hash,
+            replay_mode=replay_mode,
+        )
+        if cached is not None:
+            logger.debug("[L1 cache] compiled_prompt HIT")
+            return cached
+        logger.debug("[L1 cache] compiled_prompt MISS — fetching from L4")
+        result = fetch_from_l4()
+        self.set(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash, result)
+        return result
+
     def invalidate(
         self,
         prompt_bom_hash: str,
@@ -186,6 +220,29 @@ class TemplateRenderCache:
             rendered.encode("utf-8"),
             ttl_seconds=self._ttl,
         )
+
+    def get_or_fetch(
+        self,
+        template_id: str,
+        template_version: str,
+        args_hash: str,
+        fetch_from_l4: Any,
+        *,
+        replay_mode: bool = False,
+    ) -> str:
+        """Read-through helper: return cached render or call *fetch_from_l4*.
+
+        *fetch_from_l4* is a zero-argument callable returning the rendered
+        template string from L4.  Called only on a cache miss.
+        """
+        cached = self.get(template_id, template_version, args_hash, replay_mode=replay_mode)
+        if cached is not None:
+            logger.debug("[L1 cache] template_render HIT")
+            return cached
+        logger.debug("[L1 cache] template_render MISS — fetching from L4")
+        result = fetch_from_l4()
+        self.set(template_id, template_version, args_hash, result)
+        return result
 
     def invalidate(
         self,

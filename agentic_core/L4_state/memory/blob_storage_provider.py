@@ -1,11 +1,12 @@
 from __future__ import annotations
 
-from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.interfaces.write_gateway import get_write_gateway
+
 
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
+
 
 """
 Storage adapters for different backend types.
@@ -15,7 +16,6 @@ Supports local disk (for development) and S3 (for production).
 """
 import json
 import logging
-import time
 from pathlib import Path
 from typing import Any, Protocol
 
@@ -317,104 +317,28 @@ def create_storage_adapter(adapter_type: str = "local", **kwargs) -> IBlobStorag
 
 from agentic_core.L0_routing.config import TESTS_DIR
 
+# ---------------------------------------------------------------------------
+# TOMBSTONED SHADOW REDIS CLASSES
+#
+# RedisDistributedLock, RedisHotCache, and HotBrainCache have been removed.
+# L4 must not own its own Redis connection — all caching and coordination
+# must go through agentic_core.cache (get_hot_cache / get_coordination_cache).
+# Zero external callers were found at tombstone time.
+#
+# For distributed locks use: agentic_core.cache.get_coordination_cache()
+#   with acquire_lease() / release_lease().
+# For hot caching use: agentic_core.cache.get_hot_cache()
+# ---------------------------------------------------------------------------
 
-class RedisDistributedLock(SovereignBaseAgent):
-    """
-    Redis-based distributed lock for coordination across multiple processes.
-    """
 
-    def __init__(self, redis_client=None, lock_timeout: int = 30):
-        """
-        Initialize the distributed lock.
+class _TombstonedRedisDistributedLock:
+    """Tombstoned — see module comment above."""
 
-        Args:
-            redis_client: Redis client instance
-            lock_timeout: Default lock timeout in seconds
-        """
-        self.redis = redis_client
-        self.lock_timeout = lock_timeout
-        self._local_cache = {}
-
-    async def acquire_lock(self, key: str, timeout: int | None = None) -> bool:
-        """
-        Acquire a distributed lock.
-
-        Args:
-            key: Lock key
-            timeout: Custom timeout (uses default if None)
-
-        Returns:
-            True if lock acquired, False otherwise
-        """
-        if not self.redis:
-            if key in self._local_cache:
-                return False
-            self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
-            return True
-        try:
-            lock_key: Any = f"lock:{key}"
-            expires_in: Any = timeout or self.lock_timeout
-            result: Any = await self.redis.set(lock_key, "locked", ex=expires_in, nx=True)
-            if result:
-                LOGGER.debug(f"Acquired lock: {key}")
-                return True
-            else:
-                LOGGER.debug(f"Failed to acquire lock: {key} (already held)")
-                return False
-        except Exception as e:
-            LOGGER.error(f"Error acquiring lock {key}: {e}")
-            if key not in self._local_cache:
-                self._local_cache[key] = time.time() + (timeout or self.lock_timeout)
-                return True
-            return False
-
-    async def release_lock(self, key: str) -> bool:
-        """
-        Release a distributed lock.
-
-        Args:
-            key: Lock key
-
-        Returns:
-            True if lock released, False otherwise
-        """
-        if not self.redis:
-            if key in self._local_cache:
-                del self._local_cache[key]
-                return True
-            return False
-        try:
-            lock_key: Any = f"lock:{key}"
-            result: Any = await self.redis.delete(lock_key)
-            if result:
-                LOGGER.debug(f"Released lock: {key}")
-                return True
-            else:
-                LOGGER.warning(f"Lock not found for release: {key}")
-                return False
-        except Exception as e:
-            LOGGER.error(f"Error releasing lock {key}: {e}")
-            if key in self._local_cache:
-                del self._local_cache[key]
-            return False
-
-    async def is_locked(self, key: str) -> bool:
-        """
-        Check if a lock is currently held.
-
-        Args:
-            key: Lock key
-
-        Returns:
-            True if locked, False otherwise
-        """
-        if not self.redis:
-            return key in self._local_cache
-        try:
-            lock_key: Any = f"lock:{key}"
-            return await self.redis.exists(lock_key)
-        except Exception:
-            return key in self._local_cache
+    def __init__(self, *args, **kwargs):
+        raise RuntimeError(
+            "RedisDistributedLock is tombstoned. "
+            "Use agentic_core.cache.get_coordination_cache() for coordination."
+        )
 
 
 def _run_self_tests(self) -> dict:
@@ -430,212 +354,11 @@ def _run_self_tests(self) -> dict:
     return results
 
 
-class RedisHotCache(SovereignBaseAgent):
-    """
-    Redis-based hot cache with local fallback for frequently accessed data.
-    """
+class _TombstonedRedisHotCache:
+    """Tombstoned — see module comment above."""
 
-    def __init__(self, redis_client=None, default_ttl: int = 3600):
-        """
-        Initialize the hot cache.
-
-        Args:
-            redis_client: Redis client instance
-            default_ttl: Default TTL in seconds
-        """
-        super().__init__()
-        self.redis = redis_client
-        self.default_ttl = default_ttl
-        self._local_cache = {}
-        self._local_cache_times = {}
-        self._mcp_audit("init")
-
-    async def set_cache(self, key: str, value: Any, ttl: int | None = None) -> bool:
-        """
-        Set a value in cache.
-
-        Args:
-            key: cache key
-            value: Value to cache (must be JSON serializable)
-            ttl: Time to live (uses default if None)
-
-        Returns:
-            True if set successfully, False otherwise
-        """
-        try:
-            serialized: Any = json.dumps(value)
-        except (TypeError, ValueError) as e:
-            LOGGER.error(f"Cannot serialize cache value for {key}: {e}")
-            return False
-        if not self.redis:
-            self._local_cache[key] = value
-            self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
-            return True
-        try:
-            cache_key: Any = f"cache:{key}"
-            expire_time: Any = ttl or self.default_ttl
-            result: Any = await self.redis.setex(cache_key, expire_time, serialized)
-            if result:
-                LOGGER.debug(f"Cached value: {key} (TTL: {expire_time}s)")
-                return True
-            return False
-        except Exception as e:
-            LOGGER.error(f"Error caching {key}: {e}")
-            self._local_cache[key] = value
-            self._local_cache_times[key] = time.time() + (ttl or self.default_ttl)
-            return True
-
-    async def get_cache(self, key: str) -> Any | None:
-        """
-        Get a value from cache.
-
-        Args:
-            key: cache key
-
-        Returns:
-            Cached value or None if not found
-        """
-        if not self.redis:
-            if key in self._local_cache:
-                if time.time() < self._local_cache_times.get(key, 0):
-                    return self._local_cache[key]
-                else:
-                    del self._local_cache[key]
-                    if key in self._local_cache_times:
-                        del self._local_cache_times[key]
-            return None
-        try:
-            cache_key: Any = f"cache:{key}"
-            serialized: Any = await self.redis.get(cache_key)
-            if serialized:
-                value: Any = json.loads(serialized)
-                LOGGER.debug(f"cache hit: {key}")
-                return value
-            else:
-                LOGGER.debug(f"cache miss: {key}")
-                return None
-        except Exception as e:
-            LOGGER.error(f"Error getting cache {key}: {e}")
-            if key in self._local_cache:
-                if time.time() < self._local_cache_times.get(key, 0):
-                    return self._local_cache[key]
-            return None
-
-    async def delete_cache(self, key: str) -> bool:
-        """
-        Delete a value from cache.
-
-        Args:
-            key: cache key
-
-        Returns:
-            True if deleted, False otherwise
-        """
-        if not self.redis:
-            if key in self._local_cache:
-                del self._local_cache[key]
-            if key in self._local_cache_times:
-                del self._local_cache_times[key]
-            return True
-        try:
-            cache_key: Any = f"cache:{key}"
-            result: Any = await self.redis.delete(cache_key)
-            if result:
-                LOGGER.debug(f"Deleted cache: {key}")
-                return True
-            return False
-        except Exception as e:
-            LOGGER.error(f"Error deleting cache {key}: {e}")
-            if key in self._local_cache:
-                del self._local_cache[key]
-            if key in self._local_cache_times:
-                del self._local_cache_times[key]
-            return False
-
-    async def clear_expired_local(self) -> Any:
-        """Clear expired entries from local fallback cache."""
-        now: Any = time.time()
-        expired_keys: Any = []
-        for key, expire_time in self._local_cache_times.items():
-            if now >= expire_time:
-                expired_keys.append(key)
-        for key in expired_keys:
-            if key in self._local_cache:
-                del self._local_cache[key]
-            del self._local_cache_times[key]
-        if expired_keys:
-            LOGGER.debug(f"Cleared {len(expired_keys)} expired local cache entries")
-
-
-_redis_client = None
-_distributed_lock: RedisDistributedLock | None = None
-_hot_cache: RedisHotCache | None = None
-
-
-async def initialize_redis(redis_url: str = "redis://localhost:6379") -> Any:
-    """
-    Initialize Redis client and distributed systems.
-
-    Args:
-        redis_url: Redis connection URL
-    """
-    global _redis_client, _distributed_lock, _hot_cache
-    try:
-        import redis.asyncio as redis
-
-        _redis_client = redis.from_url(redis_url, decode_responses=True)
-        await _redis_client.ping()
-        _distributed_lock = RedisDistributedLock(_redis_client)
-        _hot_cache = RedisHotCache(_redis_client)
-        LOGGER.info(f"Redis initialized at {redis_url}")
-    except ImportError:
-        LOGGER.warning("redis not installed - using local fallback only")
-        _distributed_lock = RedisDistributedLock()
-        _hot_cache = RedisHotCache()
-    except Exception as e:
-        LOGGER.error(f"Failed to connect to Redis: {e} - using local fallback")
-        _distributed_lock = RedisDistributedLock()
-        _hot_cache = RedisHotCache()
-
-
-def get_distributed_lock() -> RedisDistributedLock:
-    """Get the distributed lock instance."""
-    global _distributed_lock
-    if _distributed_lock is None:
-        _distributed_lock = RedisDistributedLock()
-    return _distributed_lock
-
-
-def get_hot_cache() -> RedisHotCache:
-    """Get the hot cache instance."""
-    global _hot_cache
-    if _hot_cache is None:
-        _hot_cache = RedisHotCache()
-    return _hot_cache
-
-
-async def acquire_lock(key: str, timeout: int | None = None) -> bool:
-    """Acquire a distributed lock."""
-    lock: Any = get_distributed_lock()
-    return await lock.acquire_lock(key, timeout)
-
-
-async def release_lock(key: str) -> bool:
-    """Release a distributed lock."""
-    lock: Any = get_distributed_lock()
-    return await lock.release_lock(key)
-
-
-async def set_cache(key: str, value: Any, ttl: int | None = None) -> bool:
-    """Set a value in cache."""
-    cache: Any = get_hot_cache()
-    return await cache.set_cache(key, value, ttl)
-
-
-async def get_cache(key: str) -> Any | None:
-    """Get a value from cache."""
-    cache: Any = get_hot_cache()
-    return await cache.get_cache(key)
+    def __init__(self, *args, **kwargs):
+        raise RuntimeError("RedisHotCache is tombstoned. Use agentic_core.cache.get_hot_cache() instead.")
 
 
 class SignalLedger:
@@ -762,127 +485,12 @@ class SignalLedger:
         return summary
 
 
-class HotBrainCache:
-    """
-    Redis-based hot brain cache for distributed coordination.
+class _TombstonedHotBrainCache:
+    """Tombstoned — see module comment above."""
 
-    Provides fast, distributed caching and locking capabilities
-    for multi-instance deployments. Falls back to local cache
-    when Redis is unavailable.
-    """
-
-    def __init__(self, redis_url: str | None = None):
-        """
-        Initialize hot brain cache.
-
-        Args:
-            redis_url: Redis connection URL (optional)
-        """
-        self.redis_url = redis_url
-        self.redis_client = None
-        self._local_cache = {}
-        self._local_locks = {}
-        if redis_url:
-            try:
-                import redis.asyncio as redis
-
-                self.redis_client = redis.from_url(redis_url)
-                LOGGER.info("Hot brain connected to Redis")
-            except ImportError:
-                LOGGER.warning("redis not installed - using local cache only")
-            except Exception as e:
-                LOGGER.warning(f"Redis connection failed: {e} - using local cache only")
-
-    async def acquire_lock(self, key: str, timeout: float = 30.0) -> bool:
-        """
-        Acquire a distributed lock.
-
-        Args:
-            key: Lock key
-            timeout: Lock timeout in seconds
-
-        Returns:
-            True if lock acquired, False otherwise
-        """
-        if self.redis_client:
-            try:
-                lock_key: Any = f"lock:{key}"
-                result: Any = await self.redis_client.set(lock_key, "locked", ex=timeout, nx=True)
-                return result is not None
-            except Exception as e:
-                LOGGER.error(f"Redis lock acquisition failed: {e}")
-        if key in self._local_locks:
-            return False
-        self._local_locks[key] = time.time() + timeout
-        return True
-
-    async def release_lock(self, key: str) -> bool:
-        """
-        Release a distributed lock.
-
-        Args:
-            key: Lock key
-
-        Returns:
-            True if lock released, False otherwise
-        """
-        if self.redis_client:
-            try:
-                lock_key: Any = f"lock:{key}"
-                result: Any = await self.redis_client.delete(lock_key)
-                return result > 0
-            except Exception as e:
-                LOGGER.error(f"Redis lock release failed: {e}")
-        if key in self._local_locks:
-            del self._local_locks[key]
-            return True
-        return False
-
-    async def get(self, key: str) -> Any | None:
-        """Get value from cache."""
-        if self.redis_client:
-            try:
-                value: Any = await self.redis_client.get(key)
-                if value:
-                    return json.loads(value)
-            except Exception as e:
-                LOGGER.error(f"Redis get failed: {e}")
-        return self._local_cache.get(key)
-
-    async def set(self, key: str, value: Any, ttl: float | None = None) -> bool:
-        """Set value in cache."""
-        serialized: Any = json.dumps(value)
-        if self.redis_client:
-            try:
-                if ttl:
-                    await self.redis_client.setex(key, ttl, serialized)
-                else:
-                    await self.redis_client.set(key, serialized)
-                return True
-            except Exception as e:
-                LOGGER.error(f"Redis set failed: {e}")
-        self._local_cache[key] = value
-        return True
-
-    async def delete(self, key: str) -> bool:
-        """Delete value from cache."""
-        if self.redis_client:
-            try:
-                await self.redis_client.delete(key)
-            except Exception as e:
-                LOGGER.error(f"Redis delete failed: {e}")
-        if key in self._local_cache:
-            del self._local_cache[key]
-            return True
-        return False
-
-
-_hot_brain: HotBrainCache | None = None
-
-
-def get_hot_brain(redis_url: str | None = None) -> HotBrainCache:
-    """Get or create the global hot brain cache instance."""
-    global _hot_brain
-    if _hot_brain is None:
-        _hot_brain = HotBrainCache(redis_url)
-    return _hot_brain
+    def __init__(self, *args, **kwargs):
+        raise RuntimeError(
+            "HotBrainCache is tombstoned. "
+            "Use agentic_core.cache.get_coordination_cache() for coordination, "
+            "or agentic_core.cache.get_hot_cache() for hot caching."
+        )

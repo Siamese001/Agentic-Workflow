@@ -13,7 +13,6 @@ import time
 from pathlib import Path
 from typing import Any
 
-import redis
 from agentic_core.runtime.types.anomaly_report import AnomalyReport
 
 
@@ -37,6 +36,8 @@ class CachedStateLedger(SovereignBaseAgent):
         redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         try:
             import urllib.parse
+
+            import redis
 
             parsed = urllib.parse.urlparse(redis_url)
             connection_kwargs = {

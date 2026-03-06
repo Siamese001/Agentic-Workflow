@@ -37,15 +37,27 @@ def _require_safe_segment(name: str, value: str) -> None:
 
 
 def _require_hash_segment(name: str, value: str) -> None:
-    """Raise ``ValueError`` if *value* is empty.
+    """Raise ``ValueError`` if *value* is not a valid SHA-256 hexdigest.
 
-    NOTE: Full SHA-256 format validation (64 hex chars) was removed because
-    it broke existing tests using short placeholder hashes. In production,
-    callers should pass real SHA-256 digests, but this is not enforced at
-    runtime to maintain test compatibility.
+    In strict mode (default, production) the value must be exactly 64
+    lowercase hex characters [0-9a-f].  Set the environment variable
+    ``REDIS_CACHE_STRICT_HASH_VALIDATION=0`` to fall back to a non-empty
+    check only (useful for tests that use short placeholder hashes).
     """
+    import os
+
     if not value:
         raise ValueError(f"Hash segment {name!r} must not be empty")
+    strict = os.environ.get("REDIS_CACHE_STRICT_HASH_VALIDATION", "1") != "0"
+    if strict:
+        import re
+
+        if not re.fullmatch(r"[0-9a-f]{64}", value):
+            raise ValueError(
+                f"Hash segment {name!r} must be a 64-char lowercase SHA-256 hexdigest, "
+                f"got {value!r}. Set REDIS_CACHE_STRICT_HASH_VALIDATION=0 to disable "
+                "this check in tests."
+            )
 
 
 # ---------------------------------------------------------------------------
