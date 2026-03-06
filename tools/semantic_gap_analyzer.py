@@ -36,6 +36,72 @@ EXCLUDED_DIR_NAMES = {
 }
 EXCLUDED_FILE_SUFFIXES = {".pyi"}
 
+PROMPT_SLOT_ORDER = ("S0", "D0", "I0", "C0", "U0")
+PROMPT_SLOT_DESCRIPTIONS = {
+    "S0": "System / state rulebooks and hard invariants",
+    "D0": "Injections, semantic fences, and tool constraints",
+    "I0": "Instructional identity and governed behavior",
+    "C0": "Dependency context such as RAG or Elevator Shaft injected knowledge",
+    "U0": "Raw user prompt / intent",
+}
+PROMPT_TAXONOMY_PATTERNS = {
+    "S0": (
+        "S0",
+        "system",
+        "system_prompt",
+        "constitution",
+        "invariant",
+        "rulebook",
+        "state_prompt",
+    ),
+    "D0": (
+        "D0",
+        "injection",
+        "guardrail",
+        "tool_constraint",
+        "safety_fence",
+        "semantic_fence",
+        "policy_injection",
+    ),
+    "I0": (
+        "I0",
+        "instruction",
+        "instructional",
+        "identity_prompt",
+        "role_prompt",
+        "persona",
+        "behavior",
+    ),
+    "C0": (
+        "C0",
+        "dependency",
+        "context",
+        "rag",
+        "retrieval",
+        "elevator_shaft",
+        "knowledge_pack",
+        "injected_context",
+    ),
+    "U0": (
+        "U0",
+        "user_prompt",
+        "user_input",
+        "raw_intent",
+        "request_text",
+        "prompt_text",
+        "query_text",
+    ),
+}
+PROMPT_ASSEMBLER_HINTS = (
+    "assemble",
+    "assembler",
+    "build_prompt",
+    "compose_prompt",
+    "prompt_package",
+    "instruction_packet",
+    "governed_prompt",
+)
+
 
 @dataclass
 class ImportTrace:
@@ -98,6 +164,11 @@ class FileAnalysis:
     imported_module_names: set[str] = field(default_factory=set)
     imported_symbol_names: set[str] = field(default_factory=set)
     used_names: set[str] = field(default_factory=set)
+    string_literals: list[str] = field(default_factory=list)
+    prompt_slot_hits: dict[str, list[str]] = field(default_factory=dict)
+    manifest_hash_mentions: list[int] = field(default_factory=list)
+    boundary_snapshot_mentions: list[int] = field(default_factory=list)
+    prompt_assembly_markers: list[str] = field(default_factory=list)
     parse_failure: ParseFailure | None = None
 
     @property
@@ -133,6 +204,12 @@ class ASTAnalyzer:
             return analysis
 
         analysis.used_names = {node.id for node in ast.walk(tree) if isinstance(node, ast.Name)}
+        analysis.string_literals = [
+            node.value
+            for node in ast.walk(tree)
+            if isinstance(node, ast.Constant) and isinstance(node.value, str)
+        ]
+        analysis.prompt_slot_hits = {slot: [] for slot in PROMPT_SLOT_ORDER}
 
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
@@ -186,6 +263,32 @@ class ASTAnalyzer:
                 if any(token in lowered for token in ("ledger", "blob", "state", "memory", "registry")):
                     analysis.l4_state_accesses.append(node.lineno)
 
+        for literal in analysis.string_literals:
+            literal_lower = literal.lower()
+            for slot, patterns in PROMPT_TAXONOMY_PATTERNS.items():
+                if any(pattern.lower() in literal_lower for pattern in patterns):
+                    analysis.prompt_slot_hits[slot].append(literal)
+
+            if "manifest hash" in literal_lower or "manifest_hash" in literal_lower:
+                analysis.manifest_hash_mentions.append(1)
+            if "boundary_snapshot" in literal_lower:
+                analysis.boundary_snapshot_mentions.append(1)
+            if any(hint in literal_lower for hint in PROMPT_ASSEMBLER_HINTS):
+                analysis.prompt_assembly_markers.append(literal)
+
+        for name in analysis.used_names:
+            lowered_name = name.lower()
+            for slot, patterns in PROMPT_TAXONOMY_PATTERNS.items():
+                if any(pattern.lower() in lowered_name for pattern in patterns):
+                    analysis.prompt_slot_hits[slot].append(name)
+
+            if "manifest_hash" in lowered_name:
+                analysis.manifest_hash_mentions.append(1)
+            if "boundary_snapshot" in lowered_name:
+                analysis.boundary_snapshot_mentions.append(1)
+            if any(hint in lowered_name for hint in PROMPT_ASSEMBLER_HINTS):
+                analysis.prompt_assembly_markers.append(name)
+
         return analysis
 
     def find_hot_paths(self, layer_dir: Path, pattern: str) -> list[Path]:
@@ -237,6 +340,33 @@ def _analysis_mentions_cache(
     return False
 
 
+def _slot_coverage_score(slot_hits: dict[str, list[str]]) -> int:
+    return sum(1 for slot in PROMPT_SLOT_ORDER if slot_hits.get(slot))
+
+
+def _missing_slots(slot_hits: dict[str, list[str]]) -> list[str]:
+    return [slot for slot in PROMPT_SLOT_ORDER if not slot_hits.get(slot)]
+
+
+def _looks_like_prompt_assembler(file_path: Path, analysis: FileAnalysis) -> bool:
+    rel = _stable_relpath(file_path).lower()
+    if "prompt" in file_path.name.lower() and any(
+        token in rel for token in ("assemble", "assembler", "builder", "compose", "packet")
+    ):
+        return True
+    if analysis.prompt_assembly_markers:
+        return True
+    return False
+
+
+def _report_slot_status(slot_hits: dict[str, list[str]]) -> str:
+    parts = []
+    for slot in PROMPT_SLOT_ORDER:
+        status = "present" if slot_hits.get(slot) else "missing"
+        parts.append(f"{slot}={status}")
+    return ", ".join(parts)
+
+
 class SemanticGapAnalyzer:
     """Main analyzer for detecting semantic gaps in the architecture."""
 
@@ -245,6 +375,7 @@ class SemanticGapAnalyzer:
         self.gaps: list[SemanticGap] = []
         self.cache_opportunities: list[CacheOpportunity] = []
         self.parse_failures: list[ParseFailure] = []
+        self.prompt_taxonomy_findings: list[dict[str, Any]] = []
 
     def analyze_l0_routing_gate(self) -> list[SemanticGap]:
         """Analyze L0 routing gate for semantic gaps."""
@@ -367,6 +498,107 @@ class SemanticGapAnalyzer:
                         priority="MEDIUM",
                         evidence_files=[_stable_relpath(prompt_file)],
                         recommended_fix="Wrap prompt loading with prompt_artifact_cache.get_or_fetch()",
+                    )
+                )
+
+        return gaps
+
+    def analyze_prompt_taxonomy_coverage(self) -> list[SemanticGap]:
+        """Analyze prompt assemblers for S0/D0/I0/C0/U0 taxonomy coverage."""
+        logger.info("Analyzing Prompt Taxonomy Coverage...")
+        gaps = []
+
+        candidate_files = []
+        for base_dir in (
+            AGENTIC_CORE / "L0_routing",
+            AGENTIC_CORE / "L1_cognition",
+            AGENTIC_CORE / "L2_execution",
+            AGENTIC_CORE / "utils",
+        ):
+            candidate_files.extend(self.ast_analyzer.find_hot_paths(base_dir, PYTHON_FILE_GLOB))
+
+        seen: set[str] = set()
+        for prompt_file in candidate_files:
+            rel = _stable_relpath(prompt_file)
+            if rel in seen:
+                continue
+            seen.add(rel)
+
+            analysis = self.ast_analyzer.analyze_file(prompt_file)
+            if not analysis.ok:
+                continue
+            if not _looks_like_prompt_assembler(prompt_file, analysis):
+                continue
+
+            coverage_score = _slot_coverage_score(analysis.prompt_slot_hits)
+            missing_slots = _missing_slots(analysis.prompt_slot_hits)
+            slot_status = _report_slot_status(analysis.prompt_slot_hits)
+
+            self.prompt_taxonomy_findings.append(
+                {
+                    "file": rel,
+                    "coverage_score": coverage_score,
+                    "slot_status": slot_status,
+                    "manifest_hash": bool(analysis.manifest_hash_mentions),
+                    "boundary_snapshot": bool(analysis.boundary_snapshot_mentions),
+                }
+            )
+
+            if missing_slots:
+                priority = "HIGH" if {"S0", "C0", "U0"} & set(missing_slots) else "MEDIUM"
+                gaps.append(
+                    SemanticGap(
+                        gap_id=_stable_gap_id("PROMPT-TAXONOMY-GAP", prompt_file),
+                        layer="L1",
+                        artery="Prompt Taxonomy Assembly Coverage",
+                        intent=(
+                            "Assembled prompts should cover canonical taxonomy slots "
+                            "S0 + D0 + I0 + C0 + U0 so the governed prompt matches the architecture."
+                        ),
+                        reality=(
+                            f"{prompt_file.name} appears to assemble or package prompts but has incomplete "
+                            f"taxonomy evidence: {slot_status}"
+                        ),
+                        impact=(
+                            "Prompt packages may omit required rulebooks, fences, instructional identity, "
+                            "dependency context, or raw user intent, causing drift from the governed prompt model."
+                        ),
+                        priority=priority,
+                        evidence_files=[rel],
+                        recommended_fix=(
+                            "Add explicit slot assembly or manifest fields for the missing taxonomy slots: "
+                            + ", ".join(missing_slots)
+                        ),
+                    )
+                )
+
+            if not analysis.manifest_hash_mentions:
+                gaps.append(
+                    SemanticGap(
+                        gap_id=_stable_gap_id("PROMPT-MANIFEST-GAP", prompt_file),
+                        layer="L1",
+                        artery="Prompt Package Manifest Integrity",
+                        intent="Governed prompt assembly should emit a manifest hash for parity and auditability.",
+                        reality=f"{prompt_file.name} shows no manifest hash evidence.",
+                        impact="You cannot prove deterministic prompt-package parity across runs.",
+                        priority="MEDIUM",
+                        evidence_files=[rel],
+                        recommended_fix="Emit and persist a manifest hash for the final governed prompt package.",
+                    )
+                )
+
+            if not analysis.boundary_snapshot_mentions:
+                gaps.append(
+                    SemanticGap(
+                        gap_id=_stable_gap_id("PROMPT-VALIDATOR-GAP", prompt_file),
+                        layer="L2",
+                        artery="Prompt Pre-flight Validation",
+                        intent="Prompt execution paths should support validator boundary snapshots before execution.",
+                        reality=f"{prompt_file.name} shows no boundary_snapshot evidence.",
+                        impact="Prompt healing and pre-flight diagnostics may be blind to assembly defects.",
+                        priority="LOW",
+                        evidence_files=[rel],
+                        recommended_fix="Wire validator output to emit boundary_snapshot.json for prompt-package inspection.",
                     )
                 )
 
@@ -576,6 +808,7 @@ class SemanticGapAnalyzer:
         all_gaps = []
         all_gaps.extend(self.analyze_l0_routing_gate())
         all_gaps.extend(self.analyze_l1_cognition())
+        all_gaps.extend(self.analyze_prompt_taxonomy_coverage())
         all_gaps.extend(self.analyze_l2_execution())
         all_gaps.extend(self.analyze_l3_orchestration())
         all_gaps.extend(self.analyze_l4_state())
@@ -606,6 +839,7 @@ class SemanticGapAnalyzer:
             "medium_priority": len(medium_priority),
             "low_priority": len(low_priority),
             "parse_failures": self.parse_failures,
+            "prompt_taxonomy_findings": self.prompt_taxonomy_findings,
             "gaps": self.gaps,
         }
 
@@ -640,10 +874,23 @@ class SemanticGapAnalyzer:
         h("**Approach:**")
         h("1. Map critical hot paths across each layer")
         h("2. AST scan for import statements and cache usage patterns")
-        h("3. Identify missing wirings between cache modules and consumers")
-        h("4. Categorize gaps by layer, artery, and priority")
-        h("5. Surface parse failures explicitly instead of silently dropping files from analysis")
+        h("3. Detect prompt assemblers and score canonical slot coverage for S0/D0/I0/C0/U0")
+        h("4. Check for manifest-hash and boundary-snapshot evidence on prompt execution paths")
+        h("5. Identify missing wirings between cache modules and consumers")
+        h("6. Categorize gaps by layer, artery, and priority")
+        h("7. Surface parse failures explicitly instead of silently dropping files from analysis")
         blank()
+
+        if self.prompt_taxonomy_findings:
+            h("## Prompt Taxonomy Coverage")
+            blank()
+            h("| File | Slot Coverage | Manifest Hash | Boundary Snapshot |")
+            h("|------|---------------|---------------|-------------------|")
+            for finding in sorted(self.prompt_taxonomy_findings, key=lambda item: item["file"]):
+                manifest = "yes" if finding["manifest_hash"] else "no"
+                boundary = "yes" if finding["boundary_snapshot"] else "no"
+                h(f"| `{finding['file']}` | {finding['slot_status']} | {manifest} | {boundary} |")
+            blank()
 
         if self.parse_failures:
             h("## Parse Failures")
@@ -714,6 +961,9 @@ class SemanticGapAnalyzer:
         blank()
         h("After implementing fixes, rerun semantic gap analysis to verify:")
         h("- Cache modules are imported in hot path files")
+        h("- Prompt assemblers explicitly cover S0, D0, I0, C0, and U0")
+        h("- Governed prompt assembly emits a manifest hash")
+        h("- Validator paths emit boundary_snapshot.json for prompt-package inspection")
         h("- `get_or_fetch` pattern is used consistently")
         h("- Replay mode tests pass with warm cache (no redundant fetches)")
         h("- Side-effect envelope tests confirm cache-first behavior")
