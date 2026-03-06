@@ -13,6 +13,7 @@ def load_context_jit(intent_id: str) -> dict[str, Any]:
     Load context just-in-time for given intent ID.
 
     Stub implementation returns deterministic empty dict.
+    JIT loading is implemented at the caller layer, not in the seam.
 
     Args:
         intent_id: Intent identifier for context loading
@@ -20,6 +21,4 @@ def load_context_jit(intent_id: str) -> dict[str, Any]:
     Returns:
         Dictionary with loaded context data (currently empty)
     """
-    # Stub implementation - no business logic
-    # Future: Load context from appropriate sources
     return {}

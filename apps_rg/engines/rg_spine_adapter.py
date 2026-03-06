@@ -7,14 +7,13 @@ Forces all RG entry through the canonical spine:
 CID is derived deterministically from the payload manifest hash before any
 HOP stage runs. No uuid4, no datetime, no randomness.
 
-Null-object stubs are provided for d0_engine, risk_gate, vigilance_dispatcher,
-and meta_bus — these seams are not yet wired for RG and must remain no-ops
-until the corresponding phases implement them.
+Real implementations are wired for d0_engine, risk_gate, vigilance_dispatcher,
+and meta_bus via shared adapters. Each adapter falls back to a null stub if
+its upstream module cannot be imported, preserving fail-open behaviour.
 """
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from typing import Any
 
 from agentic_core.interfaces.execution import CIDRegistry
@@ -25,47 +24,14 @@ from agentic_core.interfaces.spine import (
     PathRouter,
     ReEntryLoop,
 )
+from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
 from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
+from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
+from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
 
 # Default maximum re-entry attempts for the RG spine.
 _DEFAULT_MAX_REENTRY_ATTEMPTS: int = 3
-
-# ---------------------------------------------------------------------------
-# Null-object stubs for unimplemented seams
-# ---------------------------------------------------------------------------
-
-
-class _NullD0Engine:
-    """Null-object stub for D0 injection engine (not yet wired for RG)."""
-
-    def render_d0(self, d0_injections: str) -> str:
-        return d0_injections
-
-
-@dataclass(frozen=True)
-class _RiskResult:
-    allow: bool
-
-
-class _NullRiskGate:
-    """Null-object stub for risk gate (not yet wired for RG)."""
-
-    def evaluate(self, *, payload_like: Any, d0_injections: Any) -> _RiskResult:
-        return _RiskResult(allow=True)
-
-
-class _NullVigilanceDispatcher:
-    """Null-object stub for vigilance dispatcher (not yet wired for RG)."""
-
-    def dispatch(self, *args: Any, **kwargs: Any) -> None:
-        pass
-
-
-class _NullMetaBus:
-    """Null-object stub for meta-learning bus (not yet wired for RG)."""
-
-    def enqueue(self, *args: Any, **kwargs: Any) -> None:
-        pass
 
 
 # ---------------------------------------------------------------------------
@@ -127,12 +93,12 @@ class RgSpineAdapter(BaseSpineAdapter):
         orchestrator = ExecutionOrchestrator(
             assembler=_RgAssemblerAdapter(),
             path_router=PathRouter(),
-            d0_engine=_NullD0Engine(),
-            risk_gate=_NullRiskGate(),
+            d0_engine=D0EngineAdapter(),
+            risk_gate=RiskGateAdapter(),
             cid_registry=cid_registry,
             reentry_loop=reentry_loop,
-            vigilance_dispatcher=_NullVigilanceDispatcher(),
-            meta_bus=_NullMetaBus(),
+            vigilance_dispatcher=VigilanceDispatcherAdapter(),
+            meta_bus=MetaLearningBus(),
         )
 
         # Initialize base adapter with dependencies and RG prefix
