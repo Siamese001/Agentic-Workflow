@@ -22,10 +22,10 @@ class LockAcquisitionResult(NamedTuple):
 class LockPolicy:
     """Defines the policy for lock acquisition."""
 
-    timeout_seconds: float = 5.0
     # A predefined, global hierarchy of lock names to prevent deadlocks.
     # Locks must always be acquired in this order.
     lock_hierarchy: list[str]
+    timeout_seconds: float = 5.0
 
 
 class MemoryCollisionDetector:
