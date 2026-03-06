@@ -10,11 +10,11 @@ Full implementation of the Architecture Dependency Graph (ADG) system:
 
 ## CODE_COMMIT
 
-7963a9014b6cace42e64b2a75bbc8d2c2e2ff15a
+7963a9014197b3301c0d8c5552d77bec6b42d90b
 
 ## EVIDENCE_COMMIT
 
-PENDING
+d7e7a985f0fea8f68372e15ad2387b05068817dd
 
 ## FILES_CHANGED_CODE
 
@@ -40,7 +40,7 @@ tests/architecture/test_adg_negative_controls.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/adg_implementation_evidence.md
 
 ## INSPECTED_FILES
 
