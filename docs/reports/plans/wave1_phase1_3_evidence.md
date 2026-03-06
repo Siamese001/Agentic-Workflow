@@ -13,7 +13,7 @@ No analyzer code changes in this phase (tests only). N=1 file declared.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+87d28735a
 
 ## FILES_CHANGED_CODE
 
@@ -23,7 +23,10 @@ tests/architecture/test_wave1_phase1_3_governance.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+```
+docs/reports/plans/wave1_phase1_3_evidence.md
+tools/evidence/wave1_phase1_3_runner.py
+```
 
 ## INSPECTED_FILES
 
@@ -63,27 +66,27 @@ tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_true_v
 tests/architecture/test_wave1_phase1_3_governance.py::test_has_any_marker_case_insensitive PASSED [ 60%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_generated_for_control_spine_file_without_hints 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 63%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_not_generated_when_hints_present 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 66%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_generated_for_enforcement_file_without_stamps 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 69%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_not_generated_when_stamps_present 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 72%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_non_control_spine_file_produces_no_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 75%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_parse_failure_file_skipped_no_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
 PASSED                                                                   [ 78%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_capability_chokepoint_has_governance_mentions PASSED [ 81%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_hints_tuple_non_empty PASSED [ 84%]
@@ -91,27 +94,27 @@ tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_shaft_hints_
 tests/architecture/test_wave1_phase1_3_governance.py::test_path_d_hints_tuple_non_empty PASSED [ 90%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_wiring_produces_gaps_from_real_codebase 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:01 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
-2026-03-05 23:17:02 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:17:17 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:18 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 93%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_priority_is_high 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:03 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
-2026-03-05 23:17:04 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:17:19 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:20 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 96%]
 tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_priority_is_medium 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:17:05 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
-2026-03-05 23:17:06 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:17:21 [    INFO] tools.semantic_gap_analyzer: Analyzing Elevator Shaft and Governance Wiring...
+2026-03-05 23:17:22 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [100%]
 
 ============================ slowest 10 durations =============================
-1.93s call     tests/architecture/test_wave1_phase1_3_governance.py::test_governance_wiring_produces_gaps_from_real_codebase
-1.91s call     tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_priority_is_medium
-1.91s call     tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_priority_is_high
+1.97s call     tests/architecture/test_wave1_phase1_3_governance.py::test_elevator_gap_priority_is_medium
+1.97s call     tests/architecture/test_wave1_phase1_3_governance.py::test_governance_gap_priority_is_high
+1.94s call     tests/architecture/test_wave1_phase1_3_governance.py::test_governance_wiring_produces_gaps_from_real_codebase
 
 (7 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 33 passed in 5.80s ==============================
+============================= 33 passed in 5.92s ==============================
 ```
 
 collected 33 / executed 33
