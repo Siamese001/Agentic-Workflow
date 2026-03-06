@@ -15,7 +15,7 @@ N=2 files declared.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+e33f0277e
 
 ## FILES_CHANGED_CODE
 
@@ -26,7 +26,10 @@ tools/semantic_gap_analyzer.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+```
+docs/reports/plans/wave1_phase1_2_evidence.md
+tools/evidence/wave1_phase1_2_runner.py
+```
 
 ## INSPECTED_FILES
 
@@ -90,18 +93,18 @@ tests/architecture/test_wave1_phase1_2_sovereignty.py::test_direct_provider_patt
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_direct_provider_patterns_does_not_contain_agentic_core PASSED [ 87%]
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_no_real_provider_imports_outside_l2 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:12:20 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:12:33 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 91%]
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_l2_real_provider_imports_are_in_expected_files PASSED [ 95%]
 tests/architecture/test_wave1_phase1_2_sovereignty.py::test_internal_vllm_type_modules_produce_no_direct_provider_gap PASSED [100%]
 
 ============================ slowest 10 durations =============================
-1.97s call     tests/architecture/test_wave1_phase1_2_sovereignty.py::test_no_real_provider_imports_outside_l2
-0.25s call     tests/architecture/test_wave1_phase1_2_sovereignty.py::test_l2_real_provider_imports_are_in_expected_files
+1.94s call     tests/architecture/test_wave1_phase1_2_sovereignty.py::test_no_real_provider_imports_outside_l2
+0.26s call     tests/architecture/test_wave1_phase1_2_sovereignty.py::test_l2_real_provider_imports_are_in_expected_files
 0.01s call     tests/architecture/test_wave1_phase1_2_sovereignty.py::test_internal_vllm_type_modules_produce_no_direct_provider_gap
 
 (7 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 24 passed in 2.27s ==============================
+============================= 24 passed in 2.26s ==============================
 ```
 
 collected 24 / executed 24
