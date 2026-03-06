@@ -9,7 +9,6 @@
 - Execute ONLY the explicitly requested phase(s). No future steps, no unrequested repairs.
 - Each phase produces EXACTLY ONE evidence file under `docs/reports/plans/`. No inline pastes.
 - End every response with: evidence file path + final commit hash(es) + changed file list. STOP.
-- Maximum phases per response: 2 (only when explicitly requested to bundle).
 - If scope expands beyond declared N files: STOP, write a plan artifact, do not partially apply.
 
 **Hard violations:**
