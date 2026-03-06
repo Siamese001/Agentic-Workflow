@@ -1,5 +1,14 @@
 """Phase 4: Production Monitoring and Drift Intelligence package."""
 
+from .completeness_monitors import (
+    ConditionLossDriftMonitor,
+    ConditionLossSnapshot,
+    HighSimilarityWrongAnswerMonitor,
+    ParentExpansionMissMonitor,
+    RetrievalCompletenessMonitor,
+    RetrievalCompletenessSnapshot,
+    SupportValidationSnapshot,
+)
 from .drift_monitor import (
     AnswerQualityMonitor,
     EmbeddingDriftMonitor,
@@ -23,4 +32,11 @@ __all__ = [
     "AnswerQualityMonitor",
     "ShadowEvaluationRunner",
     "ShadowEvaluationResult",
+    "RetrievalCompletenessMonitor",
+    "ParentExpansionMissMonitor",
+    "HighSimilarityWrongAnswerMonitor",
+    "ConditionLossDriftMonitor",
+    "RetrievalCompletenessSnapshot",
+    "SupportValidationSnapshot",
+    "ConditionLossSnapshot",
 ]

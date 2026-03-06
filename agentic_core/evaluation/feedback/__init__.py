@@ -1,5 +1,6 @@
 """Phase 5: Human Feedback and Alignment package."""
 
+from .completeness_feedback import CompletenessFeedbackExample, CompletenessReviewRubric
 from .dpo_batch_builder import DPOBatchBuilder
 from .proposer_bridge import EvaluatorProposerBridge, ImprovementProposal, ImprovementSignal
 from .schemas import DPOBatch, DPOPair, FeedbackExample, ReviewRubric
@@ -13,4 +14,6 @@ __all__ = [
     "EvaluatorProposerBridge",
     "ImprovementProposal",
     "ImprovementSignal",
+    "CompletenessReviewRubric",
+    "CompletenessFeedbackExample",
 ]

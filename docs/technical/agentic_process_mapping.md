@@ -1,389 +1,365 @@
-==============================================================================================================================================================================================================================================================================
-                                                                          AGENTIC SYSTEM — FULL ZERO-LOSS ARCHITECTURE (WIDESCREEN)
-==============================================================================================================================================================================================================================================================================
-  APPS_* LAYER (DOMAIN-SPECIFIC BUSINESS LOGIC) — ZERO INTERNAL AUTHORITY - GENERATES RAW "WHAT" THAT ENTERS THE SYSTEM
-==============================================================================================================================================================================================================================================================================
-------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------
-                              +----------------------------------------------------------+          +----------------------------------------------------------+          +----------------------------------------------------------+
-                              | apps_lic (LinkedIn InMail Campaign)                      |          | apps_rg (Resume Generation)                              |          | apps_shared (Cross-Domain Infrastructure)                |
-                              |----------------------------------------------------------|          |----------------------------------------------------------|          |----------------------------------------------------------|
-                              | reasoning/ (38 agents)                                   |          | reasoning/ (24 agents)                                   |          | reasoning/ (9 orchestrators)                             |
-                              |   • HOP1-9 Pipeline (Profile→Integration)                |          |   • Resume Assembly & Enhancement                        |          |   • InfrastructureOrchestrator                           |
-                              |   • Campaign Balance & Deliverability                    |          |   • ATS Compatibility & Brand Compliance                 |          |   • PilotOrchestrator                                    |
-                              |   • Message Architecture & Compliance                    |          |   • Content Quality & Strategy                           |          |   • InfrastructureUpgradesOrchestrator                   |
-                              |   • Outreach Learning & Validation                       |          |   • Fact Check & Strategic Planning                      |          |                                                          |
-                              |   => SCHEMA MUST EMIT:                                   |          |   => SCHEMA MUST EMIT:                                   |          | enforcement/ (11 strategies)                             |
-                              |      {intent_delta, tool_requests[], state_diff_proposal}|          |      {intent_delta, tool_requests[], state_diff_proposal}|          |   • AdaptiveretrievalgateStrategy                        |
-                              |                                                          |          |                                                          |          |   • CircuitbreakerStrategy                               |
-                              | engines/ (4 engines)                                     |          | engines/ (45 engines)                                    |          |   • DecomposedqueryagentStrategy                         |
-                              |   • control_plane.py (orchestration)                     |          |   • achievement_prioritizer_engine                       |          |                                                          |
-                              |   • hop_stage_registry.py (workflow)                     |          |   • ats_compatibility_engine                             |          | config/ (6 configs)                                      |
-                              |   • message_body_composer.py                             |          |   • content_quality_engine                               |          |   • environment_config.py                                |
-                              |                                                          |          |   • resume_orchestrator_engine                           |          |   • integration_config.py                                |
-                              | config/ (9 configs)                                      |          |   • skill_ordering_engine                                |          |                                                          |
-                              |   • agent_specs.json (HOP pipeline specs)                |          |   • template_optimizer_engine                            |          | data/ (2 knowledge bases)                                |
-                              |   • loader_config.py                                     |          |                                                          |          |   • master_resume.json (Amit's experience)               |
-                              |                                                          |          | config/ (5 configs)                                      |          |   • sender_knowledge_base.json                           |
-                              | tools/ (48 tools)                                        |          |   • agent_spec_config.py (Pydantic schemas)              |          |                                                          |
-                              | types/ (20 domain models)                                |          |   • reasoning_toggles_config.py                          |          | types/ (3 shared types)                                  |
-                              | validators/ (6 validators)                               |          |                                                          |          | validators/ (2 validators)                               |
-                              | enforcement/ (1 strategy)                                |          | tools/ (33 tools)                                        |          | [SCOPE] TOOLS STRICTLY SEGMENTED BY ROUTE/ROLE/AGENT     |
-                              |   • ExecutiveStrategyAgent                               |          | types/ (16 domain models)                                |          +----------------------------------------------------------+
-                              +----------------------------------------------------------+          | validators/ (5 validators)                               |                                       |
-                                                       |                                            +----------------------------------------------------------+                                       |
-                                                       | (Campaign Workflow Requests)                                            | (Resume Generation Requests)                                        | (Shared Services & Knowledge)
-                                                       v                                                                         v                                                                     v
+==============================================================================================================================
+  AGENTIC SYSTEM — PROCESS MAP  (box-and-arrow / feedback-loop view)
+  Read: https://github.com/... for layer sovereignty rules
+==============================================================================================================================
 
-==============================================================================================================================================================================================================================================================================
-  ENTRY PRODUCERS (NO AUTHORITY)                                                                                                                                                            STATE BUS (ANCHOR PORTION)
-==============================================================================================================================================================================================================================================================================
+  LAYER SOVEREIGNTY  ·  upward mutation FORBIDDEN  ·  dynamic runtime mutation FORBIDDEN
+  ┌─────────────┬────────────┬──────────────┬─────────────┬─────────────┬─────────────┐
+  │ L1: Propose │ L0: Route  │ L5: Certify  │ L2: Execute │ L4: Persist │ L6: Observe │
+  └─────────────┴────────────┴──────────────┴─────────────┴─────────────┴─────────────┘
 
-          [ EXTERNAL KNOWLEDGE ]                               USER REQUEST                                         SYSTEM EVENT                                       ADMIN REQUEST                  [ EXTERNAL MODEL REGISTRY ]
-          +--------------------+                                     |                                                    |                                                  |                        +-------------------------+                                           ^^
-          |  Vector Databases  |                                     v                                                    v                                                  v                        |  Weights & Checkpoints  |                                           ||
-          |  NoSQL / Documents |          +------------------------------------------------------+  +-----------------------------------------------------+  +---------------------------------------------------------------------------+                                  ||
-          | [C0 RAG Context]   |          | L1: COGNITIVE STUDIO [PHASE 1-4 / PTC COMPILER]      |  | L6: OBSERVABILITY & ANOMALY DETECTION               |  | L4: STATE, MEMORY & PERSISTENCE [♦ I::IMemoryStore ♦]                     | <==(Pulls Updated Weights & Checkpoints)==||
-          +--------------------+          |------------------------------------------------------|  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
-                   |                      | - Generates [U0: USER PROMPT] (ZERO auth)            |  | - P1: INGESTION: Execution Latency, Error Rates     |  | - P1: COGNITIVE REGISTRY: Active Models, Prompts, Templates, Calibration  |                                  ||
-                   | (Semantic Search)    | - [CACHE CHECK] Redis DB 0 (HOT) for prompt cache    |  | - P2: ANOMALY ENGINE: anomaly_score, Detect Drift   |  | - P2: CAPABILITY REGISTRY: Tool Availability, API Credentials, Policies   |                                  ||
-                   +--------------------->| - Retrieval from RAG index (READ only)               |  | - P3: BROADCAST: Emit anomaly, drift, injection     |  | - P3: WORKFLOW MEMORY: Active Job States, Pending Steps, Dependency DAG   |                                  ||
-                                          |   -> C0 context: Seed Pack lookup (top_k=20, >=0.5)  |  | - P4: ARCHIVER: Store Raw Metrics, System Snapshots |  | - P4: TELEMETRY LEDGER: Routing Decisions, Execution Logs, Error Reports  |                                  ||
-                                          |   -> C0 is INFORMATIONAL ONLY (no mutation allowed)  |  |-----------------------------------------------------|  |---------------------------------------------------------------------------|                                  ||
-                                          | - Augments prompt with [C0] Context                  |  | - [TLM] CROSS-LAYER TELEMETRY                       |  | [ RULES ] - L4 never authorizes. L4 never executes.                       |                                  ||
-                                          | - Cannot approve / Cannot execute                    |  | - [SGNL] DetectionSignalEmitter.emit_with_l4a()     |  |           - Future executions use updated versions via L0.                |                                  ||
-                                          | - P1: PRIMING: Hydrate via Knowledge Graph, Sem-Mem  |  | - [RCA] ROOT CAUSE ANALYSIS (RCA)                   |  |           - All ML improvements written as versioned updates.             |                                  ||
-                                          | - P2: ORCHESTRATION: Coordinator, Tool Agents Draft  |  | =>[BROADCAST] BREAK RECURSIVE CYCLES                |  | [ PROMPTS]- [S0: SYSTEM] Rulebooks (ABSOLUTE Authority)                   |                                  ||
-                                          | - P3: PTC CALIBRATION: Simulate CoT, Calc Complexity |  |   (Triggers Stall & Forces Path D)                  |  |           - [I0: INSTRUCTIONAL] Mixins (GOVERNED Authority)               |                                  ||
-                                          | - P4: SYNTHESIS: Emit intent, tools, raw_reasoning   |  | - [VIGI] TieredVigilanceEmitter: classify_signals() |  | [ STATE ] - [TMPL] REASONING TEMPLATES, [SYNC] TEAM MEMORY                |                                  ||
-                                          | - [LOG] LOG ORIGINAL USER INTENT                     |  |           → VigilanceSeverity tier mapping          |  | [ RAG ]   - [TRTH] ANCHOR KNOWLEDGE DRIFT [♦ I::IMemoryStore ♦]           |                                  ||
-                                          | ML Integration:                                      |  | - [DSPCH] VigilanceDispatcher → L0 vigilance route  |  |           - Governance: EMBEDDING_ENABLED kill-switch, SINGLETON Factory  |                                  ||
-                                          | - [COG] CognitiveNode: assemble→query→validate→emit  |  | - [ENTR] EntropyTelemetryEngine: FlipMetrics,       |  |           - Embedder: OpenAI text-embedding-3-large (Batch=500, Retry=8)  |                                  ||
-                                          | - [EPIC] EpisodicMemory→L4B; [METL] MetaLearning     |  +-----------------------------------------------------+  |           - Determinism: BLAS locked, eps=1e-12, Max K=20, Cutoff>=0.5    |                                  ||
-                                          +------------------------------------------------------+            || (WRITE: Structured Telemetry)               |           - Integrity: SHA-256(embeddings.f32) MUST match manifest at boot|                                  ||
-                                                    | (U0 USER QUERY)                                         ||                  |                          |           - C0 RULE: Informational ONLY. Never mutates routes/safety/tiers|                                  ||
-                                                    v                                                         ||                  v                          |           - Seed Packs: C:/AgenticEmbeddings/seed_packs/<namespace>/      |                                  ||
-                                          +------------------------------------------------------+            ||   +-----------------------------------------------------+  |           - L4A: Detection signals (write-once, content-hash keyed)       |                                  ||
-                                          | L7: EVALUATION SPINE [♦ QUALITY & OPTIMIZATION ♦]    |            ||   | L7 INTEGRATION: Evaluation & Continuous Improvement |  |           - L4B: Healing snapshots (write-once, content-hash keyed)       |                                  ||
-                                          |------------------------------------------------------|            ||   |-----------------------------------------------------|  |           - L4C: Drift snapshots (write-once, content-hash keyed)         |                                  ||
-                                          | [METRICS] Retrieval & Generation Quality             |            ||   | - EvaluationSnapshot → L4 (persistent_store)        |  | [ COORD] - BlackboardStore: multi-agent KV, tick-based leases             |                                  ||
-                                          | - PrecisionAtK, RecallAtK, MRR, NDCG                 |            ||   | - DriftAlert → L6 (anomaly detection feed)          |  |           verify_healing_lease() [IBlackboardLeaseVerifier]               |                                  ||
-                                          | - Groundedness, AnswerCorrectness                    |            ||   | - ImprovementProposal → Meta Learning Bus           |  | [ PROMO] - PromotionAuthority: scoped pointer updates via UWG             |                                  ||
-                                          | [RETRIEVAL] Hybrid Pipeline Components               |            ||   | - DPOBatch → L4 (optional RLHF training data)       |  |           single-use tokens, validate_pointer_update_integrity()          |                                  ||
-                                          | - ReciprocalRankFusion, ScoreFusion                  |            ||   | - SystemEvaluationSummary → L6 dashboards           |  | [ LOCKS] - PhaseLockStore + PhaseLockValidator: phase sequence gating     |                                  ||
-                                          | - HeuristicReranker, PassthroughReranker             |            ||   +-----------------------------------------------------+  |           lock_phase / unlock_phase / verify_replay_integrity()           |                                  ||
-                                          | - RetrievalPipeline (vector/hybrid/hybrid_reranked)  |            ||                  |                                             | [ VRSNR] - PromptVersionStore: immutable versioned S0/I0 prompt storage   |                                  ||
-                                          | [CHUNKING] Document Segmentation & Validation        |            ||                  v (Writes Evaluation Snapshots)                +---------------------------------------------------------------------------+                                  ||
-                                          | - FixedToken, OverlapWindow, SectionAware, Semantic  |            ||                                                                                                                                                                            ||
-                                          | - ChunkManifestValidator (7 validators)              |            ||                                                                                                                                                                            ||
-                                          | [MONITORING] Drift Detection & Shadow Testing        |            ||                                                                                                                                                                            ||
-                                          | - RetrievalDriftMonitor, EmbeddingDriftMonitor       |            ||                                                                                                                                                                            ||
-                                          | - AnswerQualityMonitor, ShadowEvaluationRunner       |            ||                                                                                                                                                                            ||
-                                          | [FEEDBACK] Human-in-Loop & RLHF Integration          |            ||                                                                                                                                                                            ||
-                                          | - DPOBatchBuilder (preference pairs from feedback)   |            ||                                                                                                                                                                            ||
-                                          | - EvaluatorProposerBridge (aggregate → proposals)    |            ||                                                                                                                                                                            ||
-                                          | [RUNNERS] Offline & Replay Evaluation Orchestration  |            ||                                                                                                                                                                            ||
-                                          | - OfflineEvaluationRunner (dataset → metrics → L4)   |            ||                                                                                                                                                                            ||
-                                          | - ReplayEvaluationRunner (A/B config comparison)     |            ||                                                                                                                                                                            ||
-                                          +------------------------------------------------------+            ||                                                                                                                                                                            ||
-                                            | (Emits Quality Metrics & Improvement Signals)                    ||                                                                                                                                                                            ||
-                                            v                                                                 ||                                                                                                                                                                            ||
-                                   [TO L6 OBSERVABILITY & META LEARNING BUS]                                 ||                                                                                                                                                                            ||
-                                          +------------------------------------------------------+            ||                                                                                                                                                                            ||
-                                          | L1: RAG SEMANTIC RETRIEVAL (C0 PIPELINE)             |            ||                                                                                                                                                                            ||
-                                          |------------------------------------------------------|            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          |                                                      |            ||                                                                                                                                                                            ||
-                                          | 1. USER QUERY (U0 - Zero Authority)                  |            ||                                                                                                                                                                            ||
-                                          |      |                                               |            ||                                                                                                                                                            ||
-                                          |      v                                               |            ||                                                                                                                                                            ||
-                                          | 2. EMBEDDING MODEL (Deterministic Encoder)           |            ||                                                                                                                                                            ||
-                                          |      |                                               |            ||                                                                                                                                                            ||
-                                          |      v                                               |            ||                                                                                                                                                            ||
-                                          | 3. QUERY VECTOR (Ephemeral State)                    |            ||                                                                                                                                                            ||
-                                          |      |                                               |            ||                                                                                                                                                            ||
-                                          |      v                                               |            ||                                                                                                                                                            ||
-                                          | 4. LOCAL FAISS / VECTOR INDEX (BLAS Locked)          |            ||                                                                                                                                                            ||
-                                          |    [ COSINE SIMILARITY COMPUTATION ]                 |            ||                                                                                                                                                            ||
-                                          |    score_i = cosine(query_vector, seed_vector_i)     |            ||                                                                                                                                                            ||
-                                          |    - Rank + Threshold Filter (cutoff ≥ τ, top_k ≤ K) |            ||                                                                                                                                                            ||
-                                          |      |                                               |            ||                                                                                                                                                            ||
-                                          |      v                                               |            ||                                                                                                                                                            ||
-                                          | 5. TOP-K CONTEXT (C0 Informational Only)             |            ||                                                                                                                                                            ||
-                                          |------------------------------------------------------|            ||                                                                                                                                                            ||
-                                          | C0 RULE:                                             |            ||                                                                                                                                                            ||
-                                          | - Informational only                                 |            ||                                                                                                                                                            ||
-                                          | - Cannot mutate routing                              |            ||                                                                                                                                                            ||
-                                          | - Cannot escalate tiers                              |            ||                                                                                                                                                            ||
-                                          | - Cannot influence safety thresholds                 |            ||                                                                                                                                                            ||
-                                          | - Cannot alter determinism digest                    |            ||                                                                                                                                                            ||
-                                          +------------------------------------------------------+            ||                                                                                                                                                            ||
-                                            | (Emits C0 Dependency) || (WRITE: [U0] & Script Proposals)       ||                                                                                                                                                            ||
-                                            |                       =========================================================================================================|                                                                                              ||
-                                            v                                                    (READ: Model Config, RAG Config, Detection Config Parameters)               |                                                                                              ||
-                                   [TO ASSEMBLY STAGE: C0]                                                                                                                   |                                                                                              ||
-                                   (Bypasses Routing Logic)                                                                                                                  |                                                                                              ||
-                              |                             |                                                                 |                                                                                                                                  |   ||
-                              v (L1 Emits Intent) v (L1 Emits Anomaly)                                        v (L1 Emits C0 Dependency)                                                                                                                       |   ||
-==========================================================================================================================================================================================================================================================================||==
-  L5 SAFETY ENFORCEMENT PLANE — CROSS-CUTTING GOVERNANCE (CONSULTED BY ALL LAYERS)                                                                                                                                                                                          ||
-==========================================================================================================================================================================================================================================================================||==
-              +-----------------------+         +-----------------------+         +-----------------------+         +-----------------------+                                                                                                                  ||
-              | [1] CLASSIFICATION    |<------->| [2] STRUCTURE         |<------->| [3] AGENT REGISTRY    |<------->| [4] SOVEREIGN LLM     |                                                                                                                  ||
-              |     KERNEL            |  (CI)   |     BLUEPRINT         |  (CI)   |     (FROZEN SSOT)     | (Runtime)|     GATEWAY           |                                                                                                                  ||
-              |-----------------------|         |-----------------------|         |-----------------------|         |-----------------------|                                                                                                                  ||
-              | FileType taxonomy     |         | Territory enforcement |         | Agent profiles        |         | Sole LLM egress seam  |                                                                                                                  ||
-              | AST-based (19 queue)  |         | Path validation       |         | Execution modes       |         | Provider abstraction  |                                                                                                                  ||
-              | LRU cached (1024)     |         | Test placement SSOT   |         | Model allowlists      |         | Injection detection   |                                                                                                                  ||
-              | Zero dependencies     |         | 62 kernel components  |         | registry_digest()     |         | Hash-chained audit    |                                                                                                                  ||
-              +-----------------------+         +-----------------------+         +-----------------------+         +-----------------------+                                                                                                                  ||
-                      |                                 |                                 |                                 |                                                                                                                                          ||
-                      | (Called by L0/L2/L6)            | (Called by CI/L2)               | (Called by L0/L2/L2.3)          | (Called by L2 agents)                                                                                                                    ||
-                      v                                 v                                 v                                 v                                                                                                                                          ||
-              [Agent discovery]               [Path allow/deny]               [Profile lookup]                [LLM request routing]                                                                                                                                    ||
-              [File validation]               [Cross-domain block]            [Allowlist check]               [Model resolution]                                                                                                                                       ||
-              [Audit categorization]          [Test placement]                [Digest inclusion]              [Replay support]                                                                                                                                         ||
-                      |                                 |                                 |                                 |                                                                                                                                          ||
-                      |                                 |                                 |                                 |                                                                                                                                          ||
-                      +================================================================================================================================================================================================================================>||
-                                                                                          |                                                                                                                                                                            ||
-                                                                                          | [SEE: L5 Safety Enforcement Plane.md for full detail]                                                                                                                     ||
-                                                                                          |                                                                                                                                                                            ||
-                                                                                          v (All L5 checks passed, routes to L0)                                                                                                                                        ||
-                                                               +---------------------------------------------------------------------------+                                                                                                                                ||
-                                                               | L0 – ROUTING (THE AUTHORITY NODE: CENTRAL TRAFFIC CONTROL)                | <==(Reads Active Cognitive & Tool States)======================================================================================||
-                                                               |---------------------------------------------------------------------------|                                                                                                                                ||
-                                                               | - Classifies intent vs. L4 Routing State                                  |          +---------------------------------------------------------------------+                                               ||
-                                                               | - [JIT] Load context on-demand via the "Elevator Shaft" (L0 <-> L5)       |          | [ META-LEARNING & OPTIMIZATION BUS ]                                |                                               ||
-                                                               | - Cannot evaluate rules / Cannot execute                                  |          |---------------------------------------------------------------------|                                               ||
-                                                               | - P1: INGEST: Assign Trace_ID, Policy Hash, Correlate L1 vs L6            |          | 1. [PULL]     DATA FOR TRAINING (From L4 Black Box Audit)           |                                               ||
-                                                               | - CI ENFORCEMENT: AST Scanner blocks unsigned InstructionPacket ingress   |          | 2. [INGEST]   Healing outcome events -> HealingOutcomeAggregator    |                                               ||
-                                                               | - P2: ELECTION: Deterministic Ruleset, Learned ML, Guardian Override      |          | 3. [RCA]      ROOT CAUSE ANALYSIS: SYNTAX/IMPORT/TEST_DISCOVERY     |                                               ||
-                                                               | - P3: ARBITRATION: Check Tool Inventory, Budget Forecast, Rate Limits     |          | 4. [PATTERN]  PatternAnalysisEngine: flapping, drift spikes         |====(Writes Optimized Rules & Checkpoints)====>||
-                                                               | - P4: DISPATCH: Stamp Route Mode, Encrypt/Seal Signed Execution Plan      |          | 5. [EMBED]    Semantic retrieval (C0-info): EmbeddingServiceFactory |                                               ||
-                                                               | ML Integration:                                                           |          | 6. [PROPOSE]  L0ThresholdTuner / RAGProposer / RLHFOptimizer        |                                               ||
-                                                               | [1. Pattern Analysis ]=======(Match Intent Logs)==========================|=========>| 7. [VALIDATE] Replay + Shadow + Oscillation gates                   |                                               ||
-                                                               | [2. Threshold Tuning ]=======(Assess Risk Limits)=========================|=========>| 8. [COMMIT]   Stage A: VersionStore. Stage B: Activator (requires   |                                               ||
-                                                               | [3. Path Optimization]=======(Optimize Routing)===========================|=========>|               approval_gate). DEFAULT: proposal_only=True           |                                               ||
-                                                               | AGENT EXECUTION PROFILE ENFORCEMENT                                       |          +---------------------------------------------------------------------+                                               ||
-                                                               | - Every agent must be registered in AgentExecutionProfileRegistry         |                                                                                                                                ||
-                                                               | - Profiles: LOW (deterministic only), HIGH (LLM via Gateway only)         |                                                                                                                                ||
-                                                               | - Unregistered agent invocation -> HARD FAIL                              |                                                                                                                                ||
-                                                               | - Registry hash included in determinism digest                            |                                                                                                                                ||
-                                                               | - [BOOT] BootSequence.execute_boot(): sovereign arch initialization       |                                                                                                                                ||
-                                                               | - [CRYPT] CryptoTrustContracts: sign_artifact / verify_signature          |                                                                                                                                ||
-                                                               |           ReplayGuardStore.record_and_block_replay()                      |                                                                                                                                ||
-                                                               | - [RPOL] ReasoningPolicyEngine: compute_complexity_score() → tier        |                                                                                                                                ||
-                                                               | - [SHADOW] ShadowRouterClassifier: non-invasive routing drift detect      |                                                                                                                                ||
-                                                               | - [TSHFT] TimeshiftRouter: N+1 routing from prior DetectionSignals        |                                                                                                                                ||
-                                                               | - [ESCL] EscalationRouter: policy-coded mode from prior violations        |                                                                                                                                ||
-                                                               | - [MBUS] MetaLearningBus: FIFO queue (enqueue/dequeue/apply_next)         |                                                                                                                                ||
-                                                               | - [CFGS] ConfigStore: time-shifted activated config consumption           |                                                                                                                                ||
-                                                               +---------------------------------------------------------------------------+                                                                                                                                ||
-                                                                                                   v (Dispatches Signed Execution Plan)                                                                                                                                     ||
-                                                               +---------------------------------------------------------------------------+                                                                                                                                ||
-                                                               | ASSEMBLY STAGE (SANDBOX AIRLOCK & DETERMINISTIC COMPOSITION)              |                                                                                                                                ||
-                                                               |---------------------------------------------------------------------------|                                                                                                                                ||
-                                                               | [S0: SYSTEM]        - Hard-coded constitutions & invariants (L4)          |                                                                                                                                ||
-                                                               | [I0: INSTRUCTIONAL] - Identity & "Mixin" behaviors (L4)                   |                                                                                                                                ||
-                                                               | [D0: INJECTIONS]    - Semantic fences & tool constraints (L5)             |                                                                                                                                ||
-                                  [FROM L1: RAG] ============> | [C0: DEPENDENCY]    - Elevator Shaft/RAG injected knowledge               |                                                                                                                                ||
-                                                               | [U0: USER PROMPT]   - Raw intent (L1)                                     |                                                                                                                                ||
-                                                               | => Final Package = Validated Script ready for Path B/C Execution          |                                                                                                                                ||
-                                                               | => [BLOCK] BLOCK HOSTILE INPUT VECTORS (Neutralize Attack Paths)          |                                                                                                                                ||
-                                                               | => [SPLIT] SPLIT INTO ATOMIC TASKS (Limit Scope, Prevent Collateral)      |                                                                                                                                ||
-                                                               | - Emits: Governed Payload => Passes to Paths A / B / C / D                |                                                                                                                                ||
-                                                               +---------------------------------------------------------------------------+                                                                                                                                ||
-                                                                                                   v (Passes Validated Governed Payload)                                                                                                                                    ||
-                                 +---------------------------------------------+-----------------------+-----------------------+-----------------------------------------------+                                                                                            ||
-                                 |                                             |                       |                       |                                               |                                                                                            ||
-                                 v                                             v                       |                       v                                               v                                                                                            ||
-              +===========================================+ +=======================================+  |  +=======================================+ +===========================================+                                                                         ||
-              | PATH A                                    | | PATH B                                |  |  | PATH C                                | | PATH D                                    |                                                                         ||
-              | READ-ONLY RESPONSE                        | | POLICY CHECK FIRST                    |  |  | EXECUTE SCRIPT DIRECTLY               | | HUMAN REVIEW FIRST                        |                                                                         ||
-              +===========================================+ +=======================================+  |  +=======================================+ +===========================================+                                                                         ||
-                              |                                            |                           |                           |                                         |                                                                                              ||
-                              v (Returns Read-Only Data)                   v (Triggers Policy Rules)   |                           v (Initiates Script Exec)                 v (Requests Human Review)                                                                      ||
-              +-----------------------------------+         +-----------------------------------+      |      +-----------------------------------+       +-----------------------------------+                                                                         ||
-              | Final Response                    |         | L3 – ORCHESTRATION [♦ I::IOrch ♦] |      |      | L3 – ORCHESTRATION [♦ I::IOrch ♦] |       | L3 – ORCHESTRATION [♦ I::IOrch ♦] |                                                                         ||
-              |-----------------------------------|         |-----------------------------------|      |      |-----------------------------------|       |-----------------------------------|                                                                         ||
-              | - No system mutation              |         | - [HNDS] SEQUENTIAL HANDSHAKE     |      |      | - [HNDS] SEQUENTIAL HANDSHAKE     |       | - Prepares review artifact        |                                                                         ||
-              | - Logged outcome                  |         | - [ARB]  CONFLICT ARBITRATION     |      |      | - [ARB]  CONFLICT ARBITRATION     |       +-----------------------------------+                                                                         ||
-              |                                   |         |        (Weight/Role rules resolve |      |      |        (Weight/Role rules resolve |                         |                                                                                             ||
-              | ML consumes outcome               |         |         simultaneous escalations) |      |      |         simultaneous escalations) |                         v                                                                                             ||
-              |                                   |         | - [DEDUP] MERGE OVERLAP TOOLS     |      |      | - [DEDUP] MERGE OVERLAP TOOLS     |       ML Integration:                                                                                                 ||
-              |                                   |         | - [GATE] Block hallucination      |      |      | - P1: EVALUATE Result vs DAG      |       [1. Efficiency Tuner]             |======(Evaluate Pipeline Bottlenecks)=======================================>||
-              |                                   |         | - [SEED] Force strict heal        |      |      | - P2: SEQUENCE Branches & Parallel|       [2. Planning Optimization]        |======(Tune Orchestration Efficiency)=======================================>||
-              +-----------------------------------+         | - P1: EVALUATE Result vs DAG      |      |      | - P3: COORDINATE Cross-Agent Sync |                                                                                                                         ||
-                              |                             | - P2: SEQUENCE Branches & Parallel|      |      | - P4: ROUTE Complete, Escalate, L2|                                                                                                                         ||
-                              |                             | - P3: COORDINATE Cross-Agent Sync |      |      +-----------------------------------+                                                                                                                         ||
-                              |                             | - P4: ROUTE Complete, Escalate, L2|      |                           |                                                                                                                                    ||
-                              |                             | - [HSM] HandshakeStateMachine:    |      |                           |                                                                                                                                    ||
-                              |                             |   INIT→PENDING→ESTABLISHED→ACTIVE |      |                           |                                                                                                                                    ||
-                              |                             |   →COMPLETE | FAILED (audit logged)|      |                           |                                                                                                                                    ||
-                              |                             | - [NRVS] NervousSystem: cross-    |      |                           |                                                                                                                                    ||
-                              |                             |   layer coordination signal bus   |      |                           |                                                                                                                                    ||
-                              |                             | - [MCPR] MCPRegistrar: dynamic    |      |                           |                                                                                                                                    ||
-                              |                             |   tool capability marketplace     |      |                           |                                                                                                                                    ||
-                              |                             | - [REIN] ReasoningIntensityEnforc:|      |                           |                                                                                                                                    ||
-                              |                             |   enforce compute tier from score |      |                           |                                                                                                                                    ||
-                              |                             +-----------------------------------+      |                [IF] LOGIC VIOLATION DETECTED?                                                                                                                  ||
-                              |                                            |                           |                <=======(Yes: [!] ESCALATE)=========+                                                                                                           ||
-                              |                                            v (Passes to Safety Guard)  |                           |                        |                                                                                                           ||
-                              |                             +-----------------------------------+      |                           |                        |                           +-----------------------------------+                                           ||
-                              |                             | L5: SAFETY [♦ I::IValidator ♦]    | <====+===========================+                        |                           | HUMAN REVIEW                      |                                           ||
-                              |                             |-----------------------------------|    (No)                                                   |                           |-----------------------------------|                                           ||
-                              |                             | - [RISK] RISK TIER CLASSIFY       |      |                                                    |                           | - [PATCH] MODIFY_DIFF explicitly  |                                           ||
-                              |                             | - [STMP] COMPLIANCE HASH/STAMP    |      |                                                    |                           |   references `original_plan_hash` |                                           ||
-                              |                             | - [STOP] HARD STOP REJECTION      |      |                                                    |                           |   and allowlist tools ONLY.       |                                           ||
-                              |                             | - [RE-CLR] MANDATORY RE-CLEAR FOR |      |                                                    |                           | - [ISOLATE] Zero authority to     |                                           ||
-                              |                             |            HUMAN MODIFY_DIFF PLANS|      |                                                    |                           |   mutate tool permissions directly|                                           ||
-                              |                             | - P1: VALIDATE Proposal vs Policy |      |                                                    |                           | - [DPO] Feedback routed to RLHF   |                                           ||
-                              |                             | - P2: ENFORCE Approve, Remediate  |      v                                                    |                           | ML Integration:                   |                                           ||
-                              |                             | - P3: REMEDIATE Safety Retry/Fix  |======(Track False Positive & Negatives)===================|===========================| [1. Drift Monitoring]             |======(Track False Positives/Overrides)=======>||
-                              |                             | - P4: CERTIFY Audit Logs & Hashes |======(Analyze Safety Block Accuracy)======================|===========================| [2. Policy Shift Monitor]         |======(Tune L0/L5 Thresholds ONLY)============>||
-                              |                             | ML: Policy Optimization           |======(Tune Safety Rule Strictness)========================|===========================+-----------------------------------+                                           ||
-                              |                             |                                   |======(Adapt Risk Threshold Configs)=======================|========================================|                                                                  ||
-                              |                             +-----------------------------------+                                                           |                                        | (If Approved or Modified)                                        ||
-                              |                                            |                                                                                |                                        |                                                                  ||
-                              |                 [RE-ROUTE TO L1] <==(Fail)-+-(Pass)==> [AUTH] STAMP WORK CONTRACT (Sandbox Permission Granted)              |                                        |                                                                  ||
-                              |                   (If Rejected)            |           (Applies to Paths B & C. Modifed Path D MUST loop back to L5)        |                                        |                                                                  ||
-                              |                                            v (Grants Sandbox Execution Permission)                                          |                                        v (Routes Human Decision via L5 Re-Clear)                          ||
-                              |                             +=======================================================================================================================================================================================================+   ||
-                              |                             | \\\ L2 – UNIFIED EXECUTION CORE (PTC SANDBOX: ACTION & IMPLEMENTATION FACTORY FLOOR)                                                                                                              /// |   ||
-                              |                             |=======================================================================================================================================================================================================|   ||
-                              |                             |       [ LOCAL PROGRAMMATIC SANDBOX & FACTORY CONTROL ]             |         [ ML INTEGRATION (FEEDBACK TO STATE BUS) ]                                                                               |   ||
-                              |                             |                                                                    |                                                                                                                                  |   ||
-                              |                             |  [CHKPT] CapabilityChokepoint (G-12-3): authorize_and_execute()   |                                                                                                                                  |   ||
-                              |                             |          EVERY L2 invocation MUST pass through this gate          |                                                                                                                                  |   ||
-                              |                             |  [NEGG]  NetworkEgressGuard: ALL LLM HTTP MUST route via          |                                                                                                                                  |   ||
-                              |                             |          SovereignLLMGateway (no direct provider connections)     |                                                                                                                                  |   ||
-                              |                             |  [SAND]  Isolation: DockerSandbox.run_code() / FirecrackerManager |                                                                                                                                  |   ||
-                              |                             |  [PROTO] L2AgentProtocol: pre_commit→validate→execute→heal        |                                                                                                                                  |   ||
-                              |                             |  [PBIND] ProviderBindingDeterminism: compute_provider_binding_    |                                                                                                                                  |   ||
-                              |                             |          digest() — provider_id+model_id+gw_version+sem_clock    |                                                                                                                                  |   ||
-                              |                             |  +-> [P1: INITIALIZATION] [♦ I::ILeaseVerifier ♦]                  |  [1. Failure Classifier] =======(Learn API Syntax & Failures)===================================================================>||
-                              |                             |  |    -> Validates Signed Plan & PTC ToolBudget Caps               |  [2. Resource Predictor] =======(Optimize Sandbox Compute Cost)=================================================================>||
-                              |                             |  |    -> [CapabilityToken REQUIRED — scoped + unexpired]           |  [3. RL Rollback Refiner]=======(Self-Correct Healer Logic)=====================================================================>||
-                              |                             |  |    -> [Unsigned / expired / unscoped => HARD FAIL]              |                                                                                                                                  |   ||
-                              |                             |  |    -> [FREEZ] FREEZE CLEAN SYSTEM STATE                         |  [ DATA MUTATION ]               [ EXTERNAL RAG (C0 RULE) ]                                                                      |   ||
-                              |                             |  |    -> [Freeze disables WriteGateway + promotion + meta-learning + routing changes] |  - Sandbox Snapshot Revert    +--------------------------------+                                              |   ||
-                              |                             |  |    -> [CLAIM] CLAIM EXCLUSIVE WRITE ACCESS                      |  - Embedding gen (OpenAI)        | Local FAISS (BLAS Locked)      |                                                              |   ||
-                              |                             |  |    -> [GUARD] PRESERVE EXISTING CODE INTEGRITY                  |  - FAISS index write ----------->| SINGLETON Factory Enforced     |                                                              |   ||
-                              |                             |  |         v                                                       |  - Seed pack write (Plan B)      | SHA-256 Integrity Verified     |                                                              |   ||
-                              |                             |  |   [P2: PTC EXECUTION] [♦ I::IMemoryStore ♦]                     |  - Retention policy (rolling)    | [Embedding ONLY via factory]   |                                                              |   ||
-                              |                             |  |    -> [CONTRACTS] Enforce strict ToolCall -> ToolResult schemas |                                  | [No backend fallback permitted]|                                                              |   ||
-                              |                             |  |    -> [STDOUT RULE] Verified constraint: structured, max bytes  |                                  +--------------------------------+                                                              |   ||
-                              |                             |  |    -> [CID REGISTRY] L2 Correlation ID Tracking (Immutable)     |                                                                                                                                  |   ||
-                              |                             |  |       * ExecutionCycle(cid, attempt, status) — frozen dataclass |                                                                                                                                  |   ||
-                              |                             |  |       * new_cycle(cid) → attempt=1, status="new"                |                                                                                                                                  |   ||
-                              |                             |  |       * next_attempt(cycle) → deterministic increment only      |                                                                                                                                  |   ||
-                              |                             |  |       * No wall-clock usage, no randomness, pure determinism    |                                                                                                                                  |   ||
-                              |                             |  |    -> [All L2 actions MUST declare effect class]                |                                                                                                                                  |   ||
-                              |                             |  |    -> [Undeclared side-effects => abort wave]                   |                                                                                                                                  |   ||
-                              |                             |  |    -> [UWG] UNIVERSAL WRITE GATEWAY (Single Mutation Authority) |                                                                                                                                  |   ||
-                              |                             |  |       * Runtime block of ALL non-gateway FS/DB/Vector writes    |                                                                                                                                  |   ||
-                              |                             |  |       * In `replay_mode = true`: strictly simulates diffs       |                                                                                                                                  |   ||
-                              |                             |  |       * [write_gateway.py = SOLE durable mutation authority]    |                                                                                                                                  |   ||
-                              |                             |  |       * [Non-UWG mutation => ToolNotAllowedError]               |                                                                                                                                  |   ||
-                              |                             |  |    -> [CEIL] TERMINATE STUCK COMPUTE CYCLES                     |                                                                                                                                  |   ||
-                              |                             |  |         v                                                       |                                                                                                                                  |   ||
-                              |                             |  |   [Evaluation     ]--+                                          |                                                                                                                                  |   ||
-                              |                             |  |         | (Fail)     |                                          |                                                                                                                                  |   ||
-                              |                             |  |         v            |                                          |                                                                                                                                  |   ||
-                              |                             |  |   [L2.3: CONFIDENCE-TIER HEALING SUBSYSTEM]                     |                                                                                                                                  |   ||
-                              |                             |  |   +---------------------------------------------------------+   |                                                                                                                                  |   ||
-                              |                             |  |   | remediation_dispatcher._invoke_healer()                |   |                                                                                                                                  |   ||
-                              |                             |  |   |   -> On exception: needs_llm_escalation=True           |   |                                                                                                                                  |   ||
-                              |                             |  |   |   -> On FAILED: _tier_escalate() [G1+G2 guards]        |   |                                                                                                                                  |   ||
-                              |                             |  |   |   -> EscalationContext -> FailureSignal -> tier router  |   |                                                                                                                                  |   ||
-                              |                             |  |   |   -> heal_confidence score -> LOCAL / QWEN / GEMINI    |   |                                                                                                                                  |   ||
-                              |                             |  |   |   [SEE: Healing & Escalation Loop.md for full detail]  |   |                                                                                                                                  |   ||
-                              |                             |  |   +---------------------------------------------------------+   |                                                                                                                                  |   ||
-                              |                             |  |         v                                                       |                                                                                                                                  |   ||
-                              |                             |  |   [P4: SYNTHESIZER] (Pass)<--+                                  |                                                                                                                                  |   ||
-                              |                             |  |    -> Aggregate Outputs, Validate Schema, Final Artifact        |  [SEE: Zero Loss Determinism & Replay Core.md for digest                                                                        |   ||
-                              |                             |  |    -> [TRANSCRIPT] EMIT PTC ToolTranscript ONLY                 |   formulas (P5/W6/LOCKDOWN) and replay strictness guarantees]                                                                   |   ||
-                              |                             |  |                                                                 |  [SEE: PTC.md for token compression value prop (~37% lower)]                                                                    |   ||
-                              |                             +====================================================================+                                                                                                                                  |   ||
-                              |                                                                            |                                                                                                                                                            |   ||
-              v (Passes Filtered ToolTranscript)                                           v (Passes Sandbox Transcript to L4/L6)                                                                                                                                    |   ||
-              +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
-              | FINAL DECISION / OUTCOME LOGGING                                                                                                                                                                                                                   |    ||
-              |----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|    ||
-              | - Outcome and state diffs are logged and versioned via ExecutionTrace Audit Envelope                                                                                                                                                               |    ||
-              | - [L1 UPDATE] FINAL ANSWER GENERATED USING ONLY ToolTranscript (Maintains PTC Context Isolation)                                                                                                                                                   |    ||
-              | - [SYNC] UPDATE SHARED TEAM MEMORY & ACTIVITY LEDGER (Non-blocking state update occurs only after L2.2 confirms)                                                                                                                                   |    ||
-              | - [RECON] VERIFY DATA MATCHES REALITY (Detect ghost mutations across state layers)                                                                                                                                                                 |    ||
-              | - Metrics captured: Execution Latency, Outcome Accuracy, Compute Cost, Human Correction Rate                                                                                                                                                       |    ||
-              +----------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------+    ||
-                                                                                       |                                                                                                                                                                                ||
-                                                                                       +===(Commits Final State to Activity Ledger)====================================================================================================================================>||
+==============================================================================================================================
+  [1]  DOMAIN APPS  (zero internal authority — emit raw "what")
+==============================================================================================================================
 
-==============================================================================================================================================================================================================================================================================
-  CORE DATA CONTRACTS & CRYPTOGRAPHIC PRIMITIVES (ENFORCEABLE BOUNDARIES)
-==============================================================================================================================================================================================================================================================================
-| [0] Canonicalization Rules              : JSON strict alphabetical key sorting, UTF-8 encoded, zero whitespace variation before HMAC-SHA256 hashing. Applies universally.                                                                                              |
-| [1] InstructionPacket (L0 -> L2/L3)     : [trace_id, policy_hash, route_mode, allowed_tools[], signature(HMAC-SHA256 of canonical JSON)]                                                                                                                           |
-| [2] SandboxEnvelope (L2 Entry)          : [InstructionPacket, ToolBudget(compute_ms, memory_mb, stdout_bytes)] (Signature verified at L2 boundary)                                                                                                                     |
-|                                           [Signature/HMAC verification MUST precede any side-effect]                                                                                                                                                                   |
-| [3] PTC Tool Contracts (L2 Exec)        : ToolCall(id, args) -> ToolResult(exit_code, stdout). Verified constraint: STDOUT-only, redacted, strict byte caps.                                                                                                           |
-| [4] ExecutionTrace (L6/L4 Audit)        : Audit Envelope: [trace_id, plan_hash, actor, target, diff, policy_hash, timestamp, prev_hash(chaining), replay_key(trace_id+plan_hash+transcript_hash)]                                                                      |
-| [5] HumanDecisionArtifact (Path D)      : [trace_id, policy_hash, reviewer_id, action:[APPROVE|MODIFY_DIFF|REJECT], structured_patch_schema, reviewer_sig] -> MODIFY_DIFF MUST reference original plan_hash, use allowlist tools, and re-clear L5 before execution.    |
-| [6] HealCheckResult (L2.3 Healer Out)   : [check_id, status, changes_made(sorted), rollback_info, notes, needs_llm_escalation:bool, escalation_hint:str|None]                                                                                                         |
-|                                           CONTRACT_VERSION=2. needs_llm_escalation=True is healer opt-in only; policy/permission failures MUST leave it False.                                                                                                         |
-| [6a] CIDRegistry (L2 Execution Tracking): [ExecutionCycle(cid, attempt, status)] — Immutable correlation ID tracking. new_cycle(cid), next_attempt(cycle), get_cycle(cid), update_status(cid, status). No wall-clock, no randomness, pure determinism.                |
-| [7] EscalationContext (L2.3 SSOT)       : [check_id, healer_name, retry_count, failure_type, blast_radius_estimate, summary(notes[:120]), trace_id("disp-"+sha256(check_id:retry_count)[:12])]                                                                        |
-|                                           Built deterministically from HealCheckResult. ONLY source for FailureSignal construction. Never built from raw notes directly.                                                                                               |
-| [8] FailureSignal (L2.3 -> Router)      : [source_agent, failure_type, error_signature, trace_id, context={healer_name,summary}, retry_count, blast_radius_estimate]                                                                                                  |
-|                                           .to_healing_input() -> HealingInput consumed by route_healing_tier(). Agents in NO_TIERING class MUST emit FailureSignal; L2.3 selects tier on their behalf.                                                                 |
-| [9] HealingDecision (Router Out)        : [heal_confidence:float[0..1], tier:HealingTier, reason_codes:tuple[str,...]]                                                                                                                                                 |
-|                                           Tier thresholds: X=0.75 (LOCAL_AGENT), Y=0.40 (QWEN_VLLM), <Y (GEMINI_2_5_PRO). retry_count>=3 forces GEMINI_2_5_PRO.                                                                                                      |
-| [10] InvocationRecord (Dispatcher Out)  : [tier, model_id, agent_name, trace_id, heal_confidence, method_called]                                                                                                                                                      |
-|                                           Immutable audit record of every provider invocation. Appended to HealCheckResult.notes as deterministic audit string.                                                                                                        |
-| [11] EmbeddingResult (L2 RAG Out)       : [content_hash, score_round6:float[0..1], row_idx:int, embedding_artifact_hash(sha256)] -> C0 informational only. Never drives routing decisions.                                                                             |
-| [12] SeedEmbeddingPackManifest (Plan B) : [seed_index_version_hash, embedding_model_version, vector_count, dimensions, matrix_hash, row_index_hash] -> Integrity: sha256(embeddings.f32) must match matrix_hash                                                      |
-| [13] DPOPair (L6 Path D Feedback)       : [example_id:{control_hash, candidate_hash}, human_decision:APPROVE|REJECT, reasons:tuple[str,...]] -> Built deterministically from Path D decisions.                                                                        |
-| [14] ChangePackage (MetaLearning Out)   : [source, target, changes:bytes, confidence:float, reason:tuple[str,...], timestamp_utc:int] -> proposal_only=True by default. Stage A commit requires explicit version_store injection.                                    |
-| [15] CommitProofInvariant               : Proof must bind to true implementation commit. HEAD allowed only if it naturally contains implementation. No churn commits permitted.                                                                                        |
-| [16] ClassificationKernelContract       : FileType classification via AST (20 types, 19-priority queue). LRU-cached, zero dependencies. Dual-tag conflict detection. CONFIG_WITH_LOGIC violation flagging. Error hardening with catch-all guard.                      |
-| [17] StructureBlueprintContract         : Path validation (is_path_allowed), territory enforcement (SOVEREIGN_TERRITORIES), depth limits (L4 specialization), forbidden patterns, test placement SSOT (TEST_CANONICAL_LOCATION_MAP).                                  |
-| [18] AgentRegistryContract              : AGENT_REGISTRY frozen at compile time. ExecutionMode (DETERMINISTIC/LLM_API), ReasoningIntensity (LOW/HIGH), allowed_models tuple. Unregistered agent → HARD FAIL. registry_digest() for validation.                        |
-| [19] UniversalWriteGatewayContract      : MutationRecord audit trail. SimulationResult for replay mode. Allowed paths, blocked extensions. execute_instruction() tool allowlist. write_file/append_file/delete_file/rename_file with permission checks.              |
-==============================================================================================================================================================================================================================================================================
-  META-LEARNING PIPELINE STAGES (system_learning/pipelines/meta_learning_pipeline.py)
-==============================================================================================================================================================================================================================================================================
-| [Stage order immutable: AUDIT→TELEMETRY→CONFIG→SNAPSHOT→RCA→PROPOSE→VALIDATE→INTAKE→COMMIT]                                                                                                                                                                                |
-| STAGE 1  [AUDIT]    : AuditStore.read_audit_slice(window_start, window_end) — read-only                                                                                                                                                                                |
-| STAGE 2  [TELEMETRY]: TelemetryStore.read_events(window_start, window_end) — read-only                                                                                                                                                                                 |
-| STAGE 3  [CONFIG]   : ConfigProvider.get_current_configs() — materialized config bytes                                                                                                                                                                                 |
-| STAGE 4  [SNAPSHOT] : MetaLearningSnapshot (engine_version, config_surface_version, SemanticClockSnapshot)                                                                                                                                                             |
-| STAGE 5  [RCA]      : analyze_failures() -> RCAReport (SYNTAX / IMPORT / TEST_DISCOVERY / RUNTIME / UNKNOWN)                                                                                                                                                           |
-| STAGE 6  [PROPOSE]  : Proposers run in fixed order: L0 -> RAG -> L1 -> L5 (only enabled subset).                                                                                                                                                                       |
-|          [PHASE 9]  : ResourcePrediction + RollbackRefinementDecision injected as ChangePackages                                                                                                                                                                       |
-|          [DPO PATH] : dpo_batch_bytes + RLHFOptimizer.propose_from_dpo() -> threshold ChangePackage                                                                                                                                                                    |
-| STAGE 7  [VALIDATE] : ReplayValidator + ShadowEvaluator + DampeningValidators (cooldown, sample-size) + OscillationDetector                                                                                                                                            |
-|          [OSCILLATE]: Oscillation detected within cooldown window -> proposal auto-rejected. Threshold flip-flopping prohibited. Minimum sample size required.                                                                                                         |
-| STAGE 8  [INTAKE]   : HealingOutcomeIntakeAdapter.build_record() + persist_record() (always, before proposal_only check)                                                                                                                                               |
-| STAGE 8.5[HEAL-OPT] : HealingConfigOptimizer.create_snapshot_from_intake() -> L4StateWriter.write_l4b_healing_snapshot()                                                                                                                                               |
-| STAGE 8.6[PATTERN]  : PatternAnalysisEngine.analyze(healing_snapshot, detection_signal, drift_snapshot) -> PatternFindingReport                                                                                                                                        |
-| STAGE 8.7[EMBED]    : _retrieve_semantic_context(rca_report, pattern_report) -> embedding_metadata dict (C0 informational only)                                                                                                                                        |
-| STAGE 9  [COMMIT]   : IF proposal_only=False: ApprovalGate.decide() -> Stage A (VersionStore.commit) -> Stage B (Activator.activate). DEFAULT IS proposal_only=True.                                                                                                   |
-|          [Dual injection REQUIRED: version_store + approval_gate]                                                                                                                                                                                                      |
-|          [Single injection => HARD FAIL]                                                                                                                                                                                                                               |
-==============================================================================================================================================================================================================================================================================
-  LAYER SOVEREIGNTY MATRIX
-==============================================================================================================================================================================================================================================================================
-| L1: Propose only                                                                                                                                                                                                                                                           |
-| L0: Route only                                                                                                                                                                                                                                                             |
-| L5: Certify only                                                                                                                                                                                                                                                           |
-| L2: Execute only                                                                                                                                                                                                                                                           |
-| L4: Persist only                                                                                                                                                                                                                                                           |
-| L6: Observe only                                                                                                                                                                                                                                                           |
-| Upward mutation across layers is forbidden.                                                                                                                                                                                                                                |
-| [Dynamic runtime mutation (monkeypatch/setattr/importlib.reload/metaclass injection) FORBIDDEN]                                                                                                                                                                            |
-==============================================================================================================================================================================================================================================================================
+     +----------------------+       +----------------------+       +----------------------+
+     |   apps_lic           |       |   apps_rg            |       |   apps_shared        |
+     |  (InMail Campaigns)  |       | (Resume Generation)  |       | (Cross-Domain Infra) |
+     |  38 reasoning agents |       | 24 reasoning agents  |       |  9 orchestrators     |
+     |  4 engines           |       | 45 engines           |       | 11 enforcement strats|
+     |  => intent_delta     |       |  => intent_delta     |       |  => shared knowledge |
+     |     tool_requests[]  |       |     tool_requests[]  |       |     + policies       |
+     |     state_diff_prop  |       |     state_diff_prop  |       |                      |
+     +----------+-----------+       +----------+-----------+       +-----------+----------+
+                |                              |                               |
+                | (Campaign Requests)          | (Resume Requests)             | (Shared Services)
+                v                              v                               v
+==============================================================================================================================
+  [2]  ENTRY PRODUCERS  — L1 · L6 · L4  (run in parallel, no authority)
+==============================================================================================================================
+
+                   User Request / System Event / Admin Request
+                                      |
+           +---------------------------+---------------------------+
+           |                           |                           |
+           v                           v                           v
+  +-------------------+     +---------------------+     +------------------------+
+  |   L1: COGNITIVE   |     |  L6: OBSERVABILITY  |     |  L4: STATE & MEMORY    |
+  |   STUDIO          |     |  & ANOMALY DETECT   |     |  & PERSISTENCE         |
+  |-------------------|     |---------------------|     |------------------------|
+  | P1: Priming       |     | Ingest metrics      |     | Cognitive registry     |
+  | P2: Orchestration |     | Anomaly scoring     |     | Capability registry    |
+  | P3: PTC Calib.    |     | Broadcast drift     |     | Workflow memory        |
+  | P4: Synthesis     |     | RCA engine          |     | Telemetry ledger       |
+  |                   |     | TieredVigilance     |     | L4A: Detection signals |
+  | Emits: U0 prompt  |     | EntropyTelemetry    |     | L4B: Healing snapshots |
+  | Cannot approve    |     | DetectionSignal     |     | L4C: Drift snapshots   |
+  | Cannot execute    |     | →emit_with_l4a()    |     | L4D: ChunkManifest     |
+  |                   |     |                     |     | L4E: ParentChildIndex  |
+  |  +---C0 RAG----+  |     | WRITE: Structured   |     | L4F: RetrievalEval     |
+  |  |seed lookup  |<-+-----|--Telemetry--------->|     | L4G: Completeness Snap |
+  |  |(read, top20)|  |     |                     |     |                        |
+  |  +-------------+  |     | [BROADCAST]         |     | BlackboardStore (KV)   |
+  |  C0 = info only   |     | Break recursive     |     | PhaseLockStore         |
+  |  no route/tier    |     | cycles → Path D     |     | PromptVersionStore     |
+  |  mutation         |     |                     |     | PromotionAuthority     |
+  +--------+----------+     +---------+-----------+     +-----------+------------+
+           |                          |                             |
+           | U0 query                 | telemetry write             | state reads
+           v                          v                             |
+  +-------------------+     +---------------------+                |
+  | EVALUATION SPINE  |     | EVALUATION          |                |
+  | [Quality & Optim] |     | INTEGRATION         |                |
+  |-------------------|     |---------------------|                |
+  | Metrics: P@K, MRR |     | EvalSnapshot → L4   |                |
+  | Groundedness      |     | DriftAlert  → L6    |                |
+  | ReciprocalRankFus |     | ImprovProposal      |                |
+  | HeuristicReranker |     |   → Meta-Learning   |                |
+  | RetrievalPipeline |     | DPOBatch → L4       |                |
+  | Chunking variants |     | EvalSummary → L6    |                |
+  | CompletenessMonit |     +----------+----------+                |
+  | DPOBatchBuilder   |                |                           |
+  | OfflineEvalRunner |                v (eval snapshots)          |
+  +--------+----------+                                            |
+           |                                                       |
+           v (quality metrics + improvement signals)               |
+  [→ Observability & Meta-Learning Bus]                            |
+           |                                                       |
+           +-------------------------------------------------------+
+           |
+           v
+==============================================================================================================================
+  [3]  C0 RAG PIPELINE  (informational only — no route/safety/tier mutation)
+==============================================================================================================================
+
+  User Query (U0)
+       |
+       v
+  +---------------------------+
+  | 1. EMBED QUERY            |
+  |    → ephemeral query vec  |
+  +---------------------------+
+       |
+       +---------(union)--------+
+       |                        |
+       v                        v
+  +-------------+        +-------------+
+  | 2a. VECTOR  |        | 2b. LEXICAL |
+  |   CANDIDATES|        |   RETRIEVAL |
+  | cosine/FAISS|        |  BM25/exact |
+  +------+------+        +------+------+
+         |                      |
+         +-------(fusion)-------+
+                    |
+                    v
+  +---------------------------+
+  | 3. CANDIDATE FUSION       |
+  |    ScoreFusion / RRF      |
+  |    dedupe by chunk_id     |
+  +---------------------------+
+                    |
+                    v
+  +---------------------------+
+  | 4. PARENT-CHILD EXPANSION |
+  |    child → parent+sibling |
+  +---------------------------+
+                    |
+                    v
+  +---------------------------+
+  | 5. COMPLETENESS SCORING   |
+  |    condition/exception/   |
+  |    scope/temporal signals |
+  |    score → L6 + L4G       |
+  +---------------------------+
+                    |
+                    v
+  +---------------------------+
+  | 6. COMPLETENESS RERANKER  |
+  |    relevance + complete.  |
+  +---------------------------+
+                    |
+                    v
+  +---------------------------+
+  | 7. TOP-K + SUPPORT VALID  |
+  |    sentence coverage chk  |
+  |    → L4F (observe only)   |
+  +---------------------------+
+                    |
+                    v (C0 context — informational only, bypasses routing)
+             [C0 → ASSEMBLY]
+
+==============================================================================================================================
+  [4]  L5 SAFETY ENFORCEMENT PLANE  (cross-cutting — consulted by ALL layers)
+==============================================================================================================================
+
+     L1 emits intent  ·  L1 emits anomaly  ·  L1 emits C0 dependency
+                              |
+                              v
+     +----------------+  +----------------+  +----------------+  +----------------+
+     | [1] CLASSIF.   |  | [2] STRUCTURE  |  | [3] AGENT REG  |  | [4] SOVEREIGN  |
+     |    KERNEL      |<>|    BLUEPRINT   |<>|  (FROZEN SSOT) |<>|   LLM GATEWAY  |
+     |----------------|  |----------------|  |----------------|  |----------------|
+     | FileType (AST) |  | Territory enf. |  | Agent profiles |  | Sole LLM egress|
+     | 19-priority Q  |  | Path allow/deny|  | Exec modes     |  | Provider abstr.|
+     | LRU cache 1024 |  | Test placement |  | Model allowlist|  | Injection detec|
+     | Zero deps      |  | 62 components  |  | registry_diges |  | Hash-chain aud.|
+     +-------+--------+  +-------+--------+  +-------+--------+  +-------+--------+
+             |                   |                    |                   |
+             | L0/L2/L6          | CI/L2              | L0/L2/L2.3        | L2 agents
+             v                   v                    v                   v
+       [agent discov.]    [path allow/deny]    [profile lookup]   [LLM routing]
+       [file valid.]      [cross-domain blk]   [allowlist chk]    [model resolv.]
+       [audit categ.]     [test placement]     [digest incl.]     [replay supp.]
+             |                   |                    |                   |
+             +-------------------+--------------------+-------------------+
+                                            |
+                                            v (L5 checks passed)
+                              [SEE: L5 Safety Enforcement Plane.md]
+
+==============================================================================================================================
+  [5]  L0 ROUTING  +  META-LEARNING BUS  (authority node — central traffic control)
+==============================================================================================================================
+
+              L5 certified ──────────────────────────────────────────────────> L4 state reads
+                    |                                                               |
+                    v                                                               |
+  +--------------------------------------+      +--------------------------------+ |
+  |  L0 – ROUTING                        |      |  META-LEARNING & OPTIM. BUS   |<+
+  |  (Central Traffic Control)           |      |  Stage order IMMUTABLE:        |
+  |--------------------------------------|      |  AUDIT→TELEM→CFG→SNAP→RCA→     |
+  | Classify intent vs L4 routing state  |      |  PROPOSE→VALIDATE→INTAKE→CMT  |
+  | JIT context via Elevator Shaft       |      |--------------------------------|
+  | Cannot evaluate / cannot execute     |      | S1 AUDIT     read audit slice  |
+  |                                      |      | S2 TELEMETRY read events       |===> Writes optimized
+  | P1: Assign TraceID + PolicyHash      |      | S3 CONFIG    get configs       |     rules &
+  | P2: Deterministic election           |      | S4 SNAPSHOT  engine+cfg+clock  |     checkpoints
+  | P3: Tool budget arbitration          |      | S5 RCA       analyze failures  |     → L0/L1/L4
+  | P4: Seal + dispatch signed plan      |      |              ↑                 |
+  |                                      |      | (all three ML signals below)   |
+  | ML signals ──────────────────────────+────> | S6 PROPOSE   L0/RAG/L1/L5     |
+  | [1] Pattern Analysis (intent logs)   |      |              + DPO/RLHF        |
+  | [2] Threshold Tuning (risk limits)   |      | S7 VALIDATE  Replay+Shadow+    |
+  | [3] Path Optimization (routing)      |      |              Dampening+Oscill. |
+  |                                      |      | S8 INTAKE    HealingOutcome+   |
+  | Agent Exec Profile Enforcement:      |      |    HEAL-OPT  Config optimizer  |
+  | LOW=deterministic / HIGH=LLM-only    |      |    PATTERN   PatternAnalysis   |
+  | Unregistered → HARD FAIL             |      |    EMBED     semantic ctx C0   |
+  | Registry hash in determinism digest  |      | S9 COMMIT    proposal_only=T   |
+  |                                      |      |    ApprovalGate → VersionStore |
+  | ShadowRouterClassifier (drift detect)|      |    → Activator (dual inject    |
+  | TimeshiftRouter (N+1 from signals)   |      |      REQUIRED or HARD FAIL)    |
+  | EscalationRouter (prior violations)  |      +--------------------------------+
+  | MetaLearningBus FIFO queue           |
+  | ConfigStore (time-shifted configs)   |
+  +--------------------------------------+
+               |
+               v (dispatches signed execution plan)
+
+==============================================================================================================================
+  [6]  ASSEMBLY STAGE  (sandbox airlock — deterministic composition)
+==============================================================================================================================
+
+                    C0 RAG context ──────────────────────────┐
+                    Signed plan from L0 ────────────────────>│
+                                                             │
+  +---------------------------------------------------------+│
+  |  ASSEMBLY STAGE                                         |│
+  |---------------------------------------------------------|<
+  |  [S0] System prompt    — hard-coded constitutions (L4)  |
+  |  [I0] Instructional    — identity / mixin behaviors (L4)|
+  |  [D0] Injections       — semantic fences / tool fences  |
+  |  [C0] Dependency       — RAG injected knowledge (C0)    |
+  |  [U0] User prompt      — raw intent from L1             |
+  |                                                         |
+  |  BLOCK hostile input vectors                            |
+  |  SPLIT into atomic tasks (limit scope)                  |
+  |  => Governed Payload → Paths A / B / C / D             |
+  +---------------------------------------------------------+
+               |
+               v (governed payload)
+               +────────────────┬───────────────┬──────────────────+
+               |                |               |                  |
+               v                v               v                  v
+
+==============================================================================================================================
+  [7]  EXECUTION PATHS  A / B / C / D
+==============================================================================================================================
+
+  +================+   +=================+   +=================+   +==================+
+  | PATH A         |   | PATH B          |   | PATH C          |   | PATH D           |
+  | Read-Only Resp |   | Policy-Check 1st|   | Direct Script   |   | Human Review 1st |
+  +================+   +=================+   +=================+   +==================+
+          |                    |                     |                      |
+          v                    v                     v                      v
+  +-------+--------+   +-------+--------+   +-------+--------+   +---------+--------+
+  | Final Response |   | L3: ORCHEST.   |   | L3: ORCHEST.   |   | HUMAN REVIEW     |
+  | No mutation    |   |----------------|   |----------------|   |------------------|
+  | Logged outcome |   | Seq Handshake  |   | Seq Handshake  |   | MODIFY_DIFF must |
+  |                |   | Conflict Arb.  |   | Conflict Arb.  |   | ref plan_hash    |
+  |                |   | Dedup tools    |   | Eval vs DAG    |   | Zero authority   |
+  |                |   | Gate halluc.   |   | Seq branches   |   | DPO → RLHF       |
+  |                |   | Force heal     |   | Coord agents   |   |                  |
+  |                |   | Eval vs DAG    |   | Route/escalate |   | [Drift Monitor]--|---> Meta-Learning
+  |                |   | HSM states     |   |                |   | [Policy Monitor]-|---> L0/L5 tune
+  |                |   | NervousSystem  |   |                |   +------------------+
+  |                |   | MCPRegistrar   |   |                |            |
+  |                |   | ReasoningIntens|   |                |            | (if approved/modified)
+  |                |   +-------+--------+   +-------+--------+            |
+  |                |           |                     |                    |
+  |                |           v                     v                    |
+  |                |   +-------+----------------------------------------------+
+  |                |   |  L5: SAFETY  [cross-path guard]                       |
+  |                |   |-------------------------------------------------------|
+  |                |   | Risk tier classify · Compliance hash/stamp             |
+  |                |   | Validate proposal vs policy                            |
+  |                |   | Enforce → Approve / Remediate / Reject                 |
+  |                |   | RE-CLEAR mandatory for human MODIFY_DIFF               |
+  |                |   | ML: policy optimization → Meta-Learning                |
+  |                |   +-------+----------------------------------------------+
+  |                |           |                     |
+  |                |           | (Pass)              | (Fail)
+  |                |           v                     v
+  |                |   [STAMP WORK CONTRACT]   [RE-ROUTE → L1]
+  |                |   Sandbox permission        (rejected)
+  |                |           |
+  |                |           v
+
+==============================================================================================================================
+  [8]  L2 UNIFIED EXECUTION CORE  (PTC Sandbox — action & implementation factory)
+==============================================================================================================================
+
+  +===========================================================================+
+  |  L2 – UNIFIED EXECUTION CORE                                              |
+  |---------------------------------------------------------------------------|
+  |  CAPABILITY CHOKEPOINT (G-12-3): authorize_and_execute() — EVERY call    |
+  |  NETWORK EGRESS GUARD: ALL LLM HTTP → SovereignLLMGateway (no direct)    |
+  |  ISOLATION: DockerSandbox.run_code() / FirecrackerManager                 |
+  |  PROTOCOL: pre_commit → validate → execute → heal                         |
+  |  PROVIDER BINDING: provider+model+gw_version+sem_clock digest             |
+  |                                                                           |
+  |  +--[P1: INIT]-----------------------------+                              |
+  |  | Validate signed plan + PTC ToolBudget   |                              |
+  |  | CapabilityToken: scoped + unexpired      |                              |
+  |  | FREEZE clean state (disables UWG/ML/etc)|                              |
+  |  | CLAIM exclusive write access            |                              |
+  |  +--[P2: EXECUTE]--+    +-----------------++                              |
+  |                    |    |                  |                              |
+  |   Enforce ToolCall-+    | UNIVERSAL WRITE  |   ML Feedback Signals:      |
+  |   → ToolResult schema   | GATEWAY (UWG)    |   [Failure Classifier] ──────+──> Meta-Learning
+  |   STDOUT: structured,   | sole mutation    |   [Resource Predictor] ──────+──> Meta-Learning
+  |   max-bytes capped      | authority        |   [RL Rollback Refiner]──────+──> Meta-Learning
+  |   CID Registry:         | replay_mode →    |                              |
+  |   immutable cycle track | simulate diffs   |   EXTERNAL RAG (C0 only):   |
+  |   declare effect class  | Non-UWG → Error  |   Local FAISS (BLAS locked) |
+  |   undeclared → abort    +------------------+   SHA-256 integrity check   |
+  |   CEIL: terminate stuck compute cycles                                    |
+  |                                                                           |
+  |  +--[P3: EVALUATE / HEAL]------------------------------------------+     |
+  |  |                                                                  |     |
+  |  |   Result ──(Pass)──────────────────────────────────────────────> |     |
+  |  |           ──(Fail)──> L2.3 CONFIDENCE-TIER HEALING              |     |
+  |  |                        |                                         |     |
+  |  |   EscalationContext ──>| FailureSignal ──> tier router           |     |
+  |  |   heal_confidence ────>| LOCAL(≥0.75) / QWEN(≥0.40) / GEMINI   |     |
+  |  |   retry_count ≥3 ─────> force GEMINI                            |     |
+  |  |   healer result ──────>| HealCheckResult → needs_llm_escalation |     |
+  |  |                        |        |                                |     |
+  |  |                        | (loop back to execute on heal success)  |     |
+  |  +--[P4: SYNTHESIZE]-------+---------+-------------------------------+     |
+  |     Aggregate outputs · Validate schema · Final artifact                   |
+  |     EMIT PTC ToolTranscript ONLY  (context isolation enforced)             |
+  |     [SEE: Zero Loss Determinism & Replay Core.md]                          |
+  |     [SEE: PTC.md — ~37% token compression]                                 |
+  |     [SEE: Healing & Escalation Loop.md]                                    |
+  +===========================================================================+
+               |                              |
+               | (filtered ToolTranscript)    | (sandbox transcript → L4/L6)
+               v                              v
+
+==============================================================================================================================
+  [9]  OUTCOME  +  FEEDBACK LOOPS
+==============================================================================================================================
+
+  +------------------------------------+
+  |  FINAL DECISION / OUTCOME LOGGING  |
+  |------------------------------------|
+  |  Answer via ToolTranscript only    |
+  |  ExecutionTrace audit envelope     |
+  |  UPDATE team memory & ledger       |
+  |  RECONCILE data vs reality         |
+  |  Metrics: latency, accuracy, cost, |
+  |           human correction rate    |
+  +------------------+-----------------+
+                     |
+                     v (commits final state to Activity Ledger → L4)
+                     |
+  ┌──────────────────+──────────────────────────────────────────────────────────┐
+  │  FEEDBACK LOOPS                                                              │
+  ├──────────────────────────────────────────────────────────────────────────────┤
+  │                                                                              │
+  │  L2 ML signals ──────────────────────────────────────────> Meta-Learning    │
+  │  L2 healer outcome ──> HealingOutcomeAggregator ─────────> Meta-Learning    │
+  │  Eval Spine metrics ─────────────────────────────────────> Meta-Learning    │
+  │  Path D human decisions ─> DPOPair ──> RLHF ─────────────> Meta-Learning    │
+  │  L6 anomaly/drift ───────────────────────────────────────> Meta-Learning    │
+  │                                                                              │
+  │  Meta-Learning S9 COMMIT ────> Updated rules/checkpoints ──> L0/L1/L4      │
+  │  Meta-Learning S6 PROPOSE ───> L0ThresholdTuner / CompletenessRAGProposer  │
+  │                                                                              │
+  │  L6 vigilance ───────────────> L0 re-route                                  │
+  │  L6 broadcast (rec. cycle) ──> STALL → Path D                               │
+  │  L5 fail ────────────────────> RE-ROUTE → L1                                │
+  │  C0 RAG context ─────────────> Assembly (info only, no tier mutation)       │
+  │  Eval Integration ───────────> ImprovementProposal → Meta-Learning          │
+  │                                                                              │
+  └──────────────────────────────────────────────────────────────────────────────┘
