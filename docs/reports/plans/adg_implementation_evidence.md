@@ -16,7 +16,7 @@ c4b1cd32fdc5fff92f274701b00f257e6442a1a6
 
 ## EVIDENCE_COMMIT
 
-PENDING
+1ca3bd24e5d14c95f01fbf9e409c29eb1afad792
 
 ## FILES_CHANGED_CODE
 
@@ -25,7 +25,7 @@ tools/evidence/run_adg_evidence.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/adg_implementation_evidence.md
 
 ## INSPECTED_FILES
 
@@ -222,17 +222,17 @@ tests/architecture/test_adg_branches_and_robustness.py::TestCLIBranches::test_cl
 tests/architecture/test_adg_branches_and_robustness.py::TestCLIBranches::test_cli_scan_diff_mode_no_crash PASSED [100%]
 
 ============================ slowest 10 durations =============================
-6.53s call     tests/architecture/test_adg_digest_stable.py::test_adg_digest_stable_two_runs
-3.36s call     tests/architecture/test_adg_branches_and_robustness.py::TestBlastRadiusThresholdBoundary::test_impact_digest_changes_with_different_changed_files
-3.32s call     tests/architecture/test_adg_invariants.py::TestBlastRadius::test_blast_radius_l0_is_high_risk
-3.30s call     tests/architecture/test_adg_invariants.py::TestADGStaticScanner::test_reverse_import_graph_populated
-3.29s call     tests/architecture/test_adg_invariants.py::TestBlastRadius::test_blast_radius_deterministic_same_input
-3.26s call     tests/architecture/test_adg_negative_controls.py::test_negative_blast_radius_high_risk_escalates_mode
-3.24s call     tests/architecture/test_adg_digest_stable.py::test_adg_digest_is_sha256_hex
-3.21s call     tests/architecture/test_adg_digest_stable.py::test_adg_modules_sorted
-3.20s call     tests/architecture/test_adg_digest_stable.py::test_adg_scan_files_subset_digest_differs_from_full
-3.20s call     tests/architecture/test_adg_branches_and_robustness.py::TestCLIBranches::test_cli_blast_radius_exits_0
-============================ 153 passed in 55.14s =============================
+6.44s call     tests/architecture/test_adg_digest_stable.py::test_adg_digest_stable_two_runs
+3.33s call     tests/architecture/test_adg_branches_and_robustness.py::TestCLIBranches::test_cli_blast_radius_exits_0
+3.29s call     tests/architecture/test_adg_invariants.py::TestADGStaticScanner::test_scan_produces_edges
+3.27s call     tests/architecture/test_adg_invariants.py::TestADGStaticScanner::test_reverse_import_graph_populated
+3.26s call     tests/architecture/test_adg_digest_stable.py::test_adg_scan_files_subset_digest_differs_from_full
+3.25s call     tests/architecture/test_adg_digest_stable.py::test_adg_canonical_edge_text_stable
+3.25s call     tests/architecture/test_adg_invariants.py::TestBlastRadius::test_blast_radius_l0_is_high_risk
+3.24s call     tests/architecture/test_adg_invariants.py::TestBlastRadius::test_blast_radius_deterministic_same_input
+3.23s call     tests/architecture/test_adg_digest_stable.py::test_adg_modules_sorted
+3.23s call     tests/architecture/test_adg_branches_and_robustness.py::TestBlastRadiusThresholdBoundary::test_impact_digest_changes_with_different_changed_files
+============================ 153 passed in 55.15s =============================
 
 collected 153 / executed 153
 
