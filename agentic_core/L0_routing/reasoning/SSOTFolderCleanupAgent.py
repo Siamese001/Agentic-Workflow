@@ -90,11 +90,11 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
 
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from L0 config."""
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    L4_APPROVED_FOLDERS,
-    VARIABLE_DEPTH_SUBFOLDERS,
-)
+        from agentic_core.L0_routing.config import (
+            AGENTIC_CORE_DIR,
+            L4_APPROVED_FOLDERS,
+            VARIABLE_DEPTH_SUBFOLDERS,
+        )
 
         # Derive SOVEREIGN_REGISTRY and CORE_SUBFOLDER_MAP from L0 constants
         self.sovereign_registry = {

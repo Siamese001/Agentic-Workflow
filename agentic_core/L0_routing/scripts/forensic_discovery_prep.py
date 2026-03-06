@@ -51,14 +51,14 @@ def _get_safe_subprocess_check_output():
 # IMPORT STRATEGY: Inherit strict SSOT paths from production environment
 # ==============================================================================
 try:
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
-    FORENSIC_DISCOVERY_INTEGRITY_HASH,
-    FORENSIC_DISCOVERY_SCRIPT,
-)
+    from agentic_core.L0_routing.config import (
+        AGENTIC_CORE_DIR,
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
+        FORENSIC_DISCOVERY_INTEGRITY_HASH,
+        FORENSIC_DISCOVERY_SCRIPT,
+    )
     from agentic_core.L0_routing.utils.path_util import validate_path_within_project
     from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
     from agentic_core.L0_routing.utils.ssot_discovery_util import (
