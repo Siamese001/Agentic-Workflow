@@ -4682,12 +4682,43 @@ def _write_mandatory_json_output(
             heatmap.setdefault(agent, {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0})
             heatmap[agent][tier] += 1
 
+    # Collect Redis / semantic-cache stats — informational; never influences routing.
+    _semantic_cache_stats: dict = {}
+    try:
+        from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
+
+        _hot = _get_hot_cache()
+        _semantic_cache_stats = _hot.get_stats()
+    except Exception:  # guardian: allow-silent-swallower
+        _semantic_cache_stats = {"error": "unavailable"}
+
+    # Collect meta-learning pipeline summary from state (populated by _fire_meta_learning_intake)
+    _ml_pipeline_state = state_mgr.state.get("meta_learning", {})
+    _ml_pipeline_output: dict = {
+        "pipeline_ran": bool(_ml_pipeline_state),
+        "total_experiences": _ml_pipeline_state.get("total_experiences", 0),
+        "recent_experiences": _ml_pipeline_state.get("recent_experiences", [])[:5],
+        "strategy_weights": _ml_pipeline_state.get("strategy_weights", {}),
+        "failure_vector_count": len(_ml_pipeline_state.get("recent_failure_vectors", [])),
+        "last_intake_experience": _ml_pipeline_state.get("experience", None),
+    }
+
     output = {
         "meta": {
             "report_type": "HEAL_RUN_OUTPUT",
             "timestamp": datetime.datetime.now().isoformat(),
             "mandatory": True,
         },
+        "semantic_cache": {
+            "backend": "redis",
+            "stats": _semantic_cache_stats,
+            "using_fallback": _semantic_cache_stats.get("using_fallback", True),
+            "hits": _semantic_cache_stats.get("hits", 0),
+            "misses": _semantic_cache_stats.get("misses", 0),
+            "fallback_hits": _semantic_cache_stats.get("fallback_hits", 0),
+            "fallback_misses": _semantic_cache_stats.get("fallback_misses", 0),
+        },
+        "meta_learning_pipeline": _ml_pipeline_output,
         "healing_heatmap": {
             "agents": {
                 agent: {
