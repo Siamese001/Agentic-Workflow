@@ -68,6 +68,10 @@ except ImportError:
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
+# Early constants required by resolve_repo_root (full block also at bottom of file)
+AGENTIC_CORE_DIR = "agentic_core"
+OPS_SCRIPTS_DIR = "ops_scripts"
+
 
 def _get_uwg():
     """Lazy loader — avoids circular import at module level."""
@@ -812,6 +816,7 @@ class ConfidenceScore:
 
 import enum as _enum
 import hashlib as _hashlib
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,

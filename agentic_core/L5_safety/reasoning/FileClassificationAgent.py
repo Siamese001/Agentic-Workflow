@@ -2063,14 +2063,12 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns None if compliant, or a violation dict.
         """
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    L5_SUBPROCESS_ALLOWLIST,
-    L6_HYBRID_ALLOWLIST,
-    SCRIPTS_FORBIDDEN_PATTERNS,
-    validate_no_nested_lcd,
-)
+        from agentic_core.L0_routing.config import (
+            L5_SUBPROCESS_ALLOWLIST,
+            L6_HYBRID_ALLOWLIST,
+            SCRIPTS_FORBIDDEN_PATTERNS,
+            validate_no_nested_lcd,
+        )
 
         if not path.name.endswith(".py") or path.name.startswith("__"):
             return None
