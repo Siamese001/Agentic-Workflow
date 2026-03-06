@@ -80,6 +80,161 @@
 - Evidence MUST show "collected X / executed Y" counts. Any deselection must be explained.
 - `pytest.ini` testpaths changes require same-commit update to `tests/unit_min_deps/test_testpaths_contract.py`.
 - Phase completion requires: pytest exits 0, git status clean, evidence file committed.
+- Happy-path coverage alone is INSUFFICIENT. Every changed or newly introduced logic surface MUST have deterministic tests for success path, branch paths, negative paths, failure/exception paths, and recovery behavior where applicable.
+- Any changed conditional, guard, threshold, allowlist/denylist, retry path, fallback path, state transition, exception handler, or early return MUST have at least one direct test proving that branch outcome.
+- Exact boundary values MUST be tested for threshold logic, including equality edges where behavior differs (`>`, `>=`, `<`, `<=`, `==`).
+- Every newly introduced `except` block MUST have at least one test that forces that exception path and proves the resulting fail-closed, rollback, escalation, or recovery behavior.
+- Any fail-closed claim in code, comments, plans, or evidence without a proving automated test is a HARD FAIL.
+- Recovery and healing logic are first-class behavior. If code can retry, roll back, escalate, restore, re-enter, or degrade safely, those paths MUST be tested and may not be deferred.
+- Branch coverage requirements apply to all changed files in scope, not only newly created tests. "Existing happy-path tests still pass" does NOT satisfy phase completion.
+- Before phase completion, produce a deterministic Branch Inventory in evidence for changed logic surfaces:
+  - file path
+  - function or method
+  - branch type
+  - branch condition or trigger
+  - expected outcome
+  - exact test name covering it
+- Any changed branch without a mapped test in the Branch Inventory is a HARD FAIL.
+- Preferred test naming is by branch intent, for example:
+  - `test_<unit>_returns_<x>_when_<condition>`
+  - `test_<unit>_raises_<error>_when_<condition>`
+  - `test_<unit>_rejects_<input>_when_<policy_condition>`
+  - `test_<unit>_escalates_to_<tier>_when_<condition>`
+- Generic names such as `test_success`, `test_basic_flow`, `test_main`, or `test_happy_path` are insufficient for new branch-validating tests unless paired with specific branch-intent coverage.
+- If a code change introduces or modifies branching behavior, the same change set MUST include the proving tests. Separate "tests later" follow-up work is NOT acceptable for PASS.
+- Negative controls are REQUIRED for enforcement logic, fail-closed logic, and invariant guards. A negative control must trigger the guard, produce the expected blocked or rejected outcome, and complete without ambiguity.
+- Where a prior defect involved silent deselection, skipped execution, broad exception handling, or hidden fallback, regression tests MUST prove the defect cannot recur through the same ingress path.
+- Minimum robustness is REQUIRED for every changed logic surface. A branch is not considered tested unless the suite proves normal behavior, malformed behavior, boundary behavior, and control-integrity behavior.
+- Required edge-case classes for every changed logic surface:
+  - null / None / missing field
+  - empty string / empty list / empty dict / zero-length payload
+  - min boundary, boundary-minus-one, exact boundary, boundary-plus-one, max boundary where applicable
+  - malformed type, wrong enum, wrong shape, wrong ordering, duplicate entries
+  - unauthorized / disallowed / unallowlisted input
+  - stale state, already-complete state, double-submit, replayed input, idempotent re-entry
+  - dependency unavailable, timeout, partial dependency result, corrupted dependency result
+  - deterministic replay path, negative control path, recovery path
+- For every changed function or method, at least one test MUST attempt invalid inputs of the same structural family as valid inputs. Testing only obviously-invalid junk inputs is insufficient.
+- For every changed parser, normalizer, router, scorer, validator, classifier, or contract boundary, tests MUST include malformed-but-plausible inputs that could realistically pass superficial checks.
+- For every changed state transition, tests MUST cover:
+  - allowed predecessor -> allowed successor
+  - disallowed predecessor -> attempted successor
+  - repeated same transition twice
+  - interrupted transition / partial-write prevention
+  - replay of already-applied transition
+- For every changed deterministic scorer, router, digest, hash, confidence calculation, ranking function, or threshold gate, tests MUST cover:
+  - exact same input twice gives identical output
+  - semantically equivalent normalized inputs give identical output where normalization claims equivalence
+  - materially distinct inputs do NOT collapse to the same result unless explicitly intended
+  - stable tie-break ordering
+  - exact threshold edge selection
+- For every changed replay-sensitive surface, tests MUST prove that timestamps, randomness, wall-clock state, process order, or hidden external state do not alter the decision outcome unless explicitly part of the contract.
+- For every changed fail-closed surface, tests MUST prove both:
+  - the operation is blocked when required preconditions are absent or invalid
+  - no side-effect occurs before the block
+- For every changed mutation path, tests MUST assert both outcome and side-effect envelope:
+  - returned value or raised exception
+  - files written or not written
+  - state changed or not changed
+  - external call made or not made
+  - audit or trace record emitted where required
+- "No exception raised" is NOT sufficient proof of correctness. Tests MUST assert semantic postconditions, not just execution survival.
+- For every changed exception handler, tests MUST prove:
+  - the exact exception class or contract family is caught
+  - the handler does not silently convert failure into false success
+  - the handler emits the required status, audit note, retry flag, escalation signal, or rollback behavior
+  - unrelated exception classes are not accidentally swallowed
+- Broad exception handlers (`except Exception`) require explicit proving tests for:
+  - intended handled exception
+  - unrelated exception passthrough or hard fail
+  - side-effect safety before and after interception
+- Matrix testing is REQUIRED when logic depends on 2 or more interacting inputs or gates. Single-axis tests are insufficient when behavior changes across combinations.
+- Required matrix cases include combinations of:
+  - feature flag x input validity
+  - retry count x confidence tier
+  - policy allow/deny x mutation attempt
+  - replay mode x external dependency behavior
+  - cache hit/miss x authoritative state freshness
+  - signed/unsigned envelope x side-effect attempt
+- If pairwise or full Cartesian coverage is intentionally reduced, evidence MUST justify the reduction deterministically and show the selected matrix basis. Unexplained matrix pruning is a HARD FAIL.
+- Metamorphic tests are REQUIRED where an exact oracle is weak but invariants are strong. Examples:
+  - normalization of whitespace / ordering / serialization should preserve digest or decision where contract claims equivalence
+  - equivalent replay envelopes should preserve routing output
+  - adding irrelevant metadata should not alter protected decisions
+  - sorting of unordered source inputs should not alter deterministic result
+- Contradiction tests are REQUIRED for policy and enforcement code. Each claimed invariant MUST have at least one test attempting to violate it through the most likely ingress path.
+- Ingress-path rule: tests MUST target the real entrypoint or nearest enforceable choke point, not only isolated helper functions, whenever the defect class could be bypassed in composition.
+- Test doubles are FORBIDDEN from erasing the very risk being tested. Mocks, stubs, monkeypatches, and fixtures may not bypass canonical validation, signature checks, routing gates, side-effect guards, or replay enforcement when those are the subject of the test.
+- Golden-path fixtures alone are insufficient. At least one hostile or corrupted fixture is REQUIRED for every changed contract surface that consumes structured input.
+- Anti-false-confidence rule: statement coverage, branch coverage percentage, and passing happy-path tests MUST NOT be cited as proof of robustness without branch-intent assertions and edge-case evidence.
+- Mutation-sensitive logic requires at least one test that would fail if:
+  - a comparison operator is flipped
+  - a guard clause is removed
+  - a boundary value is shifted by one unit
+  - a retry or escalation branch is skipped
+  - a fail-closed check is converted to permissive behavior
+- Every changed bug fix MUST add at least one regression test named for the defect mechanism, not just the user-visible symptom.
+- Regression tests MUST include the minimal reproducer and one adjacent near-miss case to prove the fix is not overfit to a single literal example.
+- Property-style testing is REQUIRED for deterministic pure functions when the input space is broad and structured. At minimum, include a fixed deterministic corpus covering varied shapes, lengths, orderings, and boundary values.
+- If fuzzing or generated cases are used, the seed corpus and seed value MUST be deterministic and captured in evidence. Non-replayable random fuzzing cannot be cited for PASS.
+- Cache-aware logic MUST be tested across:
+  - cold path
+  - warm path
+  - stale cache path
+  - replay mode or cache-bypass path where contract requires re-derivation
+- Concurrency-adjacent or re-entry-prone logic MUST be tested for:
+  - duplicate invocation
+  - already-held lease / already-claimed resource
+  - second execution after first partial completion
+  - idempotent retry after failure
+- For routing and escalation logic, tests MUST prove all reachable tiers or terminal outcomes, including the forced-escalation case after retry exhaustion and the blocked path for non-allowlisted callers.
+- For retrieval, ranking, and top-k style logic, tests MUST cover:
+  - empty result set
+  - single result
+  - exact cutoff equality
+  - tie scores
+  - stable ordering under equal score
+  - malformed metadata attached to otherwise valid candidates
+- For serialization, canonicalization, hashing, or digest logic, tests MUST cover:
+  - key ordering changes
+  - whitespace-only variation
+  - encoding edge cases
+  - duplicate semantic content rendered differently
+  - forbidden non-canonical forms
+- For signed envelopes, approvals, or capability tokens, tests MUST cover:
+  - missing signature
+  - bad signature
+  - expired token
+  - wrong scope
+  - correct signature but invalid payload semantics
+  - proof that verification occurs before side-effects
+- Evidence MUST include a new `## ROBUSTNESS_MATRIX` section for each changed logic surface with:
+  - surface name
+  - ingress path
+  - success case ids
+  - edge case ids
+  - failure case ids
+  - recovery case ids
+  - determinism case ids
+  - side-effect-safety case ids
+- Evidence MUST include a new `## DEFECT_MODEL` section listing the exact defect mechanisms the tests are intended to catch:
+  - off-by-one
+  - guard omission
+  - broad-except masking
+  - stale cache reuse
+  - unsigned side-effect
+  - hidden fallback
+  - order instability
+  - replay drift
+  - duplicate mutation
+  - partial-write leak
+- A phase is FAIL if tests prove only outputs but do not prove the absence of forbidden side-effects on the blocked path.
+- A phase is FAIL if changed logic is tested only through mocks when the real integration seam is the actual risk surface.
+- A phase is FAIL if the suite lacks at least one near-boundary test and one malformed-but-plausible test for each changed contract surface.
+- A phase is FAIL if evidence cannot show which exact edge classes were covered for each changed logic surface.
+- A phase is FAIL if a branch is technically executed but the test makes no assertion distinguishing the intended branch outcome from a false-positive pass.
+- A phase is FAIL if a fallback, degradation, retry, or escalation path is reachable in production but absent from tests.
+- A phase is FAIL if determinism is claimed but the same acceptance command is not shown stable across two independent invocations for the affected decision surface.
 
 ---
 
