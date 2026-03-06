@@ -299,6 +299,106 @@ def test_safety_eval_get_or_fetch_replay_bypasses_cache():
 
 
 # ---------------------------------------------------------------------------
+# §1b  NON-HAPPY-PATH: ERROR HANDLING & EDGE CASES
+# ---------------------------------------------------------------------------
+
+
+def test_route_decision_cache_get_or_fetch_propagates_fetch_exception():
+    """fetch_from_l4 exceptions must propagate, not be swallowed."""
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+
+    fake = _make_fake_cache()
+    cache = RouteDecisionCache(cache=fake)
+
+    def fetch_raises():
+        raise ValueError("L4 fetch failed")
+
+    with pytest.raises(ValueError, match="L4 fetch failed"):
+        cache.get_or_fetch("a" * 64, "b" * 64, "c" * 64, fetch_raises)
+
+
+def test_compiled_prompt_cache_get_or_fetch_non_callable_fetch_raises():
+    """Non-callable fetch_from_l4 must raise TypeError."""
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import CompiledPromptCache
+
+    fake = _make_fake_cache()
+    cache = CompiledPromptCache(cache=fake)
+    h = "a" * 64
+
+    with pytest.raises(TypeError):
+        cache.get_or_fetch(h, h, h, h, h, "not-a-callable")  # type: ignore[arg-type]
+
+
+def test_orch_plan_cache_replay_mode_does_not_write_to_cache():
+    """Replay mode must NOT call set_json even after successful fetch."""
+    from agentic_core.L3_orchestration.engines.orchestration_plan_cache import OrchestrationPlanCache
+
+    fake = _make_fake_cache()
+    cache = OrchestrationPlanCache(cache=fake)
+    sentinel = {"step_dag": [], "plan_hash": "a" * 64}
+
+    cache.get_or_fetch("trace-001", "a" * 64, "b" * 64, lambda: sentinel, replay_mode=True)
+    fake.set_json.assert_not_called()
+
+
+def test_safety_eval_cache_get_or_fetch_wrong_return_type_from_fetch():
+    """fetch_from_l5 returning wrong type (e.g., None) must not crash set()."""
+    from agentic_core.L5_safety.enforcement.safety_eval_cache import SafetyEvalCache
+
+    fake = _make_fake_cache()
+    cache = SafetyEvalCache(cache=fake)
+
+    def fetch_returns_none():
+        return None
+
+    result = cache.get_or_fetch("a" * 64, "b" * 64, "c" * 64, fetch_returns_none)
+    assert result is None
+    fake.set_json.assert_called_once()
+    assert fake.set_json.call_args[0][1] is None
+
+
+def test_template_render_cache_get_or_fetch_empty_string_is_valid():
+    """fetch_from_l4 returning empty string is valid and must be cached."""
+    from agentic_core.L1_cognition.engines.prompt_artifact_cache import TemplateRenderCache
+
+    fake = _make_fake_cache()
+    fake.get.return_value = None
+    cache = TemplateRenderCache(cache=fake)
+
+    result = cache.get_or_fetch("tmpl_id", "v1", "a" * 64, lambda: "")
+    assert result == ""
+    fake.set.assert_called_once()
+
+
+def test_cap_registry_cache_get_or_fetch_fetch_called_exactly_once_on_miss():
+    """fetch_from_l4 must be called exactly once, not multiple times."""
+    from agentic_core.L0_routing.seams.redis_decision_cache import CapabilityRegistryCache
+
+    fake = _make_fake_cache()
+    cache = CapabilityRegistryCache(cache=fake)
+    call_count = [0]
+
+    def fetch_increments():
+        call_count[0] += 1
+        return {"tools": []}
+
+    cache.get_or_fetch("a" * 64, fetch_increments)
+    assert call_count[0] == 1, "fetch must be called exactly once"
+
+
+def test_route_decision_cache_get_or_fetch_cache_exception_propagates():
+    """If underlying cache.get_json raises, exception must propagate."""
+    from agentic_core.L0_routing.seams.redis_decision_cache import RouteDecisionCache
+
+    fake = _make_fake_cache()
+    fake.get_json.side_effect = RuntimeError("Redis connection lost")
+    cache = RouteDecisionCache(cache=fake)
+
+    with pytest.raises(RuntimeError, match="Redis connection lost"):
+        cache.get_or_fetch("a" * 64, "b" * 64, "c" * 64, lambda: {"decision": "x"})
+
+
+# ---------------------------------------------------------------------------
 # §2  NO SHADOW REDIS IN L4
 # ---------------------------------------------------------------------------
 
@@ -389,6 +489,48 @@ def test_tombstoned_redis_classes_raise_on_instantiation():
         bsp._TombstonedHotBrainCache()
 
 
+def test_tombstoned_classes_reject_positional_args():
+    """Tombstoned classes must reject instantiation with positional args."""
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisDistributedLock("arg1", "arg2")
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisHotCache(None, 3600)
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedHotBrainCache("redis://localhost")
+
+
+def test_tombstoned_classes_reject_keyword_args():
+    """Tombstoned classes must reject instantiation with keyword args."""
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisDistributedLock(redis_client=None, lock_timeout=30)
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisHotCache(redis_client=None, default_ttl=3600)
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedHotBrainCache(redis_url="redis://localhost")
+
+
+def test_tombstoned_classes_reject_mixed_args():
+    """Tombstoned classes must reject instantiation with mixed positional + keyword args."""
+    from agentic_core.L4_state.memory import blob_storage_provider as bsp
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisDistributedLock(None, lock_timeout=30)
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedRedisHotCache(None, default_ttl=7200)
+
+    with pytest.raises(RuntimeError, match="tombstoned"):
+        bsp._TombstonedHotBrainCache("redis://localhost", extra_arg="value")
+
+
 def test_l4_caching_redis_mcp_client_has_no_live_symbols():
     """redis_mcp_client.py must be a tombstone with no callable symbols."""
     redis_mcp = REPO_ROOT / "agentic_core" / "L4_state" / "caching" / "redis_mcp_client.py"
@@ -455,3 +597,58 @@ def test_require_hash_segment_rejects_empty_in_all_modes(monkeypatch):
 
         with pytest.raises(ValueError, match="must not be empty"):
             _require_hash_segment("test_hash", "")
+
+
+def test_require_hash_segment_strict_rejects_uppercase_hex(monkeypatch):
+    """Strict mode must reject uppercase hex (SHA-256 must be lowercase)."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    with pytest.raises(ValueError, match="64-char"):
+        _require_hash_segment("test_hash", "A" * 64)
+
+
+def test_require_hash_segment_strict_rejects_mixed_case(monkeypatch):
+    """Strict mode must reject mixed case hex."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    with pytest.raises(ValueError, match="64-char"):
+        _require_hash_segment("test_hash", "aB" * 32)
+
+
+def test_require_hash_segment_strict_rejects_65_chars(monkeypatch):
+    """Strict mode must reject 65-char strings (one too long)."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    with pytest.raises(ValueError, match="64-char"):
+        _require_hash_segment("test_hash", "a" * 65)
+
+
+def test_require_hash_segment_strict_rejects_non_hex_chars(monkeypatch):
+    """Strict mode must reject strings with non-hex characters."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "1")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    invalid_chars = ["g", "z", "@", " ", "-"]
+    for char in invalid_chars:
+        bad_hash = "a" * 63 + char
+        with pytest.raises(ValueError, match="64-char"):
+            _require_hash_segment("test_hash", bad_hash)
+
+
+def test_require_hash_segment_permissive_accepts_uppercase(monkeypatch):
+    """Permissive mode accepts uppercase (for test placeholders)."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    _require_hash_segment("test_hash", "PLACEHOLDER")  # must not raise
+
+
+def test_require_hash_segment_permissive_accepts_single_char(monkeypatch):
+    """Permissive mode accepts single-char placeholders."""
+    monkeypatch.setenv("REDIS_CACHE_STRICT_HASH_VALIDATION", "0")
+    from agentic_core.cache.cache_key_builders import _require_hash_segment
+
+    _require_hash_segment("test_hash", "x")  # must not raise

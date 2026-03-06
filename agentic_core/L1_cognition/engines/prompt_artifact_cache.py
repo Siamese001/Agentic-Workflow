@@ -130,20 +130,15 @@ class CompiledPromptCache:
 
         This is the canonical wiring point for L1 prompt-assembly engines.
         """
-        cached = self.get(
-            prompt_bom_hash,
-            s0_hash,
-            i0_hash,
-            d0_hash,
-            c0_hash,
-            replay_mode=replay_mode,
-        )
-        if cached is not None:
-            logger.debug("[L1 cache] compiled_prompt HIT")
-            return cached
+        if not replay_mode:
+            cached = self.get(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash)
+            if cached is not None:
+                logger.debug("[L1 cache] compiled_prompt HIT")
+                return cached
         logger.debug("[L1 cache] compiled_prompt MISS — fetching from L4")
         result = fetch_from_l4()
-        self.set(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash, result)
+        if not replay_mode:
+            self.set(prompt_bom_hash, s0_hash, i0_hash, d0_hash, c0_hash, result)
         return result
 
     def invalidate(
@@ -235,13 +230,15 @@ class TemplateRenderCache:
         *fetch_from_l4* is a zero-argument callable returning the rendered
         template string from L4.  Called only on a cache miss.
         """
-        cached = self.get(template_id, template_version, args_hash, replay_mode=replay_mode)
-        if cached is not None:
-            logger.debug("[L1 cache] template_render HIT")
-            return cached
+        if not replay_mode:
+            cached = self.get(template_id, template_version, args_hash)
+            if cached is not None:
+                logger.debug("[L1 cache] template_render HIT")
+                return cached
         logger.debug("[L1 cache] template_render MISS — fetching from L4")
         result = fetch_from_l4()
-        self.set(template_id, template_version, args_hash, result)
+        if not replay_mode:
+            self.set(template_id, template_version, args_hash, result)
         return result
 
     def invalidate(

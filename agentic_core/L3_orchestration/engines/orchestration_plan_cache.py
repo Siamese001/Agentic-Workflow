@@ -115,13 +115,15 @@ class OrchestrationPlanCache:
         This is the canonical wiring point for L3 orchestration engines.
         Engines should call this instead of calling ``get()`` and L4 directly.
         """
-        cached = self.get(trace_id, plan_hash, tool_budget_hash, replay_mode=replay_mode)
-        if cached is not None:
-            logger.debug("[L3 cache] orch_plan HIT")
-            return cached
+        if not replay_mode:
+            cached = self.get(trace_id, plan_hash, tool_budget_hash)
+            if cached is not None:
+                logger.debug("[L3 cache] orch_plan HIT")
+                return cached
         logger.debug("[L3 cache] orch_plan MISS — fetching from L4")
         result = fetch_from_l4()
-        self.set(trace_id, plan_hash, tool_budget_hash, result)
+        if not replay_mode:
+            self.set(trace_id, plan_hash, tool_budget_hash, result)
         return result
 
     def invalidate(
