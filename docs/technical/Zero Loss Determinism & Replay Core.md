@@ -82,6 +82,60 @@
 |    - Mismatch => FAIL (Multiple competing digests).                                     |             ||
 +-----------------------------------------------------------------------------------------+             ||
 ======================================================================================================================================================================
+  DETERMINISM PROOF STANDARD (HARDENED) — DIGEST FORMULAS
+======================================================================================================================================================================
++-----------------------------------------------------------------------------------------+
+| P5-DETERMINISM-DIGEST: compute_p5_determinism_digest()                                  |
+|-----------------------------------------------------------------------------------------|
+| Inputs:                                                                                 |
+|   * registry_digest()          — from AGENT_REGISTRY                                   |
+|   * allowed_models_map         — agent_id -> sorted models tuple                       |
+|   * policy_versions            — agent_id -> version string                            |
+|   * gateway_hash               — SHA-256 of SovereignLLMGateway.py                     |
++-----------------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------+
+| W6-DETERMINISM-DIGEST: compute_w6_determinism_digest()                                  |
+|-----------------------------------------------------------------------------------------|
+| Inputs:                                                                                 |
+|   * agent_2x2_inventory.json   — ssot_registry + apps_lic + apps_rg                    |
+|   * audited_paths              — SovereignLLMGateway, healing_tier_router,             |
+|                                  agent_registry                                         |
++-----------------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------+
+| HARDEN-MERGE-LOCKDOWN-DIGEST: compute_lockdown_determinism_digest()                     |
+|-----------------------------------------------------------------------------------------|
+| Inputs:                                                                                 |
+|   * registry_hash                                                                       |
+|   * tool_inventory_hash                                                                 |
+|   * healer_registry_hash                                                                |
+|   * allowlists_hash                                                                     |
+|   * routing_ruleset_hash                                                                |
+|   * embedding_pack_hash                                                                 |
+|   * meta_learning_config_hash                                                           |
++-----------------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------+
+| DIGEST EMISSION INVARIANTS                                                              |
+|-----------------------------------------------------------------------------------------|
+| - Artifact must be printed exactly once per run                                         |
+| - Two independent runs must produce identical digest                                    |
+| - Multiple competing digests from same run -> FAIL                                      |
+| - Passing tests alone is insufficient; digest must be independently verified            |
++-----------------------------------------------------------------------------------------+
++-----------------------------------------------------------------------------------------+
+| REPLAY STRICTNESS GUARANTEE                                                             |
+|-----------------------------------------------------------------------------------------|
+| - SemanticClock is the SOLE time authority; wall-clock usage forbidden in all           |
+|   determinism paths                                                                     |
+| - Any un-transcripted network call -> HARD FAIL                                         |
+| - Timestamps, randomness, or external nondeterminism MUST be captured in transcript    |
+|   or blocked at source                                                                  |
+| - Transcript must fully reconstruct all side-effects                                   |
+| - No hidden IO permitted in replay_mode                                                 |
+| - Explicit `replay_mode = true` forces sandbox to reject un-transcripted network calls |
+| - External nondeterminism (timestamps, random seeds) MUST be captured in transcript    |
+|   or blocked                                                                            |
++-----------------------------------------------------------------------------------------+
+======================================================================================================================================================================
   CORE DETERMINISM & REPLAY DATA CONTRACTS
 ======================================================================================================================================================================
 | [2] SandboxEnvelope     : [InstructionPacket, ToolBudget(compute_ms, memory_mb, stdout_bytes)] -> Signature verified at L2 boundary before ANY I/O.                |

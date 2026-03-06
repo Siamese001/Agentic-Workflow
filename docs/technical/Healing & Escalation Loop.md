@@ -76,6 +76,88 @@
 | - Injectable HealingProviderInvoker for test isolation                                 |             ||
 +-----------------------------------------------------------------------------------------+             ||
 ======================================================================================================================================================================
+  L2.3 HEALING TIER ROUTER — FULL SCORING & DETERMINISM INTERNALS
+======================================================================================================================================================================
++-----------------------------------------------------------------------------------------+
+| ESCALATION CONTEXT BUILDER [SSOT]                                                       |
+|-----------------------------------------------------------------------------------------|
+| EscalationContext.from_result()                                                         |
+|   -> Parses escalation_hint key=value pairs from HealCheckResult                       |
+|   -> Deterministic: same inputs -> same output always                                  |
+|   -> Fields: [check_id, healer_name, retry_count, failure_type,                        |
+|               blast_radius_estimate, summary(notes[:120]),                             |
+|               trace_id("disp-"+sha256(check_id:retry_count)[:12])]                     |
+|                                                                                         |
+| FailureSignal (built from EscalationContext ONLY)                                       |
+|   -> .to_healing_input() -> HealingInput consumed by route_healing_tier()              |
+|   -> Fields: [source_agent, failure_type, error_signature, trace_id,                   |
+|               context={healer_name,summary}, retry_count, blast_radius_estimate]       |
+|   -> Agents in NO_TIERING class MUST emit FailureSignal;                               |
+|      L2.3 selects tier on their behalf                                                  |
++-----------------------------------------------------------------------------------------+
+                          |
+                          v
++-----------------------------------------------------------------------------------------+
+| HEALING TIER ROUTER [CHOKE POINT] (healing_tier_router.py)                              |
+|-----------------------------------------------------------------------------------------|
+| [DETERMINISM GUARANTEE] Mathematically deterministic:                                   |
+|   - No environment variable access                                                      |
+|   - No external data loading                                                            |
+|   - Fixed precision arithmetic                                                          |
+|   - Versioned historical data (HISTORICAL_DATA_VERSION)                                |
+|   - Timestamp excluded from replay keys                                                 |
+|                                                                                         |
+| [SCORING COMPONENTS] (weights sum to 1.0):                                              |
+|   FAILURE_CLASS_PRIORS:                                                                 |
+|     syntax_error=0.90, import_error=0.85, test_discovery=0.80,                         |
+|     runtime_error=0.70, unknown=0.50                                                    |
+|   WEIGHT_FAILURE_PRIOR:      0.25                                                       |
+|   WEIGHT_BLAST_RADIUS:       0.20                                                       |
+|   WEIGHT_HISTORICAL_SUCCESS: 0.15                                                       |
+|   WEIGHT_TOOL_READINESS:     0.15                                                       |
+|   WEIGHT_RETRY_DECAY:        0.10                                                       |
+|   WEIGHT_FAILURE_ENTROPY:    0.15                                                       |
+|                                                                                         |
+| [!] Restricts to TIERING_ALLOWLIST (YES_TIERING):                                       |
+|     (CodeHealer, GravityLeakRepair, SafetyExec, etc.)                                  |
+| [!] Non-allowlisted MUST emit FailureSignal instead                                     |
+|                                                                                         |
+| TIER THRESHOLDS:                                                                        |
+|   heal_confidence >= 0.75  -> LOCAL_AGENT    (Deterministic/Light)                     |
+|   0.40 <= score < 0.75     -> QWEN_VLLM      (Open-weights/Medium)                     |
+|   score < 0.40             -> GEMINI_2_5_PRO (Heavy RCA)                               |
+|   retry_count >= 3         -> GEMINI_2_5_PRO (forced, regardless of score)             |
++-----------------------------------------------------------------------------------------+
+                          |
+                          v
++-----------------------------------------------------------------------------------------+
+| MODEL RESOLUTION INVARIANT                                                              |
+|-----------------------------------------------------------------------------------------|
+| - Tier router returns symbolic model_id ONLY                                            |
+| - Concrete provider binding occurs exclusively in SovereignLLMGateway                  |
+| - Direct SDK imports or hardcoded model literals in agents -> HARD FAIL (AST blocked)   |
++-----------------------------------------------------------------------------------------+
+                          |
+                          v
++-----------------------------------------------------------------------------------------+
+| HealingProviderInvoker (injectable seam)                                                |
+|-----------------------------------------------------------------------------------------|
+| - Returns InvocationRecord: [tier, model_id, agent_name, trace_id,                     |
+|   heal_confidence, method_called]                                                       |
+| - Immutable audit record of every provider invocation                                  |
+| - Appended to HealCheckResult.notes as deterministic audit string:                     |
+|   "tier_escalation: check_id=X tier=Y model=Z..."                                      |
++-----------------------------------------------------------------------------------------+
+                          |
+                          v
++-----------------------------------------------------------------------------------------+
+| HealingOutcomeIntakeAdapter (feedback loop closure)                                     |
+|-----------------------------------------------------------------------------------------|
+| - Receives InvocationRecord, builds IntakeRecord                                        |
+| - Persists to L4B (consumed by MetaLearningPipeline Stage 8.5)                         |
+| - Enables future tier routing improvements via meta-learning                            |
++-----------------------------------------------------------------------------------------+
+======================================================================================================================================================================
   L2 ENFORCEMENT LAYER ADDITIONAL COMPONENTS
 ======================================================================================================================================================================
 | BOUNDARY VERIFIER      : Validates cross-layer boundaries and prevents architectural violations                    |
