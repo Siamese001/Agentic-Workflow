@@ -1,6 +1,9 @@
 import hashlib
 import os
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 GROUPS = {
@@ -22,7 +25,7 @@ def investigate():
     """TODO: Add documentation for investigate."""
     for _group_name, filenames in GROUPS.items():
         found_files = []
-        for root, _, files in os.walk(PROJECT_ROOT / "agentic_core"):
+        for root, _, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
             for f in files:
                 if f in filenames:
                     found_files.append(Path(root) / f)

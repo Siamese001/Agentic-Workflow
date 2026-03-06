@@ -21,6 +21,7 @@ from pathlib import Path
 
 # Import SSOT paths
 from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
     DASHBOARD_DIR,
     get_validated_project_root,
 )
@@ -210,7 +211,7 @@ class DashboardE2EPipeline:
         self.print_step("STEP 4: Regenerating dashboard HTML...")
 
         dashboard_script = (
-            self.project_root / "agentic_core" / "L6_observability" / "dashboards" / "generate_dashboard.py"
+            self.project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "generate_dashboard.py"
         )
 
         if not dashboard_script.exists():

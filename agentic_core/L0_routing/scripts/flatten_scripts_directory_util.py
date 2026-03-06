@@ -14,12 +14,15 @@ from agentic_core.L0_routing.utils.path_util import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # Derived from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
 
 root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / "agentic_core"
+core: Any = ROOT / AGENTIC_CORE_DIR
 scripts_dir: Any = CORE / "L0_routing/scripts"
 required_depth: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
 

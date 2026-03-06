@@ -12,9 +12,12 @@ refactored to have low cyclomatic complexity (CC ≤ 0).
 import re
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+DASHBOARD_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
 
 
 def main():

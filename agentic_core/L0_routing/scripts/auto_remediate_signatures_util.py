@@ -10,9 +10,12 @@ import ast
 import os
 import re
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # SSOT Target Directory
-TARGET_DIR = Path("agentic_core")
+TARGET_DIR = Path(AGENTIC_CORE_DIR)
 
 
 def has_kwargs_in_signature(func_node: ast.FunctionDef) -> bool:

@@ -15,7 +15,10 @@ from dataclasses import dataclass, field
 from datetime import datetime
 from pathlib import Path
 
-from agentic_core.L0_routing.config import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    L3_ORCHESTRATION_DIR,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # Project root

@@ -25,10 +25,14 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-VOID_DIR = PROJECT_ROOT / "archives" / "void_violations"
-AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
+VOID_DIR = PROJECT_ROOT / ARCHIVES_DIR / "void_violations"
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Agents to restore with their target locations
 RESTORE_MAP: dict[str, str] = {

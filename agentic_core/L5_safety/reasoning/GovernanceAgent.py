@@ -69,6 +69,9 @@ except ImportError:
 
 
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility
@@ -643,7 +646,7 @@ class GovernanceAgent(SovereignBaseAgent):
 
         # [P4] Return suggested path only - no actual move
         if "shallow" in Violation.lower():
-            target_dir: Any = self.root_dir / "agentic_core" / "L1_cognition"
+            target_dir: Any = self.root_dir / AGENTIC_CORE_DIR / "L1_cognition"
             target: Any = target_dir / path.name
         else:
             target_dir: Any = self.root_dir / "scripts"

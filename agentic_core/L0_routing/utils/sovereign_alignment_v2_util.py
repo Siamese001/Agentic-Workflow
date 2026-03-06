@@ -11,9 +11,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 root: Any = Path.cwd()
-core: Any = ROOT / "agentic_core"
+core: Any = ROOT / AGENTIC_CORE_DIR
 migration_map: Any = {
     "agentic_core/engines": "agentic_core/L2_execution/P3_engines",
     "agentic_core/interfaces": "agentic_core/L1_cognition/P1_interfaces",

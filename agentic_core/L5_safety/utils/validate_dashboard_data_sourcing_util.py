@@ -8,9 +8,12 @@ Checks for data integrity issues and validates critical metrics.
 import json
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 project_root = Path(__file__).parent.parent
-dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
+dashboard_dir = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 
 
 def load_source_data():

@@ -16,6 +16,9 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from dataclasses import dataclass
 from typing import Any, Final
+from agentic_core.L0_routing.config import (
+    DASHBOARD_DIR,
+)
 
 # Standard LCD subfolders for L0-L6 layers
 STANDARD_LCD_SUBFOLDERS: Final[tuple[str, ...]] = (
@@ -162,7 +165,7 @@ def _identify_l4_folders(
 
     # Add known L4 folders from layer nuances
     known_l4 = [
-        "agentic_core/L6_observability/dashboards",
+        DASHBOARD_DIR,
         "agentic_core/L0_routing/scripts",
         "agentic_core/L0_routing/reasoning",
         "agentic_core/L3_orchestration/reasoning",

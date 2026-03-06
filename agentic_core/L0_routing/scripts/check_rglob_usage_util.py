@@ -19,6 +19,9 @@ Phase: 4.1 - Scaled Refactoring & CI Enforcement
 import re
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # configuration
 # guardian: allow-magic-config
@@ -118,7 +121,7 @@ def main():
     # Find project root (parent of scripts directory)
     script_dir = Path(__file__).parent
     project_root = script_dir.parent
-    agentic_core = project_root / "agentic_core"
+    agentic_core = project_root / AGENTIC_CORE_DIR
 
     if not agentic_core.exists():
         print(f"ERROR: agentic_core directory not found at {agentic_core}")

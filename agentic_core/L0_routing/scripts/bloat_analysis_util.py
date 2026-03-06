@@ -5,13 +5,19 @@ import ast
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 ROOT = Path(__file__).parent.parent
 APPROVED = [
-    "agentic_core",
-    "apps_rg",
-    "apps_lic",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
     "scripts",
     "tests",
     "docs",

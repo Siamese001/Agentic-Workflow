@@ -3,9 +3,12 @@
 
 import json
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 project_root = Path(__file__).parent.parent
-data_file = project_root / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+data_file = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
 
 content = data_file.read_text(encoding="utf-8")
 lines = [l for l in content.split("\n") if not l.strip().startswith("//")]

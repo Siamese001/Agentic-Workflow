@@ -14,6 +14,11 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_move,
 )
+from agentic_core.L0_routing.config import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 class CoreSynthesisExecutor:
@@ -290,7 +295,7 @@ class CoreSynthesisExecutor:
 
     def _verify_circular_dependency_purge(self) -> bool:
         """Verify no circular dependencies remain."""
-        forbidden_zones = ["apps_lic", "apps_rg", "apps_shared"]
+        forbidden_zones = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for file_path in self.base_path.rglob("*.py"):
             if file_path.name == "__init__.py":

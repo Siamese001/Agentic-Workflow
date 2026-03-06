@@ -34,6 +34,9 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 GUARDIAN_ID = "architecture_governance"
 
@@ -96,7 +99,7 @@ def _extract_target_layer(node: ast.AST) -> str | None:
 
 def _collect_python_files(repo_root: Path) -> list[Path]:
     """Return sorted Python files under agentic_core/ for import scanning."""
-    agentic_core = repo_root / "agentic_core"
+    agentic_core = repo_root / AGENTIC_CORE_DIR
     if not agentic_core.exists():
         return []
 

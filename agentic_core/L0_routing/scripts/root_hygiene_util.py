@@ -12,9 +12,13 @@ import shutil
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 # SSOT Constants
-ROOT_MARKERS = ["agentic_core", "pyproject.toml"]
+ROOT_MARKERS = [AGENTIC_CORE_DIR, "pyproject.toml"]
 
 
 def get_project_root() -> Path:
@@ -33,8 +37,8 @@ def enforce_root_hygiene():
 
     # 1. EVACUATE ROOT SCRIPTS
     root_scripts = root / "scripts"
-    ops_scripts = root / "ops_scripts"
-    l0_scripts = root / "agentic_core" / "L0_routing" / "scripts"
+    ops_scripts = root / OPS_SCRIPTS_DIR
+    l0_scripts = root / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
 
     if root_scripts.exists():
         print("[DETECT] Illegal root 'scripts/' directory found.")

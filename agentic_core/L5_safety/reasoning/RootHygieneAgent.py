@@ -19,6 +19,10 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -35,7 +39,7 @@ except ImportError:
 
 
 # SSOT Constants
-ROOT_MARKERS = ["agentic_core", "pyproject.toml"]
+ROOT_MARKERS = [AGENTIC_CORE_DIR, "pyproject.toml"]
 
 
 def get_project_root() -> Path:
@@ -113,8 +117,8 @@ class RootHygieneAgent(SovereignBaseAgent):
     def _evacuate_root_scripts(self):
         """Evacuate root scripts directory to appropriate locations."""
         root_scripts = self.project_root / "scripts"
-        ops_scripts = self.project_root / "ops_scripts"
-        l0_scripts = self.project_root / "agentic_core" / "L0_routing" / "scripts"
+        ops_scripts = self.project_root / OPS_SCRIPTS_DIR
+        l0_scripts = self.project_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
 
         if root_scripts.exists():
             print("[DETECT] Illegal root 'scripts/' directory found.")
@@ -189,7 +193,7 @@ class RootHygieneAgent(SovereignBaseAgent):
 
     def _relocate_purge_cache(self):
         """Specific handling for purge_cache.py organization."""
-        ops_scripts = self.project_root / "ops_scripts"
+        ops_scripts = self.project_root / OPS_SCRIPTS_DIR
         purge_script = ops_scripts / "purge_cache.py"
         maint_script_dir = ops_scripts / "maintenance"
 

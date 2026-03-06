@@ -13,6 +13,9 @@ This script:
 import re
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
@@ -114,7 +117,7 @@ def fix_imports_in_file(
 def main() -> Any:
     """Main execution function."""
     script_dir: Any = Path(__file__).parent
-    agentic_core_root: Any = script_dir / "agentic_core"
+    agentic_core_root: Any = script_dir / AGENTIC_CORE_DIR
     if not agentic_core_root.exists():
         print(f"ERROR: agentic_core directory not found at {agentic_core_root}")
         return

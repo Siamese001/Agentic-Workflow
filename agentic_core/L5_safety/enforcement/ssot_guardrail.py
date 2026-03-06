@@ -28,6 +28,13 @@ import os
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 # ============================================================================
 # CONFIGURATION
@@ -264,11 +271,11 @@ def scan_repository(project_root: Path) -> ScanResult:
     result = ScanResult()
 
     scan_dirs = [
-        project_root / "agentic_core",
-        project_root / "apps_lic",
-        project_root / "apps_rg",
-        project_root / "apps_shared",
-        project_root / "ops_scripts",
+        project_root / AGENTIC_CORE_DIR,
+        project_root / APPS_LIC_DIR,
+        project_root / APPS_RG_DIR,
+        project_root / APPS_SHARED_DIR,
+        project_root / OPS_SCRIPTS_DIR,
         project_root / "tests",
     ]
 

@@ -58,6 +58,12 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 # Archives directory constant for exclusion
 ARCHIVES_DIR = "archives"
@@ -723,10 +729,10 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
 
             # Collect Python files from source directories
             source_dirs = [
-                self.project_root / "agentic_core",
-                self.project_root / "apps_lic",
-                self.project_root / "apps_rg",
-                self.project_root / "apps_shared",
+                self.project_root / AGENTIC_CORE_DIR,
+                self.project_root / APPS_LIC_DIR,
+                self.project_root / APPS_RG_DIR,
+                self.project_root / APPS_SHARED_DIR,
             ]
 
             python_files = []

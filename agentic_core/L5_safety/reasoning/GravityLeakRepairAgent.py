@@ -42,6 +42,10 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
 from agentic_core.L5_safety.validators.context_validator import get_context_manager
+from agentic_core.L0_routing.config import (
+    ARCHIVES_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -383,7 +387,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 temp_fd = None  # fdopen took ownership
 
                 # Create backup
-                backup_dir = self.project_root / "archives" / "healing_backups" / "gravity"
+                backup_dir = self.project_root / ARCHIVES_DIR / "healing_backups" / "gravity"
                 _wg.ensure_dir(backup_dir)
                 backup_path = backup_dir / f"{fix.file_path.name}.{int(os.times().system)}.bak"
                 _wg.copy_file(fix.file_path, backup_path)
@@ -552,7 +556,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             # agents and their L0-classification causes all fixes to be plan_only.
             config = StructureConfig(
                 project_root=self.project_root,
-                excluded_paths=("ops_scripts", "scripts"),
+                excluded_paths=(OPS_SCRIPTS_DIR, "scripts"),
             )
             enforcer = StructuralValidatorAgent(config=config)
             results = enforcer.validate_structure(self.project_root)

@@ -6,6 +6,13 @@ Scans for SSOT, DRY, and Layered Sovereignty violations with high precision.
 import ast
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
 # guardian: allow-global-mutation
@@ -28,7 +35,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
         path_str = str(filepath).replace("\\", "/")
         self.is_l1_l2 = "/L1_" in path_str or "/L2_" in path_str
         self.is_test = "test_" in self.filename or "tests/" in path_str
-        self.is_legacy = any(x in path_str.lower() for x in ["legacy", "deprecated", "archives"])
+        self.is_legacy = any(x in path_str.lower() for x in ["legacy", "deprecated", ARCHIVES_DIR])
 
     def add_finding(self, pattern_type: str, evidence: str, recommendation: str):
         """TODO: Add documentation for add_finding."""
@@ -171,7 +178,7 @@ class HardenedAntiPatternVisitor(ast.NodeVisitor):
 
 def main():
     """TODO: Add documentation for main."""
-    search_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
+    search_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
     findings = []
     for dir_name in search_dirs:
         path = PROJECT_ROOT / dir_name

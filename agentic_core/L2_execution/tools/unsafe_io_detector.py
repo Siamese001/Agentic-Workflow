@@ -8,6 +8,12 @@ operations that could bypass the mutation fence and write to protected roots.
 import ast
 from dataclasses import dataclass
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 @dataclass
@@ -165,17 +171,17 @@ def scan_directory_for_unsafe_patterns(
 def get_scoped_directories(repo_root: Path) -> list[Path]:
     """Get the list of directories that should be scanned for unsafe patterns."""
     scoped_dirs = [
-        repo_root / "agentic_core" / "L0_routing" / "reasoning",
-        repo_root / "agentic_core" / "L1_cognition" / "reasoning",
-        repo_root / "agentic_core" / "L2_execution" / "reasoning",
-        repo_root / "agentic_core" / "L3_orchestration" / "reasoning",
-        repo_root / "agentic_core" / "apps_lic" / "reasoning",
-        repo_root / "agentic_core" / "apps_rg" / "reasoning",
-        repo_root / "agentic_core" / "apps_shared" / "reasoning",
-        repo_root / "agentic_core" / "tools",
-        repo_root / "agentic_core" / "L0_routing" / "scripts",
-        repo_root / "agentic_core" / "L1_cognition" / "scripts",
-        repo_root / "agentic_core" / "L2_execution" / "scripts",
+        repo_root / AGENTIC_CORE_DIR / "L0_routing" / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / "L1_cognition" / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / "L2_execution" / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / "L3_orchestration" / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / APPS_LIC_DIR / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / APPS_RG_DIR / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / APPS_SHARED_DIR / "reasoning",
+        repo_root / AGENTIC_CORE_DIR / "tools",
+        repo_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts",
+        repo_root / AGENTIC_CORE_DIR / "L1_cognition" / "scripts",
+        repo_root / AGENTIC_CORE_DIR / "L2_execution" / "scripts",
     ]
 
     return [d for d in scoped_dirs if d.exists()]

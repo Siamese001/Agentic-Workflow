@@ -14,9 +14,12 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 # Derive registry depth from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
 from agentic_core.utils.ssot_discovery_validator import get_python_files
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 ROOT: Any = Path(__file__).parent.parent.parent.parent
-CORE: Any = ROOT / "agentic_core"
+CORE: Any = ROOT / AGENTIC_CORE_DIR
 REQUIRED_DEPTH: Any = SOVEREIGN_REGISTRY["agentic_core"]["depth"]
 
 

@@ -18,11 +18,16 @@ from pathlib import Path
 from agentic_core.agents.agent_registry import AGENT_REGISTRY, registry_digest
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from agentic_core.L2_execution.enforcement.provider_binding_determinism import compute_provider_binding_digest
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-GATEWAY_PATH = REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
-APPS_LIC_SPECS_PATH = REPO_ROOT / "apps_lic" / "config" / "agent_specs.json"
-APPS_RG_SPECS_PATH = REPO_ROOT / "apps_rg" / "config" / "rg_agent_specs.json"
+GATEWAY_PATH = REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
+APPS_LIC_SPECS_PATH = REPO_ROOT / APPS_LIC_DIR / "config" / "agent_specs.json"
+APPS_RG_SPECS_PATH = REPO_ROOT / APPS_RG_DIR / "config" / "rg_agent_specs.json"
 INVENTORY_ARTIFACT_PATH = REPO_ROOT / "artifacts" / "discovery" / "agent_2x2_inventory.json"
 
 
@@ -168,11 +173,11 @@ def compute_lockdown_determinism_digest() -> str:
     tool_inventory_hash = _sha256_bytes(_canonical_json(tool_inventory_map).encode("utf-8"))
 
     # Healer registry hash
-    healer_registry_path = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "healing_tier_router.py"
+    healer_registry_path = REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "healers" / "healing_tier_router.py"
     healer_registry_hash = _file_hash(healer_registry_path) if healer_registry_path.exists() else ""
 
     # Allowlists hash
-    allowlists_path = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "tiering_allowlist.py"
+    allowlists_path = REPO_ROOT / AGENTIC_CORE_DIR / "L2_execution" / "healers" / "tiering_allowlist.py"
     allowlists_hash = _file_hash(allowlists_path) if allowlists_path.exists() else ""
 
     # Routing ruleset hash

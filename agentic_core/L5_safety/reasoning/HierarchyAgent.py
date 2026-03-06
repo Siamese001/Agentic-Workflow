@@ -47,6 +47,9 @@ from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)
@@ -243,7 +246,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         # Determine which territories to process
         if target_territory:
-            territories_to_process = [target_territory] if target_territory in ENFORCED_TERRITORIES else ["agentic_core"]
+            territories_to_process = [target_territory] if target_territory in ENFORCED_TERRITORIES else [AGENTIC_CORE_DIR]
         else:
             territories_to_process = sorted(ENFORCED_TERRITORIES)
 
@@ -291,7 +294,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 if target_territory not in expected_l3:
                     continue
 
-            layer_l2_path = self.project_root / "agentic_core" / layer_l2_name
+            layer_l2_path = self.project_root / AGENTIC_CORE_DIR / layer_l2_name
             if not layer_l2_path.exists():
                 # Only create L2 if it matches target or we are in global mode
                 if not target_territory or target_territory == layer_l2_name:
@@ -384,7 +387,7 @@ class HierarchyAgent(SovereignBaseAgent):
             if target_territory in SOVEREIGN_TERRITORIES:
                 target_roots = [target_territory]
             else:
-                target_roots = ["agentic_core"]
+                target_roots = [AGENTIC_CORE_DIR]
             Logger.info(f"HierarchyAgent: 🎯 TARGETED SCAN: {target_territory} -> Roots: {target_roots}")
         else:
             # Universal Scope: Iterate through all roots defined in SOVEREIGN_TERRITORIES
@@ -1502,7 +1505,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         # Phase 2: Territory root violation scanning (Ultra-hardened)
         if target_territory:
-            search_path = self.project_root / "agentic_core" / target_territory
+            search_path = self.project_root / AGENTIC_CORE_DIR / target_territory
             Logger.info(f"HierarchyAgent: 🎯 ULTRA SCAN: Territory root violations in {target_territory}")
 
             if not search_path.exists():

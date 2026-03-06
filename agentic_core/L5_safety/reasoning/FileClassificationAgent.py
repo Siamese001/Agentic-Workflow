@@ -2063,12 +2063,14 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns None if compliant, or a violation dict.
         """
-        from agentic_core.L0_routing.config import (
-            L5_SUBPROCESS_ALLOWLIST,
-            L6_HYBRID_ALLOWLIST,
-            SCRIPTS_FORBIDDEN_PATTERNS,
-            validate_no_nested_lcd,
-        )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    L5_SUBPROCESS_ALLOWLIST,
+    L6_HYBRID_ALLOWLIST,
+    SCRIPTS_FORBIDDEN_PATTERNS,
+    validate_no_nested_lcd,
+)
 
         if not path.name.endswith(".py") or path.name.startswith("__"):
             return None
@@ -4843,7 +4845,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             # They belong in apps_shared/agents/ - trigger territory violation
             if path.name.startswith("App") and "agentic_core" in str(path):
                 # Deport to apps_shared/agents/
-                target_path = self.project_root / "apps_shared" / "agents" / path.name
+                target_path = self.project_root / APPS_SHARED_DIR / "agents" / path.name
                 self.processed_paths.add(path)
                 self.processed_paths.add(target_path)
                 return target_path
@@ -5549,8 +5551,8 @@ class FileClassificationAgent(*BASE_CLASSES):
         # Determine scan root based on target_territory
         # [HARDENED] Support both absolute paths and relative territory names
         if target_territory:
-            if (self.project_root / "agentic_core" / target_territory).exists():
-                scan_root = self.project_root / "agentic_core" / target_territory
+            if (self.project_root / AGENTIC_CORE_DIR / target_territory).exists():
+                scan_root = self.project_root / AGENTIC_CORE_DIR / target_territory
             elif (self.project_root / target_territory).exists():
                 scan_root = self.project_root / target_territory
             else:

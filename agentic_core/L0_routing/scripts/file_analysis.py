@@ -9,6 +9,12 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 @dataclass
@@ -288,7 +294,7 @@ def main():
         "archives/Reachout Engine Archive/Agentic LIC/state_manager_LIC.py",
     ]
 
-    current_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared"]
+    current_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 
     print("=" * 80)
     print("ADVANCED AST-BASED ARCHIVE ANALYSIS")

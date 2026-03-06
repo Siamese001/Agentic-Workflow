@@ -14,6 +14,9 @@ import json
 from pathlib import Path
 
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # Internal imports referencing the mandated structure
 try:
@@ -57,7 +60,7 @@ class SovereignRagOrchestrator:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.cache_dir = project_root / "agentic_core" / "knowledge" / "research_cache"
+        self.cache_dir = project_root / AGENTIC_CORE_DIR / "knowledge" / "research_cache"
         self.cache = ResearchCache(self.cache_dir) if ResearchCache is not None else None
         self.static_knowledge = self._load_static_index()
 

@@ -18,6 +18,9 @@ from agentic_core.L0_routing.seams.safety_reasoning_seam import (
     load_structure_enforcer_agent,
 )
 from agentic_core.L0_routing.utils.subprocess_runner_util import invoke_code_validator
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 def run_code_validator():
@@ -49,7 +52,7 @@ def run_structure_enforcer():
 
     StructureEnforcerAgent = load_structure_enforcer_agent()
     enforcer = StructureEnforcerAgent()
-    policy_engine_dir = project_root / "agentic_core" / "L5_safety" / "policy_engine"
+    policy_engine_dir = project_root / AGENTIC_CORE_DIR / "L5_safety" / "policy_engine"
 
     result = enforcer.heal_repository(policy_engine_dir)
 
@@ -70,7 +73,7 @@ def main():
     print("\n" + "=" * 80)
     print("PHASE 7: SOVEREIGN COMPLIANCE AUDIT")
     print("=" * 80)
-    print(f"Target: {project_root / 'agentic_core' / 'L5_safety' / 'policy_engine'}")
+    print(f"Target: {project_root / AGENTIC_CORE_DIR / 'L5_safety' / 'policy_engine'}")
     print()
 
     # Run validators

@@ -23,6 +23,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+)
 
 # ============================================================================
 # DATA STRUCTURES
@@ -328,7 +335,7 @@ def main():
 
     # Build current codebase index
     print("\n[1/4] Building current codebase index...")
-    current_dirs = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
+    current_dirs = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
     codebase_index = build_current_codebase_index(current_dirs)
     print(
         f"  Indexed: {len(codebase_index['classes'])} classes, {len(codebase_index['agents'])} agents, {len(codebase_index['functions'])} functions",
@@ -336,13 +343,13 @@ def main():
 
     # Scan archives
     print("\n[2/4] Scanning archive folders...")
-    archives_root = Path("archives")
+    archives_root = Path(ARCHIVES_DIR)
 
     # Priority archives to analyze (most likely to have useful content)
     priority_archives = [
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
         "Reachout Engine Archive",
         "legacy_agents",
         "legacy_orchestrators",

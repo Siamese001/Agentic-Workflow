@@ -12,6 +12,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -209,7 +212,7 @@ class LazySeamScanner:
     def scan_codebase(self) -> list[dict[str, Any]]:
         """Scan codebase using Phase 3B lazy upward import metric."""
         # Get Phase 3B metric results
-        agentic_core_path = self.root_path / "agentic_core"
+        agentic_core_path = self.root_path / AGENTIC_CORE_DIR
         metric = lazy_upward_import_metric(agentic_core_path)
 
         # Convert Phase 3B LazyUpwardImport items to allowlist format
@@ -253,7 +256,7 @@ def main():
     print(f"Found {len(seams)} lazy seams")
 
     # Export allowlist
-    output_path = root_path / "agentic_core" / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
+    output_path = root_path / AGENTIC_CORE_DIR / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
     scanner.export_allowlist(output_path)
 
     # Print summary by file
@@ -267,7 +270,7 @@ def main():
         print(f"  {file_path}: {count}")
 
     # Verify we match Phase 3B total
-    agentic_core_path = root_path / "agentic_core"
+    agentic_core_path = root_path / AGENTIC_CORE_DIR
     phase3b_metric = lazy_upward_import_metric(agentic_core_path)
     phase3b_total = phase3b_metric["total"]
 

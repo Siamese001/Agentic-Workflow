@@ -20,10 +20,13 @@ from agentic_core.interfaces.meta_control import (
     load_current,
     validate_component_allowed,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # Default store root — co-located with meta_control module.
 _DEFAULT_STORE_ROOT = (
-    Path(__file__).resolve().parents[2] / "agentic_core" / "L0_routing" / "meta_control" / "config_store"
+    Path(__file__).resolve().parents[2] / AGENTIC_CORE_DIR / "L0_routing" / "meta_control" / "config_store"
 )
 
 

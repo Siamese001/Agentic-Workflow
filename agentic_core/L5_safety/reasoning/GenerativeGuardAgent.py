@@ -23,6 +23,9 @@ import re
 import sys
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface (MOVED to agentic_core.utils.core_extensions)
 # GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
@@ -62,17 +65,17 @@ except ImportError:
     AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
     AGENT_DISCOVERY_MANIFEST_JSON = "agent_discovery_manifest.json"
     _root = Path(__file__).resolve().parent.parent.parent.parent
-    AGENTIC_CORE_DIR = _root / "agentic_core"
+    AGENTIC_CORE_DIR = _root / AGENTIC_CORE_DIR
     SCRIPTS_DIR = _root / "scripts"
     TESTS_DIR = _root / "tests"
-    DASHBOARD_DIR = _root / "agentic_core" / "L6_observability" / "dashboards"
-    L0_MAINTENANCE_DIR = _root / "agentic_core" / "L0_routing"
-    L1_COGNITION_DIR = _root / "agentic_core" / "L1_cognition"
-    L2_EXECUTION_DIR = _root / "agentic_core" / "L2_execution"
-    L3_ORCHESTRATION_DIR = _root / "agentic_core" / "L3_orchestration"
-    L4_STATE_DIR = _root / "agentic_core" / "L4_state"
-    L5_SAFETY_DIR = _root / "agentic_core" / "L5_safety"
-    L6_OBSERVABILITY_DIR = _root / "agentic_core" / "L6_observability"
+    DASHBOARD_DIR = _root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
+    L0_MAINTENANCE_DIR = _root / AGENTIC_CORE_DIR / "L0_routing"
+    L1_COGNITION_DIR = _root / AGENTIC_CORE_DIR / "L1_cognition"
+    L2_EXECUTION_DIR = _root / AGENTIC_CORE_DIR / "L2_execution"
+    L3_ORCHESTRATION_DIR = _root / AGENTIC_CORE_DIR / "L3_orchestration"
+    L4_STATE_DIR = _root / AGENTIC_CORE_DIR / "L4_state"
+    L5_SAFETY_DIR = _root / AGENTIC_CORE_DIR / "L5_safety"
+    L6_OBSERVABILITY_DIR = _root / AGENTIC_CORE_DIR / "L6_observability"
 
     def get_validated_project_root() -> Path:
         return _root

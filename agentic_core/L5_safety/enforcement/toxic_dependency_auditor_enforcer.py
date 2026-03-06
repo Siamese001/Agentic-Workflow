@@ -19,6 +19,9 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class ToxicDependencyAuditor(SovereignBaseAgent):
@@ -79,7 +82,7 @@ class ToxicDependencyAuditor(SovereignBaseAgent):
         # Operation Zero: Use ssot_discovery instead of glob
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-        for py_file in get_python_files(self.root / "agentic_core"):
+        for py_file in get_python_files(self.root / AGENTIC_CORE_DIR):
             current_module = self._get_module_name(py_file)
             imports = self._extract_internal_imports(py_file)
 

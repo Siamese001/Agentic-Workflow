@@ -14,6 +14,9 @@ from typing import Final
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class CoreIntegrityVerifier:
@@ -45,7 +48,7 @@ class CoreIntegrityVerifier:
         # Handle pytest running from tests directory
         if not cls.CORE_PATH.exists():
             # Try alternative path if running from tests directory
-            alt_path = Path(__file__).parent.parent.parent / "agentic_core" / "base_agents"
+            alt_path = Path(__file__).parent.parent.parent / AGENTIC_CORE_DIR / "base_agents"
             if alt_path.exists():
                 cls.CORE_PATH = alt_path
             else:

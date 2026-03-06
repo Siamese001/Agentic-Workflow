@@ -9,6 +9,9 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class PTCInvariantVisitor(ast.NodeVisitor):
@@ -160,7 +163,7 @@ def scan_repository_for_ptc_invariants(repo_root: Path) -> list[tuple[str, int, 
     violations = []
 
     # Scan PTC directory
-    ptc_dir = repo_root / "agentic_core" / "L3_orchestration" / "ptc"
+    ptc_dir = repo_root / AGENTIC_CORE_DIR / "L3_orchestration" / "ptc"
     if ptc_dir.exists():
         for file_path in ptc_dir.rglob("*.py"):
             file_violations = scan_file_for_ptc_invariants(file_path)

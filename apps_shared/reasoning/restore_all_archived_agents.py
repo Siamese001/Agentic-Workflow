@@ -20,10 +20,16 @@ import json
 import shutil
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    ARCHIVES_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
-ARCHIVES = PROJECT_ROOT / "archives"
-AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
+ARCHIVES = PROJECT_ROOT / ARCHIVES_DIR
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # Target directories for restoration
 TARGETS = {
@@ -141,7 +147,7 @@ def main():
         "runtime",
         "void_violations",
         "Reachout Engine Archive",
-        "apps_rg",
+        APPS_RG_DIR,
     ]
 
     for folder in folders_to_process:
@@ -170,9 +176,9 @@ def main():
                 target_dir = AGENTIC_CORE / TARGETS["L4"]
             elif folder in ["runtime", "Reachout Engine Archive"]:
                 # k-agents go to apps_lic outreach engine
-                target_dir = PROJECT_ROOT / "apps_lic" / "engines" / "outreach_engine"
+                target_dir = PROJECT_ROOT / APPS_LIC_DIR / "engines" / "outreach_engine"
             elif folder == "apps_rg":
-                target_dir = PROJECT_ROOT / "apps_rg" / "engines" / "resume_engine"
+                target_dir = PROJECT_ROOT / APPS_RG_DIR / "engines" / "resume_engine"
             elif folder == "location_violations":
                 # Infer from agent name
                 inferred = infer_target_directory(name, source_path)

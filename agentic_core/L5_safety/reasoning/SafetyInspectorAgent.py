@@ -35,6 +35,12 @@ from typing import Any
 from agentic_core.L1_cognition.types.action_request_types import ActionRequest
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 Logger: logging.Logger = logging.getLogger(__name__)
 
@@ -392,10 +398,10 @@ class SafetyInspectorAgent(SovereignBaseAgent):
 
             # Scan source directories
             source_dirs = [
-                Path(self.project_root) / "agentic_core",
-                Path(self.project_root) / "apps_lic",
-                Path(self.project_root) / "apps_rg",
-                Path(self.project_root) / "apps_shared",
+                Path(self.project_root) / AGENTIC_CORE_DIR,
+                Path(self.project_root) / APPS_LIC_DIR,
+                Path(self.project_root) / APPS_RG_DIR,
+                Path(self.project_root) / APPS_SHARED_DIR,
             ]
 
             all_violations = []

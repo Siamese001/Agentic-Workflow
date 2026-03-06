@@ -6,10 +6,14 @@ Verifies file inventory, class inheritance, and void compliance.
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    APPS_RG_DIR,
+    ARCHIVES_DIR,
+)
 
-ROOT = Path("apps_rg")
+ROOT = Path(APPS_RG_DIR)
 REQUIRED_BASE = "BaseRGEngine"
-FORBIDDEN_IMPORTS = ["archives", "legacy"]
+FORBIDDEN_IMPORTS = [ARCHIVES_DIR, "legacy"]
 
 
 def audit_file(path: Path):

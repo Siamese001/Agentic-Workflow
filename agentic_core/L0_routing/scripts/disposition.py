@@ -15,6 +15,11 @@ from pathlib import Path
 import networkx as nx
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 
 class Disposition(Enum):
@@ -158,7 +163,7 @@ class CoreSynthesisAnalyzer:
 
     def _detect_circular_dependencies(self, file_path: Path, imports: list[str]) -> list[str]:
         """Detect circular dependencies with app zones."""
-        forbidden_zones = ["apps_lic", "apps_rg", "apps_shared"]
+        forbidden_zones = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
         circular_deps = []
 
         for imp in imports:

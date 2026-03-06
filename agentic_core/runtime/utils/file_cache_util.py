@@ -31,6 +31,9 @@ import logging
 import os
 import threading
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -112,7 +115,7 @@ class FileCache:
 
         # Walk up looking for project markers
         for parent in [current] + list(current.parents):
-            if (parent / "agentic_core").is_dir() and (parent / "tests").is_dir():
+            if (parent / AGENTIC_CORE_DIR).is_dir() and (parent / "tests").is_dir():
                 return parent
             if (parent / "pyproject.toml").exists():
                 return parent

@@ -17,12 +17,17 @@ from __future__ import annotations
 import ast
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 APPS_ROOTS = [
-    REPO_ROOT / "apps_lic",
-    REPO_ROOT / "apps_rg",
-    REPO_ROOT / "apps_shared",
+    REPO_ROOT / APPS_LIC_DIR,
+    REPO_ROOT / APPS_RG_DIR,
+    REPO_ROOT / APPS_SHARED_DIR,
 ]
 
 FORBIDDEN_IMPORT_PATTERNS = [

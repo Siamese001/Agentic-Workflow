@@ -9,9 +9,12 @@ from pathlib import Path
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 ROOT: Any = Path("C:/Git/Agentic-Workflow")
-CORE: Any = ROOT / "agentic_core"
+CORE: Any = ROOT / AGENTIC_CORE_DIR
 HEAVY_AIRLOCKS: Any = [
     "L1_cognition/P1_core/check_outreach/__init__.py",
     "L1_cognition/P1_core/P1_retrieve/get_info/__init__.py",

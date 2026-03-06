@@ -14,6 +14,9 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 class MockContext:
@@ -31,7 +34,7 @@ def validate_l2_l3_structure(project_root: Path) -> dict:
     l1_structure = SOVEREIGN_TERRITORIES["agentic_core"]["subfolders"]
 
     for l1_name in l1_structure:
-        l1_path = project_root / "agentic_core" / l1_name
+        l1_path = project_root / AGENTIC_CORE_DIR / l1_name
         if not l1_path.exists():
             continue
 

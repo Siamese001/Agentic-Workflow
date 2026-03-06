@@ -19,6 +19,9 @@ from enum import Enum
 from pathlib import Path
 
 from pydantic import BaseModel, ConfigDict, Field, field_validator
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # =============================================================================
 # CORE CONSTANTS
@@ -41,7 +44,7 @@ PROJECT_ROOT = Path(__file__).parent.parent.absolute()
 DATA_DIR = PROJECT_ROOT / "data"
 OUTPUT_DIR = PROJECT_ROOT / "data" / "output"
 CACHE_DIR = PROJECT_ROOT / "data" / "cache"
-LOGS_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs"
+LOGS_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "logs"
 
 # Ensure directories exist
 for d in [DATA_DIR, OUTPUT_DIR, CACHE_DIR, LOGS_DIR]:

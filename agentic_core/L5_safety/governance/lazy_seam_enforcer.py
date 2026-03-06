@@ -12,6 +12,9 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -314,7 +317,7 @@ class LazySeamEnforcer:
         print("Scanning codebase for lazy seams (Phase 3B universe)...")
 
         # Get Phase 3B metric results
-        agentic_core_path = self.root_path / "agentic_core"
+        agentic_core_path = self.root_path / AGENTIC_CORE_DIR
         metric = self.lazy_upward_import_metric(agentic_core_path)
         phase3b_seams = metric["items"]
 
@@ -366,7 +369,7 @@ class LazySeamEnforcer:
 def main():
     """Main execution."""
     root_path = Path.cwd()
-    allowlist_path = root_path / "agentic_core" / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
+    allowlist_path = root_path / AGENTIC_CORE_DIR / "L5_safety" / "governance" / "lazy_seam_allowlist.json"
 
     enforcer = LazySeamEnforcer(root_path, allowlist_path)
     violations = enforcer.enforce()

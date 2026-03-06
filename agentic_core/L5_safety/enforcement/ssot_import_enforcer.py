@@ -10,9 +10,15 @@ but don't already import from SSOT.
 """
 import re
 from pathlib import Path
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
-AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # The SSOT import block to add
 SSOT_IMPORT = """# [SSOT IMPORT] Structure blueprint is the single source of truth
@@ -83,9 +89,9 @@ def main():
     territories = [
         AGENTIC_CORE,
         PROJECT_ROOT / "tests",
-        PROJECT_ROOT / "apps_shared",
-        PROJECT_ROOT / "apps_rg",
-        PROJECT_ROOT / "apps_lic",
+        PROJECT_ROOT / APPS_SHARED_DIR,
+        PROJECT_ROOT / APPS_RG_DIR,
+        PROJECT_ROOT / APPS_LIC_DIR,
     ]
 
     for territory in territories:

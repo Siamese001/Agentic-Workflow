@@ -13,9 +13,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / "agentic_core"
+core: Any = ROOT / AGENTIC_CORE_DIR
 approved_root_folders: Any = [
     "agentic_core",
     "apps_rg",

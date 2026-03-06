@@ -63,6 +63,9 @@ from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
 from agentic_core.runtime.exceptions.SovereignError import SovereignError
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -147,7 +150,7 @@ class SovereignBaseAgent(
                 raise ConfigurationError(f"Unsafe project root: {self.project_root}")
 
             # Validate required directories exist and are secure
-            required_dirs = ["agentic_core"]
+            required_dirs = [AGENTIC_CORE_DIR]
             for dir_name in required_dirs:
                 dir_path = self.project_root / dir_name
                 if dir_path.exists() and not self._is_safe_directory(dir_path):
@@ -330,7 +333,7 @@ class SovereignBaseAgent(
             import os as _os
 
             # fs_hash: aggregate mtime+size of .py files under agentic_core/
-            _core_dir = self.project_root / "agentic_core"
+            _core_dir = self.project_root / AGENTIC_CORE_DIR
             _fs_parts: list[str] = []
             if _core_dir.is_dir():
                 for _root, _dirs, _files in _os.walk(str(_core_dir)):

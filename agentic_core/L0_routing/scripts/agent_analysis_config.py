@@ -21,6 +21,9 @@ Output:
 import re
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 
 @dataclass
@@ -169,13 +172,13 @@ def analyze_file(file_path: Path) -> AgentAnalysis | None:
 def scan_ssot_folders(project_root: Path) -> list[AgentAnalysis]:
     """Scan all SSOT folders for agents needing hardening."""
     ssot_folders = [
-        project_root / "agentic_core" / "L0_routing",
-        project_root / "agentic_core" / "L1_cognition",
-        project_root / "agentic_core" / "L2_execution",
-        project_root / "agentic_core" / "L3_orchestration",
-        project_root / "agentic_core" / "L4_state",
-        project_root / "agentic_core" / "L5_safety",
-        project_root / "agentic_core" / "L6_observability",
+        project_root / AGENTIC_CORE_DIR / "L0_routing",
+        project_root / AGENTIC_CORE_DIR / "L1_cognition",
+        project_root / AGENTIC_CORE_DIR / "L2_execution",
+        project_root / AGENTIC_CORE_DIR / "L3_orchestration",
+        project_root / AGENTIC_CORE_DIR / "L4_state",
+        project_root / AGENTIC_CORE_DIR / "L5_safety",
+        project_root / AGENTIC_CORE_DIR / "L6_observability",
     ]
 
     results = []
@@ -302,7 +305,7 @@ if __name__ == "__main__":
     # [HYGIENE] Removed debug print: print(report)
 
     # Also save to file
-    report_path = project_root / "agentic_core" / "L0_routing" / "reports" / "cache_first_hardening.txt"
+    report_path = project_root / AGENTIC_CORE_DIR / "L0_routing" / "reports" / "cache_first_hardening.txt"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     report_path.write_text(report, encoding="utf-8")

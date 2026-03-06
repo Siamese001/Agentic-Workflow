@@ -21,7 +21,10 @@ if str(project_root) not in sys.path:
     # guardian: allow-global-mutation
     sys.path.insert(0, str(project_root))
 
-from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    SOVEREIGN_TERRITORIES,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 # CORE_SUBFOLDER_MAP derived from SOVEREIGN_TERRITORIES
@@ -44,7 +47,7 @@ CORE_SUBFOLDER_MAP = {
     "L6_observability": ["P1_core", "dashboards", "reasoning", "types", "utils"],
 }
 
-core_root = project_root / "agentic_core"
+core_root = project_root / AGENTIC_CORE_DIR
 
 # Layer-specific high-signal content
 LAYER_BEST_PRACTICES = {

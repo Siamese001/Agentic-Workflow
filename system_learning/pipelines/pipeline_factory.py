@@ -11,6 +11,9 @@ from __future__ import annotations
 import logging
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config import (
+    RUNTIME_STATE_JSON,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +99,7 @@ def build_pipeline_deps(
     from .healing_backups.naming_violations.l5_policy_proposer_1 import L5PolicyProposer
 
     reports_dir = repo_root / "logs" / "compliance_reports"
-    runtime_state_path = repo_root / "runtime_state.json"
+    runtime_state_path = repo_root / RUNTIME_STATE_JSON
     # [CROSS-RUN PERSISTENCE] L4B healing snapshots and L4C proposals written by
     # run_pipeline() are now stored to disk under logs/l4_state/ so they survive
     # process boundaries and are available to future runs (REQ-071: Stage 8 INTAKE
