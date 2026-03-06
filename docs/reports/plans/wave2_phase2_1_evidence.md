@@ -15,7 +15,7 @@ ec0d2e144
 
 ## EVIDENCE_COMMIT
 
-PENDING
+5c0f8414c
 
 ## FILES_CHANGED_CODE
 
@@ -25,7 +25,10 @@ tests/architecture/test_wave2_phase2_1_advanced_governance.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+```
+docs/reports/plans/wave2_phase2_1_evidence.md
+tools/evidence/wave2_phase2_1_runner.py
+```
 
 ## INSPECTED_FILES
 
@@ -45,137 +48,137 @@ collected 28 items
 
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_upward_import_generates_layer_upward_import_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [  3%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_no_upward_import_produces_no_upward_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [  7%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_same_layer_import_produces_no_upward_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 10%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_higher_layer_import_produces_no_upward_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 14%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_direct_provider_import_generates_gateway_bypass_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 17%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_no_provider_import_generates_no_gateway_bypass_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 21%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_sovereign_llm_gateway_excluded_from_gateway_bypass_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 25%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_gateway_bypass_gap_lists_provider_in_reality 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 28%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l0_file_with_write_paths_generates_mutation_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 32%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l3_file_with_write_paths_generates_mutation_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 35%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l5_file_with_write_paths_generates_mutation_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 39%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l2_file_with_write_paths_does_not_generate_mutation_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 42%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l1_file_with_write_paths_does_not_generate_mutation_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 46%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_l0_file_with_empty_write_paths_no_mutation_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 50%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_path_d_file_without_plan_hash_generates_pathd_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 53%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_path_d_file_with_plan_hash_no_pathd_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 57%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_hitl_in_path_generates_pathd_gap_even_without_mentions 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 60%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_no_path_d_no_hitl_no_pathd_gap 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 64%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_layer_connection_finding_keys_are_present 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 67%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_parse_failed_file_not_added_to_findings 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
 PASSED                                                                   [ 71%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_healing_provider_adapters_generates_gateway_bypass_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:23 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:24 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:23:54 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:56 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 75%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_qwen_vllm_inference_generates_gateway_bypass_risk 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:25 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:27 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:23:56 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:23:58 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 78%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_sovereign_llm_gateway_not_in_gateway_bypass_gaps 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:28 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:30 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:23:59 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:01 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 82%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_layer_connection_integrity_returns_list 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:30 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:32 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:24:02 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:03 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 85%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_gateway_bypass_gaps_are_all_high_priority 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:33 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:35 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:24:04 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:06 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 89%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_non_l2_mutation_risk_gaps_are_all_medium_priority 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:36 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:37 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:24:07 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:09 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 92%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_upward_import_gaps_are_all_high_priority 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:38 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:40 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:24:09 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:11 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [ 96%]
 tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_pathd_gaps_are_all_high_priority 
 -------------------------------- live log call --------------------------------
-2026-03-05 23:23:41 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
-2026-03-05 23:23:42 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
+2026-03-05 23:24:12 [    INFO] tools.semantic_gap_analyzer: Analyzing Layer Connection Integrity...
+2026-03-05 23:24:14 [ WARNING] tools.semantic_gap_analyzer: Failed to parse C:\Git\Agentic-Workflow\agentic_core\L5_safety\reasoning\FileClassificationAgent.py: unexpected indent (FileClassificationAgent.py, line 2075)
 PASSED                                                                   [100%]
 
 ============================ slowest 10 durations =============================
-2.65s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_healing_provider_adapters_generates_gateway_bypass_risk
-2.64s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_qwen_vllm_inference_generates_gateway_bypass_risk
-2.59s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_pathd_gaps_are_all_high_priority
-2.58s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_sovereign_llm_gateway_not_in_gateway_bypass_gaps
-2.58s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_layer_connection_integrity_returns_list
-2.55s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_upward_import_gaps_are_all_high_priority
+2.66s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_qwen_vllm_inference_generates_gateway_bypass_risk
+2.66s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_healing_provider_adapters_generates_gateway_bypass_risk
+2.66s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_sovereign_llm_gateway_not_in_gateway_bypass_gaps
+2.57s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_upward_import_gaps_are_all_high_priority
+2.57s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_layer_connection_integrity_returns_list
+2.57s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_pathd_gaps_are_all_high_priority
 2.54s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_gateway_bypass_gaps_are_all_high_priority
 2.54s call     tests/architecture/test_wave2_phase2_1_advanced_governance.py::test_non_l2_mutation_risk_gaps_are_all_medium_priority
 
 (2 durations < 0.005s hidden.  Use -vv to show these durations.)
-============================= 28 passed in 20.70s =============================
+============================= 28 passed in 20.80s =============================
 ```
 
 collected 28 / executed 28
