@@ -13,7 +13,7 @@ excluding _quarantine/, archives/, .healing_backups/.
 
 ## EVIDENCE_COMMIT
 
-PENDING
+d94d8dfea8ffebdc818e02c2426247c616417d6e
 
 ## FILES_CHANGED_CODE
 
@@ -34,7 +34,7 @@ tests/unit/agentic_core/test_surgical_low_tier.py
 
 ## FILES_CHANGED_EVIDENCE
 
-PENDING
+docs/reports/plans/pinecone_deprecation_evidence.md
 
 ## INSPECTED_FILES
 
