@@ -64,10 +64,10 @@ def scan_missing_structure(repo_root: Path) -> list[dict]:
     Returns sorted list of violation dicts with keys:
     level, path, parent_layer (for L3 violations).
     """
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    SOVEREIGN_TERRITORIES,
-)
+    from agentic_core.L0_routing.config import (
+        AGENTIC_CORE_DIR,
+        SOVEREIGN_TERRITORIES,
+    )
 
     violations: list[dict] = []
 

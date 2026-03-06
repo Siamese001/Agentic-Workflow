@@ -148,8 +148,13 @@ ARCHITECTURE_COMPONENT_RULES = (
         "key": "meta_learning_pipeline",
         "layer": "L4",
         "artery": "Meta-Learning Pipeline Coverage",
-        "path": AGENTIC_CORE / "system_learning" / "pipelines" / "meta_learning_pipeline.py",
-        "required_any": ("MetaLearningSnapshot", "ApprovalGate", "VersionStore", "proposal_only"),
+        "path": AGENTIC_CORE / "utils" / "meta_learning_engine_util.py",
+        "required_any": (
+            "MetaLearningEngine",
+            "MetaLearningStorage",
+            "recall_or_execute",
+            "add_architectural_observation",
+        ),
         "impact": "Stage ordering, dual injection, and proposal-only defaults are not audited.",
         "priority": "HIGH",
         "recommended_fix": "Add explicit checks for immutable stage order, dual injection, intake-before-commit, and proposal-only defaults.",
@@ -158,8 +163,8 @@ ARCHITECTURE_COMPONENT_RULES = (
         "key": "write_gateway",
         "layer": "L2",
         "artery": "Universal Write Gateway Coverage",
-        "path": AGENTIC_CORE / "L2_execution" / "write_gateway.py",
-        "required_any": ("MutationRecord", "SimulationResult", "execute_instruction"),
+        "path": AGENTIC_CORE / "L2_execution" / "tools" / "write_gateway.py",
+        "required_any": ("WriteAmplificationError", "WriteSizeCapError", "append_text", "append_csv_row"),
         "impact": "The analyzer does not verify the sole durable mutation authority described by the architecture.",
         "priority": "HIGH",
         "recommended_fix": "Treat write_gateway.py as a mandatory execution choke point and scan for non-UWG mutation paths.",
@@ -400,7 +405,9 @@ class ASTAnalyzer:
                 lowered = call_name.lower()
                 if any(token in lowered for token in ("ledger", "blob", "state", "memory", "registry")):
                     analysis.l4_state_accesses.append(node.lineno)
-                if any(token in lowered for token in ("write", "append", "delete", "rename", "commit", "persist")):
+                if any(
+                    token in lowered for token in ("write", "append", "delete", "rename", "commit", "persist")
+                ):
                     analysis.write_paths.append(call_name)
 
         for literal in analysis.string_literals:
@@ -558,7 +565,9 @@ def _detect_upward_imports(file_path: Path, analysis: FileAnalysis) -> list[str]
 
 def _looks_like_meta_pipeline(file_path: Path, analysis: FileAnalysis) -> bool:
     rel = _stable_relpath(file_path).lower()
-    return "meta_learning_pipeline" in rel or "system_learning" in rel or len(analysis.meta_stage_mentions) >= 3
+    return (
+        "meta_learning_pipeline" in rel or "system_learning" in rel or len(analysis.meta_stage_mentions) >= 3
+    )
 
 
 def _has_any_marker(analysis: FileAnalysis, values: Iterable[str]) -> bool:
@@ -859,7 +868,7 @@ class SemanticGapAnalyzer:
             available_names = (
                 set(analysis.used_names)
                 | analysis.imported_symbol_names
-                | set(call_name for call_name, _ in analysis.calls)
+                | {call_name for call_name, _ in analysis.calls}
             )
             for marker in rule["required_any"]:
                 if any(marker.lower() in candidate.lower() for candidate in available_names):
@@ -1068,7 +1077,10 @@ class SemanticGapAnalyzer:
                 layer = _path_to_layer(file_path) or "UNKNOWN"
 
                 if layer in {"L0", "L5", "L2"} and not analysis.elevator_shaft_mentions:
-                    if any(token in rel.lower() for token in ("routing", "policy", "boundary", "executor", "orchestr")):
+                    if any(
+                        token in rel.lower()
+                        for token in ("routing", "policy", "boundary", "executor", "orchestr")
+                    ):
                         gaps.append(
                             SemanticGap(
                                 gap_id=_stable_gap_id("ELEVATOR-SHAFT-GAP", file_path),
@@ -1084,7 +1096,10 @@ class SemanticGapAnalyzer:
                         )
 
                 if layer in {"L5", "L2"} and not analysis.governance_mentions:
-                    if any(token in rel.lower() for token in ("validator", "boundary", "enforcement", "safety", "capability")):
+                    if any(
+                        token in rel.lower()
+                        for token in ("validator", "boundary", "enforcement", "safety", "capability")
+                    ):
                         gaps.append(
                             SemanticGap(
                                 gap_id=_stable_gap_id("GOVERNANCE-STAMP-GAP", file_path),
@@ -1115,7 +1130,9 @@ class SemanticGapAnalyzer:
             layer = _path_to_layer(file_path) or "UNKNOWN"
             rel_lower = rel.lower()
 
-            allowed = any(token in rel_lower for token in ("embedding", "rag", "faiss", "memory", "factory", "seed"))
+            allowed = any(
+                token in rel_lower for token in ("embedding", "rag", "faiss", "memory", "factory", "seed")
+            )
             if not allowed and layer not in {"L1", "L4"}:
                 gaps.append(
                     SemanticGap(
@@ -1407,7 +1424,9 @@ class SemanticGapAnalyzer:
         h("3. Detect prompt assemblers and score canonical slot coverage for S0/D0/I0/C0/U0")
         h("4. Check for manifest-hash and boundary-snapshot evidence on prompt execution paths")
         h("5. Verify architecture SSOT components exist and expose expected contract markers")
-        h("6. Scan layer connection integrity for upward imports, gateway bypasses, and non-L2 mutation risks")
+        h(
+            "6. Scan layer connection integrity for upward imports, gateway bypasses, and non-L2 mutation risks"
+        )
         h("7. Audit Elevator Shaft, governance stamp, and airlock contract markers")
         h("8. Check embedding sovereignty and meta-learning pipeline contracts")
         h("9. Identify missing wirings between cache modules and consumers")
@@ -1435,16 +1454,18 @@ class SemanticGapAnalyzer:
             for finding in sorted(self.prompt_taxonomy_findings, key=lambda item: item["file"]):
                 manifest = "yes" if finding["manifest_hash"] else "no"
                 boundary = "yes" if finding["boundary_snapshot"] else "no"
-                h(
-                    f"| `{finding['file']}` | {finding['slot_status']} | {manifest} | {boundary} |"
-                )
+                h(f"| `{finding['file']}` | {finding['slot_status']} | {manifest} | {boundary} |")
             blank()
 
         if self.layer_connection_findings:
             h("## Layer Connection Integrity")
             blank()
-            h("| File | Layer | Upward Imports | Direct Provider Imports | Embedding Mentions | Governance Mentions |")
-            h("|------|-------|----------------|-------------------------|--------------------|---------------------|")
+            h(
+                "| File | Layer | Upward Imports | Direct Provider Imports | Embedding Mentions | Governance Mentions |"
+            )
+            h(
+                "|------|-------|----------------|-------------------------|--------------------|---------------------|"
+            )
             for finding in sorted(self.layer_connection_findings, key=lambda item: item["file"]):
                 upward = finding["upward_imports"] or "-"
                 direct = finding["direct_provider_imports"] or "-"
@@ -1525,7 +1546,9 @@ class SemanticGapAnalyzer:
         h("- Prompt assemblers explicitly cover S0, D0, I0, C0, and U0")
         h("- Governed prompt assembly emits a manifest hash")
         h("- Validator paths emit boundary_snapshot.json for prompt-package inspection")
-        h("- Classification kernel, SovereignLLMGateway, AGENT_REGISTRY, meta_learning_pipeline, and write_gateway are all present and contract-visible")
+        h(
+            "- Classification kernel, SovereignLLMGateway, AGENT_REGISTRY, meta_learning_pipeline, and write_gateway are all present and contract-visible"
+        )
         h("- No upward import edges violate the L0-L6 sovereignty matrix")
         h("- No direct provider SDK imports exist outside SovereignLLMGateway")
         h("- Non-L2 mutation paths are absent or explicitly mediated by Universal Write Gateway")

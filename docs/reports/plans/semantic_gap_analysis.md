@@ -3,10 +3,10 @@
 ## Executive Summary
 
 **Total Gaps Identified:** 1239
-**High Priority:** 598
-**Medium Priority:** 629
+**High Priority:** 593
+**Medium Priority:** 634
 **Low Priority:** 12
-**Parse Failures:** 12
+**Parse Failures:** 3
 
 ## Analysis Methodology
 
@@ -32,10 +32,10 @@ lookups, cache-first patterns) diverges from implementation reality.
 | Component | File | Exists | Signals Present |
 |-----------|------|--------|-----------------|
 | sovereign_gateway | `agentic_core/L2_execution/enforcement/SovereignLLMGateway.py` | yes | GenerationRequest, GenerationResponse, route_generation |
-| write_gateway | `agentic_core/L2_execution/write_gateway.py` | no | missing file |
+| write_gateway | `agentic_core/L2_execution/tools/write_gateway.py` | yes | WriteAmplificationError, WriteSizeCapError |
 | classification_kernel | `agentic_core/L5_safety/core_kernel/classification_kernel.py` | yes | classify_file_standalone |
 | agent_registry | `agentic_core/agents/agent_registry.py` | yes | AGENT_REGISTRY, AgentExecutionProfile |
-| meta_learning_pipeline | `agentic_core/system_learning/pipelines/meta_learning_pipeline.py` | no | missing file |
+| meta_learning_pipeline | `agentic_core/utils/meta_learning_engine_util.py` | yes | MetaLearningStorage |
 
 ## Prompt Taxonomy Coverage
 
@@ -90,6 +90,7 @@ lookups, cache-first patterns) diverges from implementation reality.
 | `agentic_core/L0_routing/meta_control/meta_apply_ops.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/meta_control/meta_learning_bus.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/reasoning/RootCustomsAgent.py` | L0 | - | - | 0 | 0 |
+| `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/reasoning/__init__.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/__init__.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/action_capability.py` | L0 | - | - | 0 | 0 |
@@ -170,6 +171,7 @@ lookups, cache-first patterns) diverges from implementation reality.
 | `agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/fission_executor_util.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/flatten_scripts_directory_util.py` | L0 | - | - | 0 | 0 |
+| `agentic_core/L0_routing/scripts/forensic_discovery_prep.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/forward_rolling_facade.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/full_agent_discovery.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/function_tool.py` | L0 | - | - | 0 | 0 |
@@ -200,6 +202,7 @@ lookups, cache-first patterns) diverges from implementation reality.
 | `agentic_core/L0_routing/scripts/run_guardian_drift_detection.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/run_guardian_escalation_determinism.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/run_guardian_gateway_bypass.py` | L0 | - | - | 3 | 0 |
+| `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/run_guardian_hygiene.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/run_guardian_location_alignment.py` | L0 | - | - | 0 | 0 |
 | `agentic_core/L0_routing/scripts/run_guardian_manifest.py` | L0 | - | - | 0 | 0 |
@@ -833,7 +836,6 @@ lookups, cache-first patterns) diverges from implementation reality.
 | `agentic_core/L5_safety/reasoning/DocumentationAgent.py` | L5 | L3 | - | 0 | 0 |
 | `agentic_core/L5_safety/reasoning/DuplicateCodeDetectorAgent.py` | L5 | L2 | - | 0 | 0 |
 | `agentic_core/L5_safety/reasoning/DynamicSealAgent.py` | L5 | L2 | - | 0 | 0 |
-| `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | L5 | L0, L2 | - | 3 | 0 |
 | `agentic_core/L5_safety/reasoning/FileClassificationHealerAgent.py` | L5 | - | - | 0 | 0 |
 | `agentic_core/L5_safety/reasoning/FileClassificationValidatorAgent.py` | L5 | - | - | 0 | 0 |
 | `agentic_core/L5_safety/reasoning/FilesystemSSOTHealerAgent.py` | L5 | - | - | 0 | 0 |
@@ -1339,18 +1341,9 @@ lookups, cache-first patterns) diverges from implementation reality.
 
 | File | Error Type | Message |
 |------|------------|---------|
-| `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py` | IndentationError | unexpected indent (SSOTFolderCleanupAgent.py, line 100) |
-| `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py` | IndentationError | unexpected indent (SSOTFolderCleanupAgent.py, line 100) |
-| `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py` | IndentationError | unexpected indent (SSOTFolderCleanupAgent.py, line 100) |
-| `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py` | IndentationError | unexpected indent (SSOTFolderCleanupAgent.py, line 100) |
-| `agentic_core/L0_routing/scripts/forensic_discovery_prep.py` | IndentationError | expected an indented block after 'try' statement on line 53 (forensic_discovery_prep.py, line 54) |
-| `agentic_core/L0_routing/scripts/forensic_discovery_prep.py` | IndentationError | expected an indented block after 'try' statement on line 53 (forensic_discovery_prep.py, line 54) |
-| `agentic_core/L0_routing/scripts/forensic_discovery_prep.py` | IndentationError | expected an indented block after 'try' statement on line 53 (forensic_discovery_prep.py, line 54) |
-| `agentic_core/L0_routing/scripts/forensic_discovery_prep.py` | IndentationError | expected an indented block after 'try' statement on line 53 (forensic_discovery_prep.py, line 54) |
-| `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py` | IndentationError | unexpected indent (run_guardian_hierarchy_compliance.py, line 72) |
-| `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py` | IndentationError | unexpected indent (run_guardian_hierarchy_compliance.py, line 72) |
-| `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py` | IndentationError | unexpected indent (run_guardian_hierarchy_compliance.py, line 72) |
-| `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py` | IndentationError | unexpected indent (run_guardian_hierarchy_compliance.py, line 72) |
+| `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | IndentationError | unexpected indent (FileClassificationAgent.py, line 2075) |
+| `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | IndentationError | unexpected indent (FileClassificationAgent.py, line 2075) |
+| `agentic_core/L5_safety/reasoning/FileClassificationAgent.py` | IndentationError | unexpected indent (FileClassificationAgent.py, line 2075) |
 
 ## L0 Layer Gaps
 
@@ -4483,6 +4476,27 @@ Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration marke
 
 ---
 
+### ELEVATOR-SHAFT-GAP-a0968d0385: JIT State Synchronization
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+Critical control-spine files should show JIT state sync markers tied to the Elevator Shaft contracts.
+
+**Implementation Reality:**
+agentic_core/L0_routing/scripts/forensic_discovery_prep.py appears control-spine relevant but shows no clear JIT / SemanticClock / CapabilityToken evidence.
+
+**Impact:**
+The analyzer cannot prove routing, safety, and execution are hydrated from the same mathematical present.
+
+**Evidence Files:
+- `agentic_core/L0_routing/scripts/forensic_discovery_prep.py`
+
+**Recommended Fix:**
+Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration markers on airlock paths.
+
+---
+
 ### ELEVATOR-SHAFT-GAP-a1fea70c74: JIT State Synchronization
 
 **Priority:** MEDIUM
@@ -4861,6 +4875,27 @@ Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration marke
 
 ---
 
+### ELEVATOR-SHAFT-GAP-b4d84516a9: JIT State Synchronization
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+Critical control-spine files should show JIT state sync markers tied to the Elevator Shaft contracts.
+
+**Implementation Reality:**
+agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py appears control-spine relevant but shows no clear JIT / SemanticClock / CapabilityToken evidence.
+
+**Impact:**
+The analyzer cannot prove routing, safety, and execution are hydrated from the same mathematical present.
+
+**Evidence Files:
+- `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py`
+
+**Recommended Fix:**
+Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration markers on airlock paths.
+
+---
+
 ### ELEVATOR-SHAFT-GAP-b67a1895e4: JIT State Synchronization
 
 **Priority:** MEDIUM
@@ -5044,6 +5079,27 @@ The analyzer cannot prove routing, safety, and execution are hydrated from the s
 
 **Evidence Files:
 - `agentic_core/L0_routing/scripts/check_rglob_usage_util.py`
+
+**Recommended Fix:**
+Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration markers on airlock paths.
+
+---
+
+### ELEVATOR-SHAFT-GAP-c29cb4934b: JIT State Synchronization
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+Critical control-spine files should show JIT state sync markers tied to the Elevator Shaft contracts.
+
+**Implementation Reality:**
+agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py appears control-spine relevant but shows no clear JIT / SemanticClock / CapabilityToken evidence.
+
+**Impact:**
+The analyzer cannot prove routing, safety, and execution are hydrated from the same mathematical present.
+
+**Evidence Files:
+- `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py`
 
 **Recommended Fix:**
 Add or detect SemanticClock, ToolBudget, CapabilityToken, or JIT hydration markers on airlock paths.
@@ -8011,6 +8067,27 @@ Move durable writes behind L2 execution contracts and Universal Write Gateway en
 
 ---
 
+### NON-L2-MUTATION-RISK-a0968d0385: Execution Mutation Boundary
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+L2 and the Universal Write Gateway are the sole durable mutation authority.
+
+**Implementation Reality:**
+agentic_core/L0_routing/scripts/forensic_discovery_prep.py appears to perform write-like operations outside the expected execution choke point: append, assert_no_persistent_write, atomic_write, get_git_commit, write_text
+
+**Impact:**
+Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarantees.
+
+**Evidence Files:
+- `agentic_core/L0_routing/scripts/forensic_discovery_prep.py`
+
+**Recommended Fix:**
+Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
+
+---
+
 ### NON-L2-MUTATION-RISK-a207aef1a1: Execution Mutation Boundary
 
 **Priority:** MEDIUM
@@ -8305,6 +8382,27 @@ Move durable writes behind L2 execution contracts and Universal Write Gateway en
 
 ---
 
+### NON-L2-MUTATION-RISK-b4d84516a9: Execution Mutation Boundary
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+L2 and the Universal Write Gateway are the sole durable mutation authority.
+
+**Implementation Reality:**
+agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py appears to perform write-like operations outside the expected execution choke point: append, assert_no_persistent_write, delete_empty_folders, write_text
+
+**Impact:**
+Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarantees.
+
+**Evidence Files:
+- `agentic_core/L0_routing/reasoning/SSOTFolderCleanupAgent.py`
+
+**Recommended Fix:**
+Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
+
+---
+
 ### NON-L2-MUTATION-RISK-b67a1895e4: Execution Mutation Boundary
 
 **Priority:** MEDIUM
@@ -8467,6 +8565,27 @@ Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarante
 
 **Evidence Files:
 - `agentic_core/L0_routing/scripts/check_rglob_usage_util.py`
+
+**Recommended Fix:**
+Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
+
+---
+
+### NON-L2-MUTATION-RISK-c29cb4934b: Execution Mutation Boundary
+
+**Priority:** MEDIUM
+
+**Architectural Intent:**
+L2 and the Universal Write Gateway are the sole durable mutation authority.
+
+**Implementation Reality:**
+agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py appears to perform write-like operations outside the expected execution choke point: append, write_guardian_result
+
+**Impact:**
+Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarantees.
+
+**Evidence Files:
+- `agentic_core/L0_routing/scripts/run_guardian_hierarchy_compliance.py`
 
 **Recommended Fix:**
 Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
@@ -9673,27 +9792,6 @@ Emit and persist a manifest hash for the final governed prompt package.
 ---
 
 ## L2 Layer Gaps
-
-### ARCH-COMPONENT-MISSING-cdac1f440e: Universal Write Gateway Coverage
-
-**Priority:** HIGH
-
-**Architectural Intent:**
-Critical architecture SSOT component should exist and be analyzable.
-
-**Implementation Reality:**
-Expected file is missing: agentic_core/L2_execution/write_gateway.py
-
-**Impact:**
-The analyzer does not verify the sole durable mutation authority described by the architecture.
-
-**Evidence Files:
-- `agentic_core/L2_execution/write_gateway.py`
-
-**Recommended Fix:**
-Treat write_gateway.py as a mandatory execution choke point and scan for non-UWG mutation paths.
-
----
 
 ### EMBEDDING-PLACEMENT-GAP-0b6740e0c1: Embedding Sovereignty Boundary
 
@@ -13185,27 +13283,6 @@ Move durable writes behind L2 execution contracts and Universal Write Gateway en
 
 ## L4 Layer Gaps
 
-### ARCH-COMPONENT-MISSING-33f61f0b15: Meta-Learning Pipeline Coverage
-
-**Priority:** HIGH
-
-**Architectural Intent:**
-Critical architecture SSOT component should exist and be analyzable.
-
-**Implementation Reality:**
-Expected file is missing: agentic_core/system_learning/pipelines/meta_learning_pipeline.py
-
-**Impact:**
-Stage ordering, dual injection, and proposal-only defaults are not audited.
-
-**Evidence Files:
-- `agentic_core/system_learning/pipelines/meta_learning_pipeline.py`
-
-**Recommended Fix:**
-Add explicit checks for immutable stage order, dual injection, intake-before-commit, and proposal-only defaults.
-
----
-
 ### LAYER-UPWARD-IMPORT-1e406ff901: Layer Sovereignty Import Boundary
 
 **Priority:** HIGH
@@ -13433,27 +13510,6 @@ C0 informational-only guarantees can erode if embedding logic leaks into routing
 
 **Evidence Files:
 - `agentic_core/L5_safety/enforcement/vector_healing_strategy.py`
-
-**Recommended Fix:**
-Move embedding creation and FAISS handling behind singleton factory or RAG provider seams only.
-
----
-
-### EMBEDDING-PLACEMENT-GAP-51439aa8a5: Embedding Sovereignty Boundary
-
-**Priority:** HIGH
-
-**Architectural Intent:**
-Embedding and FAISS operations should remain in informational RAG paths and factory-managed seams.
-
-**Implementation Reality:**
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py references embedding-related markers outside expected informational or factory surfaces.
-
-**Impact:**
-C0 informational-only guarantees can erode if embedding logic leaks into routing, safety, or execution control paths.
-
-**Evidence Files:
-- `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`
 
 **Recommended Fix:**
 Move embedding creation and FAISS handling behind singleton factory or RAG provider seams only.
@@ -15554,27 +15610,6 @@ Approval provenance, certification handoff, and signed-envelope assumptions may 
 
 **Evidence Files:
 - `agentic_core/L5_safety/enforcement/vector_healing_strategy.py`
-
-**Recommended Fix:**
-Expose or validate Compliance Hash, InstructionPacket, SandboxEnvelope, and CapabilityToken markers.
-
----
-
-### GOVERNANCE-STAMP-GAP-51439aa8a5: Governance Stamp and Airlock Contract
-
-**Priority:** HIGH
-
-**Architectural Intent:**
-Safety and execution boundaries should carry Compliance Hash, InstructionPacket, and SandboxEnvelope evidence.
-
-**Implementation Reality:**
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py appears to participate in the airlock but no governance-stamp markers were detected.
-
-**Impact:**
-Approval provenance, certification handoff, and signed-envelope assumptions may not be verifiable.
-
-**Evidence Files:
-- `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`
 
 **Recommended Fix:**
 Expose or validate Compliance Hash, InstructionPacket, SandboxEnvelope, and CapabilityToken markers.
@@ -20684,27 +20719,6 @@ Replace upward imports with protocol seams, signed contracts, or read-only data 
 
 ---
 
-### LAYER-UPWARD-IMPORT-51439aa8a5: Layer Sovereignty Import Boundary
-
-**Priority:** HIGH
-
-**Architectural Intent:**
-Lower layers must not import higher-authority layers upward across the L0-L6 spine.
-
-**Implementation Reality:**
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py imports higher-authority layer references: L0, L2
-
-**Impact:**
-Upward mutation and cross-layer coupling violate sovereignty and replay assumptions.
-
-**Evidence Files:
-- `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`
-
-**Recommended Fix:**
-Replace upward imports with protocol seams, signed contracts, or read-only data contracts.
-
----
-
 ### LAYER-UPWARD-IMPORT-543cd1ed9d: Layer Sovereignty Import Boundary
 
 **Priority:** HIGH
@@ -23786,27 +23800,6 @@ Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarante
 
 **Evidence Files:
 - `agentic_core/L5_safety/enforcement/vector_healing_strategy.py`
-
-**Recommended Fix:**
-Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
-
----
-
-### NON-L2-MUTATION-RISK-51439aa8a5: Execution Mutation Boundary
-
-**Priority:** MEDIUM
-
-**Architectural Intent:**
-L2 and the Universal Write Gateway are the sole durable mutation authority.
-
-**Implementation Reality:**
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py appears to perform write-like operations outside the expected execution choke point: append, rename_path, resolve_collision_and_rename, write_text
-
-**Impact:**
-Non-L2 mutations can bypass sandbox freeze, audit envelopes, and replay guarantees.
-
-**Evidence Files:
-- `agentic_core/L5_safety/reasoning/FileClassificationAgent.py`
 
 **Recommended Fix:**
 Move durable writes behind L2 execution contracts and Universal Write Gateway enforcement.
@@ -27391,12 +27384,12 @@ Move embedding creation and FAISS handling behind singleton factory or RAG provi
 
 | Layer | High | Medium | Low | Total |
 |-------|------|--------|-----|-------|
-| L0 | 18 | 357 | 0 | 375 |
+| L0 | 18 | 363 | 0 | 381 |
 | L1 | 12 | 9 | 0 | 21 |
-| L2 | 72 | 6 | 9 | 87 |
+| L2 | 71 | 6 | 9 | 86 |
 | L3 | 31 | 49 | 0 | 80 |
-| L4 | 9 | 0 | 0 | 9 |
-| L5 | 423 | 208 | 0 | 631 |
+| L4 | 8 | 0 | 0 | 8 |
+| L5 | 420 | 207 | 0 | 627 |
 | L6 | 17 | 0 | 3 | 20 |
 | UNKNOWN | 16 | 0 | 0 | 16 |
 
