@@ -215,7 +215,7 @@ class TestSkillScoreNormalizer:
     def test_empty_scores_returns_empty_dict(self):
         engine = _skill_normalizer()
         import asyncio
-        result = asyncio.get_event_loop().run_until_complete(engine.execute({}))
+        result = asyncio.run(engine.execute({}))
         assert result == {}
 
     @pytest.mark.governance
@@ -223,7 +223,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"python": 80.0, "java": 60.0, "sql": 40.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         for v in result.values():
             assert 0.0 <= v <= 1.0
 
@@ -232,7 +232,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"python": 80.0, "java": 40.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         assert result["python"] == 1.0
 
     @pytest.mark.governance
@@ -240,7 +240,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"python": 80.0, "java": 40.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         assert result["java"] == 0.0
 
     @pytest.mark.governance
@@ -248,7 +248,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"python": 70.0, "java": 70.0, "sql": 70.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         for v in result.values():
             assert v == 1.0
 
@@ -257,7 +257,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"python": 55.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         assert result["python"] == 1.0
 
     @pytest.mark.governance
@@ -265,7 +265,7 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"a": 1.0, "b": 2.0, "c": 3.0}
-        result = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        result = asyncio.run(engine.execute(raw))
         assert set(result.keys()) == set(raw.keys())
 
     @pytest.mark.governance
@@ -273,8 +273,8 @@ class TestSkillScoreNormalizer:
         engine = _skill_normalizer()
         import asyncio
         raw = {"x": 10.0, "y": 50.0, "z": 90.0}
-        r1 = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
-        r2 = asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        r1 = asyncio.run(engine.execute(raw))
+        r2 = asyncio.run(engine.execute(raw))
         assert r1 == r2
 
     @pytest.mark.governance
@@ -283,7 +283,7 @@ class TestSkillScoreNormalizer:
         import asyncio
         raw = {"x": 10.0, "y": 90.0}
         original = dict(raw)
-        asyncio.get_event_loop().run_until_complete(engine.execute(raw))
+        asyncio.run(engine.execute(raw))
         assert raw == original
 
 
