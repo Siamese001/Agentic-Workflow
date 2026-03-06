@@ -376,6 +376,10 @@ class SemanticCacheManager:
         Returns:
             Cached result dict or None if not found
         """
+        # Stateless mode check
+        if self.stateless_mode:
+            return None
+
         ctx_hash = self._compute_hash(context, namespace)
 
         # Layer 1: Exact Match (Redis - O(1))

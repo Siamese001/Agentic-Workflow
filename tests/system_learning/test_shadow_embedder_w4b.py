@@ -15,6 +15,14 @@ from system_learning.pipelines.meta_learning_pipeline import _retrieve_semantic_
 class TestShadowEmbedderW4B:
     """Test W4-B Shadow Embedder functionality."""
 
+    def setup_method(self):
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        get_retrieval_profile_manager().clear_cache()
+
+    def teardown_method(self):
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        get_retrieval_profile_manager().clear_cache()
+
     def test_shadow_embedder_non_influential(self):
         """Test shadow embedder does not affect retrieval ranking."""
         # Create profile without shadow embedder
@@ -187,6 +195,14 @@ class TestShadowEmbedderW4B:
 class TestW4BNegativeControl:
     """Negative control tests for W4-B Shadow Embedder."""
 
+    def setup_method(self):
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        get_retrieval_profile_manager().clear_cache()
+
+    def teardown_method(self):
+        from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+        get_retrieval_profile_manager().clear_cache()
+
     @pytest.mark.xfail(reason="W4B tamper guard", strict=False)
     def test_shadow_determinism_violation_negative_control(self):
         """Negative control: tamper with shadow vector computation."""
@@ -274,6 +290,9 @@ class TestW4BNegativeControl:
             pipeline.round = original_round
             # Clean up environment
             os.environ.pop("W4B_NEGCTRL_TAMPER", None)
+            # Reset profile manager cache to prevent cross-test contamination
+            from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+            get_retrieval_profile_manager().clear_cache()
 
     def test_shadow_determinism_violation_negative_control_guard_intact(self):
         """Verify negative control guard is intact when not tampering."""

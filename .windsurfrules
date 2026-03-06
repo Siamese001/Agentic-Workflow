@@ -4,123 +4,152 @@
 
 ---
 
-## §1. EXECUTION MODALITY — Phased, Evidence-Bundled, No Spin
+## §1. TESTING - Authoritative Verification, Runtime Truth, No Hidden Gaps
 
-- Execute ONLY the explicitly requested phase(s). No future steps, no unrequested repairs.
-- Each phase produces EXACTLY ONE evidence file under `docs/reports/plans/`. No inline pastes.
-- End every response with: evidence file path + final commit hash(es) + changed file list. STOP.
-- If scope expands beyond declared N files: STOP, write a plan artifact, do not partially apply.
+- Authoritative acceptance command:
+  `python -m pytest -q --color=no`
+- Full suite only, per `pytest.ini` `testpaths`.
+- FORBIDDEN:
+  - narrowing pytest scope to hide failures
+  - running subsets while claiming full-suite success
+  - counting collection as execution
+  - relying on happy-path passing as proof of correctness
+- Phase completion requires:
+  - authoritative pytest command exits 0
+  - git status clean
+  - evidence file committed
+  - required branch and robustness inventories present
 
-**Hard violations:**
-- Executing unrequested phases.
-- Pasting command output inline instead of evidence file.
-- Modifying files outside declared scope.
-- Continuing after a non-zero required command without stopping.
+### 1.1 Collection and execution integrity
 
----
+- Evidence MUST show:
+  - collected X tests
+  - executed Y tests
+- If counts differ:
+  - explain the reason deterministically
+  - audit `conftest.py` `pytest_collection_modifyitems`
+  - prove no silent deselection or hidden filtering occurred
+- All test markers MUST be registered in `pytest.ini`.
+- New test files MUST use existing marker taxonomy unless the same change set updates the taxonomy contract.
+- `pytest.ini` `testpaths` changes require same-commit update to:
+  `tests/unit_min_deps/test_testpaths_contract.py`
 
-## §2. EVIDENCE CONTRACT — One File, Self-Verifying, ASCII-Only
+### 1.2 Branch proof requirement
 
-**Evidence file canonical shape (in order):**
-1. `# <Phase Title>` (H1)
-2. `## Scope`
-3. `## CODE_COMMIT` — exactly one 40-hex hash
-4. `## EVIDENCE_COMMIT` — exactly one 40-hex hash (or `PENDING` in draft mode)
-5. `## FILES_CHANGED_CODE` — verbatim `git show --name-only --pretty=format: <CODE_COMMIT>`
-6. `## FILES_CHANGED_EVIDENCE` — verbatim `git show --name-only --pretty=format: <EVIDENCE_COMMIT>`
-7. `## INSPECTED_FILES` — file paths only, no content
-8. One `## <CommandTitle>` section per required command: `$ <cmd>`, full stdout, `EXIT CODE: N` only if N≠0
+- Every changed or newly introduced logic surface MUST have deterministic automated tests for:
+  - success path
+  - branch paths
+  - negative paths
+  - failure and exception paths
+  - recovery behavior where applicable
+- Any changed conditional, guard, threshold, allowlist or denylist, retry path, fallback path, state transition, exception handler, or early return MUST have at least one direct proving test.
+- Branch coverage requirements apply to all changed files in scope, not only to new tests.
+- "Existing happy-path tests still pass" does NOT satisfy completion.
 
-**Mandatory rules:**
-- All commands: `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`. Fail if argv0 contains `pwsh`/`powershell`.
-- pytest MUST be invoked as: `python -m pytest -q --color=no`
-- Strip ANSI escape sequences from all captured output before writing.
-- Byte-scan final evidence file: hard-fail if any byte > 0x7F remains.
-- Evidence runner hard-fails (`sys.exit(1)`) if any required command exits non-zero. Do NOT commit evidence containing failure output.
-- Evidence file is rebuilt from scratch every run (`evidence_lines = []`). No append mode.
-- Do NOT embed source file contents in evidence (no `INSPECTED_FILE_CONTENTS` section). Source code contains `EXIT CODE:` / `ERROR:` strings that corrupt contradiction detection.
-- Contradiction = within a single command output fence: both a failure marker (`EXIT CODE: [1-9]`, `^FAILED `, `ERROR: N gate(s) failed`) AND a success marker (`OK:`, `passed`). This is HARD FAIL.
+### 1.3 Branch Inventory is mandatory
 
-**Commit hygiene (two-commit model):**
-1. Commit code changes → CODE_COMMIT.
-2. Run runner in draft mode (`--code-commit <CODE_COMMIT>`, no `--evidence-commit`). CODE_COMMIT MAY equal HEAD in draft mode.
-3. Commit evidence file → EVIDENCE_COMMIT.
-4. Re-run runner in seal mode (`--code-commit` + `--evidence-commit`). In seal mode: CODE_COMMIT MUST NOT equal HEAD.
-5. Commit sealed evidence.
-
-**CODE_COMMIT selection:** Identify by content — `git log -n 30 --name-only --pretty=oneline -- <scope_dirs>` — pick the commit whose file list includes the phase's actual code artifacts. NEVER use "parent of HEAD" as a proxy if it breaks FILES_CHANGED_CODE fidelity.
-
-**All CI/tooling print statements must be ASCII-only.** No Unicode > 0x7F (no ✅ ❌ 🚨). Use `OK:`, `FAIL:`, `ERROR:` instead.
-
----
-
-## §3. SCOPE & DETERMINISM — No Heuristics, No Drift
-
-- All code analysis MUST use AST parsing. Regex/grep for structural logic is FORBIDDEN.
-- All repo paths normalized by one canonical function. Non-canonical path = HARD FAIL.
-- `SCAN_ROOTS` is explicit and hard-coded. No silent expansion. No heuristic scanning.
-- No randomness. No time-based behavior. Deterministic inputs → deterministic outputs.
-- Before editing: record `git diff --name-only` and planned file count N. If actual > N: STOP.
-
-**Scope decontamination (if unrelated files appear in diff):**
-1. Document unexpected files in evidence.
-2. `git reset --hard <baseline>`
-3. `git checkout <target> -- <declared_files>`
-4. Verify with `git diff --name-only`.
-
----
-
-## §4. TESTING — Authoritative Suite, No Hiding Failures
-
-- Authoritative command: `python -m pytest -q --color=no` (full suite per `pytest.ini` testpaths).
-- FORBIDDEN: narrowing pytest scope to hide failures, running a subset while claiming full suite passes.
-- All test markers MUST be registered in `pytest.ini`. New test files MUST use existing marker taxonomy.
-- When tests disappear: check `pytest --collect-only -q` vs execution count. If counts differ, audit `conftest.py` `pytest_collection_modifyitems` hooks — they can silently deselect tests.
-- Evidence MUST show "collected X / executed Y" counts. Any deselection must be explained.
-- `pytest.ini` testpaths changes require same-commit update to `tests/unit_min_deps/test_testpaths_contract.py`.
-- Phase completion requires: pytest exits 0, git status clean, evidence file committed.
-- Happy-path coverage alone is INSUFFICIENT. Every changed or newly introduced logic surface MUST have deterministic tests for success path, branch paths, negative paths, failure/exception paths, and recovery behavior where applicable.
-- Any changed conditional, guard, threshold, allowlist/denylist, retry path, fallback path, state transition, exception handler, or early return MUST have at least one direct test proving that branch outcome.
-- Exact boundary values MUST be tested for threshold logic, including equality edges where behavior differs (`>`, `>=`, `<`, `<=`, `==`).
-- Every newly introduced `except` block MUST have at least one test that forces that exception path and proves the resulting fail-closed, rollback, escalation, or recovery behavior.
-- Any fail-closed claim in code, comments, plans, or evidence without a proving automated test is a HARD FAIL.
-- Recovery and healing logic are first-class behavior. If code can retry, roll back, escalate, restore, re-enter, or degrade safely, those paths MUST be tested and may not be deferred.
-- Branch coverage requirements apply to all changed files in scope, not only newly created tests. "Existing happy-path tests still pass" does NOT satisfy phase completion.
-- Before phase completion, produce a deterministic Branch Inventory in evidence for changed logic surfaces:
+- Evidence MUST include:
+  `## BRANCH_INVENTORY`
+- For every changed logic surface, include:
   - file path
   - function or method
   - branch type
   - branch condition or trigger
   - expected outcome
   - exact test name covering it
-- Any changed branch without a mapped test in the Branch Inventory is a HARD FAIL.
-- Preferred test naming is by branch intent, for example:
-  - `test_<unit>_returns_<x>_when_<condition>`
-  - `test_<unit>_raises_<error>_when_<condition>`
-  - `test_<unit>_rejects_<input>_when_<policy_condition>`
-  - `test_<unit>_escalates_to_<tier>_when_<condition>`
-- Generic names such as `test_success`, `test_basic_flow`, `test_main`, or `test_happy_path` are insufficient for new branch-validating tests unless paired with specific branch-intent coverage.
-- If a code change introduces or modifies branching behavior, the same change set MUST include the proving tests. Separate "tests later" follow-up work is NOT acceptable for PASS.
-- Negative controls are REQUIRED for enforcement logic, fail-closed logic, and invariant guards. A negative control must trigger the guard, produce the expected blocked or rejected outcome, and complete without ambiguity.
-- Where a prior defect involved silent deselection, skipped execution, broad exception handling, or hidden fallback, regression tests MUST prove the defect cannot recur through the same ingress path.
-- Minimum robustness is REQUIRED for every changed logic surface. A branch is not considered tested unless the suite proves normal behavior, malformed behavior, boundary behavior, and control-integrity behavior.
-- Required edge-case classes for every changed logic surface:
+- Any changed branch without a mapped proving test is a HARD FAIL.
+
+### 1.4 Boundary testing is mandatory
+
+- Exact boundary values MUST be tested for threshold logic, including equality edges where behavior differs:
+  - `>`
+  - `>=`
+  - `<`
+  - `<=`
+  - `==`
+- Required where applicable:
+  - boundary-minus-one
+  - exact boundary
+  - boundary-plus-one
+  - minimum allowed
+  - maximum allowed
+- A phase is FAIL if changed threshold logic lacks at least one exact-edge test.
+
+### 1.5 Exception path verification is mandatory
+
+- Every newly introduced or modified `except` block MUST have at least one test that forces that exception path.
+- Tests MUST prove the resulting:
+  - fail-closed behavior
+  - rollback behavior
+  - escalation behavior
+  - retry behavior
+  - recovery behavior
+- "Exception handled" is NOT sufficient. Semantic postconditions MUST be asserted.
+- Broad exception handlers (`except Exception`) require explicit proving tests for:
+  - intended handled exception
+  - unrelated exception passthrough or hard fail
+  - side-effect safety before and after interception
+- A handler that can silently convert failure into false success without a proving test is a HARD FAIL.
+
+### 1.6 Negative controls are mandatory
+
+- Negative controls are REQUIRED for:
+  - enforcement logic
+  - fail-closed logic
+  - invariant guards
+  - security or policy boundaries
+  - signature or approval gates
+- A valid negative control MUST:
+  - trigger the guard
+  - produce the expected blocked or rejected outcome
+  - complete without ambiguity
+- Any fail-closed claim in code, comments, plans, or evidence without a proving automated negative control is a HARD FAIL.
+
+### 1.7 Recovery and healing paths are first-class behavior
+
+- If code can:
+  - retry
+  - roll back
+  - escalate
+  - restore
+  - re-enter
+  - degrade safely
+  those paths MUST be tested.
+- Recovery behavior may not be deferred to later work if the logic is in scope now.
+- A reachable recovery path absent from tests is a HARD FAIL.
+
+### 1.8 Required edge-case classes for every changed logic surface
+
+- Minimum robustness is REQUIRED for every changed logic surface.
+- A branch is not considered tested unless the suite proves:
+  - normal behavior
+  - malformed behavior
+  - boundary behavior
+  - control-integrity behavior
+- Required edge-case classes:
   - null / None / missing field
   - empty string / empty list / empty dict / zero-length payload
-  - min boundary, boundary-minus-one, exact boundary, boundary-plus-one, max boundary where applicable
-  - malformed type, wrong enum, wrong shape, wrong ordering, duplicate entries
+  - min boundary / boundary-minus-one / exact boundary / boundary-plus-one / max boundary where applicable
+  - malformed type / wrong enum / wrong shape / wrong ordering / duplicate entries
   - unauthorized / disallowed / unallowlisted input
-  - stale state, already-complete state, double-submit, replayed input, idempotent re-entry
-  - dependency unavailable, timeout, partial dependency result, corrupted dependency result
-  - deterministic replay path, negative control path, recovery path
-- For every changed function or method, at least one test MUST attempt invalid inputs of the same structural family as valid inputs. Testing only obviously-invalid junk inputs is insufficient.
-- For every changed parser, normalizer, router, scorer, validator, classifier, or contract boundary, tests MUST include malformed-but-plausible inputs that could realistically pass superficial checks.
+  - stale state / already-complete state / double-submit / replayed input / idempotent re-entry
+  - dependency unavailable / timeout / partial dependency result / corrupted dependency result
+  - deterministic replay path / negative control path / recovery path
+- For every changed function or method, at least one test MUST attempt invalid inputs of the same structural family as valid inputs.
+- Testing only obviously-invalid junk inputs is insufficient.
+- For parsers, normalizers, routers, scorers, validators, classifiers, and contract boundaries, tests MUST include malformed-but-plausible inputs that could pass superficial checks.
+
+### 1.9 State transition testing
+
 - For every changed state transition, tests MUST cover:
   - allowed predecessor -> allowed successor
   - disallowed predecessor -> attempted successor
   - repeated same transition twice
   - interrupted transition / partial-write prevention
   - replay of already-applied transition
+
+### 1.10 Deterministic decision surfaces
+
 - For every changed deterministic scorer, router, digest, hash, confidence calculation, ranking function, or threshold gate, tests MUST cover:
   - exact same input twice gives identical output
   - semantically equivalent normalized inputs give identical output where normalization claims equivalence
@@ -128,54 +157,81 @@
   - stable tie-break ordering
   - exact threshold edge selection
 - For every changed replay-sensitive surface, tests MUST prove that timestamps, randomness, wall-clock state, process order, or hidden external state do not alter the decision outcome unless explicitly part of the contract.
+- A phase is FAIL if determinism is claimed but not proven stable across two independent invocations for the affected decision surface.
+
+### 1.11 Fail-closed and side-effect safety
+
 - For every changed fail-closed surface, tests MUST prove both:
   - the operation is blocked when required preconditions are absent or invalid
   - no side-effect occurs before the block
-- For every changed mutation path, tests MUST assert both outcome and side-effect envelope:
+- For every changed mutation path, tests MUST assert both:
   - returned value or raised exception
   - files written or not written
   - state changed or not changed
   - external call made or not made
   - audit or trace record emitted where required
-- "No exception raised" is NOT sufficient proof of correctness. Tests MUST assert semantic postconditions, not just execution survival.
-- For every changed exception handler, tests MUST prove:
-  - the exact exception class or contract family is caught
-  - the handler does not silently convert failure into false success
-  - the handler emits the required status, audit note, retry flag, escalation signal, or rollback behavior
-  - unrelated exception classes are not accidentally swallowed
-- Broad exception handlers (`except Exception`) require explicit proving tests for:
-  - intended handled exception
-  - unrelated exception passthrough or hard fail
-  - side-effect safety before and after interception
-- Matrix testing is REQUIRED when logic depends on 2 or more interacting inputs or gates. Single-axis tests are insufficient when behavior changes across combinations.
+- "No exception raised" is NOT proof of correctness.
+
+### 1.12 Matrix testing for interacting gates
+
+- Matrix testing is REQUIRED when logic depends on 2 or more interacting inputs or gates.
+- Single-axis tests are insufficient when behavior changes across combinations.
 - Required matrix cases include combinations of:
   - feature flag x input validity
   - retry count x confidence tier
-  - policy allow/deny x mutation attempt
+  - policy allow or deny x mutation attempt
   - replay mode x external dependency behavior
-  - cache hit/miss x authoritative state freshness
-  - signed/unsigned envelope x side-effect attempt
-- If pairwise or full Cartesian coverage is intentionally reduced, evidence MUST justify the reduction deterministically and show the selected matrix basis. Unexplained matrix pruning is a HARD FAIL.
-- Metamorphic tests are REQUIRED where an exact oracle is weak but invariants are strong. Examples:
-  - normalization of whitespace / ordering / serialization should preserve digest or decision where contract claims equivalence
-  - equivalent replay envelopes should preserve routing output
-  - adding irrelevant metadata should not alter protected decisions
-  - sorting of unordered source inputs should not alter deterministic result
-- Contradiction tests are REQUIRED for policy and enforcement code. Each claimed invariant MUST have at least one test attempting to violate it through the most likely ingress path.
-- Ingress-path rule: tests MUST target the real entrypoint or nearest enforceable choke point, not only isolated helper functions, whenever the defect class could be bypassed in composition.
-- Test doubles are FORBIDDEN from erasing the very risk being tested. Mocks, stubs, monkeypatches, and fixtures may not bypass canonical validation, signature checks, routing gates, side-effect guards, or replay enforcement when those are the subject of the test.
-- Golden-path fixtures alone are insufficient. At least one hostile or corrupted fixture is REQUIRED for every changed contract surface that consumes structured input.
-- Anti-false-confidence rule: statement coverage, branch coverage percentage, and passing happy-path tests MUST NOT be cited as proof of robustness without branch-intent assertions and edge-case evidence.
+  - cache hit or miss x authoritative state freshness
+  - signed or unsigned envelope x side-effect attempt
+- If pairwise or full Cartesian coverage is intentionally reduced, evidence MUST justify the reduction deterministically and show the selected matrix basis.
+- Unexplained matrix pruning is a HARD FAIL.
+
+### 1.13 Metamorphic and contradiction tests
+
+- Metamorphic tests are REQUIRED where exact output oracles are weak but invariants are strong.
+- Examples:
+  - normalization of whitespace, ordering, or serialization preserves digest or decision where contract claims equivalence
+  - equivalent replay envelopes preserve routing output
+  - irrelevant metadata does not alter protected decisions
+  - sorting unordered source inputs does not alter deterministic result
+- Contradiction tests are REQUIRED for policy and enforcement code.
+- Each claimed invariant MUST have at least one test attempting to violate it through the most likely ingress path.
+
+### 1.14 Ingress-path rule
+
+- Tests MUST target the real entrypoint or nearest enforceable choke point, not only isolated helper functions, whenever the defect class could be bypassed in composition.
+- Test doubles are FORBIDDEN from erasing the very risk being tested.
+- Mocks, stubs, monkeypatches, and fixtures may not bypass canonical validation, signature checks, routing gates, side-effect guards, or replay enforcement when those are the subject of the test.
+
+### 1.15 Regression and mutation-sensitive proof
+
+- Every changed bug fix MUST add at least one regression test named for the defect mechanism, not just the user-visible symptom.
+- Regression tests MUST include:
+  - the minimal reproducer
+  - one adjacent near-miss case
 - Mutation-sensitive logic requires at least one test that would fail if:
   - a comparison operator is flipped
   - a guard clause is removed
   - a boundary value is shifted by one unit
   - a retry or escalation branch is skipped
   - a fail-closed check is converted to permissive behavior
-- Every changed bug fix MUST add at least one regression test named for the defect mechanism, not just the user-visible symptom.
-- Regression tests MUST include the minimal reproducer and one adjacent near-miss case to prove the fix is not overfit to a single literal example.
-- Property-style testing is REQUIRED for deterministic pure functions when the input space is broad and structured. At minimum, include a fixed deterministic corpus covering varied shapes, lengths, orderings, and boundary values.
-- If fuzzing or generated cases are used, the seed corpus and seed value MUST be deterministic and captured in evidence. Non-replayable random fuzzing cannot be cited for PASS.
+
+### 1.16 Property-style deterministic corpus
+
+- Property-style testing is REQUIRED for deterministic pure functions when the input space is broad and structured.
+- At minimum, include a fixed deterministic corpus covering varied:
+  - shapes
+  - lengths
+  - orderings
+  - boundary values
+- If fuzzing or generated cases are used:
+  - seed corpus MUST be deterministic
+  - seed value MUST be deterministic
+  - both MUST be captured in evidence
+- Non-replayable random fuzzing cannot be cited for PASS.
+
+### 1.17 Cache, re-entry, retrieval, serialization, signature surfaces
+
 - Cache-aware logic MUST be tested across:
   - cold path
   - warm path
@@ -183,10 +239,10 @@
   - replay mode or cache-bypass path where contract requires re-derivation
 - Concurrency-adjacent or re-entry-prone logic MUST be tested for:
   - duplicate invocation
-  - already-held lease / already-claimed resource
+  - already-held lease or already-claimed resource
   - second execution after first partial completion
   - idempotent retry after failure
-- For routing and escalation logic, tests MUST prove all reachable tiers or terminal outcomes, including the forced-escalation case after retry exhaustion and the blocked path for non-allowlisted callers.
+- For routing and escalation logic, tests MUST prove all reachable tiers or terminal outcomes.
 - For retrieval, ranking, and top-k style logic, tests MUST cover:
   - empty result set
   - single result
@@ -207,7 +263,14 @@
   - wrong scope
   - correct signature but invalid payload semantics
   - proof that verification occurs before side-effects
-- Evidence MUST include a new `## ROBUSTNESS_MATRIX` section for each changed logic surface with:
+
+### 1.18 Required evidence sections for testing
+
+- Evidence MUST include:
+  - `## BRANCH_INVENTORY`
+  - `## ROBUSTNESS_MATRIX`
+  - `## DEFECT_MODEL`
+- `## ROBUSTNESS_MATRIX` MUST include for each changed logic surface:
   - surface name
   - ingress path
   - success case ids
@@ -216,7 +279,7 @@
   - recovery case ids
   - determinism case ids
   - side-effect-safety case ids
-- Evidence MUST include a new `## DEFECT_MODEL` section listing the exact defect mechanisms the tests are intended to catch:
+- `## DEFECT_MODEL` MUST list the exact defect mechanisms the tests are intended to catch, such as:
   - off-by-one
   - guard omission
   - broad-except masking
@@ -227,85 +290,301 @@
   - replay drift
   - duplicate mutation
   - partial-write leak
-- A phase is FAIL if tests prove only outputs but do not prove the absence of forbidden side-effects on the blocked path.
+
+### 1.19 Explicit phase-fail conditions for testing
+
 - A phase is FAIL if changed logic is tested only through mocks when the real integration seam is the actual risk surface.
 - A phase is FAIL if the suite lacks at least one near-boundary test and one malformed-but-plausible test for each changed contract surface.
 - A phase is FAIL if evidence cannot show which exact edge classes were covered for each changed logic surface.
 - A phase is FAIL if a branch is technically executed but the test makes no assertion distinguishing the intended branch outcome from a false-positive pass.
 - A phase is FAIL if a fallback, degradation, retry, or escalation path is reachable in production but absent from tests.
-- A phase is FAIL if determinism is claimed but the same acceptance command is not shown stable across two independent invocations for the affected decision surface.
+- A phase is FAIL if tests prove only outputs but do not prove the absence of forbidden side-effects on the blocked path.
 
 ---
 
-## §5. ARCHITECTURE LOCKS — Layer Model, Import Boundaries, SSOT
+## §2. EVIDENCE CONTRACT - One File, Self-Verifying, ASCII-Only
 
-**Layer model:**
-```
-L0: Maintenance  L1: Cognition  L2: Execution  L3: Orchestration
-L4: State        L5: Safety     L6: Observability
-```
-- L0/L4/L6 MUST NOT perform persistent writes. L5 is sole structural enforcement authority.
-- Layer inversion detection must be AST-based. Any cycle = HARD FAIL.
-- No MRO duplicate mixins. Subclasses must not overwrite ConfigMixin properties.
+- Each phase produces EXACTLY ONE evidence file under:
+  `docs/reports/plans/`
+- Evidence file canonical order:
+  1. `# <Phase Title>`
+  2. `## Scope`
+  3. `## CODE_COMMIT` - exactly one 40-hex hash
+  4. `## EVIDENCE_COMMIT` - exactly one 40-hex hash, or `PENDING` in draft mode
+  5. `## FILES_CHANGED_CODE` - verbatim `git show --name-only --pretty=format: <CODE_COMMIT>`
+  6. `## FILES_CHANGED_EVIDENCE` - verbatim `git show --name-only --pretty=format: <EVIDENCE_COMMIT>`
+  7. `## INSPECTED_FILES` - file paths only, no content
+  8. One `## <CommandTitle>` section per required command: `$ <cmd>`, full stdout, `EXIT CODE: N` only if N != 0
+  9. `## BRANCH_INVENTORY`
+  10. `## ROBUSTNESS_MATRIX`
+  11. `## DEFECT_MODEL`
+- All commands MUST use:
+  `subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
+- Fail if `argv0` contains `pwsh` or `powershell`.
+- pytest MUST be invoked exactly as:
+  `python -m pytest -q --color=no`
+- Strip ANSI escape sequences from all captured output before writing.
+- Byte-scan final evidence file. Hard-fail if any byte > 0x7F remains.
+- Evidence runner hard-fails with `sys.exit(1)` if any required command exits non-zero.
+- Do NOT commit evidence containing failure output.
+- Evidence file is rebuilt from scratch every run:
+  `evidence_lines = []`
+- No append mode.
+- Do NOT embed source file contents in evidence.
+- Contradiction within a single command output block is a HARD FAIL if both appear:
+  - failure marker:
+    - `EXIT CODE: [1-9]`
+    - `^FAILED `
+    - `ERROR: N gate(s) failed`
+  - success marker:
+    - `OK:`
+    - `passed`
 
-**SSOT:**
-- `structure_blueprint.py` = structural SSOT. `agent_discovery_full.json` = agent registry SSOT.
-- All base agents (`*Base.py`, `*BaseAgent.py`) MUST reside in `agentic_core/base_agents/`.
-- No duplicate agents (1 file ↔ 1 canonical class). AST-scan for semantic duplicates before creating utilities.
+### 2.1 Commit hygiene, two-commit model
 
-**Tooling/runtime boundary:**
-- `tools/evidence/`, `ops_scripts/ci/`, `ops_scripts/hooks/` MUST NOT `import apps_*` or `from apps_* import`.
-- `apps_*` may only appear as string paths (e.g., in INSPECTED_FILES). Enforced by `check_tooling_apps_boundary.py` (AST-based).
+1. Commit code changes -> `CODE_COMMIT`
+2. Run runner in draft mode with `--code-commit <CODE_COMMIT>` and no `--evidence-commit`
+3. Commit evidence file -> `EVIDENCE_COMMIT`
+4. Re-run runner in seal mode with both commit hashes
+5. Commit sealed evidence
 
-**Agent invocation:**
-- Agents invoked via canonical Python function call only. No new scripts duplicating agent logic.
-- CLI entrypoints are thin wrappers: import canonical module, parse args, call one function, zero business logic.
+### 2.2 CODE_COMMIT selection
+
+- Identify by content:
+  `git log -n 30 --name-only --pretty=oneline -- <scope_dirs>`
+- Pick the commit whose file list includes the phase's actual code artifacts.
+- NEVER use parent-of-HEAD as a proxy if it breaks `FILES_CHANGED_CODE` fidelity.
+
+### 2.3 ASCII-only rule
+
+- All CI and tooling print statements MUST be ASCII-only.
+- No Unicode > 0x7F.
+- Use:
+  - `OK:`
+  - `FAIL:`
+  - `ERROR:`
 
 ---
 
-## §6. CI & CONTRACT GATES — Unified, Ordered, Identical Locally and in CI
+## §3. SCOPE & DETERMINISM - No Heuristics, No Drift, No Silent Expansion
 
-- Single entrypoint: `python ops_scripts/ci/run_contract_gates.py` runs all gates in order:
+- All code analysis MUST use AST parsing.
+- Regex or grep for structural logic is FORBIDDEN.
+- All repo paths normalized by one canonical function.
+- Non-canonical path is a HARD FAIL.
+- `SCAN_ROOTS` is explicit and hard-coded.
+- No silent expansion.
+- No heuristic scanning.
+- No randomness.
+- No time-based behavior.
+- Deterministic inputs MUST yield deterministic outputs.
+
+### 3.1 Scope declaration before edits
+
+- Record:
+  - `git diff --name-only`
+  - planned file count N
+- If actual changed files > N:
+  - STOP
+  - write a plan artifact
+  - do not partially apply
+
+### 3.2 Scope decontamination if unrelated files appear in diff
+
+1. Document unexpected files in evidence
+2. `git reset --hard <baseline>`
+3. `git checkout <target> -- <declared_files>`
+4. Verify with `git diff --name-only`
+
+### 3.3 Why this section remains high priority
+
+- Testing proves behavior.
+- Scope and determinism prove the behavior measured is reproducible and not contaminated by drift, hidden file spread, or nondeterministic execution.
+
+---
+
+## §4. ARCHITECTURE LOCKS - Preserve Canonical Layer Semantics, Boundaries, and SSOT
+
+- Canonical L0-L6 layer semantics MUST remain exactly as defined by the repository's governing architectural artifacts.
+- Reordering constitutional sections does NOT authorize renaming, remapping, collapsing, or reinterpreting L0-L6.
+- Any prompt, plan, evidence file, checker, or rule rewrite that substitutes invented layer meanings is a HARD FAIL.
+- Layer enforcement MUST validate against the repo's actual SSOT, not assistant-authored shorthand.
+- If a phase touches architecture rules, evidence MUST cite the exact canonical source artifact defining layer meanings.
+- No overwrite may replace canonical layer semantics with generic labels such as maintenance, cognition, execution, orchestration, state, safety, or observability unless those exact labels already exist in the repo SSOT.
+
+### 4.1 Structural SSOT and registry authority
+
+- `structure_blueprint.py` = structural SSOT unless superseded by a newer explicit repo authority
+- `agent_discovery_full.json` = agent registry SSOT unless superseded by a newer explicit repo authority
+- All checks MUST resolve authority from the repo, not from memory or shorthand summaries.
+- If multiple candidate SSOTs exist, the phase is BLOCKED until the rule names the exact winning artifact.
+
+### 4.2 Boundary enforcement
+
+- Layer inversion detection MUST be AST-based.
+- Any cycle is a HARD FAIL.
+- No MRO duplicate mixins.
+- Subclasses must not overwrite `ConfigMixin` properties unless explicitly permitted by canonical contract.
+- Any cross-layer mutation that violates repo-defined sovereignty rules is a HARD FAIL.
+
+### 4.3 Tooling/runtime boundary
+
+- `tools/evidence/`, `ops_scripts/ci/`, `ops_scripts/hooks/` MUST NOT import `apps_*`
+- `apps_*` may only appear as string paths
+- Enforced by:
+  `check_tooling_apps_boundary.py`
+
+### 4.4 Agent invocation discipline
+
+- Agents invoked via canonical Python function call only.
+- No new scripts duplicating agent logic.
+- CLI entrypoints are thin wrappers:
+  - import canonical module
+  - parse args
+  - call one function
+  - zero business logic
+
+### 4.5 Duplicate-authority prevention
+
+- No duplicate agents:
+  - 1 file <-> 1 canonical class
+- AST-scan for semantic duplicates before creating utilities.
+- No parallel enforcement path may silently shadow the canonical path.
+
+### 4.6 Why this section remains necessary
+
+- Tests prove behavior on exercised paths.
+- Architecture locks prevent structural decay, layer leakage, remapped semantics, and duplicate authority from creating untested bypasses or false architectural claims.
+
+---
+
+## §5. CI & CONTRACT GATES - Unified, Ordered, Identical Locally and in CI
+
+- Single entrypoint:
+  `python ops_scripts/ci/run_contract_gates.py`
+- It MUST run all gates in order:
   1. `python -m pytest -q --color=no`
   2. `python ops_scripts/ci/check_evidence_contract_v2.py --paths docs/reports/plans`
   3. `python ops_scripts/ci/check_tooling_apps_boundary.py`
-- CI workflow MUST invoke these in this order. Local execution MUST be identical.
-- CI MUST FAIL on any condition requiring repair. CI MUST NOT mutate baselines.
-- CI must assert zero working tree mutations post-run and no new files outside allowlisted roots.
+- CI workflow MUST invoke these in this exact order.
+- Local execution MUST be identical to CI execution.
+- CI MUST FAIL on any condition requiring repair.
+- CI MUST NOT mutate baselines.
+- CI must assert:
+  - zero working tree mutations post-run
+  - no new files outside allowlisted roots
 - "Guaranteed in CI" requires citation of the CI workflow file and job name.
 
-**Pre-commit bypass (`--no-verify`) is FORBIDDEN except:**
-- Change set is ONLY governance/config files (`.windsurfrules`, `.gitattributes`, `.editorconfig`, `.gitignore`), AND
-- Pre-commit fails on repo-wide unrelated violations not touched by the change, AND
-- Failing hook output is captured verbatim in evidence, AND
-- A follow-on remediation issue is opened and recorded in evidence.
+### 5.1 Pre-commit bypass restrictions
+
+- Pre-commit bypass with `--no-verify` is FORBIDDEN except when all are true:
+  - change set is ONLY governance or config files:
+    - `.windsurfrules`
+    - `.gitattributes`
+    - `.editorconfig`
+    - `.gitignore`
+  - pre-commit fails on unrelated repo-wide violations not touched by the change
+  - failing hook output is captured verbatim in evidence
+  - a follow-on remediation issue is opened and recorded in evidence
+
+### 5.2 Why this section remains necessary
+
+- Without identical local and CI gate ordering, passing tests can still produce non-reproducible merges and false PASS states.
 
 ---
 
-## §7. RESPONSE DISCIPLINE — No Narrative, No Future-Tense, No Padding
+## §6. EXECUTION MODALITY - Phased, Evidence-Bundled, No Scope Creep
 
-**Forbidden in responses:**
-- "Let me…", "I will…", "Next I…", "You're right", "Great idea", progress narration, apologies.
-- Truncation (`...`) of diffs, commands, or outputs.
-- Re-explaining prior completed phases. Restating constitutional rules. Summarizing previous commits.
-- Architectural essays, future roadmaps, unexecuted hypothetical steps.
+- Execute ONLY the explicitly requested phase or phases.
+- No future steps.
+- No unrequested repairs.
+- Each phase produces EXACTLY ONE evidence file under:
+  `docs/reports/plans/`
+- No inline pastes.
+- End every response with:
+  - evidence file path
+  - final commit hash or hashes
+  - changed file list
+  - STOP
+- If scope expands beyond declared N files:
+  - STOP
+  - write a plan artifact
+  - do not partially apply
 
-**Allowed at phase end (only):**
-- Evidence file path. Commit hash. `git show --stat` file list.
+### 6.1 Hard violations
 
-**Acceptance criteria must be deterministic:** exact command strings, expected exit codes, expected counts. No "should", "expected to", open-ended language.
+- executing unrequested phases
+- pasting command output inline instead of evidence file
+- modifying files outside declared scope
+- continuing after a non-zero required command without stopping
 
-**Acceptance criteria are immutable once a phase starts.** If criteria cannot be met: phase is BLOCKED, not "complete with caveats". New criteria requires a new phase.
+### 6.2 Why this section remains necessary
+
+- Strong testing can still be undermined by uncontrolled execution sprawl. Execution modality constrains blast radius and preserves reviewability.
 
 ---
 
-## §8. ARTIFACT LOCATION — Version-Controlled, Canonical Paths Only
+## §7. RESPONSE DISCIPLINE - No Narrative, No Future-Tense, No Padding
 
-- ALL plans, evidence, reports → `docs/reports/plans/`. NEVER to `.windsurf/` (not version-controlled).
-- All git commands that may open an editor MUST use `--no-edit` (or `-m` for commits).
-- Anti-pattern detection baselines are immutable. Rewrite requires `ALLOW_LANDMINE_BASELINE_WRITE=1`.
-- All Python file I/O must specify `encoding="utf-8"` explicitly (Windows compatibility).
-- Markdown lint errors in evidence files are exempt from fix cycles. Evidence files are raw output captures.
+- Forbidden in responses:
+  - "Let me"
+  - "I will"
+  - "Next I"
+  - "You're right"
+  - "Great idea"
+  - progress narration
+  - apologies
+  - truncation of diffs, commands, or outputs
+  - re-explaining prior completed phases
+  - restating constitutional rules
+  - summarizing previous commits
+  - architectural essays
+  - future roadmaps
+  - unexecuted hypothetical steps
+- Allowed at phase end only:
+  - evidence file path
+  - commit hash
+  - `git show --stat` file list
+- Acceptance criteria rules:
+  - must be deterministic
+  - must use exact command strings
+  - must use exact expected exit codes
+  - must use exact expected counts
+  - no "should"
+  - no "expected to"
+  - no open-ended language
+- Acceptance criteria are immutable once a phase starts.
+- If criteria cannot be met:
+  - phase is BLOCKED
+  - not "complete with caveats"
+- New criteria requires a new phase.
+
+### 7.1 Why this section remains necessary
+
+- Weak response discipline creates ambiguity, and ambiguity destroys auditability.
+
+---
+
+## §8. ARTIFACT LOCATION - Version-Controlled, Canonical Paths Only
+
+- ALL plans, evidence, and reports go to:
+  `docs/reports/plans/`
+- NEVER write them to:
+  `.windsurf/`
+- All git commands that may open an editor MUST use:
+  - `--no-edit`
+  - or `-m` for commits
+- Anti-pattern detection baselines are immutable.
+- Rewrite requires:
+  `ALLOW_LANDMINE_BASELINE_WRITE=1`
+- All Python file I/O MUST specify:
+  `encoding="utf-8"`
+- Markdown lint errors in evidence files are exempt from fix cycles.
+- Evidence files are raw output captures.
+
+### 8.1 Why this section remains necessary
+
+- Artifact drift breaks provenance. If artifacts are not canonical and version-controlled, test proof loses forensic value.
 
 ---
 
@@ -313,5 +592,3 @@ L4: State        L5: Safety     L6: Observability
 
 > Every defect fixed must become a deterministic invariant with an automated enforcement test.
 > If evidence does not prove it, it did not happen.
-
-C:\Users\amita\.codeium\windsurf\memories\global_rules.md
