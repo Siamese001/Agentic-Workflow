@@ -39,7 +39,7 @@ _MAX_KEY_LEN: int = 512
 _MAX_VALUE_BYTES: int = 10 * 1024 * 1024  # 10 MB safety cap
 _FALLBACK_MAX_ENTRIES: int = 4096
 _MAX_TTL_SECONDS: int = 86400  # 24 hours hard cap
-_HEALTH_CHECK_TIMEOUT_S: float = 0.5  # probe timeout; keeps health checks fast
+_REDIS_SOCKET_TIMEOUT_S: float = 0.3  # socket timeout for all Redis connections; fail-fast to prevent hangs
 
 
 class CacheDB(IntEnum):
@@ -198,8 +198,8 @@ class DeterministicRedisCache:
                 "port": int(parsed.port or 6379),
                 "db": int(self._db),
                 "decode_responses": False,  # we handle bytes ourselves
-                "socket_timeout": 2.0,
-                "socket_connect_timeout": 2.0,
+                "socket_timeout": _REDIS_SOCKET_TIMEOUT_S,
+                "socket_connect_timeout": _REDIS_SOCKET_TIMEOUT_S,
             }
             if parsed.password:
                 params["password"] = parsed.password
@@ -541,8 +541,8 @@ def check_redis_health(redis_url: str | None = None) -> dict[str, object]:
             host=parsed.hostname or "localhost",
             port=int(parsed.port or 6379),
             db=0,
-            socket_timeout=_HEALTH_CHECK_TIMEOUT_S,
-            socket_connect_timeout=_HEALTH_CHECK_TIMEOUT_S,
+            socket_timeout=_REDIS_SOCKET_TIMEOUT_S,
+            socket_connect_timeout=_REDIS_SOCKET_TIMEOUT_S,
         )
         conn.ping()
         info = conn.info("memory")
