@@ -1,0 +1,52 @@
+{
+  "name": "hallucination_eval_set",
+  "version": "1.0.0",
+  "description": "Evaluation dataset for detecting hallucination risk in generated answers",
+  "examples": [
+    {
+      "query": "What is the default chunk size used by the chunking engine?",
+      "ground_truth_documents": ["doc_chunk_001"],
+      "expected_answer": "The default chunk size is 512 tokens with a 50-token overlap window.",
+      "metadata": {
+        "source": "chunking_docs",
+        "hallucination_risk": "medium"
+      }
+    },
+    {
+      "query": "How many agents are registered in the active agent registry?",
+      "ground_truth_documents": ["doc_registry_001"],
+      "expected_answer": "The number of registered agents varies and should be queried at runtime from the active agent registry.",
+      "metadata": {
+        "source": "registry_docs",
+        "hallucination_risk": "high"
+      }
+    },
+    {
+      "query": "What embedding model version is currently deployed?",
+      "ground_truth_documents": ["doc_embed_001"],
+      "expected_answer": "The embedding model version is tracked in the EmbeddingHealthSnapshot and should be verified against the current deployment configuration.",
+      "metadata": {
+        "source": "embedding_docs",
+        "hallucination_risk": "high"
+      }
+    },
+    {
+      "query": "What is the exact SHA256 of the canonical prompt artifact?",
+      "ground_truth_documents": [],
+      "expected_answer": "The SHA256 hash of any artifact must be retrieved from the L4 state registry at runtime and cannot be stated as a fixed value.",
+      "metadata": {
+        "source": "artifact_docs",
+        "hallucination_risk": "very_high"
+      }
+    },
+    {
+      "query": "Does the system support real-time streaming retrieval?",
+      "ground_truth_documents": ["doc_retrieval_001"],
+      "expected_answer": "The retrieval pipeline is designed for batch offline evaluation. Real-time streaming support depends on the retriever backend configured.",
+      "metadata": {
+        "source": "retrieval_docs",
+        "hallucination_risk": "medium"
+      }
+    }
+  ]
+}

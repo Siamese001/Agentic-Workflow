@@ -1,0 +1,52 @@
+{
+  "name": "rag_eval_set",
+  "version": "1.0.0",
+  "description": "RAG retrieval evaluation dataset for baseline performance measurement",
+  "examples": [
+    {
+      "query": "What is the governance validator responsible for?",
+      "ground_truth_documents": ["doc_142"],
+      "expected_answer": "The governance validator enforces safety rules and validates execution plans before tools are invoked.",
+      "metadata": {
+        "source": "architecture_docs",
+        "difficulty": "easy"
+      }
+    },
+    {
+      "query": "How does the L4 state registry store artifacts?",
+      "ground_truth_documents": ["doc_201", "doc_202"],
+      "expected_answer": "The L4 state registry uses an append-only filesystem store with deterministic versioning and SHA256 content hashing.",
+      "metadata": {
+        "source": "architecture_docs",
+        "difficulty": "medium"
+      }
+    },
+    {
+      "query": "What layers does the agentic core architecture consist of?",
+      "ground_truth_documents": ["doc_001", "doc_002"],
+      "expected_answer": "The agentic core consists of layers L0 through L6 covering routing, cognition, execution, orchestration, state, safety, and observability.",
+      "metadata": {
+        "source": "architecture_docs",
+        "difficulty": "easy"
+      }
+    },
+    {
+      "query": "How does the HITL feedback loop work?",
+      "ground_truth_documents": ["doc_310", "doc_311"],
+      "expected_answer": "The HITL feedback loop collects human review decisions and converts them into DPO training pairs for model improvement.",
+      "metadata": {
+        "source": "hitl_docs",
+        "difficulty": "hard"
+      }
+    },
+    {
+      "query": "What is the purpose of the Meta Learning Pipeline?",
+      "ground_truth_documents": ["doc_401"],
+      "expected_answer": "The Meta Learning Pipeline aggregates evaluation signals, drift metrics, and human feedback to propose system improvements.",
+      "metadata": {
+        "source": "ml_docs",
+        "difficulty": "medium"
+      }
+    }
+  ]
+}

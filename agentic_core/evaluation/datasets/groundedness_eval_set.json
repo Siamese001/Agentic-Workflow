@@ -1,0 +1,43 @@
+{
+  "name": "groundedness_eval_set",
+  "version": "1.0.0",
+  "description": "Evaluation dataset for measuring answer groundedness in retrieved context",
+  "examples": [
+    {
+      "query": "What does the UniversalWriteGateway enforce?",
+      "ground_truth_documents": ["doc_512"],
+      "expected_answer": "The UniversalWriteGateway enforces sovereignty compliance on all write operations by requiring signed instruction packets.",
+      "metadata": {
+        "source": "gateway_docs",
+        "grounded": true
+      }
+    },
+    {
+      "query": "How are agent execution metrics recorded?",
+      "ground_truth_documents": ["doc_601", "doc_602"],
+      "expected_answer": "Agent execution metrics including execution time, success status, and category are recorded via the L6 observability layer.",
+      "metadata": {
+        "source": "observability_docs",
+        "grounded": true
+      }
+    },
+    {
+      "query": "What happens when a replay bundle is created?",
+      "ground_truth_documents": ["doc_701"],
+      "expected_answer": "A replay bundle captures deterministic state snapshots that allow exact reproduction of an agent execution for debugging and evaluation.",
+      "metadata": {
+        "source": "replay_docs",
+        "grounded": true
+      }
+    },
+    {
+      "query": "What is the classification kernel responsible for?",
+      "ground_truth_documents": ["doc_801", "doc_802"],
+      "expected_answer": "The classification kernel provides zero-dependency, LRU-cached file classification with AST-based detection across 20 file type categories.",
+      "metadata": {
+        "source": "kernel_docs",
+        "grounded": true
+      }
+    }
+  ]
+}
