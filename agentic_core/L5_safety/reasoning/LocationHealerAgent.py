@@ -2606,6 +2606,16 @@ class LocationHealerAgent(SovereignBaseAgent):
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.enforce_void_compliance(files)
 
+    def validate_file_location(self, file_path: Path) -> tuple[bool, str]:
+        """Validate that a file is in the correct location.
+
+        Delegates to LocationValidatorAgent for validation.
+        """
+        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+
+        validator = LocationValidatorAgent(project_root=self.project_root)
+        return validator.validate_file_location(file_path)
+
     def cleanup_violations(
         self,
         violations: list[tuple[Path, str]],

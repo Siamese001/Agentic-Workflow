@@ -44,9 +44,9 @@ class MissionPreflight:
         """Lazy load LocationAgent."""
         if self._location_agent is None:
             try:
-                from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+                from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
-                self._location_agent = LocationAgent(self.project_root)
+                self._location_agent = LocationValidatorAgent(self.project_root)
             except ImportError:
                 pass
         return self._location_agent

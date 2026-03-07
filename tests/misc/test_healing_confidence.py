@@ -43,9 +43,9 @@ class HighConfidenceTestAgent:
         decision_engine = SovereignDecisionEngine(enable_llm=False)
 
         # Create agents dict
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-        agents = {"LocationAgent": LocationAgent(project_root)}
+        agents = {"LocationAgent": LocationHealerAgent(project_root)}
 
         print("2. Creating high confidence violation plan...")
 
@@ -127,9 +127,9 @@ class DirectTestAgent:
 """)
 
     try:
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-        agent = LocationAgent(project_root)
+        agent = LocationHealerAgent(project_root)
 
         print("1. Testing direct heal method call...")
 

@@ -92,9 +92,9 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
         self.project_root = Path(__file__).resolve().parents[3]
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
-            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-            self.location_agent = LocationAgent(self.project_root)
+            self.location_agent = LocationHealerAgent(self.project_root)
         except ImportError:
             self.location_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents

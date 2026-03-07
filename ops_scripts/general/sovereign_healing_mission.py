@@ -16,7 +16,7 @@ project_root = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
-from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
 # Configure Logging
 logging.basicConfig(
@@ -30,17 +30,13 @@ def run_mission():
     logger.info("Initializing Sovereign Healing Mission...")
 
     # 1. Initialize Agent
-    agent = LocationAgent(project_root=project_root)
+    agent = LocationHealerAgent(project_root=project_root)
     state_guard = RuntimeStateGuard(project_root)
 
     # Enable autonomous mode for intelligent decision-making without user prompts
     agent._autonomous_mode = True
 
-    # Also enable autonomous mode on the healer agent
-    from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-
-    healer = LocationHealerAgent(project_root=project_root)
-    healer._autonomous_mode = True
+    healer = agent
 
     logger.info("🤖 Autonomous mode ENABLED - No user prompts required")
 

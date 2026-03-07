@@ -48,9 +48,9 @@ class SafetyAgentFactory:
 
                 return NamingAgent(project_root=self.project_root)
             elif agent_name == "LocationAgent":
-                from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+                from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-                return LocationAgent(project_root=self.project_root)
+                return LocationHealerAgent(project_root=self.project_root)
             elif agent_name == "StructureEnforcerAgent":
                 from agentic_core.L5_safety.reasoning.StructureEnforcerAgent import (
                     StructureEnforcerAgent,

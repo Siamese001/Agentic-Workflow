@@ -316,10 +316,10 @@ class TestIntegrationExecuteSSOTImports:
                 FileClassificationAgent,
             )
             from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-            from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+            from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
             assert FileClassificationAgent is not None
-            assert LocationAgent is not None
+            assert LocationHealerAgent is not None
             assert HierarchyAgent is not None
         except ImportError as e:
             pytest.fail(f"Import failed: {e}")

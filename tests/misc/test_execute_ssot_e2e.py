@@ -44,9 +44,9 @@ class InvalidLocationAgent:
         decision_engine = SovereignDecisionEngine(enable_llm=False)
 
         # Create agents dict as execute_ssot.py would
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-        agents = {"LocationAgent": LocationAgent(project_root)}
+        agents = {"LocationAgent": LocationHealerAgent(project_root)}
 
         print("2. Creating violation plan...")
 
@@ -145,9 +145,9 @@ def test_agent_validation():
         validator = PreFlightValidator(project_root)
 
         # Create test agents
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
-        agents = {"LocationAgent": LocationAgent(project_root)}
+        agents = {"LocationAgent": LocationHealerAgent(project_root)}
 
         print("1. Testing agent integrity validation...")
 

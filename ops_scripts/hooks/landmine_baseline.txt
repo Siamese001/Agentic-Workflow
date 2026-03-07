@@ -1070,10 +1070,10 @@ agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2366:silent_swallower:Si
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2506:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2537:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:260:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2613:magic_configuration:Magic configuration: Hardcoded max_actions=50
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2721:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2623:magic_configuration:Magic configuration: Hardcoded max_actions=50
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:272:type_erasure:Type erasure: LocationHealerAgent.heal_violations returns dict instead of structured type
-agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2806:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2731:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/LocationHealerAgent.py:2816:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:334:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:423:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/LocationHealerAgent.py:434:magic_configuration:Magic configuration: Hardcoded max_depth=3
