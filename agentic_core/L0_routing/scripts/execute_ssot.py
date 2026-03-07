@@ -3357,7 +3357,7 @@ def execute_phase1_discovery_impl(
     classification_scan_result = {}
     try:
         state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety (Validator)")
-        from agentic_core.L5_safety.reasoning.FileClassificationValidatorAgent import (
+        from agentic_core.L5_safety.reasoning.file_classification_validator import (
             FileClassificationValidatorAgent as _FileClassificationValidatorAgent,
         )
 

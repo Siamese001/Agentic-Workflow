@@ -1029,7 +1029,6 @@ agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:83:silent_swallower:S
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:141:type_erasure:Type erasure: DocumentationAgent.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3387:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/FileClassificationValidatorAgent.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:143:type_erasure:Type erasure: GitHygieneAgent.execute returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:194:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1158,6 +1157,7 @@ agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:419:path_fragility:Path
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:427:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:53:type_erasure:Type erasure: SystemArchitectAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:68:type_erasure:Type erasure: SystemArchitectAgent.execute returns Any instead of structured type
+agentic_core/L5_safety/reasoning/file_classification_validator.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/gravity_validator.py:70:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/guardian_decision.py:70:magic_configuration:Magic configuration: Hardcoded token_budget=1000000
 agentic_core/L5_safety/security/secure_secrets.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
