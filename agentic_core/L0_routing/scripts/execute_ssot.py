@@ -1285,6 +1285,7 @@ def _record_healing_action(
     fix_summary: str = "",
     outcome: str = "SUCCESS",
     routing_digest: str | None = None,
+    check_id: str | None = None,
 ):
     """[H2] Record a structured healing action for per-territory JSON and Markdown reports.
 
@@ -1303,6 +1304,7 @@ def _record_healing_action(
         "outcome": outcome,
         "timestamp": datetime.now().isoformat(),
         "routing_digest": routing_digest,
+        "check_id": check_id,
     }
     if "healing_actions" not in state_mgr.state:
         state_mgr.state["healing_actions"] = []
