@@ -2191,7 +2191,7 @@ system_learning/ports/healing_pattern_advisor.py:19:magic_configuration:Magic co
 system_learning/ports/meta_outcome_bus_hook.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:110:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/ports/outcome_write_back_hook.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-temp_agent_analysis.py:38:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+temp_agent_analysis.py:40:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 tools/evidence/_run_ssot_healing.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/_run_ssot_healing.py:20:global_mutation:Global mutation: os.environ['AGENTIC_BYPASS_LONGPATHS_CHECK'] assignment modifies global state at runtime
 tools/evidence/_run_ssot_healing.py:21:global_mutation:Global mutation: os.environ['SOVEREIGN_AUTO_APPROVE'] assignment modifies global state at runtime
