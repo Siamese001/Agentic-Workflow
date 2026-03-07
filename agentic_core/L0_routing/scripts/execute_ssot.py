@@ -3512,7 +3512,7 @@ def execute_phase3_alignment_impl(
 def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
     """Run GravityLeakRepairAgent once globally — gravity (layer inversions) is repo-wide."""
     state_mgr.update_agent("GravityLeakHealerAgent", "L5 - Safety")
-    from agentic_core.L5_safety.reasoning.GravityValidatorAgent import (
+    from agentic_core.L5_safety.reasoning.gravity_validator import (
         GravityValidatorAgent as _GravityValidatorAgent,
     )
 

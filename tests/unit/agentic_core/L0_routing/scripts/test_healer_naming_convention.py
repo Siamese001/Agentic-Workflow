@@ -6,6 +6,7 @@ for all healer/validator agents. The intermediate shim files
 (FileClassificationHealerAgent, HierarchyHealerAgent, FilesystemSSOTHealerAgent)
 have been deleted as part of the agent-script refactor (Phase 1).
 LocationAgent deprecated shim deleted in Phase 2.
+GravityValidatorAgent renamed to gravity_validator.py in Phase 3.
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
@@ -36,6 +37,7 @@ DELETED_SHIM_NAMES = [
     "FilesystemSSOTHealerAgent",  # deleted Phase 1 — shim for FilesystemSSOTReconcilerAgent
     "HierarchyValidatorAgent",  # deleted Phase 1 — thin wrapper, inlined in execute_ssot
     "LocationAgent",  # deleted Phase 2 — deprecated §26-violating shim for LocationHealerAgent
+    "GravityValidatorAgent",  # renamed Phase 3 — moved to gravity_validator.py (snake_case)
 ]
 
 
