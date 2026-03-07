@@ -319,6 +319,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
 
+            # ABSTRACT replaces import with a TODO comment — always plan-only (corrupts code).
+            # RELOCATE rewrites to an unverified path — always plan-only (breaks imports).
+            if fix.fix_type in ("ABSTRACT", "RELOCATE"):
+                return self._emit_plan_only(fix)
+
             # [CIRCUIT BREAKER] Check prohibition before attempting write
             # Wave 2: skip L0 block when privileged_mutation_context is explicitly set
             if not privileged_mutation_context:
