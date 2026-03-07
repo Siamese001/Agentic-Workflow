@@ -106,7 +106,7 @@ def _get_execution_context_class():
 
 
 def _get_location_validator_agent():
-    from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+    from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
     return LocationValidatorAgent
 

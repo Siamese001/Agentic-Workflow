@@ -1236,11 +1236,11 @@ agentic_core/L5_safety/validators/intervention_server_validator.py:243:silent_sw
 agentic_core/L5_safety/validators/intervention_server_validator.py:277:magic_configuration:Magic configuration: Hardcoded high_risk_threshold=3
 agentic_core/L5_safety/validators/intervention_server_validator.py:278:magic_configuration:Magic configuration: Hardcoded signal_threshold=5
 agentic_core/L5_safety/validators/magic_validator.py:105:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/validators/mission_preflight_validator.py:151:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/validators/mission_preflight_validator.py:175:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/validators/mission_preflight_validator.py:186:magic_configuration:Magic configuration: Hardcoded max_scan_files=3000
-agentic_core/L5_safety/validators/mission_preflight_validator.py:214:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/validators/mission_preflight_validator.py:248:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/mission_preflight_validator.py:152:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/mission_preflight_validator.py:176:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/mission_preflight_validator.py:187:magic_configuration:Magic configuration: Hardcoded max_scan_files=3000
+agentic_core/L5_safety/validators/mission_preflight_validator.py:215:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/mission_preflight_validator.py:249:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/path_fragility_validator.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/silent_swallower_validator.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/type_erasure_validator.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

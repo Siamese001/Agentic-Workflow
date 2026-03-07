@@ -461,7 +461,7 @@ class LocationHealerAgent(SovereignBaseAgent):
         try:
             super().heal_repository()
 
-            from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+            from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
             validator = LocationValidatorAgent(project_root=self.project_root)
             scan_result = validator.run()
@@ -703,7 +703,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Case 2: Move/Archive — validate new location
             if new_path.exists():
                 # Delegate validation to LocationValidatorAgent
-                from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
+                from agentic_core.L5_safety.reasoning.location_validator import (
                     LocationValidatorAgent,
                 )
 
@@ -2459,7 +2459,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                     "issue": str(msg),
                                 },
                             )
-                            from agentic_core.L5_safety.reasoning.LocationValidatorAgent import (
+                            from agentic_core.L5_safety.reasoning.location_validator import (
                                 LocationValidatorAgent,
                             )
 
@@ -2601,7 +2601,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         Delegates to LocationValidatorAgent for validation.
         """
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.enforce_void_compliance(files)
@@ -2611,7 +2611,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         Delegates to LocationValidatorAgent for validation.
         """
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         return validator.validate_file_location(file_path)
@@ -2844,7 +2844,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def run_with_cleanup(self, files: list[Path] = None, dry_run: bool = True) -> dict[str, Any]:
         """Full location compliance scan with automatic cleanup."""
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         validator = LocationValidatorAgent(project_root=self.project_root)
         scan_result = validator.run()

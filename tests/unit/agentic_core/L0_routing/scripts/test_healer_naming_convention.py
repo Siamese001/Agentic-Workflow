@@ -12,6 +12,7 @@ HierarchyAgent renamed to hierarchy_healer.py + hierarchy_validator.py in Phase 
 RootHygieneAgent renamed to root_hygiene_healer.py + root_hygiene_validator.py in Phase 6.
 FilesystemSSOTReconcilerAgent renamed to filesystem_ssot_reconciler.py in Phase 7.
 FilesystemSSOTValidatorAgent renamed to filesystem_ssot_validator.py in Phase 7.
+LocationValidatorAgent renamed to location_validator.py in Phase 8.
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
@@ -53,6 +54,7 @@ RENAMED_MODULE_FILES = [
     "RootHygieneAgent",  # Phase 6 — now root_hygiene_healer.py (class RootHygieneAgent preserved)
     "FilesystemSSOTReconcilerAgent",  # Phase 7 — now filesystem_ssot_reconciler.py
     "FilesystemSSOTValidatorAgent",  # Phase 7 — now filesystem_ssot_validator.py
+    "LocationValidatorAgent",  # Phase 8 — now location_validator.py
 ]
 
 
