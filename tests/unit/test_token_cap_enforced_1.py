@@ -1,0 +1,241 @@
+"""
+WAVE 1 — Token Cap Enforcement Tests.
+
+Validates:
+- Output caps enforced per task class
+- VLLM_MAX_TOKENS_ABSOLUTE never exceeded
+- Undefined task class routes to Gemini (raises VLLMOutputCapExceeded)
+- Deterministic token estimation returns identical values across calls
+- No 32B model present in routing constants
+"""
+
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.governance
+
+from agentic_core.L2_execution.types.vllm_token_budget_types import (
+    EXTENDED_CAP_WHITELIST,
+    TASK_CLASS_OUTPUT_CAPS,
+    VLLM_MAX_TOKENS_ABSOLUTE,
+    VLLM_MAX_TOKENS_DEFAULT,
+    VLLM_MAX_TOKENS_EXTENDED,
+    TaskClass,
+    VLLMOutputCapExceeded,
+    enforce_output_cap,
+    estimate_tokens_qwen,
+    get_output_cap,
+)
+
+# ---------------------------------------------------------------------------
+# Test 1 — Constants are hard-coded, not env-derived
+# ---------------------------------------------------------------------------
+
+
+def test_constants_are_hardcoded() -> None:
+    """Gateway-level caps must be integer constants, not env-derived."""
+    assert isinstance(VLLM_MAX_TOKENS_DEFAULT, int)
+    assert isinstance(VLLM_MAX_TOKENS_EXTENDED, int)
+    assert isinstance(VLLM_MAX_TOKENS_ABSOLUTE, int)
+    assert VLLM_MAX_TOKENS_DEFAULT == 600
+    assert VLLM_MAX_TOKENS_EXTENDED == 1200
+    assert VLLM_MAX_TOKENS_ABSOLUTE == 1200
+
+
+# ---------------------------------------------------------------------------
+# Test 2 — Task-class caps are within absolute ceiling
+# ---------------------------------------------------------------------------
+
+
+def test_task_class_caps_within_absolute() -> None:
+    """All task-class caps must not exceed VLLM_MAX_TOKENS_ABSOLUTE."""
+    for task_class, cap in TASK_CLASS_OUTPUT_CAPS.items():
+        assert cap <= VLLM_MAX_TOKENS_ABSOLUTE, (
+            f"Task class {task_class!r} cap {cap} exceeds VLLM_MAX_TOKENS_ABSOLUTE={VLLM_MAX_TOKENS_ABSOLUTE}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 3 — healing_json_artifact cap = 300
+# ---------------------------------------------------------------------------
+
+
+def test_healing_json_artifact_cap() -> None:
+    """healing_json_artifact must have output cap of 300."""
+    cap = get_output_cap(TaskClass.HEALING_JSON_ARTIFACT.value)
+    assert cap == 300
+
+
+# ---------------------------------------------------------------------------
+# Test 4 — patch_suggestion cap = 600
+# ---------------------------------------------------------------------------
+
+
+def test_patch_suggestion_cap() -> None:
+    """patch_suggestion must have output cap of 600."""
+    cap = get_output_cap(TaskClass.PATCH_SUGGESTION.value)
+    assert cap == 600
+
+
+# ---------------------------------------------------------------------------
+# Test 5 — multi_file_summary cap = 1200 (whitelisted)
+# ---------------------------------------------------------------------------
+
+
+def test_multi_file_summary_cap() -> None:
+    """multi_file_summary must have output cap of 1200 and be whitelisted."""
+    cap = get_output_cap(TaskClass.MULTI_FILE_SUMMARY.value)
+    assert cap == 1200
+    assert TaskClass.MULTI_FILE_SUMMARY.value in EXTENDED_CAP_WHITELIST
+
+
+# ---------------------------------------------------------------------------
+# Test 6 — Undefined task class returns None (routes to Gemini)
+# ---------------------------------------------------------------------------
+
+
+def test_undefined_task_class_returns_none() -> None:
+    """Undefined task class must return None from get_output_cap."""
+    cap = get_output_cap("undefined_class_xyz")
+    assert cap is None
+
+
+# ---------------------------------------------------------------------------
+# Test 7 — enforce_output_cap raises for undefined class
+# ---------------------------------------------------------------------------
+
+
+def test_enforce_output_cap_raises_for_undefined() -> None:
+    """enforce_output_cap must raise VLLMOutputCapExceeded for undefined class."""
+    with pytest.raises(VLLMOutputCapExceeded) as exc_info:
+        enforce_output_cap(500, "undefined_class_xyz")
+    assert exc_info.value.reason == "undefined_task_class_requires_gemini_escalation"
+
+
+# ---------------------------------------------------------------------------
+# Test 8 — enforce_output_cap clamps to task-class cap
+# ---------------------------------------------------------------------------
+
+
+def test_enforce_output_cap_clamps_to_task_cap() -> None:
+    """enforce_output_cap must clamp requested tokens to task-class cap."""
+    # Request 1000 tokens for healing_json_artifact (cap=300)
+    result = enforce_output_cap(1000, TaskClass.HEALING_JSON_ARTIFACT.value)
+    assert result == 300
+
+
+# ---------------------------------------------------------------------------
+# Test 9 — enforce_output_cap respects exact cap
+# ---------------------------------------------------------------------------
+
+
+def test_enforce_output_cap_exact_cap() -> None:
+    """enforce_output_cap with exactly the cap must return the cap."""
+    result = enforce_output_cap(600, TaskClass.PATCH_SUGGESTION.value)
+    assert result == 600
+
+
+# ---------------------------------------------------------------------------
+# Test 10 — No local request exceeds VLLM_MAX_TOKENS_ABSOLUTE
+# ---------------------------------------------------------------------------
+
+
+def test_no_local_request_exceeds_absolute() -> None:
+    """enforce_output_cap must never return > VLLM_MAX_TOKENS_ABSOLUTE."""
+    for task_class in [
+        TaskClass.HEALING_JSON_ARTIFACT.value,
+        TaskClass.PATCH_SUGGESTION.value,
+        TaskClass.MULTI_FILE_SUMMARY.value,
+    ]:
+        result = enforce_output_cap(99999, task_class)
+        assert result <= VLLM_MAX_TOKENS_ABSOLUTE, (
+            f"enforce_output_cap returned {result} > VLLM_MAX_TOKENS_ABSOLUTE for task_class={task_class!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 11 — Deterministic token estimation: identical across 10 calls
+# ---------------------------------------------------------------------------
+
+
+def test_token_estimation_deterministic() -> None:
+    """estimate_tokens_qwen must return identical values across 10 calls."""
+    prompt = "This is a test prompt for deterministic token estimation."
+    results = [estimate_tokens_qwen(prompt) for _ in range(10)]
+    assert len(set(results)) == 1, f"Non-deterministic token estimation: {results}"
+
+
+# ---------------------------------------------------------------------------
+# Test 12 — Token estimation: empty string returns 0
+# ---------------------------------------------------------------------------
+
+
+def test_token_estimation_empty_string() -> None:
+    """estimate_tokens_qwen must return 0 for empty string."""
+    assert estimate_tokens_qwen("") == 0
+
+
+# ---------------------------------------------------------------------------
+# Test 13 — Token estimation: minimum 1 for non-empty
+# ---------------------------------------------------------------------------
+
+
+def test_token_estimation_minimum_one() -> None:
+    """estimate_tokens_qwen must return at least 1 for non-empty string."""
+    assert estimate_tokens_qwen("a") >= 1
+    assert estimate_tokens_qwen("ab") >= 1
+
+
+# ---------------------------------------------------------------------------
+# Test 14 — Token estimation: proportional to length
+# ---------------------------------------------------------------------------
+
+
+def test_token_estimation_proportional() -> None:
+    """Longer prompts must estimate more tokens than shorter ones."""
+    short = "Hello"
+    long = "Hello " * 100
+    assert estimate_tokens_qwen(long) > estimate_tokens_qwen(short)
+
+
+# ---------------------------------------------------------------------------
+# Test 15 — No 32B model in routing constants
+# ---------------------------------------------------------------------------
+
+
+def test_no_32b_model_in_constants() -> None:
+    """No 32B model must appear in routing constants."""
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        GEMINI_25_PRO_MODEL_ID,
+        QWEN_7B_MODEL_ID,
+        QWEN_14B_MODEL_ID,
+    )
+
+    all_model_ids = [QWEN_7B_MODEL_ID, QWEN_14B_MODEL_ID, GEMINI_25_PRO_MODEL_ID]
+    for model_id in all_model_ids:
+        assert "32B" not in model_id and "32b" not in model_id, (
+            f"32B model found in routing constants: {model_id!r}"
+        )
+
+
+# ---------------------------------------------------------------------------
+# Test 16 — No quantized tier in routing constants
+# ---------------------------------------------------------------------------
+
+
+def test_no_quantized_tier_in_constants() -> None:
+    """No quantized model identifier must appear in routing constants."""
+    from agentic_core.L2_execution.types.vllm_token_budget_types import (
+        GEMINI_25_PRO_MODEL_ID,
+        QWEN_7B_MODEL_ID,
+        QWEN_14B_MODEL_ID,
+    )
+
+    quantized_markers = ["awq", "gptq", "gguf", "int4", "int8", "quantized"]
+    all_model_ids = [QWEN_7B_MODEL_ID, QWEN_14B_MODEL_ID, GEMINI_25_PRO_MODEL_ID]
+    for model_id in all_model_ids:
+        for marker in quantized_markers:
+            assert marker not in model_id.lower(), (
+                f"Quantized marker {marker!r} found in model ID: {model_id!r}"
+            )

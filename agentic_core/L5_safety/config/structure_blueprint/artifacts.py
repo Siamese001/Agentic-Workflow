@@ -156,8 +156,22 @@ def get_correct_app_path(filename: str) -> str | None:
     return None
 
 
+# Files explicitly allowed to carry layer prefixes because they ARE canonical
+# spec/type modules that document which layer they belong to.
+# Adding here prevents them being flagged as cross-layer naming violations.
+LAYER_PREFIX_FILENAME_ALLOWLIST: Final[frozenset[str]] = frozenset(
+    {
+        "l2_phase_spec.py",   # agentic_core/L2_execution/types/ — L2 execution plan spec
+        "l4_registries.py",   # agentic_core/evaluation/retrieval/ — L4 state registries
+        "l1_meta_adapter.py", # system_learning/adapters/ — L1 cognition meta adapter
+    }
+)
+
+
 def has_forbidden_layer_prefix(filename: str) -> str | None:
     """Check if filename starts with a forbidden layer/priority prefix."""
+    if filename in LAYER_PREFIX_FILENAME_ALLOWLIST:
+        return None
     if filename.startswith(FORBIDDEN_LAYER_PREFIXES):
         for prefix in FORBIDDEN_LAYER_PREFIXES:
             if filename.startswith(prefix):

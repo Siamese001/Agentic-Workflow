@@ -82,7 +82,7 @@ def _build_lcd_subfolders_template() -> dict[str, SubfolderDefinition]:
         },
         "types": {
             "purpose": "Data models, enums, protocols, and schemas.",
-            "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_model.py"],
+            "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_model.py", "_spec.py"],
             "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
         },
         "reasoning": {
@@ -749,6 +749,36 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "naming_convention": "I*Protocol.py",
                 "content_types": ["protocols", "abstract_interfaces", "type_contracts"],
             },
+            "_compat": {
+                "purpose": "Backward-compatibility shims and alias re-exports for renamed modules.",
+                "notes": "Shim-only: no new logic. Files re-export renamed symbols for migration.",
+            },
+            "evaluation": {
+                "purpose": "Evaluation frameworks, benchmarking, and quality assessment tooling.",
+                "subfolders": {
+                    "chunking": {"purpose": "Text chunking strategies for evaluation pipelines."},
+                    "feedback": {"purpose": "Feedback collection and annotation tooling."},
+                    "monitoring": {"purpose": "Evaluation monitoring and metric tracking."},
+                    "retrieval": {
+                        "purpose": "Retrieval evaluation and relevance scoring.",
+                        "allowed_suffixes": ["_retrieval.py", "_eval.py", "_registries.py", "_index.py", "_scorer.py"],
+                    },
+                    "runners": {"purpose": "Evaluation pipeline runners and orchestrators."},
+                    "schemas": {"purpose": "Evaluation data schemas and validation contracts."},
+                },
+            },
+            "enforcement": {
+                "purpose": "Cross-cutting enforcement hooks, guards, and policy primitives shared across layers.",
+                "notes": "Layer-specific enforcement lives in each layer's enforcement/ subfolder.",
+            },
+            "cache": {
+                "purpose": "Shared caching infrastructure and cache management primitives.",
+                "notes": "Layer-specific caches live in their respective layer directories.",
+            },
+            "agents": {
+                "purpose": "Legacy agent registry and agent discovery scaffolding.",
+                "notes": "Active agents live in layer reasoning/ folders. This holds discovery metadata.",
+            },
         },
     )
 
@@ -1275,7 +1305,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
 
     territories["data"] = {
-        "depth": 2,
+        "depth": 3,
         "purpose": "Data storage and processing artifacts.",
         "required_subfolders": [
             "external",
@@ -1304,7 +1334,12 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "processed": {"purpose": "Processed intermediate data"},
             "prompt_governance": {"purpose": "Prompt governance rules and audit trails"},
             "raw": {"purpose": "Raw unprocessed input data"},
-            "sdks_mcps": {"purpose": "SDK and MCP integration data"},
+            "sdks_mcps": {
+                "purpose": "SDK and MCP integration data",
+                "subfolders": {
+                    "client_wrappers": {"purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex)."},
+                },
+            },
             "snapshots": {"purpose": "Data state snapshots for rollback"},
             "tasks": {"purpose": "Task definitions and queue data"},
             "archives": {"purpose": "Archived data batches (optional, created on demand)"},

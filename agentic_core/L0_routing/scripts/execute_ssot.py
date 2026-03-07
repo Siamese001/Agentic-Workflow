@@ -2484,17 +2484,32 @@ def execute_phase2_reconciliation(
 
                 reconciliation_log.append(fix_result)
                 decision_engine.release_sovereignty_token(agent_key, success=True)
-                # [H3] Record healing action for Phase 2 reconciliation
-                _record_healing_action(
-                    state_mgr,
-                    agent=agent_key,
-                    territory=territory,
-                    routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
-                    routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                    confidence=confidence.value if hasattr(confidence, "value") else 0.0,
-                    fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
-                    outcome="SUCCESS",
-                )
+                # [H3] Record healing action for Phase 2 reconciliation.
+                # "reconciler" and "location" agents are already recorded unconditionally
+                # in execute_phase1_discovery_impl — skip them here to avoid duplicates.
+                _AGENT_KEY_TO_CLASS_NAME = {
+                    "reconciler": "FilesystemSSOTHealerAgent",
+                    "location": "LocationHealerAgent",
+                    "hierarchy": "HierarchyHealerAgent",
+                    "arch_governor": "ArchitectureGovernorAgent",
+                    "gravity_repair": "GravityLeakHealerAgent",
+                    "file_classification": "FileClassificationHealerAgent",
+                    "observability_probe": "ObservabilityProbeExecutorAgent",
+                    "cognitive_disposition": "CognitiveDispositionAgent",
+                    "root_hygiene": "RootHygieneAgent",
+                }
+                _PHASE1_RECORDED = {"reconciler", "location"}
+                if agent_key not in _PHASE1_RECORDED:
+                    _record_healing_action(
+                        state_mgr,
+                        agent=_AGENT_KEY_TO_CLASS_NAME.get(agent_key, agent_key),
+                        territory=territory,
+                        routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                        routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                        confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                        fix_summary=f"Applied {len(agent_violations)} reconciliation fixes via heal_repository",
+                        outcome="SUCCESS",
+                    )
                 logging.warning(
                     "Phase 2: [%s] ✓ heal_repository() complete — result keys: %s",
                     agent_key,
@@ -3031,6 +3046,15 @@ def execute_phase1_discovery_impl(
 
     violations_count = _fs_check.get("violations_count", 0)
     state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
+    _record_healing_action(
+        state_mgr,
+        agent="FilesystemSSOTHealerAgent",
+        territory=territory,
+        routing_tier="DETERMINISTIC",
+        confidence=1.0,
+        fix_summary=f"SSOT drift scan: {violations_count} violation(s) in {territory}",
+        outcome="SUCCESS",
+    )
 
     # Location Validation
     state_mgr.update_agent("LocationHealerAgent", "L5 - Safety")
@@ -3143,17 +3167,20 @@ def execute_phase1_discovery_impl(
                 healed_count = heal_result.get("healed", 0) if isinstance(heal_result, dict) else 0
                 state_mgr.state["location_fixed"] = healed_count  # [FIX-B3]
                 # [H3] Record healing action for LocationAgent
-                if healed_count > 0:
-                    _record_healing_action(
-                        state_mgr,
-                        agent="LocationHealerAgent",
-                        territory=territory,
-                        routing_score=confidence.value,
-                        routing_tier="DETERMINISTIC",
-                        confidence=confidence.value,
-                        fix_summary=f"Healed {healed_count} of {len(violations)} location violations",
-                        outcome="SUCCESS",
-                    )
+                _record_healing_action(
+                    state_mgr,
+                    agent="LocationHealerAgent",
+                    territory=territory,
+                    routing_score=confidence.value,
+                    routing_tier="DETERMINISTIC",
+                    confidence=confidence.value,
+                    fix_summary=(
+                        f"Healed {healed_count} of {len(violations)} location violations"
+                        if healed_count > 0
+                        else f"Location scan: {len(violations)} violation(s), 0 healed in {territory}"
+                    ),
+                    outcome="SUCCESS" if healed_count > 0 else "PARTIAL",
+                )
                 state_mgr.complete_agent(
                     "LocationHealerAgent",
                     True,
@@ -3163,18 +3190,48 @@ def execute_phase1_discovery_impl(
                 logger.warning(
                     "LocationHealerAgent has no heal_violations method - violations detected but not healed",
                 )
+                _record_healing_action(
+                    state_mgr,
+                    agent="LocationHealerAgent",
+                    territory=territory,
+                    routing_score=confidence.value,
+                    routing_tier="DETERMINISTIC",
+                    confidence=confidence.value,
+                    fix_summary=f"Location scan: {len(violations)} violation(s), no heal method in {territory}",
+                    outcome="SKIPPED",
+                )
                 state_mgr.complete_agent(
                     "LocationHealerAgent",
                     True,
                     f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (no heal method)",
                 )
         else:
+            _record_healing_action(
+                state_mgr,
+                agent="LocationHealerAgent",
+                territory=territory,
+                routing_score=confidence.value,
+                routing_tier="DETERMINISTIC",
+                confidence=confidence.value,
+                fix_summary=f"Location scan: {len(violations)} violation(s), healing skipped in {territory}",
+                outcome="SKIPPED",
+            )
             state_mgr.complete_agent(
                 "LocationHealerAgent",
                 True,
                 f"Violations: {len(violations)} | Conf: {confidence.value:.2f} (healing skipped)",
             )
     else:
+        _record_healing_action(
+            state_mgr,
+            agent="LocationHealerAgent",
+            territory=territory,
+            routing_score=confidence.value,
+            routing_tier="DETERMINISTIC",
+            confidence=confidence.value,
+            fix_summary=f"Location scan: 0 violations in {territory}",
+            outcome="SUCCESS",
+        )
         state_mgr.complete_agent("LocationHealerAgent", True, f"Violations: 0 | Conf: {confidence.value:.2f}")
 
     # [PHASE 1 ENHANCEMENT] Early File Classification Detection
@@ -3198,6 +3255,16 @@ def execute_phase1_discovery_impl(
             True,
             f"Early detection: {classification_count} classification issues",
         )
+        _record_healing_action(
+            state_mgr,
+            agent="FileClassificationHealerAgent",
+            territory=territory,
+            routing_tier="DETERMINISTIC",
+            routing_score=1.0,
+            confidence=1.0,
+            fix_summary=f"Scanned {territory}: {classification_count} classification issue(s) detected",
+            outcome="SUCCESS",
+        )
 
         # Store classification results for later phases (including check_dict for healing)
         state_mgr.state["classification_violations"] = classification_violations
@@ -3210,6 +3277,16 @@ def execute_phase1_discovery_impl(
     except Exception as e:
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
+        _record_healing_action(
+            state_mgr,
+            agent="FileClassificationHealerAgent",
+            territory=territory,
+            routing_tier="DETERMINISTIC",
+            routing_score=0.0,
+            confidence=0.0,
+            fix_summary=f"FileClassificationHealerAgent failed: {str(e)[:120]}",
+            outcome="FAILED",
+        )
         state_mgr.add_event("error", f"FileClassificationHealerAgent early detection failed: {e}")
         state_mgr.state["classification_violations"] = []
         state_mgr.state["classification_scan_result"] = {}
@@ -3260,11 +3337,41 @@ def execute_phase3_alignment_impl(
             healed = len(heal_result.changes_made) if heal_result else 0
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
             state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
+            _record_healing_action(
+                state_mgr,
+                agent="HierarchyHealerAgent",
+                territory=territory,
+                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                routing_score=confidence.value if hasattr(confidence, "value") else 1.0,
+                confidence=confidence.value if hasattr(confidence, "value") else 1.0,
+                fix_summary=f"Healed {healed} of {violations} hierarchy violation(s) in {territory}",
+                outcome="SUCCESS",
+            )
             return {"total_healed": healed, "status": str(heal_result.status) if heal_result else "UNKNOWN"}
         else:
             state_mgr.complete_agent("HierarchyHealerAgent", False, "Skipped - Low Confidence")
+            _record_healing_action(
+                state_mgr,
+                agent="HierarchyHealerAgent",
+                territory=territory,
+                routing_tier="DETERMINISTIC",
+                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                fix_summary=f"Skipped hierarchy healing in {territory}: {reason}",
+                outcome="SKIPPED",
+            )
     else:
         state_mgr.complete_agent("HierarchyHealerAgent", True, "No violations found")
+        _record_healing_action(
+            state_mgr,
+            agent="HierarchyHealerAgent",
+            territory=territory,
+            routing_tier="DETERMINISTIC",
+            routing_score=1.0,
+            confidence=1.0,
+            fix_summary=f"No hierarchy violations in {territory}",
+            outcome="SUCCESS",
+        )
 
     return None
 
@@ -3293,17 +3400,30 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
             )
 
         state_mgr.state["gravity_fixed"] = gravity_fixed  # [FIX-B3]
-        # [H3] Record healing action for GravityLeakRepairAgent
-        if gravity_fixed > 0:
-            _record_healing_action(
-                state_mgr,
-                agent="GravityLeakHealerAgent",
-                territory="__global__",
-                routing_tier="DETERMINISTIC",
-                confidence=0.9,
-                fix_summary=f"Fixed {gravity_fixed} of {gravity_violations} gravity violations",
-                outcome="SUCCESS",
-            )
+        # [H3] Record GravityValidatorAgent scan result
+        _record_healing_action(
+            state_mgr,
+            agent="GravityValidatorAgent",
+            territory="__global__",
+            routing_tier="DETERMINISTIC",
+            confidence=0.9,
+            fix_summary=f"Scanned for gravity violations: {gravity_violations} found",
+            outcome="SUCCESS",
+        )
+        # [H3] Always record GravityLeakHealerAgent outcome
+        _record_healing_action(
+            state_mgr,
+            agent="GravityLeakHealerAgent",
+            territory="__global__",
+            routing_tier="DETERMINISTIC",
+            confidence=0.9,
+            fix_summary=(
+                f"Fixed {gravity_fixed} of {gravity_violations} gravity violations"
+                if gravity_violations > 0
+                else "No gravity violations detected"
+            ),
+            outcome="SUCCESS" if gravity_fixed > 0 or gravity_violations == 0 else "PARTIAL",
+        )
 
         # Store gravity violations for final reporting
         gravity_violation_list = []
@@ -3333,6 +3453,24 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
     except Exception as e:
         logger.error(f"Gravity violation detection failed: {e}")
         state_mgr.complete_agent("GravityLeakHealerAgent", False, f"Detection failed: {str(e)}")
+        _record_healing_action(
+            state_mgr,
+            agent="GravityValidatorAgent",
+            territory="__global__",
+            routing_tier="DETERMINISTIC",
+            confidence=0.0,
+            fix_summary=f"GravityValidatorAgent error: {str(e)[:120]}",
+            outcome="FAILED",
+        )
+        _record_healing_action(
+            state_mgr,
+            agent="GravityLeakHealerAgent",
+            territory="__global__",
+            routing_tier="DETERMINISTIC",
+            confidence=0.0,
+            fix_summary=f"GravityLeakHealerAgent error: {str(e)[:120]}",
+            outcome="FAILED",
+        )
         state_mgr.state["gravity_violations"] = [
             {
                 "type": "GRAVITY_ERROR",
@@ -3382,6 +3520,15 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
     violations = len(gov_report.get("layer_violations", [])) + len(gov_report.get("naming_violations", []))
     state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Violations: {violations}")
+    _record_healing_action(
+        state_mgr,
+        agent="ArchitectureGovernorAgent",
+        territory=territory,
+        routing_tier="DETERMINISTIC",
+        confidence=1.0,
+        fix_summary=f"Arch validation: {violations} violation(s) in {territory}",
+        outcome="SUCCESS",
+    )
 
     # [FIX-B8] GravityLeakRepairAgent moved to _run_gravity_repair_global() — runs once before territory loop
 
@@ -3512,7 +3659,7 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     """PHASE 7: CERTIFICATION - Implementation with Silent Aggregation"""
     logger.info(f"=== PHASE 7: CERTIFICATION - {territory} ===")
 
-    state_mgr.update_agent("SovereignCertifier", "L5 - Compliance")
+    state_mgr.update_agent("ArchitectureGovernorAgent", "L5 - Certification")
 
     # [UNIFIED MANIFEST] Aggregate all findings from the state manager
     compliance_report = state_mgr.state.get("compliance_report", {})
@@ -3603,13 +3750,13 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     # [FIX-B1] Gravity violations are global (not per-territory) — excluded from per-territory reports.
     # They are emitted only in save_aggregate_report() under "global_violations".
 
-    # Get DebateSynthesisAgent violations (already stored by Phase 6 — do not re-invoke)
+    # Get ObservabilityProbeExecutorAgent violations (already stored by Phase 6 — do not re-invoke)
     conversational_violations = state_mgr.state.get("conversational_violations", [])
     for conv_violation in conversational_violations:
         if isinstance(conv_violation, dict):
             violation_dict = {
                 **conv_violation,
-                "source": "DebateSynthesisAgent",
+                "source": "ObservabilityProbeExecutorAgent",
                 "file": conv_violation.get("file", "unknown"),
                 "message": conv_violation.get("message", str(conv_violation)),
                 "severity": conv_violation.get("severity", "medium"),
@@ -3864,7 +4011,8 @@ def execute_phase7_final_impl(agents, territory, state_mgr, decision_engine=None
     )
 
     logger.info(f"📜 CERTIFICATE ISSUED: {territory}")
-    state_mgr.complete_agent("SovereignCertifier", True, "Certificate Issued")
+    state_mgr.complete_agent("ArchitectureGovernorAgent", True, "Certificate Issued")
+    total_v = len(detailed_cert.get("violations", []))
     return detailed_cert
 
 
@@ -4643,18 +4791,17 @@ def _print_run_manifest(
     # Canonical expected agents per scope
     # ---------------------------------------------------------------------------
     # Global agents (run once, outside territory loop)
-    GLOBAL_AGENTS = ["RootHygieneAgent", "GravityLeakHealerAgent"]
+    GLOBAL_AGENTS = ["RootHygieneAgent", "GravityValidatorAgent", "GravityLeakHealerAgent"]
 
     # Per-territory agents (must run for every territory)
     PER_TERRITORY_AGENTS = [
-        "FilesystemSSOTHealerAgent",   # Phase 2 reconciler
-        "LocationHealerAgent",          # Phase 2 location
-        "HierarchyHealerAgent",         # Phase 3 alignment
-        "FileClassificationHealerAgent", # Phase 3 sovereignty
-        "ArchitectureGovernorAgent",    # Phase 4 arch validation
-        "DebateSynthesisAgent",         # Phase 6 observability
-        "CognitiveDispositionAgent",    # Phase 6 cognitive
-        "SovereignCertifier",           # Phase 7 certification
+        "FilesystemSSOTHealerAgent",      # Phase 2 reconciler
+        "LocationHealerAgent",             # Phase 2 location
+        "HierarchyHealerAgent",            # Phase 3 alignment
+        "FileClassificationHealerAgent",   # Phase 3 sovereignty
+        "ArchitectureGovernorAgent",       # Phase 4 arch validation
+        "ObservabilityProbeExecutorAgent", # Phase 6 observability probe
+        "CognitiveDispositionAgent",       # Phase 6 cognitive
     ]
 
     # Phases expected per territory (from execute_phase1_discovery onward)
@@ -6051,9 +6198,9 @@ def _legacy_main(
                         # [FIX-B2] Reset per-territory conversational violations to prevent cross-territory accumulation
                         state_mgr.state["conversational_violations"] = []
 
-                        # Execute DebateSynthesisAgent
-                        logger.info(f"🤖 Triggering Debate Synthesis: {territory}")
-                        state_mgr.update_agent("DebateSynthesisAgent", "Prompt Governance")
+                        # Execute ObservabilityProbeExecutorAgent
+                        logger.info(f"🤖 Triggering Observability Probe: {territory}")
+                        state_mgr.update_agent("ObservabilityProbeExecutorAgent", "L6 - Observability")
                         try:
                             conversational_agent = agents.get("observability_probe", lambda **_: None)(
                                 project_root=REPO_ROOT, probe_type="debate"
@@ -6064,9 +6211,19 @@ def _legacy_main(
                                 )
                                 conv_violations = conv_results.get("violations", [])
                                 state_mgr.complete_agent(
-                                    "DebateSynthesisAgent",
+                                    "ObservabilityProbeExecutorAgent",
                                     True,
                                     f"Violations: {len(conv_violations)}",
+                                )
+                                _record_healing_action(
+                                    state_mgr,
+                                    agent="ObservabilityProbeExecutorAgent",
+                                    territory=territory,
+                                    routing_tier="DETERMINISTIC",
+                                    routing_score=1.0,
+                                    confidence=1.0,
+                                    fix_summary=f"Observability probe scan: {len(conv_violations)} violation(s) in {territory}",
+                                    outcome="SUCCESS",
                                 )
                                 # Store violations for aggregation
                                 if not state_mgr.state.get("conversational_violations"):
@@ -6074,14 +6231,34 @@ def _legacy_main(
                                 state_mgr.state["conversational_violations"].extend(conv_violations)
                             else:
                                 state_mgr.complete_agent(
-                                    "DebateSynthesisAgent",
+                                    "ObservabilityProbeExecutorAgent",
                                     False,
                                     "No scan_violations method",
                                 )
+                                _record_healing_action(
+                                    state_mgr,
+                                    agent="ObservabilityProbeExecutorAgent",
+                                    territory=territory,
+                                    routing_tier="DETERMINISTIC",
+                                    routing_score=0.0,
+                                    confidence=0.0,
+                                    fix_summary=f"ObservabilityProbeExecutorAgent unavailable in {territory}",
+                                    outcome="SKIPPED",
+                                )
                         except Exception as e:
-                            logger.error(f"DebateSynthesisAgent FAILED: {e}\n{traceback.format_exc()}")
-                            state_mgr.add_event("error", f"DebateSynthesisAgent failed in {territory}: {e}")
-                            state_mgr.complete_agent("DebateSynthesisAgent", False, str(e))
+                            logger.error(f"ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}")
+                            state_mgr.add_event("error", f"ObservabilityProbeExecutorAgent failed in {territory}: {e}")
+                            state_mgr.complete_agent("ObservabilityProbeExecutorAgent", False, str(e))
+                            _record_healing_action(
+                                state_mgr,
+                                agent="ObservabilityProbeExecutorAgent",
+                                territory=territory,
+                                routing_tier="DETERMINISTIC",
+                                routing_score=0.0,
+                                confidence=0.0,
+                                fix_summary=f"ObservabilityProbeExecutorAgent error in {territory}: {str(e)[:120]}",
+                                outcome="FAILED",
+                            )
 
                         # Execute CognitiveDispositionAgent
                         try:
@@ -6094,14 +6271,44 @@ def _legacy_main(
                                     True,
                                     f"Analytics keys: {list(cog_results.keys())[:4]}",
                                 )
+                                _record_healing_action(
+                                    state_mgr,
+                                    agent="CognitiveDispositionAgent",
+                                    territory=territory,
+                                    routing_tier="DETERMINISTIC",
+                                    routing_score=1.0,
+                                    confidence=1.0,
+                                    fix_summary=f"Cognitive analytics: {list(cog_results.keys())[:4]} in {territory}",
+                                    outcome="SUCCESS",
+                                )
                             else:
                                 state_mgr.complete_agent(
                                     "CognitiveDispositionAgent", False, "No get_analytics method"
+                                )
+                                _record_healing_action(
+                                    state_mgr,
+                                    agent="CognitiveDispositionAgent",
+                                    territory=territory,
+                                    routing_tier="DETERMINISTIC",
+                                    routing_score=0.0,
+                                    confidence=0.0,
+                                    fix_summary=f"CognitiveDispositionAgent unavailable in {territory}",
+                                    outcome="SKIPPED",
                                 )
                         except Exception as e:
                             logger.error(f"CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}")
                             state_mgr.add_event("error", f"CognitiveDispositionAgent failed in {territory}: {e}")
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
+                            _record_healing_action(
+                                state_mgr,
+                                agent="CognitiveDispositionAgent",
+                                territory=territory,
+                                routing_tier="DETERMINISTIC",
+                                routing_score=0.0,
+                                confidence=0.0,
+                                fix_summary=f"CognitiveDispositionAgent error in {territory}: {str(e)[:120]}",
+                                outcome="FAILED",
+                            )
 
                         # Phase 7 (RootHygieneAgent moved outside territory loop — Fix 4)
                         cert = execute_phase7_final(agents, territory, state_mgr, decision_engine)

@@ -1311,9 +1311,9 @@ class FilesystemSSOTReconcilerAgent(
     # Forbidden folders at root (they have SSOT locations elsewhere)
     FORBIDDEN_ROOT_FOLDERS = {
         "scripts",  # SSOT: agentic_core/L0_routing/scripts/
-        "logs",  # SSOT: agentic_core/L0_routing/utils/
         "coverage_html",  # SSOT: reports/coverage_html/ or gitignored
         "observability",  # SSOT: agentic_core/L6_observability/
+        # NOTE: logs/ intentionally excluded — root logs/ is the canonical heal output directory
     }
 
     def detect_root_drift(self) -> dict[str, Any]:

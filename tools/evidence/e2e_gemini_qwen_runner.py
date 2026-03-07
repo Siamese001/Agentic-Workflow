@@ -136,7 +136,7 @@ def main() -> None:
     # Wave 2 — In-process inline extraction + per-hash validations
     # -----------------------------------------------------------------------
     sys.path.insert(0, str(Path(__file__).resolve().parents[2]))  # guardian: allow-global_mutation
-    from .healing_backups.location_violations.test_gemini_qwen_e2e import (  # noqa: E402
+    from .healing_backups.location_violations.test_gemini_qwen_e2e_1 import (  # noqa: E402
         ENGINE_GEMINI,
         ENGINE_QWEN,
         _make_forced_invariant_violation,

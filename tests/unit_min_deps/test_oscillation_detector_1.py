@@ -1,0 +1,120 @@
+"""Unit tests for system_learning.validators.oscillation_detector."""
+
+import pytest
+
+from system_learning.validators.oscillation_detector import (
+    OscillationPolicy,
+    compute_freeze_decision,
+    detect_oscillation,
+)
+
+pytestmark = pytest.mark.unit_min_deps
+
+
+class TestDetectOscillation:
+    def test_oscillation_true_pattern(self):
+        """Alternating values detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.8, 0.85, 0.8)
+        assert detect_oscillation(values, policy) is True
+
+    def test_oscillation_true_pattern_reverse(self):
+        """Alternating values (reverse) detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.85, 0.8, 0.85, 0.8, 0.85)
+        assert detect_oscillation(values, policy) is True
+
+    def test_non_oscillation_pattern(self):
+        """Monotonic increasing values not detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.81, 0.82, 0.83, 0.84)
+        assert detect_oscillation(values, policy) is False
+
+    def test_non_oscillation_all_same(self):
+        """All same values not detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.8, 0.8, 0.8, 0.8)
+        assert detect_oscillation(values, policy) is False
+
+    def test_insufficient_data(self):
+        """Insufficient data returns False."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.8)
+        assert detect_oscillation(values, policy) is False
+
+    def test_oscillation_with_epsilon_tolerance(self):
+        """Values within epsilon tolerance detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.02, freeze_seconds=3600)
+        # 0.8 and 0.801 are within epsilon, 0.85 and 0.851 are within epsilon
+        values = (0.8, 0.851, 0.801, 0.85, 0.8)
+        assert detect_oscillation(values, policy) is True
+
+    def test_non_oscillation_three_values(self):
+        """Three distinct values not detected as oscillation."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.9, 0.8, 0.85)
+        assert detect_oscillation(values, policy) is False
+
+
+class TestComputeFreezeDecision:
+    def test_freeze_decision_on_oscillation(self):
+        """Oscillation triggers freeze decision."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.8, 0.85, 0.8)
+        last_update_utc = 1700000000
+        now_utc = 1700003600
+
+        decision = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+
+        assert decision.should_freeze is True
+        assert decision.freeze_until_utc == now_utc + policy.freeze_seconds
+
+    def test_no_freeze_on_non_oscillation(self):
+        """Non-oscillation does not trigger freeze."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.81, 0.82, 0.83, 0.84)
+        last_update_utc = 1700000000
+        now_utc = 1700003600
+
+        decision = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+
+        assert decision.should_freeze is False
+        assert decision.freeze_until_utc is None
+
+    def test_freeze_until_utc_computation(self):
+        """freeze_until_utc correctly computed."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=7200)
+        values = (0.8, 0.85, 0.8, 0.85, 0.8)
+        last_update_utc = 1700000000
+        now_utc = 1700010000
+
+        decision = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+
+        expected_freeze_until = 1700010000 + 7200
+        assert decision.freeze_until_utc == expected_freeze_until
+
+    def test_freeze_decision_deterministic(self):
+        """compute_freeze_decision is deterministic."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.8, 0.85, 0.8)
+        last_update_utc = 1700000000
+        now_utc = 1700003600
+
+        decision1 = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+        decision2 = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+        decision3 = compute_freeze_decision(values, last_update_utc, now_utc, policy)
+
+        assert decision1 == decision2 == decision3
+
+
+class TestDeterminism:
+    def test_detect_oscillation_deterministic(self):
+        """detect_oscillation produces consistent results."""
+        policy = OscillationPolicy(window=5, epsilon=0.01, freeze_seconds=3600)
+        values = (0.8, 0.85, 0.8, 0.85, 0.8)
+
+        result1 = detect_oscillation(values, policy)
+        result2 = detect_oscillation(values, policy)
+        result3 = detect_oscillation(values, policy)
+
+        assert result1 == result2 == result3 is True
