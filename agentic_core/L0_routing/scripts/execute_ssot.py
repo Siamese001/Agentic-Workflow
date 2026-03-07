@@ -3038,11 +3038,12 @@ def execute_phase1_discovery_impl(
         state_mgr.complete_agent("FilesystemSSOTHealerAgent", False, "Returned None")
         return None, None
 
-    # Wave 3: route healing through HEALER_REGISTRY via _invoke_healer
+    # Direct heal_repository call — same pattern as all other agents
     if ctx is not None and getattr(ctx, "heal", False):
-        from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
-
-        _rd_invoke("filesystem_ssot_drift", _fs_check, repo_root=REPO_ROOT, apply=True)
+        _fs_healer_cls = agents.get("reconciler")
+        if _fs_healer_cls is not None:
+            _fs_healer_instance = _fs_healer_cls(project_root=REPO_ROOT)
+            _fs_healer_instance.heal_repository(dry_run=False, execute=True)
 
     violations_count = _fs_check.get("violations_count", 0)
     state_mgr.complete_agent("FilesystemSSOTHealerAgent", True, f"Drift violations: {violations_count}")
@@ -3331,10 +3332,13 @@ def execute_phase3_alignment_impl(
         logger.info(f"Decision: {reason}")
 
         if proceed and ctx is not None and ctx.heal:
-            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
-
-            heal_result = _rd_invoke("hierarchy_violations", _hier_check, repo_root=REPO_ROOT, apply=True)
-            healed = len(heal_result.changes_made) if heal_result else 0
+            _hier_healer_cls = agents.get("hierarchy")
+            if _hier_healer_cls is not None:
+                _hier_healer_instance = _hier_healer_cls(project_root=REPO_ROOT)
+                heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
+            else:
+                heal_result = {}
+            healed = heal_result.get("violations_fixed", heal_result.get("healed", 0)) if isinstance(heal_result, dict) else 0
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
             state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
             _record_healing_action(
@@ -3347,7 +3351,7 @@ def execute_phase3_alignment_impl(
                 fix_summary=f"Healed {healed} of {violations} hierarchy violation(s) in {territory}",
                 outcome="SUCCESS",
             )
-            return {"total_healed": healed, "status": str(heal_result.status) if heal_result else "UNKNOWN"}
+            return {"total_healed": healed, "status": "HEALED" if healed > 0 else "NO_CHANGE"}
         else:
             state_mgr.complete_agent("HierarchyHealerAgent", False, "Skipped - Low Confidence")
             _record_healing_action(
@@ -3607,42 +3611,41 @@ def execute_phase5_healing_impl(
 
         if proceed and ctx is not None and ctx.heal:
             state_mgr.update_agent("ArchitectureGovernorAgent", "HEALING MODE")
-            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
-
-            _arch_check = {
-                "check_id": "architecture_governance",
-                "evidence": {"violations_found": fixes, "gov_report": gov_report},
-                "violations_count": fixes,
-                "territory": territory,
-                "repo_root": str(REPO_ROOT),
-            }
-            heal_result = _rd_invoke("architecture_governance", _arch_check, repo_root=REPO_ROOT, apply=True)
-            _hr_status = str(
-                getattr(
-                    getattr(heal_result, "status", None), "value", getattr(heal_result, "status", "UNKNOWN")
-                )
-            )
-            fixed = len([c for c in (heal_result.changes_made if heal_result else []) if "fixed" in c])
+            _arch_healer_cls = agents.get("arch_governor")
+            if _arch_healer_cls is not None:
+                _arch_healer_instance = _arch_healer_cls(project_root=REPO_ROOT)
+                heal_result = _arch_healer_instance.heal_repository(dry_run=False, execute=True)
+            else:
+                heal_result = {}
+            fixed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
             found = fixes
-            success = heal_result is not None and _hr_status not in ("FAILED", "UNKNOWN")
-            # [H3] Record healing action for ArchitectureGovernorAgent
-            if fixed > 0 or (heal_result and heal_result.changes_made):
-                _record_healing_action(
-                    state_mgr,
-                    agent="ArchitectureGovernorAgent",
-                    territory=territory,
-                    routing_score=confidence.value,
-                    routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
-                    confidence=confidence.value,
-                    fix_summary=f"Fixed architecture violations in {territory}",
-                    outcome="SUCCESS",
-                )
-            state_mgr.complete_agent(
-                "ArchitectureGovernorAgent", success, f"status={_hr_status} found={found} fixed={fixed}"
+            success = True
+            _record_healing_action(
+                state_mgr,
+                agent="ArchitectureGovernorAgent",
+                territory=territory,
+                routing_score=confidence.value,
+                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                confidence=confidence.value,
+                fix_summary=f"Fixed {fixed} of {found} architecture violations in {territory}",
+                outcome="SUCCESS" if fixed > 0 else "PARTIAL",
             )
-            return {"status": _hr_status, "violations_found": found, "violations_fixed": fixed}
+            state_mgr.complete_agent(
+                "ArchitectureGovernorAgent", success, f"found={found} fixed={fixed}"
+            )
+            return {"status": "HEALED" if fixed > 0 else "NO_CHANGE", "violations_found": found, "violations_fixed": fixed}
         else:
-            state_mgr.skip_agent("ArchitectureGovernorAgent", reason)
+            _record_healing_action(
+                state_mgr,
+                agent="ArchitectureGovernorAgent",
+                territory=territory,
+                routing_score=confidence.value if hasattr(confidence, "value") else 0.0,
+                routing_tier=reason.split("(")[0].strip() if reason else "DETERMINISTIC",
+                confidence=confidence.value if hasattr(confidence, "value") else 0.0,
+                fix_summary=f"Skipped arch governance in {territory}: {reason}",
+                outcome="SKIPPED",
+            )
+            state_mgr.complete_agent("ArchitectureGovernorAgent", True, f"Skipped: {reason}")
 
     return None
 

@@ -527,13 +527,23 @@ class LocationHealerAgent(SovereignBaseAgent):
             return result
 
         try:
-            # Collision handling - find unique destination
+            # Collision handling: if destination already exists, skip or report conflict.
+            # Never generate _N suffix duplicates — that is the root cause of _init__1.py etc.
             final_dst = dst_path
-            stem, suffix = dst_path.stem, dst_path.suffix
-            counter = 1
-            while final_dst.exists():
-                final_dst = dst_path.parent / f"{stem}_{counter}{suffix}"
-                counter += 1
+            if final_dst.exists():
+                src_bytes = src_path.read_bytes()
+                dst_bytes = final_dst.read_bytes()
+                if src_bytes == dst_bytes:
+                    result["applied"] = True
+                    result["action_taken"] = f"SKIPPED_IDENTICAL: destination already exists at {dst_path.relative_to(self.project_root)}"
+                    Logger.info(f"[LocationHealerAgent] Skip (identical): {src_path} == {final_dst}")
+                    return result
+                else:
+                    result["applied"] = False
+                    result["action_taken"] = f"CONFLICT: destination exists with different content at {dst_path.relative_to(self.project_root)}"
+                    result["error"] = "destination_exists_different_content"
+                    Logger.warning(f"[LocationHealerAgent] Conflict: {src_path} -> {final_dst} (different content, not overwriting)")
+                    return result
 
             # Use ArchivalGatekeeper for safe move with audit trail
             gk_result = self.gatekeeper.safe_move(

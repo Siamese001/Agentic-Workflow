@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config import (
 Logger = logging.getLogger(__name__)
 
 
-# TODO: Create abstraction layer
+class GravityRepairProhibitedError(Exception):
     """Raised when mutation prohibition blocks a gravity fix after one retry."""
 
     def __init__(self, file_path: Path, layer: str, op: str) -> None:
@@ -63,7 +63,7 @@ Logger = logging.getLogger(__name__)
 
 
 @dataclass
-# TODO: Create abstraction layer
+class GravityFix:
     """Represents a gravity violation fix."""
 
     file_path: Path
