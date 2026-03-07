@@ -6148,28 +6148,38 @@ def _legacy_main(
                         if pascal_proceed and effective_ctx.heal:
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety")
-                            from agentic_core.L2_execution.scripts.remediation_dispatcher import (
-                                _invoke_healer as _rd_invoke,
-                            )
-
-                            _fc_check = state_mgr.state.get("classification_check_dict") or {
-                                "check_id": "file_classification",
-                                "evidence": {
-                                    "file_registry": state_mgr.state.get("classification_file_registry", [])
-                                },
-                                "violations_count": len(state_mgr.state.get("classification_violations", [])),
-                                "territory": territory,
-                                "repo_root": str(REPO_ROOT),
-                            }
-                            heal_result = _rd_invoke(
-                                "file_classification", _fc_check, repo_root=REPO_ROOT, apply=True
-                            )
-                            healed = len(heal_result.changes_made) if heal_result else 0
+                            _fc_healer_cls = agents.get("file_classification")
+                            if _fc_healer_cls is not None:
+                                _fc_instance = _fc_healer_cls(project_root=REPO_ROOT)
+                                heal_result = _fc_instance.heal_repository(dry_run=False, execute=True)
+                            else:
+                                heal_result = {}
+                            healed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
                             state_mgr.complete_agent(
                                 "FileClassificationHealerAgent", True, f"Healed: {healed}"
                             )
+                            _record_healing_action(
+                                state_mgr,
+                                agent="FileClassificationHealerAgent",
+                                territory=territory,
+                                routing_tier=pascal_reason.split("(")[0].strip() if pascal_reason else "DETERMINISTIC",
+                                routing_score=pascal_confidence.value if hasattr(pascal_confidence, "value") else 1.0,
+                                confidence=pascal_confidence.value if hasattr(pascal_confidence, "value") else 1.0,
+                                fix_summary=f"Fixed {healed} file classification violation(s) in {territory}",
+                                outcome="SUCCESS" if healed > 0 else "PARTIAL",
+                            )
                         elif not pascal_proceed:
                             state_mgr.skip_agent("FileClassificationHealerAgent", pascal_reason)
+                            _record_healing_action(
+                                state_mgr,
+                                agent="FileClassificationHealerAgent",
+                                territory=territory,
+                                routing_tier="DETERMINISTIC",
+                                routing_score=0.0,
+                                confidence=0.0,
+                                fix_summary=f"Skipped file classification healing: {pascal_reason}",
+                                outcome="SKIPPED",
+                            )
                         elif not effective_ctx.heal:
                             state_mgr.skip_agent(
                                 "FileClassificationHealerAgent", "scan-only mode (no --heal)"
