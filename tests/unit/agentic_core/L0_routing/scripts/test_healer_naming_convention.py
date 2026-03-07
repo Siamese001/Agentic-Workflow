@@ -1,8 +1,15 @@
 """
-Invariant test: _get_l5_agent_roster() must use canonical healer names.
+Invariant test: _get_l5_agent_roster() must use direct class imports.
 
-Verifies that execute_ssot.py's agent roster uses the {Domain}HealerAgent
-naming convention for all healer agents, not legacy names.
+Verifies that execute_ssot.py's agent roster uses direct module imports
+for all healer/validator agents. The intermediate shim files
+(FileClassificationHealerAgent, HierarchyHealerAgent, FilesystemSSOTHealerAgent)
+have been deleted as part of the agent-script refactor (Phase 1).
+
+New invariants:
+  - Roster imports real classes directly (no shim modules)
+  - Deleted shim files no longer exist
+  - state_mgr display labels are unchanged until Phase 10
 """
 
 import ast
@@ -13,18 +20,20 @@ import pytest
 REPO_ROOT = Path(__file__).resolve().parents[5]
 EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 
-CANONICAL_HEALER_IMPORTS = [
-    "FileClassificationHealerAgent",
-    "HierarchyHealerAgent",
+# Direct class imports now used in _get_l5_agent_roster() (shims deleted, Phase 1)
+CANONICAL_ROSTER_IMPORTS = [
+    "FileClassificationAgent",
+    "HierarchyAgent",
     "GravityLeakHealerAgent",
-    "FilesystemSSOTHealerAgent",
+    "FilesystemSSOTReconcilerAgent",
 ]
 
-LEGACY_HEALER_NAMES = [
-    "FileClassificationAgent",  # was used as healer — replaced by FileClassificationHealerAgent
-    "HierarchyAgent",  # was used as healer — replaced by HierarchyHealerAgent
-    "GravityLeakRepairAgent",  # was used as healer — replaced by GravityLeakHealerAgent
-    "FilesystemSSOTReconcilerAgent",  # was used as healer — replaced by FilesystemSSOTHealerAgent
+# Shim names that were previously used as roster imports — now deleted
+DELETED_SHIM_NAMES = [
+    "FileClassificationHealerAgent",  # deleted Phase 1 — shim for FileClassificationAgent
+    "HierarchyHealerAgent",  # deleted Phase 1 — shim for HierarchyAgent
+    "FilesystemSSOTHealerAgent",  # deleted Phase 1 — shim for FilesystemSSOTReconcilerAgent
+    "HierarchyValidatorAgent",  # deleted Phase 1 — thin wrapper, inlined in execute_ssot
 ]
 
 
@@ -75,17 +84,6 @@ LEGACY_STATE_MGR_NAMES = [
     "GravityLeakRepairAgent",
 ]
 
-# §26: shims may only contain imports, one __all__, and a docstring.
-# No FunctionDef, ClassDef, Call (at module level), Conditionals, or Loops.
-_FORBIDDEN_SHIM_NODE_TYPES = (
-    ast.FunctionDef,
-    ast.AsyncFunctionDef,
-    ast.ClassDef,
-    ast.For,
-    ast.While,
-    ast.If,
-)
-
 
 def _shim_file_for(name: str) -> Path:
     return REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning" / f"{name}.py"
@@ -106,86 +104,56 @@ def execute_ssot_source():
     return _execute_ssot_source()
 
 
-class TestRosterUsesCanonicalHealerNames:
-    def test_roster_imports_canonical_healer_names(self, roster_func_node):
+class TestRosterUsesDirectImports:
+    """Invariant: _get_l5_agent_roster() must import real classes directly.
+    Shims deleted in Phase 1 of agent-script refactor."""
+
+    def test_roster_imports_direct_class_names(self, roster_func_node):
         imported = _import_names_in_function(roster_func_node)
-        for name in CANONICAL_HEALER_IMPORTS:
+        for name in CANONICAL_ROSTER_IMPORTS:
             assert name in imported, (
-                f"_get_l5_agent_roster() must import canonical healer '{name}'. Found imports: {imported}"
+                f"_get_l5_agent_roster() must import direct class '{name}'. Found imports: {imported}"
             )
 
-    def test_roster_does_not_import_legacy_healer_names(self, roster_func_node):
+    def test_roster_does_not_import_deleted_shim_names(self, roster_func_node):
         imported = _import_names_in_function(roster_func_node)
-        for legacy in LEGACY_HEALER_NAMES:
-            assert legacy not in imported, (
-                f"_get_l5_agent_roster() must NOT import legacy name '{legacy}'. "
-                f"Use canonical healer name instead."
+        for shim in DELETED_SHIM_NAMES:
+            assert shim not in imported, (
+                f"_get_l5_agent_roster() must NOT import deleted shim '{shim}'. "
+                f"Use direct class import instead."
             )
 
-    def test_roster_return_tuple_uses_canonical_names(self, roster_func_node):
+    def test_roster_return_tuple_uses_direct_names(self, roster_func_node):
         returned = _return_names_in_function(roster_func_node)
-        for name in CANONICAL_HEALER_IMPORTS:
+        for name in CANONICAL_ROSTER_IMPORTS:
             assert name in returned, (
                 f"_get_l5_agent_roster() return tuple must contain '{name}'. Found: {returned}"
             )
 
-    def test_canonical_shim_files_exist(self):
+    def test_deleted_shim_files_do_not_exist(self):
+        """Phase 1 negative invariant: deleted shim files must not exist."""
         shim_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
-        for name in CANONICAL_HEALER_IMPORTS:
+        for name in DELETED_SHIM_NAMES:
             shim_path = shim_dir / f"{name}.py"
-            assert shim_path.exists(), f"Canonical shim file missing: {shim_path.relative_to(REPO_ROOT)}"
+            assert not shim_path.exists(), (
+                f"Deleted shim file still present: {shim_path.relative_to(REPO_ROOT)}. "
+                f"Remove it as part of Phase 1."
+            )
 
-    def test_canonical_shims_are_importable(self):
-        for name in CANONICAL_HEALER_IMPORTS:
-            module_path = f"agentic_core.L5_safety.reasoning.{name}"
+    def test_direct_classes_are_importable(self):
+        """Direct class imports used in roster must be resolvable."""
+        direct_class_paths = {
+            "FileClassificationAgent": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
+            "HierarchyAgent": "agentic_core.L5_safety.reasoning.HierarchyAgent",
+            "FilesystemSSOTReconcilerAgent": "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent",
+            "GravityLeakHealerAgent": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
+        }
+        for cls_name, module_path in direct_class_paths.items():
             try:
-                mod = __import__(module_path, fromlist=[name])
-                assert hasattr(mod, name), f"Module {module_path} does not export '{name}'"
+                mod = __import__(module_path, fromlist=[cls_name])
+                assert hasattr(mod, cls_name), f"Module {module_path} does not export '{cls_name}'"
             except ImportError as e:
                 pytest.fail(f"Cannot import {module_path}: {e}")
-
-    def test_tools_evidence_scripts_use_canonical_names(self):
-        """Verify tools/evidence/ scripts use canonical healer names in display strings."""
-        tools_evidence = REPO_ROOT / "tools" / "evidence"
-
-        # Scripts that reference agent roster
-        scripts_to_check = [
-            tools_evidence / "_summarize_ssot_run.py",
-            tools_evidence / "_run_ssot_healing.py",
-        ]
-
-        for script in scripts_to_check:
-            if not script.exists():
-                continue
-
-            content = script.read_text(encoding="utf-8")
-
-            # Check for canonical healer names
-            assert "FilesystemSSOTHealerAgent" in content, (
-                f"{script.name} must use 'FilesystemSSOTHealerAgent', not 'FilesystemSSOTReconcilerAgent'"
-            )
-            assert "FileClassificationHealerAgent" in content, (
-                f"{script.name} must use 'FileClassificationHealerAgent', not 'FileClassificationAgent'"
-            )
-            assert "HierarchyHealerAgent" in content, (
-                f"{script.name} must use 'HierarchyHealerAgent', not 'HierarchyAgent'"
-            )
-            assert "GravityLeakHealerAgent" in content, (
-                f"{script.name} must use 'GravityLeakHealerAgent', not 'GravityLeakRepairAgent'"
-            )
-            assert "LocationHealerAgent" in content, (
-                f"{script.name} must use 'LocationHealerAgent', not 'LocationAgent'"
-            )
-
-            # Check for legacy names (should NOT appear in agent roster strings)
-            # Allow them in comments/other contexts, but not in roster display
-            if "agents_roster" in content or '"registered"' in content:
-                assert "FilesystemSSOTReconcilerAgent)" not in content, (
-                    f"{script.name} agent roster must not use legacy 'FilesystemSSOTReconcilerAgent)'"
-                )
-                assert "FileClassificationAgent)" not in content, (
-                    f"{script.name} agent roster must not use legacy 'FileClassificationAgent)'"
-                )
 
 
 class TestStateMgrUsesCanonicalHealerNames:
@@ -236,91 +204,29 @@ class TestStateMgrUsesCanonicalHealerNames:
         assert not violations, "Legacy healer names found in state_mgr calls:\n" + "\n".join(violations)
 
 
-class TestShimStructuralCompliance:
-    """§26: Shim files may only contain imports, one __all__, and a docstring.
-    No FunctionDef, ClassDef, Conditionals, or Loops allowed."""
+class TestDeletedShimsAreGone:
+    """Phase 1 negative invariants: deleted shim files must not exist,
+    and no remaining module imports from them."""
 
-    def test_shims_contain_only_allowed_nodes(self):
-        """AST scan: each shim must contain no forbidden node types."""
-        for name in CANONICAL_HEALER_IMPORTS:
-            shim_path = _shim_file_for(name)
-            assert shim_path.exists(), f"Shim missing: {shim_path}"
-            source = shim_path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-            # Only check top-level body nodes (not inside imports)
-            for node in tree.body:
-                assert not isinstance(node, _FORBIDDEN_SHIM_NODE_TYPES), (
-                    f"{shim_path.name}: forbidden node type {type(node).__name__} at line {node.lineno}. "
-                    f"Shims must only contain imports, __all__, and a docstring."
-                )
-
-    def test_shims_have_exactly_one_all(self):
-        """Each shim must export exactly one name via __all__."""
-        for name in CANONICAL_HEALER_IMPORTS:
-            shim_path = _shim_file_for(name)
-            source = shim_path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-            all_assigns = [
-                node
-                for node in ast.walk(tree)
-                if isinstance(node, ast.Assign)
-                and any(isinstance(t, ast.Name) and t.id == "__all__" for t in node.targets)
-            ]
-            assert len(all_assigns) == 1, (
-                f"{shim_path.name}: expected exactly 1 __all__ assignment, found {len(all_assigns)}"
-            )
-            # __all__ must contain exactly the canonical name
-            all_value = all_assigns[0].value
-            assert isinstance(all_value, ast.List), f"{shim_path.name}: __all__ must be a list literal"
-            exported = [elt.value for elt in all_value.elts if isinstance(elt, ast.Constant)]
-            assert exported == [name], (
-                f"{shim_path.name}: __all__ must export exactly ['{name}'], got {exported}"
-            )
-
-    def test_shims_import_from_canonical_module(self):
-        """Each shim must import the legacy class and re-export under the canonical name."""
-        expected_sources = {
-            "FileClassificationHealerAgent": "FileClassificationAgent",
-            "HierarchyHealerAgent": "HierarchyAgent",
-            "GravityLeakHealerAgent": "GravityLeakRepairAgent",
-            "FilesystemSSOTHealerAgent": "FilesystemSSOTReconcilerAgent",
-        }
-        for canonical_name, legacy_name in expected_sources.items():
-            shim_path = _shim_file_for(canonical_name)
-            source = shim_path.read_text(encoding="utf-8")
-            tree = ast.parse(source)
-            # Find all ImportFrom nodes and collect aliases
-            imported_as = {}
-            for node in ast.walk(tree):
-                if isinstance(node, ast.ImportFrom):
-                    for alias in node.names:
-                        imported_name = alias.name
-                        exported_as = alias.asname or alias.name
-                        imported_as[exported_as] = imported_name
-            assert canonical_name in imported_as, (
-                f"{shim_path.name}: must import something as '{canonical_name}'"
-            )
-            assert imported_as[canonical_name] == legacy_name, (
-                f"{shim_path.name}: must import '{legacy_name}' as '{canonical_name}', "
-                f"got '{imported_as[canonical_name]}'"
-            )
-
-    def test_canonical_modules_do_not_import_shims(self):
-        """§28: Canonical modules must not import shim modules (no layer inversion)."""
-        shim_module_names = {f"agentic_core.L5_safety.reasoning.{n}" for n in CANONICAL_HEALER_IMPORTS}
-        shim_file_names = {f"{n}.py" for n in CANONICAL_HEALER_IMPORTS}
+    def test_no_module_imports_deleted_shims(self):
+        """§28: No remaining .py file may import from any deleted shim module."""
+        deleted_shim_modules = {f"agentic_core.L5_safety.reasoning.{n}" for n in DELETED_SHIM_NAMES}
 
         reasoning_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
         violations = []
         for py_file in reasoning_dir.glob("*.py"):
-            if py_file.name in shim_file_names:
-                continue  # skip shims themselves
             source = py_file.read_text(encoding="utf-8", errors="replace")
-            tree = ast.parse(source, filename=str(py_file))
+            try:
+                tree = ast.parse(source, filename=str(py_file))
+            except SyntaxError:
+                continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:
-                    if node.module in shim_module_names:
-                        violations.append(f"{py_file.name} line {node.lineno}: imports shim '{node.module}'")
+                    if node.module in deleted_shim_modules:
+                        violations.append(
+                            f"{py_file.name} line {node.lineno}: imports deleted shim '{node.module}'"
+                        )
         assert not violations, (
-            "Canonical modules must not import shim modules (§28 layer inversion):\n" + "\n".join(violations)
+            "Some modules still import deleted shim modules (Phase 1 cleanup incomplete):\n"
+            + "\n".join(violations)
         )

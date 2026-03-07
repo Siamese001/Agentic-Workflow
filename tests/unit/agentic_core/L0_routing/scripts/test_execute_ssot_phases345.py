@@ -76,27 +76,31 @@ def _make_state_mgr():
 
 
 class TestPhase3Alignment:
-    def _hier_check(self, violations_count):
-        return {"violations_count": violations_count, "evidence": {}}
+    def _hier_scan_result(self, violations_count):
+        """Build a scan result compatible with HierarchyAgent.scan_root_violations()."""
+        return {
+            "violations": [f"v{i}" for i in range(violations_count)],
+            "violations_found": violations_count,
+        }
+
+    def _mock_hier_agent(self, violations_count):
+        """Return (hier_cls, hier_inst) mocking HierarchyAgent with given violation count."""
+        hier_cls = MagicMock()
+        hier_inst = MagicMock()
+        hier_inst.scan_root_violations.return_value = self._hier_scan_result(violations_count)
+        hier_cls.return_value = hier_inst
+        return hier_cls, hier_inst
+
+    def _hier_agent_patch(self, hier_cls):
+        return {"agentic_core.L5_safety.reasoning.HierarchyAgent": MagicMock(HierarchyAgent=hier_cls)}
 
     def test_zero_violations_completes_no_violations(self, mod):
         de = _make_de(mod)
         sm = _make_state_mgr()
         agents = {}
+        hier_cls, _ = self._mock_hier_agent(0)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(0)
-        hier_cls.return_value = hier_inst
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                )
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 result = mod.execute_phase3_alignment_impl(agents, "neutral", de, sm)
 
@@ -109,20 +113,9 @@ class TestPhase3Alignment:
         de = _make_de(mod, allow=False, reason="BLOCKED")
         sm = _make_state_mgr()
         agents = {}
+        hier_cls, _ = self._mock_hier_agent(3)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(3)
-        hier_cls.return_value = hier_inst
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                )
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 result = mod.execute_phase3_alignment_impl(agents, "neutral", de, sm)
 
@@ -135,20 +128,9 @@ class TestPhase3Alignment:
         de = _make_de(mod, allow=True)
         sm = _make_state_mgr()
         agents = {}
+        hier_cls, _ = self._mock_hier_agent(2)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(2)
-        hier_cls.return_value = hier_inst
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                )
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 result = mod.execute_phase3_alignment_impl(
                     agents, "neutral", de, sm, ctx=_make_ctx(heal=False)
@@ -160,64 +142,37 @@ class TestPhase3Alignment:
         de = _make_de(mod, allow=True)
         sm = _make_state_mgr()
         sm.state = {}
-        agents = {}
+        hier_cls, _ = self._mock_hier_agent(4)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(4)
-        hier_cls.return_value = hier_inst
+        healer_cls = MagicMock()
+        healer_inst = MagicMock()
+        healer_inst.heal_repository.return_value = {"violations_fixed": 2}
+        healer_cls.return_value = healer_inst
+        agents = {"hierarchy": healer_cls}
 
-        heal_result = MagicMock()
-        heal_result.changes_made = ["change1", "change2"]
-        heal_result.status = MagicMock(value="SUCCESS")
-
-        dispatcher_mod = MagicMock()
-        dispatcher_mod._invoke_healer = MagicMock(return_value=heal_result)
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                ),
-                "agentic_core.L2_execution.scripts.remediation_dispatcher": dispatcher_mod,
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 result = mod.execute_phase3_alignment_impl(
                     agents, "neutral", de, sm, ctx=_make_ctx(heal=True)
                 )
 
         assert result is not None
+        healer_inst.heal_repository.assert_called_once()
         assert result["total_healed"] == 2
 
     def test_violations_proceed_true_heal_true_updates_state(self, mod):
         de = _make_de(mod, allow=True)
         sm = _make_state_mgr()
         sm.state = {}
-        agents = {}
+        hier_cls, _ = self._mock_hier_agent(1)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(1)
-        hier_cls.return_value = hier_inst
+        healer_cls = MagicMock()
+        healer_inst = MagicMock()
+        healer_inst.heal_repository.return_value = {"violations_fixed": 1}
+        healer_cls.return_value = healer_inst
+        agents = {"hierarchy": healer_cls}
 
-        heal_result = MagicMock()
-        heal_result.changes_made = ["x"]
-        heal_result.status = MagicMock(value="SUCCESS")
-
-        dispatcher_mod = MagicMock()
-        dispatcher_mod._invoke_healer = MagicMock(return_value=heal_result)
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                ),
-                "agentic_core.L2_execution.scripts.remediation_dispatcher": dispatcher_mod,
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 mod.execute_phase3_alignment_impl(agents, "neutral", de, sm, ctx=_make_ctx(heal=True))
 
@@ -227,20 +182,9 @@ class TestPhase3Alignment:
         de = _make_de(mod, allow=True)
         sm = _make_state_mgr()
         agents = {}
+        hier_cls, _ = self._mock_hier_agent(2)
 
-        hier_cls = MagicMock()
-        hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = self._hier_check(2)
-        hier_cls.return_value = hier_inst
-
-        with patch.dict(
-            "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                )
-            },
-        ):
+        with patch.dict("sys.modules", self._hier_agent_patch(hier_cls)):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 mod.execute_phase3_alignment_impl(agents, "neutral", de, sm)
 
@@ -573,32 +517,32 @@ class TestPhaseMatrix:
 
         hier_cls = MagicMock()
         hier_inst = MagicMock()
-        hier_inst.to_check_dict.return_value = {"violations_count": violations_count}
+        hier_inst.scan_root_violations.return_value = {
+            "violations": ["v"] * violations_count,
+            "violations_found": violations_count,
+        }
         hier_cls.return_value = hier_inst
 
-        heal_result = MagicMock()
-        heal_result.changes_made = ["c1"]
-        heal_result.status = MagicMock(value="SUCCESS")
-
-        dispatcher_mod = MagicMock()
-        dispatcher_mod._invoke_healer = MagicMock(return_value=heal_result)
+        healer_cls = MagicMock()
+        healer_inst = MagicMock()
+        healer_inst.heal_repository.return_value = {"violations_fixed": 1}
+        healer_cls.return_value = healer_inst
+        agents_with_healer = dict(agents)
+        agents_with_healer["hierarchy"] = healer_cls
 
         with patch.dict(
             "sys.modules",
-            {
-                "agentic_core.L5_safety.reasoning.HierarchyValidatorAgent": MagicMock(
-                    HierarchyValidatorAgent=hier_cls
-                ),
-                "agentic_core.L2_execution.scripts.remediation_dispatcher": dispatcher_mod,
-            },
+            {"agentic_core.L5_safety.reasoning.HierarchyAgent": MagicMock(HierarchyAgent=hier_cls)},
         ):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase3_alignment_impl(agents, "neutral", de, sm, ctx=_make_ctx(heal=heal))
+                mod.execute_phase3_alignment_impl(
+                    agents_with_healer, "neutral", de, sm, ctx=_make_ctx(heal=heal)
+                )
 
         if expect_healer:
-            dispatcher_mod._invoke_healer.assert_called()
+            healer_inst.heal_repository.assert_called()
         else:
-            dispatcher_mod._invoke_healer.assert_not_called()
+            healer_inst.heal_repository.assert_not_called()
 
     @pytest.mark.parametrize(
         "heal,proceed,requires_healing,expect_healer",

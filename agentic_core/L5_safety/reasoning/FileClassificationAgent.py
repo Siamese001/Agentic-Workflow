@@ -62,9 +62,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-# SSOT: Import FileType from the zero-dependency classification kernel
+# SSOT: Import FileType and ExecutionMode helpers from the zero-dependency classification kernel
 from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,  # noqa: E402
+    classify_execution_mode,
 )
 
 # Optional: Import SovereignBaseAgent if available for full integration
@@ -148,6 +149,8 @@ class ClassificationResult:
     confidence: float  # 0.0 - 1.0
     signals: list[str]  # Evidence for classification
     warnings: list[str]  # Ambiguity warnings
+    execution_mode: str = "DETERMINISTIC"  # REASONING or DETERMINISTIC (Phase 0)
+    reasoning_signals: list[str] = field(default_factory=list)  # triggered signals
 
 
 @dataclass
@@ -215,6 +218,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     "insufficient_roles": 0,
                 },
                 "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
+                "AGENT_DETERMINISTIC": 0,
                 "ROUTER_INVARIANT_FAIL": {
                     "mutation": 0,
                     "workflow": 0,
@@ -520,6 +524,17 @@ class FileClassificationAgent(*BASE_CLASSES):
             if ftype == "IGNORE":
                 continue
 
+            # [EXECUTION MODE] Detect deterministic agents (detect-only, no routing change)
+            if ftype == "AGENT":
+                _exec_mode, _reasoning_signals = classify_execution_mode(path)
+                if _exec_mode == "DETERMINISTIC":
+                    self.stats["violations"]["AGENT_DETERMINISTIC"] += 1
+                    self.logger.warning(
+                        "[AGENT_DETERMINISTIC] %s: classified AGENT but no reasoning signals "
+                        "detected. Consider refactoring to validator/healer script.",
+                        path.name,
+                    )
+
             # [ROOT CAUSE] Check forbidden filename patterns (stuttering, ___, leading _)
             forbidden_violations = self._check_forbidden_patterns(path.name)
             for fv in forbidden_violations:
@@ -755,7 +770,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         self.logger.info("\n" + "=" * 60)
         self.logger.info(f"Total files analyzed: {self.stats['analyzed']}")
         self.logger.info(f"Compliant files:      {self.stats['compliant']}")
-        total_violations = sum(self.stats["violations"].values())
+        total_violations = sum(v for v in self.stats["violations"].values() if isinstance(v, int))
         self.logger.info(f"Violations detected:  {total_violations}")
         self.logger.info(f"  - Agents:  {self.stats['violations']['AGENT']}")
         self.logger.info(f"  - Classes: {self.stats['violations']['CLASS']}")

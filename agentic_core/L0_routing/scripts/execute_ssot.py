@@ -490,10 +490,10 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
 def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
-    from agentic_core.L5_safety.reasoning.FileClassificationHealerAgent import FileClassificationHealerAgent
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTHealerAgent import FilesystemSSOTHealerAgent
+    from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
-    from agentic_core.L5_safety.reasoning.HierarchyHealerAgent import HierarchyHealerAgent
+    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
@@ -503,10 +503,10 @@ def _get_l5_agent_roster():
     return (
         ArchitectureGovernorAgent,
         CognitiveDispositionAgent,
-        FileClassificationHealerAgent,
-        FilesystemSSOTHealerAgent,
+        FileClassificationAgent,
+        FilesystemSSOTReconcilerAgent,
         GravityLeakHealerAgent,
-        HierarchyHealerAgent,
+        HierarchyAgent,
         LocationHealerAgent,
         RootHygieneAgent,
         ObservabilityProbeExecutorAgent,
@@ -3430,12 +3430,20 @@ def execute_phase3_alignment_impl(
     logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
 
     state_mgr.update_agent("HierarchyHealerAgent", "L5 - Safety")
-    from agentic_core.L5_safety.reasoning.HierarchyValidatorAgent import (
-        HierarchyValidatorAgent as _HierarchyValidatorAgent,
-    )
+    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as _HierarchyAgentValidator
 
-    _hier_validator = _HierarchyValidatorAgent(project_root=REPO_ROOT)
-    _hier_check = _hier_validator.to_check_dict(target_territory=territory)
+    _hier_agent = _HierarchyAgentValidator(project_root=REPO_ROOT, healing_enabled=False)
+    _hier_scan = _hier_agent.scan_root_violations(target_territory=territory)
+    _hier_vcount = _hier_scan.get("violations_found", 0)
+    if "violations" in _hier_scan and isinstance(_hier_scan["violations"], list):
+        _hier_vcount = len(_hier_scan["violations"])
+    _hier_check = {
+        "check_id": "hierarchy_violations",
+        "evidence": _hier_scan,
+        "violations_count": _hier_vcount,
+        "territory": territory,
+        "repo_root": str(REPO_ROOT),
+    }
     violations = _hier_check["violations_count"]
 
     if violations > 0:
