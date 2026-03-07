@@ -30,6 +30,10 @@ import time
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
+
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     ALLOWED_DUPLICATE_FILENAMES,
@@ -47,9 +51,6 @@ from agentic_core.L5_safety.enforcement.mission_utils_enforcer import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 # [MISSION AUDIT] Standardized logging for L4 Ledger consumption
 logging.basicConfig(level=logging.INFO)
@@ -242,11 +243,15 @@ class HierarchyAgent(SovereignBaseAgent):
         """
         results = {"created": [], "errors": [], "violations_found": 0}
 
-        Logger.info("HierarchyAgent: Enforcing directory structure per SSOT across all enforced territories...")
+        Logger.info(
+            "HierarchyAgent: Enforcing directory structure per SSOT across all enforced territories..."
+        )
 
         # Determine which territories to process
         if target_territory:
-            territories_to_process = [target_territory] if target_territory in ENFORCED_TERRITORIES else [AGENTIC_CORE_DIR]
+            territories_to_process = (
+                [target_territory] if target_territory in ENFORCED_TERRITORIES else [AGENTIC_CORE_DIR]
+            )
         else:
             territories_to_process = sorted(ENFORCED_TERRITORIES)
 
@@ -281,7 +286,9 @@ class HierarchyAgent(SovereignBaseAgent):
 
         return results
 
-    def _create_agentic_core_structure(self, territory_path: Path, target_territory: str | None, results: dict) -> None:
+    def _create_agentic_core_structure(
+        self, territory_path: Path, target_territory: str | None, results: dict
+    ) -> None:
         """Create L2/L3 layer structure for agentic_core."""
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
         approved_layers_l2 = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
@@ -331,7 +338,9 @@ class HierarchyAgent(SovereignBaseAgent):
                         f"agentic_core/{layer_l2_name}/{territory_l3_name}",
                     )
 
-    def _create_territory_structure(self, territory_name: str, territory_path: Path, territory_config: dict, results: dict) -> None:
+    def _create_territory_structure(
+        self, territory_name: str, territory_path: Path, territory_config: dict, results: dict
+    ) -> None:
         """Create required subfolders for non-agentic_core territories (ops_scripts, system_learning, tools, data, docs, etc.)."""
         required_subfolders = territory_config.get("required_subfolders", [])
         if not required_subfolders:
@@ -473,7 +482,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         tests_cfg = SOVEREIGN_TERRITORIES.get("tests", {})
         subs = tests_cfg.get("subfolders", {})
-        if isinstance(subs, dict):
+        if hasattr(subs, "keys"):
             return frozenset(subs.keys())
         return frozenset()
 
@@ -506,6 +515,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 from agentic_core.L5_safety.config.structure_blueprint_config import (
                     TESTS_ROOT_FILE_WHITELIST,
                 )
+
                 if py_file.name in TESTS_ROOT_FILE_WHITELIST:
                     continue
 
