@@ -50,7 +50,7 @@ def validate_agent_roster() -> dict:
         )
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
+        from agentic_core.L5_safety.reasoning.root_hygiene_healer import (
             RootHygieneAgent,
         )
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (

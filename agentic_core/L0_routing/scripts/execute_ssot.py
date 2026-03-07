@@ -495,7 +495,7 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
     from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-    from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
+    from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
         ObservabilityProbeExecutorAgent,
     )

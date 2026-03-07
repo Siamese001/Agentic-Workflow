@@ -19,6 +19,7 @@ import sys
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
@@ -126,16 +127,17 @@ class RootHygieneAgent(SovereignBaseAgent):
         the _N numbered copy is always the duplicate and must be deleted.
         """
         import re as _re
-        _n_pattern = _re.compile(r'^(.+?)_(\d+)(\.[^.]+)$')
+
+        _n_pattern = _re.compile(r"^(.+?)_(\d+)(\.[^.]+)$")
         removed = 0
         flagged = []
 
-        for candidate in sorted(self.project_root.rglob('*')):
+        for candidate in sorted(self.project_root.rglob("*")):
             if not candidate.is_file():
                 continue
             # skip archive/backup/cache dirs
             rel = candidate.relative_to(self.project_root)
-            if any(p in rel.parts for p in ('.git', '__pycache__', 'archives', '.healing_backups', '.venv')):
+            if any(p in rel.parts for p in (".git", "__pycache__", "archives", ".healing_backups", ".venv")):
                 continue
             m = _n_pattern.match(candidate.name)
             if not m:
@@ -167,7 +169,9 @@ class RootHygieneAgent(SovereignBaseAgent):
 
         self.stats["n_duplicates_removed"] += removed
         if removed:
-            print(f"[HYGIENE] _N duplicate cleanup: {removed} file(s) {'removed' if not self.dry_run else 'flagged (dry-run)'}")
+            print(
+                f"[HYGIENE] _N duplicate cleanup: {removed} file(s) {'removed' if not self.dry_run else 'flagged (dry-run)'}"
+            )
 
     def _evacuate_root_scripts(self):
         """Evacuate root scripts directory to appropriate locations."""

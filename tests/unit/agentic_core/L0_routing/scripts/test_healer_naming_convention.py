@@ -9,6 +9,7 @@ LocationAgent deprecated shim deleted in Phase 2.
 GravityValidatorAgent renamed to gravity_validator.py in Phase 3.
 FileClassificationValidatorAgent renamed to file_classification_validator.py in Phase 4.
 HierarchyAgent renamed to hierarchy_healer.py + hierarchy_validator.py in Phase 5.
+RootHygieneAgent renamed to root_hygiene_healer.py + root_hygiene_validator.py in Phase 6.
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
@@ -47,6 +48,7 @@ RENAMED_MODULE_FILES = [
     "GravityValidatorAgent",  # Phase 3 — now gravity_validator.py
     "FileClassificationValidatorAgent",  # Phase 4 — now file_classification_validator.py
     "HierarchyAgent",  # Phase 5 — now hierarchy_healer.py (class HierarchyAgent preserved)
+    "RootHygieneAgent",  # Phase 6 — now root_hygiene_healer.py (class RootHygieneAgent preserved)
 ]
 
 

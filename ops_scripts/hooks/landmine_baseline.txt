@@ -1110,7 +1110,6 @@ agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:66:silent_swallower:Si
 agentic_core/L5_safety/reasoning/RegressionOracleAgent.py:87:type_erasure:Type erasure: RegressionOracleAgent.execute returns Any instead of structured type
 agentic_core/L5_safety/reasoning/ResourceManagerAgent.py:154:magic_configuration:Magic configuration: Hardcoded warning_threshold=0.8
 agentic_core/L5_safety/reasoning/ResourceManagerAgent.py:334:type_erasure:Type erasure: ResourceManagerAgent.heal returns dict instead of structured type
-agentic_core/L5_safety/reasoning/RootHygieneAgent.py:284:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SafetyDetectorAgent.py:276:type_erasure:Type erasure: SafetyDetectorAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py:226:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SafetyExecutorAgent.py:291:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1160,6 +1159,7 @@ agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:68:type_erasure:Type er
 agentic_core/L5_safety/reasoning/file_classification_validator.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/gravity_validator.py:70:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/guardian_decision.py:70:magic_configuration:Magic configuration: Hardcoded token_budget=1000000
+agentic_core/L5_safety/reasoning/root_hygiene_healer.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/security/secure_secrets.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/security/secure_secrets.py:55:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
 agentic_core/L5_safety/static_checks/determinism_serialization_check.py:131:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
