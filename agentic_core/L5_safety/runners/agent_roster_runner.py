@@ -23,7 +23,7 @@ def get_project_root() -> Path:
 
 def _get_ObservabilityProbeExecutorAgent():
     """Lazy loader for ObservabilityProbeExecutorAgent (upward L5->L6 seam)."""
-    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+    from agentic_core.L6_observability.reasoning.observability_probe_executor import (
         ObservabilityProbeExecutorAgent,
     )
 

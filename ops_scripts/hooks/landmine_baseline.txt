@@ -1278,8 +1278,8 @@ agentic_core/L6_observability/engines/SovereignHealthMonitor.py:68:silent_swallo
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:86:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:90:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L6_observability/engines/detection_signal_emitter.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L6_observability/reasoning/ObservabilityProbeExecutorAgent.py:33:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.execute returns dict instead of structured type
-agentic_core/L6_observability/reasoning/ObservabilityProbeExecutorAgent.py:84:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.heal_repository returns dict instead of structured type
+agentic_core/L6_observability/reasoning/observability_probe_executor.py:33:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.execute returns dict instead of structured type
+agentic_core/L6_observability/reasoning/observability_probe_executor.py:84:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.heal_repository returns dict instead of structured type
 agentic_core/adg/applications/blast_radius.py:51:magic_configuration:Magic configuration: Hardcoded _restricted_threshold=300
 agentic_core/adg/applications/blast_radius.py:52:magic_configuration:Magic configuration: Hardcoded _human_review_threshold=700
 agentic_core/base_agents/L0RoutingBase.py:87:magic_configuration:Magic configuration: Hardcoded max_depth=3
