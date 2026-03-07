@@ -493,7 +493,7 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
     from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
     from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
     from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
@@ -3430,9 +3430,11 @@ def execute_phase3_alignment_impl(
     logger.info(f"=== PHASE 3: ALIGNMENT - {territory} ===")
 
     state_mgr.update_agent("HierarchyHealerAgent", "L5 - Safety")
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as _HierarchyAgentValidator
+    from agentic_core.L5_safety.reasoning.hierarchy_validator import (
+        HierarchyValidatorAgent as _HierarchyAgentValidator,
+    )
 
-    _hier_agent = _HierarchyAgentValidator(project_root=REPO_ROOT, healing_enabled=False)
+    _hier_agent = _HierarchyAgentValidator(project_root=REPO_ROOT)
     _hier_scan = _hier_agent.scan_root_violations(target_territory=territory)
     _hier_vcount = _hier_scan.get("violations_found", 0)
     if "violations" in _hier_scan and isinstance(_hier_scan["violations"], list):

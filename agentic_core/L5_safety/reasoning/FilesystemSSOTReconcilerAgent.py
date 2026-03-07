@@ -96,10 +96,10 @@ except ImportError:
         pass
 
 
-from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 Logger = logging.getLogger(__name__)
 
@@ -122,7 +122,8 @@ def _evict_blueprint_modules() -> None:
     the filesystem for new/changed .py files.
     """
     evicted = [
-        k for k in list(sys.modules)
+        k
+        for k in list(sys.modules)
         if any(k == p or k.startswith(p + ".") for p in _BLUEPRINT_MODULE_PREFIXES)
     ]
     for key in evicted:
@@ -269,7 +270,7 @@ class FilesystemSSOTReconcilerAgent(
             is_compliant, results = agent.run_ci_verification_sync()
             sys.exit(0 if is_compliant else 1)
         """
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         Logger.info("Starting CI SSOT Verification (headless mode)...")
@@ -1482,6 +1483,11 @@ class FilesystemSSOTReconcilerAgent(
                     else:
                         errors += 1
                         Logger.error("[FilesystemSSOTReconcilerAgent] archive failed: %s", result.error)
-            return {"drift_detected": True, "forbidden": len(forbidden), "applied": archived, "errors": errors}
+            return {
+                "drift_detected": True,
+                "forbidden": len(forbidden),
+                "applied": archived,
+                "errors": errors,
+            }
         finally:
             _call_path.discard(agent_name)

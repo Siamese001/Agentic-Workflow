@@ -315,7 +315,7 @@ class TestIntegrationExecuteSSOTImports:
             from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
                 FileClassificationAgent,
             )
-            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
             from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
             assert FileClassificationAgent is not None

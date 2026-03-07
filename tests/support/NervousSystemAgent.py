@@ -99,7 +99,7 @@ class NervousSystemAgent(AtomicExecutionMixin, SovereignBaseAgent):
             self.location_agent = None
         # [SSOT DYNAMIC] Runtime-only L5 imports for validation agents
         try:
-            from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
             self.hierarchy_agent = HierarchyAgent(self.project_root)
         except ImportError:

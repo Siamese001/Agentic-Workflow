@@ -11,7 +11,7 @@ if str(project_root) not in sys.path:
     sys.path.insert(0, str(project_root))
 
 try:
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 except (ImportError, NameError, AttributeError, TypeError) as e:
     print(f"Import error: {e}")
     print(f"Project root: {project_root}")
@@ -129,7 +129,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
         # Capture log output
         log_capture = io.StringIO()
         handler = logging.StreamHandler(log_capture)
-        logger = logging.getLogger("agentic_core.L5_safety.reasoning.HierarchyAgent")
+        logger = logging.getLogger("agentic_core.L5_safety.reasoning.hierarchy_healer")
         logger.addHandler(handler)
         logger.setLevel(logging.INFO)
 

@@ -32,7 +32,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (
 def _get_hierarchy_agent() -> Any:
     """Get hierarchy agent."""
     try:
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         return HierarchyAgent
     except Exception:

@@ -129,7 +129,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             if "pytest" in str(proj_root) or "tmp" in str(proj_root):
                 Logger.info("Test Environment Detected: Bypassing strict HierarchyAgent validation.")
                 return []
-            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
             return HierarchyAgent(proj_root).validate_hierarchy()
 
@@ -183,8 +183,11 @@ class SystemArchitectAgent(SovereignBaseAgent):
         from agentic_core.L5_safety.config.structure_blueprint_config import CODE_TERRITORIES
 
         # Build dependency graph across all code territories (not just agentic_core)
-        scan_roots = [self.project_root / territory for territory in sorted(CODE_TERRITORIES)
-                      if (self.project_root / territory).exists()]
+        scan_roots = [
+            self.project_root / territory
+            for territory in sorted(CODE_TERRITORIES)
+            if (self.project_root / territory).exists()
+        ]
 
         # Create cache key from all scan roots
         cache_key = tuple(sorted(str(r) for r in scan_roots))

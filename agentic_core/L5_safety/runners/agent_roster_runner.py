@@ -48,7 +48,7 @@ def validate_agent_roster() -> dict:
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
         from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
             RootHygieneAgent,

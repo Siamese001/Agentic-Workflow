@@ -616,28 +616,28 @@ agentic_core/L0_routing/scripts/execute_ssot.py:308:silent_swallower:Silent exce
 agentic_core/L0_routing/scripts/execute_ssot.py:3394:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:354:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:356:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4247:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:4312:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4249:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:4314:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:434:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:456:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:486:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5322:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5418:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5485:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5675:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5748:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5895:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:5909:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6050:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6101:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6131:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6139:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6405:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6459:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6499:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6527:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5242:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5420:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5487:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5677:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5750:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5897:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:5911:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6052:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6133:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6141:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6407:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6461:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6501:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6529:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/scripts/ssot_adapters.py:402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1143,18 +1143,18 @@ agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py:440:type_erasure:Type
 agentic_core/L5_safety/reasoning/StructureEnforcerAgent.py:492:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:112:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:136:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:233:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:291:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:329:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:341:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:380:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:388:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:392:magic_configuration:Magic configuration: Hardcoded max_rounds=5
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:397:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:414:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:416:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:419:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
-agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:427:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:236:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:294:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:332:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:344:path_fragility:Path fragility: os.getcwd() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:383:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:391:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:395:magic_configuration:Magic configuration: Hardcoded max_rounds=5
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:400:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:417:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:419:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:422:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:430:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:53:type_erasure:Type erasure: SystemArchitectAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:68:type_erasure:Type erasure: SystemArchitectAgent.execute returns Any instead of structured type
 agentic_core/L5_safety/reasoning/file_classification_validator.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

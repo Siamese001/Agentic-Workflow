@@ -39,7 +39,7 @@ def run_orchestrator_mission(
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         orchestrator = get_consolidated_orchestrator(project_root)

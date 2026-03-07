@@ -53,6 +53,9 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
@@ -63,9 +66,6 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 Logger = logging.getLogger(__name__)
 
@@ -564,7 +564,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
                 # [UNIFIED AUDIT] Ingest Physical Hierarchy Violations
                 try:
-                    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+                    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                     hierarchy = HierarchyAgent(project_root=self.project_root)
                     # Scan specifically for files sitting in the root that shouldn't be there
@@ -1480,7 +1480,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         # 2. Ingest Hierarchy (Physical Placement)
         try:
-            from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+            from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
             hierarchy = HierarchyAgent(project_root=self.project_root)
             for territory in target_territories:

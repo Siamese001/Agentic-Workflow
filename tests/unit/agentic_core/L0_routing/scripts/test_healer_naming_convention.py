@@ -8,6 +8,7 @@ have been deleted as part of the agent-script refactor (Phase 1).
 LocationAgent deprecated shim deleted in Phase 2.
 GravityValidatorAgent renamed to gravity_validator.py in Phase 3.
 FileClassificationValidatorAgent renamed to file_classification_validator.py in Phase 4.
+HierarchyAgent renamed to hierarchy_healer.py + hierarchy_validator.py in Phase 5.
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
@@ -31,15 +32,21 @@ CANONICAL_ROSTER_IMPORTS = [
     "FilesystemSSOTReconcilerAgent",
 ]
 
-# Shim names that were previously used as roster imports — now deleted
+# Shim names that were deleted and whose class names must NOT appear in the roster.
 DELETED_SHIM_NAMES = [
     "FileClassificationHealerAgent",  # deleted Phase 1 — shim for FileClassificationAgent
     "HierarchyHealerAgent",  # deleted Phase 1 — shim for HierarchyAgent
     "FilesystemSSOTHealerAgent",  # deleted Phase 1 — shim for FilesystemSSOTReconcilerAgent
     "HierarchyValidatorAgent",  # deleted Phase 1 — thin wrapper, inlined in execute_ssot
     "LocationAgent",  # deleted Phase 2 — deprecated §26-violating shim for LocationHealerAgent
-    "GravityValidatorAgent",  # renamed Phase 3 — moved to gravity_validator.py (snake_case)
-    "FileClassificationValidatorAgent",  # renamed Phase 4 — moved to file_classification_validator.py
+]
+
+# Module files that were renamed to snake_case. Their class names may still exist in the
+# codebase (roster, tests, etc.). Only the OLD PascalCase module path is forbidden.
+RENAMED_MODULE_FILES = [
+    "GravityValidatorAgent",  # Phase 3 — now gravity_validator.py
+    "FileClassificationValidatorAgent",  # Phase 4 — now file_classification_validator.py
+    "HierarchyAgent",  # Phase 5 — now hierarchy_healer.py (class HierarchyAgent preserved)
 ]
 
 
@@ -137,20 +144,20 @@ class TestRosterUsesDirectImports:
             )
 
     def test_deleted_shim_files_do_not_exist(self):
-        """Phase 1 negative invariant: deleted shim files must not exist."""
+        """Phase 1-5 negative invariant: deleted/renamed shim files must not exist."""
         shim_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
-        for name in DELETED_SHIM_NAMES:
+        for name in DELETED_SHIM_NAMES + RENAMED_MODULE_FILES:
             shim_path = shim_dir / f"{name}.py"
             assert not shim_path.exists(), (
-                f"Deleted shim file still present: {shim_path.relative_to(REPO_ROOT)}. "
-                f"Remove it as part of Phase 1."
+                f"Deleted/renamed shim file still present: {shim_path.relative_to(REPO_ROOT)}. "
+                f"Remove or rename it."
             )
 
     def test_direct_classes_are_importable(self):
         """Direct class imports used in roster must be resolvable."""
         direct_class_paths = {
             "FileClassificationAgent": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
-            "HierarchyAgent": "agentic_core.L5_safety.reasoning.HierarchyAgent",
+            "HierarchyAgent": "agentic_core.L5_safety.reasoning.hierarchy_healer",
             "FilesystemSSOTReconcilerAgent": "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent",
             "GravityLeakHealerAgent": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
         }
@@ -211,12 +218,14 @@ class TestStateMgrUsesCanonicalHealerNames:
 
 
 class TestDeletedShimsAreGone:
-    """Phase 1 negative invariants: deleted shim files must not exist,
+    """Phase 1-5 negative invariants: deleted/renamed shim files must not exist,
     and no remaining module imports from them."""
 
     def test_no_module_imports_deleted_shims(self):
-        """§28: No remaining .py file may import from any deleted shim module."""
-        deleted_shim_modules = {f"agentic_core.L5_safety.reasoning.{n}" for n in DELETED_SHIM_NAMES}
+        """§28: No remaining .py file may import from any deleted or renamed shim module."""
+        deleted_shim_modules = {
+            f"agentic_core.L5_safety.reasoning.{n}" for n in DELETED_SHIM_NAMES + RENAMED_MODULE_FILES
+        }
 
         reasoning_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
         violations = []

@@ -92,7 +92,11 @@ class TestPhase3Alignment:
         return hier_cls, hier_inst
 
     def _hier_agent_patch(self, hier_cls):
-        return {"agentic_core.L5_safety.reasoning.HierarchyAgent": MagicMock(HierarchyAgent=hier_cls)}
+        return {
+            "agentic_core.L5_safety.reasoning.hierarchy_validator": MagicMock(
+                HierarchyValidatorAgent=hier_cls
+            )
+        }
 
     def test_zero_violations_completes_no_violations(self, mod):
         de = _make_de(mod)
@@ -532,7 +536,11 @@ class TestPhaseMatrix:
 
         with patch.dict(
             "sys.modules",
-            {"agentic_core.L5_safety.reasoning.HierarchyAgent": MagicMock(HierarchyAgent=hier_cls)},
+            {
+                "agentic_core.L5_safety.reasoning.hierarchy_validator": MagicMock(
+                    HierarchyValidatorAgent=hier_cls
+                )
+            },
         ):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 mod.execute_phase3_alignment_impl(
