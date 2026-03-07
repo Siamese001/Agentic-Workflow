@@ -595,6 +595,15 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
 
     # Build agentic_core with all layers
     agentic_core_subfolders: dict[str, Any] = {
+        "adg": {
+            "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
+            "subfolders": {
+                "applications": {"purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."},
+                "ci": {"purpose": "CI integration and invariant checks."},
+                "client": {"purpose": "MCP client for ADG graph operations."},
+                "extraction": {"purpose": "Static AST-based scanner and edge extraction."},
+            },
+        },
         "agents": {
             "purpose": "Agent execution profiles and registry. SSOT for agent identity, execution mode, and reasoning intensity.",
             "notes": "Contains agent_registry.py (AGENT_REGISTRY, get_profile, registry_digest) and types/ subfolder.",
@@ -955,7 +964,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
-            "_quarantine": {"purpose": "Quarantined tests pending triage or fix"},
             "core": {"purpose": "Core framework-level tests"},
             "goldens": {"purpose": "Golden test data for snapshot comparisons"},
             "helpers": {"purpose": "Shared test helper modules"},

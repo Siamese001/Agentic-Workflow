@@ -2297,11 +2297,11 @@ def with_retry(max_retries=3, delay=1.0):
                         raise e
 
                     wait_time = delay * (2**attempt)
-                    logger.warning(
-                        f"Retry {attempt + 1}/{max_retries} for {func.__name__} failed: {e}. Waiting {wait_time}s",
+                    logger.error(
+                        f"Retry {attempt + 1}/{max_retries} for {func.__name__} failed: {e}\n{traceback.format_exc()}",
                     )
                     time.sleep(wait_time)
-            logger.error(f"All retries failed for {func.__name__}")
+            logger.error(f"All {max_retries} retries exhausted for {func.__name__}")
             raise last_exception
 
         return wrapper
@@ -3207,10 +3207,10 @@ def execute_phase1_discovery_impl(
 
         logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
 
-    # guardian: allow-silent-swallow
     except Exception as e:
-        logger.warning(f"FileClassificationHealerAgent early detection failed: {e}")
+        logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
+        state_mgr.add_event("error", f"FileClassificationHealerAgent early detection failed: {e}")
         state_mgr.state["classification_violations"] = []
         state_mgr.state["classification_scan_result"] = {}
         state_mgr.state["classification_check_dict"] = {}
@@ -4626,6 +4626,177 @@ def _print_meta_learning_summary(
     print("=" * _W)
 
 
+def _print_run_manifest(
+    state_mgr: "RuntimeStateManager",
+    targets: list[str],
+) -> int:
+    """Print a complete agent/phase execution manifest and return the number of gaps.
+
+    Every expected agent must appear in completed_agents. Every territory must have
+    executed Phase 1 (discovery). Any gap is printed as an explicit ERROR line.
+    Returns the count of gaps so the caller can decide exit behavior.
+    Zero tolerance: if it didn't run, it appears here.
+    """
+    _W = 78
+
+    # ---------------------------------------------------------------------------
+    # Canonical expected agents per scope
+    # ---------------------------------------------------------------------------
+    # Global agents (run once, outside territory loop)
+    GLOBAL_AGENTS = ["RootHygieneAgent", "GravityLeakHealerAgent"]
+
+    # Per-territory agents (must run for every territory)
+    PER_TERRITORY_AGENTS = [
+        "FilesystemSSOTHealerAgent",   # Phase 2 reconciler
+        "LocationHealerAgent",          # Phase 2 location
+        "HierarchyHealerAgent",         # Phase 3 alignment
+        "FileClassificationHealerAgent", # Phase 3 sovereignty
+        "ArchitectureGovernorAgent",    # Phase 4 arch validation
+        "DebateSynthesisAgent",         # Phase 6 observability
+        "CognitiveDispositionAgent",    # Phase 6 cognitive
+        "SovereignCertifier",           # Phase 7 certification
+    ]
+
+    # Phases expected per territory (from execute_phase1_discovery onward)
+    PER_TERRITORY_PHASES = [
+        "Phase1:Discovery",
+        "Phase2:Reconciliation",
+        "Phase3:Alignment",
+        "Phase3:Sovereignty",
+        "Phase4:ArchValidation",
+        "Phase5:Healing",
+        "Phase6:Observability",
+        "Phase7:Certification",
+    ]
+
+    # ---------------------------------------------------------------------------
+    # Build lookup from state
+    # ---------------------------------------------------------------------------
+    completed = {a.get("agent") for a in state_mgr.state.get("completed_agents", []) if a.get("agent")}
+    failed_agents = {
+        a.get("agent"): a.get("details", "no details")
+        for a in state_mgr.state.get("completed_agents", [])
+        if a.get("agent") and a.get("success") is False
+    }
+    skipped_agents = {
+        a.get("agent"): a.get("reason", "no reason")
+        for a in state_mgr.state.get("skipped_agents", [])
+        if a.get("agent")
+    }
+    error_events = state_mgr.state.get("events", [])
+    error_msgs: dict[str, list[str]] = {}
+    for ev in error_events:
+        if ev.get("type") == "error":
+            msg = ev.get("message", "")
+            for territory in targets:
+                if territory in msg:
+                    error_msgs.setdefault(territory, []).append(msg)
+            if "RootHygieneAgent" in msg:
+                error_msgs.setdefault("__global__", []).append(msg)
+            if "GravityLeakHealerAgent" in msg:
+                error_msgs.setdefault("__global__", []).append(msg)
+
+    # Phase 1 success is inferred: if a territory has completed reconciler/location it ran
+    # Phase 1 failure is recorded as an error event "Phase 1 failure in {territory}" or
+    # "Crash in {territory}"
+    territory_crashed = set()
+    phase1_failed = set()
+    for ev in error_events:
+        msg = ev.get("message", "")
+        if ev.get("type") == "error":
+            for t in targets:
+                if f"Phase 1 failure in {t}" in msg or f"Phase 1 failed for {t}" in msg:
+                    phase1_failed.add(t)
+                if f"Crash in {t}" in msg:
+                    territory_crashed.add(t)
+
+    # ---------------------------------------------------------------------------
+    # Print manifest
+    # ---------------------------------------------------------------------------
+    gaps = 0
+
+    print("")
+    print("=" * _W)
+    print("  RUN MANIFEST — AGENT & PHASE COVERAGE")
+    print("  Zero-tolerance: every expected agent/phase must appear below as RAN")
+    print("=" * _W)
+
+    # --- Global agents ---
+    print("")
+    print("  GLOBAL AGENTS (run once, repo-wide)")
+    print("  " + "-" * 40)
+    for agent in GLOBAL_AGENTS:
+        errs = error_msgs.get("__global__", [])
+        agent_errs = [e for e in errs if agent in e]
+        if agent in completed and agent not in failed_agents:
+            print(f"  ✓  {agent}")
+        elif agent in failed_agents:
+            print(f"  ✗  {agent}  [FAILED: {failed_agents[agent]}]")
+            gaps += 1
+        elif agent in skipped_agents:
+            print(f"  ⚠  {agent}  [SKIPPED: {skipped_agents[agent]}]")
+            gaps += 1
+        elif agent_errs:
+            print(f"  ✗  {agent}  [ERROR: {agent_errs[0][:120]}]")
+            gaps += 1
+        else:
+            print(f"  ✗  {agent}  [DID NOT RUN — no record in completed_agents]")
+            gaps += 1
+
+    # --- Per-territory agents ---
+    print("")
+    print("  PER-TERRITORY AGENTS")
+    print("  " + "-" * 40)
+    for territory in targets:
+        crashed = territory in territory_crashed
+        p1_fail = territory in phase1_failed
+        t_errs = error_msgs.get(territory, [])
+
+        print(f"  Territory: {territory}")
+        if crashed:
+            crash_msg = next((e for e in t_errs if "Crash in" in e), "unknown crash")
+            print(f"    ✗  [TERRITORY CRASHED: {crash_msg[:160]}]")
+            gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
+            continue
+
+        if p1_fail:
+            p1_msg = next((e for e in t_errs if "Phase 1" in e), "Phase 1 failed")
+            print(f"    ✗  Phase1:Discovery  [FAILED: {p1_msg[:160]}]")
+            print(f"    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
+            gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
+            continue
+
+        for agent in PER_TERRITORY_AGENTS:
+            a_errs = [e for e in t_errs if agent in e]
+            if agent in completed and agent not in failed_agents:
+                print(f"    ✓  {agent}")
+            elif agent in failed_agents:
+                print(f"    ✗  {agent}  [FAILED: {str(failed_agents[agent])[:120]}]")
+                gaps += 1
+            elif agent in skipped_agents:
+                print(f"    ⚠  {agent}  [SKIPPED: {str(skipped_agents[agent])[:120]}]")
+                gaps += 1
+            elif a_errs:
+                print(f"    ✗  {agent}  [ERROR: {a_errs[0][:120]}]")
+                gaps += 1
+            else:
+                print(f"    ✗  {agent}  [DID NOT RUN]")
+                gaps += 1
+
+    # --- Summary ---
+    print("")
+    print("  " + "-" * 40)
+    if gaps == 0:
+        print("  ✓  ALL EXPECTED AGENTS AND PHASES RAN SUCCESSFULLY")
+    else:
+        print(f"  ✗  {gaps} AGENT/PHASE EXECUTION GAP(S) DETECTED — SEE ABOVE")
+        print("     Re-run with the same flags; gaps indicate errors that must be resolved.")
+    print("=" * _W)
+    print("")
+
+    return gaps
+
+
 def _write_mandatory_json_output(
     state_mgr: "SovereignStateMgr",
     decision_engine: "SovereignDecisionEngine",
@@ -5597,9 +5768,9 @@ def _legacy_main(
                                 logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
                     else:
                         logger.warning(f"Integrity check failed: {result.get('error')}")
-                # guardian: allow-silent-swallow
-                except Exception as e:  # guardian: allow-silent-swallower
-                    logger.warning(f"Integrity check failed, continuing: {e}")
+                except Exception as e:
+                    logger.error(f"Integrity check FAILED: {e}\n{traceback.format_exc()}")
+                    state_mgr.add_event("error", f"Integrity check failed: {e}")
 
             # [INTEGRATION] Attempt L3 Smart Orchestration first
             if args.domains:
@@ -5648,8 +5819,9 @@ def _legacy_main(
                                         _v.get("type"),
                                         _v.get("file", ""),
                                     )
-                            except Exception as _he:  # guardian: allow-silent-swallower
-                                logger.debug("[RootHygiene] heal() error: %s", _he)
+                            except Exception as _he:
+                                logger.error("[RootHygiene] heal() FAILED for %s: %s\n%s", _v.get("type"), _he, traceback.format_exc())
+                                state_mgr.add_event("error", f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}")
                     state_mgr.complete_agent(
                         "RootHygieneAgent",
                         True,
@@ -5670,16 +5842,17 @@ def _legacy_main(
                         )
                 else:
                     state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
-            # guardian: allow-silent-swallow
-            except Exception as e:  # guardian: allow-silent-swallower
-                logger.warning(f"RootHygieneAgent failed: {e}")
+            except Exception as e:
+                logger.error(f"RootHygieneAgent FAILED: {e}\n{traceback.format_exc()}")
+                state_mgr.add_event("error", f"RootHygieneAgent failed: {e}")
                 state_mgr.complete_agent("RootHygieneAgent", False, str(e))
 
             # [FIX-B8] Run GravityLeakRepairAgent once globally (same pattern as RootHygieneAgent)
             try:
                 _run_gravity_repair_global(agents, state_mgr, ctx=ctx)
-            except Exception as e:  # guardian: allow-silent-swallower
-                logger.warning(f"GravityLeakRepairAgent global run failed: {e}")
+            except Exception as e:
+                logger.error(f"GravityLeakRepairAgent global run FAILED: {e}\n{traceback.format_exc()}")
+                state_mgr.add_event("error", f"GravityLeakRepairAgent failed: {e}")
 
             # [L3-SEAM] Initialize agent execution log for L3EfficiencyTuner consumption
             if "agent_execution_log" not in state_mgr.state:
@@ -5905,9 +6078,9 @@ def _legacy_main(
                                     False,
                                     "No scan_violations method",
                                 )
-                        # guardian: allow-silent-swallow
-                        except Exception as e:  # guardian: allow-silent-swallower
-                            logger.warning(f"DebateSynthesisAgent failed: {e}")
+                        except Exception as e:
+                            logger.error(f"DebateSynthesisAgent FAILED: {e}\n{traceback.format_exc()}")
+                            state_mgr.add_event("error", f"DebateSynthesisAgent failed in {territory}: {e}")
                             state_mgr.complete_agent("DebateSynthesisAgent", False, str(e))
 
                         # Execute CognitiveDispositionAgent
@@ -5925,9 +6098,9 @@ def _legacy_main(
                                 state_mgr.complete_agent(
                                     "CognitiveDispositionAgent", False, "No get_analytics method"
                                 )
-                        # guardian: allow-silent-swallow
-                        except Exception as e:  # guardian: allow-silent-swallower
-                            logger.warning(f"CognitiveDispositionAgent failed: {e}")
+                        except Exception as e:
+                            logger.error(f"CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}")
+                            state_mgr.add_event("error", f"CognitiveDispositionAgent failed in {territory}: {e}")
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
 
                         # Phase 7 (RootHygieneAgent moved outside territory loop — Fix 4)
@@ -5953,11 +6126,9 @@ def _legacy_main(
                         state_mgr.add_event("error", f"Blocked Prompt in {territory}")
                         continue  # Skip this territory, try next
                     raise runtime_err
-                # guardian: allow-silent-swallow
-                except Exception as e:  # guardian: allow-silent-swallower
-                    logger.error(f"❌ Protocol crashed on {territory}: {e}")
-                    traceback.print_exc()
-                    state_mgr.add_event("error", f"Crash in {territory}: {str(e)[:200]}")
+                except Exception as e:
+                    logger.error(f"❌ Protocol crashed on {territory}: {e}\n{traceback.format_exc()}")
+                    state_mgr.add_event("error", f"Crash in {territory}: {type(e).__name__}: {str(e)[:500]}")
                     if is_autonomous:
                         continue
                     else:
@@ -6001,6 +6172,16 @@ def _legacy_main(
 
             _print_healing_heatmap(state_mgr, decision_engine)
             _print_meta_learning_summary(state_mgr, decision_engine)
+
+            # [ZERO-TOLERANCE] Print full agent/phase coverage manifest.
+            # Any agent or phase that did not run is explicitly named here.
+            _manifest_gaps = _print_run_manifest(state_mgr, targets)
+            if _manifest_gaps > 0:
+                logger.error(
+                    f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
+                    "See RUN MANIFEST output above for full details."
+                )
+
             _write_mandatory_json_output(state_mgr, decision_engine)
 
             return results

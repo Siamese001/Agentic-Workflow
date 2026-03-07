@@ -1,7 +1,7 @@
 {
-  "status": "completed",
-  "start_time": "2026-03-06T17:16:32.744099",
-  "end_time": "2026-03-06T17:18:49.150043",
+  "status": "fatal_error",
+  "start_time": "2026-03-06T18:16:07.168443",
+  "end_time": "2026-03-06T18:16:30.459234",
   "current_agent": null,
   "current_layer": "L5 - Safety (Validator)",
   "agents_order": [
@@ -25,448 +25,654 @@
   "completed_agents": [
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-03-06T17:16:39.275274",
+      "time": "2026-03-06T18:16:13.460656",
       "success": true,
-      "details": "Violations: 5 (high: 0) fixed: 2"
+      "details": "Violations: 4 (high: 0) fixed: 0"
     },
     {
       "agent": "GravityLeakHealerAgent",
-      "time": "2026-03-06T17:16:49.258661",
-      "success": false,
-      "details": "Detection failed: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "time": "2026-03-06T18:16:22.277778",
+      "success": true,
+      "details": "Violations: 257 | Fixed: 0"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:22.290552",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:22.292563",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:22.293089",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.607555",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.609560",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.609560",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.641959",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.644072",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.644072",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.673028",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.674545",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.674545",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.704129",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.719388",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.719388",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.748300",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.766719",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.767224",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.797395",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:29.823401",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:29.823401",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:29.852934",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:30.209166",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:30.209166",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:30.243355",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:30.249049",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:30.249049",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:30.279481",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "FilesystemSSOTHealerAgent",
+      "time": "2026-03-06T18:16:30.391630",
+      "success": true,
+      "details": "Drift violations: 2"
+    },
+    {
+      "agent": "LocationHealerAgent",
+      "time": "2026-03-06T18:16:30.399875",
+      "success": true,
+      "details": "Violations: 0 | Conf: 1.00"
+    },
+    {
+      "agent": "FileClassificationHealerAgent",
+      "time": "2026-03-06T18:16:30.400882",
+      "success": true,
+      "details": "Early detection: 0 classification issues"
     }
   ],
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-06T17:16:32.744099",
+      "time": "2026-03-06T18:16:07.168443",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-06T17:16:39.270722",
+      "time": "2026-03-06T18:16:13.458147",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-03-06T17:16:39.275274",
+      "time": "2026-03-06T18:16:13.460656",
       "type": "agent_end",
       "message": "✓ Completed RootHygieneAgent"
     },
     {
-      "time": "2026-03-06T17:16:39.275274",
+      "time": "2026-03-06T18:16:13.460656",
       "type": "agent_start",
       "message": "→ Executing GravityLeakHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:16:49.258661",
+      "time": "2026-03-06T18:16:22.277778",
       "type": "agent_end",
-      "message": "❌ Completed GravityLeakHealerAgent"
+      "message": "✓ Completed GravityLeakHealerAgent"
     },
     {
-      "time": "2026-03-06T17:16:49.268186",
+      "time": "2026-03-06T18:16:22.288922",
       "type": "domain_start",
       "message": "Entering Domain: L0_routing"
     },
     {
-      "time": "2026-03-06T17:16:49.268186",
+      "time": "2026-03-06T18:16:22.288922",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:16:50.271848",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:22.290552",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:16:52.274698",
+      "time": "2026-03-06T18:16:22.290552",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:16:56.279730",
+      "time": "2026-03-06T18:16:22.292563",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:22.292563",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:22.293089",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.595424",
       "type": "error",
-      "message": "Crash in L0_routing: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in L0_routing"
     },
     {
-      "time": "2026-03-06T17:16:56.290499",
+      "time": "2026-03-06T18:16:29.606008",
       "type": "domain_start",
       "message": "Entering Domain: L2_execution"
     },
     {
-      "time": "2026-03-06T17:16:56.290499",
+      "time": "2026-03-06T18:16:29.606008",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:16:57.293444",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.607555",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:16:59.295866",
+      "time": "2026-03-06T18:16:29.607555",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:03.299600",
+      "time": "2026-03-06T18:16:29.609560",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.609560",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.609560",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.631517",
       "type": "error",
-      "message": "Crash in L2_execution: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in L2_execution"
     },
     {
-      "time": "2026-03-06T17:17:03.307382",
+      "time": "2026-03-06T18:16:29.641450",
       "type": "domain_start",
       "message": "Entering Domain: L3_orchestration"
     },
     {
-      "time": "2026-03-06T17:17:03.307382",
+      "time": "2026-03-06T18:16:29.641450",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:04.310863",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.641959",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:06.313041",
+      "time": "2026-03-06T18:16:29.641959",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:10.316734",
+      "time": "2026-03-06T18:16:29.644072",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.644072",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.644072",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.661090",
       "type": "error",
-      "message": "Crash in L3_orchestration: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in L3_orchestration"
     },
     {
-      "time": "2026-03-06T17:17:10.325943",
+      "time": "2026-03-06T18:16:29.670998",
       "type": "domain_start",
       "message": "Entering Domain: L5_safety"
     },
     {
-      "time": "2026-03-06T17:17:10.325943",
+      "time": "2026-03-06T18:16:29.670998",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:11.329987",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.673028",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:13.332267",
+      "time": "2026-03-06T18:16:29.673028",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:17.335956",
+      "time": "2026-03-06T18:16:29.674545",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.674545",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.674545",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.693138",
       "type": "error",
-      "message": "Crash in L5_safety: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in L5_safety"
     },
     {
-      "time": "2026-03-06T17:17:17.345224",
+      "time": "2026-03-06T18:16:29.703513",
       "type": "domain_start",
       "message": "Entering Domain: apps_lic"
     },
     {
-      "time": "2026-03-06T17:17:17.345224",
+      "time": "2026-03-06T18:16:29.703513",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:18.347571",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.704129",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:20.350103",
+      "time": "2026-03-06T18:16:29.704129",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:24.354260",
+      "time": "2026-03-06T18:16:29.719388",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.719388",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.719388",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.737820",
       "type": "error",
-      "message": "Crash in apps_lic: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in apps_lic"
     },
     {
-      "time": "2026-03-06T17:17:24.360634",
+      "time": "2026-03-06T18:16:29.748300",
       "type": "domain_start",
       "message": "Entering Domain: apps_rg"
     },
     {
-      "time": "2026-03-06T17:17:24.360634",
+      "time": "2026-03-06T18:16:29.748300",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:25.365319",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.748300",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:27.368161",
+      "time": "2026-03-06T18:16:29.748300",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:31.372074",
+      "time": "2026-03-06T18:16:29.766719",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.766719",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.767224",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.785520",
       "type": "error",
-      "message": "Crash in apps_rg: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in apps_rg"
     },
     {
-      "time": "2026-03-06T17:17:31.383652",
+      "time": "2026-03-06T18:16:29.796387",
       "type": "domain_start",
       "message": "Entering Domain: apps_shared"
     },
     {
-      "time": "2026-03-06T17:17:31.383652",
+      "time": "2026-03-06T18:16:29.796387",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:32.386546",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.797395",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:34.392236",
+      "time": "2026-03-06T18:16:29.797395",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:38.395546",
+      "time": "2026-03-06T18:16:29.823401",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.823401",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:29.823401",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:29.841851",
       "type": "error",
-      "message": "Crash in apps_shared: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in apps_shared"
     },
     {
-      "time": "2026-03-06T17:17:38.404587",
+      "time": "2026-03-06T18:16:29.851922",
       "type": "domain_start",
       "message": "Entering Domain: archives"
     },
     {
-      "time": "2026-03-06T17:17:38.404587",
+      "time": "2026-03-06T18:16:29.851922",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:39.407152",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:29.852934",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:41.409984",
+      "time": "2026-03-06T18:16:29.852934",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:45.412157",
+      "time": "2026-03-06T18:16:30.209166",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.209166",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:30.209166",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.231426",
       "type": "error",
-      "message": "Crash in archives: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in archives"
     },
     {
-      "time": "2026-03-06T17:17:45.421694",
+      "time": "2026-03-06T18:16:30.242349",
       "type": "domain_start",
       "message": "Entering Domain: artifacts"
     },
     {
-      "time": "2026-03-06T17:17:45.421694",
+      "time": "2026-03-06T18:16:30.242349",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:46.424355",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:30.243355",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:48.426659",
+      "time": "2026-03-06T18:16:30.243355",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:52.429688",
+      "time": "2026-03-06T18:16:30.249049",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.249049",
+      "type": "agent_start",
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-06T18:16:30.249049",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.267452",
       "type": "error",
-      "message": "Crash in artifacts: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in artifacts"
     },
     {
-      "time": "2026-03-06T17:17:52.438918",
+      "time": "2026-03-06T18:16:30.278439",
       "type": "domain_start",
       "message": "Entering Domain: data"
     },
     {
-      "time": "2026-03-06T17:17:52.438918",
+      "time": "2026-03-06T18:16:30.278439",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:17:53.441097",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "time": "2026-03-06T18:16:30.279481",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-06T17:17:55.443539",
+      "time": "2026-03-06T18:16:30.279481",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:17:59.446208",
+      "time": "2026-03-06T18:16:30.380082",
       "type": "error",
-      "message": "Crash in data: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "message": "Blocked Prompt in data"
     },
     {
-      "time": "2026-03-06T17:17:59.456618",
+      "time": "2026-03-06T18:16:30.390623",
       "type": "domain_start",
       "message": "Entering Domain: docs"
     },
     {
-      "time": "2026-03-06T17:17:59.456618",
+      "time": "2026-03-06T18:16:30.390623",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:18:00.459768",
+      "time": "2026-03-06T18:16:30.391630",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.391630",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-06T17:18:02.462049",
+      "time": "2026-03-06T18:16:30.399875",
+      "type": "agent_end",
+      "message": "✓ Completed LocationHealerAgent"
+    },
+    {
+      "time": "2026-03-06T18:16:30.399875",
       "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-06T17:18:06.465774",
-      "type": "error",
-      "message": "Crash in docs: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
-    },
-    {
-      "time": "2026-03-06T17:18:06.475487",
-      "type": "domain_start",
-      "message": "Entering Domain: logs"
-    },
-    {
-      "time": "2026-03-06T17:18:06.475487",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:07.478038",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:09.480236",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:13.483525",
-      "type": "error",
-      "message": "Crash in logs: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
-    },
-    {
-      "time": "2026-03-06T17:18:13.491877",
-      "type": "domain_start",
-      "message": "Entering Domain: ops_scripts"
-    },
-    {
-      "time": "2026-03-06T17:18:13.491877",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:14.494615",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:16.496763",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:20.500231",
-      "type": "error",
-      "message": "Crash in ops_scripts: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
-    },
-    {
-      "time": "2026-03-06T17:18:20.509273",
-      "type": "domain_start",
-      "message": "Entering Domain: system_learning"
-    },
-    {
-      "time": "2026-03-06T17:18:20.509273",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:21.512197",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:23.515197",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:27.518318",
-      "type": "error",
-      "message": "Crash in system_learning: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
-    },
-    {
-      "time": "2026-03-06T17:18:27.527551",
-      "type": "domain_start",
-      "message": "Entering Domain: tests"
-    },
-    {
-      "time": "2026-03-06T17:18:27.527551",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:28.530456",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:30.533079",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:34.536299",
-      "type": "error",
-      "message": "Crash in tests: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
-    },
-    {
-      "time": "2026-03-06T17:18:34.545777",
-      "type": "domain_start",
-      "message": "Entering Domain: tools"
-    },
-    {
-      "time": "2026-03-06T17:18:34.545777",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:35.548325",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:37.550612",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-06T17:18:41.554360",
-      "type": "error",
-      "message": "Crash in tools: No module named 'agentic_core.L2_execution.types.l2_phase_spec'"
+      "time": "2026-03-06T18:16:30.400882",
+      "type": "agent_end",
+      "message": "✓ Completed FileClassificationHealerAgent"
     }
   ],
   "meta_learning": {
     "enabled": true,
-    "total_experiences": 1,
+    "total_experiences": 0,
     "patterns_extracted": 0,
     "strategy_weights": {
       "cot": 1.0,
@@ -474,6 +680,7 @@
       "react": 1.0
     },
     "recent_experiences": [
+      "intake: 0 healing records persisted",
       "intake: 1 healing records persisted"
     ],
     "recent_failure_vectors": [
@@ -1505,17 +1712,29 @@
       ]
     ]
   },
-  "compliance_scores": {},
+  "compliance_scores": {
+    "L0_routing": 1.0,
+    "L2_execution": 1.0,
+    "L3_orchestration": 1.0,
+    "L5_safety": 1.0,
+    "apps_lic": 1.0,
+    "apps_rg": 1.0,
+    "apps_shared": 1.0,
+    "archives": 1.0,
+    "artifacts": 1.0,
+    "data": 0.7271101665496827,
+    "docs": 1.0
+  },
   "decisions_made": [],
   "compliance_report": {},
   "audit_chain": [],
-  "apply_proposals": true,
-  "runtime_state_digest_sha256": "9c95e21dbebdf5d1ce92c7aaf0219ea4e95d64e1d1dd14546c5523dcbb2d50ef",
+  "apply_proposals": false,
+  "runtime_state_digest_sha256": "5423588e7d68d41c05547d6c2ff02cd1f6f2c6694654171aa7c8ccc51999135a",
   "runtime_state_digest_schema_version": 1,
   "compliance_report_audit": {
     "success": false,
     "stats": {
-      "violations_found": 609,
+      "violations_found": 655,
       "violations_fixed": 0,
       "errors": 0,
       "drift_detected": 0
@@ -6653,6 +6872,411 @@
       },
       {
         "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172738\\import_fixes\\agentic_core\\L2_execution\\scripts\\remediation_dispatcher.py",
+        "message": "Gravity violation: L2 cannot import from L3 (module: agentic_core.L3_orchestration.types.approval_contract_types)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L2",
+        "target_layer": "L3"
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172812\\tests\\support\\ContextCuratorAgent.py",
+        "message": "Class 'ContextSnapshot' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172812\\tests\\support\\ContextCuratorAgent.py",
+        "message": "Class 'HandoffSummary' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172816\\tests\\support\\SovereignCognitivePlaneAgent.py",
+        "message": "Class 'AgentInfo' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172817\\tests\\support\\SupremeCourtAgent.py",
+        "message": "Class 'SupremeCourt' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'PeerIntelligenceConfig' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'PeerIntelligenceResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'RagHop' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'KeywordClassification' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'KeywordAnalysis' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172822\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'ValidationResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'GraphTransaction' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'MutationAction' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'HopSpec' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'DAGMutation' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'MutationResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'DAGConfig' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172824\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'Config' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172836\\tests\\support\\TracingAgent.py",
+        "message": "Class 'Span' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172836\\tests\\support\\TracingAgent.py",
+        "message": "Class 'MockSpan' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172836\\tests\\support\\TracingAgent.py",
+        "message": "Class 'MockTracer' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\archives\\healing_backups\\location\\20260306_172836\\tests\\support\\TracingAgent.py",
+        "message": "Class 'NoOpSpan' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\ContextCuratorAgent.py",
+        "message": "Class 'ContextSnapshot' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\ContextCuratorAgent.py",
+        "message": "Class 'HandoffSummary' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'GraphTransaction' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'MutationAction' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'HopSpec' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'DAGMutation' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'MutationResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'DAGConfig' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\DAGMutatorAgent.py",
+        "message": "Class 'Config' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\HistorianAgent.py",
+        "message": "Class 'WatchmanHandler' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\HistorianAgent.py",
+        "message": "Class 'WatchmanHandler' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'PeerIntelligenceConfig' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'PeerIntelligenceResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'RagHop' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'KeywordClassification' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'KeywordAnalysis' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\PeerIntelligenceAuditorAgent.py",
+        "message": "Class 'ValidationResult' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\SovereignCognitivePlaneAgent.py",
+        "message": "Class 'AgentInfo' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\SupremeCourtAgent.py",
+        "message": "Class 'SupremeCourt' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\TracingAgent.py",
+        "message": "Class 'Span' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\TracingAgent.py",
+        "message": "Class 'MockSpan' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\TracingAgent.py",
+        "message": "Class 'MockTracer' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "NAMING",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\support\\TracingAgent.py",
+        "message": "Class 'NoOpSpan' in agent file must end with 'Agent'",
+        "severity": "ERROR",
+        "suggestion": null,
+        "source_layer": null,
+        "target_layer": null
+      },
+      {
+        "type": "GRAVITY",
         "file": "C:\\Git\\Agentic-Workflow\\tests\\e2e\\agentic_core\\L0_maintenance\\scripts\\test_direct_hierarchy_boundary.py",
         "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.reasoning.HierarchyAgent)",
         "severity": "CRITICAL",
@@ -6941,6 +7565,15 @@
       },
       {
         "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\tests\\unit\\agentic_core\\L0_routing\\scripts\\test_sovereign_decision_engine.py",
+        "message": "Gravity violation: L0 cannot import from L1 (module: agentic_core.L1_cognition.memory.healing_memory_retriever)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L1"
+      },
+      {
+        "type": "GRAVITY",
         "file": "C:\\Git\\Agentic-Workflow\\tests\\unit\\agentic_core\\L0_routing\\scripts\\test_v25_structural_strictness.py",
         "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint_config)",
         "severity": "CRITICAL",
@@ -7015,14 +7648,6 @@
       "confidence": 0.95
     },
     {
-      "type": "ILLEGAL_CACHE_DIR",
-      "file": "C:\\Git\\Agentic-Workflow\\.ruff_cache",
-      "message": "Transient cache directory '.ruff_cache' in project root",
-      "severity": "low",
-      "recommended_action": "Delete .ruff_cache (add to .gitignore)",
-      "confidence": 0.95
-    },
-    {
       "type": "UNAPPROVED_ROOT_FILE",
       "file": "C:\\Git\\Agentic-Workflow\\test_output.txt",
       "message": "Unapproved file 'test_output.txt' in project root",
@@ -7047,31 +7672,138 @@
       "confidence": 0.8
     }
   ],
-  "hygiene_fixed": 2,
-  "healing_actions": [
-    {
-      "agent": "RootHygieneAgent",
-      "territory": "__global__",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 0.9,
-      "fix_summary": "Cleaned 2 of 5 root hygiene violations",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-06T17:16:39.275274",
-      "routing_digest": null
-    }
-  ],
+  "hygiene_fixed": 0,
+  "gravity_fixed": 0,
   "gravity_violations": [
     {
-      "type": "GRAVITY_ERROR",
-      "message": "Gravity detection failed: No module named 'agentic_core.L2_execution.types.l2_phase_spec'",
+      "type": "GRAVITY",
+      "message": "Found 257 gravity violations (layer inversions)",
       "severity": "high",
-      "recommended_action": "Fix gravity detection error",
-      "confidence": 0.5
+      "recommended_action": "Review and fix layer boundary violations",
+      "confidence": 0.9,
+      "violations_found": 257,
+      "violations_fixed": 0
     }
   ],
   "agent_execution_log": [],
-  "current_territory": "tools"
+  "current_territory": "docs",
+  "location_violations": [],
+  "location_scan_result": {
+    "violations": [],
+    "total_files_scanned": 12,
+    "compliant_files": 12,
+    "roots_scanned": [
+      "docs"
+    ],
+    "status": "COMPLETE"
+  },
+  "classification_violations": [],
+  "classification_scan_result": {
+    "success": false,
+    "stats": {
+      "analyzed": 0,
+      "compliant": 0,
+      "renamed": 0,
+      "imports_fixed": 0,
+      "deep_refactors": 0,
+      "collisions_resolved": 0,
+      "violations": {
+        "AGENT": 0,
+        "CLASS": 0,
+        "MIXIN": 0,
+        "UTILITY": 0,
+        "PROTOCOL": 0,
+        "ENGINE": 0,
+        "STUB": 0,
+        "TEST": 0,
+        "SCRIPT": 0,
+        "TYPES": 0,
+        "GATEWAY": 0,
+        "ORCHESTRATOR": 0,
+        "VALIDATOR": 0,
+        "FACTORY": 0,
+        "CONFIG": 0,
+        "ADAPTER": 0,
+        "STRATEGY": 0,
+        "ENFORCER": 0,
+        "SEAM": 0,
+        "EXCEPTION": 0,
+        "ORCHESTRATOR_INVARIANT_FAIL": {
+          "mutation_hard": 0,
+          "mutation_soft": 0,
+          "thin_wrapper": 0,
+          "insufficient_roles": 0
+        },
+        "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
+        "ROUTER_INVARIANT_FAIL": {
+          "mutation": 0,
+          "workflow": 0,
+          "inheritance": 0,
+          "structure": 0
+        }
+      },
+      "territory_moves": 0
+    },
+    "summary": "Renamed: 0, Refactors: 0"
+  },
+  "classification_check_dict": {
+    "check_id": "file_classification",
+    "evidence": {
+      "scan_result": {
+        "success": false,
+        "stats": {
+          "analyzed": 0,
+          "compliant": 0,
+          "renamed": 0,
+          "imports_fixed": 0,
+          "deep_refactors": 0,
+          "collisions_resolved": 0,
+          "violations": {
+            "AGENT": 0,
+            "CLASS": 0,
+            "MIXIN": 0,
+            "UTILITY": 0,
+            "PROTOCOL": 0,
+            "ENGINE": 0,
+            "STUB": 0,
+            "TEST": 0,
+            "SCRIPT": 0,
+            "TYPES": 0,
+            "GATEWAY": 0,
+            "ORCHESTRATOR": 0,
+            "VALIDATOR": 0,
+            "FACTORY": 0,
+            "CONFIG": 0,
+            "ADAPTER": 0,
+            "STRATEGY": 0,
+            "ENFORCER": 0,
+            "SEAM": 0,
+            "EXCEPTION": 0,
+            "ORCHESTRATOR_INVARIANT_FAIL": {
+              "mutation_hard": 0,
+              "mutation_soft": 0,
+              "thin_wrapper": 0,
+              "insufficient_roles": 0
+            },
+            "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
+            "ROUTER_INVARIANT_FAIL": {
+              "mutation": 0,
+              "workflow": 0,
+              "inheritance": 0,
+              "structure": 0
+            }
+          },
+          "territory_moves": 0
+        },
+        "summary": "Renamed: 0, Refactors: 0"
+      },
+      "violations": [],
+      "file_registry": []
+    },
+    "violations_count": 0,
+    "territory": "docs",
+    "repo_root": "C:\\Git\\Agentic-Workflow"
+  },
+  "classification_file_registry": [],
+  "cognitive_dispositions": []
 }

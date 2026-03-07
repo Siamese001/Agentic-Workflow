@@ -461,10 +461,35 @@ class HierarchyAgent(SovereignBaseAgent):
                     if archived:
                         results["files_relocated"] += 1
 
+    @staticmethod
+    def _get_approved_tests_subfolders() -> frozenset[str]:
+        """Derive the approved tests/ subfolder set directly from SOVEREIGN_TERRITORIES.
+
+        Never hardcoded — always reflects the live SSOT in _constants.py.
+        """
+        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+            SOVEREIGN_TERRITORIES,
+        )
+
+        tests_cfg = SOVEREIGN_TERRITORIES.get("tests", {})
+        subs = tests_cfg.get("subfolders", {})
+        if isinstance(subs, dict):
+            return frozenset(subs.keys())
+        return frozenset()
+
     def _enforce_tests_structure(self, root_path: Path, results: dict[str, Any]) -> None:
-        """Categorize test files into unit, integration, e2e, functional, or fixtures."""
-        # Use rglob directly since we specifically want test files
-        approved_subfolders = {"unit", "integration", "e2e", "functional", "fixtures"}
+        """Enforce tests/ structure rules:
+        1. All canonical subfolders (derived live from SOVEREIGN_TERRITORIES) are left
+           untouched — no phantom relocation.
+        2. Every .py file that is not infra MUST have a 'test_' prefix — violations are
+           reported as errors, never silently moved.
+        """
+        # Derived at runtime from SOVEREIGN_TERRITORIES["tests"]["subfolders"].
+        # Zero hardcoded folder names — stays in sync with _constants.py automatically.
+        approved_subfolders = self._get_approved_tests_subfolders()
+
+        # File stems that are legitimate non-test_-prefixed infra inside tests/
+        INFRA_STEMS = {"conftest", "__init__", "pytest_plugins"}
 
         # Get all .py files in tests directory
         py_files = list(root_path.rglob("*.py"))
@@ -472,52 +497,47 @@ class HierarchyAgent(SovereignBaseAgent):
         for py_file in py_files:
             rel = py_file.relative_to(root_path)
 
-            # Skip files already in approved subfolders
+            # Skip files already inside an approved subfolder — they are correct
             if len(rel.parts) > 1 and rel.parts[0] in approved_subfolders:
                 continue
 
-            # Skip whitelisted root files (conftest.py, pytest.ini)
+            # Skip whitelisted root files (conftest.py, __init__.py, etc.)
             if len(rel.parts) == 1:
                 from agentic_core.L5_safety.config.structure_blueprint_config import (
                     TESTS_ROOT_FILE_WHITELIST,
                 )
-
                 if py_file.name in TESTS_ROOT_FILE_WHITELIST:
                     continue
 
-            # Determine target category
-            name = py_file.name.lower()
-            if "fixture" in name or "conftest" in name:
-                category = "fixtures"
-            elif "_e2e" in name or "e2e" in name:
-                category = "e2e"
-            elif "_integration" in name or "integration" in name:
-                category = "integration"
-            elif "_functional" in name or "functional" in name:
-                category = "functional"
-            else:
-                category = "unit"  # Default
+            stem = py_file.stem
 
-            target_dir = root_path / category
-            _wg.ensure_dir(target_dir)
-            dest = target_dir / py_file.name
+            # Infra files (conftest, __init__, etc.) are exempt from test_ prefix rule
+            if stem in INFRA_STEMS or stem.startswith("__"):
+                continue
 
-            if not dest.exists():
+            # [BUG-2 FIX] Enforce test_ prefix: any .py file inside tests/ that is
+            # not infrastructure MUST start with 'test_'. Report — never auto-relocate.
+            if not stem.startswith("test_"):
                 results["violations_found"] += 1
-                Logger.warning(f"   [!] UNCATEGORIZED TEST: {rel} -> {category}/")
-                if self.healing_enabled:
-                    # [PHASE 33j] Gatekeeper is Single Point of Approval
-                    gk_result = self.gatekeeper.safe_move(
-                        py_file,
-                        dest,
-                        self.agent_name,
-                        f"Test categorization: {category}",
-                    )
-                    if gk_result.success:
-                        results["files_relocated"] += 1
-                        Logger.info(f"      [✓] CATEGORIZED: {py_file.name} -> {category}/")
-            else:
-                Logger.warning(f"      [!] SKIP (exists): {py_file.name} in {category}/")
+                Logger.error(
+                    f"[HierarchyAgent] NON-TEST FILE IN tests/: {rel} — "
+                    "all test files must have a 'test_' prefix. "
+                    "This file does not belong in tests/ and must be moved to its "
+                    "correct source territory manually."
+                )
+                # No healing action — moving a misclassified file to a random
+                # category would be worse than leaving it in place.
+                continue
+
+            # File has test_ prefix but is not inside an approved subfolder —
+            # this is a genuine uncategorized test. Report only; do NOT auto-move,
+            # as picking the wrong category is destructive.
+            results["violations_found"] += 1
+            Logger.error(
+                f"[HierarchyAgent] UNCATEGORIZED TEST: {rel} — "
+                "file has test_ prefix but is not inside a canonical tests/ subfolder. "
+                "Move it to the correct subfolder (unit/, integration/, e2e/, etc.) manually."
+            )
 
     def _relocate_l2_layer_files(
         self,
@@ -878,52 +898,52 @@ class HierarchyAgent(SovereignBaseAgent):
 
         Strategy:
         - DEEP Violation (> expected): Flatten by moving up.
-        - SHALLOW Violation (< expected): Nest by adding 'depth_aligned' spacers.
+        - SHALLOW Violation (< expected): Reported only — no mutation. Creating a
+          semantically meaningless folder (e.g. 'depth_aligned') to satisfy a depth
+          counter is forbidden. The file must be placed in a semantically named folder.
         """
         try:
             if depth > expected:
                 # DEEP: Flatten (move up) - Keep the filename, remove intermediate folders
-                # Logic: Take first 'expected' parts + filename
                 new_parts = rel.parts[:expected] + (rel.parts[-1],)
                 target_path = self.project_root.joinpath(*new_parts)
                 action = "FLATTENED"
-            else:
-                # SHALLOW: Nest (add depth_aligned spacers)
-                deficit = expected - depth
-                spacers = tuple(["depth_aligned"] * deficit)
-                # Logic: Insert spacers before the filename
-                new_parts = rel.parts[:-1] + spacers + (rel.parts[-1],)
-                target_path = self.project_root.joinpath(*new_parts)
-                action = "NESTED"
 
-            # Safety Check: Don't overwrite existing files without verification
-            if target_path.exists():
-                # Fallback to legacy archive if target exists to prevent data loss
-                return self._legacy_archive_depth_violation(
+                # Safety Check: Don't overwrite existing files without verification
+                if target_path.exists():
+                    return self._legacy_archive_depth_violation(
+                        file_path,
+                        rel,
+                        depth,
+                        expected,
+                        "collision",
+                        "COLLISION",
+                    )
+
+                # Execute Move using ArchivalGatekeeper
+                _wg.ensure_dir(target_path.parent)
+                gk_result = self.gatekeeper.safe_move(
                     file_path,
-                    rel,
-                    depth,
-                    expected,
-                    "collision",
-                    "COLLISION",
+                    target_path,
+                    self.agent_name,
+                    f"Depth healing: {action}",
                 )
 
-            # Execute Move using ArchivalGatekeeper
-            _wg.ensure_dir(target_path.parent)
-            gk_result = self.gatekeeper.safe_move(
-                file_path,
-                target_path,
-                self.agent_name,
-                f"Depth healing: {action}",
-            )
+                if not gk_result.success:
+                    Logger.error(f"  [ERROR] Gatekeeper move failed: {gk_result.error}")
+                    return 0
 
-            if not gk_result.success:
-                Logger.error(f"  [ERROR] Gatekeeper move failed: {gk_result.error}")
+                Logger.info(f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}")
+                return 1
+            else:
+                # SHALLOW: Report only — NEVER create a semantically meaningless folder.
+                # The file must be placed in a folder with real semantic meaning by a human.
+                Logger.error(
+                    f"  [VIOLATION] SHALLOW DEPTH: {rel} is at depth {depth}, "
+                    f"expected {expected}. Manual intervention required: "
+                    "place file in a semantically named subfolder."
+                )
                 return 0
-
-            # Log the healing action
-            Logger.info(f"  [HEALED] {action}: {rel} -> {target_path.relative_to(self.project_root)}")
-            return 1
 
         except Exception as e:
             # Failsafe: If healing fails, log error

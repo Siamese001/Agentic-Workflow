@@ -1567,7 +1567,9 @@ class LocationHealerAgent(SovereignBaseAgent):
         """
         Heal depth violations by realigning file within its Sovereign Territory.
         - DEEP: Flattens path (moves up).
-        - SHALLOW: Nests path (injects 'depth_aligned' spacer).
+        - SHALLOW: Reported only — no mutation. Creating a semantically meaningless
+          folder (e.g. 'depth_aligned') to satisfy a depth counter is forbidden.
+          The file must be placed in a folder with real semantic meaning.
         """
         try:
             rel_path = file_path.relative_to(self.project_root)
@@ -1583,33 +1585,42 @@ class LocationHealerAgent(SovereignBaseAgent):
             target_path = None
 
             if current_depth > expected_depth:
-                # Too Deep: Flatten up to parent
+                # DEEP: Flatten up to parent
                 new_parts = parts[:expected_depth] + (parts[-1],)
                 target_path = self.project_root.joinpath(*new_parts)
                 action_type = "FLATTENED"
+
+                # Identity-path guard
+                if target_path.resolve() == file_path.resolve():
+                    return {
+                        "action_taken": "SKIPPED: depth already correct",
+                        "applied": False,
+                    }
+
+                move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
+                if move_result.get("applied"):
+                    move_result["action_taken"] = (
+                        f"{action_type} to align depth: {target_path.relative_to(self.project_root)}"
+                    )
+                    if not dry_run:
+                        affected_paths.extend([file_path, target_path])
+                return move_result
             else:
-                # Too Shallow: Nest deeper
-                deficit = expected_depth - current_depth
-                spacers = tuple(["depth_aligned"] * deficit)
-                new_parts = parts[:-1] + spacers + (parts[-1],)
-                target_path = self.project_root.joinpath(*new_parts)
-                action_type = "NESTED"
-
-            # Identity-path guard: target == source means depth is already correct
-            if target_path.resolve() == file_path.resolve():
-                return {
-                    "action_taken": "SKIPPED: depth already correct",
-                    "applied": False,
-                }
-
-            move_result = self.safe_move(file_path, target_path, dry_run=dry_run)
-            if move_result.get("applied"):
-                move_result["action_taken"] = (
-                    f"{action_type} to align depth: {target_path.relative_to(self.project_root)}"
+                # SHALLOW: Report only — NEVER create a semantically meaningless folder.
+                # The file must be placed in a folder with real semantic meaning by a human.
+                Logger.error(
+                    f"[LocationHealerAgent] DEPTH VIOLATION (SHALLOW): {rel_path} "
+                    f"is at depth {current_depth}, expected {expected_depth}. "
+                    "Manual intervention required: place file in a semantically named subfolder."
                 )
-                if not dry_run:
-                    affected_paths.extend([file_path, target_path])
-            return move_result
+                return {
+                    "action_taken": "REPORTED: SHALLOW depth violation — manual placement required",
+                    "applied": False,
+                    "violation": "SHALLOW_DEPTH",
+                    "file": str(rel_path),
+                    "current_depth": current_depth,
+                    "expected_depth": expected_depth,
+                }
 
         except Exception as e:
             Logger.error(f"[LocationHealerAgent] Depth heal failed: {e}")
