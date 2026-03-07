@@ -275,12 +275,11 @@ class TestEnforceAppsDepth:
             agent._enforce_apps_depth()
 
         assert len(captured_checks) == 3
-        # Each check must accept its own key and reject others
-        for i, (expected_key, check) in enumerate(
-            zip(["apps_rg", "apps_lic", "apps_shared"], captured_checks)
-        ):
+        # Keys emitted in sorted() order — derive expected order from the same SSOT filter
+        expected_keys = sorted(k for k in _FAKE_TERRITORIES if k.startswith("apps_"))
+        for expected_key, check in zip(expected_keys, captured_checks):
             assert check(expected_key) is True
-            for other_key in {"apps_rg", "apps_lic", "apps_shared"} - {expected_key}:
+            for other_key in set(expected_keys) - {expected_key}:
                 assert check(other_key) is False
 
 

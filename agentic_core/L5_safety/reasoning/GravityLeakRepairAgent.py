@@ -590,7 +590,10 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             import re as _re
 
             _LAYER_DIR_PATTERN = _re.compile(r"^L[0-6]_")
-            _APPS_ROOTS: frozenset[str] = frozenset({"apps_lic", "apps_rg", "apps_shared"})
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                SOVEREIGN_TERRITORIES as _ST,
+            )
+            _APPS_ROOTS: frozenset[str] = frozenset(k for k in _ST if k.startswith("apps_"))
 
             def _in_sovereign_scope(v: object) -> bool:
                 fp = str(

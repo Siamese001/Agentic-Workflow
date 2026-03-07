@@ -306,10 +306,12 @@ class TestGeneratorAgent(SovereignBaseAgent):
     def _path_to_module(self, path: Path) -> str | None:
         """Convert file path to Python module path."""
         try:
+            from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+
+            _root_anchors = frozenset(SOVEREIGN_TERRITORIES.keys())
             parts = path.with_suffix("").parts
-            # Find agentic_core or tests in path
             for i, part in enumerate(parts):
-                if part in ("agentic_core", "tests", "apps_rg", "apps_lic", "apps_shared"):
+                if part in _root_anchors:
                     return ".".join(parts[i:])
             return None
         except Exception:

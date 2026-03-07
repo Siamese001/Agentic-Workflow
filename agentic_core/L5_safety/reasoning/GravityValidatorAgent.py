@@ -18,7 +18,16 @@ from typing import Any
 CHECK_ID = "gravity_violations"
 
 _LAYER_DIR_PATTERN = re.compile(r"^L[0-6]_")
-_APPS_ROOTS: frozenset[str] = frozenset({"apps_lic", "apps_rg", "apps_shared"})
+
+
+def _get_apps_roots() -> frozenset[str]:
+    """Derive apps_* roots from SOVEREIGN_TERRITORIES — zero hardcoded folder names."""
+    from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+
+    return frozenset(k for k in SOVEREIGN_TERRITORIES if k.startswith("apps_"))
+
+
+_APPS_ROOTS: frozenset[str] = _get_apps_roots()
 _EXCLUDED_PATHS: tuple[str, ...] = ("ops_scripts", "scripts")
 
 logger = logging.getLogger(__name__)

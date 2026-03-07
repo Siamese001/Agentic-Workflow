@@ -220,27 +220,17 @@ class RootHygieneAgent(SovereignBaseAgent):
         """
         violations = []
 
-        # CANONICAL APPROVED ROOT DIRS — hardcoded SSOT allowlist.
-        # ONLY these directories are permitted at project root.
-        # Adding anything here requires an explicit architectural decision.
-        approved_dirs = {
-            # Core framework
-            "agentic_core",
-            # Application domains
-            "apps_lic",
-            "apps_rg",
-            "apps_shared",
-            # Supporting territories
-            "system_learning",
-            "artifacts",
-            "data",
-            "docs",
-            "logs",
-            "ops_scripts",
-            "tests",
-            "tools",
-            "archives",
-            # Version control / CI / IDE tooling (dotdirs)
+        # Sovereign territory dirs derived live from SSOT — zero hardcoded folder names.
+        # Dotdirs / VCS / IDE tooling are NOT code territories; they stay explicit here.
+        try:
+            from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES as _ST
+
+            _sovereign_dirs: set[str] = set(_ST.keys())
+        except Exception:
+            _sovereign_dirs = set()
+
+        _tooling_dirs: set[str] = {
+            # Version control / CI / IDE tooling (not sovereign territories)
             ".git",
             ".github",
             ".vscode",
@@ -253,6 +243,7 @@ class RootHygieneAgent(SovereignBaseAgent):
             ".backup",
             ".gravity_state",
         }
+        approved_dirs = _sovereign_dirs | _tooling_dirs
         approved_files = {
             # Standard project config
             ".gitignore",
