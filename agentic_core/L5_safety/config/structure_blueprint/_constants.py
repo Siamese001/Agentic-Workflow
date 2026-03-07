@@ -598,7 +598,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "adg": {
             "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
             "subfolders": {
-                "applications": {"purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."},
+                "applications": {
+                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."
+                },
                 "ci": {"purpose": "CI integration and invariant checks."},
                 "client": {"purpose": "MCP client for ADG graph operations."},
                 "extraction": {"purpose": "Static AST-based scanner and edge extraction."},
@@ -761,7 +763,13 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                     "monitoring": {"purpose": "Evaluation monitoring and metric tracking."},
                     "retrieval": {
                         "purpose": "Retrieval evaluation and relevance scoring.",
-                        "allowed_suffixes": ["_retrieval.py", "_eval.py", "_registries.py", "_index.py", "_scorer.py"],
+                        "allowed_suffixes": [
+                            "_retrieval.py",
+                            "_eval.py",
+                            "_registries.py",
+                            "_index.py",
+                            "_scorer.py",
+                        ],
                     },
                     "runners": {"purpose": "Evaluation pipeline runners and orchestrators."},
                     "schemas": {"purpose": "Evaluation data schemas and validation contracts."},
@@ -1192,7 +1200,15 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "architecture": {
                 "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
             },
-            "contracts": {"purpose": "Interface contract and API boundary tests"},
+            "contracts": {
+                "purpose": "Interface contract and API boundary tests",
+                "forbidden_patterns": [r".*Agent\.py$", r"^fake_.*\.py$"],
+                "subfolders": {
+                    "fixtures": {
+                        "purpose": "Synthetic AST-only fixture agents for negative tests — never imported at runtime"
+                    },
+                },
+            },
             "enforcement": {"purpose": "Enforcement rule and guardrail tests"},
             "governance": {"purpose": "Governance policy and lifecycle tests"},
             "integration_full_deps": {
@@ -1203,6 +1219,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "ssot_equivalence": {"purpose": "SSOT drift and equivalence tests"},
             "support": {
                 "purpose": "Shared test infrastructure — base classes, helpers, shared fixtures",
+                "forbidden_patterns": [r".*Agent\.py$"],
             },
             "system_learning": {
                 "purpose": "Higher-level functional tests for system_learning (embedding, meta-learning, pattern analysis). Canonical unit mirror: tests/unit/system_learning/.",
@@ -1337,7 +1354,9 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "sdks_mcps": {
                 "purpose": "SDK and MCP integration data",
                 "subfolders": {
-                    "client_wrappers": {"purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex)."},
+                    "client_wrappers": {
+                        "purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex)."
+                    },
                 },
             },
             "snapshots": {"purpose": "Data state snapshots for rollback"},

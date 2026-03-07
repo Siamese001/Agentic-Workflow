@@ -229,18 +229,24 @@ class TestBlueprintInvariants:
 
 class TestEnforcementGapDocumentation:
     """
-    These tests DOCUMENT the enforcement gap: files inside tests/support/l1_cognition/
-    are NOT detected by _enforce_tests_structure because rel.parts[0] == 'support'
-    which IS in the approved set.
+    [FIX-1 APPLIED] The enforcement gap is now closed.
 
-    The Layer 3 filesystem invariant (test_phantom_folder_regression.py) is therefore
-    the load-bearing guard for this bug.
+    Previously, _enforce_tests_structure used an unconditional `continue` for any file
+    whose rel.parts[0] was in the approved set, silently accepting *Agent.py files placed
+    inside tests/support/l1_cognition/ etc.
+
+    After Fix 1, the approved-subfolder branch runs the infra-exemption and test_ prefix
+    checks BEFORE continuing, so non-test files (including *Agent.py) inside approved
+    subfolders ARE now detected as violations.
+
+    The Layer 3 filesystem invariant (test_phantom_folder_regression.py) remains
+    load-bearing for files that exist on disk outside any scan.
     """
 
     def test_phantom_l1_cognition_under_support_not_detected(self, tmp_path):
         """
-        GAP: tests/support/l1_cognition/SomeAgent.py
-        rel.parts[0] = 'support' → in approved set → SKIPPED → violations_found stays 0.
+        [FIX-1] tests/support/l1_cognition/SomeAgent.py must now be detected.
+        rel.parts[0] = 'support' → approved, but no test_ prefix → violation logged.
         """
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
@@ -251,13 +257,13 @@ class TestEnforcementGapDocumentation:
                     ("support/l1_cognition/SomeAgent.py", "class SomeAgent: pass"),
                 ],
             )
-        assert results["violations_found"] == 0, (
-            "GAP CONFIRMED: tests/support/l1_cognition/SomeAgent.py not detected "
-            "by _enforce_tests_structure. Layer 3 filesystem invariant is the real guard."
+        assert results["violations_found"] >= 1, (
+            "FIX-1: tests/support/l1_cognition/SomeAgent.py must now be detected "
+            "by _enforce_tests_structure (gap closed)."
         )
 
     def test_phantom_l2_execution_under_support_not_detected(self, tmp_path):
-        """GAP: tests/support/l2_execution/ files are also silently skipped."""
+        """[FIX-1] tests/support/l2_execution/ *Agent.py files are now detected."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
             results = _run_enforce(
@@ -268,10 +274,10 @@ class TestEnforcementGapDocumentation:
                     ("support/l2_execution/SubAgent.py", "class SubAgent: pass"),
                 ],
             )
-        assert results["violations_found"] == 0
+        assert results["violations_found"] == 2
 
     def test_phantom_depth_aligned_under_support_not_detected(self, tmp_path):
-        """GAP: tests/support/depth_aligned/ files are also silently skipped."""
+        """[FIX-1] Non-test file in tests/support/depth_aligned/ is now detected."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
             results = _run_enforce(
@@ -281,12 +287,12 @@ class TestEnforcementGapDocumentation:
                     ("support/depth_aligned/schema_cache.py", "# phantom"),
                 ],
             )
-        assert results["violations_found"] == 0
+        assert results["violations_found"] == 1
 
     def test_non_test_file_in_phantom_support_subdir_not_detected(self, tmp_path):
         """
-        GAP: A non-test_ file inside tests/support/l1_cognition/ is also silently
-        skipped, even though it would be a violation if placed directly at tests/ root.
+        [FIX-1] A non-test_ file inside tests/support/l1_cognition/ is now detected
+        (same rule as placing it directly at tests/ root).
         """
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
@@ -297,12 +303,12 @@ class TestEnforcementGapDocumentation:
                     ("support/l1_cognition/AgentWithNoTestPrefix.py", "class Agent: pass"),
                 ],
             )
-        assert results["violations_found"] == 0
+        assert results["violations_found"] == 1
 
     def test_stress_50_phantom_support_files_all_skipped(self, tmp_path):
         """
-        Stress: 50 files across phantom l*_* subdirs under tests/support/ →
-        ALL silently skipped (0 violations). Documents the scope of the gap.
+        [FIX-1] Stress: 50 non-test_ files across phantom l*_* subdirs under tests/support/
+        are ALL now detected (one violation per file).
         """
         agent = _make_agent()
         phantom_subdirs = [
@@ -330,16 +336,15 @@ class TestEnforcementGapDocumentation:
         with _patch_approved(APPROVED), _patch_whitelist():
             results = _run_enforce(agent, tmp_path, files)
 
-        assert results["violations_found"] == 0, (
-            f"Expected 0 violations (all in support/ → skipped), "
-            f"but got {results['violations_found']}. "
-            "Phantom support subdirs are an enforcement gap — Layer 3 is the real guard."
+        assert results["violations_found"] == 50, (
+            f"[FIX-1] Expected 50 violations (one per phantom support file), "
+            f"but got {results['violations_found']}."
         )
 
     def test_real_support_files_not_reported(self, tmp_path):
         """
-        Positive control: real tests/support/ root-level files are legitimately skipped
-        (because support is in approved subfolders).
+        [FIX-1] Direct non-test files in tests/support/ ARE now reported (gap closed).
+        Infra files (conftest, __init__) and test_-prefixed files remain exempt.
         """
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
@@ -352,12 +357,15 @@ class TestEnforcementGapDocumentation:
                     ("support/conftest.py", "import pytest"),
                 ],
             )
-        assert results["violations_found"] == 0
+        # BaseHealingTestCase.py has no test_ prefix and is not infra → 1 violation
+        # test_helpers.py has test_ prefix → clean
+        # conftest.py is infra → exempt
+        assert results["violations_found"] == 1
 
     def test_real_violations_not_masked_by_phantom_support_files(self, tmp_path):
         """
-        Matrix: real violations (files at tests/ root) ARE counted, even when
-        phantom support files are present (which are silently skipped).
+        [FIX-1] Matrix: both BadAgent.py at root AND PhantomAgent.py in support/l1_cognition/
+        are now detected (2 violations total).
         """
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
@@ -370,16 +378,15 @@ class TestEnforcementGapDocumentation:
                     ("unit/test_ok.py", "def test_ok(): pass"),
                 ],
             )
-        assert results["violations_found"] == 1, (
-            "Only the real violation (BadAgent.py at root) should be counted. "
-            "The phantom support file is silently skipped."
+        assert results["violations_found"] == 2, (
+            "[FIX-1] Both BadAgent.py at root and PhantomAgent.py in support/l1_cognition/ "
+            "must now be detected."
         )
 
     def test_duplicate_agent_files_in_phantom_support_subdirs_all_skipped(self, tmp_path):
         """
-        Bug 1 exact scenario: agent files that were DUPLICATED into tests/support/l*_*
-        during healing are ALL silently skipped by _enforce_tests_structure.
-        This is why the bug persisted across multiple healing cycles.
+        [FIX-1] Bug 1 exact scenario: agent files duplicated into tests/support/l*_* during
+        healing are now ALL detected by _enforce_tests_structure (gap closed).
         """
         agent = _make_agent()
         # Simulates the exact files that appeared in the bug report
@@ -394,10 +401,9 @@ class TestEnforcementGapDocumentation:
         with _patch_approved(APPROVED), _patch_whitelist():
             results = _run_enforce(agent, tmp_path, files)
 
-        assert results["violations_found"] == 0, (
-            "EXACT BUG 1 SCENARIO: duplicated agent files in tests/support/l*_* subdirs "
-            "are NOT detected by _enforce_tests_structure. "
-            "The filesystem scan invariant (Layer 3) must be the final guard."
+        assert results["violations_found"] == 5, (
+            "[FIX-1] All 5 duplicated agent files in tests/support/l*_* subdirs must "
+            "now be detected by _enforce_tests_structure."
         )
 
     def test_gatekeeper_never_called_for_phantom_support_files(self, tmp_path):

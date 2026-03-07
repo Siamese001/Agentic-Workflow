@@ -18,6 +18,7 @@ import pytest
 
 pytestmark = pytest.mark.unit_min_deps
 
+from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
 from agentic_core.L2_execution.types.instruction_packet_types import (
     InstructionPacket,
     SignatureVerificationError,
@@ -28,6 +29,8 @@ from agentic_core.L2_execution.types.instruction_packet_types import (
 # ---------------------------------------------------------------------------
 
 _SECRET = b"phase1-test-secret-key"
+
+inject_key_source(TestKeySource())
 
 _PACKET_V = InstructionPacket(
     instruction_id="instr-0001",

@@ -245,12 +245,116 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                 )
             )
 
+        # Wave 1: Record outcomes into HealingSuccessRateStore (EMA per error_sig)
+        try:
+            from system_learning.engines.healing_success_rate_store import get_default_store as _get_sr_store
+
+            _sr_store = _get_sr_store()
+            for _action in healing_actions:
+                _sig = (
+                    _action.get("routing_digest")
+                    or f"{_action.get('agent', 'unknown')}:{_action.get('type', 'UNKNOWN')}"
+                )
+                _sr_store.record_outcome(_sig, _action.get("outcome", "SUCCESS") == "SUCCESS")
+            state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
+        except Exception as _sr_err:  # guardian: allow-silent-swallower
+            logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
+
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store=store)
         # Only persist if there are actual healing events to record
         if healing_actions:
             record = adapter.build_record(aggregator=aggregator, created_utc=0, source="execute_ssot")
             adapter.persist_record(record)
+
+            # Wave 2: Append raw events as JSONL lines to healing_contexts_corpus.jsonl
+            try:
+                import json as _json_w2
+
+                _corpus_path = REPO_ROOT / "data" / "corpus" / "healing_contexts_corpus.jsonl"
+                _new_lines = []
+                for _action in healing_actions:
+                    _new_lines.append(
+                        _json_w2.dumps(
+                            {
+                                "schema_version": 1,
+                                "content_hash": _action.get("routing_digest", ""),
+                                "trace_id": _action.get("trace_id", ""),
+                                "namespace": "healing_contexts",
+                                "created_utc": 0,
+                                "healer_id": _action.get("agent", "unknown"),
+                                "tier": _action.get("routing_tier") or _action.get("tier", "L5"),
+                                "failure_type": _action.get("type", "UNKNOWN"),
+                                "territory": _action.get("territory", "unknown"),
+                                "outcome": _action.get("outcome", "UNKNOWN"),
+                                "fix_summary": _action.get("fix_summary", ""),
+                            },
+                            separators=(",", ":"),
+                            sort_keys=True,
+                        )
+                    )
+                with open(_corpus_path, "a", encoding="utf-8") as _cf:
+                    _cf.write("\n".join(_new_lines) + "\n")
+            except Exception as _w2_err:  # guardian: allow-silent-swallower
+                logging.warning("[MetaLearning] Wave2 JSONL corpus append failed (non-fatal): %s", _w2_err)
+
+            # Wave 3: Persist HealingOutcomeIntakeRecord via FileBackedVersionStore
+            try:
+                from system_learning.stores.version_store import FileBackedVersionStore as _FBVS
+
+                _intake_dir = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
+                _file_store = _FBVS(_intake_dir)
+                _file_store.commit_change_package(record)
+            except Exception as _w3_err:  # guardian: allow-silent-swallower
+                logging.warning("[MetaLearning] Wave3 FileBackedVersionStore failed (non-fatal): %s", _w3_err)
+
+        # Wave 4: Reload and merge prior intake records (cap at 50) into aggregator
+        try:
+            import json as _json_w4
+
+            from system_learning.stores.version_store import FileBackedVersionStore as _FBVS4
+            from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _HOE4
+
+            _intake_dir4 = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
+            _idx_path4 = _intake_dir4 / "_index.json"
+            if _idx_path4.exists():
+                _idx4 = _json_w4.loads(_idx_path4.read_text(encoding="utf-8"))
+                _file_store4 = _FBVS4(_intake_dir4)
+                _prior_vids = sorted(_idx4.keys())[-50:]
+                for _vid in _prior_vids:
+                    _raw4 = _file_store4.get(_vid)
+                    if not _raw4:
+                        continue
+                    try:
+                        _rec4 = _json_w4.loads(_raw4.decode("utf-8"))
+                        for _s in _rec4.get("snapshot", []):
+                            _hid4 = _s.get("healer_id", "unknown")
+                            _tier4 = _s.get("tier", "L5")
+                            _ftype4 = _s.get("failure_type", "UNKNOWN")
+                            for _ in range(int(_s.get("success_count", 0))):
+                                aggregator.ingest(
+                                    _HOE4(
+                                        healer_id=_hid4,
+                                        tier=_tier4,
+                                        failure_type=_ftype4,
+                                        success=True,
+                                        timestamp_utc=0,
+                                    )
+                                )
+                            for _ in range(int(_s.get("failure_count", 0))):
+                                aggregator.ingest(
+                                    _HOE4(
+                                        healer_id=_hid4,
+                                        tier=_tier4,
+                                        failure_type=_ftype4,
+                                        success=False,
+                                        timestamp_utc=0,
+                                    )
+                                )
+                    except Exception:  # guardian: allow-silent-swallow malformed record
+                        continue
+        except Exception as _w4_err:  # guardian: allow-silent-swallower
+            logging.warning("[MetaLearning] Wave4 prior record merge failed (non-fatal): %s", _w4_err)
 
         # A4: wire accumulated failure_vectors into LocalFAISSStore (healing_context_v1)
         # [CROSS-RUN FAISS PERSISTENCE] Loads prior run's index from disk, merges new
@@ -2611,6 +2715,18 @@ class RuntimeStateManager:
             except Exception:  # guardian: allow-silent-swallower
                 _prior_meta = {}
 
+        # Wave 1 restore: reload HealingSuccessRateStore EMA state from prior run
+        _prior_sr_state = _prior_meta.get("success_rate_store")
+        if _prior_sr_state:
+            try:
+                from system_learning.engines.healing_success_rate_store import (
+                    get_default_store as _get_sr_init,
+                )
+
+                _get_sr_init().import_state(_prior_sr_state)
+            except Exception:  # guardian: allow-silent-swallower
+                pass
+
         self.state = {
             "status": "idle",
             "start_time": None,
@@ -3338,7 +3454,11 @@ def execute_phase3_alignment_impl(
                 heal_result = _hier_healer_instance.heal_repository(dry_run=False, execute=True)
             else:
                 heal_result = {}
-            healed = heal_result.get("violations_fixed", heal_result.get("healed", 0)) if isinstance(heal_result, dict) else 0
+            healed = (
+                heal_result.get("violations_fixed", heal_result.get("healed", 0))
+                if isinstance(heal_result, dict)
+                else 0
+            )
             state_mgr.state["hierarchy_fixed"] = healed  # [FIX-B3]
             state_mgr.complete_agent("HierarchyHealerAgent", True, f"Healed: {healed}")
             _record_healing_action(
@@ -3630,10 +3750,12 @@ def execute_phase5_healing_impl(
                 fix_summary=f"Fixed {fixed} of {found} architecture violations in {territory}",
                 outcome="SUCCESS" if fixed > 0 else "PARTIAL",
             )
-            state_mgr.complete_agent(
-                "ArchitectureGovernorAgent", success, f"found={found} fixed={fixed}"
-            )
-            return {"status": "HEALED" if fixed > 0 else "NO_CHANGE", "violations_found": found, "violations_fixed": fixed}
+            state_mgr.complete_agent("ArchitectureGovernorAgent", success, f"found={found} fixed={fixed}")
+            return {
+                "status": "HEALED" if fixed > 0 else "NO_CHANGE",
+                "violations_found": found,
+                "violations_fixed": fixed,
+            }
         else:
             _record_healing_action(
                 state_mgr,
@@ -4797,13 +4919,13 @@ def _print_run_manifest(
 
     # Per-territory agents (must run for every territory)
     PER_TERRITORY_AGENTS = [
-        "FilesystemSSOTHealerAgent",      # Phase 2 reconciler
-        "LocationHealerAgent",             # Phase 2 location
-        "HierarchyHealerAgent",            # Phase 3 alignment
-        "FileClassificationHealerAgent",   # Phase 3 sovereignty
-        "ArchitectureGovernorAgent",       # Phase 4 arch validation
-        "ObservabilityProbeExecutorAgent", # Phase 6 observability probe
-        "CognitiveDispositionAgent",       # Phase 6 cognitive
+        "FilesystemSSOTHealerAgent",  # Phase 2 reconciler
+        "LocationHealerAgent",  # Phase 2 location
+        "HierarchyHealerAgent",  # Phase 3 alignment
+        "FileClassificationHealerAgent",  # Phase 3 sovereignty
+        "ArchitectureGovernorAgent",  # Phase 4 arch validation
+        "ObservabilityProbeExecutorAgent",  # Phase 6 observability probe
+        "CognitiveDispositionAgent",  # Phase 6 cognitive
     ]
 
     # Phases expected per territory (from execute_phase1_discovery onward)
@@ -4911,7 +5033,7 @@ def _print_run_manifest(
         if p1_fail:
             p1_msg = next((e for e in t_errs if "Phase 1" in e), "Phase 1 failed")
             print(f"    ✗  Phase1:Discovery  [FAILED: {p1_msg[:160]}]")
-            print(f"    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
+            print("    ✗  [ALL DOWNSTREAM PHASES SKIPPED — Phase 1 did not produce drift report]")
             gaps += len(PER_TERRITORY_AGENTS) + len(PER_TERRITORY_PHASES)
             continue
 
@@ -5969,8 +6091,15 @@ def _legacy_main(
                                         _v.get("file", ""),
                                     )
                             except Exception as _he:
-                                logger.error("[RootHygiene] heal() FAILED for %s: %s\n%s", _v.get("type"), _he, traceback.format_exc())
-                                state_mgr.add_event("error", f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}")
+                                logger.error(
+                                    "[RootHygiene] heal() FAILED for %s: %s\n%s",
+                                    _v.get("type"),
+                                    _he,
+                                    traceback.format_exc(),
+                                )
+                                state_mgr.add_event(
+                                    "error", f"RootHygieneAgent heal failed for {_v.get('type')}: {_he}"
+                                )
                     state_mgr.complete_agent(
                         "RootHygieneAgent",
                         True,
@@ -6154,7 +6283,9 @@ def _legacy_main(
                                 heal_result = _fc_instance.heal_repository(dry_run=False, execute=True)
                             else:
                                 heal_result = {}
-                            healed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
+                            healed = (
+                                heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
+                            )
                             state_mgr.complete_agent(
                                 "FileClassificationHealerAgent", True, f"Healed: {healed}"
                             )
@@ -6162,9 +6293,15 @@ def _legacy_main(
                                 state_mgr,
                                 agent="FileClassificationHealerAgent",
                                 territory=territory,
-                                routing_tier=pascal_reason.split("(")[0].strip() if pascal_reason else "DETERMINISTIC",
-                                routing_score=pascal_confidence.value if hasattr(pascal_confidence, "value") else 1.0,
-                                confidence=pascal_confidence.value if hasattr(pascal_confidence, "value") else 1.0,
+                                routing_tier=pascal_reason.split("(")[0].strip()
+                                if pascal_reason
+                                else "DETERMINISTIC",
+                                routing_score=pascal_confidence.value
+                                if hasattr(pascal_confidence, "value")
+                                else 1.0,
+                                confidence=pascal_confidence.value
+                                if hasattr(pascal_confidence, "value")
+                                else 1.0,
                                 fix_summary=f"Fixed {healed} file classification violation(s) in {territory}",
                                 outcome="SUCCESS" if healed > 0 else "PARTIAL",
                             )
@@ -6258,8 +6395,12 @@ def _legacy_main(
                                     outcome="SKIPPED",
                                 )
                         except Exception as e:
-                            logger.error(f"ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}")
-                            state_mgr.add_event("error", f"ObservabilityProbeExecutorAgent failed in {territory}: {e}")
+                            logger.error(
+                                f"ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}"
+                            )
+                            state_mgr.add_event(
+                                "error", f"ObservabilityProbeExecutorAgent failed in {territory}: {e}"
+                            )
                             state_mgr.complete_agent("ObservabilityProbeExecutorAgent", False, str(e))
                             _record_healing_action(
                                 state_mgr,
@@ -6309,7 +6450,9 @@ def _legacy_main(
                                 )
                         except Exception as e:
                             logger.error(f"CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}")
-                            state_mgr.add_event("error", f"CognitiveDispositionAgent failed in {territory}: {e}")
+                            state_mgr.add_event(
+                                "error", f"CognitiveDispositionAgent failed in {territory}: {e}"
+                            )
                             state_mgr.complete_agent("CognitiveDispositionAgent", False, str(e))
                             _record_healing_action(
                                 state_mgr,

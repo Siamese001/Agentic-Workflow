@@ -157,6 +157,21 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
     return "utils"
 
 
+_AGENT_LOW_CONFIDENCE_ROOTS: frozenset[str] = frozenset({"tests", "docs", "data", "artifacts", "ops_scripts"})
+
+
+def _calculate_subfolder_confidence_for_agent(l1_name: str, item_name: str) -> float:
+    """Return placement confidence for an *Agent.py file into l1_name.
+
+    Returns:
+        < 0.5 — caller must NOT auto-relocate; archive instead.
+        1.0   — source layer; relocation is acceptable.
+    """
+    if l1_name in _AGENT_LOW_CONFIDENCE_ROOTS:
+        return 0.0
+    return 1.0
+
+
 def get_best_target_l2(l1_name: str, item_name: str) -> str:
     """
     Heuristically determine the best approved L2 folder within an L1.
@@ -166,8 +181,16 @@ def get_best_target_l2(l1_name: str, item_name: str) -> str:
         item_name: Name of file/folder to place
 
     Returns:
-        Best matching L2 folder name
+        Best matching L2 folder name, or ``"__ARCHIVE__"`` sentinel when the
+        placement confidence for an *Agent.py file is below 0.5.  Callers must
+        check for this sentinel and route to safe_archive() instead of moving.
     """
+    # [FIX-3] Agent files must never be routed into non-source subfolders.
+    # If confidence < 0.5 return the ARCHIVE sentinel so callers can archive.
+    if item_name.endswith("Agent.py"):
+        if _calculate_subfolder_confidence_for_agent(l1_name, item_name) < 0.5:
+            return "__ARCHIVE__"
+
     approved_l2 = CORE_SUBFOLDER_MAP.get(l1_name, [])
     if not approved_l2:
         return "workflow_engines"  # Fallback default

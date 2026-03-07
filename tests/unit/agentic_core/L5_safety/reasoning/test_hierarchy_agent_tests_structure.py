@@ -18,19 +18,17 @@ Branch inventory (§1.3):
     - file has test_ prefix, NOT inside approved → violation + error, NO move
     - healing_enabled=True, non-test_ file       → still no move (report only)
 """
+
 from __future__ import annotations
 
-import types
 from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
-import pytest
-
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_agent(healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent with mocked dependencies."""
@@ -69,6 +67,7 @@ def _run_enforce(agent, tmp_path, files: list[tuple[str, str]]) -> dict:
 # ---------------------------------------------------------------------------
 # _get_approved_tests_subfolders — branch coverage
 # ---------------------------------------------------------------------------
+
 
 class TestGetApprovedTestsSubfolders:
     def test_derives_from_sovereign_territories(self):
@@ -145,6 +144,7 @@ class TestGetApprovedTestsSubfolders:
 # _enforce_tests_structure — helpers to patch approved subfolders
 # ---------------------------------------------------------------------------
 
+
 def _patch_approved(approved: frozenset[str]):
     """Patch _get_approved_tests_subfolders to return a fixed set."""
     return patch(
@@ -169,15 +169,21 @@ def _patch_whitelist():
 # _enforce_tests_structure — success/skip branches
 # ---------------------------------------------------------------------------
 
+
 class TestEnforceTestsStructureSkipBranches:
     def test_file_in_approved_subfolder_is_skipped(self, tmp_path):
-        """Success path: test_ file inside approved subfolder → no violation."""
+        """Success path: test_ file and infra files inside approved subfolder → no violation."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("unit/test_something.py", "def test_something(): pass"),
-                ("support/SomeInfraHelper.py", "class SomeInfraHelper: pass"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("unit/test_something.py", "def test_something(): pass"),
+                    ("support/conftest.py", "import pytest"),
+                    ("support/__init__.py", ""),
+                ],
+            )
         assert results["violations_found"] == 0
         assert results["files_relocated"] == 0
 
@@ -185,29 +191,41 @@ class TestEnforceTestsStructureSkipBranches:
         """Success path: conftest.py at root of tests/ → no violation."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("conftest.py", "import pytest"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("conftest.py", "import pytest"),
+                ],
+            )
         assert results["violations_found"] == 0
 
     def test_dunder_stem_is_skipped(self, tmp_path):
         """Success path: __init__.py anywhere → no violation."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("__init__.py", ""),
-                ("support/__init__.py", ""),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("__init__.py", ""),
+                    ("support/__init__.py", ""),
+                ],
+            )
         assert results["violations_found"] == 0
 
     def test_infra_stems_exempt_from_prefix_rule(self, tmp_path):
         """Success path: conftest / pytest_plugins at non-root depth → no violation."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("conftest.py", ""),
-                ("pytest_plugins.py", ""),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("conftest.py", ""),
+                    ("pytest_plugins.py", ""),
+                ],
+            )
         assert results["violations_found"] == 0
 
 
@@ -215,15 +233,20 @@ class TestEnforceTestsStructureSkipBranches:
 # _enforce_tests_structure — violation branches
 # ---------------------------------------------------------------------------
 
+
 class TestEnforceTestsStructureViolations:
     def test_non_test_prefixed_file_is_reported(self, tmp_path):
         """Negative control: Agent file without test_ prefix in tests/ → violation + error."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
             with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
-                results = _run_enforce(agent, tmp_path, [
-                    ("DAGMutatorAgent.py", "class DAGMutatorAgent: pass"),
-                ])
+                results = _run_enforce(
+                    agent,
+                    tmp_path,
+                    [
+                        ("DAGMutatorAgent.py", "class DAGMutatorAgent: pass"),
+                    ],
+                )
 
         assert results["violations_found"] == 1
         mock_log.error.assert_called_once()
@@ -236,9 +259,13 @@ class TestEnforceTestsStructureViolations:
         agent = _make_agent(healing_enabled=True)
         src = tmp_path / "DAGMutatorAgent.py"
         with _patch_approved(APPROVED), _patch_whitelist():
-            _run_enforce(agent, tmp_path, [
-                ("DAGMutatorAgent.py", "class DAGMutatorAgent: pass"),
-            ])
+            _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("DAGMutatorAgent.py", "class DAGMutatorAgent: pass"),
+                ],
+            )
 
         # File must still be where it was — no move
         assert src.exists(), "File must not have been relocated by the healer"
@@ -249,9 +276,13 @@ class TestEnforceTestsStructureViolations:
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
             with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
-                results = _run_enforce(agent, tmp_path, [
-                    ("test_orphan.py", "def test_orphan(): pass"),
-                ])
+                results = _run_enforce(
+                    agent,
+                    tmp_path,
+                    [
+                        ("test_orphan.py", "def test_orphan(): pass"),
+                    ],
+                )
 
         assert results["violations_found"] == 1
         mock_log.error.assert_called_once()
@@ -264,9 +295,13 @@ class TestEnforceTestsStructureViolations:
         agent = _make_agent(healing_enabled=True)
         src = tmp_path / "test_orphan.py"
         with _patch_approved(APPROVED), _patch_whitelist():
-            _run_enforce(agent, tmp_path, [
-                ("test_orphan.py", "def test_orphan(): pass"),
-            ])
+            _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("test_orphan.py", "def test_orphan(): pass"),
+                ],
+            )
 
         assert src.exists(), "Uncategorized test must not have been moved"
         agent.gatekeeper.safe_move.assert_not_called()
@@ -275,29 +310,38 @@ class TestEnforceTestsStructureViolations:
         """Branch divergence: two bad files → violations_found == 2."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("AgentX.py", "class AgentX: pass"),
-                ("AgentY.py", "class AgentY: pass"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("AgentX.py", "class AgentX: pass"),
+                    ("AgentY.py", "class AgentY: pass"),
+                ],
+            )
         assert results["violations_found"] == 2
 
     def test_mix_of_valid_and_invalid_files(self, tmp_path):
         """Matrix: valid files don't inflate violation count; bad files do."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("unit/test_good.py", "def test_good(): pass"),     # valid → skip
-                ("support/Helper.py", "class Helper: pass"),         # in approved → skip
-                ("__init__.py", ""),                                  # dunder → skip
-                ("conftest.py", ""),                                  # whitelist → skip
-                ("BadAgent.py", "class BadAgent: pass"),              # violation
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("unit/test_good.py", "def test_good(): pass"),  # valid → skip
+                    ("support/conftest.py", "import pytest"),  # infra in approved → skip
+                    ("__init__.py", ""),  # dunder → skip
+                    ("conftest.py", ""),  # whitelist → skip
+                    ("BadAgent.py", "class BadAgent: pass"),  # violation
+                ],
+            )
         assert results["violations_found"] == 1
 
 
 # ---------------------------------------------------------------------------
 # Boundary / edge-case coverage (§1.8)
 # ---------------------------------------------------------------------------
+
 
 class TestEnforceTestsStructureBoundaries:
     def test_empty_tests_directory(self, tmp_path):
@@ -312,9 +356,13 @@ class TestEnforceTestsStructureBoundaries:
         """Boundary: approved_subfolders is empty → all non-infra files become violations."""
         agent = _make_agent()
         with _patch_approved(frozenset()), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("unit/test_something.py", "def test_something(): pass"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("unit/test_something.py", "def test_something(): pass"),
+                ],
+            )
         # test_something.py IS prefixed with test_ but unit/ not in approved → uncategorized
         assert results["violations_found"] == 1
 
@@ -322,9 +370,13 @@ class TestEnforceTestsStructureBoundaries:
         """Boundary: file 3 levels deep inside approved subfolder → no violation."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("unit/agentic_core/L5_safety/test_deep.py", "def test_deep(): pass"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("unit/agentic_core/L5_safety/test_deep.py", "def test_deep(): pass"),
+                ],
+            )
         assert results["violations_found"] == 0
 
     def test_non_py_files_ignored(self, tmp_path):
@@ -341,20 +393,24 @@ class TestEnforceTestsStructureBoundaries:
         """Invariant: files_relocated is NEVER incremented by _enforce_tests_structure."""
         agent = _make_agent(healing_enabled=True)
         with _patch_approved(APPROVED), _patch_whitelist():
-            results = _run_enforce(agent, tmp_path, [
-                ("BadAgent.py", "class BadAgent: pass"),
-                ("test_orphan.py", "def test_orphan(): pass"),
-                ("unit/test_ok.py", "def test_ok(): pass"),
-            ])
+            results = _run_enforce(
+                agent,
+                tmp_path,
+                [
+                    ("BadAgent.py", "class BadAgent: pass"),
+                    ("test_orphan.py", "def test_orphan(): pass"),
+                    ("unit/test_ok.py", "def test_ok(): pass"),
+                ],
+            )
         assert results["files_relocated"] == 0, (
-            "_enforce_tests_structure must never relocate files; "
-            "files_relocated should remain 0"
+            "_enforce_tests_structure must never relocate files; files_relocated should remain 0"
         )
 
 
 # ---------------------------------------------------------------------------
 # Determinism (§1.10)
 # ---------------------------------------------------------------------------
+
 
 class TestEnforceTestsStructureDeterminism:
     def test_identical_input_identical_output(self, tmp_path):
@@ -372,5 +428,6 @@ class TestEnforceTestsStructureDeterminism:
     def test_approved_subfolders_is_frozenset(self):
         """Invariant: _get_approved_tests_subfolders always returns a frozenset."""
         from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+
         result = HierarchyAgent._get_approved_tests_subfolders()
         assert isinstance(result, frozenset)

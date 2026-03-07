@@ -3,6 +3,7 @@
 Provides centralized prompt loading and caching for agentic components.
 """
 
+from .core.evaluation_loader import EvalLoadError, EvalSchemaError, EvaluationLoader
 from .core.prompt_entry_types import (
     PromptConstitution,
     get_constitution,
@@ -13,6 +14,9 @@ from .core.prompt_entry_types import (
 from .core.prompt_loader import PromptLoader, PromptLoadError, PromptSchemaError
 
 __all__ = [
+    "EvalLoadError",
+    "EvalSchemaError",
+    "EvaluationLoader",
     "PromptLoader",
     "PromptLoadError",
     "PromptSchemaError",

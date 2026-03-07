@@ -417,6 +417,9 @@ class HierarchyAgent(SovereignBaseAgent):
             elif root_name == "tests":
                 self._enforce_tests_structure(root_path, results)
 
+        # [FIX-2] Belt-and-suspenders: Agent files must never be in tests/
+        self._block_agent_files_in_tests(results)
+
         if results["violations_found"] > 0:
             Logger.info(f"HierarchyAgent: [RELOCATION] Found {results['violations_found']} misplaced files")
             if self.healing_enabled:
@@ -429,6 +432,24 @@ class HierarchyAgent(SovereignBaseAgent):
                     self._remove_empty_dirs(root_path)
 
         return results
+
+    def _block_agent_files_in_tests(self, results: dict[str, Any]) -> None:
+        """Scan tests/ for any *Agent.py files and record violations without moving.
+
+        Agent files must never be relocated into tests/. Human action is required
+        to move them back to their correct agentic_core/ territory.
+        """
+        tests_path = self.project_root / "tests"
+        if not tests_path.exists():
+            return
+        for py_file in tests_path.rglob("*Agent.py"):
+            rel = py_file.relative_to(self.project_root)
+            results["violations_found"] += 1
+            Logger.error(
+                f"[HierarchyAgent] AGENT FILE IN tests/: {rel} — "
+                "Agent files must never be relocated into tests/. "
+                "Move this file back to its correct agentic_core/ territory manually."
+            )
 
     def _enforce_agentic_core_structure(self, agentic_core_path: Path, results: dict[str, Any]) -> None:
         """Enforce strictly defined L2 structure for agentic_core."""
@@ -505,10 +526,22 @@ class HierarchyAgent(SovereignBaseAgent):
 
         for py_file in py_files:
             rel = py_file.relative_to(root_path)
+            stem = py_file.stem
 
-            # Skip files already inside an approved subfolder — they are correct
+            # [FIX-1] Files inside an approved subfolder are NOT automatically correct.
+            # Run infra-exemption and test_ prefix checks before accepting them.
             if len(rel.parts) > 1 and rel.parts[0] in approved_subfolders:
-                continue
+                if stem in INFRA_STEMS or stem.startswith("__"):
+                    continue  # Legitimate infra — OK
+                if not stem.startswith("test_"):
+                    results["violations_found"] += 1
+                    Logger.error(
+                        f"[HierarchyAgent] NON-TEST FILE IN tests/{rel.parts[0]}/: {rel} — "
+                        "all files inside a tests/ subfolder must have a 'test_' prefix. "
+                        "This file does not belong in tests/ and must be moved to its "
+                        "correct source territory manually."
+                    )
+                continue  # Handled (clean or violation logged) — skip rest of loop body
 
             # Skip whitelisted root files (conftest.py, __init__.py, etc.)
             if len(rel.parts) == 1:
@@ -518,8 +551,6 @@ class HierarchyAgent(SovereignBaseAgent):
 
                 if py_file.name in TESTS_ROOT_FILE_WHITELIST:
                     continue
-
-            stem = py_file.stem
 
             # Infra files (conftest, __init__, etc.) are exempt from test_ prefix rule
             if stem in INFRA_STEMS or stem.startswith("__"):
@@ -636,6 +667,16 @@ class HierarchyAgent(SovereignBaseAgent):
             # Fallback to heuristic if FCA unavailable or returns None
             if not target_territory_l3:
                 target_territory_l3 = get_best_target_l2(target_layer_l2, py_file.name)
+
+            # [FIX-3] ARCHIVE sentinel: agent file routed to non-source root — do not move
+            if target_territory_l3 == "__ARCHIVE__":
+                results["violations_found"] += 1
+                Logger.error(
+                    f"[HierarchyAgent] ARCHIVE SENTINEL: {py_file.name} — "
+                    "Agent files cannot be auto-relocated to a non-source root. "
+                    "Move this file back to its correct agentic_core/ territory manually."
+                )
+                return
 
             final_target = target_path / target_territory_l3
             _wg.ensure_dir(final_target)
@@ -763,6 +804,17 @@ class HierarchyAgent(SovereignBaseAgent):
             # Fallback to heuristic if FCA unavailable or returns None
             if not target_territory_l3:
                 target_territory_l3 = get_best_target_l2(layer_l2_name, bad_territory_l3)
+
+            # [FIX-3] ARCHIVE sentinel: agent file routed to non-source root — do not move
+            if target_territory_l3 == "__ARCHIVE__":
+                results["violations_found"] += 1
+                Logger.error(
+                    f"[HierarchyAgent] ARCHIVE SENTINEL: {py_file.name} — "
+                    "Agent files cannot be auto-relocated to a non-source root. "
+                    "Move this file back to its correct agentic_core/ territory manually."
+                )
+                return
+
             target_path = layer_l2_path / target_territory_l3
             _wg.ensure_dir(target_path)
 

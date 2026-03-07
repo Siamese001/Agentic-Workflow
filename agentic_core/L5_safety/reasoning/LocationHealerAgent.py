@@ -32,6 +32,11 @@ from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.config.core.registry_config import SOVEREIGN_REGISTRY
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+)
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     LocationHealingStrategy,
@@ -55,11 +60,6 @@ from agentic_core.L5_safety.utils.location_utils_util import (
 )
 from agentic_core.runtime.config.heal_result_config import HealResult, HealStatus
 from agentic_core.utils.timeout_decorator_util import timeout
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_SHARED_DIR,
-    ARCHIVES_DIR,
-)
 
 Logger = logging.getLogger(__name__)
 
@@ -81,12 +81,20 @@ def _evict_blueprint_modules() -> None:
     importlib.invalidate_caches() then tells the import machinery to rescan
     the file-system for new/changed .py files.
     """
-    evicted = [k for k in list(sys.modules) if any(k == p or k.startswith(p + ".") for p in _BLUEPRINT_MODULE_PREFIXES)]
+    evicted = [
+        k
+        for k in list(sys.modules)
+        if any(k == p or k.startswith(p + ".") for p in _BLUEPRINT_MODULE_PREFIXES)
+    ]
     for key in evicted:
         sys.modules.pop(key, None)
     importlib.invalidate_caches()
     if evicted:
-        Logger.info("[LocationHealerAgent] Evicted %d stale blueprint module(s) from sys.modules: %s", len(evicted), evicted)
+        Logger.info(
+            "[LocationHealerAgent] Evicted %d stale blueprint module(s) from sys.modules: %s",
+            len(evicted),
+            evicted,
+        )
 
 
 @dataclass
@@ -291,7 +299,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                     _fp = Path(file_path) if isinstance(file_path, str) else file_path
                     _cp = Path(canonical_path) if isinstance(canonical_path, str) else canonical_path
                     _hitl_fn = getattr(self, "_hitl_approval_fn", None)
-                    _is_interactive = __import__("sys").stdin.isatty() if hasattr(__import__("sys"), "stdin") else False
+                    _is_interactive = (
+                        __import__("sys").stdin.isatty() if hasattr(__import__("sys"), "stdin") else False
+                    )
                     _batch = __import__("os").environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
                     if not _batch and _is_interactive and _hitl_fn is None:
                         # Inline SSOT conflict prompt
@@ -313,6 +323,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         # else "H" — fall through to normal healer logic
                         try:
                             from system_learning.engines.hitl_decision_logger import log_hitl_decision
+
                             log_hitl_decision(
                                 agent="LocationHealerAgent",
                                 file_path=str(_fp),
@@ -562,14 +573,20 @@ class LocationHealerAgent(SovereignBaseAgent):
                 dst_bytes = final_dst.read_bytes()
                 if src_bytes == dst_bytes:
                     result["applied"] = True
-                    result["action_taken"] = f"SKIPPED_IDENTICAL: destination already exists at {dst_path.relative_to(self.project_root)}"
+                    result["action_taken"] = (
+                        f"SKIPPED_IDENTICAL: destination already exists at {dst_path.relative_to(self.project_root)}"
+                    )
                     Logger.info(f"[LocationHealerAgent] Skip (identical): {src_path} == {final_dst}")
                     return result
                 else:
                     result["applied"] = False
-                    result["action_taken"] = f"CONFLICT: destination exists with different content at {dst_path.relative_to(self.project_root)}"
+                    result["action_taken"] = (
+                        f"CONFLICT: destination exists with different content at {dst_path.relative_to(self.project_root)}"
+                    )
                     result["error"] = "destination_exists_different_content"
-                    Logger.warning(f"[LocationHealerAgent] Conflict: {src_path} -> {final_dst} (different content, not overwriting)")
+                    Logger.warning(
+                        f"[LocationHealerAgent] Conflict: {src_path} -> {final_dst} (different content, not overwriting)"
+                    )
                     return result
 
             # Use ArchivalGatekeeper for safe move with audit trail
@@ -925,6 +942,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             if not approved:
                 try:
                     from system_learning.engines.hitl_decision_logger import log_hitl_decision
+
                     log_hitl_decision(
                         agent="LocationHealerAgent",
                         file_path=str(file_path),
@@ -952,6 +970,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             affected_paths.extend([file_path, target_path])
             try:
                 from system_learning.engines.hitl_decision_logger import log_hitl_decision
+
                 log_hitl_decision(
                     agent="LocationHealerAgent",
                     file_path=str(file_path),
@@ -1359,7 +1378,10 @@ class LocationHealerAgent(SovereignBaseAgent):
             )
 
             # Analyze subfolder semantics for confidence scoring
-            confidence_score = self._calculate_subfolder_confidence(unknown_subfolder, existing_subfolders)
+            # [AST-PRIMARY] Pass file_path so agent files are blocked before regex/Jaccard
+            confidence_score = self._calculate_subfolder_confidence(
+                unknown_subfolder, existing_subfolders, file_path=file_path
+            )
 
             if confidence_score > 0.75:
                 # HIGH CONFIDENCE: Create new subfolder
@@ -1376,7 +1398,10 @@ class LocationHealerAgent(SovereignBaseAgent):
                 )
             elif confidence_score >= 0.5:
                 # MEDIUM CONFIDENCE: Relocate to best matching existing subfolder
-                best_match = self._find_best_matching_subfolder(unknown_subfolder, existing_subfolders)
+                # [AST-PRIMARY] Pass file_path so agent files skip non-source subfolders
+                best_match = self._find_best_matching_subfolder(
+                    unknown_subfolder, existing_subfolders, file_path=file_path
+                )
                 if best_match:
                     Logger.info(
                         f"  🎯 Medium confidence ({confidence_score:.2f}) - Relocating to '{best_match}'",
@@ -1411,20 +1436,69 @@ class LocationHealerAgent(SovereignBaseAgent):
         self,
         unknown_subfolder: str,
         existing_subfolders: list[str],
+        file_path: Path | None = None,
     ) -> float:
         """
         Calculate confidence score for creating a new subfolder.
         Returns 0.0-1.0 based on semantic analysis.
+
+        [AST-PRIMARY] If file_path is provided and AST classification returns AGENT
+        or ORCHESTRATOR, confidence is forced to 0.0 — agent files must never be
+        autonomously created inside non-source subfolders.  Regex/Jaccard are only
+        consulted for non-agent files (secondary role).
         """
         import re
 
-        # High confidence patterns
+        # [PRESERVED-FIRST] Self-describing subfolder names must always be created,
+        # never Jaccard-remapped into something else.  Return 0.9 so the caller takes
+        # the HIGH-CONFIDENCE "create new subfolder" branch.
+        _PRESERVED_SUBDIRS: frozenset[str] = frozenset(
+            {
+                "fixtures",
+                "fixture",
+                "mocks",
+                "mock",
+                "stubs",
+                "stub",
+                "fakes",
+                "fake",
+                "conftest",
+                "testdata",
+                "test_data",
+                "resources",
+            }
+        )
+        if unknown_subfolder in _PRESERVED_SUBDIRS:
+            return 0.9  # always create — never remap via Jaccard
+
+        # [AST-PRIMARY] Agent files must never be routed into any subfolder by
+        # confidence scoring — return 0.0 so the caller falls through to archiving.
+        if file_path is not None:
+            _is_agent = False
+            try:
+                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                    classify_file_standalone,
+                )
+
+                file_type = classify_file_standalone(file_path)
+                if file_type in ("AGENT", "ORCHESTRATOR"):
+                    _is_agent = True
+            except Exception:
+                pass
+            # Filename heuristic always fires for *Agent.py regardless of path classification.
+            # A file named *Agent.py that lives in tests/ is a misplaced production agent.
+            if not _is_agent and file_path.name.endswith("Agent.py"):
+                _is_agent = True
+            if _is_agent:
+                return 0.0
+
+        # [REGEX-SECONDARY] High confidence patterns for non-agent files only
+        # NOTE: r".*tests.*" and r".*test.*" are intentionally excluded — a non-test
+        # file being placed in a tests/ subfolder is never high-confidence.
         high_confidence_patterns = [
             r".*utils.*",
             r".*tools.*",
             r".*helpers.*",  # Utility folders
-            r".*tests.*",
-            r".*test.*",  # Test folders
             r".*examples.*",
             r".*demo.*",  # Example folders
             r".*scripts.*",
@@ -1446,7 +1520,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             if re.match(pattern, unknown_subfolder, re.IGNORECASE):
                 return 0.9
 
-        # Check for semantic similarity with existing subfolders
+        # [JACCARD-SECONDARY] Check for semantic similarity with existing subfolders
         similarity_score = self._calculate_semantic_similarity(unknown_subfolder, existing_subfolders)
 
         # If very similar to existing, lower confidence (should relocate instead)
@@ -1480,19 +1554,117 @@ class LocationHealerAgent(SovereignBaseAgent):
 
         return max_similarity
 
-    def _find_best_matching_subfolder(self, unknown: str, existing: list[str]) -> str | None:
-        """Find the best matching existing subfolder for relocation."""
+    def _find_best_matching_subfolder(
+        self,
+        unknown: str,
+        existing: list[str],
+        file_path: Path | None = None,
+    ) -> str | None:
+        """Find the best matching existing subfolder for relocation.
+
+        [PRESERVED-FIRST] Certain subfolder names are semantically self-describing
+        and must never be flattened or Jaccard-matched into a different location.
+        If `unknown` is in _PRESERVED_SUBDIRS AND already exists in `existing`,
+        return it as-is (perfect self-match).  If it is preserved but not yet in
+        `existing`, return None so the caller creates it rather than relocating.
+
+        [AST-PRIMARY] If file_path is provided, classify the file first.
+        - AGENT / ORCHESTRATOR files: only source-layer subfolders are eligible
+          (reasoning/, engines/, enforcement/).  Non-source subfolders such as
+          'support', 'test_*', 'fixtures' are unconditionally excluded.
+        - All other types: Jaccard word-overlap (secondary) selects the best match.
+        """
         if not existing:
+            return None
+
+        # [AST-PRIMARY] Step 1: determine file type FIRST — before any other check.
+        # An agent file must never be routed to a non-source subfolder, even if that
+        # subfolder name is in the preserved list (e.g. 'support').
+        _NON_SOURCE_SUBFOLDERS: frozenset[str] = frozenset(
+            {"support", "fixtures", "helpers", "mocks", "stubs", "data", "docs"}
+        )
+        _SOURCE_SUBFOLDERS: frozenset[str] = frozenset(
+            {"reasoning", "engines", "enforcement", "config", "types", "validators", "utils"}
+        )
+
+        is_agent_type = False
+        if file_path is not None:
+            try:
+                from agentic_core.L5_safety.core_kernel.classification_kernel import (
+                    classify_file_standalone,
+                )
+
+                file_type = classify_file_standalone(file_path)
+                if file_type in ("AGENT", "ORCHESTRATOR"):
+                    is_agent_type = True
+            except Exception:
+                pass
+            # Filename heuristic always fires for *Agent.py — a production agent
+            # named *Agent.py must never be routed to a non-source subfolder.
+            if not is_agent_type and file_path.name.endswith("Agent.py"):
+                is_agent_type = True
+
+        # [AST-PRIMARY] Step 2: if agent, gate the target before preserved check.
+        # Agent files may only land in source-layer subfolders.
+        if is_agent_type:
+            if unknown in _NON_SOURCE_SUBFOLDERS:
+                # Requested target is a non-source subfolder — hard block.
+                return None
+            # Allow preserved source subfolders for agents (e.g. 'reasoning')
+            # Fall through to Jaccard / source-subfolder selection below.
+
+        # [PRESERVED-FIRST] Step 3 (non-agent only): self-describing subfolder names
+        # must never be Jaccard-remapped.  Return self-match or None (create).
+        _PRESERVED_SUBDIRS: frozenset[str] = frozenset(
+            {
+                "fixtures",
+                "fixture",
+                "mocks",
+                "mock",
+                "stubs",
+                "stub",
+                "fakes",
+                "fake",
+                "conftest",
+                "data",
+                "testdata",
+                "test_data",
+                "helpers",
+                "support",
+                "resources",
+            }
+        )
+        if not is_agent_type and unknown in _PRESERVED_SUBDIRS:
+            if unknown in existing:
+                return unknown
             return None
 
         best_match = None
         best_score = 0.0
 
         for subfolder in existing:
+            # [AST-PRIMARY] Block agent files from non-source subfolders entirely
+            if is_agent_type and subfolder in _NON_SOURCE_SUBFOLDERS:
+                continue
+            # [AST-PRIMARY] For agent files, prefer source subfolders; skip unknown ones
+            # when source options are available
+            if is_agent_type and subfolder not in _SOURCE_SUBFOLDERS:
+                source_candidates = [s for s in existing if s in _SOURCE_SUBFOLDERS]
+                if source_candidates:
+                    continue  # Skip non-source when source options exist
+
+            # [JACCARD-SECONDARY] Word-overlap similarity
             score = self._calculate_semantic_similarity(unknown, [subfolder])
             if score > best_score and score >= 0.5:
                 best_score = score
                 best_match = subfolder
+
+        # If no Jaccard match found for agent type but source subfolders exist, pick
+        # the first source subfolder rather than falling through to archive on a tie.
+        if best_match is None and is_agent_type:
+            source_candidates = [s for s in existing if s in _SOURCE_SUBFOLDERS]
+            if source_candidates:
+                return source_candidates[0]
 
         return best_match
 
