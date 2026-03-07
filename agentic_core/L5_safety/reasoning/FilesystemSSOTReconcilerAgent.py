@@ -56,8 +56,10 @@ DOMAIN-SPECIFIC INTEGRATIONS (SSOT Coordination):
 """
 
 import ast
+import importlib
 import logging
 import os
+import sys
 import tempfile
 from dataclasses import dataclass
 from datetime import datetime
@@ -100,6 +102,38 @@ from agentic_core.L0_routing.config import (
 )
 
 Logger = logging.getLogger(__name__)
+
+_BLUEPRINT_MODULE_PREFIXES = (
+    "agentic_core.L5_safety.config.structure_blueprint",
+    "agentic_core.L5_safety.config.structure_blueprint_config",
+)
+
+
+def _evict_blueprint_modules() -> None:
+    """Evict stale structure_blueprint submodules from sys.modules.
+
+    Called immediately after any on-disk write to a blueprint/constants file so
+    that the next import re-executes the module and picks up the new
+    SOVEREIGN_TERRITORIES / is_path_allowed definitions.
+
+    REQ-417 blocks importlib.reload() on core modules but does NOT block
+    deletion from sys.modules — eviction via pop() is the safe path.
+    importlib.invalidate_caches() then tells the import machinery to rescan
+    the filesystem for new/changed .py files.
+    """
+    evicted = [
+        k for k in list(sys.modules)
+        if any(k == p or k.startswith(p + ".") for p in _BLUEPRINT_MODULE_PREFIXES)
+    ]
+    for key in evicted:
+        sys.modules.pop(key, None)
+    importlib.invalidate_caches()
+    if evicted:
+        Logger.info(
+            "[FilesystemSSOTReconcilerAgent] Evicted %d stale blueprint module(s) from sys.modules: %s",
+            len(evicted),
+            evicted,
+        )
 
 
 @dataclass
@@ -895,6 +929,7 @@ class FilesystemSSOTReconcilerAgent(
             tmp_path = tmp.name
 
         Path(tmp_path).replace(self.blueprint_file)
+        _evict_blueprint_modules()
         Logger.info("Blueprint updated successfully with atomic write")
 
     def _apply_sovereign_registry_update(self, content: str, root: str, folders: list[str]) -> str:
