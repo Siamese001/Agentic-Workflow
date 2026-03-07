@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config import (
 Logger = logging.getLogger(__name__)
 
 
-class GravityRepairProhibitedError(RuntimeError):
+# TODO: Create abstraction layer
     """Raised when mutation prohibition blocks a gravity fix after one retry."""
 
     def __init__(self, file_path: Path, layer: str, op: str) -> None:
@@ -63,7 +63,7 @@ class GravityRepairProhibitedError(RuntimeError):
 
 
 @dataclass
-class GravityFix:
+# TODO: Create abstraction layer
     """Represents a gravity violation fix."""
 
     file_path: Path
@@ -315,11 +315,6 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             if dry_run:
                 self.logger.info(f"[DRY RUN] Would fix {fix.file_path.name}: {fix.fix_type}")
                 return {"status": "simulated", "fix_type": fix.fix_type}
-
-            # Fix 3: all gravity fix strategies are plan_only — ABSTRACT writes a TODO
-            # comment that breaks the import, and RELOCATE produces an unverified path.
-            # Emit a rich plan artifact so developers can fix manually with full context.
-            return self._emit_plan_only(fix)
 
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
@@ -682,7 +677,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
             fix_summary[fix.fix_type] += 1
 
-            self.apply_fix(fix, dry_run=dry_run)
+            result = self.apply_fix(fix, dry_run=dry_run, privileged_mutation_context=not dry_run)
+            if isinstance(result, dict) and result.get("status") == "fixed":
+                fixes_applied += 1
 
         # Report summary
         self.logger.info("\nGravity Leak Repair Summary:")

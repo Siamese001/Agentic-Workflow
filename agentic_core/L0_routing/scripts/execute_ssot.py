@@ -3392,12 +3392,11 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
         gravity_fixed = 0
 
         if gravity_violations > 0 and ctx is not None and ctx.heal:
-            from agentic_core.L2_execution.scripts.remediation_dispatcher import _invoke_healer as _rd_invoke
-
-            heal_result = _rd_invoke("gravity_violations", _gravity_check, repo_root=REPO_ROOT, apply=True)
-            gravity_fixed = len(
-                [c for c in (heal_result.changes_made if heal_result else []) if "fixed" in c]
-            )
+            _gravity_healer = agents.get("gravity_repair")
+            if _gravity_healer is not None:
+                _gh_instance = _gravity_healer(project_root=REPO_ROOT)
+                heal_result = _gh_instance.heal_repository(dry_run=False, execute=True)
+                gravity_fixed = heal_result.get("violations_fixed", 0) if isinstance(heal_result, dict) else 0
 
         state_mgr.state["gravity_fixed"] = gravity_fixed  # [FIX-B3]
         # [H3] Record GravityValidatorAgent scan result
