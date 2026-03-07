@@ -60,7 +60,7 @@ _Mapping = (dict, MappingProxyType)
 
 def _make_agent(project_root: Path, healing_enabled: bool = True):
     """Construct a minimal HierarchyAgent without triggering __init__ chain."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -78,7 +78,7 @@ def _make_agent(project_root: Path, healing_enabled: bool = True):
 
 
 def _call(agent, file_path, rel, depth, expected):
-    with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg:
+    with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg:
         mock_wg.ensure_dir = MagicMock()
         return agent._heal_depth_violation(file_path, rel, depth, expected)
 
@@ -478,7 +478,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_support_in_approved_tests_subfolders(self):
         """'support' must be a canonical tests/ subfolder (approved by SOVEREIGN_TERRITORIES)."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         assert "support" in approved, (
@@ -488,7 +488,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_depth_aligned_not_in_approved_tests_subfolders(self):
         """'depth_aligned' must NEVER appear in the approved tests/ subfolders set."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         assert "depth_aligned" not in approved, (
@@ -498,7 +498,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_l_layer_in_approved_tests_subfolders(self):
         """No l[0-9]_* names in the top-level approved tests/ subfolders."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         approved = HierarchyAgent._get_approved_tests_subfolders()
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")
@@ -565,13 +565,13 @@ class TestCreateMissingStructurePhantomPrevention:
             },
         }
         with (
-            patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg,
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg,
             patch(
-                "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
                 clean_st,
             ),
             patch(
-                "agentic_core.L5_safety.reasoning.HierarchyAgent.ENFORCED_TERRITORIES",
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.ENFORCED_TERRITORIES",
                 frozenset({"ops_scripts"}),
             ),
         ):

@@ -14,15 +14,15 @@ sys.path.insert(0, str(project_root))
 
 AGENTS_TO_TEST = [
     (
-        "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent",
+        "agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler",
         "FilesystemSSOTReconcilerAgent",
     ),
     ("agentic_core.L5_safety.reasoning.LocationAgent", "LocationAgent"),
-    ("agentic_core.L5_safety.reasoning.HierarchyAgent", "HierarchyAgent"),
+    ("agentic_core.L5_safety.reasoning.hierarchy_healer", "HierarchyAgent"),
     ("agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent", "ArchitectureGovernorAgent"),
     ("agentic_core.L5_safety.reasoning.SystemArchitectAgent", "SystemArchitectAgent"),
     ("agentic_core.L5_safety.validators.PascalSovereigntyAgent", "PascalSovereigntyAgent"),
-    ("agentic_core.L5_safety.reasoning.RootHygieneAgent", "RootHygieneAgent"),
+    ("agentic_core.L5_safety.reasoning.root_hygiene_healer", "RootHygieneAgent"),
     (
         "agentic_core.prompt_governance.agents.ConversationalRepairAgent",
         "ConversationalRepairAgent",

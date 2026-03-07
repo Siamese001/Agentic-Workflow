@@ -42,21 +42,20 @@ Covers every branch, boundary, and side-effect surface per §1 Constitutional Ru
 | HierarchyAgent.py | enforce_depth_rules | healing_enabled=False → archived keys stay 0 | no mutation | test_enforce_rules_detection_only_archived_zero |
 | HierarchyAgent.py | enforce_depth_rules | violations_found==0 → no summary log | Logger.info count | test_enforce_rules_no_log_when_no_violations |
 """
+
 from __future__ import annotations
 
 from pathlib import Path
 from types import MappingProxyType
-from unittest.mock import MagicMock, call, patch
-
-import pytest
-
+from unittest.mock import MagicMock, patch
 
 # ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_agent(project_root: Path, healing_enabled: bool = True):
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -64,14 +63,16 @@ def _make_agent(project_root: Path, healing_enabled: bool = True):
     agent.healing_enabled = healing_enabled
     gk = MagicMock()
     gk.safe_move.return_value = MagicMock(success=True, error=None)
-    gk.safe_archive.return_value = MagicMock(success=True, destination_path="archive/x.py", approval_status="APPROVED")
+    gk.safe_archive.return_value = MagicMock(
+        success=True, destination_path="archive/x.py", approval_status="APPROVED"
+    )
     agent.gatekeeper = gk
     agent._legacy_archive_depth_violation = MagicMock(return_value=0)
     return agent
 
 
 def _call(agent, file_path, rel, depth, expected):
-    with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg:
+    with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg:
         mock_wg.ensure_dir = MagicMock()
         return agent._heal_depth_violation(file_path, rel, depth, expected), mock_wg
 
@@ -91,6 +92,7 @@ def _write(tmp_path, rel_str, content=""):
 # ---------------------------------------------------------------------------
 # _heal_depth_violation — DEEP: collision delegation
 # ---------------------------------------------------------------------------
+
 
 class TestDeepCollisionDelegation:
     def test_deep_collision_legacy_returns_one_propagated(self, tmp_path):
@@ -155,6 +157,7 @@ class TestDeepCollisionDelegation:
 # ---------------------------------------------------------------------------
 # _heal_depth_violation — DEEP: gk arguments + ensure_dir
 # ---------------------------------------------------------------------------
+
 
 class TestDeepGkArgs:
     def test_deep_ensure_dir_called_with_correct_parent(self, tmp_path):
@@ -233,8 +236,10 @@ class TestDeepGkArgs:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log, \
-             patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with (
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log,
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"),
+        ):
             agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
         info_calls = [str(c) for c in mock_log.info.call_args_list]
@@ -244,6 +249,7 @@ class TestDeepGkArgs:
 # ---------------------------------------------------------------------------
 # _heal_depth_violation — DEEP: gk failure side-effects
 # ---------------------------------------------------------------------------
+
 
 class TestDeepGkFailure:
     def test_deep_gk_failure_source_still_exists(self, tmp_path):
@@ -284,6 +290,7 @@ class TestDeepGkFailure:
 # _heal_depth_violation — SHALLOW boundaries
 # ---------------------------------------------------------------------------
 
+
 class TestShallowBoundaries:
     def test_shallow_boundary_minus_one(self, tmp_path):
         """depth == expected-1 → SHALLOW, returns 0."""
@@ -323,8 +330,10 @@ class TestShallowBoundaries:
         rel = Path("tests/test_x.py")
         file_path = _write(tmp_path, rel)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log, \
-             patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with (
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log,
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"),
+        ):
             agent._heal_depth_violation(file_path, rel, depth=1, expected=3)
 
         error_msgs = [str(c) for c in mock_log.error.call_args_list]
@@ -344,6 +353,7 @@ class TestShallowBoundaries:
 # ---------------------------------------------------------------------------
 # _heal_depth_violation — depth==expected edge + exception variants
 # ---------------------------------------------------------------------------
+
 
 class TestEdgeAndExceptions:
     def test_depth_equal_hits_else_returns_zero(self, tmp_path):
@@ -374,7 +384,7 @@ class TestEdgeAndExceptions:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg:
             mock_wg.ensure_dir.side_effect = PermissionError("no access")
             result = agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
@@ -398,8 +408,10 @@ class TestEdgeAndExceptions:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log, \
-             patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with (
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log,
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"),
+        ):
             agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
         error_msgs = [str(c) for c in mock_log.error.call_args_list]
@@ -432,7 +444,7 @@ class TestEnforceDepthForRoot:
         """Context manager: patch get_python_files and get_data_files."""
         data_files = data_files or []
         return patch.multiple(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent",
+            "agentic_core.L5_safety.reasoning.hierarchy_healer",
             **{},
         )
 
@@ -447,20 +459,26 @@ class TestEnforceDepthForRoot:
         def _fake_get_data(root, extensions=None):
             return iter(data_files)
 
-        with patch(
-            "agentic_core.L0_routing.utils.ssot_discovery_util.get_python_files",
-            _fake_get_python,
-        ), patch(
-            "agentic_core.L0_routing.utils.ssot_discovery_util.get_data_files",
-            _fake_get_data,
-        ), patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.VARIABLE_DEPTH_SUBFOLDERS",
-            vds_patch,
-        ), patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
-            MappingProxyType({"apps_rg": {"depth": 2}, "tests": {"depth": 2}, "agentic_core": {"depth": 3}}),
-        ), patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent._wg"
+        with (
+            patch(
+                "agentic_core.L0_routing.utils.ssot_discovery_util.get_python_files",
+                _fake_get_python,
+            ),
+            patch(
+                "agentic_core.L0_routing.utils.ssot_discovery_util.get_data_files",
+                _fake_get_data,
+            ),
+            patch(
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.VARIABLE_DEPTH_SUBFOLDERS",
+                vds_patch,
+            ),
+            patch(
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
+                MappingProxyType(
+                    {"apps_rg": {"depth": 2}, "tests": {"depth": 2}, "agentic_core": {"depth": 3}}
+                ),
+            ),
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"),
         ):
             return agent._enforce_depth_for_root(root_key, root_check, "subdir", "LABEL")
 
@@ -592,6 +610,7 @@ class TestEnforceDepthForRoot:
 # enforce_depth_rules — target_territory dispatch
 # ---------------------------------------------------------------------------
 
+
 class TestEnforceDepthRulesDispatch:
     """Tests for enforce_depth_rules target_territory scoping."""
 
@@ -686,7 +705,7 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_no_log_when_no_violations(self, tmp_path):
         """violations_found==0 → no summary info log about depth violations."""
         agent = self._make_dispatch_agent(tmp_path)
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent.enforce_depth_rules()
 
         info_msgs = [str(c) for c in mock_log.info.call_args_list]

@@ -32,7 +32,7 @@ from unittest.mock import MagicMock, patch
 
 def _make_agent(healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent with mocked dependencies."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = Path("/fake/root")
@@ -72,7 +72,7 @@ def _run_enforce(agent, tmp_path, files: list[tuple[str, str]]) -> dict:
 class TestGetApprovedTestsSubfolders:
     def test_derives_from_sovereign_territories(self):
         """Success path: returns frozenset of subfolders declared in SOVEREIGN_TERRITORIES."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         fake_st = _fake_sovereign_territories({"unit": {}, "support": {}, "integration": {}})
         with patch(
@@ -88,7 +88,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_missing_tests_key_returns_empty(self):
         """Branch: SOVEREIGN_TERRITORIES has no 'tests' key → frozenset()."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         empty_st = MappingProxyType({})
         with patch(
@@ -101,7 +101,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_missing_subfolders_key_returns_empty(self):
         """Branch: tests config exists but has no 'subfolders' key → frozenset()."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         st = MappingProxyType({"tests": MappingProxyType({"depth": 2})})
         with patch(
@@ -114,7 +114,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_subfolders_is_not_dict_returns_empty(self):
         """Branch: subfolders is a list (invalid schema) → frozenset()."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         st = MappingProxyType({"tests": {"subfolders": ["unit", "integration"]}})
         with patch(
@@ -127,7 +127,7 @@ class TestGetApprovedTestsSubfolders:
 
     def test_reflects_live_ssot_not_hardcoded(self):
         """Metamorphic: adding a new subfolder to SOVEREIGN_TERRITORIES is immediately reflected."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         st = _fake_sovereign_territories({"unit": {}, "brand_new_folder": {}})
         with patch(
@@ -148,7 +148,7 @@ class TestGetApprovedTestsSubfolders:
 def _patch_approved(approved: frozenset[str]):
     """Patch _get_approved_tests_subfolders to return a fixed set."""
     return patch(
-        "agentic_core.L5_safety.reasoning.HierarchyAgent.HierarchyAgent._get_approved_tests_subfolders",
+        "agentic_core.L5_safety.reasoning.hierarchy_healer.HierarchyAgent._get_approved_tests_subfolders",
         return_value=approved,
     )
 
@@ -239,7 +239,7 @@ class TestEnforceTestsStructureViolations:
         """Negative control: Agent file without test_ prefix in tests/ → violation + error."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+            with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
                 results = _run_enforce(
                     agent,
                     tmp_path,
@@ -275,7 +275,7 @@ class TestEnforceTestsStructureViolations:
         """Negative control: test_ file at tests/ root (not in subfolder) → violation + error."""
         agent = _make_agent()
         with _patch_approved(APPROVED), _patch_whitelist():
-            with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+            with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
                 results = _run_enforce(
                     agent,
                     tmp_path,
@@ -427,7 +427,7 @@ class TestEnforceTestsStructureDeterminism:
 
     def test_approved_subfolders_is_frozenset(self):
         """Invariant: _get_approved_tests_subfolders always returns a frozenset."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         result = HierarchyAgent._get_approved_tests_subfolders()
         assert isinstance(result, frozenset)

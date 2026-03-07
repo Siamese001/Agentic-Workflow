@@ -46,21 +46,20 @@ All failure points identified:
 | HierarchyAgent.py | enforce_depth_rules | stress: 10 deep violations → archived=10 | sum=10 | test_stress_10_deep_violations_all_archived |
 | HierarchyAgent.py | enforce_depth_rules | stress: mixed roots 5+5+5 violations | sum=15 | test_stress_mixed_roots_15_violations |
 """
+
 from __future__ import annotations
 
 from pathlib import Path
 from types import MappingProxyType
-from unittest.mock import MagicMock, call, patch
-
-import pytest
-
+from unittest.mock import MagicMock, patch
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_agent(project_root: Path, healing_enabled: bool = True):
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -86,6 +85,7 @@ def _write(tmp_path: Path, rel_str: str, content: str = "") -> Path:
 # _legacy_archive_depth_violation
 # ---------------------------------------------------------------------------
 
+
 class TestLegacyArchiveDepthViolation:
     def test_legacy_archive_success_returns_one(self, tmp_path):
         """safe_archive success → returns 1."""
@@ -103,7 +103,7 @@ class TestLegacyArchiveDepthViolation:
         file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
         rel = file_path.relative_to(tmp_path)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
 
         info_msgs = [str(c) for c in mock_log.info.call_args_list]
@@ -131,7 +131,7 @@ class TestLegacyArchiveDepthViolation:
         file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
         rel = file_path.relative_to(tmp_path)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
 
         info_msgs = [str(c) for c in mock_log.info.call_args_list]
@@ -159,7 +159,7 @@ class TestLegacyArchiveDepthViolation:
         file_path = _write(tmp_path, "agentic_core/L0_routing/scripts/extra/f.py")
         rel = file_path.relative_to(tmp_path)
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent._legacy_archive_depth_violation(file_path, rel, 4, 3, "collision", "COLLISION")
 
         error_msgs = [str(c) for c in mock_log.error.call_args_list]
@@ -206,13 +206,15 @@ class TestLegacyArchiveDepthViolation:
 # _enforce_apps_depth
 # ---------------------------------------------------------------------------
 
-_FAKE_TERRITORIES = MappingProxyType({
-    "apps_rg": {"depth": 2},
-    "apps_lic": {"depth": 2},
-    "apps_shared": {"depth": 2},
-    "tests": {"depth": 2},
-    "agentic_core": {"depth": 3},
-})
+_FAKE_TERRITORIES = MappingProxyType(
+    {
+        "apps_rg": {"depth": 2},
+        "apps_lic": {"depth": 2},
+        "apps_shared": {"depth": 2},
+        "tests": {"depth": 2},
+        "agentic_core": {"depth": 3},
+    }
+)
 
 
 class TestEnforceAppsDepth:
@@ -222,7 +224,7 @@ class TestEnforceAppsDepth:
         agent._enforce_depth_for_root = MagicMock(return_value=0)
 
         with patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
             _FAKE_TERRITORIES,
         ):
             agent._enforce_apps_depth()
@@ -238,7 +240,7 @@ class TestEnforceAppsDepth:
 
         partial = MappingProxyType({"apps_rg": {"depth": 2}, "apps_lic": {"depth": 2}})
         with patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
             partial,
         ):
             agent._enforce_apps_depth()
@@ -253,7 +255,7 @@ class TestEnforceAppsDepth:
         agent._enforce_depth_for_root = MagicMock(side_effect=[3, 5, 2])
 
         with patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
             _FAKE_TERRITORIES,
         ):
             total = agent._enforce_apps_depth()
@@ -269,7 +271,7 @@ class TestEnforceAppsDepth:
         )
 
         with patch(
-            "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
             _FAKE_TERRITORIES,
         ):
             agent._enforce_apps_depth()
@@ -286,6 +288,7 @@ class TestEnforceAppsDepth:
 # ---------------------------------------------------------------------------
 # _enforce_tests_depth
 # ---------------------------------------------------------------------------
+
 
 class TestEnforceTestsDepth:
     def test_enforce_tests_delegates_correctly(self, tmp_path):
@@ -319,6 +322,7 @@ class TestEnforceTestsDepth:
 # _enforce_universal_depth
 # ---------------------------------------------------------------------------
 
+
 def _run_universal(agent, data_files, vds=None, territories=None):
     """Run _enforce_universal_depth with mocked discovery."""
     vds_patch = vds if vds is not None else frozenset()
@@ -327,15 +331,19 @@ def _run_universal(agent, data_files, vds=None, territories=None):
     def _fake_get_data(root, extensions=None):
         return iter(data_files)
 
-    with patch(
-        "agentic_core.L0_routing.utils.ssot_discovery_util.get_data_files",
-        _fake_get_data,
-    ), patch(
-        "agentic_core.L5_safety.reasoning.HierarchyAgent.VARIABLE_DEPTH_SUBFOLDERS",
-        vds_patch,
-    ), patch(
-        "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
-        territories_patch,
+    with (
+        patch(
+            "agentic_core.L0_routing.utils.ssot_discovery_util.get_data_files",
+            _fake_get_data,
+        ),
+        patch(
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.VARIABLE_DEPTH_SUBFOLDERS",
+            vds_patch,
+        ),
+        patch(
+            "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
+            territories_patch,
+        ),
     ):
         return agent._enforce_universal_depth()
 
@@ -428,7 +436,7 @@ class TestEnforceUniversalDepth:
         """Mixed: 1 correct-depth + 1 violation → detection-only returns 1."""
         agent = _make_agent(tmp_path, healing_enabled=False)
         good = _write(tmp_path, "agentic_core/L0_routing/scripts/schema.json")  # depth=3
-        bad = _write(tmp_path, "agentic_core/L0_routing/extra/sub/schema.json")   # depth=4
+        bad = _write(tmp_path, "agentic_core/L0_routing/extra/sub/schema.json")  # depth=4
         result = _run_universal(agent, [good, bad])
         assert result == 1
 
@@ -437,10 +445,10 @@ class TestEnforceUniversalDepth:
 # Full end-to-end chain tests
 # ---------------------------------------------------------------------------
 
+
 class TestFullChain:
     def test_full_chain_collision_legacy_success(self, tmp_path):
         """DEEP + collision → legacy archive → gk.safe_archive → returns 1."""
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
 
         agent = _make_agent(tmp_path)
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
@@ -450,7 +458,7 @@ class TestFullChain:
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"):
             result = agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
         assert result == 1
@@ -463,7 +471,7 @@ class TestFullChain:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, str(rel))
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"):
             result = agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
         assert result == 1
@@ -476,7 +484,7 @@ class TestFullChain:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, str(rel))
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg"):
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"):
             result = agent._heal_depth_violation(file_path, rel, depth=4, expected=3)
 
         assert result == 0
@@ -485,6 +493,7 @@ class TestFullChain:
 # ---------------------------------------------------------------------------
 # enforce_depth_rules pipeline logging + stress
 # ---------------------------------------------------------------------------
+
 
 class TestEnforceRulesPipelineLogging:
     def _make_dispatch_agent(self, project_root: Path, healing: bool = False):
@@ -500,7 +509,7 @@ class TestEnforceRulesPipelineLogging:
         agent._enforce_apps_depth.return_value = 3
         agent._enforce_tests_depth.return_value = 2
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent.enforce_depth_rules()
 
         info_msgs = [str(c) for c in mock_log.info.call_args_list]
@@ -513,7 +522,7 @@ class TestEnforceRulesPipelineLogging:
         agent._enforce_tests_depth.return_value = 3
         agent._enforce_universal_depth.return_value = 1
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             agent.enforce_depth_rules()
 
         info_msgs = [str(c) for c in mock_log.info.call_args_list]

@@ -24,11 +24,9 @@ Tests cover:
 
 from __future__ import annotations
 
-import importlib
 import sys
 import types
-from unittest.mock import MagicMock, patch
-
+from unittest.mock import patch
 
 # ---------------------------------------------------------------------------
 # Import the helpers under test — both agents must export _evict_blueprint_modules
@@ -37,17 +35,19 @@ from unittest.mock import MagicMock, patch
 
 def _import_location_evict():
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import (
-        _evict_blueprint_modules,
         _BLUEPRINT_MODULE_PREFIXES,
+        _evict_blueprint_modules,
     )
+
     return _evict_blueprint_modules, _BLUEPRINT_MODULE_PREFIXES
 
 
 def _import_reconciler_evict():
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
-        _evict_blueprint_modules,
+    from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
         _BLUEPRINT_MODULE_PREFIXES,
+        _evict_blueprint_modules,
     )
+
     return _evict_blueprint_modules, _BLUEPRINT_MODULE_PREFIXES
 
 
@@ -98,7 +98,6 @@ _SENTINEL = object()
 
 
 class TestLocationHealerEviction:
-
     def test_evict_removes_all_blueprint_prefixes(self):
         """All structure_blueprint* keys are removed from sys.modules."""
         _evict, _prefixes = _import_location_evict()
@@ -139,12 +138,17 @@ class TestLocationHealerEviction:
         """Works without error when no blueprint modules are in sys.modules."""
         _evict, _ = _import_location_evict()
         # Remove any real blueprint modules temporarily
-        saved = {k: sys.modules.pop(k) for k in list(sys.modules) if any(
-            k == p or k.startswith(p + ".") for p in (
-                "agentic_core.L5_safety.config.structure_blueprint",
-                "agentic_core.L5_safety.config.structure_blueprint_config",
+        saved = {
+            k: sys.modules.pop(k)
+            for k in list(sys.modules)
+            if any(
+                k == p or k.startswith(p + ".")
+                for p in (
+                    "agentic_core.L5_safety.config.structure_blueprint",
+                    "agentic_core.L5_safety.config.structure_blueprint_config",
+                )
             )
-        )}
+        }
         try:
             _evict()  # must not raise
         finally:
@@ -214,7 +218,6 @@ class TestLocationHealerEviction:
 
 
 class TestFilesystemSSOTReconcilerEviction:
-
     def test_evict_removes_all_blueprint_prefixes(self):
         """FilesystemSSOTReconcilerAgent eviction removes all blueprint keys."""
         _evict, _ = _import_reconciler_evict()
@@ -266,7 +269,6 @@ class TestFilesystemSSOTReconcilerEviction:
 
 
 class TestEvictionAllowsFreshReimport:
-
     def test_reimport_after_eviction_returns_new_object(self):
         """After eviction, importing the module again creates a new module object."""
         _evict, _ = _import_location_evict()

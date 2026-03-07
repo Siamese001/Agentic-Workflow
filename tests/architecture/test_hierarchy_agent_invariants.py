@@ -41,7 +41,7 @@ pytestmark = pytest.mark.architecture
 
 def _make_agent(tmp_root: Path, healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent with mocked gatekeeper, no filesystem side-effects."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = tmp_root

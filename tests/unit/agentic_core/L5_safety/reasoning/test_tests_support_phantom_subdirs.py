@@ -60,7 +60,7 @@ _Mapping = (dict, MappingProxyType)
 
 def _make_agent(healing_enabled: bool = False):
     """Construct a minimal HierarchyAgent without triggering __init__ chain."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = Path("/fake/root")
@@ -75,7 +75,7 @@ def _make_agent(healing_enabled: bool = False):
 
 def _patch_approved(approved: frozenset):
     return patch(
-        "agentic_core.L5_safety.reasoning.HierarchyAgent.HierarchyAgent._get_approved_tests_subfolders",
+        "agentic_core.L5_safety.reasoning.hierarchy_healer.HierarchyAgent._get_approved_tests_subfolders",
         return_value=approved,
     )
 
@@ -503,13 +503,13 @@ class TestCreateMissingStructureSupportFlat:
             },
         }
         with (
-            patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg,
+            patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg,
             patch(
-                "agentic_core.L5_safety.reasoning.HierarchyAgent.SOVEREIGN_TERRITORIES",
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
                 clean_st,
             ),
             patch(
-                "agentic_core.L5_safety.reasoning.HierarchyAgent.ENFORCED_TERRITORIES",
+                "agentic_core.L5_safety.reasoning.hierarchy_healer.ENFORCED_TERRITORIES",
                 frozenset({"tests"}),
             ),
         ):
@@ -539,7 +539,7 @@ class TestDepthEnforcementPhantomSupportFiles:
     """
 
     def _make_heal_agent(self, project_root: Path):
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         agent = object.__new__(HierarchyAgent)
         agent.project_root = project_root
@@ -552,7 +552,7 @@ class TestDepthEnforcementPhantomSupportFiles:
         return agent
 
     def _call(self, agent, file_path, rel, depth, expected):
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg:
             mock_wg.ensure_dir = MagicMock()
             return agent._heal_depth_violation(file_path, rel, depth, expected)
 

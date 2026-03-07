@@ -12,6 +12,7 @@ Tests for HierarchyAgent._heal_depth_violation (depth_aligned bug fix).
 | HierarchyAgent.py | _heal_depth_violation | exception raised | caught, logs error, returns 0 | test_exception_returns_zero |
 | HierarchyAgent.py | _heal_depth_violation | DEEP success | logs HEALED, returns 1 | test_deep_success_returns_one |
 """
+
 from __future__ import annotations
 
 from pathlib import Path
@@ -19,13 +20,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Minimal agent factory
 # ---------------------------------------------------------------------------
 
+
 def _make_agent(project_root: Path):
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = object.__new__(HierarchyAgent)
     agent.project_root = project_root
@@ -40,7 +41,7 @@ def _make_agent(project_root: Path):
 
 
 def _call(agent, file_path, rel, depth, expected):
-    with patch("agentic_core.L5_safety.reasoning.HierarchyAgent._wg") as mock_wg:
+    with patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg") as mock_wg:
         mock_wg.ensure_dir = MagicMock()
         return agent._heal_depth_violation(file_path, rel, depth, expected)
 
@@ -48,6 +49,7 @@ def _call(agent, file_path, rel, depth, expected):
 # ---------------------------------------------------------------------------
 # DEEP violation (depth > expected)
 # ---------------------------------------------------------------------------
+
 
 class TestHierarchyDeepViolation:
     def test_deep_calls_gatekeeper_safe_move(self, tmp_path):
@@ -88,7 +90,7 @@ class TestHierarchyDeepViolation:
         file_path.parent.mkdir(parents=True)
         file_path.write_text("")
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             result = _call(agent, file_path, rel, depth=4, expected=3)
 
         assert result == 0
@@ -130,6 +132,7 @@ class TestHierarchyDeepViolation:
 # SHALLOW violation (depth < expected) — depth_aligned bug fix
 # ---------------------------------------------------------------------------
 
+
 class TestHierarchyShallowViolation:
     def test_shallow_returns_zero(self, tmp_path):
         """SHALLOW: returns 0 — no healing action taken."""
@@ -163,7 +166,7 @@ class TestHierarchyShallowViolation:
         file_path.parent.mkdir(parents=True)
         file_path.write_text("")
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             _call(agent, file_path, rel, depth=1, expected=3)
 
         mock_log.error.assert_called_once()
@@ -204,6 +207,7 @@ class TestHierarchyShallowViolation:
 # Exception path (§1.5)
 # ---------------------------------------------------------------------------
 
+
 class TestHierarchyExceptionPath:
     def test_exception_returns_zero(self, tmp_path):
         """Exception during heal → caught, returns 0."""
@@ -227,7 +231,7 @@ class TestHierarchyExceptionPath:
         file_path.parent.mkdir(parents=True)
         file_path.write_text("")
 
-        with patch("agentic_core.L5_safety.reasoning.HierarchyAgent.Logger") as mock_log:
+        with patch("agentic_core.L5_safety.reasoning.hierarchy_healer.Logger") as mock_log:
             _call(agent, file_path, rel, depth=4, expected=3)
 
         mock_log.error.assert_called_once()
@@ -250,6 +254,7 @@ class TestHierarchyExceptionPath:
 # ---------------------------------------------------------------------------
 # Boundary / determinism (§1.8, §1.10)
 # ---------------------------------------------------------------------------
+
 
 class TestHierarchyBoundaries:
     def test_depth_equals_expected_is_deep_path_edge(self, tmp_path):
