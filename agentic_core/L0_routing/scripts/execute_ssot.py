@@ -491,7 +491,7 @@ def _get_l5_agent_roster():
     from agentic_core.L5_safety.reasoning.ArchitectureGovernorAgent import ArchitectureGovernorAgent
     from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent
     from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import FilesystemSSOTReconcilerAgent
+    from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import FilesystemSSOTReconcilerAgent
     from agentic_core.L5_safety.reasoning.GravityLeakHealerAgent import GravityLeakHealerAgent
     from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
@@ -3142,7 +3142,7 @@ def execute_phase1_discovery_impl(
 
     state_mgr.update_agent("FilesystemSSOTHealerAgent", "L5 - Safety (Validator)")
 
-    from agentic_core.L5_safety.reasoning.FilesystemSSOTValidatorAgent import (
+    from agentic_core.L5_safety.reasoning.filesystem_ssot_validator import (
         FilesystemSSOTValidatorAgent as _FilesystemSSOTValidatorAgent,
     )
 

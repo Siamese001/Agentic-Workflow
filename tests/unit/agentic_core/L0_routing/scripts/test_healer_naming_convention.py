@@ -10,6 +10,8 @@ GravityValidatorAgent renamed to gravity_validator.py in Phase 3.
 FileClassificationValidatorAgent renamed to file_classification_validator.py in Phase 4.
 HierarchyAgent renamed to hierarchy_healer.py + hierarchy_validator.py in Phase 5.
 RootHygieneAgent renamed to root_hygiene_healer.py + root_hygiene_validator.py in Phase 6.
+FilesystemSSOTReconcilerAgent renamed to filesystem_ssot_reconciler.py in Phase 7.
+FilesystemSSOTValidatorAgent renamed to filesystem_ssot_validator.py in Phase 7.
 
 New invariants:
   - Roster imports real classes directly (no shim modules)
@@ -49,6 +51,8 @@ RENAMED_MODULE_FILES = [
     "FileClassificationValidatorAgent",  # Phase 4 — now file_classification_validator.py
     "HierarchyAgent",  # Phase 5 — now hierarchy_healer.py (class HierarchyAgent preserved)
     "RootHygieneAgent",  # Phase 6 — now root_hygiene_healer.py (class RootHygieneAgent preserved)
+    "FilesystemSSOTReconcilerAgent",  # Phase 7 — now filesystem_ssot_reconciler.py
+    "FilesystemSSOTValidatorAgent",  # Phase 7 — now filesystem_ssot_validator.py
 ]
 
 
@@ -160,7 +164,7 @@ class TestRosterUsesDirectImports:
         direct_class_paths = {
             "FileClassificationAgent": "agentic_core.L5_safety.reasoning.FileClassificationAgent",
             "HierarchyAgent": "agentic_core.L5_safety.reasoning.hierarchy_healer",
-            "FilesystemSSOTReconcilerAgent": "agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent",
+            "FilesystemSSOTReconcilerAgent": "agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler",
             "GravityLeakHealerAgent": "agentic_core.L5_safety.reasoning.GravityLeakHealerAgent",
         }
         for cls_name, module_path in direct_class_paths.items():

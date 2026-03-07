@@ -42,7 +42,7 @@ def validate_agent_roster() -> dict:
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
-        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
             FilesystemSSOTReconcilerAgent,
         )
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
