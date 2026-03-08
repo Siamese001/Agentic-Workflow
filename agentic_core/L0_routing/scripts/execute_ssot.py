@@ -2499,6 +2499,7 @@ def execute_phase2_reconciliation(
                         agent_instance.heal_repository,
                         dry_run=False,
                         execute=True,
+                        target_territory=territory,
                     )
                     try:
                         fix_result = _future.result(timeout=_HEAL_TIMEOUT_S)
@@ -6992,10 +6993,26 @@ def _legacy_main(
             if "agent_execution_log" not in state_mgr.state:
                 state_mgr.state["agent_execution_log"] = []
 
+            # Dirs that contain no agent code and produce zero healing fixes.
+            # Running all 7 phases against them causes redundant full-repo
+            # location scans — skip them from the full pipeline entirely.
+            # Code territories outside agentic_core (apps_*, tests, ops_scripts,
+            # system_learning) are NOT in this set and still get the full pipeline.
+            _DATA_ONLY_TERRITORIES = frozenset(
+                {"logs", "docs", "data", "archives", "artifacts", "tools"}
+            )
+
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
                 logger.info(f"PROCESSING TERRITORY: {territory}")
                 logger.info(f"{'=' * 60}")
+
+                if territory in _DATA_ONLY_TERRITORIES and ctx.heal:
+                    logger.info(
+                        f"[SKIP] {territory} is a data/artifact territory — bypassing full pipeline (scan-only)"
+                    )
+                    results.append({"territory": territory, "status": "scan_only_skipped"})
+                    continue
 
                 # Update State with Target
                 state_mgr.state["current_territory"] = territory

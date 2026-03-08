@@ -433,10 +433,16 @@ class LocationHealerAgent(SovereignBaseAgent):
         depth: int = 0,
         max_depth: int = 3,
         _call_path: set[str] | None = None,
+        target_territory: str | None = None,
     ) -> dict[str, int]:
         """
         Autonomous full-repository location law healing.
         Canon Key 51 compliance - fully self-orchestrating.
+
+        Args:
+            target_territory: If provided, restricts the location scan to this
+                sovereign territory root only (matches LocationValidatorAgent.run
+                strict-targeting behaviour). When None, scans all roots.
         """
         if _call_path is None:
             _call_path = set()
@@ -464,7 +470,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
             validator = LocationValidatorAgent(project_root=self.project_root)
-            scan_result = validator.run()
+            scan_result = validator.run(target_territory=target_territory)
             violations = scan_result.get("violations", [])
             print(f"[LOCATION HEAL @ depth {depth}] Found {len(violations)} violations")
 
