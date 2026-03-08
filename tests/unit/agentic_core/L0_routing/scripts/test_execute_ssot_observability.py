@@ -792,13 +792,13 @@ class TestGateCriteriaThresholds:
 
 
 class TestWriteFailureForensics:
-    """Branch: no failures (no file), partial, full with failed/blocked/misrouted."""
+    """Branch: clean run (file always written), partial, full with failed/blocked/misrouted."""
 
     def setup_method(self):
         self.mod = _load()
 
-    def test_forensics_no_failures_no_file(self, tmp_path):
-        """No failures, no blockers → file NOT written."""
+    def test_forensics_clean_run_always_written(self, tmp_path):
+        """No failures, no blockers → file IS always written with empty arrays (CLEAN)."""
         sm = _make_state(
             {
                 "healing_actions": [{"agent": "A", "outcome": "SUCCESS"}],
@@ -809,7 +809,22 @@ class TestWriteFailureForensics:
         eng = _make_engine()
         self.mod._write_failure_forensics(sm, eng)
         out = tmp_path / "logs" / "compliance_reports" / "failure_forensics.json"
-        assert not out.exists()
+        assert out.exists()
+        data = json.loads(out.read_text())
+        assert data["summary"]["failed_agents_count"] == 0
+        assert data["summary"]["blocked_agents_count"] == 0
+        assert data["summary"]["misrouted_agents_count"] == 0
+        assert data["failed_agents"] == []
+        assert data["blocked_agents"] == []
+        assert data["misrouted_agents"] == []
+
+    def test_forensics_clean_run_write_fail_no_crash(self):
+        """OSError on clean run → logged and swallowed, no exception raised."""
+        sm = _make_state({"healing_actions": [{"agent": "A", "outcome": "SUCCESS"}], "blocked_agents": []})
+        sm.project_root = None
+        eng = _make_engine()
+        with patch("builtins.open", side_effect=OSError("disk full")):
+            self.mod._write_failure_forensics(sm, eng)
 
     def test_forensics_with_failed_agents(self, tmp_path):
         """Failed agents → file written with failed_agents populated."""

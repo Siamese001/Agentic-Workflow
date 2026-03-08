@@ -5549,7 +5549,7 @@ def _write_mandatory_json_output(
 def _write_heal_run_complete(
     state_mgr: "SovereignStateMgr",
     decision_engine: "SovereignDecisionEngine",
-) -> None:
+) -> dict:
     """Write authoritative heal_run_complete.json with prove-it evidence for all 6 concerns.
 
     Sections:
@@ -5964,10 +5964,6 @@ def _write_failure_forensics(
                 }
             )
 
-    # Skip writing if nothing to report
-    if not failed_agents and not blockers and not misrouted_agents:
-        return
-
     run_ts = datetime.datetime.now().isoformat()
     output = {
         "meta": {
@@ -5993,7 +5989,9 @@ def _write_failure_forensics(
         out_path = out_dir / "failure_forensics.json"
         with open(out_path, "w", encoding="utf-8") as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
-        print(f"[FORENSICS] failure_forensics.json -> {out_path}")
+        clean = not failed_agents and not blockers and not misrouted_agents
+        status_tag = "CLEAN" if clean else "FAILURES_PRESENT"
+        print(f"[FORENSICS] failure_forensics.json ({status_tag}) -> {out_path}")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[FORENSICS] Failed to write failure_forensics.json: %s", _e)
 
@@ -6133,8 +6131,9 @@ def _print_executive_summary(
     if overall == "PASS":
         print("  All diagnostic gates satisfied. Healing pipeline operating as intended.")
     else:
-        print(f"  {n_fail} gate(s) failed. See failure_forensics.json for drill-down.")
+        print(f"  {n_fail} gate(s) failed. See logs/compliance_reports/failure_forensics.json for drill-down.")
     print("  Detailed reports: logs/compliance_reports/heal_run_complete.json")
+    print("                    logs/compliance_reports/failure_forensics.json")
     print("=" * _W)
     print("")
 
