@@ -346,7 +346,7 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_has_forbidden_patterns(self):
         """Success path: contracts entry has forbidden_patterns key."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -357,7 +357,7 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_forbidden_patterns_block_agent(self):
         """Branch: forbidden_patterns blocks *Agent.py."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -370,7 +370,7 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_forbidden_patterns_block_fake(self):
         """Branch: forbidden_patterns blocks fake_*.py."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -383,7 +383,7 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_fixtures_subfolder_declared(self):
         """Branch: contracts/ SSOT entry declares fixtures/ as approved subfolder."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 

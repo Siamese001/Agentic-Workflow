@@ -760,7 +760,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
                 import agentic_core.L0_routing.scripts.execute_ssot as mod
 
             state_mgr = self._make_state_mgr()
-            mod._fire_meta_learning_intake(state_mgr)  # Must not raise
+            mod._fire_meta_learning_intake(state_mgr, now_utc=0)  # Must not raise
         finally:
             builtins.__import__ = real_import
 

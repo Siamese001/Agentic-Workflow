@@ -12,7 +12,7 @@ from dataclasses import dataclass
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint import TESTS_AUTOGEN_DIR
+from agentic_core.L5_safety.config.structure_blueprint_config import TESTS_AUTOGEN_DIR
 
 """
 TestGeneratorAgent: Automatically creates subatomic tests for agents.

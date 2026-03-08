@@ -23,6 +23,7 @@ Bug 2: Healing pipeline creates L-layer subdirectories (`l1_cognition/`, `l2_exe
 Both bugs represent the same class of failure: healing agents creating phantom structural
 scaffolding rather than actually relocating files correctly.
 """
+
 from __future__ import annotations
 
 import re
@@ -56,7 +57,6 @@ L_LAYER_PATTERN = re.compile(r"^l[0-9]_[a-z]+$")
 
 @pytest.mark.architecture
 class TestDepthAlignedRegression:
-
     def _all_depth_aligned_dirs(self) -> list[Path]:
         violations = []
         for territory in AGENT_TERRITORIES:
@@ -80,8 +80,7 @@ class TestDepthAlignedRegression:
             rel = [str(d.relative_to(REPO_ROOT)) for d in violations]
             pytest.fail(
                 f"HEALING BUG REGRESSION: {len(violations)} phantom depth_aligned/ "
-                f"director(y/ies) found — these must never be created:\n  "
-                + "\n  ".join(rel)
+                f"director(y/ies) found — these must never be created:\n  " + "\n  ".join(rel)
             )
 
     def test_no_depth_aligned_in_agentic_core(self):
@@ -90,9 +89,8 @@ class TestDepthAlignedRegression:
         if not ac.exists():
             pytest.skip("agentic_core not present")
         violations = [d for d in ac.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
-        assert not violations, (
-            f"depth_aligned/ found inside agentic_core/:\n  "
-            + "\n  ".join(str(d.relative_to(REPO_ROOT)) for d in violations)
+        assert not violations, "depth_aligned/ found inside agentic_core/:\n  " + "\n  ".join(
+            str(d.relative_to(REPO_ROOT)) for d in violations
         )
 
     def test_no_depth_aligned_in_tests(self):
@@ -101,9 +99,8 @@ class TestDepthAlignedRegression:
         if not t.exists():
             pytest.skip("tests/ not present")
         violations = [d for d in t.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
-        assert not violations, (
-            f"depth_aligned/ found inside tests/:\n  "
-            + "\n  ".join(str(d.relative_to(REPO_ROOT)) for d in violations)
+        assert not violations, "depth_aligned/ found inside tests/:\n  " + "\n  ".join(
+            str(d.relative_to(REPO_ROOT)) for d in violations
         )
 
     def test_no_depth_aligned_in_system_learning(self):
@@ -112,9 +109,8 @@ class TestDepthAlignedRegression:
         if not sl.exists():
             pytest.skip("system_learning not present")
         violations = [d for d in sl.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
-        assert not violations, (
-            f"depth_aligned/ found inside system_learning/:\n  "
-            + "\n  ".join(str(d.relative_to(REPO_ROOT)) for d in violations)
+        assert not violations, "depth_aligned/ found inside system_learning/:\n  " + "\n  ".join(
+            str(d.relative_to(REPO_ROOT)) for d in violations
         )
 
     def test_depth_aligned_not_in_sovereign_territories_blueprint(self):
@@ -124,7 +120,7 @@ class TestDepthAlignedRegression:
         legitimise the phantom folder structure.
         """
         try:
-            from agentic_core.L5_safety.config.structure_blueprint._constants import (
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES,
             )
         except ImportError:
@@ -141,7 +137,7 @@ class TestDepthAlignedRegression:
 
         violations = _walk(SOVEREIGN_TERRITORIES)
         assert not violations, (
-            f"depth_aligned declared as canonical subfolder in SOVEREIGN_TERRITORIES: "
+            "depth_aligned declared as canonical subfolder in SOVEREIGN_TERRITORIES: "
             + ", ".join(violations)
             + " — this is forbidden."
         )
@@ -177,7 +173,6 @@ class TestDepthAlignedRegression:
 
 @pytest.mark.architecture
 class TestTestsSupportFlatStructure:
-
     def _support_subdirs(self) -> list[Path]:
         support = REPO_ROOT / "tests" / "support"
         if not support.exists():
@@ -196,8 +191,7 @@ class TestTestsSupportFlatStructure:
             rel = [str(d.relative_to(REPO_ROOT)) for d in subdirs]
             pytest.fail(
                 f"HEALING BUG REGRESSION: {len(subdirs)} phantom subdirector(y/ies) found "
-                f"under tests/support/ — this directory must be flat:\n  "
-                + "\n  ".join(rel)
+                f"under tests/support/ — this directory must be flat:\n  " + "\n  ".join(rel)
             )
 
     def test_tests_support_has_no_l_layer_subdirectories(self):
@@ -209,13 +203,9 @@ class TestTestsSupportFlatStructure:
         support = REPO_ROOT / "tests" / "support"
         if not support.exists():
             pytest.skip("tests/support not present")
-        violations = [
-            d for d in support.iterdir()
-            if d.is_dir() and L_LAYER_PATTERN.match(d.name)
-        ]
-        assert not violations, (
-            f"L-layer phantom subdirectories found under tests/support/: "
-            + ", ".join(d.name for d in violations)
+        violations = [d for d in support.iterdir() if d.is_dir() and L_LAYER_PATTERN.match(d.name)]
+        assert not violations, "L-layer phantom subdirectories found under tests/support/: " + ", ".join(
+            d.name for d in violations
         )
 
     def test_tests_support_no_agent_duplication(self):
@@ -239,11 +229,20 @@ class TestTestsSupportFlatStructure:
                 f"tests/support/{subdir.name}/: {sorted(duplicates)}"
             )
 
-    @pytest.mark.parametrize("forbidden_name", [
-        "l0_routing", "l1_cognition", "l2_execution", "l3_orchestration",
-        "l4_memory", "l5_safety", "l6_observability",
-        "depth_aligned", "_quarantine",
-    ])
+    @pytest.mark.parametrize(
+        "forbidden_name",
+        [
+            "l0_routing",
+            "l1_cognition",
+            "l2_execution",
+            "l3_orchestration",
+            "l4_memory",
+            "l5_safety",
+            "l6_observability",
+            "depth_aligned",
+            "_quarantine",
+        ],
+    )
     def test_tests_support_specific_forbidden_subdirs_absent(self, forbidden_name):
         """Each known-bad subdirectory name must not exist under tests/support/."""
         support = REPO_ROOT / "tests" / "support"
@@ -263,7 +262,6 @@ class TestTestsSupportFlatStructure:
 
 @pytest.mark.architecture
 class TestPhantomSubdirDuplication:
-
     # ONLY depth_aligned is universally forbidden.
     # _quarantine is canonical under tests/. l0_scripts is legitimate ops tooling.
     FORBIDDEN_SUBDIR_NAMES = frozenset({"depth_aligned"})
@@ -332,10 +330,7 @@ class TestPhantomSubdirDuplication:
             text=True,
         )
         tracked = result.stdout.splitlines()
-        violations = [
-            f for f in tracked
-            if "depth_aligned" in Path(f).parts
-        ]
+        violations = [f for f in tracked if "depth_aligned" in Path(f).parts]
         assert not violations, (
             f"REGRESSION: {len(violations)} depth_aligned/ path(s) tracked in git index:\n  "
             + "\n  ".join(sorted(violations)[:40])
@@ -357,7 +352,8 @@ class TestPhantomSubdirDuplication:
         )
         tracked = result.stdout.splitlines()
         violations = [
-            f for f in tracked
+            f
+            for f in tracked
             if f.startswith("tests/support/")
             and len(Path(f).parts) > 2
             and L_LAYER_PATTERN.match(Path(f).parts[2])

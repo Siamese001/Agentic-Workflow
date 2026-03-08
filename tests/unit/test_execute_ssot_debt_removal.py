@@ -184,7 +184,7 @@ def test_fire_meta_learning_intake_adapter_sentinel_is_none_on_early_fail(monkey
             side_effect=ImportError("pipeline unavailable"),
         ),
     ):
-        _mod._fire_meta_learning_intake(state_mgr)
+        _mod._fire_meta_learning_intake(state_mgr, now_utc=0)
 
     if calls:
         assert calls[0] is None, "adapter must be None when intake try-block raised before assignment"

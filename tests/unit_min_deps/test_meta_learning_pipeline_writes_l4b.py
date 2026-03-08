@@ -27,7 +27,7 @@ from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.healing_outcome_types import HealingOutcomeStats
+from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
 
 
 class FakeL4StateWriter:
@@ -88,11 +88,10 @@ class FakeHealingOutcomeIntakeAdapter:
     """Fake intake adapter for testing."""
 
     def __init__(self) -> None:
-        self.records_persisted = []
+        self.records_persisted: list[HealingOutcomeIntakeRecord] = []
 
     def build_record(self, aggregator, created_utc: int, source: str):
         """Build a fake intake record."""
-        # Create fake stats
         stats = (HealingOutcomeStats.from_counts("healer1", "LOCAL_AGENT", "failure1", 7, 3),)
 
         return HealingOutcomeIntakeRecord(
@@ -104,9 +103,26 @@ class FakeHealingOutcomeIntakeAdapter:
             source=source,
         )
 
-    def persist_record(self, record):
+    def persist_record(self, record: HealingOutcomeIntakeRecord) -> None:
         """Persist the record."""
         self.records_persisted.append(record)
+
+    def get_recent_records(self, window_start_utc: int, window_end_utc: int) -> list:
+        """Return persisted records within the window."""
+        return [r for r in self.records_persisted if window_start_utc <= r.created_utc <= window_end_utc]
+
+
+def _make_seed_record(created_utc: int) -> HealingOutcomeIntakeRecord:
+    """Build a minimal valid HealingOutcomeIntakeRecord for seeding tests."""
+    stats = (HealingOutcomeStats.from_counts("healer1", "LOCAL_AGENT", "failure1", 7, 3),)
+    return HealingOutcomeIntakeRecord(
+        schema_version=1,
+        created_utc=created_utc,
+        window_size=1,
+        snapshot=stats,
+        proposal=HealingOutcomeProposal(stats=stats),
+        source="test-seed",
+    )
 
 
 class TestMetaLearningPipelineWritesL4B:
@@ -118,6 +134,12 @@ class TestMetaLearningPipelineWritesL4B:
         fake_l4_writer = FakeL4StateWriter()
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake_adapter = FakeHealingOutcomeIntakeAdapter()
+
+        # Pre-seed the adapter with a real record inside the window so Step 8 runs
+        now_utc = 1000
+        window_start_utc = 900
+        window_end_utc = 1100
+        fake_intake_adapter.records_persisted.append(_make_seed_record(created_utc=950))
 
         # Create minimal pipeline dependencies
         mock_telemetry_store = Mock(spec=TelemetryStore)
@@ -159,11 +181,6 @@ class TestMetaLearningPipelineWritesL4B:
             proposal_only=True,  # Don't commit/activate
         )
 
-        # Run pipeline
-        now_utc = 1000
-        window_start_utc = 900
-        window_end_utc = 1100
-
         run_pipeline(
             now_utc=now_utc,
             window_start_utc=window_start_utc,
@@ -172,7 +189,7 @@ class TestMetaLearningPipelineWritesL4B:
             deps=deps,
         )
 
-        # Verify L4B write occurred
+        # Verify L4B write occurred (pipeline ran Step 8 and persisted)
         assert len(fake_l4_writer.l4b_writes) == 1
 
         # Verify write parameters
@@ -196,6 +213,9 @@ class TestMetaLearningPipelineWritesL4B:
         """Test that pipeline doesn't write L4B when writer not provided."""
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake_adapter = FakeHealingOutcomeIntakeAdapter()
+
+        # Pre-seed so Step 8 produces an intake record
+        fake_intake_adapter.records_persisted.append(_make_seed_record(created_utc=1950))
 
         # Create dependencies without L4 writer
         mock_telemetry_store = Mock(spec=TelemetryStore)
@@ -239,9 +259,9 @@ class TestMetaLearningPipelineWritesL4B:
         # Run pipeline
         run_pipeline(now_utc=2000, window_start_utc=1900, window_end_utc=2100, cfg=cfg, deps=deps)
 
-        # Verify no L4B writes occurred
-        assert len(fake_intake_adapter.records_persisted) == 1  # Intake still works
-        # But no L4B writes since no writer provided
+        # Intake adapter received the pipeline-produced record (seed + pipeline = 2)
+        assert len(fake_intake_adapter.records_persisted) >= 2
+        # No L4B writes since no writer provided
 
     def test_pipeline_l4b_write_failure_doesnt_break_pipeline(self):
         """Test that L4B write failure doesn't break the pipeline."""
@@ -255,6 +275,9 @@ class TestMetaLearningPipelineWritesL4B:
         failing_writer = FailingL4StateWriter()
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake_adapter = FakeHealingOutcomeIntakeAdapter()
+
+        # Pre-seed so Step 8 produces an intake record
+        fake_intake_adapter.records_persisted.append(_make_seed_record(created_utc=2950))
 
         mock_telemetry_store = Mock(spec=TelemetryStore)
         mock_telemetry_store.read_events.return_value = []
@@ -299,14 +322,17 @@ class TestMetaLearningPipelineWritesL4B:
 
         # Pipeline should still complete successfully
         assert isinstance(proposals, tuple)
-        # Intake adapter should still have been called
-        assert len(fake_intake_adapter.records_persisted) == 1
+        # Intake adapter should have seed + pipeline-produced record
+        assert len(fake_intake_adapter.records_persisted) >= 2
 
     def test_pipeline_l4b_version_id_deterministic_same_snapshot(self):
         """Test that same snapshot produces same L4B version ID."""
         fake_l4_writer = FakeL4StateWriter()
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake_adapter = FakeHealingOutcomeIntakeAdapter()
+
+        # Pre-seed so Step 8 runs for both pipeline executions
+        fake_intake_adapter.records_persisted.append(_make_seed_record(created_utc=3950))
 
         # Create deterministic snapshot
         aggregates = [

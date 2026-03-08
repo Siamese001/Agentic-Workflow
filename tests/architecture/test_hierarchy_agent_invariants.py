@@ -244,7 +244,7 @@ class TestFix4SSOTForbiddenPatterns:
     """tests/support/ SSOT entry must contain forbidden_patterns blocking *Agent.py."""
 
     def _get_support_config(self) -> dict:
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 

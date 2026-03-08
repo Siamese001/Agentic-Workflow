@@ -11,16 +11,15 @@ Invariant tests for _constants.py structural guarantees.
 | _constants.py | SOVEREIGN_TERRITORIES | tests.subfolders all keys semantic | no empty-string, no numeric keys | test_subfolders_all_have_semantic_names |
 | _constants.py | SOVEREIGN_TERRITORIES | support is in tests.subfolders | declared canonical subfolder present | test_support_in_tests_subfolders |
 """
+
 from __future__ import annotations
 
 import pytest
 
-
 # ---------------------------------------------------------------------------
 # Load SOVEREIGN_TERRITORIES once
 # ---------------------------------------------------------------------------
-
-from agentic_core.L5_safety.config.structure_blueprint._constants import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_TERRITORIES,
 )
 
@@ -34,6 +33,7 @@ def _tests_subfolders() -> dict:
 # ---------------------------------------------------------------------------
 # Core invariants
 # ---------------------------------------------------------------------------
+
 
 class TestConstantsQuarantineInvariant:
     def test_quarantine_not_in_tests_subfolders(self):
@@ -71,13 +71,12 @@ class TestConstantsQuarantineInvariant:
         """All tests/ subfolder names must be non-empty strings."""
         subs = _tests_subfolders()
         for name in subs.keys():
-            assert isinstance(name, str) and len(name) > 0, (
-                f"Non-semantic subfolder key found: {name!r}"
-            )
+            assert isinstance(name, str) and len(name) > 0, f"Non-semantic subfolder key found: {name!r}"
 
     def test_sovereign_territories_not_plain_dict(self):
         """SOVEREIGN_TERRITORIES must be immutable (MappingProxyType), not a plain dict."""
         import builtins
+
         assert not isinstance(SOVEREIGN_TERRITORIES, builtins.dict), (
             "SOVEREIGN_TERRITORIES must be a MappingProxyType, not a plain mutable dict."
         )
@@ -92,11 +91,13 @@ class TestConstantsQuarantineInvariant:
 # Regression guard — depth_aligned
 # ---------------------------------------------------------------------------
 
+
 class TestConstantsDepthAlignedInvariant:
     def test_depth_aligned_not_in_any_subfolders(self):
         """depth_aligned must never appear as a declared subfolder in any territory.
         It is a semantically meaningless spacer that was used to satisfy depth counters.
         """
+
         def _walk(obj, path=""):
             if isinstance(obj, (dict,)) or hasattr(obj, "items"):
                 for k, v in obj.items():
@@ -111,6 +112,4 @@ class TestConstantsDepthAlignedInvariant:
     def test_tests_subfolders_count_is_nonzero(self):
         """Sanity: tests/ must have at least several canonical subfolders."""
         subs = _tests_subfolders()
-        assert len(subs) >= 5, (
-            f"tests/ has only {len(subs)} subfolders — expected at least 5 canonical ones."
-        )
+        assert len(subs) >= 5, f"tests/ has only {len(subs)} subfolders — expected at least 5 canonical ones."

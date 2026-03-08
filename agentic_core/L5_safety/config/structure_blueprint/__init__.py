@@ -17,6 +17,24 @@ Modules:
 
 from __future__ import annotations
 
+# Territories - loaded eagerly from leaf node directly (no shim hop)
+# Governance constants - merged into _constants (2026-03-08)
+from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
+    AGENT_RESILIENCE_CONFIG,
+    DOWNSTREAM_ROOTS,
+    GRAVITY_CONFIG,
+    GRAVITY_SURGERY_ENABLED,
+    HEALING_CONFIG,
+    LAYER_OVERRIDES,
+    MCP_CAPABILITIES,
+    MISSION_CONFIG,
+    SOVEREIGN_TERRITORIES,
+    UPSTREAM_SOVEREIGN_ROOTS,
+    SubfolderDefinition,
+    TerritoryDefinition,
+    build_sovereign_territories,
+)
+
 # HOT imports - always loaded (ssot.py is minimal-cost)
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     AGENT_DISCOVERY_JSON,
@@ -106,15 +124,6 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     validate_no_duplicate_prefix,
     validate_no_nested_lcd,
     validate_path_within_project,
-)
-
-# Territories - loaded eagerly (needed by most consumers)
-from agentic_core.L5_safety.config.structure_blueprint.territories import (
-    LAYER_OVERRIDES,
-    SOVEREIGN_TERRITORIES,
-    SubfolderDefinition,
-    TerritoryDefinition,
-    build_sovereign_territories,
 )
 
 
@@ -239,20 +248,6 @@ def __getattr__(name: str):
         from agentic_core.L5_safety.config.structure_blueprint import derived
 
         return getattr(derived, name)
-
-    if name in {
-        "AGENT_RESILIENCE_CONFIG",
-        "DOWNSTREAM_ROOTS",
-        "GRAVITY_CONFIG",
-        "GRAVITY_SURGERY_ENABLED",
-        "HEALING_CONFIG",
-        "MCP_CAPABILITIES",
-        "MISSION_CONFIG",
-        "UPSTREAM_SOVEREIGN_ROOTS",
-    }:
-        from agentic_core.L5_safety.config.structure_blueprint import governance
-
-        return getattr(governance, name)
 
     raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 

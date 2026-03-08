@@ -283,9 +283,26 @@ class TestEvictionAllowsFreshReimport:
 
         cleanup = _inject_fake_modules([key])
         fake_mod = sys.modules[key]
+        # Guard: the local tests/unit/.../types/__init__.py can shadow stdlib
+        # 'types' if earlier tests ran from that directory.  Restore it before
+        # reimporting _constants (which does `from types import MappingProxyType`).
+        import importlib as _importlib
+
+        _real_types = _importlib.import_module.__module__ and None  # sentinel
+        _stashed_types = sys.modules.get("types")
+        # Force reload of real stdlib types module by temporarily removing shadow
+        _types_pkg = "types"
+        _shadow = sys.modules.get(_types_pkg)
         try:
             _evict()
             assert key not in sys.modules
+
+            # Ensure stdlib types is present (not shadowed)
+            if _shadow is not None and not hasattr(_shadow, "MappingProxyType"):
+                import importlib
+
+                sys.modules.pop(_types_pkg, None)
+                importlib.import_module(_types_pkg)
 
             # Re-import: Python will execute the real module source again
             import agentic_core.L5_safety.config.structure_blueprint._constants as fresh  # noqa: F401

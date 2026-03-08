@@ -4,17 +4,11 @@ and the intake adapter must correctly persist healing records.
 """
 
 import ast
-import textwrap
 from pathlib import Path
 from unittest.mock import MagicMock
 
-
 EXECUTE_SSOT_PATH = (
-    Path(__file__).parent.parent.parent
-    / "agentic_core"
-    / "L0_routing"
-    / "scripts"
-    / "execute_ssot.py"
+    Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
 )
 
 
@@ -31,9 +25,9 @@ def test_fire_meta_learning_intake_defined_in_execute_ssot():
 def test_fire_meta_learning_intake_called_before_finish_mission():
     """_fire_meta_learning_intake call must appear before finish_mission('completed') in source."""
     src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
-    intake_pos = src.find("_fire_meta_learning_intake(state_mgr)")
+    intake_pos = src.find("_fire_meta_learning_intake(state_mgr")
     finish_pos = src.find('finish_mission(status="completed")')
-    assert intake_pos != -1, "_fire_meta_learning_intake(state_mgr) call not found"
+    assert intake_pos != -1, "_fire_meta_learning_intake(state_mgr call not found"
     assert finish_pos != -1, 'finish_mission(status="completed") call not found'
     assert intake_pos < finish_pos, (
         "_fire_meta_learning_intake must be called BEFORE finish_mission('completed')"
@@ -57,14 +51,14 @@ def test_intake_adapter_persists_records_with_healing_actions():
     aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
     for action in healing_actions:
         aggregator.ingest(
-                HealingOutcomeEvent(
-                    healer_id=action["agent"],
-                    tier=action["tier"],
-                    failure_type=action["type"],
-                    success=action["status"] == "healed",
-                    timestamp_utc=0,
-                )
+            HealingOutcomeEvent(
+                healer_id=action["agent"],
+                tier=action["tier"],
+                failure_type=action["type"],
+                success=action["status"] == "healed",
+                timestamp_utc=0,
             )
+        )
 
     store = InMemoryHealingOutcomeIntakeStore()
     adapter = HealingOutcomeIntakeAdapter(store=store)
@@ -79,7 +73,6 @@ def test_intake_adapter_persists_records_with_healing_actions():
 
 def test_intake_adapter_no_persist_when_empty():
     """_fire_meta_learning_intake must not call build_record when healing_actions is empty."""
-    from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
     from system_learning.engines.in_memory_healing_outcome_intake_store import (
         InMemoryHealingOutcomeIntakeStore,
     )
@@ -111,6 +104,7 @@ def test_fire_meta_learning_intake_noop_on_import_error():
 
     # Re-import execute_ssot to get the function with hidden modules
     import builtins
+
     real_import = builtins.__import__
 
     def blocking_import(name, *args, **kwargs):
@@ -127,7 +121,7 @@ def test_fire_meta_learning_intake_noop_on_import_error():
             import agentic_core.L0_routing.scripts.execute_ssot as execute_ssot
 
         # Should not raise
-        execute_ssot._fire_meta_learning_intake(fake_state_mgr)
+        execute_ssot._fire_meta_learning_intake(fake_state_mgr, now_utc=0)
     finally:
         builtins.__import__ = real_import
         # Restore hidden modules

@@ -43,6 +43,20 @@ from __future__ import annotations
 from agentic_core.L5_safety.config.structure_blueprint import *  # noqa: F401,F403
 from agentic_core.L5_safety.config.structure_blueprint import __all__ as _pkg_all
 from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
+    AGENT_RESILIENCE_CONFIG,
+    DOWNSTREAM_ROOTS,
+    GRAVITY_CONFIG,
+    GRAVITY_SURGERY_ENABLED,
+    HEALING_CONFIG,
+    LAYER_OVERRIDES,
+    MCP_CAPABILITIES,
+    MISSION_CONFIG,
+    UPSTREAM_SOVEREIGN_ROOTS,
+    SubfolderDefinition,
+    TerritoryDefinition,
+    build_sovereign_territories,
+)
+from agentic_core.L5_safety.config.structure_blueprint._constants import (  # noqa: F401
     SOVEREIGN_TERRITORIES as SOVEREIGN_REGISTRY,
 )
 from agentic_core.L5_safety.config.structure_blueprint.artifacts import (  # noqa: F401
@@ -71,12 +85,6 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (  # noqa: F4
     get_core_subfolder_map,
     get_sovereign_territories,
     get_subfolder_metadata,
-)
-from agentic_core.L5_safety.config.structure_blueprint.territories import (  # noqa: F401
-    LAYER_OVERRIDES,
-    SubfolderDefinition,
-    TerritoryDefinition,
-    build_sovereign_territories,
 )
 
 # __all__ mirrors the package's __all__ exactly (163 names).

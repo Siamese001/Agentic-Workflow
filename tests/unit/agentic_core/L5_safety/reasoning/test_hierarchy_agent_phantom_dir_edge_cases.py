@@ -430,7 +430,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_depth_aligned_in_any_required_subfolders(self):
         """HARD INVARIANT: depth_aligned absent from required_subfolders of every territory."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -445,7 +445,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_l_layer_pattern_in_tests_required_subfolders(self):
         """HARD INVARIANT: no l[0-9]_* names in tests.required_subfolders."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -460,7 +460,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
         tests/support/ must remain flat — no nested subdirectory structure declared in blueprint.
         """
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 

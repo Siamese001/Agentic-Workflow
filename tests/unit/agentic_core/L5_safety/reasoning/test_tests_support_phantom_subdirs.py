@@ -133,7 +133,7 @@ class TestBlueprintInvariants:
         Any declared subfolders would give healing agents permission to create
         L-layer subdirectories inside tests/support/.
         """
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -147,7 +147,7 @@ class TestBlueprintInvariants:
 
     def test_support_is_approved_tests_subfolder(self):
         """support must exist in SOVEREIGN_TERRITORIES['tests']['subfolders'] as a canonical dir."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -160,7 +160,7 @@ class TestBlueprintInvariants:
 
     def test_no_l_layer_names_approved_at_tests_top_level(self):
         """No l[0-9]_* names in SOVEREIGN_TERRITORIES['tests']['subfolders'] at top level."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -176,7 +176,7 @@ class TestBlueprintInvariants:
 
     def test_no_l_layer_in_any_required_subfolders(self):
         """No l[0-9]_* names in required_subfolders of ANY territory."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -196,7 +196,7 @@ class TestBlueprintInvariants:
 
     def test_no_depth_aligned_in_tests_subfolders(self):
         """'depth_aligned' must not appear anywhere in SOVEREIGN_TERRITORIES['tests']['subfolders']."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -209,7 +209,7 @@ class TestBlueprintInvariants:
 
     def test_support_cfg_has_purpose_key(self):
         """Sanity check: support entry is a non-empty Mapping with a purpose."""
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             SOVEREIGN_TERRITORIES,
         )
 

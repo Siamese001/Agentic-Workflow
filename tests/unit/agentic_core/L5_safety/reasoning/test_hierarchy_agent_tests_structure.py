@@ -76,7 +76,7 @@ class TestGetApprovedTestsSubfolders:
 
         fake_st = _fake_sovereign_territories({"unit": {}, "support": {}, "integration": {}})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint._constants.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
             fake_st,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
@@ -92,7 +92,7 @@ class TestGetApprovedTestsSubfolders:
 
         empty_st = MappingProxyType({})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint._constants.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
             empty_st,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
@@ -105,7 +105,7 @@ class TestGetApprovedTestsSubfolders:
 
         st = MappingProxyType({"tests": MappingProxyType({"depth": 2})})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint._constants.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
             st,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
@@ -118,7 +118,7 @@ class TestGetApprovedTestsSubfolders:
 
         st = MappingProxyType({"tests": {"subfolders": ["unit", "integration"]}})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint._constants.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
             st,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()
@@ -131,7 +131,7 @@ class TestGetApprovedTestsSubfolders:
 
         st = _fake_sovereign_territories({"unit": {}, "brand_new_folder": {}})
         with patch(
-            "agentic_core.L5_safety.config.structure_blueprint._constants.SOVEREIGN_TERRITORIES",
+            "agentic_core.L5_safety.config.structure_blueprint_config.SOVEREIGN_TERRITORIES",
             st,
         ):
             result = HierarchyAgent._get_approved_tests_subfolders()

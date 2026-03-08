@@ -21,10 +21,42 @@ class TestMetaLearningPipelineHealingIntakeWiring:
     """Test suite for healing outcome intake wiring in meta-learning pipeline."""
 
     def test_pipeline_with_healing_intake_adapter_persists_record(self) -> None:
-        """Test that pipeline persists exactly one intake record when adapter is provided."""
-        # Setup
+        """Pipeline Step 8 persists a window-aggregated record from real pre-seeded records.
+
+        After GAP-C fix, Step 8 never injects mock data. This test seeds the store with
+        a real HealingOutcomeIntakeRecord *before* running the pipeline, so that
+        get_recent_records() returns a non-empty window and triggers aggregation.
+        """
+        from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
+        # Seed the store with one real record inside the pipeline window
         store = InMemoryHealingOutcomeIntakeStore()
         adapter = HealingOutcomeIntakeAdapter(store)
+
+        seed_ts = 7000  # inside window [5000, 10000]
+        seed_agg = HealingOutcomeAggregator(window_size=2)
+        seed_agg.ingest(
+            HealingOutcomeEvent(
+                healer_id="real_healer",
+                tier="L0",
+                failure_type="REAL_FAIL",
+                success=True,
+                timestamp_utc=seed_ts,
+            )
+        )
+        seed_agg.ingest(
+            HealingOutcomeEvent(
+                healer_id="real_healer",
+                tier="L0",
+                failure_type="REAL_FAIL",
+                success=False,
+                timestamp_utc=seed_ts,
+            )
+        )
+        seed_record = adapter.build_record(aggregator=seed_agg, created_utc=seed_ts, source="pre-seed")
+        adapter.persist_record(seed_record)
+        assert store.count() == 1  # one seed record
 
         # Create mock dependencies
         audit_store = MagicMock()
@@ -70,21 +102,25 @@ class TestMetaLearningPipelineHealingIntakeWiring:
             ),
         )
 
-        # Run pipeline
+        # Run pipeline — window [5000, 10000] includes seed_record at 7000
         result = run_pipeline(now_utc=10000, window_start_utc=5000, window_end_utc=10000, cfg=cfg, deps=deps)
 
-        # Verify exactly one record was persisted
-        assert store.count() == 1
+        # Step 8 should have added one more window-aggregated record
+        assert store.count() == 2
         stored_records = store.get_records()
-        assert len(stored_records) == 1
 
-        # Verify record contents
-        record = stored_records[0]
-        assert record.schema_version == 1
-        assert record.created_utc == 10000
-        assert record.source == "meta-learning-pipeline"
-        assert record.window_size == 1  # Mock aggregator has one event
-        assert len(record.snapshot) == 1
+        # The last record is the window-aggregated one from Step 8
+        window_record = stored_records[-1]
+        assert window_record.schema_version == 1
+        assert window_record.created_utc == 10000
+        assert window_record.source == "meta-learning-pipeline-window"
+        # Verify healer_id from the seed flows through (not a synthetic test_healer)
+        assert window_record.snapshot
+        healer_ids = {s.healer_id for s in window_record.snapshot}
+        assert "test_healer" not in healer_ids, (
+            "Synthetic test_healer found in window record — mock path not removed"
+        )
+        assert "real_healer" in healer_ids
 
         # Verify pipeline still returns result
         assert isinstance(result, tuple)

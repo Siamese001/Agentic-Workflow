@@ -117,7 +117,7 @@ def _get_location_healer_agent():
     return LocationHealerAgent
 
 
-def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
+def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -> None:
     """Wire HealingOutcomeIntakeAdapter and MetaLearningPipeline after each run.
 
     Both imports are guarded — if archived modules are not yet restored (pre-Wave 0B)
@@ -235,7 +235,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                     tier=tier_str,
                     failure_type=failure_type_str,
                     success=success_flag,
-                    timestamp_utc=0,
+                    timestamp_utc=now_utc,
                     routing_digest=action.get("routing_digest"),
                     confidence_score=action.get("confidence"),
                     failure_vector=failure_vector,
@@ -264,7 +264,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         adapter = HealingOutcomeIntakeAdapter(store=store)
         # Only persist if there are actual healing events to record
         if healing_actions:
-            record = adapter.build_record(aggregator=aggregator, created_utc=0, source="execute_ssot")
+            record = adapter.build_record(aggregator=aggregator, created_utc=now_utc, source="execute_ssot")
             adapter.persist_record(record)
 
             # Wave 2: Append raw events as JSONL lines to healing_contexts_corpus.jsonl
@@ -281,7 +281,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                                 "content_hash": _action.get("routing_digest", ""),
                                 "trace_id": _action.get("trace_id", ""),
                                 "namespace": "healing_contexts",
-                                "created_utc": 0,
+                                "created_utc": now_utc,
                                 "healer_id": _action.get("agent", "unknown"),
                                 "tier": _action.get("routing_tier") or _action.get("tier", "L5"),
                                 "failure_type": _action.get("type", "UNKNOWN"),
@@ -338,7 +338,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                                         tier=_tier4,
                                         failure_type=_ftype4,
                                         success=True,
-                                        timestamp_utc=0,
+                                        timestamp_utc=now_utc,
                                     )
                                 )
                             for _ in range(int(_s.get("failure_count", 0))):
@@ -348,7 +348,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                                         tier=_tier4,
                                         failure_type=_ftype4,
                                         success=False,
-                                        timestamp_utc=0,
+                                        timestamp_utc=now_utc,
                                     )
                                 )
                     except Exception:  # guardian: allow-silent-swallow malformed record
@@ -362,8 +362,6 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
         # HealingMemoryRetriever can search patterns from all prior runs (G3/G4/G5/G7 fix).
         if _faiss_vectors:
             try:
-                import time as _time_faiss
-
                 from system_learning.engines.local_faiss_store import (
                     LocalFAISSStore as _FAISSStore,
                 )
@@ -413,7 +411,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
                 _faiss_writer.add_vectors(_faiss_idx, _all_vecs, _all_metas)
                 _faiss_writer.finalize_build(
                     _faiss_idx,
-                    built_at_utc=int(_time_faiss.time()),
+                    built_at_utc=now_utc,
                     canonicalization_version="v1",
                     embedding_model_version=_model_ver,
                     embedding_model_checksum=_vec_source_str,
@@ -443,6 +441,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
 
         state_mgr.update_meta_learning(
             {
+                "meta_learning_schema": 1,
                 "total_experiences": store.count(),
                 "experience": f"intake: {store.count()} healing records persisted",
             }
@@ -473,13 +472,35 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager") -> None:
             repo_root=REPO_ROOT,
             healing_outcome_intake_adapter=adapter,
         )
-        _ml_run_pipeline(
+        _ml_proposals = _ml_run_pipeline(
             now_utc=_now_utc,
             window_start_utc=_window_start_utc,
             window_end_utc=_now_utc,
             cfg=_ml_cfg,
             deps=_ml_deps,
         )
+        if _ml_proposals:
+            _prop_path = REPO_ROOT / "logs" / "proposals" / "threshold_proposals.jsonl"
+            _prop_path.parent.mkdir(parents=True, exist_ok=True)
+            try:
+                import json as _json_prop
+
+                with open(_prop_path, "a", encoding="utf-8") as _pf:
+                    for _p in _ml_proposals:
+                        _pf.write(
+                            _json_prop.dumps(
+                                {
+                                    "schema_version": 1,
+                                    "created_utc": _now_utc,
+                                    "payload": _p.canonical_bytes().decode("utf-8", errors="replace"),
+                                },
+                                sort_keys=True,
+                                separators=(",", ":"),
+                            )
+                            + "\n"
+                        )
+            except Exception as _prop_err:
+                logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
@@ -5593,7 +5614,7 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     need the full agent pipeline.
     """
     try:
-        from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
 
         all_keys = list(SOVEREIGN_TERRITORIES.keys())
     except ImportError:
@@ -6506,12 +6527,12 @@ def _legacy_main(
                     if is_autonomous:
                         continue
                     else:
-                        _fire_meta_learning_intake(state_mgr)
+                        _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
                         state_mgr.finish_mission(status="error")
                         sys.exit(1)
 
             # Wave 0C: fire meta-learning intake before closing the mission
-            _fire_meta_learning_intake(state_mgr)
+            _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
 
             # Save aggregate report across all territories
             save_aggregate_report(targets, REPO_ROOT)
@@ -6565,7 +6586,7 @@ def _legacy_main(
         # Catch-all for top-level crashes (e.g., initialization failure)
         logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
-        _fire_meta_learning_intake(state_mgr)
+        _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
         state_mgr.finish_mission(status="fatal_error")
         sys.exit(1)
 

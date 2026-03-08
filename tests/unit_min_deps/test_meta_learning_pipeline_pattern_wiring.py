@@ -20,11 +20,13 @@ from system_learning.pipelines.meta_learning_pipeline import (
     PipelineDependencies,
     run_pipeline,
 )
+from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
+from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
 from system_learning.types.pattern_analysis_types import (
     PatternFinding,
     PatternFindingKey,
@@ -34,6 +36,19 @@ from system_learning.types.pattern_analysis_types import (
 from system_learning.validators.dampening import CooldownPolicy, SampleSizePolicy
 from system_learning.validators.oscillation_detector import OscillationPolicy
 from system_learning.validators.shadow_evaluator import ShadowThresholds
+
+
+def _make_seed_record(created_utc: int) -> HealingOutcomeIntakeRecord:
+    """Build a minimal valid HealingOutcomeIntakeRecord for seeding tests."""
+    stats = (HealingOutcomeStats.from_counts("healer1", "LOCAL_AGENT", "failure1", 7, 3),)
+    return HealingOutcomeIntakeRecord(
+        schema_version=1,
+        created_utc=created_utc,
+        window_size=1,
+        snapshot=stats,
+        proposal=HealingOutcomeProposal(stats=stats),
+        source="test-seed",
+    )
 
 
 @dataclass(frozen=True, slots=True)
@@ -249,6 +264,14 @@ class FakeHealingOutcomeIntakeAdapter:
     def persist_record(self, record):
         self.records_persisted.append(record)
 
+    def get_recent_records(self, window_start_utc: int, window_end_utc: int) -> list:
+        """Return persisted records within the window."""
+        return [
+            r
+            for r in self.records_persisted
+            if window_start_utc <= getattr(r, "created_utc", 0) <= window_end_utc
+        ]
+
 
 class TestMetaLearningPipelinePatternWiring:
     """Test suite for meta learning pipeline pattern analysis integration."""
@@ -275,6 +298,9 @@ class TestMetaLearningPipelinePatternWiring:
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake = FakeHealingOutcomeIntakeAdapter()
 
+        # Pre-seed so Step 8 produces a real intake_record
+        fake_intake.records_persisted.append(_make_seed_record(created_utc=1950))
+
         deps = PipelineDependencies(
             audit_store=FakeAuditStore(),
             telemetry_store=FakeTelemetryStore(),
@@ -285,13 +311,6 @@ class TestMetaLearningPipelinePatternWiring:
             l4_state_writer=fake_l4_writer,
             pattern_analysis_engine=fake_pattern_engine,
         )
-
-        # Create minimal intake record with snapshot
-        @dataclass(frozen=True, slots=True)
-        class FakeIntakeRecord:
-            snapshot: list[Any]
-
-        _intake_record = FakeIntakeRecord(snapshot=healing_snapshot.aggregates)
 
         # Run pipeline
         _proposals = run_pipeline(
@@ -350,6 +369,9 @@ class TestMetaLearningPipelinePatternWiring:
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake = FakeHealingOutcomeIntakeAdapter()
 
+        # Pre-seed so Step 8 produces a real intake_record
+        fake_intake.records_persisted.append(_make_seed_record(created_utc=1950))
+
         deps = PipelineDependencies(
             audit_store=FakeAuditStore(),
             telemetry_store=FakeTelemetryStore(),
@@ -360,13 +382,6 @@ class TestMetaLearningPipelinePatternWiring:
             l4_state_writer=fake_l4_writer,
             pattern_analysis_engine=fake_pattern_engine,
         )
-
-        # Create minimal intake record with snapshot
-        @dataclass(frozen=True, slots=True)
-        class FakeIntakeRecord:
-            snapshot: list[Any]
-
-        _intake_record = FakeIntakeRecord(snapshot=healing_snapshot.aggregates)
 
         # Run pipeline
         _proposals = run_pipeline(
@@ -424,6 +439,9 @@ class TestMetaLearningPipelinePatternWiring:
         fake_pattern_engine = FakePatternAnalysisEngine()
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake = FakeHealingOutcomeIntakeAdapter()
+
+        # Pre-seed so Step 8 produces a real intake_record
+        fake_intake.records_persisted.append(_make_seed_record(created_utc=1950))
 
         deps = PipelineDependencies(
             audit_store=FakeAuditStore(),
@@ -505,6 +523,9 @@ class TestMetaLearningPipelinePatternWiring:
         fake_optimizer = FakeHealingConfigOptimizer()
         fake_intake = FakeHealingOutcomeIntakeAdapter()
 
+        # Pre-seed so Step 8 produces a real intake_record
+        fake_intake.records_persisted.append(_make_seed_record(created_utc=1950))
+
         deps = PipelineDependencies(
             audit_store=FakeAuditStore(),
             telemetry_store=FakeTelemetryStore(),
@@ -515,13 +536,6 @@ class TestMetaLearningPipelinePatternWiring:
             l4_state_writer=fake_l4_writer,
             pattern_analysis_engine=fake_pattern_engine,
         )
-
-        # Create minimal intake record with snapshot
-        @dataclass(frozen=True, slots=True)
-        class FakeIntakeRecord:
-            snapshot: list[Any]
-
-        _intake_record = FakeIntakeRecord(snapshot=healing_snapshot.aggregates)
 
         # Run pipeline
         _proposals = run_pipeline(

@@ -10,7 +10,7 @@ from __future__ import annotations
 
 import re
 
-from agentic_core.L5_safety.config.structure_blueprint._constants import (
+from agentic_core.L5_safety.config.structure_blueprint_config import (
     LAYER_OVERRIDES,
 )
 
