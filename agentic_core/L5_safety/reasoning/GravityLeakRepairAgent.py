@@ -50,7 +50,7 @@ from agentic_core.L0_routing.config import (
 Logger = logging.getLogger(__name__)
 
 
-class GravityRepairProhibitedError(RuntimeError):
+class GravityRepairProhibitedError(Exception):
     """Raised when mutation prohibition blocks a gravity fix after one retry."""
 
     def __init__(self, file_path: Path, layer: str, op: str) -> None:
@@ -316,13 +316,13 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 self.logger.info(f"[DRY RUN] Would fix {fix.file_path.name}: {fix.fix_type}")
                 return {"status": "simulated", "fix_type": fix.fix_type}
 
-            # Fix 3: all gravity fix strategies are plan_only — ABSTRACT writes a TODO
-            # comment that breaks the import, and RELOCATE produces an unverified path.
-            # Emit a rich plan artifact so developers can fix manually with full context.
-            return self._emit_plan_only(fix)
-
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
+
+            # ABSTRACT replaces import with a TODO comment — always plan-only (corrupts code).
+            # RELOCATE rewrites to an unverified path — always plan-only (breaks imports).
+            if fix.fix_type in ("ABSTRACT", "RELOCATE"):
+                return self._emit_plan_only(fix)
 
             # [CIRCUIT BREAKER] Check prohibition before attempting write
             # Wave 2: skip L0 block when privileged_mutation_context is explicitly set
@@ -590,7 +590,10 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             import re as _re
 
             _LAYER_DIR_PATTERN = _re.compile(r"^L[0-6]_")
-            _APPS_ROOTS: frozenset[str] = frozenset({"apps_lic", "apps_rg", "apps_shared"})
+            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                SOVEREIGN_TERRITORIES as _ST,
+            )
+            _APPS_ROOTS: frozenset[str] = frozenset(k for k in _ST if k.startswith("apps_"))
 
             def _in_sovereign_scope(v: object) -> bool:
                 fp = str(
@@ -679,7 +682,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
             fix_summary[fix.fix_type] += 1
 
-            self.apply_fix(fix, dry_run=dry_run)
+            result = self.apply_fix(fix, dry_run=dry_run, privileged_mutation_context=not dry_run)
+            if isinstance(result, dict) and result.get("status") == "fixed":
+                fixes_applied += 1
 
         # Report summary
         self.logger.info("\nGravity Leak Repair Summary:")

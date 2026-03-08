@@ -1949,3 +1949,135 @@ HITL_DECISION_1: Agent=FileClassificationAgent | File=C:\Users\amita\AppData\Loc
   Violation=AMBIGUOUS_CLASSIFICATION | Proposed=TYPES | Decision=FLAGGED_FOR_REVIEW
   delta=0.125
   top3=[('TYPES', 0.5), ('CONFIG', 0.375), ('VALIDATOR', 0.125)]
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\utils\workflow_engines\l5_safety_aliases.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l5_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\utils\workflow_engines\l5_safety_aliases.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l5_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\utils\workflow_engines\l5_safety_aliases.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l5_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=reconciler
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_5: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_6: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\evaluation\retrieval\l4_registries.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l4_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_2: Agent=LocationHealerAgent | File=C:\Git\Agentic-Workflow\agentic_core\L2_execution\types\l2_phase_spec.py
+  Violation=LAYER PREFIX VIOLATION: Filename has forbidden prefix 'l2_' | Proposed=ARCHIVE | Decision=APPROVED
+
+HITL_DECISION_3: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_4: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_1: Agent=SovereignDecisionEngine | File=location
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)
+
+HITL_DECISION_2: Agent=SovereignDecisionEngine | File=ArchitectureGovernorAgent
+  Violation=TIER_ESCALATION:QWEN_VLLM | Proposed=QWEN_VLLM | Decision=HITL-TIER-AUTO-APPROVED (non-interactive)

@@ -23,7 +23,7 @@ def get_project_root() -> Path:
 
 def _get_ObservabilityProbeExecutorAgent():
     """Lazy loader for ObservabilityProbeExecutorAgent (upward L5->L6 seam)."""
-    from agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent import (
+    from agentic_core.L6_observability.reasoning.observability_probe_executor import (
         ObservabilityProbeExecutorAgent,
     )
 
@@ -42,15 +42,15 @@ def validate_agent_roster() -> dict:
         from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
             FileClassificationAgent,
         )
-        from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
+        from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
             FilesystemSSOTReconcilerAgent,
         )
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
-        from agentic_core.L5_safety.reasoning.RootHygieneAgent import (
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
+        from agentic_core.L5_safety.reasoning.root_hygiene_healer import (
             RootHygieneAgent,
         )
         from agentic_core.L5_safety.reasoning.SystemArchitectAgent import (
@@ -61,7 +61,7 @@ def validate_agent_roster() -> dict:
 
         agents = {
             "reconciler": FilesystemSSOTReconcilerAgent,
-            "location": LocationAgent,
+            "location": LocationHealerAgent,
             "hierarchy": HierarchyAgent,
             "arch_governor": ArchitectureGovernorAgent,
             "gravity_repair": GravityLeakRepairAgent,

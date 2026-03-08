@@ -41,7 +41,7 @@ def load_location_validator_agent():
     """Load LocationValidatorAgent from L5."""
     import importlib
 
-    mod = importlib.import_module("agentic_core.L5_safety.reasoning.LocationValidatorAgent")
+    mod = importlib.import_module("agentic_core.L5_safety.reasoning.location_validator")
     return mod.LocationValidatorAgent
 
 

@@ -234,7 +234,7 @@ class HealingStrategy:
                 return create_legacy_import_healer()
 
             elif agent_name == "HierarchyAgent":
-                from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 return HierarchyAgent(project_root=self.project_root)
 
@@ -246,7 +246,7 @@ class HealingStrategy:
                 return CodeDeduplicationAgent()
 
             elif agent_name == "FilesystemSSOTReconcilerAgent":
-                from agentic_core.L5_safety.reasoning.FilesystemSSOTReconcilerAgent import (
+                from agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler import (
                     FilesystemSSOTReconcilerAgent,
                 )
 

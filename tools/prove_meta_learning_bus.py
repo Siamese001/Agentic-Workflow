@@ -7,10 +7,11 @@ Exercises the exact code path that execute_ssot fires at line ~4964:
 
 No mocks. Uses real classes from system_learning.
 """
+
 from __future__ import annotations
 
-import json
 import sys
+import time
 import traceback
 from pathlib import Path
 
@@ -30,7 +31,8 @@ print("=" * 72)
 import_results = {}
 
 try:
-    from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
+    from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
     import_results["HealingOutcomeEvent"] = True
     print(f"  {PASS} HealingOutcomeEvent imported")
 except ImportError as e:
@@ -39,6 +41,7 @@ except ImportError as e:
 
 try:
     from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+
     import_results["HealingOutcomeAggregator"] = True
     print(f"  {PASS} HealingOutcomeAggregator imported")
 except ImportError as e:
@@ -47,6 +50,7 @@ except ImportError as e:
 
 try:
     from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+
     import_results["HealingOutcomeIntakeAdapter"] = True
     print(f"  {PASS} HealingOutcomeIntakeAdapter imported")
 except ImportError as e:
@@ -54,24 +58,25 @@ except ImportError as e:
     print(f"  {FAIL} HealingOutcomeIntakeAdapter: {e}")
 
 try:
-    from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
+    from system_learning.engines.in_memory_healing_outcome_intake_store import (
+        InMemoryHealingOutcomeIntakeStore,
+    )
+
     import_results["InMemoryHealingOutcomeIntakeStore"] = True
     print(f"  {PASS} InMemoryHealingOutcomeIntakeStore imported")
 except ImportError as e:
     import_results["InMemoryHealingOutcomeIntakeStore"] = False
     print(f"  {FAIL} InMemoryHealingOutcomeIntakeStore: {e}")
 
-try:
-    from system_learning.pipelines.meta_learning_pipeline import run_pipeline as ml_run_pipeline
-    import_results["meta_learning_pipeline"] = True
-    print(f"  {PASS} meta_learning_pipeline.run_pipeline imported")
-except ImportError as e:
-    import_results["meta_learning_pipeline"] = False
-    print(f"  {FAIL} meta_learning_pipeline: {e}")
+# MetaLearningPipeline import test removed - not used in this script
+import_results["meta_learning_pipeline"] = None
+print(f"  {SKIP} meta_learning_pipeline: import test removed (unused)")
 
 stage0_pass = all(v for k, v in import_results.items() if k != "meta_learning_pipeline")
-print(f"\nSTAGE 0 RESULT: {'PASS' if stage0_pass else 'FAIL'} "
-      f"({sum(import_results.values())}/{len(import_results)} imports resolved)")
+print(
+    f"\nSTAGE 0 RESULT: {'PASS' if stage0_pass else 'FAIL'} "
+    f"({sum(import_results.values())}/{len(import_results)} imports resolved)"
+)
 
 if not stage0_pass:
     print(f"\n{FAIL} Cannot proceed without core imports. Exiting.")
@@ -159,8 +164,10 @@ healing_actions = [
 
 print(f"  Built {len(healing_actions)} healing action records")
 for i, a in enumerate(healing_actions):
-    print(f"    [{i}] agent={a['agent']:<30s} territory={a['territory']:<15s} "
-          f"status={a['status']:<10s} type={a.get('type','?')}")
+    print(
+        f"    [{i}] agent={a['agent']:<30s} territory={a['territory']:<15s} "
+        f"status={a['status']:<10s} type={a.get('type', '?')}"
+    )
 
 # ============================================================================
 # STAGE 2: Run HealingOutcomeAggregator + IntakeAdapter (real classes)
@@ -188,9 +195,11 @@ print(f"  Ingested {aggregator.event_count} events into aggregator (window={aggr
 snapshot = aggregator.snapshot()
 print(f"  Snapshot produced {len(snapshot)} stats entries:")
 for s in snapshot:
-    print(f"    healer={s.healer_id:<30s} tier={s.tier:<5s} "
-          f"type={s.failure_type:<20s} total={s.total_count} "
-          f"success={s.success_count} rate={s.success_rate:.4f}")
+    print(
+        f"    healer={s.healer_id:<30s} tier={s.tier:<5s} "
+        f"type={s.failure_type:<20s} total={s.total_count} "
+        f"success={s.success_count} rate={s.success_rate:.4f}"
+    )
 
 # Proposal
 proposal = aggregator.build_proposal()
@@ -207,8 +216,10 @@ persisted_count = store.count()
 print(f"  Store count after persist: {persisted_count}")
 
 stage2_pass = persisted_count > 0 and len(snapshot) > 0
-print(f"\nSTAGE 2 RESULT: {'PASS' if stage2_pass else 'FAIL'} "
-      f"(persisted={persisted_count}, snapshot_entries={len(snapshot)})")
+print(
+    f"\nSTAGE 2 RESULT: {'PASS' if stage2_pass else 'FAIL'} "
+    f"(persisted={persisted_count}, snapshot_entries={len(snapshot)})"
+)
 
 # ============================================================================
 # STAGE 3: Verify skipped actions are correctly classified
@@ -220,7 +231,7 @@ print("=" * 72)
 # The 5th action has status="skipped" -> success=False
 # The other 4 have status="applied" -> success=True
 expected_success = {
-    "FileClassificationAgent": True,   # first one is "applied"
+    "FileClassificationAgent": True,  # first one is "applied"
     "ArchitectureGovernorAgent": True,
     "LocationAgent": True,
     "GravityLeakRepairAgent": True,
@@ -233,13 +244,15 @@ for s in snapshot:
         assert s.total_count == 2, f"Expected 2 FCA events, got {s.total_count}"
         assert s.success_count == 1, f"Expected 1 FCA success, got {s.success_count}"
         assert s.failure_count == 1, f"Expected 1 FCA failure, got {s.failure_count}"
-        print(f"  {PASS} FileClassificationAgent: 2 events (1 success + 1 skipped=failure), rate={s.success_rate}")
+        print(
+            f"  {PASS} FileClassificationAgent: 2 events (1 success + 1 skipped=failure), rate={s.success_rate}"
+        )
     elif s.healer_id in expected_success:
         assert s.success_count == 1
         assert s.failure_count == 0
         print(f"  {PASS} {s.healer_id}: 1 event (1 success), rate={s.success_rate}")
 
-print(f"\nSTAGE 3 RESULT: PASS (classification logic verified)")
+print("\nSTAGE 3 RESULT: PASS (classification logic verified)")
 
 # ============================================================================
 # STAGE 4: Verify intake record schema
@@ -265,7 +278,7 @@ if len(record.snapshot) > 1:
     assert keys == sorted(keys), f"Snapshot not deterministically sorted: {keys}"
     print(f"  {PASS} Snapshot is deterministically sorted by (healer_id, tier, failure_type)")
 
-print(f"\nSTAGE 4 RESULT: PASS (schema valid, sorted, source='execute_ssot')")
+print("\nSTAGE 4 RESULT: PASS (schema valid, sorted, source='execute_ssot')")
 
 # ============================================================================
 # STAGE 5: Run the REAL _fire_meta_learning_intake from execute_ssot.py
@@ -275,12 +288,13 @@ print("STAGE 5: _fire_meta_learning_intake (exact production code path)")
 print("=" * 72)
 
 import logging
+
 logging.basicConfig(level=logging.DEBUG, format="  [%(levelname)s] %(message)s")
 
 try:
     from agentic_core.L0_routing.scripts.execute_ssot import (
-        _fire_meta_learning_intake,
         RuntimeStateManager,
+        _fire_meta_learning_intake,
     )
 
     # Build a real RuntimeStateManager with healing_actions loaded
@@ -289,18 +303,22 @@ try:
 
     # Verify pre-state
     ml_before = state_mgr.state["meta_learning"].copy()
-    print(f"  meta_learning BEFORE: enabled={ml_before['enabled']} "
-          f"total_experiences={ml_before['total_experiences']} "
-          f"recent={ml_before['recent_experiences']}")
+    print(
+        f"  meta_learning BEFORE: enabled={ml_before['enabled']} "
+        f"total_experiences={ml_before['total_experiences']} "
+        f"recent={ml_before['recent_experiences']}"
+    )
 
     # Fire the REAL function
-    _fire_meta_learning_intake(state_mgr)
+    _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
 
     # Verify post-state
     ml_after = state_mgr.state["meta_learning"]
-    print(f"  meta_learning AFTER:  enabled={ml_after['enabled']} "
-          f"total_experiences={ml_after['total_experiences']} "
-          f"recent={ml_after['recent_experiences']}")
+    print(
+        f"  meta_learning AFTER:  enabled={ml_after['enabled']} "
+        f"total_experiences={ml_after['total_experiences']} "
+        f"recent={ml_after['recent_experiences']}"
+    )
 
     stage5_pass = (
         ml_after["enabled"] is True
@@ -345,9 +363,11 @@ try:
     adj = proposal_result.adjustments
     print(f"  {PASS} propose_threshold_adjustments() returned {len(adj)} adjustments")
     for a in adj:
-        print(f"        -> healer={a.healer_name} tier={a.tier} "
-              f"type={a.failure_type} current={a.current_threshold} "
-              f"proposed={a.proposed_threshold} reason={a.reason}")
+        print(
+            f"        -> healer={a.healer_name} tier={a.tier} "
+            f"type={a.failure_type} current={a.current_threshold} "
+            f"proposed={a.proposed_threshold} reason={a.reason}"
+        )
 
     stage6_pass = True
 except Exception as e:
@@ -365,7 +385,7 @@ print("STAGE 7: PatternAnalysisEngine availability")
 print("=" * 72)
 
 try:
-    from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine, PatternAnalysisConfig
+    from system_learning.engines.pattern_analysis_engine import PatternAnalysisConfig, PatternAnalysisEngine
 
     engine = PatternAnalysisEngine(config=PatternAnalysisConfig(min_cluster_size=2))
     print(f"  {PASS} PatternAnalysisEngine instantiated")
@@ -386,14 +406,14 @@ print("FINAL SUMMARY: Meta-Learning Bus Proof")
 print("=" * 72)
 
 results = {
-    "Stage 0 - Imports":           stage0_pass,
-    "Stage 1 - Healing Actions":   True,
-    "Stage 2 - Aggregator+Store":  stage2_pass,
-    "Stage 3 - Classification":    True,
-    "Stage 4 - Schema":            True,
-    "Stage 5 - Production Intake":  stage5_pass,
-    "Stage 6 - Config Optimizer":  stage6_pass,
-    "Stage 7 - Pattern Engine":    stage7_pass,
+    "Stage 0 - Imports": stage0_pass,
+    "Stage 1 - Healing Actions": True,
+    "Stage 2 - Aggregator+Store": stage2_pass,
+    "Stage 3 - Classification": True,
+    "Stage 4 - Schema": True,
+    "Stage 5 - Production Intake": stage5_pass,
+    "Stage 6 - Config Optimizer": stage6_pass,
+    "Stage 7 - Pattern Engine": stage7_pass,
 }
 
 all_pass = True

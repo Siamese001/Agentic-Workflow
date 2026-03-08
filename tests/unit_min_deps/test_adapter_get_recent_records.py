@@ -1,0 +1,134 @@
+"""GAP-C/E: HealingOutcomeIntakeAdapter.get_recent_records() interface contract."""
+
+import pytest
+
+from system_learning.engines.healing_outcome_aggregator import HealingOutcomeAggregator
+from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
+from system_learning.engines.in_memory_healing_outcome_intake_store import (
+    InMemoryHealingOutcomeIntakeStore,
+)
+from system_learning.types.healing_outcome_types import HealingOutcomeEvent
+
+
+def _make_adapter():
+    store = InMemoryHealingOutcomeIntakeStore()
+    return HealingOutcomeIntakeAdapter(store=store)
+
+
+def _persist_record(adapter, created_utc, healer_id="agent_x", success=True):
+    agg = HealingOutcomeAggregator(window_size=1)
+    agg.ingest(
+        HealingOutcomeEvent(
+            healer_id=healer_id,
+            tier="L0",
+            failure_type="F",
+            success=success,
+            timestamp_utc=created_utc,
+        )
+    )
+    rec = adapter.build_record(aggregator=agg, created_utc=created_utc, source="test")
+    adapter.persist_record(rec)
+    return rec
+
+
+@pytest.mark.unit_min_deps
+class TestAdapterGetRecentRecords:
+    def test_get_recent_records_method_exists(self):
+        """HealingOutcomeIntakeAdapter must expose get_recent_records()."""
+        adapter = _make_adapter()
+        assert hasattr(adapter, "get_recent_records"), (
+            "get_recent_records method missing from HealingOutcomeIntakeAdapter"
+        )
+        assert callable(adapter.get_recent_records)
+
+    def test_get_records_on_protocol(self):
+        """HealingOutcomeIntakeStore protocol must declare get_records()."""
+        from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
+
+        assert hasattr(HealingOutcomeIntakeStore, "get_records"), (
+            "get_records() not declared on HealingOutcomeIntakeStore protocol"
+        )
+
+    def test_empty_store_returns_empty_list(self):
+        """Empty store → get_recent_records returns []."""
+        adapter = _make_adapter()
+        assert adapter.get_recent_records(0, 9_999_999) == []
+
+    def test_record_in_window_is_returned(self):
+        """A record with created_utc inside [start, end] is returned."""
+        adapter = _make_adapter()
+        rec = _persist_record(adapter, created_utc=5_000_000)
+        results = adapter.get_recent_records(4_999_999, 5_000_001)
+        assert len(results) == 1
+        assert results[0].created_utc == 5_000_000
+
+    def test_record_before_window_excluded(self):
+        """Record before window_start_utc must be excluded."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=1_000)
+        results = adapter.get_recent_records(window_start_utc=2_000, window_end_utc=9_999)
+        assert len(results) == 0
+
+    def test_record_after_window_excluded(self):
+        """Record after window_end_utc must be excluded."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=9_999_999)
+        results = adapter.get_recent_records(window_start_utc=0, window_end_utc=9_999_998)
+        assert len(results) == 0
+
+    def test_exact_boundary_start_included(self):
+        """Record at exactly window_start_utc must be included."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=1_000_000)
+        results = adapter.get_recent_records(1_000_000, 2_000_000)
+        assert len(results) == 1
+
+    def test_exact_boundary_end_included(self):
+        """Record at exactly window_end_utc must be included."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=2_000_000)
+        results = adapter.get_recent_records(1_000_000, 2_000_000)
+        assert len(results) == 1
+
+    def test_window_start_greater_than_end_returns_empty(self):
+        """window_start_utc > window_end_utc must return empty list, not raise."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=5_000_000)
+        results = adapter.get_recent_records(window_start_utc=9_000_000, window_end_utc=1_000_000)
+        assert results == []
+
+    def test_multiple_records_partial_window(self):
+        """Only records within the window are returned when store contains records outside too."""
+        adapter = _make_adapter()
+        _persist_record(adapter, created_utc=100_000)  # outside
+        _persist_record(adapter, created_utc=500_000)  # inside
+        _persist_record(adapter, created_utc=600_000)  # inside
+        _persist_record(adapter, created_utc=999_999)  # outside
+
+        results = adapter.get_recent_records(400_000, 700_000)
+        assert len(results) == 2
+        assert all(400_000 <= r.created_utc <= 700_000 for r in results)
+
+    def test_all_records_in_wide_window(self):
+        """A window that spans all records returns all of them."""
+        adapter = _make_adapter()
+        for ts in [100_000, 200_000, 300_000]:
+            _persist_record(adapter, created_utc=ts)
+        results = adapter.get_recent_records(0, 9_999_999)
+        assert len(results) == 3
+
+    def test_preserves_insertion_order(self):
+        """get_recent_records returns records in insertion order."""
+        adapter = _make_adapter()
+        timestamps = [1_000_000, 1_000_100, 1_000_200]
+        for ts in timestamps:
+            _persist_record(adapter, created_utc=ts)
+        results = adapter.get_recent_records(999_999, 1_000_300)
+        assert [r.created_utc for r in results] == timestamps
+
+    def test_in_memory_store_get_records_protocol_conformant(self):
+        """InMemoryHealingOutcomeIntakeStore.get_records() satisfies the protocol."""
+        store = InMemoryHealingOutcomeIntakeStore()
+        assert hasattr(store, "get_records") and callable(store.get_records)
+        # Before any writes
+        assert store.get_records() == []

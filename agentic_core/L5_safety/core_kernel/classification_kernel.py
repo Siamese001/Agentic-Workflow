@@ -65,6 +65,12 @@ FileType = Literal[
     "IGNORE",
 ]
 
+# ============================================================================
+# ExecutionMode — REASONING vs DETERMINISTIC classification dimension
+# ============================================================================
+
+ExecutionMode = Literal["REASONING", "DETERMINISTIC"]
+
 # Classification conflict tracking for governance hardening
 _classification_conflicts: list[dict] = []
 
@@ -464,6 +470,114 @@ def is_agent_or_orchestrator(path: Path) -> bool:
         True if classification is AGENT or ORCHESTRATOR.
     """
     return classify_file_standalone(path) in ("AGENT", "ORCHESTRATOR")
+
+
+# ============================================================================
+# classify_execution_mode — AST-based reasoning vs deterministic detection
+# ============================================================================
+
+_META_LEARNING_PREFIXES: tuple[str, ...] = ("recall_", "store_", "ml_enhanced", "meta_learn")
+
+
+def classify_execution_mode(path: Path) -> tuple[str, list[str]]:
+    """Detect whether a file requires LLM reasoning or is purely deterministic.
+
+    Pure AST analysis — zero I/O side effects beyond reading the file.
+    Only reads content once; safe to call on any .py file.
+
+    Reasoning signals detected:
+        weighted_scoring      — sum(score * weight ...) multi-axis accumulator
+        prompt_construction   — FunctionDef with 'prompt' in name
+        plan_only_fallback    — AST Constant 'plan_only' present (deferred-execution marker)
+        meta_learning         — calls to recall_*/store_*/ml_enhanced* methods
+        multi_agent_orch      — ≥2 distinct *Agent class instantiations
+        async_external_call   — AsyncFunctionDef present (implies external system wait)
+
+    Returns:
+        tuple of (ExecutionMode, list[triggered_signal_names])
+        ExecutionMode is "REASONING" when any signal fires, else "DETERMINISTIC".
+    """
+    try:
+        if not path.exists() or path.stat().st_size == 0:
+            return "DETERMINISTIC", []
+        content = path.read_text(encoding="utf-8")
+    except (OSError, UnicodeDecodeError):
+        return "DETERMINISTIC", []
+
+    try:
+        tree = ast.parse(content)
+    except SyntaxError:
+        return "DETERMINISTIC", []
+
+    signals: list[str] = []
+
+    # Signal 1: weighted_scoring — sum(expr * expr for ...) multi-axis accumulator
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Call):
+            func = node.func
+            if isinstance(func, ast.Name) and func.id == "sum":
+                for arg in node.args:
+                    if isinstance(arg, (ast.GeneratorExp, ast.ListComp)):
+                        elt = arg.elt
+                        if isinstance(elt, ast.BinOp) and isinstance(elt.op, ast.Mult):
+                            signals.append("weighted_scoring")
+                            break
+            if "weighted_scoring" in signals:
+                break
+
+    # Signal 2: prompt_construction — FunctionDef with 'prompt' in name
+    if "prompt_construction" not in signals:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and "prompt" in node.name.lower():
+                signals.append("prompt_construction")
+                break
+
+    # Signal 3: plan_only_fallback — string constant 'plan_only' present in AST
+    if "plan_only_fallback" not in signals:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Constant) and node.value == "plan_only":
+                signals.append("plan_only_fallback")
+                break
+
+    # Signal 4: meta_learning — calls to recall_*/store_*/ml_enhanced* attribute/names
+    if "meta_learning" not in signals:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func = node.func
+                attr_name: str | None = None
+                if isinstance(func, ast.Attribute):
+                    attr_name = func.attr
+                elif isinstance(func, ast.Name):
+                    attr_name = func.id
+                if attr_name and any(attr_name.startswith(p) for p in _META_LEARNING_PREFIXES):
+                    signals.append("meta_learning")
+                    break
+
+    # Signal 5: multi_agent_orchestration — ≥2 distinct *Agent class instantiations
+    if "multi_agent_orchestration" not in signals:
+        _agent_instantiations: set[str] = set()
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Call):
+                func = node.func
+                name: str | None = None
+                if isinstance(func, ast.Name):
+                    name = func.id
+                elif isinstance(func, ast.Attribute):
+                    name = func.attr
+                if name and name.endswith("Agent") and not name.startswith("_"):
+                    _agent_instantiations.add(name)
+        if len(_agent_instantiations) >= 2:
+            signals.append("multi_agent_orchestration")
+
+    # Signal 6: async_external_call — AsyncFunctionDef present
+    if "async_external_call" not in signals:
+        for node in ast.walk(tree):
+            if isinstance(node, ast.AsyncFunctionDef):
+                signals.append("async_external_call")
+                break
+
+    mode: str = "REASONING" if signals else "DETERMINISTIC"
+    return mode, signals
 
 
 def clear_classification_cache() -> None:

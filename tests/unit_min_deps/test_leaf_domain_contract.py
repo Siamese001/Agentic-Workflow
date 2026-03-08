@@ -50,7 +50,7 @@ def _get_declared_subfolders(domain: str) -> set[str]:
     """Get subfolders declared in the blueprint for a LEAF_DOMAIN."""
     # Import here to avoid circular deps at module level
     try:
-        from agentic_core.L5_safety.config.structure_blueprint._constants import (
+        from agentic_core.L5_safety.config.structure_blueprint_config import (
             build_sovereign_territories,
         )
 

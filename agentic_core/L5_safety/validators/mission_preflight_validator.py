@@ -8,10 +8,11 @@ import os
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent as HierarchyHealerAgent
+
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
 
 
 class MissionPreflight:
@@ -44,9 +45,9 @@ class MissionPreflight:
         """Lazy load LocationAgent."""
         if self._location_agent is None:
             try:
-                from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+                from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
-                self._location_agent = LocationAgent(self.project_root)
+                self._location_agent = LocationValidatorAgent(self.project_root)
             except ImportError:
                 pass
         return self._location_agent
@@ -55,7 +56,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:

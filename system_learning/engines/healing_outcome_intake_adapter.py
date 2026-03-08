@@ -56,3 +56,19 @@ class HealingOutcomeIntakeAdapter:
             record: The record to persist
         """
         self._store.write(record)
+
+    def get_recent_records(
+        self, window_start_utc: int, window_end_utc: int
+    ) -> list[HealingOutcomeIntakeRecord]:
+        """Return records whose created_utc falls within [window_start_utc, window_end_utc].
+
+        Args:
+            window_start_utc: Inclusive lower bound (UTC epoch seconds)
+            window_end_utc: Inclusive upper bound (UTC epoch seconds)
+
+        Returns:
+            Filtered list of records, preserving insertion order
+        """
+        if window_start_utc > window_end_utc:
+            return []
+        return [r for r in self._store.get_records() if window_start_utc <= r.created_utc <= window_end_utc]

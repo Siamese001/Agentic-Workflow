@@ -1,5 +1,6 @@
 """Healing Outcome Intake Types - Immutable contract for meta-learning intake."""
 
+import json
 from dataclasses import dataclass
 
 from system_learning.types.healing_outcome_types import HealingOutcomeProposal, HealingOutcomeStats
@@ -33,3 +34,30 @@ class HealingOutcomeIntakeRecord:
         # Ensure snapshot is deterministically sorted
         if list(self.snapshot) != sorted(self.snapshot, key=lambda s: (s.healer_id, s.tier, s.failure_type)):
             raise ValueError("snapshot must be sorted by (healer_id, tier, failure_type)")
+
+    def canonical_bytes(self) -> bytes:
+        """Deterministic canonical byte representation for content-addressed identity.
+
+        Used by FileBackedVersionStore for SHA-256 dedup: identical semantic
+        records (same schema_version, snapshot, source) produce identical bytes.
+        Non-semantic fields (run_id, trace_id) are excluded from the hash
+        so that re-runs of the same data do not create duplicate entries.
+        """
+        payload = {
+            "schema_version": self.schema_version,
+            "created_utc": self.created_utc,
+            "window_size": self.window_size,
+            "source": self.source,
+            "snapshot": [
+                {
+                    "healer_id": s.healer_id,
+                    "tier": s.tier,
+                    "failure_type": s.failure_type,
+                    "total_count": s.total_count,
+                    "success_count": s.success_count,
+                    "failure_count": s.failure_count,
+                }
+                for s in self.snapshot
+            ],
+        }
+        return json.dumps(payload, separators=(",", ":"), sort_keys=True).encode("utf-8")

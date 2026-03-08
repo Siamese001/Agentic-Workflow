@@ -85,7 +85,10 @@ def build_pipeline_deps(
     PipelineDependencies
         Fully-wired dependencies ready for ``run_pipeline()``.
     """
+    from system_learning.engines.l0_threshold_tuner import L0ProposerAdapter
+    from system_learning.engines.l1_model_proposer import L1ModelProposer
     from system_learning.engines.l4_state_writer import FileBackedL4StateWriter
+    from system_learning.engines.l5_policy_proposer import L5PolicyProposer
     from system_learning.engines.rag_proposer import RAGParameterProposer
     from system_learning.pipelines.meta_learning_pipeline import PipelineDependencies
     from system_learning.stores.audit_store import FileBackedAuditStore
@@ -94,10 +97,6 @@ def build_pipeline_deps(
         InMemoryBaselineMetricsProvider,
     )
     from system_learning.stores.telemetry_store import InMemoryTelemetryStore
-
-    from .healing_backups.naming_violations.l0_threshold_tuner_2 import L0ProposerAdapter
-    from .healing_backups.naming_violations.l1_model_proposer_1 import L1ModelProposer
-    from .healing_backups.naming_violations.l5_policy_proposer_1 import L5PolicyProposer
 
     reports_dir = repo_root / "logs" / "compliance_reports"
     runtime_state_path = repo_root / RUNTIME_STATE_JSON

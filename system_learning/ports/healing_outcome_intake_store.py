@@ -20,3 +20,11 @@ class HealingOutcomeIntakeStore:
             IOError: If the write operation fails
         """
         raise NotImplementedError
+
+    def get_records(self) -> list:
+        """Return all persisted records for pipeline consumption.
+
+        Returns:
+            List of all persisted HealingOutcomeIntakeRecord instances
+        """
+        raise NotImplementedError

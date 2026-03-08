@@ -49,8 +49,11 @@ Invariants:
 from __future__ import annotations
 
 import hashlib
+import logging
 from dataclasses import dataclass
 from typing import Any, Protocol
+
+logger = logging.getLogger(__name__)
 
 from system_learning.arbitration.engine import ArbitrationEngine
 from system_learning.arbitration.types import ArbitrationCandidate, ArbitrationPolicy
@@ -141,9 +144,8 @@ def _analyze_shadow_drift_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except Exception:
-        # L4 write failure should not break pipeline
-        pass
+    except Exception as _l4_err:
+        logger.warning("[MetaLearning] L4C shadow_drift write failed: %s", _l4_err)
 
     # Clear the batch for next run
     _shadow_telemetry_batch.clear()
@@ -186,9 +188,8 @@ def _generate_policy_recommendation_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except Exception:
-        # L4 write failure should not break pipeline
-        pass
+    except Exception as _l4_err:
+        logger.warning("[MetaLearning] L4C policy_recommendation write failed: %s", _l4_err)
 
     return recommendation
 
@@ -228,9 +229,8 @@ def _create_proposal_and_write(
             component_name="meta-learning",
             created_utc=now_utc,
         )
-    except Exception:
-        # L4 write failure should not break pipeline
-        pass
+    except Exception as _l4_err:
+        logger.warning("[MetaLearning] L4C retrieval_profile_proposal write failed: %s", _l4_err)
 
     return proposal
 
@@ -1222,30 +1222,48 @@ def run_pipeline(
     # NameError in Stage 8.5 when healing_outcome_intake_adapter is None.
     intake_record = None
 
-    # Step 8: Persist healing outcome intake record (optional)
-    # This runs before proposal_only check to ensure intake is always captured
+    # Step 8: Persist healing outcome intake record from real window records
+    # Reads all records within the pipeline window via the public adapter method —
+    # never injects synthetic/mock data.
     if deps.healing_outcome_intake_adapter is not None:
-        # Create a mock aggregator with events for demonstration
-        # In real usage, this would be injected or created from actual healing outcomes
-        mock_aggregator = HealingOutcomeAggregator(window_size=10)
-
-        # Add a mock event to avoid empty snapshot validation
-        from system_learning.types.healing_outcome_types import HealingOutcomeEvent
-
-        mock_event = HealingOutcomeEvent(
-            healer_id="test_healer",
-            tier="LOCAL_AGENT",
-            failure_type="test_failure",
-            success=True,
-            timestamp_utc=9999,
+        _window_records = deps.healing_outcome_intake_adapter.get_recent_records(
+            window_start_utc, window_end_utc
         )
-        mock_aggregator.ingest(mock_event)
 
-        # Build and persist the intake record
-        intake_record = deps.healing_outcome_intake_adapter.build_record(
-            aggregator=mock_aggregator, created_utc=now_utc, source="meta-learning-pipeline"
-        )
-        deps.healing_outcome_intake_adapter.persist_record(intake_record)
+        if _window_records:
+            from system_learning.types.healing_outcome_types import HealingOutcomeEvent as _WHE
+
+            _window_aggregator = HealingOutcomeAggregator(window_size=10000)
+            for _rec in _window_records:
+                for _s in _rec.snapshot:
+                    for _ in range(_s.success_count):
+                        _window_aggregator.ingest(
+                            _WHE(
+                                healer_id=_s.healer_id,
+                                tier=_s.tier,
+                                failure_type=_s.failure_type,
+                                success=True,
+                                timestamp_utc=now_utc,
+                            )
+                        )
+                    for _ in range(_s.failure_count):
+                        _window_aggregator.ingest(
+                            _WHE(
+                                healer_id=_s.healer_id,
+                                tier=_s.tier,
+                                failure_type=_s.failure_type,
+                                success=False,
+                                timestamp_utc=now_utc,
+                            )
+                        )
+            intake_record = deps.healing_outcome_intake_adapter.build_record(
+                aggregator=_window_aggregator,
+                created_utc=now_utc,
+                source="meta-learning-pipeline-window",
+            )
+            deps.healing_outcome_intake_adapter.persist_record(intake_record)
+        else:
+            intake_record = None
 
     # Step 8.5: Run healing config optimizer if available
     # GAP-016: guard uses intake_record is not None (safe after initialization above)

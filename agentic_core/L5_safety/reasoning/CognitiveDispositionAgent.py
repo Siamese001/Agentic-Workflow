@@ -26,7 +26,7 @@ from dataclasses import dataclass
 from pathlib import Path
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L5_safety.config.structure_blueprint.ssot import LAYER_ROOTS
+from agentic_core.L5_safety.config.structure_blueprint_config import LAYER_ROOTS
 
 Logger = logging.getLogger(__name__)
 
@@ -71,8 +71,7 @@ class CognitiveDispositionAgent(SovereignBaseAgent):
         }
 
         self.layer_map = {
-            layer: layer.split("_", 1)[1].replace("_", " ").title()
-            for layer in sorted(LAYER_ROOTS)
+            layer: layer.split("_", 1)[1].replace("_", " ").title() for layer in sorted(LAYER_ROOTS)
         }
 
     async def analyze_violation_async(

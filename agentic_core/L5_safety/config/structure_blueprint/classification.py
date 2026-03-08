@@ -228,6 +228,9 @@ FOLDER_PURITY_RULES: Final[Mapping[str, Sequence[str]]] = {
         r"I[A-Z].*Protocol\.py$",
         r".*Error\.py$",
         r".*Exception\.py$",
+        r".*_spec\.py$",
+        r".*_schema\.py$",
+        r".*_model\.py$",
     ],
     "utils": [
         r".*_util\.py$",

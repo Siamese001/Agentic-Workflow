@@ -82,7 +82,7 @@ def _build_lcd_subfolders_template() -> dict[str, SubfolderDefinition]:
         },
         "types": {
             "purpose": "Data models, enums, protocols, and schemas.",
-            "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_model.py"],
+            "allowed_suffixes": ["_types.py", "_protocol.py", "_schema.py", "_model.py", "_spec.py"],
             "forbidden_suffixes": ["_config.py", "_engine.py", "_agent.py"],
         },
         "reasoning": {
@@ -595,6 +595,17 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
 
     # Build agentic_core with all layers
     agentic_core_subfolders: dict[str, Any] = {
+        "adg": {
+            "purpose": "Architecture Dependency Graph (ADG) — commit-scoped static analysis, MCP-backed graph persistence, and policy enforcement.",
+            "subfolders": {
+                "applications": {
+                    "purpose": "ADG governance applications (blast radius, gateway enforcement, RAG, UWG)."
+                },
+                "ci": {"purpose": "CI integration and invariant checks."},
+                "client": {"purpose": "MCP client for ADG graph operations."},
+                "extraction": {"purpose": "Static AST-based scanner and edge extraction."},
+            },
+        },
         "agents": {
             "purpose": "Agent execution profiles and registry. SSOT for agent identity, execution mode, and reasoning intensity.",
             "notes": "Contains agent_registry.py (AGENT_REGISTRY, get_profile, registry_digest) and types/ subfolder.",
@@ -739,6 +750,42 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
                 "weight": 100,
                 "naming_convention": "I*Protocol.py",
                 "content_types": ["protocols", "abstract_interfaces", "type_contracts"],
+            },
+            "_compat": {
+                "purpose": "Backward-compatibility shims and alias re-exports for renamed modules.",
+                "notes": "Shim-only: no new logic. Files re-export renamed symbols for migration.",
+            },
+            "evaluation": {
+                "purpose": "Evaluation frameworks, benchmarking, and quality assessment tooling.",
+                "subfolders": {
+                    "chunking": {"purpose": "Text chunking strategies for evaluation pipelines."},
+                    "feedback": {"purpose": "Feedback collection and annotation tooling."},
+                    "monitoring": {"purpose": "Evaluation monitoring and metric tracking."},
+                    "retrieval": {
+                        "purpose": "Retrieval evaluation and relevance scoring.",
+                        "allowed_suffixes": [
+                            "_retrieval.py",
+                            "_eval.py",
+                            "_registries.py",
+                            "_index.py",
+                            "_scorer.py",
+                        ],
+                    },
+                    "runners": {"purpose": "Evaluation pipeline runners and orchestrators."},
+                    "schemas": {"purpose": "Evaluation data schemas and validation contracts."},
+                },
+            },
+            "enforcement": {
+                "purpose": "Cross-cutting enforcement hooks, guards, and policy primitives shared across layers.",
+                "notes": "Layer-specific enforcement lives in each layer's enforcement/ subfolder.",
+            },
+            "cache": {
+                "purpose": "Shared caching infrastructure and cache management primitives.",
+                "notes": "Layer-specific caches live in their respective layer directories.",
+            },
+            "agents": {
+                "purpose": "Legacy agent registry and agent discovery scaffolding.",
+                "notes": "Active agents live in layer reasoning/ folders. This holds discovery metadata.",
             },
         },
     )
@@ -955,7 +1002,6 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
         "depth": 2,
         "purpose": "Universal test suites organized by Type then Domain.",
         "subfolders": {
-            "_quarantine": {"purpose": "Quarantined tests pending triage or fix"},
             "core": {"purpose": "Core framework-level tests"},
             "goldens": {"purpose": "Golden test data for snapshot comparisons"},
             "helpers": {"purpose": "Shared test helper modules"},
@@ -1154,7 +1200,15 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "architecture": {
                 "purpose": "Structural invariant tests — AST-based, no filesystem mutations",
             },
-            "contracts": {"purpose": "Interface contract and API boundary tests"},
+            "contracts": {
+                "purpose": "Interface contract and API boundary tests",
+                "forbidden_patterns": [r".*Agent\.py$", r"^fake_.*\.py$"],
+                "subfolders": {
+                    "fixtures": {
+                        "purpose": "Synthetic AST-only fixture agents for negative tests — never imported at runtime"
+                    },
+                },
+            },
             "enforcement": {"purpose": "Enforcement rule and guardrail tests"},
             "governance": {"purpose": "Governance policy and lifecycle tests"},
             "integration_full_deps": {
@@ -1165,6 +1219,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "ssot_equivalence": {"purpose": "SSOT drift and equivalence tests"},
             "support": {
                 "purpose": "Shared test infrastructure — base classes, helpers, shared fixtures",
+                "forbidden_patterns": [r".*Agent\.py$"],
             },
             "system_learning": {
                 "purpose": "Higher-level functional tests for system_learning (embedding, meta-learning, pattern analysis). Canonical unit mirror: tests/unit/system_learning/.",
@@ -1267,7 +1322,7 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
     }
 
     territories["data"] = {
-        "depth": 2,
+        "depth": 3,
         "purpose": "Data storage and processing artifacts.",
         "required_subfolders": [
             "external",
@@ -1296,7 +1351,14 @@ def build_sovereign_territories() -> dict[str, TerritoryDefinition]:
             "processed": {"purpose": "Processed intermediate data"},
             "prompt_governance": {"purpose": "Prompt governance rules and audit trails"},
             "raw": {"purpose": "Raw unprocessed input data"},
-            "sdks_mcps": {"purpose": "SDK and MCP integration data"},
+            "sdks_mcps": {
+                "purpose": "SDK and MCP integration data",
+                "subfolders": {
+                    "client_wrappers": {
+                        "purpose": "Production-ready client builder functions for AI SDKs (OpenAI, Anthropic, Vertex)."
+                    },
+                },
+            },
             "snapshots": {"purpose": "Data state snapshots for rollback"},
             "tasks": {"purpose": "Task definitions and queue data"},
             "archives": {"purpose": "Archived data batches (optional, created on demand)"},
@@ -1408,3 +1470,59 @@ SOVEREIGN_TERRITORIES: Final[Mapping[str, Any]] = _deep_freeze(build_sovereign_t
 # frozenset guarantees immutability: no downstream code can accidentally mutate
 # the SSOT whitelist and cause global side-effects.
 ROOT_WHITELIST: Final[frozenset[str]] = frozenset(SOVEREIGN_TERRITORIES.keys())
+
+
+# ============================================================================
+# OPERATIONAL GOVERNANCE CONFIGURATION
+# Merged from governance.py (2026-03-08) — one leaf, zero drift.
+# ============================================================================
+
+import os as _os
+
+HEALING_CONFIG: Final[Mapping[str, int]] = {
+    "max_rounds": int(_os.getenv("MAX_HEALING_ROUNDS", "10")),
+    "max_per_file": int(_os.getenv("MAX_HEALING_PER_FILE", "8")),
+    "global_budget": int(_os.getenv("GLOBAL_HEALING_BUDGET", "500")),
+    "max_moves_per_run": 250,
+    "max_shared_upgrades_per_run": 10,
+    "max_fissions_per_run": 50,
+    "dust_threshold": 40,
+}
+
+AGENT_RESILIENCE_CONFIG: Final[Mapping[str, int | float]] = {
+    "retry_count": int(_os.getenv("AGENT_RETRY_COUNT", "3")),
+    "backoff_base": float(_os.getenv("AGENT_RETRY_BACKOFF_BASE", "0.5")),
+}
+
+MISSION_CONFIG: Final[Mapping[str, bool | int]] = {
+    "GRAVITY_SURGERY_ENABLED": True,
+    "hierarchy_healing_enabled": True,
+    "span_surgery_enabled": True,
+    "fission_enabled": True,
+    "run_full_mission": True,
+    "run_hierarchy_healing": True,
+    "run_gravity_refactor": True,
+    "run_sprawl_surgery": True,
+    "structural_only_mode": False,
+    "timeout_seconds": int(_os.getenv("MISSION_TIMEOUT_SECONDS", "1800")),
+}
+
+MCP_CAPABILITIES: Final[Mapping[str, Mapping[str, bool | str]]] = {
+    "router": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
+    "marketplace_filter": {"enabled": True, "path": "agentic_core.L3_orchestration.mcp"},
+    "filesystem": {"enabled": True, "path": "agentic_core.L4_state.filesystem"},
+    "figma": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "fetch": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+    "semantic_cache": {"enabled": True, "path": "agentic_core.L2_execution.enforcement"},
+}
+
+GRAVITY_CONFIG: Mapping[str, Any] = {
+    "enabled": True,
+    "UPSTREAM_SOVEREIGN_ROOTS": ["agentic_core"],
+    "downstream_domains": ["apps_rg", "apps_lic", "apps_shared", "tests"],
+    "exemptions": [],
+}
+
+GRAVITY_SURGERY_ENABLED: Any = GRAVITY_CONFIG["enabled"]
+UPSTREAM_SOVEREIGN_ROOTS: Any = frozenset(GRAVITY_CONFIG["UPSTREAM_SOVEREIGN_ROOTS"])
+DOWNSTREAM_ROOTS: Any = frozenset(GRAVITY_CONFIG["downstream_domains"])

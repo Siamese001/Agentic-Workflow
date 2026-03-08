@@ -69,7 +69,7 @@ class TestBug1LocationAgentRegistry:
 
     def test_location_validator_raises_not_implemented(self):
         """LocationValidatorAgent.heal_repository() must raise NotImplementedError."""
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
 
         agent = LocationValidatorAgent(project_root=REPO_ROOT)
         with pytest.raises(NotImplementedError):
@@ -78,8 +78,8 @@ class TestBug1LocationAgentRegistry:
     def test_get_l5_agent_roster_returns_healer_not_validator(self):
         """_get_l5_agent_roster must include LocationHealerAgent, not LocationValidatorAgent."""
         from agentic_core.L0_routing.scripts.execute_ssot import _get_l5_agent_roster
+        from agentic_core.L5_safety.reasoning.location_validator import LocationValidatorAgent
         from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
-        from agentic_core.L5_safety.reasoning.LocationValidatorAgent import LocationValidatorAgent
 
         roster = list(_get_l5_agent_roster())
         assert LocationHealerAgent in roster, "LocationHealerAgent must be in the roster"

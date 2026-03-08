@@ -2,7 +2,7 @@ from unittest.mock import MagicMock
 
 import pytest
 
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
 
 class TestHierarchyAgentUpdates:

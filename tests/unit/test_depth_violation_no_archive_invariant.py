@@ -142,7 +142,7 @@ def test_pascal_in_non_agent_folder_in_strategy_map():
 
 def test_apps_rg_apps_lic_depth_is_two():
     """Bug 1 guard: apps_rg and apps_lic must have depth=2 in SOVEREIGN_TERRITORIES."""
-    from agentic_core.L5_safety.config.structure_blueprint.territories import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
         SOVEREIGN_TERRITORIES,
     )
 

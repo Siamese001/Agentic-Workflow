@@ -1,5 +1,6 @@
 """Prompt Governance Core - Hub, Assembler, and Renderer."""
 
+from .evaluation_loader import EvalLoadError, EvalSchemaError, EvaluationLoader
 from .governance_hub import GovernanceHub
 from .prompt_assembler import (
     AssembledPrompt,
@@ -16,6 +17,9 @@ from .sovereign_prompt_renderer import (
 )
 
 __all__ = [
+    "EvalLoadError",
+    "EvalSchemaError",
+    "EvaluationLoader",
     "GovernanceHub",
     "AssembledPrompt",
     "PromptAssembler",

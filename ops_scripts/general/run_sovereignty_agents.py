@@ -13,7 +13,7 @@ sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.validators.PascalSovereigntyAgent import PascalSovereigntyAgent
 
-from agentic_core.L5_safety.reasoning.RootHygieneAgent import RootHygieneAgent
+from agentic_core.L5_safety.reasoning.root_hygiene_healer import RootHygieneAgent
 
 
 def main():

@@ -25,7 +25,7 @@ def get_project_root() -> Path:
 
 def run_hierarchy_dry_run(project_root: Path) -> dict:
     """Run HierarchyAgent in dry-run mode."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = HierarchyAgent(project_root, healing_enabled=False)
     agent.heal_hierarchy(
@@ -43,7 +43,7 @@ def run_hierarchy_dry_run(project_root: Path) -> dict:
 
 def run_heal_violations(project_root: Path) -> dict:
     """Run HierarchyAgent to heal violations in dry-run mode."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     agent = HierarchyAgent(project_root, healing_enabled=False)
     result = agent.heal_hierarchy_violations()
@@ -57,7 +57,7 @@ def run_heal_violations(project_root: Path) -> dict:
 
 def verify_mro() -> dict:
     """Verify HierarchyAgent MRO structure."""
-    from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+    from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
     mro = [cls.__name__ for cls in HierarchyAgent.__mro__]
     return {

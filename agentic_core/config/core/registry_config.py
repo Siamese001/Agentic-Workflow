@@ -17,7 +17,7 @@ def _derive_registry() -> dict:
     """
     from collections.abc import Mapping as _Mapping
 
-    from agentic_core.L5_safety.config.structure_blueprint._constants import (
+    from agentic_core.L5_safety.config.structure_blueprint_config import (
         SOVEREIGN_TERRITORIES,
     )
 

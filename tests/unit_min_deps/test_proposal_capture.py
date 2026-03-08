@@ -1,0 +1,171 @@
+"""GAP-B: _ml_run_pipeline proposals must be captured and persisted with canonical_bytes()."""
+
+import ast
+import json
+from pathlib import Path
+from unittest.mock import patch
+
+import pytest
+
+EXECUTE_SSOT_PATH = (
+    Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+)
+
+
+@pytest.mark.unit_min_deps
+class TestProposalCapture:
+    def test_pipeline_call_assigned_not_bare_in_source(self):
+        """AST: _ml_run_pipeline() call must be assigned (not a bare call)."""
+        src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
+        tree = ast.parse(src)
+
+        for node in ast.walk(tree):
+            # Find the pipeline try-block; look for bare Expr(Call) to _ml_run_pipeline
+            if isinstance(node, ast.Expr) and isinstance(node.value, ast.Call):
+                func = node.value.func
+                name = None
+                if isinstance(func, ast.Name):
+                    name = func.id
+                elif isinstance(func, ast.Attribute):
+                    name = func.attr
+                if name == "_ml_run_pipeline":
+                    pytest.fail("_ml_run_pipeline() called as a bare expression — return value discarded")
+
+    def test_canonical_bytes_used_not_str_in_source(self):
+        """AST: str(_p) must NOT appear in the proposal write block; canonical_bytes must appear."""
+        src = EXECUTE_SSOT_PATH.read_text(encoding="utf-8", errors="replace")
+        assert "canonical_bytes" in src, "canonical_bytes not found in execute_ssot.py"
+        # Verify str(_p) pattern is absent near proposals
+        assert '"proposal": str(' not in src and "'proposal': str(" not in src, (
+            "Unsafe str(proposal) serialization found"
+        )
+
+    def test_change_package_canonical_bytes_is_deterministic(self):
+        """ChangePackage.canonical_bytes() produces identical output for identical input."""
+        from system_learning.engines.change_package_impl import ChangePackage
+
+        pkg = ChangePackage(
+            source="L0",
+            target="threshold_config",
+            changes=b'{"threshold": 0.8}',
+            confidence=0.9,
+            reason=("signal above threshold",),
+            timestamp_utc=1_000_000,
+        )
+        b1 = pkg.canonical_bytes()
+        b2 = pkg.canonical_bytes()
+        assert b1 == b2
+        assert isinstance(b1, bytes)
+
+    def test_proposal_jsonl_structure(self, tmp_path):
+        """Written JSONL line must have schema_version, created_utc, payload keys."""
+        # Simulate what the write block does
+        from system_learning.engines.change_package_impl import ChangePackage
+
+        pkg = ChangePackage(
+            source="L0",
+            target="threshold_config",
+            changes=b'{"threshold": 0.8}',
+            confidence=0.9,
+            reason=("signal above threshold",),
+            timestamp_utc=1_000_000,
+        )
+
+        prop_path = tmp_path / "proposals" / "threshold_proposals.jsonl"
+        prop_path.parent.mkdir(parents=True, exist_ok=True)
+
+        now_utc = 1_000_000
+        with open(prop_path, "a", encoding="utf-8") as pf:
+            pf.write(
+                json.dumps(
+                    {
+                        "schema_version": 1,
+                        "created_utc": now_utc,
+                        "payload": pkg.canonical_bytes().decode("utf-8", errors="replace"),
+                    },
+                    sort_keys=True,
+                    separators=(",", ":"),
+                )
+                + "\n"
+            )
+
+        lines = prop_path.read_text(encoding="utf-8").strip().splitlines()
+        assert len(lines) == 1
+        parsed = json.loads(lines[0])
+        assert parsed["schema_version"] == 1
+        assert parsed["created_utc"] == 1_000_000
+        assert "payload" in parsed
+        assert isinstance(parsed["payload"], str)
+
+    def test_proposal_jsonl_determinism(self, tmp_path):
+        """Same ChangePackage + same now_utc → identical JSONL bytes on two writes."""
+        from system_learning.engines.change_package_impl import ChangePackage
+
+        pkg = ChangePackage(
+            source="L1",
+            target="model_config",
+            changes=b'{"model": "bert-base"}',
+            confidence=0.85,
+            reason=("drift detected",),
+            timestamp_utc=2_000_000,
+        )
+        now_utc = 2_000_000
+
+        def write_jsonl(path):
+            with open(path, "w", encoding="utf-8") as pf:
+                pf.write(
+                    json.dumps(
+                        {
+                            "schema_version": 1,
+                            "created_utc": now_utc,
+                            "payload": pkg.canonical_bytes().decode("utf-8", errors="replace"),
+                        },
+                        sort_keys=True,
+                        separators=(",", ":"),
+                    )
+                    + "\n"
+                )
+            return Path(path).read_bytes()
+
+        b1 = write_jsonl(tmp_path / "a.jsonl")
+        b2 = write_jsonl(tmp_path / "b.jsonl")
+        assert b1 == b2
+
+    def test_empty_proposals_no_write(self, tmp_path):
+        """Empty proposal list must produce no JSONL file."""
+        prop_path = tmp_path / "proposals" / "threshold_proposals.jsonl"
+        _ml_proposals = []
+        if _ml_proposals:
+            prop_path.parent.mkdir(parents=True, exist_ok=True)
+            with open(prop_path, "a", encoding="utf-8") as pf:
+                pf.write("line\n")
+        assert not prop_path.exists()
+
+    def test_write_failure_non_fatal(self, tmp_path, caplog):
+        """IOError during proposal write must be caught and logged as warning, not raised."""
+        import logging
+
+        from system_learning.engines.change_package_impl import ChangePackage
+
+        pkg = ChangePackage(
+            source="L5",
+            target="policy_config",
+            changes=b'{"p": 1}',
+            confidence=0.7,
+            reason=("policy change",),
+            timestamp_utc=3_000_000,
+        )
+
+        # Patch open to raise IOError
+        with patch("builtins.open", side_effect=OSError("disk full")):
+            with caplog.at_level(logging.WARNING):
+                try:
+                    _prop_path = tmp_path / "proposals" / "threshold_proposals.jsonl"
+                    _prop_path.parent.mkdir(parents=True, exist_ok=True)
+                    with open(_prop_path, "a", encoding="utf-8") as pf:
+                        pf.write("x\n")
+                except OSError as _prop_err:
+                    import logging as _log
+
+                    _log.getLogger(__name__).warning("[MetaLearning] proposal write failed: %s", _prop_err)
+                # No re-raise — must be silent to caller

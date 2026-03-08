@@ -39,14 +39,14 @@ def run_orchestrator_mission(
         from agentic_core.L5_safety.reasoning.GravityLeakRepairAgent import (
             GravityLeakRepairAgent,
         )
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
-        from agentic_core.L5_safety.reasoning.LocationAgent import LocationAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
 
         orchestrator = get_consolidated_orchestrator(project_root)
 
         # Assemble Roster for L3
         active_roster = [
-            ("LocationAgent", LocationAgent(project_root)),
+            ("LocationAgent", LocationHealerAgent(project_root)),
             ("HierarchyAgent", HierarchyAgent(project_root)),
             ("ArchitectureGovernorAgent", ArchitectureGovernorAgent(project_root)),
             ("GravityLeakRepairAgent", GravityLeakRepairAgent(project_root)),

@@ -19,6 +19,7 @@ import pytest
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L2_execution.enforcement.boundary_verifier import L2BoundaryVerifier
+from agentic_core.L2_execution.enforcement.key_source import TestKeySource, inject_key_source
 from agentic_core.L2_execution.types.instruction_packet_types import (
     SignatureVerificationError,
 )
@@ -29,6 +30,8 @@ from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelo
 # ---------------------------------------------------------------------------
 
 _SECRET = b"phase1-test-secret-key"
+
+inject_key_source(TestKeySource())
 
 _ENVELOPE_V = SandboxEnvelope(
     envelope_id="env-0001",
