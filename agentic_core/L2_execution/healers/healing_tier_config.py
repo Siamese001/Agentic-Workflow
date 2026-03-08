@@ -13,8 +13,8 @@ import os
 from dataclasses import dataclass
 
 # FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
-HEALING_CONFIDENCE_X = 0.75  # Upper threshold - CANNOT BE MODIFIED
-HEALING_CONFIDENCE_Y = 0.40  # Lower threshold - CANNOT BE MODIFIED
+HEALING_CONFIDENCE_X = 0.80  # Upper threshold: conf > X  → DETERMINISTIC
+HEALING_CONFIDENCE_Y = 0.50  # Lower threshold: conf <= Y → GEMINI 2.5 Pro
 
 # Qwen pinned revisions for determinism
 QWEN_MODEL_REVISION_SHA = "a1b2c3d4e5f6a7b8c9d0e1f2a3b4c5d6e7f8a9b0"

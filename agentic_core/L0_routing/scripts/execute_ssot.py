@@ -1929,13 +1929,14 @@ class SovereignDecisionEngine:
             "reason": None,
         }
 
-        tier = routing.tier
-
-        # ── Qwen14B / confidence-band routing override ──────────────────────────
-        # DETERMINISTIC is only correct for high confidence (>= CONF_X = 0.75).
-        # Medium confidence: designated Qwen14B agents → QWEN; others → GEMINI.
-        # Low confidence (< CONF_Y = 0.40): always GEMINI (recovery path).
-        # Tier 2: thresholds sourced from canonical SSOT to eliminate drift.
+        # ── Confidence-score SSOT routing ────────────────────────────────────
+        # Single routing rule — confidence score is the only input to tier.
+        # FAIL_CLOSED from _route_decision (safety gates: replay, retry,
+        # provider prohibition) is preserved and takes precedence.
+        #
+        #   conf > 0.80  → DETERMINISTIC
+        #   0.50 < conf ≤ 0.80 → QWEN (Qwen2.5-14B)
+        #   conf ≤ 0.50  → GEMINI 2.5 Pro
         try:
             from agentic_core.L2_execution.healers.healing_tier_config import (
                 HEALING_CONFIDENCE_X as _CONF_X,
@@ -1944,29 +1945,20 @@ class SovereignDecisionEngine:
                 HEALING_CONFIDENCE_Y as _CONF_Y,
             )
         except ImportError:  # guardian: allow-silent-swallower
-            _CONF_X = 0.75
-            _CONF_Y = 0.40
-        _tier_overridden = False
-        if confidence.value < _CONF_Y and tier not in (RoutingTier.FAIL_CLOSED,):
-            tier = RoutingTier.GEMINI
-            _tier_overridden = True
-        elif confidence.value < _CONF_X and tier == RoutingTier.DETERMINISTIC:
-            try:
-                from agentic_core.L2_execution.healers.healing_tier_config import (
-                    QWEN_14B_AGENT_KEYS as _q14b_keys,
-                )
-            except ImportError:  # guardian: allow-silent-swallower
-                _q14b_keys = frozenset()
-            if agent_name in _q14b_keys:
+            _CONF_X = 0.80
+            _CONF_Y = 0.50
+        if routing.tier != RoutingTier.FAIL_CLOSED:
+            if confidence.value > _CONF_X:
+                tier = RoutingTier.DETERMINISTIC
+                decision_data["model"] = "deterministic-sovereign"
+            elif confidence.value > _CONF_Y:
                 tier = RoutingTier.QWEN
+                decision_data["model"] = os.getenv("QWEN_14B_MODEL", "Qwen2.5-14B-Instruct-AWQ")
             else:
                 tier = RoutingTier.GEMINI
-            _tier_overridden = True
-        if _tier_overridden:
-            if tier == RoutingTier.QWEN:
-                decision_data["model"] = os.getenv("QWEN_14B_MODEL", "Qwen2.5-14B-Instruct-AWQ")
-            elif tier == RoutingTier.GEMINI:
-                decision_data["model"] = os.getenv("GEMINI_MODEL", "gemini-3-flash-preview")
+                decision_data["model"] = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+        else:
+            tier = routing.tier
 
         if tier == RoutingTier.FAIL_CLOSED:
             reason = f"FAIL-CLOSED ({routing.gate_applied}, S={routing.score})"

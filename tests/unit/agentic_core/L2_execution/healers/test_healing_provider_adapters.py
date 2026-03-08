@@ -533,7 +533,7 @@ class TestAdapterIntegrationWithDispatcher:
             error_signature="NamingError: camel_case_found",
             trace_id="dispatcher-local-003",
             retry_count=0,
-            blast_radius_estimate=0.1,  # Low blast radius favors local
+            blast_radius_estimate=0.0,  # Zero blast radius guarantees conf > X → LOCAL_AGENT
             required_tools=("rename",),
             violation_metadata_refs=(),
         )
