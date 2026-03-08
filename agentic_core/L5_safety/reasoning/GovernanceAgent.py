@@ -426,8 +426,7 @@ class GovernanceAgent(SovereignBaseAgent):
         """Lazy-load HierarchyAgent to avoid circular import."""
         if self._hierarchy_agent is None:
             try:
-                # GRAVITY FIXED (Upward Leak): from agentic_core.L5_safety.enforcement.HierarchyAgent import HierarchyAgent
-                _mod = importlib.import_module("agentic_core.L5_safety.enforcement.HierarchyAgent")
+                _mod = importlib.import_module("agentic_core.L5_safety.reasoning.hierarchy_healer")
                 HierarchyAgent = _mod.HierarchyAgent
                 self._hierarchy_agent = HierarchyAgent(self.root_dir)
             except ImportError:

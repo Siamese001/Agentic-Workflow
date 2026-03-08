@@ -65,7 +65,7 @@ def heal_hierarchy_violations(
     repo_root = Path(repo_root).resolve()
 
     try:
-        from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+        from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         hierarchy = HierarchyAgent(project_root=repo_root, healing_enabled=True)
         res = hierarchy.heal_hierarchy(

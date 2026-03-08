@@ -70,7 +70,7 @@ class SafetyAgentFactory:
 
                 return GovernanceAgent(project_root=self.project_root)
             elif agent_name == "HierarchyAgent":
-                from agentic_core.L5_safety.enforcement.HierarchyAgent import (
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import (
                     HierarchyAgent,
                 )
 

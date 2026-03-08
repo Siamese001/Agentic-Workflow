@@ -93,7 +93,7 @@ Examples:
         return 0
     else:
         print("[FAIL] SSOT Violations Detected.")
-        print("   Run 'python -m agentic_core.L5_safety.reasoning.HierarchyAgent --heal' to fix.")
+        print("   Run 'python -m agentic_core.L5_safety.reasoning.hierarchy_healer --heal' to fix.")
         return 1
 
 

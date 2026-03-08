@@ -45,7 +45,7 @@ ALLOWLIST: dict[str, int] = {
     "agentic_core.mixins.subatomic_testing_mixin": 60,
     "agentic_core.mixins.atomic_execution_mixin": 40,
     "agentic_core.L5_safety.enforcement.archival_gatekeeper_gate": 20,
-    "agentic_core.L5_safety.reasoning.HierarchyAgent": 20,
+    "agentic_core.L5_safety.reasoning.hierarchy_healer": 20,
     "apps_rg.utils.RGAgentBase": 20,
     "agentic_core.mixins.mcp_hardened_mixin": 20,
     "agentic_core.L0_routing.scripts.full_agent_discovery": 20,
@@ -61,7 +61,7 @@ ALLOWLIST: dict[str, int] = {
 
 EXECUTOR_CEILINGS: dict[str, int] = {
     "apps_lic.engines.HOPPipelineExecutor": 12,
-    "agentic_core.L6_observability.reasoning.ObservabilityProbeExecutorAgent": 10,
+    "agentic_core.L6_observability.reasoning.observability_probe_executor": 10,
     "apps_lic.engines.LICValidationExecutor": 10,
     "agentic_core.L5_safety.reasoning.InspectorExecutor": 10,
     "apps_rg.engines.RGValidationExecutor": 10,

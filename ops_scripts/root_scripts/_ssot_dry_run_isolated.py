@@ -38,7 +38,7 @@ AGENT_REGISTRY = {
         ["heal_repository"],
     ),
     "FilesystemSSOTReconcilerAgent": (
-        "agentic_core.L0_routing.reasoning.FilesystemSSOTReconcilerAgent",
+        "agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler",
         "FilesystemSSOTReconcilerAgent",
         ["heal_repository"],
     ),
@@ -48,12 +48,12 @@ AGENT_REGISTRY = {
         ["heal_repository"],
     ),
     "LocationValidatorAgent": (
-        "agentic_core.L5_safety.reasoning.LocationValidatorAgent",
+        "agentic_core.L5_safety.reasoning.location_validator",
         "LocationValidatorAgent",
         ["heal_repository"],
     ),
     "HierarchyAgent": (
-        "agentic_core.L5_safety.reasoning.HierarchyAgent",
+        "agentic_core.L5_safety.reasoning.hierarchy_healer",
         "HierarchyAgent",
         ["heal_repository"],
     ),
@@ -68,7 +68,7 @@ AGENT_REGISTRY = {
         ["heal_repository"],
     ),
     "RootHygieneAgent": (
-        "agentic_core.L5_safety.reasoning.RootHygieneAgent",
+        "agentic_core.L5_safety.reasoning.root_hygiene_healer",
         "RootHygieneAgent",
         ["scan_root_violations"],
     ),

@@ -8,7 +8,7 @@ import os
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent as HierarchyHealerAgent
+from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent as HierarchyHealerAgent
 
 from agentic_core.L5_safety.config.structure_blueprint_config import (
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -56,7 +56,7 @@ class MissionPreflight:
         """Lazy load HierarchyAgent."""
         if self._hierarchy_agent is None:
             try:
-                from agentic_core.L5_safety.reasoning.HierarchyAgent import HierarchyAgent
+                from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
                 self._hierarchy_agent = HierarchyAgent(self.project_root)
             except ImportError:
