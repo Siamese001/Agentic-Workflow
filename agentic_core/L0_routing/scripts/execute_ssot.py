@@ -5183,6 +5183,7 @@ def _collect_llm_call_trace(
             )
 
     # Decisions that expected LLM but have no matching action entry
+    llm_disabled = not getattr(decision_engine, "enable_llm", True)
     seen_agents = {e["agent"] for e in call_trace} | {e["agent"] for e in blocked_calls}
     for d in decisions:
         tier = TIER_ALIASES.get(str(d.get("routing_tier", "DETERMINISTIC")), "DETERMINISTIC")
@@ -5190,13 +5191,19 @@ def _collect_llm_call_trace(
             continue
         agent = d.get("agent", "unknown")
         if agent not in seen_agents:
+            _blocker_type = "feature_flag" if llm_disabled else "not_executed"
+            _blocker_msg = (
+                "LLM disabled (enable_llm=False) — routing decision overridden to DETERMINISTIC"
+                if llm_disabled
+                else "LLM call expected by routing decision but not recorded in healing_actions"
+            )
             blocked_calls.append(
                 {
                     "agent": agent,
                     "timestamp": d.get("timestamp", ""),
                     "tier": tier,
-                    "blocker_type": "not_recorded",
-                    "blocker": "LLM call expected by routing decision but not recorded in healing_actions",
+                    "blocker_type": _blocker_type,
+                    "blocker": _blocker_msg,
                     "fallback_tier": "DETERMINISTIC",
                     "llm_call_made": False,
                 }
@@ -5671,7 +5678,10 @@ def _write_heal_run_complete(
             "actual": llm_rate,
             "status": "PASS" if llm_rate >= 0.80 else "FAIL",
             "blocker": (
-                f"{llm_trace['stats']['blocked_by_flags']} calls blocked by flags"
+                (
+                    f"{llm_trace['stats']['blocked_by_flags']} call(s) blocked — "
+                    + ("LLM disabled (enable_llm=False)" if not getattr(decision_engine, "enable_llm", True) else "check feature flags")
+                )
                 if llm_rate < 0.80
                 else None
             ),

@@ -63,9 +63,10 @@ def _make_state(overrides: dict | None = None) -> MagicMock:
     return mgr
 
 
-def _make_engine(decisions: list | None = None) -> MagicMock:
+def _make_engine(decisions: list | None = None, enable_llm: bool = True) -> MagicMock:
     eng = MagicMock()
     eng.decisions_made = decisions or []
+    eng.enable_llm = enable_llm
     return eng
 
 
@@ -169,22 +170,30 @@ class TestCollectLlmCallTrace:
         assert result["stats"]["blocked_by_flags"] == 1
         assert result["stats"]["execution_rate"] == 0.0
 
-    def test_llm_trace_decision_without_action_recorded_as_blocked(self):
-        """Decision routing to QWEN but no matching healing_action → blocked_call entry."""
+    def test_llm_trace_decision_without_action_llm_enabled(self):
+        """Decision routing to QWEN, no action, enable_llm=True → blocker_type 'not_executed'."""
         sm = _make_state()
         eng = _make_engine(
-            decisions=[
-                {
-                    "agent": "AgentE",
-                    "routing_tier": "QWEN_VLLM",
-                    "decision": True,
-                    "confidence": 0.5,
-                }
-            ]
+            decisions=[{"agent": "AgentE", "routing_tier": "QWEN_VLLM", "decision": True, "confidence": 0.5}],
+            enable_llm=True,
         )
         result = self.mod._collect_llm_call_trace(sm, eng)
         assert len(result["blocked_calls"]) == 1
-        assert result["blocked_calls"][0]["blocker_type"] == "not_recorded"
+        assert result["blocked_calls"][0]["blocker_type"] == "not_executed"
+
+    def test_llm_trace_decision_without_action_llm_disabled(self):
+        """Decision routing to QWEN, no action, enable_llm=False → blocker_type 'feature_flag'."""
+        sm = _make_state()
+        eng = _make_engine(
+            decisions=[{"agent": "AgentE2", "routing_tier": "QWEN", "decision": True, "confidence": 0.5}],
+            enable_llm=False,
+        )
+        result = self.mod._collect_llm_call_trace(sm, eng)
+        assert len(result["blocked_calls"]) == 1
+        bc = result["blocked_calls"][0]
+        assert bc["blocker_type"] == "feature_flag"
+        assert "enable_llm=False" in bc["blocker"]
+        assert result["stats"]["blocked_by_flags"] == 1
 
     def test_llm_trace_tier_aliases_qwen(self):
         """Alias 'QWEN' maps to 'QWEN_VLLM'."""
