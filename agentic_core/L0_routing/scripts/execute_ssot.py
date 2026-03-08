@@ -5592,7 +5592,42 @@ def _write_heal_run_complete(
     run_ts = datetime.datetime.now().isoformat()
     run_id = "run_" + run_ts.replace(":", "").replace("-", "").replace("T", "_")[:19]
 
-    # ── Executive gate criteria (10 gates) ────────────────────────────────────
+    # ── Healing effectiveness: parse fix_summary strings ─────────────────────
+    import re as _re
+
+    _fix_pat = _re.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
+    _scan_pat = _re.compile(r"(\d+)\s+(?:violation|found)", _re.IGNORECASE)
+
+    _total_found = 0
+    _total_fixed = 0
+    _zero_fix_agents: list[str] = []  # agents with found>0, fixed==0
+
+    for _a in healing_actions:
+        _summary = str(_a.get("fix_summary", "") or "")
+        _outcome = str(_a.get("outcome", "")).upper()
+        _m = _fix_pat.search(_summary)
+        if _m:
+            _fixed = int(_m.group(1))
+            _found = int(_m.group(2))
+            _total_found += _found
+            _total_fixed += _fixed
+            if _found > 0 and _fixed == 0:
+                _agent_label = f"{_a.get('agent','?')} [{_a.get('territory','__global__')}]"
+                _zero_fix_agents.append(_agent_label)
+
+    _healing_effectiveness = (
+        round(_total_fixed / _total_found, 4) if _total_found > 0 else None
+    )
+    # Agents that reported violations but fixed zero of them (excluding plan-only)
+    _zero_fix_blocker = (
+        f"{len(_zero_fix_agents)} agent(s) found violations but fixed 0: "
+        + ", ".join(_zero_fix_agents[:5])
+        + ("..." if len(_zero_fix_agents) > 5 else "")
+        if _zero_fix_agents
+        else None
+    )
+
+    # ── Executive gate criteria (12 gates) ────────────────────────────────────
     llm_rate = llm_trace["stats"]["execution_rate"]
     calib_max_err = (
         max((v["calibration_error"] for v in calibration.values()), default=0.0) if calibration else 0.0
@@ -5738,6 +5773,35 @@ def _write_heal_run_complete(
             if (success_delta is None or success_delta >= 0.0)
             else "Healing trending downward",
             "severity": "high",
+        },
+        {
+            "criterion": "Healing Effectiveness Rate",
+            "target": ">=0.50 or N/A",
+            "threshold": 0.50,
+            "actual": _healing_effectiveness,
+            "status": (
+                "PASS"
+                if _healing_effectiveness is None or _healing_effectiveness >= 0.50
+                else "FAIL"
+            ),
+            "blocker": (
+                None
+                if _healing_effectiveness is None or _healing_effectiveness >= 0.50
+                else (
+                    f"Only {_healing_effectiveness:.0%} of found violations were fixed "
+                    f"({_total_fixed}/{_total_found})"
+                )
+            ),
+            "severity": "critical",
+        },
+        {
+            "criterion": "Zero-Fix Healer Penalty",
+            "target": "==0 agents with found>0 and fixed==0",
+            "threshold": 0,
+            "actual": len(_zero_fix_agents),
+            "status": "PASS" if not _zero_fix_agents else "FAIL",
+            "blocker": _zero_fix_blocker,
+            "severity": "critical",
         },
     ]
 
@@ -5993,8 +6057,8 @@ def _print_executive_summary(
     """Print the mandatory high-signal pass/fail executive summary table.
 
     Accepts the dict returned by _write_heal_run_complete so no recomputation needed.
-    10 gate criteria rows, VERDICT line, critical blockers, remediation commands,
-    proof integrity check, next-run prediction.
+    12 gate criteria rows, VERDICT line, critical blockers, remediation commands,
+    proof integrity check, healing effectiveness breakdown, next-run prediction.
     """
     es = complete_output.get("executive_summary", {})
     gate_criteria = es.get("gate_criteria", [])
@@ -6087,6 +6151,24 @@ def _print_executive_summary(
     exec_count = coverage.get("executed_agents", {}).get("count", 0)
     exp_count = coverage.get("expected_agents", {}).get("count", 0)
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
+
+    # Healing effectiveness breakdown (per-agent signal)
+    import re as _re2
+    _fp2 = _re2.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
+    _heal_rows = []
+    for _a in complete_output.get("healing_actions", []):
+        _m2 = _fp2.search(str(_a.get("fix_summary", "") or ""))
+        if _m2:
+            _fx, _fd = int(_m2.group(1)), int(_m2.group(2))
+            if _fd > 0:
+                _pct = f"{_fx}/{_fd}"
+                _tag = "OK" if _fx == _fd else ("PARTIAL" if _fx > 0 else "ZERO-FIX")
+                _heal_rows.append((_a.get("agent", "?"), _a.get("territory", ""), _pct, _tag))
+    if _heal_rows:
+        print(f"  {'Healing effectiveness (agents with violations)':<40}")
+        for _ag, _terr, _pct, _tag in _heal_rows:
+            _lbl = f"{_ag} [{_terr}]" if _terr else _ag
+            print(f"    {_tag:<10} {_pct:<8} {_lbl}")
 
     # Next-run prediction (if blockers present)
     skipped_count = coverage.get("skipped_agents", {}).get("count", 0)
