@@ -1430,7 +1430,7 @@ class SovereignDecisionEngine:
 
     def __init__(
         self,
-        enable_llm: bool = False,
+        enable_llm: bool = True,
         state_mgr: Optional["RuntimeStateManager"] = None,
         enable_cda: bool = False,
         execution_context: Optional["ExecutionContext"] = None,
@@ -1983,65 +1983,6 @@ class SovereignDecisionEngine:
             decision_data["reason"] = reason
             self.decisions_made.append(decision_data)
             return True, reason
-
-        if not self.enable_llm:
-            approved, hitl_reason = self._hitl_gate(agent_name, confidence, tier.value)
-            if not approved:
-                hitl_reason = f"LLM Disabled ({hitl_reason})"
-            decision_data["decision"] = approved
-            decision_data["reason"] = hitl_reason
-            self.decisions_made.append(decision_data)
-            if approved:
-                self._healing_count += 1
-                self._call_path.add(agent_name)
-            return approved, hitl_reason
-
-        # Wave 6: HITL gate for tier escalation — fires before QWEN or GEMINI routing
-        # when enable_llm=True.  Operator may approve, skip, or force LOCAL_AGENT.
-        if tier in (RoutingTier.QWEN, RoutingTier.GEMINI):
-            _tier_name = "QWEN_VLLM" if tier == RoutingTier.QWEN else "GEMINI_2_5_PRO"
-            _is_interactive = sys.stdin.isatty() if hasattr(sys, "stdin") else False
-            _batch_tier = os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1"
-            if _batch_tier or not _is_interactive:
-                _tier_hitl_decision = "HITL-TIER-AUTO-APPROVED (non-interactive)"
-            else:
-                print("\n  HITL GATE  [TIER ESCALATION]")
-                print(f"  Agent    : {agent_name}")
-                print(f"  Tier     : {_tier_name} (confidence={confidence.value:.2f}, S={routing.score})")
-                print(f"  Gate     : {routing.gate_applied}")
-                print("  Options  : [A] Approve escalation  [S] Skip  [L] Force LOCAL_AGENT")
-                try:
-                    _tier_raw = input("  Choice [A/S/L]: ").strip().upper()
-                except EOFError:
-                    _tier_raw = "A"
-                if _tier_raw == "S":
-                    _tier_hitl_decision = "HITL-TIER-SKIPPED"
-                    decision_data["decision"] = False
-                    decision_data["reason"] = _tier_hitl_decision
-                    self.decisions_made.append(decision_data)
-                    return False, _tier_hitl_decision
-                elif _tier_raw == "L":
-                    _tier_hitl_decision = "HITL-TIER-FORCED-LOCAL"
-                    self._healing_count += 1
-                    self._call_path.add(agent_name)
-                    decision_data["decision"] = True
-                    decision_data["reason"] = _tier_hitl_decision
-                    self.decisions_made.append(decision_data)
-                    return True, _tier_hitl_decision
-                else:
-                    _tier_hitl_decision = f"HITL-TIER-APPROVED ({_tier_name})"
-            try:
-                from system_learning.engines.hitl_decision_logger import log_hitl_decision
-
-                log_hitl_decision(
-                    agent="SovereignDecisionEngine",
-                    file_path=agent_name,
-                    violation=f"TIER_ESCALATION:{_tier_name}",
-                    proposed=_tier_name,
-                    decision=_tier_hitl_decision,
-                )
-            except Exception:  # guardian: allow-silent-swallow
-                pass
 
         if tier == RoutingTier.QWEN:
             # Medium score: Qwen arbitrates. If Qwen says NO, fall through to
@@ -5288,10 +5229,10 @@ def _build_coverage_proof(
     if isinstance(_ca, dict):
         completed = list(_ca.keys())
     elif isinstance(_ca, (list, tuple)):
-        completed = list({
-            a["agent"] for a in _ca
-            if isinstance(a, dict) and a.get("agent")
-        } | {a for a in _ca if isinstance(a, str)})
+        completed = list(
+            {a["agent"] for a in _ca if isinstance(a, dict) and a.get("agent")}
+            | {a for a in _ca if isinstance(a, str)}
+        )
     else:
         completed = []
     blocked = _collect_blocker_scan(state_mgr)
@@ -5681,7 +5622,11 @@ def _write_heal_run_complete(
                 (
                     lambda _stats=llm_trace["stats"], _llm_on=getattr(decision_engine, "enable_llm", True): (
                         f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
-                        + (" — LLM disabled (enable_llm=False)" if not _llm_on else " — not_executed (routing decided LLM but no llm_call_evidence written)")
+                        + (
+                            " — LLM disabled (enable_llm=False)"
+                            if not _llm_on
+                            else " — not_executed (routing decided LLM but no llm_call_evidence written)"
+                        )
                     )
                 )()
                 if llm_rate < 0.80
@@ -6143,7 +6088,9 @@ def _print_executive_summary(
     if overall == "PASS":
         print("  All diagnostic gates satisfied. Healing pipeline operating as intended.")
     else:
-        print(f"  {n_fail} gate(s) failed. See logs/compliance_reports/failure_forensics.json for drill-down.")
+        print(
+            f"  {n_fail} gate(s) failed. See logs/compliance_reports/failure_forensics.json for drill-down."
+        )
     print("  Detailed reports: logs/compliance_reports/heal_run_complete.json")
     print("                    logs/compliance_reports/failure_forensics.json")
     print("=" * _W)

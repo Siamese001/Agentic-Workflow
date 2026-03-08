@@ -311,7 +311,8 @@ class TestShouldProceedWithHealing:
                         )
         assert ok is False or "LLM Disabled" in reason or "QWEN" in reason
 
-    def test_llm_disabled_hitl_approved(self, sde, cs, mod):
+    def test_llm_disabled_does_not_block_qwen_routing(self, sde, cs, mod):
+        """enable_llm=False is no longer a blocking gate — QWEN arbitration fires directly."""
         eng = mod.SovereignDecisionEngine(enable_llm=False)
         conf = cs(value=0.50)
         with patch.object(eng, "_route_decision") as mock_route:
@@ -322,11 +323,17 @@ class TestShouldProceedWithHealing:
             decision.determinism_digest = "abc"
             decision.model_id = "Qwen2.5-14B"
             mock_route.return_value = decision
-            with patch.object(eng, "_hitl_gate", return_value=(True, "HITL-APPROVED")) as m_hitl:
+            with patch.object(eng, "_get_qwen_vllm_arbiter") as mock_arbiter:
+                mock_arbiter.return_value = lambda agent_name, violation_types, territory, score, gate: {
+                    "decision": True,
+                    "reason": "QWEN-OK",
+                }
                 ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
         assert ok is True
+        assert "QWEN" in reason or "LLM" in reason
 
-    def test_llm_disabled_hitl_denied_wraps_llm_disabled(self, mod, cs):
+    def test_llm_disabled_qwen_arbitration_fires_not_hitl(self, mod, cs):
+        """Routing to QWEN bypasses the HITL gate entirely — _hitl_gate is never called."""
         eng = mod.SovereignDecisionEngine(enable_llm=False)
         conf = cs(value=0.50)
         with patch.object(eng, "_route_decision") as mock_route:
@@ -337,10 +344,15 @@ class TestShouldProceedWithHealing:
             decision.determinism_digest = "abc"
             decision.model_id = "Qwen2.5-14B"
             mock_route.return_value = decision
-            with patch.object(eng, "_hitl_gate", return_value=(False, "HITL-SKIPPED")):
-                ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
-        assert ok is False
-        assert "LLM Disabled" in reason
+            with patch.object(eng, "_hitl_gate") as mock_hitl:
+                with patch.object(eng, "_get_qwen_vllm_arbiter") as mock_arbiter:
+                    mock_arbiter.return_value = lambda agent_name, violation_types, territory, score, gate: {
+                        "decision": True,
+                        "reason": "QWEN-OK",
+                    }
+                    ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
+        mock_hitl.assert_not_called()
+        assert ok is True
 
 
 # ===========================================================================
