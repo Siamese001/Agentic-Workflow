@@ -1,6 +1,6 @@
 {
   "status": "running",
-  "start_time": "2026-03-08T12:40:23.243563",
+  "start_time": "2026-03-08T13:25:31.624271",
   "end_time": null,
   "current_agent": "LocationHealerAgent",
   "current_layer": "L5 - Safety",
@@ -25,181 +25,181 @@
   "completed_agents": [
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-03-08T12:40:30.196775",
+      "time": "2026-03-08T13:25:38.237759",
       "success": true,
       "details": "Violations: 4 (high: 0) fixed: 0"
     },
     {
       "agent": "GravityLeakHealerAgent",
-      "time": "2026-03-08T12:40:40.381801",
+      "time": "2026-03-08T13:25:47.927354",
       "success": true,
       "details": "Violations: 254 | Fixed: 0"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:40.657172",
+      "time": "2026-03-08T13:25:48.211327",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:40.660754",
+      "time": "2026-03-08T13:25:48.214442",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:40.660754",
+      "time": "2026-03-08T13:25:48.215447",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:48.610867",
+      "time": "2026-03-08T13:25:55.902112",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:48.614420",
+      "time": "2026-03-08T13:25:55.903618",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:48.614420",
+      "time": "2026-03-08T13:25:55.904121",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:48.970703",
+      "time": "2026-03-08T13:25:56.242239",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:48.972738",
+      "time": "2026-03-08T13:25:56.244746",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:48.972738",
+      "time": "2026-03-08T13:25:56.244746",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:49.327913",
+      "time": "2026-03-08T13:25:56.577242",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:49.328919",
+      "time": "2026-03-08T13:25:56.578747",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:49.330422",
+      "time": "2026-03-08T13:25:56.578747",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:49.668345",
+      "time": "2026-03-08T13:25:56.928609",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:49.685359",
+      "time": "2026-03-08T13:25:56.945480",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:49.685865",
+      "time": "2026-03-08T13:25:56.945480",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:50.035966",
+      "time": "2026-03-08T13:25:57.287657",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:50.054063",
+      "time": "2026-03-08T13:25:57.308380",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:50.057018",
+      "time": "2026-03-08T13:25:57.308380",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:50.404095",
+      "time": "2026-03-08T13:25:57.642191",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:50.432598",
+      "time": "2026-03-08T13:25:57.671239",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:50.432598",
+      "time": "2026-03-08T13:25:57.671239",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:50.765467",
+      "time": "2026-03-08T13:25:58.025556",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:51.162592",
+      "time": "2026-03-08T13:25:58.413459",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:51.162592",
+      "time": "2026-03-08T13:25:58.413962",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:51.509268",
+      "time": "2026-03-08T13:25:58.753051",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-08T12:40:51.514377",
+      "time": "2026-03-08T13:25:58.758191",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-08T12:40:51.514377",
+      "time": "2026-03-08T13:25:58.759693",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-08T12:40:51.877669",
+      "time": "2026-03-08T13:25:59.108669",
       "success": true,
       "details": "Drift violations: 1"
     }
@@ -207,412 +207,412 @@
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-08T12:40:23.243563",
+      "time": "2026-03-08T13:25:31.624271",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-08T12:40:30.194270",
+      "time": "2026-03-08T13:25:38.236191",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-03-08T12:40:30.196775",
+      "time": "2026-03-08T13:25:38.237759",
       "type": "agent_end",
       "message": "✓ Completed RootHygieneAgent"
     },
     {
-      "time": "2026-03-08T12:40:30.196775",
+      "time": "2026-03-08T13:25:38.237759",
       "type": "agent_start",
       "message": "→ Executing GravityLeakHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:40.381801",
+      "time": "2026-03-08T13:25:47.927354",
       "type": "agent_end",
       "message": "✓ Completed GravityLeakHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:40.657172",
+      "time": "2026-03-08T13:25:48.209817",
       "type": "domain_start",
       "message": "Entering Domain: L0_routing"
     },
     {
-      "time": "2026-03-08T12:40:40.657172",
+      "time": "2026-03-08T13:25:48.209817",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:40.657172",
+      "time": "2026-03-08T13:25:48.211327",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:40.657172",
+      "time": "2026-03-08T13:25:48.211327",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:40.660754",
+      "time": "2026-03-08T13:25:48.214442",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:40.660754",
+      "time": "2026-03-08T13:25:48.214442",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:40.660754",
+      "time": "2026-03-08T13:25:48.215447",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.337685",
+      "time": "2026-03-08T13:25:55.614411",
       "type": "error",
       "message": "Blocked Prompt in L0_routing"
     },
     {
-      "time": "2026-03-08T12:40:48.610867",
+      "time": "2026-03-08T13:25:55.900609",
       "type": "domain_start",
       "message": "Entering Domain: L2_execution"
     },
     {
-      "time": "2026-03-08T12:40:48.610867",
+      "time": "2026-03-08T13:25:55.900609",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:48.610867",
+      "time": "2026-03-08T13:25:55.902112",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.610867",
+      "time": "2026-03-08T13:25:55.902112",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:48.614420",
+      "time": "2026-03-08T13:25:55.903618",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.614420",
+      "time": "2026-03-08T13:25:55.903618",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:48.614420",
+      "time": "2026-03-08T13:25:55.904121",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.694197",
+      "time": "2026-03-08T13:25:55.965445",
       "type": "error",
       "message": "Blocked Prompt in L2_execution"
     },
     {
-      "time": "2026-03-08T12:40:48.969195",
+      "time": "2026-03-08T13:25:56.242239",
       "type": "domain_start",
       "message": "Entering Domain: L3_orchestration"
     },
     {
-      "time": "2026-03-08T12:40:48.969195",
+      "time": "2026-03-08T13:25:56.242239",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:48.970703",
+      "time": "2026-03-08T13:25:56.242239",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.970703",
+      "time": "2026-03-08T13:25:56.242239",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:48.972738",
+      "time": "2026-03-08T13:25:56.244746",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:48.972738",
+      "time": "2026-03-08T13:25:56.244746",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:48.972738",
+      "time": "2026-03-08T13:25:56.244746",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.028871",
+      "time": "2026-03-08T13:25:56.305963",
       "type": "error",
       "message": "Blocked Prompt in L3_orchestration"
     },
     {
-      "time": "2026-03-08T12:40:49.327410",
+      "time": "2026-03-08T13:25:56.574701",
       "type": "domain_start",
       "message": "Entering Domain: L5_safety"
     },
     {
-      "time": "2026-03-08T12:40:49.327410",
+      "time": "2026-03-08T13:25:56.576239",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:49.327913",
+      "time": "2026-03-08T13:25:56.577242",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.327913",
+      "time": "2026-03-08T13:25:56.577242",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:49.328919",
+      "time": "2026-03-08T13:25:56.578747",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.328919",
+      "time": "2026-03-08T13:25:56.578747",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:49.330422",
+      "time": "2026-03-08T13:25:56.578747",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.390569",
+      "time": "2026-03-08T13:25:56.640691",
       "type": "error",
       "message": "Blocked Prompt in L5_safety"
     },
     {
-      "time": "2026-03-08T12:40:49.667832",
+      "time": "2026-03-08T13:25:56.928609",
       "type": "domain_start",
       "message": "Entering Domain: apps_lic"
     },
     {
-      "time": "2026-03-08T12:40:49.668345",
+      "time": "2026-03-08T13:25:56.928609",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:49.668345",
+      "time": "2026-03-08T13:25:56.928609",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.668345",
+      "time": "2026-03-08T13:25:56.928609",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:49.685359",
+      "time": "2026-03-08T13:25:56.945480",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.685359",
+      "time": "2026-03-08T13:25:56.945480",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:49.685865",
+      "time": "2026-03-08T13:25:56.945480",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:49.746729",
+      "time": "2026-03-08T13:25:57.006598",
       "type": "error",
       "message": "Blocked Prompt in apps_lic"
     },
     {
-      "time": "2026-03-08T12:40:50.034908",
+      "time": "2026-03-08T13:25:57.287657",
       "type": "domain_start",
       "message": "Entering Domain: apps_rg"
     },
     {
-      "time": "2026-03-08T12:40:50.034908",
+      "time": "2026-03-08T13:25:57.287657",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:50.035966",
+      "time": "2026-03-08T13:25:57.287657",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.035966",
+      "time": "2026-03-08T13:25:57.287657",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:50.054063",
+      "time": "2026-03-08T13:25:57.308380",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.054063",
+      "time": "2026-03-08T13:25:57.308380",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:50.057018",
+      "time": "2026-03-08T13:25:57.308380",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.118350",
+      "time": "2026-03-08T13:25:57.369314",
       "type": "error",
       "message": "Blocked Prompt in apps_rg"
     },
     {
-      "time": "2026-03-08T12:40:50.404095",
+      "time": "2026-03-08T13:25:57.642191",
       "type": "domain_start",
       "message": "Entering Domain: apps_shared"
     },
     {
-      "time": "2026-03-08T12:40:50.404095",
+      "time": "2026-03-08T13:25:57.642191",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:50.404095",
+      "time": "2026-03-08T13:25:57.642191",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.404095",
+      "time": "2026-03-08T13:25:57.642191",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:50.432598",
+      "time": "2026-03-08T13:25:57.671239",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.432598",
+      "time": "2026-03-08T13:25:57.671239",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:50.432598",
+      "time": "2026-03-08T13:25:57.671239",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.493849",
+      "time": "2026-03-08T13:25:57.731829",
       "type": "error",
       "message": "Blocked Prompt in apps_shared"
     },
     {
-      "time": "2026-03-08T12:40:50.764397",
+      "time": "2026-03-08T13:25:58.024553",
       "type": "domain_start",
       "message": "Entering Domain: archives"
     },
     {
-      "time": "2026-03-08T12:40:50.764397",
+      "time": "2026-03-08T13:25:58.024553",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:50.765467",
+      "time": "2026-03-08T13:25:58.025556",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:50.765467",
+      "time": "2026-03-08T13:25:58.025556",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:51.162592",
+      "time": "2026-03-08T13:25:58.413459",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.162592",
+      "time": "2026-03-08T13:25:58.413459",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:51.162592",
+      "time": "2026-03-08T13:25:58.413962",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.234619",
+      "time": "2026-03-08T13:25:58.476413",
       "type": "error",
       "message": "Blocked Prompt in archives"
     },
     {
-      "time": "2026-03-08T12:40:51.507261",
+      "time": "2026-03-08T13:25:58.752047",
       "type": "domain_start",
       "message": "Entering Domain: artifacts"
     },
     {
-      "time": "2026-03-08T12:40:51.507261",
+      "time": "2026-03-08T13:25:58.752047",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:51.509268",
+      "time": "2026-03-08T13:25:58.753051",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.509268",
+      "time": "2026-03-08T13:25:58.753051",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:51.514377",
+      "time": "2026-03-08T13:25:58.758191",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.514377",
+      "time": "2026-03-08T13:25:58.758191",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:51.514377",
+      "time": "2026-03-08T13:25:58.759693",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.577732",
+      "time": "2026-03-08T13:25:58.834840",
       "type": "error",
       "message": "Blocked Prompt in artifacts"
     },
     {
-      "time": "2026-03-08T12:40:51.876652",
+      "time": "2026-03-08T13:25:59.107665",
       "type": "domain_start",
       "message": "Entering Domain: data"
     },
     {
-      "time": "2026-03-08T12:40:51.876652",
+      "time": "2026-03-08T13:25:59.107665",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-08T12:40:51.877669",
+      "time": "2026-03-08T13:25:59.108669",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-08T12:40:51.877669",
+      "time": "2026-03-08T13:25:59.108669",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-08T12:40:51.954257",
+      "time": "2026-03-08T13:25:59.182948",
       "type": "error",
       "message": "Blocked Prompt in data"
     }
@@ -205852,7 +205852,7 @@
   "compliance_report": {},
   "audit_chain": [],
   "apply_proposals": false,
-  "runtime_state_digest_sha256": "9c71cf76382d60e2c0dd4f25565659283143772d93eccd962a924cbfaf0f7a1b",
+  "runtime_state_digest_sha256": "e164d0f31590a33928f5f78ad24dae417c5722da631e524132f223623b1f17e8",
   "runtime_state_digest_schema_version": 1,
   "compliance_report_audit": {
     "success": false,
@@ -211565,7 +211565,7 @@
       "confidence": 0.9,
       "fix_summary": "Scanned for gravity violations: 254 found",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:40.381801",
+      "timestamp": "2026-03-08T13:25:47.927354",
       "routing_digest": null,
       "check_id": null
     },
@@ -211579,7 +211579,7 @@
       "confidence": 0.9,
       "fix_summary": "Fixed 0 of 254 gravity violations",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-08T12:40:40.381801",
+      "timestamp": "2026-03-08T13:25:47.927354",
       "routing_digest": null,
       "check_id": null
     },
@@ -211593,7 +211593,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:40.657172",
+      "timestamp": "2026-03-08T13:25:48.211327",
       "routing_digest": null,
       "check_id": null
     },
@@ -211607,7 +211607,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:40.660754",
+      "timestamp": "2026-03-08T13:25:48.214442",
       "routing_digest": null,
       "check_id": null
     },
@@ -211621,7 +211621,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L0_routing: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:40.660754",
+      "timestamp": "2026-03-08T13:25:48.215447",
       "routing_digest": null,
       "check_id": null
     },
@@ -211635,7 +211635,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.610867",
+      "timestamp": "2026-03-08T13:25:55.902112",
       "routing_digest": null,
       "check_id": null
     },
@@ -211649,7 +211649,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.614420",
+      "timestamp": "2026-03-08T13:25:55.903618",
       "routing_digest": null,
       "check_id": null
     },
@@ -211663,7 +211663,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L2_execution: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.614420",
+      "timestamp": "2026-03-08T13:25:55.904121",
       "routing_digest": null,
       "check_id": null
     },
@@ -211677,7 +211677,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.970703",
+      "timestamp": "2026-03-08T13:25:56.242239",
       "routing_digest": null,
       "check_id": null
     },
@@ -211691,7 +211691,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.972738",
+      "timestamp": "2026-03-08T13:25:56.244746",
       "routing_digest": null,
       "check_id": null
     },
@@ -211705,7 +211705,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L3_orchestration: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:48.972738",
+      "timestamp": "2026-03-08T13:25:56.244746",
       "routing_digest": null,
       "check_id": null
     },
@@ -211719,7 +211719,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.327913",
+      "timestamp": "2026-03-08T13:25:56.577242",
       "routing_digest": null,
       "check_id": null
     },
@@ -211733,7 +211733,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.328919",
+      "timestamp": "2026-03-08T13:25:56.578747",
       "routing_digest": null,
       "check_id": null
     },
@@ -211747,7 +211747,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L5_safety: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.330422",
+      "timestamp": "2026-03-08T13:25:56.578747",
       "routing_digest": null,
       "check_id": null
     },
@@ -211761,7 +211761,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.668345",
+      "timestamp": "2026-03-08T13:25:56.928609",
       "routing_digest": null,
       "check_id": null
     },
@@ -211775,7 +211775,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.685359",
+      "timestamp": "2026-03-08T13:25:56.945480",
       "routing_digest": null,
       "check_id": null
     },
@@ -211789,7 +211789,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_lic: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:49.685865",
+      "timestamp": "2026-03-08T13:25:56.945480",
       "routing_digest": null,
       "check_id": null
     },
@@ -211803,7 +211803,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.035966",
+      "timestamp": "2026-03-08T13:25:57.287657",
       "routing_digest": null,
       "check_id": null
     },
@@ -211817,7 +211817,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.054063",
+      "timestamp": "2026-03-08T13:25:57.308380",
       "routing_digest": null,
       "check_id": null
     },
@@ -211831,7 +211831,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_rg: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.057018",
+      "timestamp": "2026-03-08T13:25:57.308380",
       "routing_digest": null,
       "check_id": null
     },
@@ -211845,7 +211845,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.404095",
+      "timestamp": "2026-03-08T13:25:57.642191",
       "routing_digest": null,
       "check_id": null
     },
@@ -211859,7 +211859,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.432598",
+      "timestamp": "2026-03-08T13:25:57.671239",
       "routing_digest": null,
       "check_id": null
     },
@@ -211873,7 +211873,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_shared: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.432598",
+      "timestamp": "2026-03-08T13:25:57.671239",
       "routing_digest": null,
       "check_id": null
     },
@@ -211887,7 +211887,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in archives",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:50.765467",
+      "timestamp": "2026-03-08T13:25:58.025556",
       "routing_digest": null,
       "check_id": null
     },
@@ -211901,7 +211901,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in archives",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.162592",
+      "timestamp": "2026-03-08T13:25:58.413459",
       "routing_digest": null,
       "check_id": null
     },
@@ -211915,7 +211915,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned archives: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.162592",
+      "timestamp": "2026-03-08T13:25:58.413962",
       "routing_digest": null,
       "check_id": null
     },
@@ -211929,7 +211929,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in artifacts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.509268",
+      "timestamp": "2026-03-08T13:25:58.753051",
       "routing_digest": null,
       "check_id": null
     },
@@ -211943,7 +211943,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in artifacts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.514377",
+      "timestamp": "2026-03-08T13:25:58.758191",
       "routing_digest": null,
       "check_id": null
     },
@@ -211957,7 +211957,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned artifacts: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.514377",
+      "timestamp": "2026-03-08T13:25:58.759693",
       "routing_digest": null,
       "check_id": null
     },
@@ -211971,7 +211971,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in data",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-08T12:40:51.877669",
+      "timestamp": "2026-03-08T13:25:59.108669",
       "routing_digest": null,
       "check_id": null
     }
