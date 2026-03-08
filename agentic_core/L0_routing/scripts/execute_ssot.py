@@ -1957,6 +1957,8 @@ class SovereignDecisionEngine:
             else:
                 tier = RoutingTier.GEMINI
                 decision_data["model"] = os.getenv("GEMINI_MODEL", "gemini-2.5-pro")
+            # Sync routing_tier in decision_data to the confidence-SSOT override value
+            decision_data["routing_tier"] = tier.value
         else:
             tier = routing.tier
 
@@ -5274,12 +5276,45 @@ def _build_calibration_proof(
     decisions = getattr(decision_engine, "decisions_made", [])
     healing_actions = state_mgr.state.get("healing_actions", [])
 
-    # Build outcome map: agent -> outcome
-    outcome_map: dict = {}
+    # Build outcome map: agent -> best outcome across all territories.
+    # SUCCESS > PARTIAL > other. Keyed by both exact and lowercased name.
+    _OUTCOME_RANK = {"SUCCESS": 2, "PARTIAL": 1}
+    _raw_best: dict = {}
     for a in healing_actions:
         agent = a.get("agent", "unknown")
         outcome = str(a.get("outcome", "")).upper()
+        rank = _OUTCOME_RANK.get(outcome, 0)
+        if rank > _OUTCOME_RANK.get(_raw_best.get(agent, ""), 0):
+            _raw_best[agent] = outcome
+    outcome_map: dict = {}
+    for agent, outcome in _raw_best.items():
         outcome_map[agent] = outcome
+        outcome_map[agent.lower()] = outcome
+
+    def _lookup_outcome(agent_key: str) -> str:
+        """Resolve a decision agent key to its healing outcome.
+
+        Decision keys are short roster names (e.g. 'location', 'reconciler').
+        Healing-action keys are full class names (e.g. 'LocationHealerAgent').
+        Resolution order:
+          1. Exact match
+          2. Case-insensitive exact match
+          3. Any healing-action agent whose lower-case name starts with the key
+          4. Any healing-action agent whose lower-case name contains the key
+          5. Default → empty string (no outcome recorded → not SUCCESS)
+        """
+        if agent_key in outcome_map:
+            return outcome_map[agent_key]
+        lk = agent_key.lower()
+        if lk in outcome_map:
+            return outcome_map[lk]
+        for full_name, out in outcome_map.items():
+            if full_name.lower().startswith(lk):
+                return out
+        for full_name, out in outcome_map.items():
+            if lk in full_name.lower():
+                return out
+        return ""
 
     # Per-tier: collect (predicted_confidence, actual_success)
     tier_data: dict = {}
@@ -5291,7 +5326,8 @@ def _build_calibration_proof(
         if not isinstance(conf, (int, float)):
             continue
         agent = d.get("agent", "unknown")
-        actual = 1.0 if outcome_map.get(agent, "") == "SUCCESS" else 0.0
+        # PARTIAL counts as success: agent executed; only FAIL/ERROR/empty is non-success
+        actual = 1.0 if _lookup_outcome(agent) in ("SUCCESS", "PARTIAL") else 0.0
         tier_data.setdefault(tier, []).append((float(conf), actual))
 
     result = {}
