@@ -5679,9 +5679,11 @@ def _write_heal_run_complete(
             "status": "PASS" if llm_rate >= 0.80 else "FAIL",
             "blocker": (
                 (
-                    f"{llm_trace['stats']['blocked_by_flags']} call(s) blocked — "
-                    + ("LLM disabled (enable_llm=False)" if not getattr(decision_engine, "enable_llm", True) else "check feature flags")
-                )
+                    lambda _stats=llm_trace["stats"], _llm_on=getattr(decision_engine, "enable_llm", True): (
+                        f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
+                        + (" — LLM disabled (enable_llm=False)" if not _llm_on else " — not_executed (routing decided LLM but no llm_call_evidence written)")
+                    )
+                )()
                 if llm_rate < 0.80
                 else None
             ),
