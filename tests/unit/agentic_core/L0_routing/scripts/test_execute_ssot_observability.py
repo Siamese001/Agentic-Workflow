@@ -36,16 +36,26 @@ def _load():
 
 
 def _make_state(overrides: dict | None = None) -> MagicMock:
-    """Return a state_mgr stub with a `.state` dict."""
+    """Return a state_mgr stub with a `.state` dict.
+
+    completed_agents mirrors the real state shape: list of dicts with 'agent' key.
+    Tests may pass either {"AgentA": True} shorthand (converted here) or the real list form.
+    """
     state = {
         "healing_actions": [],
         "meta_learning": {},
         "blocked_agents": [],
-        "completed_agents": {},
+        "completed_agents": [],
         "prior_meta": {},
         "faiss_retrieval_stats": {},
     }
     if overrides:
+        # Normalize completed_agents shorthand {"AgentA": True} → [{"agent": "AgentA"}]
+        if "completed_agents" in overrides and isinstance(overrides["completed_agents"], dict):
+            overrides = dict(overrides)
+            overrides["completed_agents"] = [
+                {"agent": k} for k, v in overrides["completed_agents"].items() if v
+            ]
         state.update(overrides)
     mgr = MagicMock()
     mgr.state = state

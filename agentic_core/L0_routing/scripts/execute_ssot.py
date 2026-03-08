@@ -5277,7 +5277,16 @@ def _build_coverage_proof(
     """
     import hashlib
 
-    completed = list(state_mgr.state.get("completed_agents", {}).keys())
+    _ca = state_mgr.state.get("completed_agents", [])
+    if isinstance(_ca, dict):
+        completed = list(_ca.keys())
+    elif isinstance(_ca, (list, tuple)):
+        completed = list({
+            a["agent"] for a in _ca
+            if isinstance(a, dict) and a.get("agent")
+        } | {a for a in _ca if isinstance(a, str)})
+    else:
+        completed = []
     blocked = _collect_blocker_scan(state_mgr)
     blocked_names = [b["agent"] for b in blocked]
 
