@@ -26,7 +26,14 @@ class SovereignRAGManager(SovereignBaseAgent):
 
         self.embedder = None
         self.vector_store = None
-        self.bm25_store = None
+
+        # Wire live BM25 singleton (Gap 3 fix: was always None)
+        try:
+            from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+
+            self.bm25_store = get_bm25_store()
+        except Exception:  # guardian: allow-silent-swallow
+            self.bm25_store = None
 
         # BGE-m3 embedder + in-memory vector store (replaces ghost semantic_memory imports)
         try:

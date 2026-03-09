@@ -16,6 +16,10 @@ except ImportError as _err:
         "rank-bm25 is required for this module. Install with: pip install -e '.[infra]'",
     ) from _err
 
+from agentic_core.L2_execution.config.hybrid_retriever_config import ASTAwareTokenizer
+
+_tokenizer = ASTAwareTokenizer()
+
 
 class Bm25Store:
     """In-memory BM25 index for fast keyword retrieval."""
@@ -34,14 +38,14 @@ class Bm25Store:
         if not self.documents:
             self.bm25 = None
             return
-        tokenized = [doc["text"].lower().split() for doc in self.documents]
+        tokenized = [_tokenizer.tokenize_code(doc["text"]) for doc in self.documents]
         self.bm25 = BM25Okapi(tokenized)
 
     def query(self, query: str, top_k: int = 5) -> list[dict]:
         """BM25 keyword search."""
         if not self.bm25 or not self.documents:
             return []
-        tokenized_query: Any = query.lower().split()
+        tokenized_query: Any = _tokenizer.tokenize_query(query)
         scores: Any = self.bm25.get_scores(tokenized_query)
         ranked: Any = sorted(enumerate(scores), key=lambda x: x[1], reverse=True)[:top_k]
         results: Any = []

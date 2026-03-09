@@ -1323,6 +1323,7 @@ agentic_core/knowledge/engine/rag_orchestrator.py:203:silent_swallower:Silent ex
 agentic_core/knowledge/engine/rag_orchestrator.py:299:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/engine/rag_orchestrator.py:325:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/knowledge/engine/rag_orchestrator.py:73:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+agentic_core/knowledge/reasoning/SovereignRAGManagerAgent.py:35:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/research_cache/cache_store_util.py:100:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/research_cache/cache_store_util.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/research_cache/cache_store_util.py:63:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

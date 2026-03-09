@@ -155,6 +155,7 @@ class RetrievalResult:
     score: float
     source: str
     metadata: dict
+    original_score: float = 0.0  # Preserves raw BM25/dense score before RRF overwrites
 
 
 class HybridRetriever:
@@ -169,7 +170,7 @@ class HybridRetriever:
         self.local_chunks: list[dict] = []
         self.index_ready = asyncio.Event()
         self.tokenizer = ASTAwareTokenizer()
-        self._init_task = asyncio.create_task(self._load_or_rebuild_local_index())
+        self._index_initialized = False  # Lazy init: no asyncio.create_task at construction
 
     async def _load_or_rebuild_local_index(self):
         """Thread-safe loading of the sovereign index"""
@@ -305,8 +306,15 @@ class HybridRetriever:
             return []
         return await self.guardrail.rerank_documents(combined, query)
 
+    async def _ensure_index(self) -> None:
+        """Lazy index init: called on first hybrid_search invocation."""
+        if not self._index_initialized:
+            self._index_initialized = True
+            await self._load_or_rebuild_local_index()
+
     async def hybrid_search(self, query: str, top_k: int = 12) -> list[RetrievalResult]:
         """Sovereign hybrid search with RRF fusion"""
+        await self._ensure_index()
         dense_results, sparse_results = await asyncio.gather(
             self.dense_search(query, top_k=top_k * 2),
             asyncio.to_thread(self.sparse_search, query, top_k=top_k * 2),

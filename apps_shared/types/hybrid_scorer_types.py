@@ -47,6 +47,14 @@ class BM25Scorer:
             k1: Controls term frequency saturation
             b: Controls document length normalization
         """
+        import warnings
+
+        warnings.warn(
+            "BM25Scorer is deprecated. Use agentic_core.L4_state.memory.bm25_store.Bm25Store "
+            "(backed by ASTAwareTokenizer) instead.",
+            DeprecationWarning,
+            stacklevel=2,
+        )
         self.k1 = k1
         self.b = b
         self.doc_freqs: dict[str, int] = {}
