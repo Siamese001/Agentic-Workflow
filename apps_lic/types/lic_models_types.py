@@ -265,7 +265,7 @@ class QAReport:
     passed: bool
     timestamp: str
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

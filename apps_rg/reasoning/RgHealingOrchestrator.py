@@ -22,6 +22,8 @@ from typing import Any
 
 from apps_rg.utils.RGAgentBase import RGAgentBase
 
+from apps_rg.reasoning.healing_cycle import HealingCycle  # noqa: F401  (re-exported)
+
 Logger = logging.getLogger(__name__)
 
 
@@ -98,16 +100,8 @@ class RgHealingOrchestrator(RGAgentBase):
             print(f"   📋 Strategy: {strategy}")
 
             # Execute cycle
-            # TODO: HealingCycle not yet implemented
-            result = {
-                "status": "skipped",
-                "reason": "HealingCycle not implemented",
-                "passed_agents": [],
-                "failed_agents": [],
-                "rollback_triggered": False,
-            }
-            # cycle = HealingCycle(self.ctx, cycle_num)
-            # result = await cycle.execute(strategy)
+            cycle = HealingCycle(self.ctx, cycle_num)
+            result = await cycle.execute(strategy)
             self.cycle_results.append(result)
 
             # Log cycle result
@@ -163,12 +157,12 @@ class RgHealingOrchestrator(RGAgentBase):
         #     final_resume=self.ctx.current_resume.copy(),
         # )
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
+    def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, Any]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 
         Args:
-            dry_run: If True, only report violations without fixing
+            dry_run: If True, only report violations without fixing (default False per HEAL-GAP-02)
             execute: If True, apply fixes
             **kwargs: Additional healing parameters
 
@@ -457,3 +451,7 @@ class RgHealingOrchestrator(RGAgentBase):
             self.cycle_results.append(results)
 
         return results
+
+
+# HealingCycle is imported from apps_rg.reasoning.healing_cycle (standalone module).
+# Re-exported at the top of this file for backward compatibility.

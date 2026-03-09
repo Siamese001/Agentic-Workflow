@@ -9,15 +9,16 @@ Phase 2 - Resilient Routing Layer
 import logging
 from typing import Any
 
-from apps_shared.utils.Provider import Provider
-
-from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
 from apps_rg.engines.hardened_openai_executor import HardenedOpenAIExecutor
 
 # [Diff Start: Updated Imports for Relocation]
 # Previous: from runtime.shared.HardenedAnthropicExecutor import HardenedAnthropicExecutor
 from apps_rg.engines.HardenedAnthropicExecutor import HardenedAnthropicExecutor
-from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
+from apps_shared.utils.Provider import Provider
+
+from agentic_core.interfaces.observability import CircuitBreakerState, SystemTelemetry
+from apps_rg.engines.hardened_gemini_executor import HardenedGeminiExecutor
+from apps_rg.utils.agent_executor_util import AgentMessage, AgentResponse
 
 # [Diff End]
 from .schema import DEFAULT_ROUTING_CONFIGS, RouteConfig, RoutingTier
@@ -75,8 +76,7 @@ class HardenedRouter:
                 elif provider == Provider.ANTHROPIC:
                     self.executors[provider] = HardenedAnthropicExecutor()
                 elif provider == Provider.GOOGLE:
-                    # HardenedGeminiExecutor not yet implemented
-                    logger.warning(f"HardenedGeminiExecutor not available for {provider}")
+                    self.executors[provider] = HardenedGeminiExecutor()
                 else:
                     logger.warning(f"No hardened executor available for provider: {provider}")
             except Exception as e:

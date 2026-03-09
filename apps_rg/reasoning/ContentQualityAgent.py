@@ -20,8 +20,9 @@ import re
 from dataclasses import dataclass
 from typing import Any
 
-from apps_rg.types.skill_extractor_node_types import SkillExtractorNode
 from apps_rg.utils.RGAgentBase import RGAgentBase
+
+from apps_rg.types.skill_extractor_node_types import SkillExtractorNode
 
 
 @dataclass
@@ -243,7 +244,7 @@ class ContentQualityAgent(RGAgentBase):
             return json.dumps(content)
         return str(content)
 
-    def heal_repository(self, dry_run: bool = True, execute: bool = False, **kwargs: Any) -> dict[str, int]:
+    def heal_repository(self, dry_run: bool = False, execute: bool = False, **kwargs: Any) -> dict[str, int]:
         """
         Autonomous healing method (Canon Key 51 compliance).
 

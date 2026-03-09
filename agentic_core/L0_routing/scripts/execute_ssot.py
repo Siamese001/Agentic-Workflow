@@ -8068,6 +8068,35 @@ def _legacy_main(
         with NonInteractiveGuard(active=is_autonomous):
             state_mgr.start_mission(f"Unified Protocol: {mission_mode}", [f"{t}" for t in targets])
 
+            # GAP-A: Write run_manifest.json immediately after trace_id is bound.
+            # Invariant: file exists with correct trace_id after any heal/scan run.
+            _run_manifest_dir = REPO_ROOT / "logs" / "run_manifests" / ctx.trace_id
+            try:
+                _write_run_manifest_json(
+                    trace_id=ctx.trace_id,
+                    execution_mode=ctx.execution_mode
+                    if hasattr(ctx, "execution_mode")
+                    else ("heal" if ctx.heal else "scan"),
+                    territories=list(targets),
+                    agents_executed=list(agents.keys()),
+                    output_dir=_run_manifest_dir,
+                )
+            except Exception as _gap_a_exc:  # guardian: allow-silent-swallower
+                logger.warning("[GAP-A] run_manifest.json write failed (non-fatal): %s", _gap_a_exc)
+
+            # GAP-B: Wire mutation ledger before Phase 2 mutations begin.
+            # Invariant: ledger non-empty after any heal run that commits writes.
+            _ledger_path = REPO_ROOT / "logs" / "mutation_ledgers" / ctx.trace_id / "mutation_ledger.jsonl"
+            try:
+                from agentic_core.L2_execution.tools.write_gateway import (
+                    set_mutation_ledger_path as _set_ledger,
+                )
+
+                _set_ledger(_ledger_path, ctx.trace_id)
+                logger.info("[GAP-B] Mutation ledger wired: %s", _ledger_path)
+            except Exception as _gap_b_exc:  # guardian: allow-silent-swallower
+                logger.warning("[GAP-B] set_mutation_ledger_path failed (non-fatal): %s", _gap_b_exc)
+
             # [PHASE 8] Integrated Integrity Check
             # [HARDENED] Pass territory targets to ensure integrity check is also scoped.
             if is_autonomous:
@@ -8727,7 +8756,8 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
     # Define search paths relative to project root
     search_paths = [
         project_root / AGENTIC_CORE_DIR,
-        # Add other apps_* folders if needed, e.g., apps_private
+        project_root / APPS_RG_DIR,
+        project_root / APPS_LIC_DIR,
     ]
 
     for search_path in search_paths:

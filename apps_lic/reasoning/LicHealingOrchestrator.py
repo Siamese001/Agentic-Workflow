@@ -135,15 +135,103 @@ class LicHealingOrchestrator(LICAgentBase):
             }
 
     def _execute_healing(self, incident: dict[str, Any]) -> dict[str, Any]:
-        """Execute standard healing logic for an incident."""
+        """Execute domain-specific healing by dispatching to appropriate agents.
+
+        HEAL-GAP-04: Dispatches based on incident.type:
+          - structural → ControlPlane.evaluate_input/output()
+          - schema/output_contract → HOPPipelineExecutor re-run on failing stage
+          - llm_call → re-route via SovereignLLMGateway with corrected model ID
+        """
         incident_type = incident.get("type", "unknown")
         playbook = self.recovery_playbooks.get(incident_type, "default_recovery")
+        Logger.info(
+            "[%s] _execute_healing: incident_type=%s playbook=%s",
+            self.__class__.__name__,
+            incident_type,
+            playbook,
+        )
 
-        return {
-            "status": "resolved",
-            "playbook_used": playbook,
-            "incident_type": incident_type,
-        }
+        if incident_type == "structural":
+            return self._heal_structural(incident)
+        elif incident_type in ("schema", "output_contract"):
+            return self._heal_schema(incident)
+        elif incident_type in ("llm_call", "api_timeout"):
+            return self._heal_llm_call(incident)
+        else:
+            return {
+                "status": "resolved",
+                "playbook_used": playbook,
+                "incident_type": incident_type,
+            }
+
+    def _heal_structural(self, incident: dict[str, Any]) -> dict[str, Any]:
+        """Route structural violations through ControlPlane."""
+        try:
+            from apps_lic.engines.control_plane import ControlPlane
+
+            cp = ControlPlane()
+            content = incident.get("content", "")
+            decision = cp.evaluate_input(content)
+            return {
+                "status": "resolved",
+                "healer": "ControlPlane",
+                "action": decision.action.value,
+                "is_safe": decision.is_safe,
+                "incident_type": incident.get("type"),
+            }
+        except Exception as exc:
+            Logger.error("[%s] _heal_structural failed: %s", self.__class__.__name__, exc)
+            return {"status": "error", "healer": "ControlPlane", "reason": str(exc)}
+
+    def _heal_schema(self, incident: dict[str, Any]) -> dict[str, Any]:
+        """Re-run the failing HOP stage via HOPPipelineExecutor."""
+        try:
+            from apps_lic.reasoning.HOPPipelineExecutor import HOPPipelineExecutor
+
+            stage_id = incident.get("stage_id", 5)
+            executor = HOPPipelineExecutor()
+            result = executor.execute_stage(stage_id, incident.get("context", {}))
+            return {
+                "status": "resolved",
+                "healer": "HOPPipelineExecutor",
+                "stage_id": stage_id,
+                "result": result,
+                "incident_type": incident.get("type"),
+            }
+        except Exception as exc:
+            Logger.error("[%s] _heal_schema failed: %s", self.__class__.__name__, exc)
+            return {"status": "error", "healer": "HOPPipelineExecutor", "reason": str(exc)}
+
+    def _heal_llm_call(self, incident: dict[str, Any]) -> dict[str, Any]:
+        """Re-route LLM call via SovereignLLMGateway with corrected model ID."""
+        try:
+            import asyncio
+
+            from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
+
+            gateway = SovereignLLMGateway()
+            prompt = incident.get("prompt", incident.get("content", ""))
+            request = GenerationRequest(
+                agent_id="LicHealingOrchestrator",
+                provider="google",
+                model="gemini-2.5-pro",
+                prompt=prompt,
+            )
+            loop = asyncio.new_event_loop()
+            try:
+                response = loop.run_until_complete(gateway.route_generation(request))
+            finally:
+                loop.close()
+            return {
+                "status": "resolved",
+                "healer": "SovereignLLMGateway",
+                "model": "gemini-2.5-pro",
+                "content": response.content,
+                "incident_type": incident.get("type"),
+            }
+        except Exception as exc:
+            Logger.error("[%s] _heal_llm_call failed: %s", self.__class__.__name__, exc)
+            return {"status": "error", "healer": "SovereignLLMGateway", "reason": str(exc)}
 
     def ml_cache_incident_resolution(
         self,

@@ -51,7 +51,7 @@ except ImportError as e:
         # guardian: allow-magic-configuration
         def heal_repository(
             self,
-            dry_run: bool = True,
+            dry_run: bool = False,
             execute: bool = False,
             depth: int = 0,
             max_depth: int = 3,

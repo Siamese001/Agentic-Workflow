@@ -110,10 +110,13 @@ class ResumeOrchestratorEngine(BaseRGEngine):
 
             # 4. VALIDATION CRUCIBLE (HOP 5-6) - Cyclic Phase
             iteration = 0
+            from apps_rg.config.reasoning_toggles_config import RGReasoningToggles as _RGToggles
+
+            _defaults = _RGToggles()
             use_cyclic = (
                 self.toggles.use_cyclic_validation
                 if self.toggles and hasattr(self.toggles, "use_cyclic_validation")
-                else False
+                else _defaults.use_cyclic_validation
             )
             while iteration < self.MAX_RETRY_ITERATIONS and use_cyclic:
                 iteration += 1

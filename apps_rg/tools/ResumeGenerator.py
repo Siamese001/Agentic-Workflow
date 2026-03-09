@@ -18,7 +18,7 @@ class ResumeGenerator:
     def __init__(
         self,
         llm_client: Any | None = None,
-        Provider: Provider | None = None,
+        provider: Any | None = None,
         creative_brief: Any | None = None,
         validation_rules: dict[str, Any] | None = None,
     ):
@@ -27,10 +27,12 @@ class ResumeGenerator:
 
         Args:
             llm_client: Optional pre-configured LLM client
-            Provider: Provider to use if client not supplied (defaults to Google/Gemini)
+            provider: Provider to use if client not supplied (defaults to Google/Gemini)
         """
-        self.llm_client = llm_client or get_client(Provider or Provider.GOOGLE)
-        self.Provider = Provider or Provider.GOOGLE
+        _default_provider = getattr(Provider, "GOOGLE", provider)
+        resolved_provider = provider or _default_provider
+        self.llm_client = llm_client or get_client(resolved_provider)
+        self.Provider = resolved_provider
         self.creative_brief = creative_brief  # Store creative brief configuration
         self.validation_rules = validation_rules or {}  # Store validation rules
 
@@ -264,13 +266,30 @@ Return ONLY the rewritten description, no additional text."""
             return self._generate_with_generic_client(prompt)
 
     def _generate_with_gemini(self, prompt: str, temperature: float = 0.7) -> str:
-        """Generate response using Google Gemini."""
-        import google.generativeai as genai
+        """Generate response using Google Gemini via SovereignLLMGateway.
 
-        model = genai.GenerativeModel("gemini-1.5-flash")
-        generation_config = genai.types.GenerationConfig(temperature=temperature)
-        response = model.generate_content(prompt, generation_config=generation_config)
-        return response.text
+        Routes through SovereignLLMGateway — no direct SDK access.
+        """
+        try:
+            from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
+
+            gateway = SovereignLLMGateway()
+            request = GenerationRequest(
+                agent_id="ResumeGenerator",
+                provider="google",
+                model="gemini-2.5-pro",
+                prompt=prompt,
+                temperature=temperature,
+            )
+            response = gateway.generate(request)
+            return response.text if hasattr(response, "text") else str(response)
+        except Exception as e:
+            Logger.error(
+                "ResumeGenerator._generate_with_gemini: SovereignLLMGateway failed: %s; "
+                "direct SDK fallback is NOT permitted — raising",
+                e,
+            )
+            raise RuntimeError(f"ResumeGenerator: Gemini generation failed (gateway unavailable): {e}") from e
 
     def _generate_with_generic_client(self, prompt: str, temperature: float = 0.7) -> str:
         """Generate response using generic client interface."""

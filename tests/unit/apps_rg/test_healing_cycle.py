@@ -1,0 +1,60 @@
+"""3.9: Baseline tests for HealingCycle (3.3) in RgHealingOrchestrator."""
+
+from __future__ import annotations
+
+import asyncio
+from unittest.mock import MagicMock
+
+
+class TestHealingCycle:
+    def test_execute_no_signals_converges(self):
+        from apps_rg.reasoning.healing_cycle import HealingCycle
+
+        ctx = MagicMock()
+        ctx.signals = set()
+        ctx.trace_id = "trace-test-001"
+
+        cycle = HealingCycle(ctx, cycle_num=1)
+        result = asyncio.run(cycle.execute("default"))
+
+        assert result["converged"] is True
+        assert result["status"] == "success"
+        assert result["cycle_num"] == 1
+
+    def test_execute_with_signals_processes_them(self):
+        from apps_rg.reasoning.healing_cycle import HealingCycle
+
+        ctx = MagicMock()
+        signals_mock = MagicMock()
+        signals_mock.__iter__ = MagicMock(return_value=iter(["signal_a", "signal_b"]))
+        signals_mock.discard = MagicMock()
+        ctx.signals = signals_mock
+        ctx.trace_id = "trace-test-002"
+
+        cycle = HealingCycle(ctx, cycle_num=2)
+        result = asyncio.run(cycle.execute("default"))
+
+        assert isinstance(result, dict)
+        assert "converged" in result
+        assert result["cycle_num"] == 2
+
+    def test_execute_returns_required_keys(self):
+        from apps_rg.reasoning.healing_cycle import HealingCycle
+
+        ctx = MagicMock()
+        ctx.signals = set()
+        ctx.trace_id = "trace-003"
+
+        cycle = HealingCycle(ctx, cycle_num=1)
+        result = asyncio.run(cycle.execute("aggressive"))
+
+        required_keys = {
+            "status",
+            "strategy",
+            "cycle_num",
+            "passed_agents",
+            "failed_agents",
+            "converged",
+            "rollback_triggered",
+        }
+        assert required_keys.issubset(result.keys())
