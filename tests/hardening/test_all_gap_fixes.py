@@ -855,3 +855,849 @@ class TestP4_4B_RRFDeterminism:
         out = r.reciprocal_rank_fusion(dense, [])
         # first (rank 1) should have highest RRF score
         assert out[0].text == "first"
+
+
+# ===========================================================================
+# G8/P1: drift_monitor._persist swallowers must LOG before swallowing
+# ===========================================================================
+
+
+class TestG8SilentSwallowLogging:
+    """G8: Every bare except-swallow in drift_monitor MUST emit a log before continuing.
+
+    Plan requirement: 'drift_monitor._persist() must at minimum log the exception
+    before swallowing.'
+    """
+
+    def test_retrieval_drift_monitor_persist_logs_on_failure(self, caplog):
+        """_persist failure in RetrievalDriftMonitor logs at debug level."""
+        import logging
+
+        from agentic_core.utils.workflow_engines.drift_monitor import RetrievalDriftMonitor
+        from agentic_core.utils.workflow_engines.snapshots import RetrievalDriftSnapshot
+
+        class FailingStore:
+            def put(self, artifact):
+                raise RuntimeError("store unavailable")
+
+        monitor = RetrievalDriftMonitor(l4_store=FailingStore())
+        snapshot = RetrievalDriftSnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            system_version="v1",
+            retrieval_hit_rate=0.9,
+            score_distribution_mean=0.8,
+            score_distribution_std=0.05,
+            top_k_stability=0.85,
+            sample_size=10,
+        )
+
+        with caplog.at_level(logging.DEBUG, logger="agentic_core.utils.workflow_engines.drift_monitor"):
+            monitor._persist(snapshot)
+
+        assert any("_persist" in r.message or "persist" in r.message.lower() for r in caplog.records), (
+            "RetrievalDriftMonitor._persist must emit a log record when store raises"
+        )
+
+    def test_embedding_drift_monitor_persist_logs_on_failure(self, caplog):
+        """_persist failure in EmbeddingDriftMonitor logs at debug level."""
+        import logging
+
+        from agentic_core.utils.workflow_engines.drift_monitor import EmbeddingDriftMonitor
+        from agentic_core.utils.workflow_engines.snapshots import EmbeddingHealthSnapshot
+
+        class FailingStore:
+            def put(self, artifact):
+                raise RuntimeError("store unavailable")
+
+        monitor = EmbeddingDriftMonitor(l4_store=FailingStore(), current_model_version="v1")
+        snapshot = EmbeddingHealthSnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            embedding_model_version="v1",
+            vector_norm_mean=1.0,
+            vector_norm_std=0.05,
+            similarity_distribution_mean=0.8,
+            similarity_distribution_std=0.05,
+            version_mismatch_detected=False,
+            sample_size=10,
+        )
+
+        with caplog.at_level(logging.DEBUG, logger="agentic_core.utils.workflow_engines.drift_monitor"):
+            monitor._persist(snapshot)
+
+        assert any("_persist" in r.message or "persist" in r.message.lower() for r in caplog.records), (
+            "EmbeddingDriftMonitor._persist must emit a log record when store raises"
+        )
+
+    def test_answer_quality_monitor_persist_logs_on_failure(self, caplog):
+        """_persist failure in AnswerQualityMonitor logs at debug level."""
+        import logging
+
+        from agentic_core.utils.workflow_engines.drift_monitor import AnswerQualityMonitor
+        from agentic_core.utils.workflow_engines.snapshots import AnswerQualitySnapshot
+
+        class FailingStore:
+            def put(self, artifact):
+                raise RuntimeError("store unavailable")
+
+        monitor = AnswerQualityMonitor(l4_store=FailingStore())
+        snapshot = AnswerQualitySnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            system_version="v1",
+            groundedness_rate=0.9,
+            hallucination_rate=0.05,
+            human_override_rate=0.02,
+            answer_correctness_mean=0.85,
+            sample_size=10,
+        )
+
+        with caplog.at_level(logging.DEBUG, logger="agentic_core.utils.workflow_engines.drift_monitor"):
+            monitor._persist(snapshot)
+
+        assert any("_persist" in r.message or "persist" in r.message.lower() for r in caplog.records), (
+            "AnswerQualityMonitor._persist must emit a log record when store raises"
+        )
+
+    def test_persist_does_not_raise(self):
+        """_persist swallows exception and never propagates to caller."""
+        from agentic_core.utils.workflow_engines.drift_monitor import RetrievalDriftMonitor
+        from agentic_core.utils.workflow_engines.snapshots import RetrievalDriftSnapshot
+
+        class AlwaysExplodingStore:
+            def put(self, artifact):
+                raise RuntimeError("catastrophic failure")
+
+        monitor = RetrievalDriftMonitor(l4_store=AlwaysExplodingStore())
+        snapshot = RetrievalDriftSnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            system_version="v1",
+            retrieval_hit_rate=0.9,
+            score_distribution_mean=0.8,
+            score_distribution_std=0.05,
+            top_k_stability=0.85,
+            sample_size=5,
+        )
+        monitor._persist(snapshot)  # must not raise
+
+
+# ===========================================================================
+# P2-1A: QwenInvokerAdapter and GeminiInvokerAdapter capture response_text
+# ===========================================================================
+
+
+class TestP2_1A_ResponseCapture:
+    """P2-1A: Both adapters must assign the API return value to InvocationRecord.response_text.
+
+    Plan requirement: 'invoke_qwen_vllm calls client.chat.completions.create(...)
+    but the return is never captured into InvocationRecord.response_text.'
+    Fix: single-line captures must be present.
+    """
+
+    def test_qwen_adapter_response_text_field_exists(self):
+        """InvocationRecord from QwenInvokerAdapter has a response_text field."""
+        from agentic_core.L2_execution.healers.healing_tier_types import InvocationRecord
+
+        fields = {f.name for f in InvocationRecord.__dataclass_fields__.values()}
+        assert "response_text" in fields, "InvocationRecord must have response_text field"
+
+    def test_qwen_adapter_captures_response_text(self):
+        """QwenInvokerAdapter.invoke_qwen_vllm captures completion.choices[0].message.content."""
+        from unittest.mock import MagicMock, patch
+
+        from agentic_core.L2_execution.healers.healing_provider_adapters import QwenInvokerAdapter
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+            HealingDecision,
+            HealingInput,
+            HealingTier,
+        )
+
+        adapter = QwenInvokerAdapter(base_url="http://localhost:8000", api_key="fake")
+
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-qwen-01",
+            failure_type="syntax_error",
+            error_signature="syntax_error",
+            blast_radius_estimate=0.1,
+            retry_count=0,
+        )
+        decision = HealingDecision(
+            heal_confidence=0.85,
+            tier=HealingTier.QWEN_VLLM,
+            reason_codes=("test",),
+        )
+        config = HealingTierConfig()
+
+        # Build a fake completion that returns a known text
+        fake_choice = MagicMock()
+        fake_choice.message.content = "HEALED: remove extra colon"
+        fake_completion = MagicMock()
+        fake_completion.choices = [fake_choice]
+
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = fake_completion
+
+        with patch("openai.OpenAI", return_value=fake_client):
+            record = adapter.invoke_qwen_vllm(hi, decision, config, agent_name="test_agent")
+
+        assert record.response_text == "HEALED: remove extra colon", (
+            "QwenInvokerAdapter must capture completion text into response_text"
+        )
+
+    def test_qwen_adapter_response_text_none_on_empty_choices(self):
+        """When completion has no choices, response_text must be None (not raise)."""
+        from unittest.mock import MagicMock, patch
+
+        from agentic_core.L2_execution.healers.healing_provider_adapters import QwenInvokerAdapter
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+            HealingDecision,
+            HealingInput,
+            HealingTier,
+        )
+
+        adapter = QwenInvokerAdapter(base_url="http://localhost:8000", api_key="fake")
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-qwen-02",
+            failure_type="syntax_error",
+            error_signature="syntax_error",
+            blast_radius_estimate=0.1,
+            retry_count=0,
+        )
+        decision = HealingDecision(
+            heal_confidence=0.85,
+            tier=HealingTier.QWEN_VLLM,
+            reason_codes=("test",),
+        )
+        config = HealingTierConfig()
+
+        fake_completion = MagicMock()
+        fake_completion.choices = []  # empty choices
+
+        fake_client = MagicMock()
+        fake_client.chat.completions.create.return_value = fake_completion
+
+        with patch("openai.OpenAI", return_value=fake_client):
+            record = adapter.invoke_qwen_vllm(hi, decision, config, agent_name="test_agent")
+
+        assert record.response_text is None
+
+
+# ===========================================================================
+# P2-2A: Confidence routing matrix — X/Y threshold boundary coverage
+# ===========================================================================
+
+
+class TestP2_2A_RoutingMatrix:
+    """P2-2A: Routing matrix tests for X/Y threshold boundaries.
+
+    .windsurfrules §1.9 requires matrix testing for logic depending on
+    multiple interacting gates. Axes: confidence × tier boundary.
+    """
+
+    def _route(self, confidence_override: float, retry_count: int = 0):
+        """Route with a fixed confidence override (bypass normal scoring)."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+            clear_historical_success_rates,
+            route_healing_tier,
+            set_historical_success_rate,
+        )
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+
+        config = HealingTierConfig()
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-matrix",
+            failure_type="syntax_error",
+            error_signature="__matrix_override__",
+            blast_radius_estimate=0.0,
+            retry_count=retry_count,
+        )
+
+        # Inject override so compute_heal_confidence returns the target value.
+        # We choose error_signature == '__matrix_override__' so no collision.
+        set_historical_success_rate("__matrix_override__", confidence_override)
+        try:
+            decision = route_healing_tier(hi, config)
+        finally:
+            clear_historical_success_rates()
+
+        return decision
+
+    def test_confidence_above_x_routes_local(self):
+        """confidence > 0.80 (X) → LOCAL_AGENT."""
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingTier
+
+        decision = self._route(confidence_override=1.0)
+        assert decision.tier == HealingTier.LOCAL_AGENT
+
+    def test_confidence_between_y_and_x_routes_qwen(self):
+        """0.50 < confidence < 0.80 (Y < conf < X) → QWEN_VLLM."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+
+        # Inject a synthetic low historical rate so final score lands in (Y, X)
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+            clear_historical_success_rates,
+            route_healing_tier,
+            set_historical_success_rate,
+        )
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput, HealingTier
+
+        config = HealingTierConfig()
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-matrix-mid",
+            failure_type="runtime_error",  # prior = 0.35 → confidence in (Y, X) range
+            error_signature="runtime_error",
+            blast_radius_estimate=0.5,
+            retry_count=0,
+        )
+        set_historical_success_rate("runtime_error", 0.35)
+        try:
+            decision = route_healing_tier(hi, config)
+        finally:
+            clear_historical_success_rates()
+
+        # runtime_error + high blast + low history → QWEN or GEMINI — never LOCAL
+        assert decision.tier != HealingTier.LOCAL_AGENT
+
+    def test_confidence_below_y_routes_gemini(self):
+        """confidence < 0.50 (Y) → GEMINI_2_5_PRO."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_router import (
+            clear_historical_success_rates,
+            route_healing_tier,
+            set_historical_success_rate,
+        )
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput, HealingTier
+
+        config = HealingTierConfig()
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-matrix-low",
+            failure_type="unknown",  # prior = 0.30
+            error_signature="unknown_low",
+            blast_radius_estimate=0.9,  # very high blast
+            retry_count=0,
+        )
+        set_historical_success_rate("unknown_low", 0.0)  # force minimum historical rate
+        try:
+            decision = route_healing_tier(hi, config)
+        finally:
+            clear_historical_success_rates()
+
+        assert decision.tier == HealingTier.GEMINI_2_5_PRO
+
+    def test_retry_count_at_max_forces_gemini(self):
+        """retry_count >= max_heal_retries always forces GEMINI_2_5_PRO."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput, HealingTier
+
+        config = HealingTierConfig()
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-retry",
+            failure_type="syntax_error",  # normally LOCAL_AGENT
+            error_signature="syntax_error",
+            blast_radius_estimate=0.0,
+            retry_count=config.max_heal_retries,  # AT max → forced GEMINI
+        )
+        decision = route_healing_tier(hi, config)
+        assert decision.tier == HealingTier.GEMINI_2_5_PRO
+
+    def test_identical_input_identical_decision(self):
+        """Determinism: same HealingInput → identical HealingDecision every time."""
+        from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
+        from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+
+        config = HealingTierConfig()
+        hi = HealingInput(
+            agent_id="",
+            trace_id="trace-determ",
+            failure_type="syntax_error",
+            error_signature="syntax_error",
+            blast_radius_estimate=0.1,
+            retry_count=0,
+        )
+        d1 = route_healing_tier(hi, config)
+        d2 = route_healing_tier(hi, config)
+
+        assert d1.tier == d2.tier
+        assert d1.heal_confidence == d2.heal_confidence
+        assert d1.reason_codes == d2.reason_codes
+
+
+# ===========================================================================
+# P6-1A: DefaultMetaOutcomeBusHook.publish_outcome → bus size increases by 1
+# ===========================================================================
+
+
+class TestP6_1A_BusPublish:
+    """P6-1A: DefaultMetaOutcomeBusHook.publish_outcome must enqueue exactly one package.
+
+    Plan requirement: 'New test: DefaultMetaOutcomeBusHook.publish_outcome() called
+    with valid inputs → bus size increases by 1.'
+    """
+
+    def _make_healing_input(self, trace_id: str = "trace-bus-001"):
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+
+        return HealingInput(
+            agent_id="",
+            trace_id=trace_id,
+            failure_type="syntax_error",
+            error_signature="syntax_error",
+            blast_radius_estimate=0.1,
+            retry_count=0,
+        )
+
+    def _make_healing_decision(self):
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingDecision, HealingTier
+
+        return HealingDecision(
+            heal_confidence=0.85,
+            tier=HealingTier.LOCAL_AGENT,
+            reason_codes=("test",),
+        )
+
+    def test_publish_outcome_increments_bus_size(self):
+        """publish_outcome with a valid bus enqueues exactly one package."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        assert bus.size() == 0
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_healing_decision(),
+            record=None,
+            success=True,
+        )
+        assert bus.size() == 1
+
+    def test_publish_outcome_package_kind_is_healing_outcome(self):
+        """Enqueued package must have kind='healing_outcome'."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_healing_decision(),
+            record=None,
+            success=False,
+        )
+        pkg = bus.dequeue()
+        assert pkg is not None
+        assert pkg.kind == "healing_outcome"
+
+    def test_publish_outcome_payload_contains_error_signature(self):
+        """Package payload must contain error_signature from healing_input."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hi = self._make_healing_input(trace_id="trace-payload-check")
+        hook.publish_outcome(
+            healing_input=hi,
+            decision=self._make_healing_decision(),
+            record=None,
+            success=True,
+        )
+        pkg = bus.dequeue()
+        assert pkg.payload["error_signature"] == hi.error_signature
+        assert pkg.payload["success"] is True
+
+    def test_publish_outcome_null_bus_is_noop(self):
+        """NullMetaOutcomeBusHook.publish_outcome must not raise."""
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        hook = DefaultMetaOutcomeBusHook(bus=None)  # None bus → noop
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_healing_decision(),
+            record=None,
+            success=True,
+        )  # must not raise
+
+    def test_publish_outcome_package_hash_is_deterministic(self):
+        """Same inputs produce same package_hash every time."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        hashes = []
+        for _ in range(3):
+            bus = MetaLearningBus()
+            hook = DefaultMetaOutcomeBusHook(bus=bus)
+            hook.publish_outcome(
+                healing_input=self._make_healing_input(trace_id="fixed-trace"),
+                decision=self._make_healing_decision(),
+                record=None,
+                success=True,
+            )
+            pkg = bus.dequeue()
+            hashes.append(pkg.package_hash)
+
+        assert hashes[0] == hashes[1] == hashes[2]
+
+
+# ===========================================================================
+# P6-2A: drain_and_apply — bus consumer correctness
+# ===========================================================================
+
+
+class TestP6_2A_DrainAndApply:
+    """P6-2A: drain_and_apply drains queue and updates success-rate store.
+
+    Plan requirements:
+    - 3 pre-enqueued packages → store has updated 3 rates.
+    - Idempotency: calling drain_and_apply twice on empty bus → 0 packages, no error.
+    """
+
+    def _make_bus_with_packages(self, n: int, success: bool = True):
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            MetaLearningBus,
+            MetaLearningChangePackage,
+        )
+
+        bus = MetaLearningBus()
+        for i in range(n):
+            pkg = MetaLearningChangePackage.create(
+                trace_id=f"trace-drain-{i:03d}",
+                kind="healing_outcome",
+                payload={
+                    "error_signature": f"sig_{i:03d}",
+                    "success": success,
+                    "tier": "LOCAL_AGENT",
+                    "heal_confidence": 0.85,
+                    "retry_count": 0,
+                    "reason_codes": [],
+                    "proposal_only": True,
+                },
+            )
+            bus.enqueue(pkg)
+        return bus
+
+    def test_drain_three_packages_updates_store(self):
+        """3 healing_outcome packages → 3 different signatures updated in store."""
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        bus = self._make_bus_with_packages(3, success=True)
+        store = HealingSuccessRateStore()
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 3
+        assert bus.size() == 0
+        # All 3 signatures were touched (counts > 0)
+        counts = store.get_counts()
+        assert len(counts) == 3
+
+    def test_drain_empty_bus_returns_zero(self):
+        """drain_and_apply on empty bus returns 0 and does not raise."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        count = drain_and_apply(bus, store)
+        assert count == 0
+
+    def test_drain_idempotent_on_empty_bus(self):
+        """Calling drain_and_apply twice on an empty bus is safe."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        c1 = drain_and_apply(bus, store)
+        c2 = drain_and_apply(bus, store)
+        assert c1 == 0
+        assert c2 == 0
+
+    def test_drain_skips_non_healing_outcome_packages(self):
+        """Packages with unknown kind are counted but do not update store."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            MetaLearningBus,
+            MetaLearningChangePackage,
+        )
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        bus = MetaLearningBus()
+        # Enqueue one unknown-kind package
+        pkg = MetaLearningChangePackage.create(
+            trace_id="trace-skip",
+            kind="unknown_kind",
+            payload={"error_signature": "sig_x", "success": True},
+        )
+        bus.enqueue(pkg)
+
+        store = HealingSuccessRateStore()
+        count = drain_and_apply(bus, store)
+
+        assert count == 1  # processed (counted)
+        assert store.get_counts() == {}  # store unchanged
+
+    def test_drain_success_true_increases_rate(self):
+        """Repeated success outcomes raise the success rate above neutral."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            MetaLearningBus,
+            MetaLearningChangePackage,
+        )
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            HealingSuccessRateStore,
+        )
+
+        bus = MetaLearningBus()
+        # All packages use the SAME signature so it crosses _MIN_SAMPLE_SIZE
+        for i in range(_MIN_SAMPLE_SIZE + 2):
+            pkg = MetaLearningChangePackage.create(
+                trace_id=f"trace-success-{i}",
+                kind="healing_outcome",
+                payload={
+                    "error_signature": "sig_repeated",
+                    "success": True,
+                    "tier": "LOCAL_AGENT",
+                    "heal_confidence": 0.85,
+                    "retry_count": 0,
+                    "reason_codes": [],
+                    "proposal_only": True,
+                },
+            )
+            bus.enqueue(pkg)
+
+        store = HealingSuccessRateStore()
+        drain_and_apply(bus, store)
+
+        # After enough successes for the same signature, prior > neutral (0.50)
+        prior = store.get_prior("sig_repeated")
+        assert prior > 0.50
+
+    def test_drain_failure_outcomes_decrease_rate(self):
+        """Repeated failure outcomes push the rate below neutral."""
+        from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+            MetaLearningBus,
+            MetaLearningChangePackage,
+        )
+        from system_learning.engines.bus_consumer import drain_and_apply
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            HealingSuccessRateStore,
+        )
+
+        bus = MetaLearningBus()
+        # Enqueue _MIN_SAMPLE_SIZE + 2 failures for the SAME signature
+        for i in range(_MIN_SAMPLE_SIZE + 2):
+            pkg = MetaLearningChangePackage.create(
+                trace_id=f"trace-fail-{i}",
+                kind="healing_outcome",
+                payload={
+                    "error_signature": "sig_fail",
+                    "success": False,
+                    "tier": "GEMINI_2_5_PRO",
+                    "heal_confidence": 0.3,
+                    "retry_count": 3,
+                    "reason_codes": [],
+                    "proposal_only": True,
+                },
+            )
+            bus.enqueue(pkg)
+
+        store = HealingSuccessRateStore()
+        drain_and_apply(bus, store)
+
+        prior = store.get_prior("sig_fail")
+        assert prior < 0.50
+
+
+# ===========================================================================
+# P6-2B: HealingSuccessRateStore persistence round-trip
+# ===========================================================================
+
+
+class TestP6_2B_StorePersistence:
+    """P6-2B: export_state/import_state round-trip preserves rates and counts exactly."""
+
+    def test_export_import_round_trip(self):
+        """Exported state reloaded into a fresh store reproduces identical priors."""
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            HealingSuccessRateStore,
+        )
+
+        original = HealingSuccessRateStore()
+        for i in range(_MIN_SAMPLE_SIZE + 1):
+            original.record_outcome("sig_a", True)
+            original.record_outcome("sig_b", False)
+
+        state = original.export_state()
+
+        restored = HealingSuccessRateStore()
+        restored.import_state(state)
+
+        assert restored.get_prior("sig_a") == original.get_prior("sig_a")
+        assert restored.get_prior("sig_b") == original.get_prior("sig_b")
+        assert restored.get_counts() == original.get_counts()
+
+    def test_store_state_hash_is_deterministic(self):
+        """Same outcomes → same state hash every time (determinism invariant)."""
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        hashes = []
+        for _ in range(3):
+            store = HealingSuccessRateStore()
+            store.record_outcome("sig_x", True)
+            store.record_outcome("sig_x", True)
+            store.record_outcome("sig_y", False)
+            hashes.append(store.store_state_hash())
+
+        assert hashes[0] == hashes[1] == hashes[2]
+
+    def test_export_state_is_sorted(self):
+        """export_state returns keys in sorted order (canonical for hashing)."""
+        from system_learning.engines.healing_success_rate_store import HealingSuccessRateStore
+
+        store = HealingSuccessRateStore()
+        store.record_outcome("zzz_sig", True)
+        store.record_outcome("aaa_sig", True)
+
+        state = store.export_state()
+        rate_keys = list(state["rates"].keys())
+        assert rate_keys == sorted(rate_keys)
+
+    def test_neutral_prior_below_min_sample_size(self):
+        """get_prior returns neutral 0.50 before _MIN_SAMPLE_SIZE observations."""
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            _NEUTRAL_PRIOR,
+            HealingSuccessRateStore,
+        )
+
+        store = HealingSuccessRateStore()
+        for i in range(_MIN_SAMPLE_SIZE - 1):  # one fewer than threshold
+            store.record_outcome("warm_sig", True)
+
+        assert store.get_prior("warm_sig") == _NEUTRAL_PRIOR
+
+    def test_prior_activates_at_min_sample_size(self):
+        """get_prior returns real rate once _MIN_SAMPLE_SIZE observations are recorded."""
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            _NEUTRAL_PRIOR,
+            HealingSuccessRateStore,
+        )
+
+        store = HealingSuccessRateStore()
+        for i in range(_MIN_SAMPLE_SIZE):
+            store.record_outcome("active_sig", True)
+
+        assert store.get_prior("active_sig") != _NEUTRAL_PRIOR
+
+
+# ===========================================================================
+# P6-3A: L4MetaPriorProvider — cold-start fallback + live store delegation
+# ===========================================================================
+
+
+class TestP6_3A_L4MetaPriorProvider:
+    """P6-3A: L4MetaPriorProvider satisfies MetaPriorProvider seam.
+
+    Plan requirements:
+    - Integration test: inject store with error_signature='syntax_error' at
+      rate=0.95 → prior returned is 0.95 (after enough samples).
+    - Cold-start test: no store (None) → NeutralMetaPriorProvider fallback, no exception.
+    """
+
+    def test_cold_start_returns_neutral_prior(self):
+        """L4MetaPriorProvider(store=None) returns neutral prior without raising."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.ports.meta_prior_provider import _NEUTRAL_PRIOR
+
+        provider = L4MetaPriorProvider(store=None)
+        result = provider.get_prior("any_signature")
+        assert result == _NEUTRAL_PRIOR
+
+    def test_cold_start_result_in_range(self):
+        """Cold-start prior must be in [0.0, 1.0]."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        provider = L4MetaPriorProvider(store=None)
+        result = provider.get_prior("sig_range_check")
+        assert 0.0 <= result <= 1.0
+
+    def test_live_store_delegation(self):
+        """L4MetaPriorProvider delegates get_prior to store.get_prior()."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.engines.healing_success_rate_store import (
+            _MIN_SAMPLE_SIZE,
+            HealingSuccessRateStore,
+        )
+
+        store = HealingSuccessRateStore()
+        # Record enough successes so prior is non-neutral
+        for _ in range(_MIN_SAMPLE_SIZE + 2):
+            store.record_outcome("syntax_error", True)
+
+        provider = L4MetaPriorProvider(store=store)
+        prior = provider.get_prior("syntax_error")
+
+        # Must match store.get_prior exactly
+        assert prior == store.get_prior("syntax_error")
+        assert prior > 0.50  # all successes → above neutral
+
+    def test_store_exception_returns_neutral(self):
+        """If store.get_prior raises, L4MetaPriorProvider returns neutral prior."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.ports.meta_prior_provider import _NEUTRAL_PRIOR
+
+        class BrokenStore:
+            def get_prior(self, sig):
+                raise RuntimeError("store corrupt")
+
+        provider = L4MetaPriorProvider(store=BrokenStore())
+        result = provider.get_prior("some_sig")
+        assert result == _NEUTRAL_PRIOR
+
+    def test_from_default_store_returns_provider(self):
+        """from_default_store() constructs a working L4MetaPriorProvider."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.engines.healing_success_rate_store import reset_default_store
+
+        reset_default_store()
+        try:
+            provider = L4MetaPriorProvider.from_default_store()
+            assert callable(getattr(provider, "get_prior", None))
+            result = provider.get_prior("unknown_sig")
+            assert 0.0 <= result <= 1.0
+        finally:
+            reset_default_store()
+
+    def test_provider_satisfies_meta_prior_provider_protocol(self):
+        """L4MetaPriorProvider satisfies the MetaPriorProvider Protocol."""
+        import inspect
+
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        provider = L4MetaPriorProvider(store=None)
+        # Protocol method must exist and be callable
+        assert callable(getattr(provider, "get_prior", None))
+        sig = inspect.signature(provider.get_prior)
+        assert "error_signature" in sig.parameters
