@@ -16,6 +16,7 @@ Coverage matrix:
 from __future__ import annotations
 
 import asyncio
+import importlib.util
 from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
@@ -782,15 +783,20 @@ class TestG9IdFactory:
 # ===========================================================================
 
 
+_RANK_BM25_MISSING = importlib.util.find_spec("rank_bm25") is None
+
+
+@pytest.mark.skipif(
+    _RANK_BM25_MISSING,
+    reason="rank-bm25 is a MANDATORY pyproject.toml dependency — install it: pip install rank-bm25>=0.2.0",
+)
 class TestP4_4B_RRFDeterminism:
     def _make_result(self, text: str, score: float = 1.0):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import RetrievalResult
 
         return RetrievalResult(text=text, score=score, source="test", metadata={})
 
     def _retriever(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import HybridRetrieverFactory
 
         return HybridRetrieverFactory.from_in_memory_store()
