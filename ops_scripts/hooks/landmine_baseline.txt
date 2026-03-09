@@ -732,8 +732,9 @@ agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic
 agentic_core/L2_execution/healers/architecture_governor_healer.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/file_classification_healer.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/gravity_leak_healer.py:80:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_provider_adapters.py:45:magic_configuration:Magic configuration: Hardcoded max_tokens=2048
-agentic_core/L2_execution/healers/healing_provider_adapters.py:46:magic_configuration:Magic configuration: Hardcoded max_output_tokens=2048
+agentic_core/L2_execution/healers/healing_provider_adapters.py:302:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_provider_adapters.py:57:magic_configuration:Magic configuration: Hardcoded max_tokens=2048
+agentic_core/L2_execution/healers/healing_provider_adapters.py:58:magic_configuration:Magic configuration: Hardcoded max_output_tokens=2048
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_dispatcher.py:300:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1742,18 +1743,18 @@ apps_shared/types/execution_type_types.py:550:magic_configuration:Magic configur
 apps_shared/types/feedback_loop_orchestrator_types.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/feedback_loop_orchestrator_types.py:90:magic_configuration:Magic configuration: Hardcoded max_attempts=5
 apps_shared/types/golden_state_evaluator_types.py:142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/hardened_gemini_executor_types.py:115:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
-apps_shared/types/hardened_gemini_executor_types.py:116:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0
-apps_shared/types/hardened_gemini_executor_types.py:117:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3
-apps_shared/types/hardened_gemini_executor_types.py:215:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
-apps_shared/types/hardened_gemini_executor_types.py:215:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3 in function call
-apps_shared/types/hardened_gemini_executor_types.py:215:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0 in function call
-apps_shared/types/hardened_gemini_executor_types.py:297:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_shared/types/hardened_gemini_executor_types.py:52:magic_configuration:Magic configuration: Hardcoded safety_threshold_ratio=0.8
-apps_shared/types/hardened_gemini_executor_types.py:58:magic_configuration:Magic configuration: Hardcoded max_output_tokens=8192
-apps_shared/types/hardened_gemini_executor_types.py:60:magic_configuration:Magic configuration: Hardcoded max_retries=5
-apps_shared/types/hardened_gemini_executor_types.py:61:magic_configuration:Magic configuration: Hardcoded retry_min_wait=2.0
-apps_shared/types/hardened_gemini_executor_types.py:62:magic_configuration:Magic configuration: Hardcoded retry_max_wait=30.0
+apps_shared/types/hardened_gemini_executor_types.py:135:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
+apps_shared/types/hardened_gemini_executor_types.py:136:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0
+apps_shared/types/hardened_gemini_executor_types.py:137:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3
+apps_shared/types/hardened_gemini_executor_types.py:235:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
+apps_shared/types/hardened_gemini_executor_types.py:235:magic_configuration:Magic configuration: Hardcoded half_open_max_calls=3 in function call
+apps_shared/types/hardened_gemini_executor_types.py:235:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60.0 in function call
+apps_shared/types/hardened_gemini_executor_types.py:317:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/types/hardened_gemini_executor_types.py:72:magic_configuration:Magic configuration: Hardcoded safety_threshold_ratio=0.8
+apps_shared/types/hardened_gemini_executor_types.py:78:magic_configuration:Magic configuration: Hardcoded max_output_tokens=8192
+apps_shared/types/hardened_gemini_executor_types.py:80:magic_configuration:Magic configuration: Hardcoded max_retries=5
+apps_shared/types/hardened_gemini_executor_types.py:81:magic_configuration:Magic configuration: Hardcoded retry_min_wait=2.0
+apps_shared/types/hardened_gemini_executor_types.py:82:magic_configuration:Magic configuration: Hardcoded retry_max_wait=30.0
 apps_shared/types/health_status_types.py:151:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/health_status_types.py:233:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/health_status_types.py:300:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

@@ -683,3 +683,190 @@ class TestTokenLimitConstants:
 
         finally:
             sys.modules.pop("google.generativeai", None)
+
+
+# ---------------------------------------------------------------------------
+# Plan 1 hardening tests
+# ---------------------------------------------------------------------------
+
+
+class TestResponseCapture:
+    """Plan 1 Phase 1-A: model response_text must be captured into InvocationRecord."""
+
+    def test_qwen_response_text_captured(self) -> None:
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_response = Mock()
+        fake_response.choices = [Mock()]
+        fake_response.choices[0].message.content = "Fix: add missing __init__.py"
+        fake_client.chat.completions.create.return_value = fake_response
+        fake_openai.OpenAI.return_value = fake_client
+        sys.modules["openai"] = fake_openai
+        try:
+            adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1", api_key="x")
+            hi = HealingInput(
+                failure_type="missing_init",
+                error_signature="ModuleError",
+                trace_id="rt-001",
+                retry_count=0,
+                blast_radius_estimate=0.3,
+            )
+            cfg = load_default_healing_tier_config()
+            dec = route_healing_tier(hi, cfg)
+            record = adapter.invoke_qwen_vllm(hi, dec, cfg, agent_name="A")
+            assert record.response_text == "Fix: add missing __init__.py"
+        finally:
+            sys.modules.pop("openai", None)
+
+    def test_qwen_response_text_none_when_no_choices(self) -> None:
+        fake_openai = Mock()
+        fake_client = Mock()
+        fake_resp = Mock()
+        fake_resp.choices = []
+        fake_client.chat.completions.create.return_value = fake_resp
+        fake_openai.OpenAI.return_value = fake_client
+        sys.modules["openai"] = fake_openai
+        try:
+            adapter = QwenInvokerAdapter(base_url="http://localhost:8000/v1", api_key="x")
+            hi = HealingInput(
+                failure_type="t",
+                error_signature="t",
+                trace_id="rt-002",
+                retry_count=0,
+                blast_radius_estimate=0.0,
+            )
+            cfg = load_default_healing_tier_config()
+            dec = route_healing_tier(hi, cfg)
+            record = adapter.invoke_qwen_vllm(hi, dec, cfg)
+            assert record.response_text is None
+        finally:
+            sys.modules.pop("openai", None)
+
+    def test_gemini_response_text_captured(self) -> None:
+        fake_genai = Mock()
+        fake_model = Mock()
+        fake_resp = Mock()
+        fake_resp.text = "Gemini fix: restructure imports"
+        fake_model.generate_content.return_value = fake_resp
+        fake_genai.configure = Mock()
+        fake_genai.GenerativeModel.return_value = fake_model
+        fake_genai.types = Mock()
+        fake_genai.types.GenerationConfig = Mock
+        sys.modules["google.generativeai"] = fake_genai
+        try:
+            adapter = GeminiInvokerAdapter(api_key="k")
+            hi = HealingInput(
+                failure_type="import_cycle",
+                error_signature="IC",
+                trace_id="rt-003",
+                retry_count=3,
+                blast_radius_estimate=0.8,
+            )
+            cfg = load_default_healing_tier_config()
+            dec = route_healing_tier(hi, cfg)
+            record = adapter.invoke_gemini(hi, dec, cfg, agent_name="A")
+            assert record.response_text == "Gemini fix: restructure imports"
+        finally:
+            sys.modules.pop("google.generativeai", None)
+
+    def test_gemini_response_text_none_on_safety_block(self) -> None:
+        """response_text is None when .text property raises (safety block)."""
+        fake_genai = Mock()
+        fake_model = Mock()
+        bad_resp = Mock(spec=[])  # no .text attribute
+        fake_model.generate_content.return_value = bad_resp
+        fake_genai.configure = Mock()
+        fake_genai.GenerativeModel.return_value = fake_model
+        fake_genai.types = Mock()
+        fake_genai.types.GenerationConfig = Mock
+        sys.modules["google.generativeai"] = fake_genai
+        try:
+            adapter = GeminiInvokerAdapter(api_key="k")
+            hi = HealingInput(
+                failure_type="t",
+                error_signature="t",
+                trace_id="rt-004",
+                retry_count=3,
+                blast_radius_estimate=0.8,
+            )
+            cfg = load_default_healing_tier_config()
+            dec = route_healing_tier(hi, cfg)
+            record = adapter.invoke_gemini(hi, dec, cfg)
+            assert record.response_text is None
+        finally:
+            sys.modules.pop("google.generativeai", None)
+
+
+class TestThresholdUnification:
+    """Plan 1 Phase 1-B: HEALING_CONFIDENCE_X/Y single SSOT."""
+
+    def test_meta_learning_imports_equal_config_thresholds(self) -> None:
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_X as cfg_x,
+        )
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            HEALING_CONFIDENCE_Y as cfg_y,
+        )
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+            HEALING_CONFIDENCE_X as meta_x,
+        )
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+            HEALING_CONFIDENCE_Y as meta_y,
+        )
+
+        assert meta_x == cfg_x
+        assert meta_y == cfg_y
+
+    def test_threshold_defined_only_in_config_ast_invariant(self) -> None:
+        import ast
+        from pathlib import Path
+
+        healers_dir = Path(__file__).parents[5] / "agentic_core" / "L2_execution" / "healers"
+        bad_files = []
+        for py_file in healers_dir.glob("*.py"):
+            if py_file.name == "healing_tier_config.py":
+                continue
+            try:
+                tree = ast.parse(py_file.read_text(encoding="utf-8"))
+            except SyntaxError:
+                continue
+            for node in ast.walk(tree):
+                if isinstance(node, ast.Assign):
+                    for target in node.targets:
+                        if isinstance(target, ast.Name) and target.id == "HEALING_CONFIDENCE_X":
+                            bad_files.append(py_file.name)
+        assert bad_files == [], (
+            f"HEALING_CONFIDENCE_X must only be defined in healing_tier_config.py; also found in: {bad_files}"
+        )
+
+    def test_validate_threshold_immutability_passes(self) -> None:
+        from agentic_core.L2_execution.healers.qwen_meta_learning import (
+            validate_threshold_immutability,
+        )
+
+        validate_threshold_immutability()  # must not raise
+
+
+class TestHardenedGeminiModelLimits:
+    """Plan 1 Phase 2-A: gemini-2.5-pro must appear in HardenedGeminiConfig.MODEL_LIMITS."""
+
+    def test_gemini_2_5_pro_in_model_limits(self) -> None:
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+
+        assert "gemini-2.5-pro" in HardenedGeminiConfig.MODEL_LIMITS
+
+    def test_gemini_2_5_pro_context_window_is_1m(self) -> None:
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+
+        assert HardenedGeminiConfig.MODEL_LIMITS["gemini-2.5-pro"] == 1_048_576
+
+    def test_healing_config_model_id_covered_by_model_limits(self) -> None:
+        from agentic_core.L2_execution.healers.healing_tier_config import (
+            load_default_healing_tier_config,
+        )
+        from apps_shared.types.hardened_gemini_executor_types import HardenedGeminiConfig
+
+        cfg = load_default_healing_tier_config()
+        assert cfg.model_gemini_2_5_pro_id in HardenedGeminiConfig.MODEL_LIMITS, (
+            f"'{cfg.model_gemini_2_5_pro_id}' not in HardenedGeminiConfig.MODEL_LIMITS"
+        )

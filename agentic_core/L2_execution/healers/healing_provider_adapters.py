@@ -14,6 +14,18 @@ import hashlib
 import logging
 from typing import Any
 
+try:
+    from tenacity import (
+        retry,
+        retry_if_exception_type,
+        stop_after_attempt,
+        wait_exponential,
+    )
+
+    _TENACITY_AVAILABLE = True
+except ImportError:
+    _TENACITY_AVAILABLE = False
+
 from agentic_core.L2_execution.healers.healing_tier_router import HISTORICAL_DATA_HASH, _compute_replay_key
 from agentic_core.L2_execution.healers.healing_tier_types import (
     HealingDecision,
@@ -118,21 +130,45 @@ class QwenInvokerAdapter:
 
         try:
             import openai
+
             client = openai.OpenAI(base_url=self.base_url, api_key=self.api_key)
         except (ImportError, AttributeError) as exc:
             raise ImportError(
-                "OpenAI SDK is required for Qwen vLLM adapter. "
-                "Install with: pip install openai"
+                "OpenAI SDK is required for Qwen vLLM adapter. Install with: pip install openai"
             ) from exc
-        client.chat.completions.create(
-            model=model_id,
-            messages=[
-                {"role": "system", "content": "You are a code healing assistant."},
-                {"role": "user", "content": prompt},
-            ],
-            temperature=QWEN_CONFIG["temperature"],
-            max_tokens=DEFAULT_MAX_TOKENS,
-        )
+        response_text: str | None = None
+        if _TENACITY_AVAILABLE:
+
+            @retry(
+                retry=retry_if_exception_type((ConnectionError, TimeoutError, OSError)),
+                stop=stop_after_attempt(3),
+                wait=wait_exponential(multiplier=1, min=1, max=10),
+                reraise=True,
+            )
+            def _call_vllm():
+                return client.chat.completions.create(
+                    model=model_id,
+                    messages=[
+                        {"role": "system", "content": "You are a code healing assistant."},
+                        {"role": "user", "content": prompt},
+                    ],
+                    temperature=QWEN_CONFIG["temperature"],
+                    max_tokens=DEFAULT_MAX_TOKENS,
+                )
+
+            completion = _call_vllm()
+        else:
+            completion = client.chat.completions.create(
+                model=model_id,
+                messages=[
+                    {"role": "system", "content": "You are a code healing assistant."},
+                    {"role": "user", "content": prompt},
+                ],
+                temperature=QWEN_CONFIG["temperature"],
+                max_tokens=DEFAULT_MAX_TOKENS,
+            )
+        if completion and completion.choices:
+            response_text = completion.choices[0].message.content
 
         record = InvocationRecord(
             tier=HealingTier.QWEN_VLLM,
@@ -144,6 +180,7 @@ class QwenInvokerAdapter:
             provider_config_hash=self._config_hash,
             historical_data_hash=HISTORICAL_DATA_HASH,
             replay_key=_compute_replay_key(healing_input, decision),
+            response_text=response_text,
         )
 
         logger.info(
@@ -257,7 +294,13 @@ class GeminiInvokerAdapter:
             top_k=GEMINI_CONFIG["top_k"],
         )
 
-        model.generate_content(prompt, generation_config=generation_config)
+        gemini_response = model.generate_content(prompt, generation_config=generation_config)
+        response_text: str | None = None
+        if gemini_response is not None:
+            try:
+                response_text = gemini_response.text
+            except Exception:  # guardian: allow-silent-swallow — .text raises on safety block
+                response_text = None
 
         record = InvocationRecord(
             tier=HealingTier.GEMINI_2_5_PRO,
@@ -269,6 +312,7 @@ class GeminiInvokerAdapter:
             provider_config_hash=self._config_hash,
             historical_data_hash=HISTORICAL_DATA_HASH,
             replay_key=_compute_replay_key(healing_input, decision),
+            response_text=response_text,
         )
 
         logger.info(
