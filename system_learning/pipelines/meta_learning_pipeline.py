@@ -1238,7 +1238,7 @@ def run_pipeline(
                 deps.l4_state_writer.write_l4b_healing_snapshot(
                     payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
                 )
-            except Exception:  # guardian: allow-silent_swallower
+            except Exception:  # guardian: allow-silent-swallow
                 # L4B write failure should not break pipeline
                 # In production, this would be logged
                 pass

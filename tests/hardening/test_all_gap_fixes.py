@@ -143,8 +143,9 @@ class TestL4PriorProviderWiring:
                 # Build minimal InvocationRecord matching actual dataclass fields
 
                 from agentic_core.L2_execution.healers.healing_tier_types import InvocationRecord
+
                 fields = {f.name for f in InvocationRecord.__dataclass_fields__.values()}
-                kwargs = dict(
+                kwargs = dict(  # noqa: C408
                     tier=HealingTier.LOCAL_AGENT,
                     model_id="local",
                     agent_name=agent_name,
@@ -153,7 +154,11 @@ class TestL4PriorProviderWiring:
                     method_called="invoke_local",
                 )
                 # Add optional fields if they exist on the dataclass
-                for fname, fval in [("provider_config_hash", "abc"), ("historical_data_hash", "def"), ("replay_key", "key")]:
+                for fname, fval in [
+                    ("provider_config_hash", "abc"),
+                    ("historical_data_hash", "def"),
+                    ("replay_key", "key"),
+                ]:
                     if fname in fields:
                         kwargs[fname] = fval
                 return InvocationRecord(**kwargs)
@@ -181,9 +186,7 @@ class TestP3G1GhostImportRemoved:
         import ast
         from pathlib import Path
 
-        src = Path(
-            "agentic_core/knowledge/engine/rag_orchestrator.py"
-        )
+        src = Path("agentic_core/knowledge/engine/rag_orchestrator.py")
         if not src.exists():
             src = Path("c:/Git/Agentic-Workflow/agentic_core/knowledge/engine/rag_orchestrator.py")
 
@@ -224,8 +227,7 @@ class TestP4_2B:
 
         guardrail = NoOpGuardrail()
         docs = [
-            RetrievalResult(text=f"doc{i}", score=float(i), source="test", metadata={})
-            for i in range(20)
+            RetrievalResult(text=f"doc{i}", score=float(i), source="test", metadata={}) for i in range(20)
         ]
         result = asyncio.get_event_loop().run_until_complete(
             guardrail.rerank_documents(docs, query="q", top_k=5)
@@ -495,9 +497,7 @@ class TestP3_3A_RerankEngine:
         orch = self._make_orchestrator()
         orch.engine = None
         docs = [FakeDoc(0.1), FakeDoc(0.9), FakeDoc(0.5)]
-        result = asyncio.get_event_loop().run_until_complete(
-            orch._llm_rerank(docs, "query", top_k=2)
-        )
+        result = asyncio.get_event_loop().run_until_complete(orch._llm_rerank(docs, "query", top_k=2))
         assert len(result) == 2
         assert result[0].score == 0.9
         assert result[1].score == 0.5
@@ -517,9 +517,7 @@ class TestP3_3A_RerankEngine:
                 self.text = text
 
         docs = [FakeDoc("a"), FakeDoc("b"), FakeDoc("c")]
-        result = asyncio.get_event_loop().run_until_complete(
-            orch._llm_rerank(docs, "query", top_k=3)
-        )
+        result = asyncio.get_event_loop().run_until_complete(orch._llm_rerank(docs, "query", top_k=3))
         assert [d.text for d in result] == ["c", "b", "a"]
 
     def test_llm_rerank_engine_failure_returns_top_k(self):
@@ -537,9 +535,7 @@ class TestP3_3A_RerankEngine:
                 self.score = score
 
         docs = [FakeDoc(float(i)) for i in range(10)]
-        result = asyncio.get_event_loop().run_until_complete(
-            orch._llm_rerank(docs, "query", top_k=3)
-        )
+        result = asyncio.get_event_loop().run_until_complete(orch._llm_rerank(docs, "query", top_k=3))
         assert len(result) == 3
 
 
@@ -660,3 +656,202 @@ class TestP3_4A_ReflectionLoop:
         asyncio.get_event_loop().run_until_complete(run())
         # decompose_query should NOT have been called
         assert len(sub_called) == 0
+
+
+# ===========================================================================
+# G5/P3-1C: get_context_for_task is async and awaits retrieve
+# ===========================================================================
+
+
+class TestG5AsyncBoundary:
+    def test_get_context_for_task_is_async(self):
+        """get_context_for_task must be an async def (not sync calling async retrieve)."""
+        import inspect
+
+        from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+
+        assert inspect.iscoroutinefunction(SovereignRagOrchestrator.get_context_for_task), (
+            "get_context_for_task must be async def so it can await self.retrieve()"
+        )
+
+    def test_get_context_for_task_returns_string_not_coroutine(self):
+        """Calling get_context_for_task must yield a string result, not a coroutine."""
+        from pathlib import Path
+        from unittest.mock import AsyncMock, patch
+
+        from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
+
+        orch = SovereignRagOrchestrator(project_root=Path("."))
+
+        async def run():
+            with patch.object(
+                orch,
+                "retrieve",
+                new=AsyncMock(return_value=[{"source": "test", "content": "hello"}]),
+            ):
+                result = await orch.get_context_for_task("test query")
+            return result
+
+        result = asyncio.get_event_loop().run_until_complete(run())
+        assert isinstance(result, str)
+        assert "hello" in result
+
+
+# ===========================================================================
+# G9/P5-1A: id_factory param on EmbeddingDriftMonitor + AnswerQualityMonitor
+# ===========================================================================
+
+
+class TestG9IdFactory:
+    def test_embedding_monitor_check_alerts_accepts_id_factory(self):
+        """EmbeddingDriftMonitor.check_alerts() must accept id_factory kwarg."""
+        import inspect
+
+        from agentic_core.utils.workflow_engines.drift_monitor import EmbeddingDriftMonitor
+
+        sig = inspect.signature(EmbeddingDriftMonitor.check_alerts)
+        assert "id_factory" in sig.parameters
+
+    def test_embedding_monitor_id_factory_used(self):
+        """id_factory produces deterministic alert IDs for EmbeddingDriftMonitor."""
+        from agentic_core.utils.workflow_engines.drift_monitor import EmbeddingDriftMonitor
+        from agentic_core.utils.workflow_engines.snapshots import EmbeddingHealthSnapshot
+
+        monitor = EmbeddingDriftMonitor(current_model_version="v1")
+        snapshot = EmbeddingHealthSnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            embedding_model_version="v2",  # mismatch → version_mismatch_detected=True
+            vector_norm_mean=1.0,
+            vector_norm_std=0.01,
+            similarity_distribution_mean=0.9,
+            similarity_distribution_std=0.05,
+            version_mismatch_detected=True,
+            sample_size=10,
+        )
+        counter = [0]
+
+        def fixed_id():
+            counter[0] += 1
+            return f"fixed-id-{counter[0]:03d}"
+
+        alerts = monitor.check_alerts(
+            snapshot,
+            now_iso="2025-01-01T00:00:00Z",
+            id_factory=fixed_id,
+        )
+        assert len(alerts) >= 1
+        assert alerts[0].alert_id == "fixed-id-001"
+        assert alerts[0].timestamp == "2025-01-01T00:00:00Z"
+
+    def test_answer_quality_monitor_check_alerts_accepts_id_factory(self):
+        """AnswerQualityMonitor.check_alerts() must accept id_factory kwarg."""
+        import inspect
+
+        from agentic_core.utils.workflow_engines.drift_monitor import AnswerQualityMonitor
+
+        sig = inspect.signature(AnswerQualityMonitor.check_alerts)
+        assert "id_factory" in sig.parameters
+
+    def test_answer_quality_monitor_id_factory_used(self):
+        """id_factory produces deterministic alert IDs for AnswerQualityMonitor."""
+        from agentic_core.utils.workflow_engines.drift_monitor import AnswerQualityMonitor
+        from agentic_core.utils.workflow_engines.snapshots import AnswerQualitySnapshot
+
+        monitor = AnswerQualityMonitor()
+        snapshot = AnswerQualitySnapshot(
+            timestamp="2025-01-01T00:00:00Z",
+            system_version="v1.0",
+            groundedness_rate=0.1,  # below threshold → alert
+            hallucination_rate=0.0,
+            human_override_rate=0.0,
+            answer_correctness_mean=0.9,
+            sample_size=10,
+        )
+        alerts = monitor.check_alerts(
+            snapshot,
+            now_iso="2025-01-01T00:00:00Z",
+            id_factory=lambda: "deterministic-id",
+        )
+        assert len(alerts) >= 1
+        assert alerts[0].alert_id == "deterministic-id"
+        assert alerts[0].timestamp == "2025-01-01T00:00:00Z"
+
+
+# ===========================================================================
+# P4-4B: Deterministic RRF correctness tests
+# ===========================================================================
+
+
+class TestP4_4B_RRFDeterminism:
+    def _make_result(self, text: str, score: float = 1.0):
+        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
+        from agentic_core.L2_execution.config.hybrid_retriever_config import RetrievalResult
+
+        return RetrievalResult(text=text, score=score, source="test", metadata={})
+
+    def _retriever(self):
+        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
+        from agentic_core.L2_execution.config.hybrid_retriever_config import HybridRetrieverFactory
+
+        return HybridRetrieverFactory.from_in_memory_store()
+
+    def test_identical_inputs_produce_identical_output(self):
+        """Determinism: same dense+sparse lists → same ranked output every time."""
+        r = self._retriever()
+        dense = [self._make_result("alpha"), self._make_result("beta"), self._make_result("gamma")]
+        sparse = [self._make_result("gamma"), self._make_result("alpha")]
+
+        out1 = r.reciprocal_rank_fusion(dense[:], sparse[:])
+        out2 = r.reciprocal_rank_fusion(dense[:], sparse[:])
+        assert [d.text for d in out1] == [d.text for d in out2]
+
+    def test_dual_rank1_scores_higher_than_single_rank1(self):
+        """Doc in rank-1 of both lists scores higher than doc in rank-2 of one list."""
+        r = self._retriever()
+        # "shared" is rank-1 in both → should beat "dense_only" (rank-1 dense only)
+        dense = [self._make_result("shared"), self._make_result("dense_only")]
+        sparse = [self._make_result("shared"), self._make_result("sparse_only")]
+
+        out = r.reciprocal_rank_fusion(dense, sparse)
+        texts = [d.text for d in out]
+        # "shared" must appear before "dense_only" and "sparse_only"
+        assert texts.index("shared") < texts.index("dense_only")
+        assert texts.index("shared") < texts.index("sparse_only")
+
+    def test_rrf_k60_formula_for_dual_rank1(self):
+        """k=60: dual rank-1 RRF score == 1/(60+1) + 1/(60+1) = 2/61."""
+        r = self._retriever()
+        dense = [self._make_result("doc_a")]
+        sparse = [self._make_result("doc_a")]
+
+        out = r.reciprocal_rank_fusion(dense, sparse, k=60)
+        expected = 1.0 / (60 + 1) + 1.0 / (60 + 1)
+        assert abs(out[0].score - expected) < 1e-9
+
+    def test_deduplication_single_occurrence(self):
+        """Doc present in both dense and sparse appears exactly once in output."""
+        r = self._retriever()
+        shared = self._make_result("common_doc")
+        dense = [shared, self._make_result("only_dense")]
+        sparse = [shared, self._make_result("only_sparse")]
+
+        out = r.reciprocal_rank_fusion(dense, sparse)
+        texts = [d.text for d in out]
+        assert texts.count("common_doc") == 1
+
+    def test_empty_lists_return_empty(self):
+        r = self._retriever()
+        out = r.reciprocal_rank_fusion([], [])
+        assert out == []
+
+    def test_single_list_ordering_preserved(self):
+        """With only dense results, rank order must be preserved (rank 1 > rank 2)."""
+        r = self._retriever()
+        dense = [
+            self._make_result("first"),
+            self._make_result("second"),
+            self._make_result("third"),
+        ]
+        out = r.reciprocal_rank_fusion(dense, [])
+        # first (rank 1) should have highest RRF score
+        assert out[0].text == "first"

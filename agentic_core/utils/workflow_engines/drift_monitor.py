@@ -259,15 +259,22 @@ class EmbeddingDriftMonitor:
 
         return snapshot
 
-    def check_alerts(self, snapshot: EmbeddingHealthSnapshot) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: EmbeddingHealthSnapshot,
+        now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for detected embedding health issues."""
+        _ts = now_iso if now_iso is not None else _utcnow()
+        _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
 
         if snapshot.version_mismatch_detected:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="embedding_drift",
                     metric_name="embedding_model_version",
                     current_value=0.0,
@@ -285,8 +292,8 @@ class EmbeddingDriftMonitor:
         if snapshot.vector_norm_std > self.norm_std_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="embedding_drift",
                     metric_name="vector_norm_std",
                     current_value=snapshot.vector_norm_std,
@@ -303,8 +310,8 @@ class EmbeddingDriftMonitor:
         if snapshot.similarity_distribution_mean < self.similarity_mean_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="embedding_drift",
                     metric_name="similarity_distribution_mean",
                     current_value=snapshot.similarity_distribution_mean,
@@ -395,15 +402,22 @@ class AnswerQualityMonitor:
 
         return snapshot
 
-    def check_alerts(self, snapshot: AnswerQualitySnapshot) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: AnswerQualitySnapshot,
+        now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for answer quality degradation."""
+        _ts = now_iso if now_iso is not None else _utcnow()
+        _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
 
         if snapshot.groundedness_rate < self.groundedness_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="answer_quality_drift",
                     metric_name="groundedness_rate",
                     current_value=snapshot.groundedness_rate,
@@ -420,8 +434,8 @@ class AnswerQualityMonitor:
         if snapshot.hallucination_rate > self.hallucination_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="answer_quality_drift",
                     metric_name="hallucination_rate",
                     current_value=snapshot.hallucination_rate,
@@ -438,8 +452,8 @@ class AnswerQualityMonitor:
         if snapshot.human_override_rate > self.override_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
-                    timestamp=_utcnow(),
+                    alert_id=_new_id(),
+                    timestamp=_ts,
                     alert_type="answer_quality_drift",
                     metric_name="human_override_rate",
                     current_value=snapshot.human_override_rate,

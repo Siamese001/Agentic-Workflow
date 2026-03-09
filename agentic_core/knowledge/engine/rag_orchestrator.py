@@ -39,7 +39,9 @@ except ImportError:
 
 # Embedding cache — canonical BGE path (no ghost semantic_memory fallback)
 try:
-    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text as _bge_embed
+    from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+        bmg_embed_text as _bge_embed,  # noqa: F401
+    )
 
     _embedding_cache: dict = {}
 
@@ -48,6 +50,7 @@ try:
 
 except ImportError as _exc:
     import logging as _logging
+
     _logging.getLogger(__name__).critical(
         "rag_orchestrator: BGE embedder unavailable — embedding cache disabled: %s", _exc
     )
@@ -106,6 +109,7 @@ class SovereignRagOrchestrator:
 
                 def query(self, query_emb, top_k=5):
                     import numpy as np
+
                     if not self._store or query_emb is None:
                         return []
                     q = np.array(query_emb, dtype=np.float32)
@@ -116,10 +120,7 @@ class SovereignRagOrchestrator:
                         v_norm = v / (np.linalg.norm(v) + 1e-8)
                         scored.append((float(np.dot(q_norm, v_norm)), entry))
                     scored.sort(key=lambda x: x[0], reverse=True)
-                    return [
-                        {"id": e["id"], "score": s, "metadata": e["metadata"]}
-                        for s, e in scored[:top_k]
-                    ]
+                    return [{"id": e["id"], "score": s, "metadata": e["metadata"]} for s, e in scored[:top_k]]
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
@@ -318,19 +319,20 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
             print(f"Reranking failed: {e}")
             return candidates[:top_k]
 
-    def get_context_for_task(self, Task: str, domain: str = "general") -> str:
+    async def get_context_for_task(self, Task: str, domain: str = "general") -> str:
         """
         Converts raw retrievals into a formatted context block for LLM instructions.
         Ensures agents operate under Sovereign Truth.
         """
-        retrievals = self.retrieve(Task, domain=domain)
+        retrievals = await self.retrieve(Task, domain=domain)
         if not retrievals:
             return "No relevant sovereign knowledge found."
 
         context_parts = ["### RELEVANT SOVEREIGN KNOWLEDGE"]
         for r in retrievals:
-            r["source"]
-            r["content"]
+            source = r.get("source", "unknown")
+            content = r.get("content", "")
+            context_parts.append(f"[{source}] {content}")
 
         return "\n".join(context_parts)
 

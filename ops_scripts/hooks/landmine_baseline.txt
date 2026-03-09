@@ -732,16 +732,18 @@ agentic_core/L2_execution/engines/tool_registry.py:121:magic_configuration:Magic
 agentic_core/L2_execution/healers/architecture_governor_healer.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/file_classification_healer.py:84:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/gravity_leak_healer.py:80:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_provider_adapters.py:302:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_provider_adapters.py:297:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_provider_adapters.py:299:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_provider_adapters.py:57:magic_configuration:Magic configuration: Hardcoded max_tokens=2048
 agentic_core/L2_execution/healers/healing_provider_adapters.py:58:magic_configuration:Magic configuration: Hardcoded max_output_tokens=2048
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:300:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:329:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:366:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:426:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/healers/healing_tier_dispatcher.py:450:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:314:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:322:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:333:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:362:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:399:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:459:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:483:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/healers/healing_tier_dispatcher.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/healers/healing_tier_router.py:171:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
 agentic_core/L2_execution/healers/healing_tier_router.py:71:magic_configuration:Magic configuration: Hardcoded weight_retry_decay=0.1
 agentic_core/L2_execution/healers/hierarchy_agent_healer.py:80:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -816,6 +818,10 @@ agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:236:magic_con
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:38:magic_configuration:Magic configuration: Hardcoded line_threshold=600
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L3_orchestration/engines/sovereign_mcp_marketplace.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:412:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:417:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:493:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:507:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/ptc/tool_call_store.py:132:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/ptc/tool_call_store.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/ptc/tool_call_store.py:199:magic_configuration:Magic configuration: Hardcoded limit=100
@@ -1320,12 +1326,13 @@ agentic_core/interfaces/IValidatorProtocol.py:99:silent_swallower:Silent excepti
 agentic_core/interfaces/embeddings.py:79:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/document_loaders/pdf_document_loader_config.py:21:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/document_loaders/pdf_document_loader_config.py:24:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/knowledge/engine/rag_orchestrator.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/knowledge/engine/rag_orchestrator.py:172:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/knowledge/engine/rag_orchestrator.py:203:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/knowledge/engine/rag_orchestrator.py:299:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/knowledge/engine/rag_orchestrator.py:325:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/knowledge/engine/rag_orchestrator.py:73:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:222:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/knowledge/engine/rag_orchestrator.py:345:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/knowledge/engine/rag_orchestrator.py:88:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/knowledge/reasoning/SovereignRAGManagerAgent.py:35:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/research_cache/cache_store_util.py:100:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/knowledge/research_cache/cache_store_util.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1412,11 +1419,14 @@ agentic_core/utils/workflow_engines/dpo_batch_builder.py:35:magic_configuration:
 agentic_core/utils/workflow_engines/drift_monitor.py:199:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/workflow_engines/drift_monitor.py:208:magic_configuration:Magic configuration: Hardcoded norm_std_threshold=0.15
 agentic_core/utils/workflow_engines/drift_monitor.py:209:magic_configuration:Magic configuration: Hardcoded similarity_mean_threshold=0.5
-agentic_core/utils/workflow_engines/drift_monitor.py:333:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/utils/workflow_engines/drift_monitor.py:342:magic_configuration:Magic configuration: Hardcoded groundedness_threshold=0.7
-agentic_core/utils/workflow_engines/drift_monitor.py:343:magic_configuration:Magic configuration: Hardcoded hallucination_threshold=0.15
-agentic_core/utils/workflow_engines/drift_monitor.py:344:magic_configuration:Magic configuration: Hardcoded override_threshold=0.2
-agentic_core/utils/workflow_engines/drift_monitor.py:468:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:340:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:349:magic_configuration:Magic configuration: Hardcoded groundedness_threshold=0.7
+agentic_core/utils/workflow_engines/drift_monitor.py:350:magic_configuration:Magic configuration: Hardcoded hallucination_threshold=0.15
+agentic_core/utils/workflow_engines/drift_monitor.py:351:magic_configuration:Magic configuration: Hardcoded override_threshold=0.2
+agentic_core/utils/workflow_engines/drift_monitor.py:482:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:513:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:549:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:581:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/utils/workflow_engines/drift_monitor.py:61:magic_configuration:Magic configuration: Hardcoded hit_rate_threshold=0.7
 agentic_core/utils/workflow_engines/drift_monitor.py:62:magic_configuration:Magic configuration: Hardcoded score_std_threshold=0.2
 agentic_core/utils/workflow_engines/drift_monitor.py:63:magic_configuration:Magic configuration: Hardcoded stability_threshold=0.6
@@ -2180,6 +2190,8 @@ system_learning/engines/rlhf_optimizer_impl.py:25:magic_configuration:Magic conf
 system_learning/engines/rlhf_optimizer_impl.py:27:magic_configuration:Magic configuration: Hardcoded _min_pairs=3
 system_learning/engines/seed_pack_build_cli.py:234:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/engines/shadow_drift_analyzer.py:14:magic_configuration:Magic configuration: Hardcoded _default_drift_threshold=0.92
+system_learning/engines/shadow_drift_analyzer.py:192:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+system_learning/engines/shadow_drift_analyzer.py:194:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/engines/signal_grouping_engine.py:83:magic_configuration:Magic configuration: Hardcoded _max_sample_payloads=3
 system_learning/pipelines/approval_gate_impl.py:50:magic_configuration:Magic configuration: Hardcoded max_auto_approve_delta=0.03
 system_learning/pipelines/approval_gates.py:162:magic_configuration:Magic configuration: Hardcoded max_surfaces_medium=3
