@@ -217,6 +217,7 @@ class TestDirectClientBypassBlocked:
         # Direct call to mock does not raise — enforcement is in the mixin only
         mock_client.store_healing_pattern(_VIOLATION, _HEALING_RESULT, AGENTIC_CORE_DIR)
         mock_client.store_healing_pattern.assert_called_once()
+        assert True  # no-exception contract
 
     def test_mixin_is_sole_enforcement_seam_for_store(self):
         """

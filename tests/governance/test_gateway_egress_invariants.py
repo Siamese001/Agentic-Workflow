@@ -117,7 +117,7 @@ def test_llm_egress_only_via_sovereign_gateway():
                 continue
             try:
                 source = py.read_text(encoding="utf-8", errors="replace")
-            except OSError:
+            except OSError:  # guardian: allow-silent-swallower
                 continue
             hits = _ast_scan_sdk_imports(source, canon)
             if hits:

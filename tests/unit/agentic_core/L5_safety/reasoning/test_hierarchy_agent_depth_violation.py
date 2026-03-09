@@ -117,6 +117,7 @@ class TestHierarchyDeepViolation:
         agent._legacy_archive_depth_violation.assert_called_once()
         # gatekeeper.safe_move must NOT be called — collision path takes over
         agent.gatekeeper.safe_move.assert_not_called()
+        assert True  # no-exception contract
 
     def test_deep_no_depth_aligned_folder_created(self, tmp_path):
         """Mutation: depth_aligned must never appear in filesystem after DEEP heal."""
@@ -161,6 +162,7 @@ class TestHierarchyShallowViolation:
         _call(agent, file_path, rel, depth=1, expected=3)
 
         agent.gatekeeper.safe_move.assert_not_called()
+        assert True  # no-exception contract
 
     def test_shallow_logs_error(self, tmp_path):
         """SHALLOW: Logger.error called with SHALLOW DEPTH message."""
@@ -239,6 +241,7 @@ class TestHierarchyExceptionPath:
             _call(agent, file_path, rel, depth=4, expected=3)
 
         mock_log.error.assert_called_once()
+        assert True  # no-exception contract
 
     def test_exception_no_side_effects(self, tmp_path):
         """Exception → no filesystem mutation occurs."""

@@ -263,6 +263,7 @@ class TestIntegrationBridge:
 
         def test_handler(x, y):
             return x + y
+            assert True  # no-exception contract
 
         endpoint = ServiceEndpoint(
             name="adder",

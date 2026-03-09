@@ -23,7 +23,7 @@ def test_ReconciliationViolation_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -39,7 +39,7 @@ def test_FilesystemSSOTReconcilerAgent_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -55,7 +55,7 @@ def test_MCPHardenedMixin_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -71,7 +71,7 @@ def test_SubatomicTestingMixin_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None

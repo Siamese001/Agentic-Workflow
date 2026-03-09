@@ -178,7 +178,7 @@ class TestPhase1EarlyDetectionIntegration:
         # Simulate error scenario
         try:
             raise Exception("Test error")
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             # Error handling should set empty lists
             mock_state_mgr.state["classification_violations"] = []
             mock_state_mgr.state["classification_scan_result"] = {}

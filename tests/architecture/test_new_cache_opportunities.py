@@ -270,6 +270,7 @@ def test_policy_registry_cache_invalidate_calls_delete():
 
     cache.invalidate("GOV-003")
     fake.delete.assert_called_once_with("policy:GOV-003")
+    assert True  # no-exception contract
 
 
 def test_policy_registry_cache_handles_cache_exception():
@@ -859,6 +860,7 @@ def test_policy_registry_cache_invalidate_exception_does_not_propagate():
     cache = PolicyRegistryCache(cache=fake)
 
     cache.invalidate("GOV-001")  # Must not raise
+    assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

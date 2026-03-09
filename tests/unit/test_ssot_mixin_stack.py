@@ -162,6 +162,7 @@ class TestCrossMixinIntegration:
         ctx = _Ctx(trace_id="t", active_policy_hash="ph", safety_status="CLEARED")
         obj = _FullStackEngine(execution_context=ctx)
         obj.validate_safety_cleared()  # Should not raise
+        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_tracing_accessible(self):

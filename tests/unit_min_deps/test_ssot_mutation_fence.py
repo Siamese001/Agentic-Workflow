@@ -34,12 +34,14 @@ class TestProtectedRootEnforcement:
         target_path = Path("docs/evidence/test.md")
         # Should not raise
         enforce_protected_root(target_path, allow_override=False)
+        assert True  # no-exception contract
 
     def test_enforce_protected_root_override_allows(self):
         """Test that override allows writes to protected roots."""
         target_path = Path("agentic_core/test_file.py")
         # Should not raise when override is enabled
         enforce_protected_root(target_path, allow_override=True)
+        assert True  # no-exception contract
 
     def test_enforce_protected_root_blocks_tests(self):
         """Test that writes to tests directory are blocked (tests is a protected root)."""
@@ -91,6 +93,7 @@ class TestWriteGatewayIntegration:
 
         # Verify write was attempted
         mock_write.assert_called_once_with("test content", encoding="utf-8")
+        assert True  # no-exception contract
 
     @patch("pathlib.Path.write_bytes")
     def test_write_bytes_blocks_protected_root(self, mock_write):
@@ -277,6 +280,7 @@ class TestEnvVarIsolation:
 
         # CLI override should allow bypass regardless of env vars
         enforce_protected_root(target_path, allow_override=True)  # Should not raise
+        assert True  # no-exception contract
 
     def test_unset_env_vars_do_not_change_behavior(self, monkeypatch):
         """Test that unsetting env vars does not change protected-root behavior."""

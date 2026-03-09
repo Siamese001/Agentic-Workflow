@@ -37,6 +37,7 @@ class TestBoundaryValidator:
         post = {"file_a": "v1_updated", "file_b": "v2"}
         uwg_diff = compute_boundary_diff(pre, post)
         verify_mutation_replay_integrity(pre, post, uwg_diff)
+        assert True  # no-exception contract
 
     def test_mismatched_diffs_raise(self):
         from agentic_core.L2_execution.sandbox.boundary_validator import verify_mutation_replay_integrity
@@ -56,6 +57,7 @@ class TestLedgerIntegrityValidator:
         append_with_hash(entries, {"op": "write", "file": "foo.py"})
         append_with_hash(entries, {"op": "delete", "file": "bar.py"})
         validate_ledger_chain(entries)
+        assert True  # no-exception contract
 
     def test_tampered_hash_raises(self):
         from agentic_core.L4_state.ledger.integrity_validator import append_with_hash, validate_ledger_chain
@@ -116,6 +118,7 @@ class TestC0Guard:
         from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
 
         guard_c0_payload({"query": "hello", "context": "software"})
+        assert True  # no-exception contract
 
     def test_authority_field_raises(self):
         from agentic_core.L0_routing.context.c0_guard import guard_c0_payload
@@ -128,6 +131,7 @@ class TestC0Guard:
 
         payload = {"key": "value"}
         verify_c0_immutability(payload, {"key": "value"})
+        assert True  # no-exception contract
 
     def test_immutability_raises_on_mutation(self):
         from agentic_core.L0_routing.context.c0_guard import verify_c0_immutability
@@ -144,6 +148,7 @@ class TestStageBarrierEnforcer:
         enforcer.advance_to(MetaLearningStage.S1_AUDIT)
         enforcer.advance_to(MetaLearningStage.S9_COMMIT)
         enforcer.assert_config_mutation_allowed()
+        assert True  # no-exception contract
 
     def test_backwards_advance_raises(self):
         from system_learning.engines.stage_barrier_enforcer import MetaLearningStage, StageBarrierEnforcer

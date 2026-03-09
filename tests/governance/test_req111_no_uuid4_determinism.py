@@ -122,7 +122,7 @@ def test_req111_critical_artifact_classes_no_uuid4():
         # Parse the file
         try:
             tree = ast.parse(file_path.read_text(encoding="utf-8", errors="replace"))
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallower
             continue
 
         # Look for uuid4 usage

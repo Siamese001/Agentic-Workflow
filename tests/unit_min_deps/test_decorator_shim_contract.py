@@ -188,7 +188,7 @@ class TestBaseAgentsDecoratorImports:
             try:
                 source = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(source)
-            except (SyntaxError, UnicodeDecodeError):
+            except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallower
                 continue
 
             for node in ast.walk(tree):

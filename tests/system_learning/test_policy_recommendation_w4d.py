@@ -279,7 +279,7 @@ class TestPolicyRecommendationW4D:
 class TestW4DNegativeControl:
     """Negative control tests for W4-D Policy Recommendation Engine."""
 
-    @pytest.mark.xfail(reason="W4D tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W4D tamper guard", strict=True)
     def test_policy_recommendation_determinism_violation_negative_control(self):
         """Negative control: tamper with recommendation determinism."""
         # Set tamper flag to change rounding precision

@@ -210,7 +210,7 @@ class TestW4BNegativeControl:
 
         get_retrieval_profile_manager().clear_cache()
 
-    @pytest.mark.xfail(reason="W4B tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W4B tamper guard", strict=True)
     def test_shadow_determinism_violation_negative_control(self):
         """Negative control: tamper with shadow vector computation."""
         # Set tamper flag to change rounding precision

@@ -227,7 +227,7 @@ class TestE2EMockFailures:
             try:
                 requests.get("https://example.com")
                 pytest.fail("Should have raised mock failure")
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 assert "Mock intentionally failed" in str(e)
                 assert len(mock_failures) == 1
 

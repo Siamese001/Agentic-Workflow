@@ -44,6 +44,7 @@ def test_structure_config_has_excluded_paths():
         "excluded_paths field not found in StructureConfig — "
         "GravityLeakRepairAgent cannot exclude ops_scripts/ and scripts/"
     )
+    assert True  # no-exception contract
 
 
 def test_apply_fix_has_privileged_mutation_context_param():

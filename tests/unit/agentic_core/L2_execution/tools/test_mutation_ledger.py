@@ -141,14 +141,14 @@ def test_mutation_ledger_records_write_failure(tmp_path):
             "write protection is not enforced on this platform. "
             "The mutation ledger must record this as a failure, not silently succeed."
         )
-    except (PermissionError, OSError):
+    except (PermissionError, OSError):  # guardian: allow-silent-swallower
         # Expected failure
         pass
     finally:
         # Restore permissions for cleanup
         try:
             target.parent.chmod(0o755)
-        except:
+        except:  # guardian: allow-silent-swallower
             pass
 
     # Verify ledger recorded the failure

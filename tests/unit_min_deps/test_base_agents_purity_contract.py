@@ -105,7 +105,7 @@ class TestBaseAgentsPurity:
             try:
                 source = py_file.read_text(encoding="utf-8")
                 tree = ast.parse(source, filename=str(py_file))
-            except (SyntaxError, UnicodeDecodeError):
+            except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallower
                 continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom):

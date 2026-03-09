@@ -23,7 +23,7 @@ def test_IBlackboardLeaseVerifier_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -39,7 +39,7 @@ def test_SandboxViolationError_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -55,7 +55,7 @@ def test_HealingLeaseError_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None
@@ -71,7 +71,7 @@ def test_PreservationViolationError_exists():
         try:
             instance = cls()
             assert instance is not None
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Class requires parameters - that's OK
             pass
         assert cls is not None

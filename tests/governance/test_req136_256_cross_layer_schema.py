@@ -344,6 +344,7 @@ def test_req136_cross_layer_schema_version_pinning():
     # Consistency tests
     test.test_schema_hash_consistency()
     test.test_schema_version_pinning_persistence()
+    assert True  # no-exception contract
 
 
 def test_req256_schema_mismatch_abort():

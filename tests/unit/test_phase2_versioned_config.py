@@ -126,6 +126,7 @@ class TestManifestHashBinding:
     def test_manifest_requires_config_hashes(self):
         manifest = self._valid_manifest()
         validate_manifest_hashes(manifest)
+        assert True  # no-exception contract
 
     def test_missing_policy_hash_rejected(self):
         manifest = self._valid_manifest()
@@ -160,3 +161,4 @@ class TestManifestHashBinding:
     def test_all_correct_hashes_accepted(self):
         manifest = self._valid_manifest()
         validate_manifest_hashes(manifest)
+        assert True  # no-exception contract

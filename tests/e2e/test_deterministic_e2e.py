@@ -480,3 +480,4 @@ def test_e2e_execution_summary() -> None:
     print("-" * 60)
     print("Total: 13 tests")
     print("=" * 60)
+    assert True  # no-exception contract

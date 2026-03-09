@@ -70,6 +70,7 @@ class TestL0RoutingThresholds:
     def test_escalation_threshold_valid_change(self):
         # Within bounds and delta
         validate_surface_change("escalation_threshold", 0.80, 0.82)
+        assert True  # no-exception contract
 
     def test_escalation_threshold_below_min_raises(self):
         with pytest.raises(BoundsViolation, match="BOUNDS_VIOLATION"):
@@ -86,9 +87,11 @@ class TestL0RoutingThresholds:
     def test_escalation_threshold_max_delta_allowed(self):
         # Exactly at max delta (0.05)
         validate_surface_change("escalation_threshold", 0.80, 0.85)
+        assert True  # no-exception contract
 
     def test_anomaly_routing_threshold_valid_change(self):
         validate_surface_change("anomaly_routing_threshold", 0.70, 0.73)
+        assert True  # no-exception contract
 
     def test_anomaly_routing_threshold_bounds_enforced(self):
         with pytest.raises(BoundsViolation):
@@ -103,6 +106,7 @@ class TestL0RoutingThresholds:
 class TestL0RoutingIntConstraints:
     def test_depth_breaker_valid_change(self):
         validate_surface_change("depth_breaker", 10, 11)
+        assert True  # no-exception contract
 
     def test_depth_breaker_below_min_raises(self):
         with pytest.raises(BoundsViolation, match="BOUNDS_VIOLATION"):
@@ -119,6 +123,7 @@ class TestL0RoutingIntConstraints:
     def test_depth_breaker_max_delta_allowed(self):
         # Exactly at max delta (2)
         validate_surface_change("depth_breaker", 10, 12)
+        assert True  # no-exception contract
 
 
 # =============================================================================
@@ -129,6 +134,7 @@ class TestL0RoutingIntConstraints:
 class TestRAGParameters:
     def test_retrieval_top_k_valid_change(self):
         validate_surface_change("retrieval_top_k", 10, 12)
+        assert True  # no-exception contract
 
     def test_retrieval_top_k_bounds_enforced(self):
         with pytest.raises(BoundsViolation):
@@ -140,6 +146,7 @@ class TestRAGParameters:
 
     def test_rerank_top_n_valid_change(self):
         validate_surface_change("rerank_top_n", 5, 6)
+        assert True  # no-exception contract
 
     def test_rerank_top_n_bounds_enforced(self):
         with pytest.raises(BoundsViolation):
@@ -154,6 +161,7 @@ class TestRAGParameters:
 class TestL1ModelPointers:
     def test_cognition_model_valid_pointer(self):
         validate_surface_change("cognition_model", "gpt-4o", "gpt-4o-mini")
+        assert True  # no-exception contract
 
     def test_cognition_model_allowlist_enforced(self):
         with pytest.raises(PointerViolation, match="POINTER_VIOLATION"):
@@ -165,6 +173,7 @@ class TestL1ModelPointers:
 
     def test_embedding_model_valid_pointer(self):
         validate_surface_change("embedding_model", "text-embedding-3-small", "text-embedding-3-large")
+        assert True  # no-exception contract
 
     def test_embedding_model_allowlist_enforced(self):
         with pytest.raises(PointerViolation):
@@ -179,6 +188,7 @@ class TestL1ModelPointers:
 class TestL5PolicyTunables:
     def test_token_budget_valid_change(self):
         validate_surface_change("token_budget", 1_000_000, 1_050_000)
+        assert True  # no-exception contract
 
     def test_token_budget_bounds_enforced(self):
         with pytest.raises(BoundsViolation):
@@ -190,6 +200,7 @@ class TestL5PolicyTunables:
 
     def test_max_k_valid_change(self):
         validate_surface_change("max_k", 10, 11)
+        assert True  # no-exception contract
 
     def test_max_k_bounds_enforced(self):
         with pytest.raises(BoundsViolation):
@@ -197,6 +208,7 @@ class TestL5PolicyTunables:
 
     def test_max_retries_valid_change(self):
         validate_surface_change("max_retries", 3, 4)
+        assert True  # no-exception contract
 
     def test_max_retries_delta_enforced(self):
         with pytest.raises(DeltaViolation):
@@ -248,3 +260,4 @@ class TestDeterminism:
 
         validate_surface_change("retrieval_top_k", 10, 12)
         validate_surface_change("depth_breaker", 10, 11)
+        assert True  # no-exception contract

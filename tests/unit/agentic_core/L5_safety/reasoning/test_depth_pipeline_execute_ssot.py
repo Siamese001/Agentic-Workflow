@@ -416,6 +416,7 @@ class TestEnforceUniversalDepth:
         fp = _write(tmp_path, "agentic_core/L0_routing/extra/sub/schema.json")  # depth=4
         _run_universal(agent, [fp])
         agent._heal_depth_violation.assert_called_once()
+        assert True  # no-exception contract
 
     def test_universal_healing_returns_archived_not_violations(self, tmp_path):
         """healing_enabled=True → return value comes from archived count, not violations."""

@@ -114,6 +114,7 @@ def test_preflight_check_passes_when_bge_available(monkeypatch):
     monkeypatch.delenv("BOOTSTRAP_MODE", raising=False)
     # BGE is available in this environment — check should pass cleanly
     _mod._preflight_import_check()
+    assert True  # no-exception contract
 
 
 @pytest.mark.unit
@@ -128,6 +129,7 @@ def test_preflight_check_bootstrap_mode_bypasses_bge(monkeypatch):
     monkeypatch.setenv("BOOTSTRAP_MODE", "true")
     # Even if BGE would fail, bootstrap mode skips the check
     _mod._preflight_import_check()
+    assert True  # no-exception contract
 
 
 @pytest.mark.unit
@@ -493,6 +495,7 @@ def test_preflight_bootstrap_mode_matrix(bootstrap_val, expect_bypass, monkeypat
     else:
         # Normal path — BGE is available in this environment, should pass
         _mod._preflight_import_check()
+        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

@@ -94,7 +94,7 @@ class TestSecureToolsPathTraversalGuard:
         original = tools.work_dir
         try:
             tools._safe_path("../../escape")
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         assert tools.work_dir == original
 
@@ -260,7 +260,7 @@ class TestSecureToolsRunCommand:
         original = list(tools.BLACKLIST_COMMANDS)
         try:
             tools.tool_run_command("sudo bad")
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         assert tools.BLACKLIST_COMMANDS == original
 
@@ -322,7 +322,7 @@ class TestSecureToolsSideEffectSafety:
         before = list(tmp_path.iterdir())
         try:
             tools._safe_path("../../escape")
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         after = list(tmp_path.iterdir())
         assert before == after
@@ -333,7 +333,7 @@ class TestSecureToolsSideEffectSafety:
         before = list(tmp_path.iterdir())
         try:
             tools.tool_run_command("rm -rf .")
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         after = list(tmp_path.iterdir())
         assert before == after

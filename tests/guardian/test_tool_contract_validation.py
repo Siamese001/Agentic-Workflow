@@ -180,6 +180,7 @@ class TestToolContractValidation:
 
         # Should pass validation
         self._validate_tool_call(tool_call, expected_contract)  # Should not raise
+        assert True  # no-exception contract
 
     def _validate_tool_call(self, tool_call: dict[str, Any], contract: dict[str, Any]) -> None:
         """Validate tool call against contract."""

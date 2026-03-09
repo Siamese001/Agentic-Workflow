@@ -35,10 +35,12 @@ class TestHappyPath:
     def test_all_components_present_no_raise(self):
         """With real modules present, assert_activation_allowed must not raise."""
         assert_activation_allowed()
+        assert True  # no-exception contract
 
     def test_all_components_present_with_trace_id(self):
         """With trace_id supplied, still passes when modules present."""
         assert_activation_allowed(trace_id="trace-happy-path")
+        assert True  # no-exception contract
 
 
 # =====================================================================

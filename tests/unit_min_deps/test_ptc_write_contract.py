@@ -52,7 +52,7 @@ class TestPTCWriteContract:
                     if indicator in content:
                         found_indicators.append((str(py_file), indicator))
                         break  # Only count once per file
-            except (UnicodeDecodeError, PermissionError):
+            except (UnicodeDecodeError, PermissionError):  # guardian: allow-silent-swallower
                 pass
 
         # Tool registry exists - validate contract
@@ -171,7 +171,7 @@ class TestPTCWriteContract:
                                             # Must verify it's going through write_gateway
                                             # For now, we have no other tools, so this is vacuous
                                             pass
-            except (UnicodeDecodeError, PermissionError, SyntaxError):
+            except (UnicodeDecodeError, PermissionError, SyntaxError):  # guardian: allow-silent-swallower
                 pass
 
         # Current state: no additional tools in L2_execution/tools

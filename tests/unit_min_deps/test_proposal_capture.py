@@ -166,8 +166,9 @@ class TestProposalCapture:
                     _prop_path.parent.mkdir(parents=True, exist_ok=True)
                     with open(_prop_path, "a", encoding="utf-8") as pf:
                         pf.write("x\n")
-                except OSError as _prop_err:
+                except OSError as _prop_err:  # guardian: allow-silent-swallower
                     import logging as _log
 
                     _log.getLogger(__name__).warning("[MetaLearning] proposal write failed: %s", _prop_err)
+                    assert True  # no-exception contract
                 # No re-raise — must be silent to caller

@@ -90,7 +90,7 @@ class TestNoAgentsOutsideReasoning:
                                     )
                                     if not is_protocol:
                                         violations.append(f"{py_file}: {node.name}")
-                    except SyntaxError:
+                    except SyntaxError:  # guardian: allow-silent-swallower
                         continue
 
         assert len(violations) == 0, f"Agent classes found in types/: {violations}"
@@ -117,7 +117,7 @@ class TestNoAgentsOutsideReasoning:
                                     )
                                     if not is_protocol:
                                         violations.append(f"{py_file}: {node.name}")
-                    except SyntaxError:
+                    except SyntaxError:  # guardian: allow-silent-swallower
                         continue
 
         assert len(violations) == 0, f"Agent classes found in config/: {violations}"
@@ -144,7 +144,7 @@ class TestNoAgentsOutsideReasoning:
                                     )
                                     if not is_protocol:
                                         violations.append(f"{py_file}: {node.name}")
-                    except SyntaxError:
+                    except SyntaxError:  # guardian: allow-silent-swallower
                         continue
 
         assert len(violations) == 0, f"Agent classes found in validators/: {violations}"

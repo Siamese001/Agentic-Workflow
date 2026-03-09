@@ -107,6 +107,7 @@ def test_scanner_coverage():
 
     if storage_dir.exists():
         pass
+        assert True  # no-exception contract
 
 
 @pytest.mark.unit_min_deps

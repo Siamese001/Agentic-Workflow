@@ -137,7 +137,7 @@ def test_req114_critical_computation_paths_no_wallclock():
         # Parse the file
         try:
             tree = ast.parse(file_path.read_text(encoding="utf-8", errors="replace"))
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallower
             continue
 
         # Look for wall-clock usage

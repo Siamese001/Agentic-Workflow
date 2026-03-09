@@ -192,7 +192,7 @@ class TestShadowDriftW4C:
 class TestW4CNegativeControl:
     """Negative control tests for W4-C Shadow Drift Analyzer."""
 
-    @pytest.mark.xfail(reason="W4C tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W4C tamper guard", strict=True)
     def test_shadow_drift_determinism_violation_negative_control(self):
         """Negative control: tamper with drift analysis determinism."""
         # Set tamper flag to change rounding precision

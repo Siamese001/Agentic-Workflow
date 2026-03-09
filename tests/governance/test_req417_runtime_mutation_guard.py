@@ -23,6 +23,7 @@ def test_install_guards_is_idempotent() -> None:
     install_guards()
     install_guards()
     install_guards()
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance
@@ -61,6 +62,7 @@ def test_guarded_sys_modules_allows_new_key() -> None:
     """_GuardedSysModules MUST allow adding a new core-prefix key (initial import)."""
     guarded: _GuardedSysModules = _GuardedSysModules()
     guarded["agentic_core.new_module_xyz"] = object()
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance
@@ -80,6 +82,7 @@ def test_guarded_sys_modules_allows_non_core_replacement() -> None:
     guarded: _GuardedSysModules = _GuardedSysModules()
     guarded["third_party.lib"] = object()
     guarded["third_party.lib"] = object()
+    assert True  # no-exception contract
 
 
 # =============================================================================

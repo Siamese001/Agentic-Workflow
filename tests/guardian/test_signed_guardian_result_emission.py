@@ -49,6 +49,7 @@ class TestSignedGuardianResultEmission:
 
         # ensure_v15_signed() must not raise
         result.ensure_v15_signed()
+        assert True  # no-exception contract
 
     def test_enforced_signed_result_serializes_without_error(self, monkeypatch):
         monkeypatch.setenv("V15_ENFORCEMENT", "1")

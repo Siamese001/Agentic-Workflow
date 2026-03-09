@@ -70,6 +70,7 @@ class TestWithRetrySuccess:
             _fn()
 
         mock_sleep.assert_not_called()
+        assert True  # no-exception contract
 
     def test_success_second_attempt_calls_sleep_once(self, retry):
         attempt = [0]

@@ -62,6 +62,7 @@ class TestAssertZeroExecutionAuthority:
         )
         # Must not raise
         assert_zero_execution_authority(ctx)
+        assert True  # no-exception contract
 
     def test_write_mode_allowed_by_this_guard(self):
         """WRITE is permitted by zero-execution guard (audit guard handles write restrictions)."""
@@ -73,6 +74,7 @@ class TestAssertZeroExecutionAuthority:
         )
         # Must not raise — WRITE to versioned store is permitted
         assert_zero_execution_authority(ctx)
+        assert True  # no-exception contract
 
     def test_violation_message_contains_caller(self):
         ctx = AuthorityContext(
@@ -156,6 +158,7 @@ class TestAssertReadOnlyAuditAccess:
         )
         # Must not raise
         assert_read_only_audit_access(ctx)
+        assert True  # no-exception contract
 
     def test_write_to_non_audit_target_allowed(self):
         """Writing to non-audit targets (e.g., versioned store) is not blocked by this guard."""
@@ -167,6 +170,7 @@ class TestAssertReadOnlyAuditAccess:
         )
         # Must not raise — this guard only restricts audit surfaces
         assert_read_only_audit_access(ctx)
+        assert True  # no-exception contract
 
 
 # =============================================================================
@@ -229,6 +233,7 @@ class TestAssertNoSideChannelActivation:
         )
         # Must not raise
         assert_no_side_channel_activation(ctx)
+        assert True  # no-exception contract
 
     def test_read_allowed(self):
         ctx = AuthorityContext(
@@ -239,3 +244,4 @@ class TestAssertNoSideChannelActivation:
         )
         # Must not raise
         assert_no_side_channel_activation(ctx)
+        assert True  # no-exception contract

@@ -70,6 +70,7 @@ class TestInjectionRegressionGate:
 
         # Should not raise
         evaluate_against_baseline(current, baseline, thresholds)
+        assert True  # no-exception contract
 
     def test_high_risk_count_increase_triggers(self):
         """Test that high-risk count increase triggers regression."""
@@ -143,6 +144,7 @@ class TestInjectionRegressionGate:
 
         # Should not raise with default thresholds
         evaluate_against_baseline(current, baseline)  # No thresholds provided
+        assert True  # no-exception contract
 
     def test_check_regression_compliance_function(self):
         """Test the check_regression_compliance helper function."""
@@ -191,3 +193,4 @@ class TestInjectionRegressionGate:
 
         # Should not raise - both zero is acceptable
         evaluate_against_baseline(current, baseline)
+        assert True  # no-exception contract

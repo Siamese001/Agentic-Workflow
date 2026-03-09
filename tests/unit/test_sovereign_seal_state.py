@@ -199,7 +199,7 @@ class TestSovereignSealState:
         try:
             agent.new_attr = "test"
             pytest.fail("Should have raised AttributeError")
-        except AttributeError as e:
+        except AttributeError as e:  # guardian: allow-silent-swallower
             error_msg = str(e)
             assert "sovereign seal" in error_msg.lower()
             assert "active" in error_msg.lower()
@@ -208,7 +208,7 @@ class TestSovereignSealState:
         try:
             agent.config = "modified"
             pytest.fail("Should have raised AttributeError")
-        except AttributeError as e:
+        except AttributeError as e:  # guardian: allow-silent-swallower
             error_msg = str(e)
             assert "sovereign seal" in error_msg.lower()
             assert "active" in error_msg.lower()

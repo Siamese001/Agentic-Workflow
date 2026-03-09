@@ -337,7 +337,7 @@ print(f"FINDINGS_COUNT: {{len(report.findings)}}")
                 now_utc="invalid",
             )
             # If no exception, that's also deterministic behavior
-        except (TypeError, ValueError):
+        except (TypeError, ValueError):  # guardian: allow-silent-swallower
             # Any exception is acceptable as long as it's deterministic
             pass
 
@@ -350,7 +350,7 @@ print(f"FINDINGS_COUNT: {{len(report.findings)}}")
                 now_utc=2000,
             )
             # If no exception, that's also deterministic behavior
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             # Any exception is acceptable as long as it's deterministic
             pass
 

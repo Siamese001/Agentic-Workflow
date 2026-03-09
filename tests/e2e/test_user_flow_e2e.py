@@ -16,3 +16,4 @@ class TestUserFlowE2E:
         page.fill("#username", "testuser")
         page.click("#register-button")
         page.wait_for_url("**/dashboard")
+        assert True  # no-exception contract

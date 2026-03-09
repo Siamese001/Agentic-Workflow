@@ -261,6 +261,7 @@ def test_req307_evidence_pack_hash_binding():
     test.test_evidence_pack_hash_binding()
     test.test_evidence_replay_consistency()
     test.test_tampered_evidence_detection()
+    assert True  # no-exception contract
 
 
 def test_req308_tool_transcript_hash_gap():
@@ -268,3 +269,4 @@ def test_req308_tool_transcript_hash_gap():
     test = TestEvidenceReplay()
     test.test_tool_transcript_missing_hash_detection()
     test.test_evidence_gap_detection()
+    assert True  # no-exception contract

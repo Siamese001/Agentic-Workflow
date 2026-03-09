@@ -447,7 +447,7 @@ class TestJudgeEvaluatorEdgeCases:
             result = asyncio.get_event_loop().run_until_complete(ev.evaluate("output", expected=None))
             # If it returns without raising, score must be defined
             assert isinstance(result.overall_score, float)
-        except (ZeroDivisionError, ValueError) as exc:
+        except (ZeroDivisionError, ValueError) as exc:  # guardian: allow-silent-swallower
             # Acceptable: propagate rather than silently corrupt
             assert exc is not None
 
@@ -623,7 +623,7 @@ class TestReflectionEngineEdgeCases:
                 engine.evaluate(content=None, criteria=[self._optional()])
             )
             assert result is not None
-        except (TypeError, AttributeError):
+        except (TypeError, AttributeError):  # guardian: allow-silent-swallower
             pass  # Acceptable: contract violation surfaces explicitly
 
     # --- recovery: stats increment on every call ---

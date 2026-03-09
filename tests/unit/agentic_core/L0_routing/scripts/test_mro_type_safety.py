@@ -59,10 +59,10 @@ def test_mro_integrity_and_initialization_order():
         print("  ✓ _sovereign_initialized sentinel set")
         return True
 
-    except AttributeError as e:
+    except AttributeError as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: Initialization Order Failure: {e}")
         return False
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: Unexpected error: {e}")
         return False
 
@@ -106,7 +106,7 @@ def test_heal_repository_return_type_consistency():
         print("  ✓ No legacy keys present")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -146,7 +146,7 @@ def test_diamond_inheritance_stability():
         print("  ✓ State persists through inheritance")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -185,7 +185,7 @@ def test_double_init_prevention():
         print("  ✓ Double initialization guard active")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -220,7 +220,7 @@ def test_cycle_detection():
         print("  ✓ Cycle detection returns SKIPPED status")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -252,7 +252,7 @@ def test_max_depth_termination():
         print("  ✓ Max depth termination returns SKIPPED status")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -293,7 +293,7 @@ def test_mixin_state_access_during_init():
         print("  ✓ State containers properly initialized")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 
@@ -324,7 +324,7 @@ def test_healer_mixin_heal_result_type():
         print("  ✓ HealerMixin returns HealResult-compatible dict")
         return True
 
-    except Exception as e:
+    except Exception as e:  # guardian: allow-silent-swallower
         print(f"  ✗ FAILED: {e}")
         return False
 

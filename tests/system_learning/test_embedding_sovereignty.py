@@ -291,7 +291,7 @@ def test_embedding_service_end_to_end():
             service = EmbeddingServiceFactory.get_or_disabled()
             # If it succeeds, verify it's not disabled
             assert not service.is_disabled()
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             # Pack loading failure is expected without actual files
             # This demonstrates the kill-switch is working (trying to load)
             pass

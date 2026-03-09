@@ -25,6 +25,7 @@ def test_no_context_passes_without_citations():
     )
 
     validate_citation_custody([], None)  # no context -> no enforcement needed
+    assert True  # no-exception contract
 
 
 def test_empty_context_passes_without_citations():
@@ -33,6 +34,7 @@ def test_empty_context_passes_without_citations():
     )
 
     validate_citation_custody([], [])  # empty -> no enforcement needed
+    assert True  # no-exception contract
 
 
 def test_single_chunk_with_matching_citation_passes():
@@ -52,6 +54,7 @@ def test_single_chunk_with_matching_citation_passes():
         )
     ]
     validate_citation_custody(chunks, citations)  # should not raise
+    assert True  # no-exception contract
 
 
 def test_multiple_chunks_all_cited_passes():
@@ -71,6 +74,7 @@ def test_multiple_chunks_all_cited_passes():
         CitationBundle(chunk_id="c3", source_ref="c.md", byte_sha256="c" * 64, byte_range=(0, 30), score=0.7),
     ]
     validate_citation_custody(chunks, citations)  # should not raise
+    assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

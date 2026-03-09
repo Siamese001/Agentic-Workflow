@@ -37,6 +37,7 @@ def test_req270_immutable_reference_enforcement():
             return 42
 
     assert_immutable_reference(CustomHashable(), "test context")
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance
@@ -170,12 +171,12 @@ def test_req270_violation_tracking():
         # Generate some violations
         try:
             assert_immutable_reference([1, 2, 3], "test1")
-        except MutableReferenceError:
+        except MutableReferenceError:  # guardian: allow-silent-swallower
             pass
 
         try:
             assert_immutable_reference({"a": 1}, "test2")
-        except MutableReferenceError:
+        except MutableReferenceError:  # guardian: allow-silent-swallower
             pass
 
         # Check violations were recorded

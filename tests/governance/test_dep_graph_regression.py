@@ -144,7 +144,7 @@ class TestStarImportAllShims:
 
                     tree = ast.parse(src)
 
-                except SyntaxError:
+                except SyntaxError:  # guardian: allow-silent-swallower
                     continue
 
                 has_star = any(

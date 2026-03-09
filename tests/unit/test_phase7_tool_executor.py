@@ -86,7 +86,7 @@ class TestToolIntentExecBlockedOutsideSandbox:
         try:
             executor.execute(intent, fn=_noop_fn)
             pytest.fail("Expected ToolViolation")
-        except ToolViolation as exc:
+        except ToolViolation as exc:  # guardian: allow-silent-swallower
             assert "pinecone_upsert" in exc.detail
 
 

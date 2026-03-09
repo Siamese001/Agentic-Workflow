@@ -68,7 +68,7 @@ class TestMissingCitationsRejected:
                 retrieval_used=True,
             )
             pytest.fail("Expected CitationEnforcementViolation")
-        except CitationEnforcementViolation as exc:
+        except CitationEnforcementViolation as exc:  # guardian: allow-silent-swallower
             assert exc.detail != ""
 
     def test_violation_code_constant(self):

@@ -250,7 +250,7 @@ class TestW4EProposalApproval:
 class TestW4ENegativeControl:
     """Negative control tests for W4-E Retrieval Profile Proposal."""
 
-    @pytest.mark.xfail(reason="W4E tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W4E tamper guard", strict=True)
     def test_proposal_determinism_violation_negative_control(self):
         """Negative control: tamper with proposal determinism."""
         # Set tamper flag to change canonicalization

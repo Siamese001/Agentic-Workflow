@@ -346,7 +346,7 @@ print(f"SIGNAL_HASH: {{hashlib.sha256(signal.canonical_bytes()).hexdigest()}}")
                 )
                 # If no exception, that's also deterministic behavior
                 assert case["expected_error"] != ValueError  # Should not be ValueError
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 # Check that we get some deterministic exception type
                 assert isinstance(e, (ValueError, TypeError, KeyError))
 

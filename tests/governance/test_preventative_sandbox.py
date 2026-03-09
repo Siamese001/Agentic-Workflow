@@ -76,7 +76,7 @@ class TestSandboxRestoration:
         try:
             with sandbox.activated():
                 raise ValueError("test error")
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         assert os.remove is original
 

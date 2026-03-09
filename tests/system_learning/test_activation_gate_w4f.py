@@ -192,7 +192,7 @@ class TestActivationGateW4F:
 class TestW4FNegativeControl:
     """Negative control tests for W4-F Activation Gate."""
 
-    @pytest.mark.xfail(reason="W4F tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W4F tamper guard", strict=True)
     def test_activation_determinism_violation_negative_control(self):
         """Negative control: tamper with activation digest determinism."""
         # Set tamper flag to change canonicalization

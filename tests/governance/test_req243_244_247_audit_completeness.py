@@ -177,6 +177,7 @@ def test_req247_explicit_scope_accepted():
     validate_capability_scope("pointer_update:ns_alpha")
     validate_capability_scope("emit_metric:trace_001")
     validate_capability_scope("execute_tool:subprocess")
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance

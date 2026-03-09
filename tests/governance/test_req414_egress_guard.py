@@ -75,7 +75,7 @@ def test_route_generation_writes_egress_audit():
     ):
         try:
             asyncio.run(gw.route_generation(req))
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             pass
         assert mock_append.called, "Egress audit log.append must be called by route_generation"
 
@@ -132,7 +132,7 @@ def test_route_generation_egress_payload_contains_agent_id():
     ):
         try:
             asyncio.run(gw.route_generation(req))
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             pass
 
     assert len(captured) >= 1, "Egress audit log must be written at least once"

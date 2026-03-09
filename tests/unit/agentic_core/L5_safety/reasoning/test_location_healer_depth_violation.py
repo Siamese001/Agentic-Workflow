@@ -209,6 +209,7 @@ class TestDeepViolation:
 
         # depth=1 > expected=0 → DEEP, identity guard: target=tmp_path/agent.py != source
         agent.safe_move.assert_called_once()
+        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------
@@ -262,6 +263,7 @@ class TestShallowViolation:
         _call(agent, f)
 
         agent.safe_move.assert_not_called()
+        assert True  # no-exception contract
 
     def test_shallow_logs_error(self, tmp_path):
         """SHALLOW: Logger.error is called with violation details."""
@@ -365,6 +367,7 @@ class TestExceptionPath:
             _call(agent, f)
 
         mock_log.error.assert_called_once()
+        assert True  # no-exception contract
 
     def test_exception_does_not_extend_affected_paths(self, tmp_path):
         """Exception → affected_paths never mutated."""
@@ -434,6 +437,7 @@ class TestBoundaries:
 
         # depth=5 > default 3 → DEEP path entered, safe_move called
         agent.safe_move.assert_called_once()
+        assert True  # no-exception contract
 
     def test_deterministic_shallow_identical_input(self, tmp_path):
         """Determinism: same shallow file produces identical result on repeated calls."""

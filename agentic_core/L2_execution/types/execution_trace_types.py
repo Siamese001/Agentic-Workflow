@@ -13,6 +13,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
+
 
 def _compute_replay_key(trace_id: str, plan_hash: str, transcript_hash: str) -> str:
     raw = (trace_id + plan_hash + transcript_hash).encode("ascii", errors="replace")
@@ -68,6 +70,28 @@ class ExecutionTrace:
 
     def content_hash(self) -> str:
         return hashlib.sha256(self.canonical_bytes()).hexdigest()
+
+    def validate_completeness(self) -> None:
+        """Addendum 1.1: Raise ExecutionTraceIntegrityError if any required field is empty.
+
+        Required fields: trace_id, instruction_packet_id, governed_payload_hash,
+        llm_response_hash, validation_decision, hash_chain_root, replay_key.
+        """
+        _required = {
+            "trace_id": self.trace_id,
+            "instruction_packet_id": self.instruction_packet_id,
+            "governed_payload_hash": self.governed_payload_hash,
+            "llm_response_hash": self.llm_response_hash,
+            "validation_decision": self.validation_decision,
+            "hash_chain_root": self.hash_chain_root,
+            "replay_key": self.replay_key,
+        }
+        missing = [k for k, v in _required.items() if not v]
+        if missing:
+            raise ExecutionTraceIntegrityError(
+                f"ExecutionTrace missing required field(s): {missing}. "
+                "Execution marked FAILED — trace is incomplete."
+            )
 
 
 class ExecutionTraceBuilder:

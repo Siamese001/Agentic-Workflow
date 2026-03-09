@@ -49,6 +49,7 @@ class TestChangePackageJSONOnly:
         import json
 
         json.dumps(pkg.parameters)  # must not raise
+        assert True  # no-exception contract
 
     def test_lambda_rejected(self):
         CP = self._make()

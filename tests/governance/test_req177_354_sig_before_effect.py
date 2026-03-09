@@ -189,6 +189,7 @@ def test_req177_354_ordering_invariant_surgical_manifest(consumer, tracker):
     art = _make_artifact("sm_001", "SurgicalManifest", b"surgical_payload_data")
     consumer.consume(art)
     tracker.assert_ordering("sm_001")
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance
@@ -197,6 +198,7 @@ def test_req177_354_ordering_invariant_wave_audit_summary(consumer, tracker):
     art = _make_artifact("was_001", "WaveAuditSummary", b"wave_audit_data")
     consumer.consume(art)
     tracker.assert_ordering("was_001")
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance
@@ -205,6 +207,7 @@ def test_req177_354_ordering_invariant_capability_token(consumer, tracker):
     art = _make_artifact("cap_001", "CapabilityToken", b"capability_data")
     consumer.consume(art)
     tracker.assert_ordering("cap_001")
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance

@@ -169,7 +169,7 @@ class TestBootstrapSingleUseContract:
                 mock_ca.return_value = MagicMock(authority_public_hash="auth-hash-001")
                 try:
                     bs.bootstrap(policy_file)
-                except Exception:
+                except Exception:  # guardian: allow-silent-swallower
                     pass
 
             # Second call must raise regardless of dependency state

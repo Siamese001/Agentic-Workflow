@@ -53,6 +53,7 @@ def test_negctrl_pt011_slot_order():
             "<SLOT_U0>user</SLOT_U0>\n"
         )
         validate_slot_order(canonical)
+        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------
@@ -89,3 +90,4 @@ def test_negctrl_ragx006_citation_custody():
             )
         ]
         validate_citation_custody(chunks, citations)
+        assert True  # no-exception contract

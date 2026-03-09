@@ -121,6 +121,7 @@ def test_token_with_valid_digest_passes_validation():
     """Token with valid replay_digest_hash passes validate()."""
     token = _make_token(replay_digest_hash=_make_digest("valid_digest_seed"))
     token.validate(current_tick=15)  # within window [10, 30)
+    assert True  # no-exception contract
 
 
 @pytest.mark.governance

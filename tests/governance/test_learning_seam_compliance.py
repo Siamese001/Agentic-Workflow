@@ -109,7 +109,7 @@ class TestNoDirectPersistenceImport:
         for path in _agent_files():
             try:
                 tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError:
+            except SyntaxError:  # guardian: allow-silent-swallower
                 continue
             for lineno, module in _scan_imports(tree):
                 root_mod = module.split(".")[0]
@@ -129,7 +129,7 @@ class TestNoForbiddenWriteCalls:
         for path in _agent_files():
             try:
                 tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError:
+            except SyntaxError:  # guardian: allow-silent-swallower
                 continue
             for lineno, fqn in _scan_forbidden_calls(tree):
                 rel = path.relative_to(REPO_ROOT)

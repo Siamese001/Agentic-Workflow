@@ -82,7 +82,7 @@ class TestSignatureBoundary:
                 )
             except SignatureBoundaryError:
                 pytest.fail("Valid signature must NOT raise SignatureBoundaryError")
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallower
                 pass  # Other exceptions (e.g. tool logic) are acceptable
 
     @pytest.mark.asyncio

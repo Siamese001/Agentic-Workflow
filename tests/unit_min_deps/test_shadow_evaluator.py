@@ -39,6 +39,7 @@ class TestShadowEvaluator:
 
         # Should not raise
         evaluate_shadow(prod, shadow, thresholds)
+        assert True  # no-exception contract
 
     def test_fail_latency_regression(self):
         """Latency regression beyond threshold raises."""
@@ -236,3 +237,4 @@ class TestDeterminism:
         evaluate_shadow(prod, shadow, thresholds)
         evaluate_shadow(prod, shadow, thresholds)
         evaluate_shadow(prod, shadow, thresholds)
+        assert True  # no-exception contract

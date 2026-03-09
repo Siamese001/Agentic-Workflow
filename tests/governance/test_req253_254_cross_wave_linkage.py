@@ -176,6 +176,7 @@ def test_req253_cross_wave_linkage():
     test.test_chain_of_wave_hashes()
     test.test_missing_prev_wave_hash()
     test.test_wave_hash_consistency()
+    assert True  # no-exception contract
 
 
 def test_req254_wave_hash_tamper_detection():

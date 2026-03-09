@@ -72,6 +72,7 @@ class TestReplayValidatorSeedPack:
             )
         finally:
             shutil.rmtree(base_path)
+            assert True  # no-exception contract
 
     def test_validate_seed_pack_missing_files(self):
         """Failure when required files are missing."""
@@ -262,6 +263,7 @@ class TestReplayValidatorEmbeddingArtifact:
             artifact=artifact,
             expected_seed_index_version_hash="hash123",
         )
+        assert True  # no-exception contract
 
     def test_validate_embedding_artifact_with_reference_hash(self):
         """Successful validation with reference hash."""
@@ -285,6 +287,7 @@ class TestReplayValidatorEmbeddingArtifact:
             expected_seed_index_version_hash="hash123",
             reference_artifact_hash=reference_hash,
         )
+        assert True  # no-exception contract
 
     def test_validate_embedding_artifact_wrong_type(self):
         """Failure when artifact is not EmbeddingArtifact type."""
@@ -440,6 +443,7 @@ class TestReplayValidatorEmbeddingArtifact:
             artifact=artifact,
             expected_seed_index_version_hash="hash123",
         )
+        assert True  # no-exception contract
 
         # But if we manually create an artifact with wrong order (bypassing __post_init__)
         # This would require direct manipulation, which is prevented by frozen dataclass

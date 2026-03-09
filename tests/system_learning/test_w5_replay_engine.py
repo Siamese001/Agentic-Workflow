@@ -272,7 +272,7 @@ class TestW5ReplayEngine:
 class TestW5NegativeControl:
     """Negative control tests for W5 Deterministic Replay Engine."""
 
-    @pytest.mark.xfail(reason="W5 tamper guard", strict=False)
+    @pytest.mark.xfail(reason="W5 tamper guard", strict=True)
     def test_replay_determinism_violation_negative_control(self):
         """Negative control: tamper with replay digest determinism."""
         # Set tamper flag to change canonicalization

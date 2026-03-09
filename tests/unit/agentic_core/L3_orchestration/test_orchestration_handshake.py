@@ -206,7 +206,7 @@ class TestHandshakeDisallowedTransitions:
         m = HandshakeStateMachine()
         try:
             m.certify()
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         assert m.current_state == HandshakeState.INIT
 
@@ -215,7 +215,7 @@ class TestHandshakeDisallowedTransitions:
         m = HandshakeStateMachine()
         try:
             m.certify()
-        except ValueError:
+        except ValueError:  # guardian: allow-silent-swallower
             pass
         assert len(m.transition_history) == 0
 

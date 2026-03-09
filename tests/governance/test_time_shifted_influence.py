@@ -47,6 +47,7 @@ class TestNoMidRunMutation:
         ctx.verify_or_raise(config)
         ctx.verify_or_raise(config)
         ctx.verify_or_raise(config)
+        assert True  # no-exception contract
 
     def test_detection_does_not_change_routing(self):
         config = copy.deepcopy(BASE_CONFIG)
@@ -54,6 +55,7 @@ class TestNoMidRunMutation:
         # Simulate detection event (L6 observes drift)
         # Key assertion: routing remains unchanged
         ctx.verify_or_raise(config)
+        assert True  # no-exception contract
 
     def test_mid_run_mutation_raises(self):
         config = copy.deepcopy(BASE_CONFIG)

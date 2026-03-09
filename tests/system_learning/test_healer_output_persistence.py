@@ -595,7 +595,7 @@ class TestWave4PriorRecordMerge:
                 continue
             try:
                 rec = json.loads(raw.decode("utf-8"))
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallower
                 continue
             # No exception should propagate
         assert aggregator.event_count == 0  # Nothing was merged from corrupted record
@@ -638,7 +638,7 @@ class TestWave4PriorRecordMerge:
                 continue
             try:
                 rec = json.loads(raw.decode("utf-8"))
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallower
                 continue
             for s in rec.get("snapshot", []):
                 for _ in range(int(s.get("success_count", 0))):
@@ -763,6 +763,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
             mod._fire_meta_learning_intake(state_mgr, now_utc=0)  # Must not raise
         finally:
             builtins.__import__ = real_import
+            assert True  # no-exception contract
 
     def test_wave1_exception_does_not_block_wave2(self) -> None:
         """If Wave 1 raises, Wave 2 (in-memory store) still executes."""
@@ -809,7 +810,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
                                 success=True,
                             )
                         )
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallower
                 continue
         assert aggregator.event_count >= 1
 

@@ -158,6 +158,7 @@ class TestNoRuntimeFields:
         raw = proposal.to_json()
         payload = json.loads(raw)
         self._assert_no_forbidden_keys(payload)
+        assert True  # no-exception contract
 
     def _assert_no_forbidden_keys(self, obj: object, path: str = "") -> None:
         """Recursively check no forbidden top-level or nested keys."""

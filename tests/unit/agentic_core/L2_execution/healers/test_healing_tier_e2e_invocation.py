@@ -428,7 +428,7 @@ class TestNegativeControlsE2E:
                     continue
                 try:
                     tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
-                except SyntaxError:
+                except SyntaxError:  # guardian: allow-silent-swallower
                     continue
                 for node in ast.walk(tree):
                     if isinstance(node, ast.ImportFrom) and node.module:

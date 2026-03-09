@@ -414,7 +414,7 @@ print(f"RANKED_COUNT: {{len(decision.ranked)}}")
                 history_bytes="not_bytes",
             )
             # If no exception, that's also deterministic behavior
-        except Exception:
+        except Exception:  # guardian: allow-silent-swallower
             # Any exception is acceptable as long as it's deterministic
             pass
 

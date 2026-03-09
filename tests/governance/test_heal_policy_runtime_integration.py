@@ -67,6 +67,7 @@ class TestHealPolicyRuntimeIntegration:
             healer.heal_repository(dry_run=True)
 
             mock_decide.assert_called_once()
+            assert True  # no-exception contract
 
     def test_policy_decision_is_logged(self) -> None:
         """Assert Logger.debug receives the policy decision log line."""

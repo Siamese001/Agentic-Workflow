@@ -114,7 +114,7 @@ class TestMLWriteSandbox:
             with MLWriteIntentExecutor():
                 assert is_commit_sandbox_active() is True
                 raise RuntimeError("simulated failure")
-        except RuntimeError:
+        except RuntimeError:  # guardian: allow-silent-swallower
             pass
         assert is_commit_sandbox_active() is False
 

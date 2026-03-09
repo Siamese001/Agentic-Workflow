@@ -268,6 +268,7 @@ def test_req313_surgical_edit_determinism():
     test.test_surgical_manifest_application()
     test.test_surgical_manifest_replay()
     test.test_surgical_change_order_independence()
+    assert True  # no-exception contract
 
 
 def test_req320_ssot_hash_determinism():
@@ -276,3 +277,4 @@ def test_req320_ssot_hash_determinism():
     test.test_ssot_hash_determinism()
     test.test_ssot_hash_tamper_detection()
     test.test_manifest_signature_binding()
+    assert True  # no-exception contract

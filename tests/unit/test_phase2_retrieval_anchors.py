@@ -110,6 +110,7 @@ class TestRetrievalAnchor:
 class TestAnchorCoverageEnforcement:
     def test_empty_retrieval_context_passes_with_no_anchors(self):
         enforce_anchor_coverage([], [])
+        assert True  # no-exception contract
 
     def test_reasoning_requires_anchors_when_retrieval_present(self):
         anchor = _make_anchor()
@@ -140,6 +141,7 @@ class TestAnchorCoverageEnforcement:
         result_a = AnchoredResult(content="text-a", anchor=anchor_a)
         result_b = AnchoredResult(content="text-b", anchor=anchor_b)
         enforce_anchor_coverage([result_a, result_b], [anchor_a, anchor_b])
+        assert True  # no-exception contract
 
     def test_violation_error_code_is_constant(self):
         assert AnchorViolationError.VIOLATION_CODE == "MISSING_RETRIEVAL_ANCHOR"

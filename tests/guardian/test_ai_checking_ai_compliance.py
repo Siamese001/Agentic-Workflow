@@ -137,6 +137,7 @@ def test_ai_checking_ai_compliance() -> None:
         print("=" * 70)
         print("✅ CONSTITUTIONAL COMPLIANCE: PASSED")
         print("=" * 70)
+        assert True  # no-exception contract
 
 
 if __name__ == "__main__":

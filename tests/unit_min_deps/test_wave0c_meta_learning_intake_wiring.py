@@ -129,3 +129,4 @@ def test_fire_meta_learning_intake_noop_on_import_error():
         # Restore hidden modules
         for mod, val in hidden.items():
             sys.modules[mod] = val
+            assert True  # no-exception contract

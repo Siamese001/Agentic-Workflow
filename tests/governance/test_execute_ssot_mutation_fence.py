@@ -124,7 +124,7 @@ class TestStartupFenceSelfTest:
                 mp.enforce_protected_root(probe_path, allow_override=False)
                 # If we get here, fence is NOT active
                 fence_active = False
-            except SourceMutationBlocked:
+            except SourceMutationBlocked:  # guardian: allow-silent-swallower
                 # Expected: fence blocked the write
                 fence_active = True
 
@@ -155,7 +155,7 @@ class TestStartupFenceSelfTest:
             try:
                 enforce_protected_root(probe_path, allow_override=False, policy=policy)
                 fence_active = False
-            except SourceMutationBlocked:
+            except SourceMutationBlocked:  # guardian: allow-silent-swallower
                 fence_active = True
 
         assert fence_active, "Fence should be detected as active when enforce_protected_root raises"

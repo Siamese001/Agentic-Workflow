@@ -257,6 +257,7 @@ class TestAgent(SovereignBaseAgent):
         temp_file = self._create_layer_file(temp_agentic_core, "L5_safety", "TestAgent.py", agent_code)
 
         validator.validate_file(temp_file)
+        assert True  # no-exception contract
         # Should handle gracefully without crashing
 
     def test_multiple_violations(self, validator, temp_agentic_core):

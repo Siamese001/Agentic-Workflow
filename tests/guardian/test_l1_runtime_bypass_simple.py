@@ -110,7 +110,7 @@ def test_l1_cognition_runtime_bypass_resistance():
 
                         violations.append(f"{file_path}:{line_num}: {pattern}")
 
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):  # guardian: allow-silent-swallower
             continue
 
     assert not violations, f"L1 cognition files contain runtime bypass attempts: {violations}"
@@ -153,7 +153,7 @@ def test_l1_cognition_provider_sdk_isolation():
                 if pattern in content:
                     violations.append(f"{file_path}: {pattern}")
 
-        except (OSError, UnicodeDecodeError):
+        except (OSError, UnicodeDecodeError):  # guardian: allow-silent-swallower
             continue
 
     assert not violations, f"L1 cognition files contain direct provider SDK imports: {violations}"

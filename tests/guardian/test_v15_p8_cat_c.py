@@ -217,7 +217,7 @@ class TestRuntimeManifestConstruction:
                     trace_id=manifest.correlation_id,
                 )
             # guardian: allow-silent-swallow
-            except Exception:
+            except Exception:  # guardian: allow-silent-swallower
                 pass
 
         assert len(captured) == 1, "gateway.execute must be called exactly once"

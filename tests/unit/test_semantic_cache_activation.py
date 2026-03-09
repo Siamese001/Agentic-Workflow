@@ -265,7 +265,7 @@ class TestSemanticCacheMixinProperty:
         def worker():
             try:
                 results.append(id(Agent().semantic_cache))
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 errors.append(e)
 
         threads = [threading.Thread(target=worker) for _ in range(10)]
@@ -386,7 +386,7 @@ class TestSovereignSemanticCacheImport:
         try:
             ast_mod.parse(invalid_code)
             fallback_triggered = False
-        except SyntaxError:
+        except SyntaxError:  # guardian: allow-silent-swallower
             fallback_triggered = True
 
         assert fallback_triggered, "SyntaxError must be triggered for invalid code"

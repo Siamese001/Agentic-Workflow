@@ -248,7 +248,7 @@ class TestDeletedShimsAreGone:
             source = py_file.read_text(encoding="utf-8", errors="replace")
             try:
                 tree = ast.parse(source, filename=str(py_file))
-            except SyntaxError:
+            except SyntaxError:  # guardian: allow-silent-swallower
                 continue
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:

@@ -110,7 +110,7 @@ def test_no_upward_mutations():
                             f"  Imports '{imported_module}' (Layer {imported_layer})"
                         )
 
-            except (SyntaxError, UnicodeDecodeError) as e:
+            except (SyntaxError, UnicodeDecodeError) as e:  # guardian: allow-silent-swallower
                 print(f"Warning: Could not parse {file_path}: {e}", file=sys.stderr)
 
     # Pre-existing violation baseline — these are architectural debt present before this phase.

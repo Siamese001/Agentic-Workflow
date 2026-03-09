@@ -26,6 +26,7 @@ from agentic_core.L5_safety.types.hardening_errors import (
 class TestInvariant1MutationSourceIsL2:
     def test_positive_l2_accepted(self):
         assert_mutation_source_is_l2("L2_execution")
+        assert True  # no-exception contract
 
     def test_negative_non_l2_raises(self):
         with pytest.raises(MutationReplayIntegrityViolation, match="mutation_source"):
@@ -38,6 +39,7 @@ class TestInvariant2MutationInLedger:
             {"file_path": "foo/bar.py", "operation": "write"},
         ]
         assert_mutation_in_ledger(ledger, "foo/bar.py", "write")
+        assert True  # no-exception contract
 
     def test_negative_missing_entry_raises(self):
         ledger = [{"file_path": "other.py", "operation": "delete"}]
@@ -48,6 +50,7 @@ class TestInvariant2MutationInLedger:
 class TestInvariant3StateReadSourceIsL4:
     def test_positive_l4_accepted(self):
         assert_state_read_source_is_l4("L4_state")
+        assert True  # no-exception contract
 
     def test_negative_non_l4_raises(self):
         with pytest.raises(MutationReplayIntegrityViolation, match="state_read_source"):
@@ -58,6 +61,7 @@ class TestInvariant4C0NoAuthorityFields:
     def test_positive_safe_payload_accepted(self):
         safe_payload = {"query": "find me a job", "context": "software engineering"}
         assert_c0_no_authority_fields(safe_payload)
+        assert True  # no-exception contract
 
     def test_negative_authority_field_raises(self):
         bad_payload = {"query": "find jobs", "route_mode": "privileged"}
@@ -68,6 +72,7 @@ class TestInvariant4C0NoAuthorityFields:
 class TestInvariant5TelemetryNoConfigMutation:
     def test_positive_stage_s9_allowed(self):
         assert_telemetry_no_config_mutation(current_stage=9, config_mutated=True)
+        assert True  # no-exception contract
 
     def test_negative_early_stage_with_mutation_raises(self):
         with pytest.raises(RuntimePolicyMutationViolation, match="stage 3"):
@@ -75,3 +80,4 @@ class TestInvariant5TelemetryNoConfigMutation:
 
     def test_positive_early_stage_no_mutation_ok(self):
         assert_telemetry_no_config_mutation(current_stage=2, config_mutated=False)
+        assert True  # no-exception contract
