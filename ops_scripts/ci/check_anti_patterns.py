@@ -52,7 +52,7 @@ _EXCLUDE_DIRS = {
     ".pytest_cache", ".pytest_tmp", ".mypy_cache", ".ruff_cache",
     ".coverage", "dist", "build", ".tox", ".nox",
     "node_modules", "archives", ".backup", "_quarantine",
-    "tests", "ops_scripts",
+    "tests", "ops_scripts", ".healing_backups",
 }
 
 
