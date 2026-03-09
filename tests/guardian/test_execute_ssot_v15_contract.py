@@ -201,7 +201,7 @@ class TestCLIContract:
             capture_output=True,
             text=True,
             timeout=30,
-            env={**os.environ, "V15_ENFORCEMENT": "0"},
+            env={**os.environ, "V15_ENFORCEMENT": "0", "PYTHONPATH": str(REPO_ROOT)},
         )
         assert result.returncode == 0, f"--help failed: {result.stderr[:500]}"
 
@@ -213,7 +213,7 @@ class TestCLIContract:
             capture_output=True,
             text=True,
             timeout=30,
-            env={**os.environ, "V15_ENFORCEMENT": "0"},
+            env={**os.environ, "V15_ENFORCEMENT": "0", "PYTHONPATH": str(REPO_ROOT)},
         )
         help_text = result.stdout + result.stderr
         assert "--v15-enforcement" in help_text, "--v15-enforcement flag missing from --help"

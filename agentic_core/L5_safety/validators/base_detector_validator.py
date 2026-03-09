@@ -34,6 +34,8 @@ class AntiPatternCategory(str, Enum):
     PATH_FRAGILITY = "path_fragility"
     MAGIC_CONFIGURATION = "magic_configuration"
     GLOBAL_MUTATION = "global_mutation"
+    CONFIG_WITH_LOGIC = "config_with_logic"
+    DIRECT_PROMPT_COMPILATION = "direct_prompt_compilation"
 
 
 @dataclass

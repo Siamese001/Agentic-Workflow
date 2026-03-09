@@ -18,11 +18,23 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 from agentic_core.L5_safety.validators.base_detector_validator import (
     AntiPatternCategory,
     AntiPatternViolation,
     CompositeDetector,
     EnforcementLevel,
+)
+from agentic_core.L5_safety.validators.config_with_logic_validator import (
+    ConfigWithLogicDetector,
+)
+from agentic_core.L5_safety.validators.direct_prompt_compilation_validator import (
+    DirectPromptCompilationDetector,
 )
 from agentic_core.L5_safety.validators.global_mutation_validator import (
     GlobalMutationDetector,
@@ -38,12 +50,6 @@ from agentic_core.L5_safety.validators.silent_swallower_validator import (
 )
 from agentic_core.L5_safety.validators.type_erasure_validator import (
     TypeErasureDetector,
-)
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
 )
 
 Logger = logging.getLogger(__name__)
@@ -166,6 +172,8 @@ class AntiPatternScanner:
                 PathFragilityDetector(enforcement_level=enforcement_level),
                 MagicConfigDetector(enforcement_level=enforcement_level),
                 GlobalMutationDetector(enforcement_level=enforcement_level),
+                ConfigWithLogicDetector(enforcement_level=enforcement_level),
+                DirectPromptCompilationDetector(enforcement_level=enforcement_level),
             ],
         )
 

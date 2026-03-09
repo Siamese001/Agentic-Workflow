@@ -55,8 +55,11 @@ agentic_core/L0_routing/scripts/execute_ssot.py:8666:silent_swallower:Silent exc
 agentic_core/L0_routing/scripts/execute_ssot.py:8702:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+agentic_core/L0_routing/scripts/generate_dashboard_ssot_util.py:54:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_yaml_config'
+agentic_core/L0_routing/scripts/generate_dashboard_ssot_util.py:58:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_yaml_config'
 agentic_core/L0_routing/scripts/ssot_adapters.py:406:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/seam/seam_audit.py:149:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/types/routing_contracts_types.py:112:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'read_config'
 agentic_core/L0_routing/utils/subprocess_runner_util.py:116:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
 agentic_core/L0_routing/utils/subprocess_runner_util.py:152:magic_configuration:Magic configuration: Hardcoded timeout=120 in function call
 agentic_core/L0_routing/utils/subprocess_runner_util.py:198:magic_configuration:Magic configuration: Hardcoded timeout=300 in function call
@@ -74,6 +77,7 @@ agentic_core/L1_cognition/engines/cache_manager.py:100:magic_configuration:Magic
 agentic_core/L1_cognition/engines/cache_manager.py:108:magic_configuration:Magic configuration: Hardcoded max_cache_size=5000 in function call
 agentic_core/L1_cognition/engines/cache_manager.py:108:magic_configuration:Magic configuration: Hardcoded max_healing_depth=5 in function call
 agentic_core/L1_cognition/engines/cache_manager.py:108:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.85 in function call
+agentic_core/L1_cognition/engines/cache_manager.py:120:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_domain_config'
 agentic_core/L1_cognition/engines/cache_manager.py:92:magic_configuration:Magic configuration: Hardcoded max_cache_size=10000 in function call
 agentic_core/L1_cognition/engines/cache_manager.py:92:magic_configuration:Magic configuration: Hardcoded max_healing_depth=5 in function call
 agentic_core/L1_cognition/engines/cache_manager.py:92:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.85 in function call
@@ -181,6 +185,7 @@ agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:861:type_erasure:T
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:885:type_erasure:Type erasure: SubAtomicRegistryAgent.invoke_method returns Any instead of structured type
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:927:type_erasure:Type erasure: SubAtomicRegistryAgent.execute returns Any instead of structured type
 agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:959:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L2_execution/reasoning/ToolsmithAgent.py:149:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'create_tool_from_spec'
 agentic_core/L2_execution/tools/file_io_impl.py:120:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L2_execution/tools/file_io_impl.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/file_io_impl.py:48:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -192,6 +197,7 @@ agentic_core/L2_execution/tools/time_utils_impl.py:39:silent_swallower:Silent ex
 agentic_core/L2_execution/tools/time_utils_impl.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/time_utils_impl.py:70:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/time_utils_impl.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/tools/tool_chain_executor.py:38:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_validate_config'
 agentic_core/L2_execution/tools/tool_verifier_impl.py:307:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/web_search_client.py:55:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/tools/web_search_client.py:79:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -223,6 +229,7 @@ agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:236:magic_con
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:38:magic_configuration:Magic configuration: Hardcoded line_threshold=600
 agentic_core/L3_orchestration/engines/proactive_fission_scanner.py:82:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L3_orchestration/engines/sovereign_mcp_marketplace.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:125:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_sovereign_config'
 agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:412:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:417:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/engines/sovereign_rag_orchestrator.py:493:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -232,6 +239,8 @@ agentic_core/L3_orchestration/ptc/tool_call_store.py:154:silent_swallower:Silent
 agentic_core/L3_orchestration/ptc/tool_call_store.py:199:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L3_orchestration/ptc/tool_call_store.py:77:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L3_orchestration/ptc/tool_invoker.py:85:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py:177:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_hop_spec'
+agentic_core/L3_orchestration/reasoning/DAGMutatorAgent.py:181:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_hop_spec'
 agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded line_limit=800
 agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:36:magic_configuration:Magic configuration: Hardcoded max_rounds=3
 agentic_core/L3_orchestration/reasoning/FissionManagerAgent.py:62:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -252,6 +261,8 @@ agentic_core/L3_orchestration/types/context_pruning_types.py:344:magic_configura
 agentic_core/L3_orchestration/types/context_pruning_types.py:345:magic_configuration:Magic configuration: Hardcoded max_limit=200
 agentic_core/L3_orchestration/types/context_pruning_types.py:346:magic_configuration:Magic configuration: Hardcoded min_limit=10
 agentic_core/L3_orchestration/types/context_pruning_types.py:40:magic_configuration:Magic configuration: Hardcoded default_min_entries_to_keep=10
+agentic_core/L3_orchestration/types/forward_rolling_types.py:403:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'update_config'
+agentic_core/L3_orchestration/types/forward_rolling_types.py:407:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'update_config'
 agentic_core/L3_orchestration/types/injection_result_types.py:117:magic_configuration:Magic configuration: Hardcoded threshold=0.8
 agentic_core/L3_orchestration/types/recursion_monitor_types.py:132:magic_configuration:Magic configuration: Hardcoded _failure_threshold=5
 agentic_core/L3_orchestration/types/recursion_monitor_types.py:443:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -262,6 +273,9 @@ agentic_core/L3_orchestration/types/recursive_orchestration_types.py:531:silent_
 agentic_core/L3_orchestration/types/telepathy_interface_types.py:144:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/types/telepathy_interface_types.py:174:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L3_orchestration/types/workflow_loader_types.py:117:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L3_orchestration/types/workflow_loader_types.py:202:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_role_config'
+agentic_core/L3_orchestration/types/workflow_loader_types.py:214:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_context_config'
+agentic_core/L3_orchestration/types/workflow_loader_types.py:220:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_reasoning_config'
 agentic_core/L4_state/enforcement/activation_flags.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/activation_flags.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/enforcement/blast_radius.py:103:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -305,6 +319,8 @@ agentic_core/L4_state/utils/experience_buffer_util.py:127:magic_configuration:Ma
 agentic_core/L4_state/utils/experience_buffer_util.py:44:magic_configuration:Magic configuration: Hardcoded max_entries=1000
 agentic_core/L4_state/utils/experience_buffer_util.py:94:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L4_state/utils/sanitize_telemetry_util.py:34:magic_configuration:Magic configuration: Hardcoded max_tail=1000
+agentic_core/L4_state/workflow_engines/cache_key_builders.py:141:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['s0_hash', 'i0_hash', 'd0_hash', 'c0_hash'] outside Assembly Stage
+agentic_core/L4_state/workflow_engines/cache_key_builders.py:273:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['u0_hash'] outside Assembly Stage
 agentic_core/L5_safety/config/gravity_leak_config.py:193:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/config/structure_blueprint/_verify.py:1000:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 agentic_core/L5_safety/config/structure_blueprint/_verify.py:161:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -356,6 +372,7 @@ agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py:111:silent_
 agentic_core/L5_safety/enforcement/circular_import_fixer_enforcer.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/context_session_manager_enforcer.py:315:magic_configuration:Magic configuration: Hardcoded max_age_seconds=3600
 agentic_core/L5_safety/enforcement/dependency_graph_enforcer.py:44:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/embedding_non_interference_guardrail.py:105:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['c0_key'] outside Assembly Stage
 agentic_core/L5_safety/enforcement/error_recovery_guardrail.py:128:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L5_safety/enforcement/error_recovery_guardrail.py:277:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py:124:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -376,6 +393,8 @@ agentic_core/L5_safety/enforcement/safety_guardrail.py:14:magic_configuration:Ma
 agentic_core/L5_safety/enforcement/safety_layer_enforcer.py:135:magic_configuration:Magic configuration: Hardcoded cost_limit_usd=5.0
 agentic_core/L5_safety/enforcement/safety_layer_enforcer.py:26:magic_configuration:Magic configuration: Hardcoded cost_limit_usd=5.0
 agentic_core/L5_safety/enforcement/secure_error_handler_enforcer.py:377:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L5_safety/enforcement/structural_namespace_fence_enforcer.py:141:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'find_spec'
+agentic_core/L5_safety/enforcement/structural_namespace_fence_enforcer.py:145:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'find_spec'
 agentic_core/L5_safety/enforcement/system_enforcer.py:142:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:142:type_erasure:Type erasure: ToxicDependencyAuditor.heal_repository returns dict instead of structured type
@@ -451,6 +470,10 @@ agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:83:silent_swallower:S
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:141:type_erasure:Type erasure: DocumentationAgent.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3387:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4478:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4487:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4496:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4507:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:143:type_erasure:Type erasure: GitHygieneAgent.execute returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:194:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -548,6 +571,9 @@ agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py:420:type_erasure:Type e
 agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py:430:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py:506:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py:556:type_erasure:Type erasure: SafetyInspectorAgent.heal returns dict instead of structured type
+agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:278:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'set_config'
+agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:296:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_config'
+agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:301:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_config'
 agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:343:type_erasure:Type erasure: SecurityManagerAgent.restore_checkpoint returns dict[str, Any] | None instead of structured type
 agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:372:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L5_safety/reasoning/SecurityManagerAgent.py:386:type_erasure:Type erasure: SecurityManagerAgent.heal returns dict instead of structured type
@@ -624,6 +650,9 @@ agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:105:silent_swallo
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:55:magic_configuration:Magic configuration: Hardcoded checkpoint_interval=10
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:56:magic_configuration:Magic configuration: Hardcoded max_retries=3
 agentic_core/L5_safety/utils/cognitive_batch_processor_util.py:94:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/utils/fca_safety_gates_util.py:561:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_nested_lcd_with_policy'
+agentic_core/L5_safety/utils/fca_safety_gates_util.py:565:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_nested_lcd_with_policy'
+agentic_core/L5_safety/utils/fca_safety_gates_util.py:568:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_nested_lcd_with_policy'
 agentic_core/L5_safety/utils/force_app_depth_util.py:42:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/L5_safety/utils/force_app_depth_util.py:64:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
 agentic_core/L5_safety/utils/gravity_visitor_util.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -642,8 +671,9 @@ agentic_core/L5_safety/utils/tiered_batch_util.py:96:silent_swallower:Silent exc
 agentic_core/L5_safety/utils/unified_cst_healer_util.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:73:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-agentic_core/L5_safety/validators/base_detector_validator.py:180:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/validators/base_detector_validator.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/base_detector_validator.py:182:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/base_detector_validator.py:278:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/config_with_logic_validator.py:65:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/context_validator.py:255:magic_configuration:Magic configuration: Hardcoded max_age=300
 agentic_core/L5_safety/validators/ddd_alignment_validator.py:79:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/dependencygraph_validator.py:137:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
@@ -657,6 +687,7 @@ agentic_core/L5_safety/validators/dependencygraph_validator.py:375:magic_configu
 agentic_core/L5_safety/validators/dependencygraph_validator.py:390:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/dependencygraph_validator.py:394:magic_configuration:Magic configuration: Hardcoded max_cycles=5
 agentic_core/L5_safety/validators/dependencygraph_validator.py:435:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/validators/direct_prompt_compilation_validator.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/global_mutation_validator.py:69:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/intervention_server_validator.py:243:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/intervention_server_validator.py:277:magic_configuration:Magic configuration: Hardcoded high_risk_threshold=3
@@ -704,6 +735,7 @@ agentic_core/L6_observability/engines/SovereignHealthMonitor.py:68:silent_swallo
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:86:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L6_observability/engines/SovereignHealthMonitor.py:90:magic_configuration:Magic configuration: Hardcoded limit=100
 agentic_core/L6_observability/engines/detection_signal_emitter.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L6_observability/engines/drift_detector.py:46:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['c0_context_hash'] outside Assembly Stage
 agentic_core/L6_observability/engines/drift_registry.py:135:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L6_observability/reasoning/observability_probe_executor.py:33:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.execute returns dict instead of structured type
 agentic_core/L6_observability/reasoning/observability_probe_executor.py:84:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.heal_repository returns dict instead of structured type
@@ -715,8 +747,13 @@ agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent excep
 agentic_core/base_agents/L4StateBase.py:46:type_erasure:Type erasure: L4StateBase.get_state returns Any instead of structured type
 agentic_core/base_agents/SovereignBaseAgent.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/SovereignBaseAgent.py:518:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/cache/cache_key_builders.py:141:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['s0_hash', 'i0_hash', 'd0_hash', 'c0_hash'] outside Assembly Stage
+agentic_core/cache/cache_key_builders.py:273:direct_prompt_compilation:Direct prompt compilation: f-string references prompt-slot variable(s) ['u0_hash'] outside Assembly Stage
 agentic_core/cache/redis_cache_client.py:586:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+agentic_core/config/core/config_loader.py:18:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
+agentic_core/config/core/config_loader.py:20:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
+agentic_core/config/core/config_loader.py:29:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
 agentic_core/config/core/reflection_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:364:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -855,6 +892,8 @@ agentic_core/utils/workflow_engines/validators.py:77:magic_configuration:Magic c
 apps_lic/config/placeholder_detector_agent_config.py:55:type_erasure:Type erasure: PlaceholderDetectorAgent.heal_repository returns dict instead of structured type
 apps_lic/config/retry_policy_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/config/retry_policy_config.py:262:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/reasoning/DispatchOutreachToolsAgent.py:103:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
+apps_lic/reasoning/DispatchOutreachToolsAgent.py:99:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
 apps_lic/reasoning/LicCodeInterpreter.py:278:magic_configuration:Magic configuration: Hardcoded min_length=4
 apps_lic/reasoning/LicCodeInterpreter.py:324:magic_configuration:Magic configuration: Hardcoded min_word_length=4
 apps_lic/reasoning/LicReflectionAgent.py:64:type_erasure:Type erasure: LicReflectionAgent.heal_repository returns dict instead of structured type
@@ -921,6 +960,9 @@ apps_lic/tools/run_workflow_lic.py:235:silent_swallower:Silent exception swallow
 apps_lic/tools/run_workflow_lic.py:27:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_lic/tools/run_workflow_lic.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/tools/run_workflow_lic.py:29:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+apps_lic/tools/validation_tools.py:53:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_schema_policy'
+apps_lic/tools/validation_tools.py:58:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_schema_policy'
+apps_lic/tools/validation_tools.py:61:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_schema_policy'
 apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_lic/types/action_call_generator_types.py:78:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_lic/types/app_content_validator_agent_types.py:486:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.9 in function call
@@ -958,6 +1000,7 @@ apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded max_retries=3
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:44:magic_configuration:Magic configuration: Hardcoded failure_threshold=5
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:45:magic_configuration:Magic configuration: Hardcoded reset_timeout_s=30
+apps_rg/engines/base_rg_engine.py:194:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_node_config'
 apps_rg/reasoning/ConfidencemetricsStrategy.py:206:magic_configuration:Magic configuration: Hardcoded min_confidence=0.8
 apps_rg/reasoning/ConfidencemetricsStrategy.py:25:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.95
 apps_rg/reasoning/ConfidencemetricsStrategy.py:26:magic_configuration:Magic configuration: Hardcoded convergence_threshold=0.9
@@ -965,6 +1008,9 @@ apps_rg/reasoning/ConfidencemetricsStrategy.py:27:magic_configuration:Magic conf
 apps_rg/reasoning/ConfidencemetricsStrategy.py:28:magic_configuration:Magic configuration: Hardcoded min_steps=2
 apps_rg/reasoning/ConfidencemetricsStrategy.py:29:magic_configuration:Magic configuration: Hardcoded max_steps=8
 apps_rg/reasoning/ContentQualityAgent.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/reasoning/DispatchResumeToolsAgent.py:144:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_titanium_config'
+apps_rg/reasoning/DispatchResumeToolsAgent.py:150:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
+apps_rg/reasoning/DispatchResumeToolsAgent.py:154:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_heal_timeout_settings'
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:49:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:50:magic_configuration:Magic configuration: Hardcoded timeout_s=60
 apps_rg/reasoning/HardenedopenaiexecutorStrategy.py:51:magic_configuration:Magic configuration: Hardcoded max_retries=3
@@ -1004,6 +1050,7 @@ apps_rg/tools/query_past_generations.py:21:magic_configuration:Magic configurati
 apps_rg/types/AllProvidersDownError.py:213:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/AllProvidersDownError.py:251:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/AllProvidersDownError.py:82:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/types/AllProvidersDownError.py:99:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_config'
 apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
 apps_rg/types/PromptTemplate.py:175:magic_configuration:Magic configuration: Hardcoded min_tot_depth=4 in function call
 apps_rg/types/PromptTemplate.py:208:magic_configuration:Magic configuration: Hardcoded min_tot_depth=2 in function call
@@ -1016,6 +1063,7 @@ apps_rg/types/PromptTemplate.py:244:magic_configuration:Magic configuration: Har
 apps_rg/types/PromptTemplate.py:270:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
 apps_rg/types/PromptTemplate.py:296:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
 apps_rg/types/PromptTemplate.py:317:magic_configuration:Magic configuration: Hardcoded cot_min_paths=2 in function call
+apps_rg/types/PromptTemplate.py:504:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_node_config'
 apps_rg/types/resume_analysis_plan_types.py:439:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/types/routing_tier_types.py:57:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
 apps_rg/types/routing_tier_types.py:63:magic_configuration:Magic configuration: Hardcoded max_tokens=2048 in function call
@@ -1028,6 +1076,7 @@ apps_rg/utils/deep_brain_harvester_util.py:221:silent_swallower:Silent exception
 apps_rg/utils/deep_brain_harvester_util.py:59:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_rg/utils/text_util.py:19:magic_configuration:Magic configuration: Hardcoded max_words=5
 apps_rg/validators/validation_result_validator.py:66:magic_configuration:Magic configuration: Hardcoded max_attempts=3
+apps_shared/config/integration_config.py:94:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_domain_config'
 apps_shared/config/titanium_search_tool_config.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1132,6 +1181,9 @@ apps_shared/types/app_config_types.py:567:magic_configuration:Magic configuratio
 apps_shared/types/app_config_types.py:585:magic_configuration:Magic configuration: Hardcoded cot_min_paths=4 in function call
 apps_shared/types/app_config_types.py:585:magic_configuration:Magic configuration: Hardcoded max_reflexion_loops=2 in function call
 apps_shared/types/app_config_types.py:585:magic_configuration:Magic configuration: Hardcoded min_tot_depth=3 in function call
+apps_shared/types/app_config_types.py:67:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
+apps_shared/types/app_config_types.py:70:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
+apps_shared/types/app_config_types.py:82:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
 apps_shared/types/checkpoint_manager_types.py:235:magic_configuration:Magic configuration: Hardcoded limit=100
 apps_shared/types/checkpoint_manager_types.py:259:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/checkpoint_manager_types.py:416:magic_configuration:Magic configuration: Hardcoded limit=100
@@ -1150,6 +1202,8 @@ apps_shared/types/dead_letter_queue_types.py:289:magic_configuration:Magic confi
 apps_shared/types/dead_letter_queue_types.py:334:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/dead_letter_queue_types.py:435:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/dead_letter_queue_types.py:516:magic_configuration:Magic configuration: Hardcoded limit=100
+apps_shared/types/engine_type_types.py:514:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'create_domain_config'
+apps_shared/types/engine_type_types.py:527:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'create_domain_config'
 apps_shared/types/event_bus_types.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/event_bus_types.py:339:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/event_bus_types.py:453:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1238,6 +1292,8 @@ apps_shared/types/model_router_types.py:126:magic_configuration:Magic configurat
 apps_shared/types/model_router_types.py:135:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
 apps_shared/types/model_router_types.py:145:magic_configuration:Magic configuration: Hardcoded max_tokens=32768 in function call
 apps_shared/types/model_router_types.py:154:magic_configuration:Magic configuration: Hardcoded max_tokens=4096 in function call
+apps_shared/types/model_router_types.py:282:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
+apps_shared/types/model_router_types.py:286:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_model_config'
 apps_shared/types/model_router_types.py:544:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/model_router_types.py:70:magic_configuration:Magic configuration: Hardcoded budget_period_hours=24
 apps_shared/types/model_router_types.py:70:magic_configuration:Magic configuration: Hardcoded daily_budget=5.0
@@ -1302,6 +1358,8 @@ apps_shared/types/tool_type_types.py:167:silent_swallower:Silent exception swall
 apps_shared/types/tool_type_types.py:324:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/tool_type_types.py:540:magic_configuration:Magic configuration: Hardcoded timeout=30.0
 apps_shared/types/tool_type_types.py:541:magic_configuration:Magic configuration: Hardcoded retry_count=3
+apps_shared/types/unified_formatter_types.py:206:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_apply_config'
+apps_shared/types/unified_formatter_types.py:209:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_apply_config'
 apps_shared/types/unified_formatter_types.py:525:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/types/validation_status_types.py:397:magic_configuration:Magic configuration: Hardcoded threshold=0.85
 apps_shared/types/validation_status_types.py:399:magic_configuration:Magic configuration: Hardcoded threshold=0.7
@@ -1321,6 +1379,8 @@ apps_shared/utils/agent_interface_util.py:265:silent_swallower:Silent exception 
 apps_shared/utils/agent_interface_util.py:270:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/agent_interface_util.py:277:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/analysis_mixin_util.py:236:magic_configuration:Magic configuration: Hardcoded threshold=2.0
+apps_shared/utils/app_base_util.py:116:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_app_config'
+apps_shared/utils/app_base_util.py:120:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_app_config'
 apps_shared/utils/async_coordinator_util.py:227:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/async_coordinator_util.py:237:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/async_coordinator_util.py:363:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1334,12 +1394,21 @@ apps_shared/utils/bulkhead_manager_util.py:327:magic_configuration:Magic configu
 apps_shared/utils/bulkhead_manager_util.py:332:magic_configuration:Magic configuration: Hardcoded max_concurrency=2 in function call
 apps_shared/utils/bulkhead_manager_util.py:337:magic_configuration:Magic configuration: Hardcoded max_concurrency=3 in function call
 apps_shared/utils/bulkhead_manager_util.py:337:magic_configuration:Magic configuration: Hardcoded timeout_seconds=60.0 in function call
+apps_shared/utils/config_loader_util.py:200:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'reload_config'
+apps_shared/utils/config_loader_util.py:213:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/config_loader_util.py:218:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/config_loader_util.py:277:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_agent_config'
+apps_shared/utils/config_loader_util.py:74:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_config'
+apps_shared/utils/config_loader_util.py:78:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_config'
+apps_shared/utils/config_loader_util.py:86:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_config'
 apps_shared/utils/context_manager_util.py:158:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
 apps_shared/utils/context_manager_util.py:26:magic_configuration:Magic configuration: Hardcoded max_tokens=4000
 apps_shared/utils/contextual_compressor_util.py:232:magic_configuration:Magic configuration: Hardcoded max_tokens=1000 in function call
 apps_shared/utils/contextual_compressor_util.py:241:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/contextual_compressor_util.py:307:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
 apps_shared/utils/contextual_compressor_util.py:37:magic_configuration:Magic configuration: Hardcoded similarity_threshold=0.1
+apps_shared/utils/environment_util.py:147:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_config'
+apps_shared/utils/environment_util.py:191:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_environment_config'
 apps_shared/utils/etl_pipeline_util.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/etl_pipeline_util.py:212:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/etl_pipeline_util.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1387,7 +1456,13 @@ apps_shared/utils/retrieval_grader_util.py:236:magic_configuration:Magic configu
 apps_shared/utils/retrieval_grader_util.py:49:magic_configuration:Magic configuration: Hardcoded relevance_threshold=0.5
 apps_shared/utils/retrieval_grader_util.py:50:magic_configuration:Magic configuration: Hardcoded confidence_threshold=0.7
 apps_shared/utils/retrieval_grader_util.py:52:magic_configuration:Magic configuration: Hardcoded max_docs_to_grade=10
+apps_shared/utils/secure_config_manager_util.py:108:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_config'
 apps_shared/utils/secure_config_manager_util.py:152:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/secure_config_manager_util.py:321:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/secure_config_manager_util.py:322:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/secure_config_manager_util.py:325:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/secure_config_manager_util.py:328:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_config'
+apps_shared/utils/secure_config_manager_util.py:346:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'export_config'
 apps_shared/utils/security_config_util.py:104:magic_configuration:Magic configuration: Hardcoded max_length=255
 apps_shared/utils/security_config_util.py:154:magic_configuration:Magic configuration: Hardcoded max_length=10000
 apps_shared/utils/security_config_util.py:235:magic_configuration:Magic configuration: Hardcoded max_requests=100
@@ -1417,6 +1492,9 @@ apps_shared/utils/tone_voice_util.py:150:magic_configuration:Magic configuration
 apps_shared/utils/tone_voice_util.py:150:magic_configuration:Magic configuration: Hardcoded max_sentence_length=25 in function call
 apps_shared/utils/tone_voice_util.py:162:magic_configuration:Magic configuration: Hardcoded max_passive_voice_percent=25.0 in function call
 apps_shared/utils/tone_voice_util.py:162:magic_configuration:Magic configuration: Hardcoded max_sentence_length=30 in function call
+apps_shared/utils/unified_config_helper_util.py:183:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_unified_config'
+apps_shared/utils/unified_config_helper_util.py:188:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_unified_config'
+apps_shared/utils/unified_config_helper_util.py:190:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'validate_unified_config'
 apps_shared/utils/unified_executor_util.py:109:magic_configuration:Magic configuration: Hardcoded failure_threshold=5 in function call
 apps_shared/utils/unified_executor_util.py:109:magic_configuration:Magic configuration: Hardcoded recovery_timeout=60 in function call
 apps_shared/utils/unified_executor_util.py:162:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1425,6 +1503,7 @@ apps_shared/utils/unified_executor_util.py:252:magic_configuration:Magic configu
 apps_shared/utils/unified_executor_util.py:252:magic_configuration:Magic configuration: Hardcoded recovery_timeout=30 in function call
 apps_shared/utils/unified_executor_util.py:289:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/unified_executor_util.py:374:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_shared/utils/unified_executor_util.py:598:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_get_engine_config'
 apps_shared/utils/validation_mixin_util.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/utils/vector_memory_types_util.py:152:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/validators/cache_entry_validator.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1646,6 +1725,8 @@ tools/evidence/phase02_consolidated_evidence_runner.py:13:global_mutation:Global
 tools/evidence/phase03_04_consolidated_evidence_runner.py:13:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase05_06_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase07_08_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+tools/evidence/phase4_l5_d0_confcalib_evidence.py:151:direct_prompt_compilation:Direct prompt compilation: string concatenation (+) references prompt-slot variable(s) ['d0_wall_clock'] outside Assembly Stage
+tools/evidence/phase4_l5_d0_confcalib_evidence.py:152:direct_prompt_compilation:Direct prompt compilation: string concatenation (+) references prompt-slot variable(s) ['d0_forbidden'] outside Assembly Stage
 tools/evidence/phase_09_10_consolidated_evidence_runner.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/phase_10c_11_12_consolidated_evidence_runner.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 tools/evidence/qwen_migration_phase6_evidence_runner.py:217:magic_configuration:Magic configuration: Hardcoded budget_margin_tokens=7000 in function call

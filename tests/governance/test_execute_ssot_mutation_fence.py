@@ -196,7 +196,7 @@ class TestProtectedRootPolicy:
     def test_default_policy_has_correct_immutable_roots(self):
         """Test that default policy has the expected immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == ("agentic_core", "tests", ".github")
+        assert policy.immutable_roots == ("agentic_core", "tests", ".github", ".windsurfrules")
 
     def test_default_policy_log_path_outside_immutable_roots(self):
         """Test that default policy log path is outside immutable roots."""

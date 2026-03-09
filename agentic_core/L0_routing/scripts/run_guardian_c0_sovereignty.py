@@ -200,7 +200,7 @@ def _main(argv: list[str] | None = None) -> int:
     parser.add_argument("--correlation-id", default=None)
     args = parser.parse_args(argv)
     result = run_c0_sovereignty_guardian(
-        artifact_dir=args.write_artifacts,
+        write_artifacts_dir=args.write_artifacts,
         correlation_id=args.correlation_id,
     )
     if args.strict and result.status == GuardianStatus.FAIL.value:

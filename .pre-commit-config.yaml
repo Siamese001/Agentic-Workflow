@@ -85,6 +85,15 @@ repos:
         # Also exclude third-party/vendored paths and venv/site-packages
         exclude: (ops_scripts/ci/check_anti_patterns\.py|ops_scripts/.*|tests/support/l6_observability/.*|tests/.*|__pycache__/.*|.nox/.*|archives/.*|.backup/.*|(^|/)(\.venv|venv|site-packages|third_party|vendor|node_modules)/)
 
+      # -- T3a-c0: C0 Sovereignty Guardian (embedding must not drive routing) -----
+      - id: check-c0-sovereignty
+        name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
+        entry: cmd /c "set PYTHONPATH=.&& python agentic_core/L0_routing/scripts/run_guardian_c0_sovereignty.py"
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T3b: Report location SSOT (staged-only, structural) ------------------
       - id: check-report-location
         name: "T3b: Report Location SSOT Check"

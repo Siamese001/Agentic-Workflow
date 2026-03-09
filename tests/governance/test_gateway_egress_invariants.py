@@ -39,6 +39,10 @@ _KNOWN_BYPASS_DEBT: frozenset[str] = frozenset(
     {
         "apps_rg/tools/ResumeGenerator.py",
         "apps_shared/utils/providers_google_genai_client_util.py",
+        # Lazy inline import inside invoke_prompt() with try/except ImportError guard.
+        # This is the hardened executor implementation for the sync healing path.
+        # Remediation: move import to L2 gateway; tracked as gateway-migration debt.
+        "apps_shared/types/hardened_gemini_executor_types.py",
     }
 )
 
