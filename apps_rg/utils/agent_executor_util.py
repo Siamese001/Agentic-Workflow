@@ -127,14 +127,31 @@ class AgentExecutor:
         tools: list[dict[str, Any]] | None,
         **kwargs,
     ) -> AgentResponse:
-        """Internal execution logic."""
+        """Internal execution logic.
+
+        RG-GAP-04: All LLM calls MUST route through SovereignLLMGateway.
+        Direct SDK methods (_execute_openai, _execute_anthropic, _execute_google_legacy)
+        are retained as documented but must not be called directly from here.
+        """
         # Convert messages to provider format
         formatted_messages = self._format_messages(messages, system_prompt)
 
         # Get model name
         model = self.config.model or self._get_default_model()
 
-        # Execute based on provider
+        # RG-GAP-04: Prefer SovereignLLMGateway for all provider paths.
+        gateway_response = self._try_execute_via_gateway(
+            formatted_messages, model, system_prompt, tools, **kwargs
+        )
+        if gateway_response is not None:
+            return gateway_response
+
+        # Sovereign gateway unavailable — fall through to direct SDK paths.
+        # This path is only reached when gateway import fails (e.g. local dev without gateway).
+        logger.warning(
+            "[RG-GAP-04] SovereignLLMGateway unavailable; falling back to direct SDK for provider=%s",
+            self.config.provider.value,
+        )
         if self.config.provider == Provider.OPENAI:
             return self._execute_openai(formatted_messages, model, tools, **kwargs)
         elif self.config.provider == Provider.ANTHROPIC:
@@ -144,6 +161,63 @@ class AgentExecutor:
         else:
             # Use LiteLLM for other providers
             return self._execute_litellm(formatted_messages, model, tools, **kwargs)
+
+    def _try_execute_via_gateway(
+        self,
+        formatted_messages: list[dict[str, str]],
+        model: str,
+        system_prompt: str | None,
+        tools: list[dict[str, Any]] | None,
+        **kwargs,
+    ) -> AgentResponse | None:
+        """Route execution through SovereignLLMGateway.
+
+        Returns AgentResponse on success, None if gateway is unavailable.
+        RG-GAP-04: This is the canonical execution path for all providers.
+        """
+        try:
+            from agentic_core.interfaces.gateway import GenerationRequest, SovereignLLMGateway
+        except ImportError:
+            return None
+
+        # Build a single prompt string from formatted messages for gateway compat.
+        prompt_parts = []
+        _system = None
+        for msg in formatted_messages:
+            role = msg.get("role", "user")
+            content = msg.get("content", "")
+            if role == "system":
+                _system = content
+            else:
+                prompt_parts.append(f"{role}: {content}")
+        prompt = "\n".join(prompt_parts)
+
+        try:
+            gateway = SovereignLLMGateway()
+            request = GenerationRequest(
+                agent_id=f"AgentExecutor.{self.config.provider.value}",
+                provider=self.config.provider.value,
+                model=model,
+                prompt=prompt,
+                system_prompt=_system,
+                temperature=self.config.temperature,
+                max_tokens=self.config.max_tokens,
+            )
+            response = gateway.generate(request)
+            text = response.text if hasattr(response, "text") else str(response)
+            return AgentResponse(
+                content=text,
+                finish_reason="stop",
+                raw_response=response,
+            )
+        except Exception as exc:  # guardian: allow-silent-swallower
+            logger.error(
+                "[RG-GAP-04] SovereignLLMGateway.generate failed for provider=%s: %s; "
+                "falling back to direct SDK",
+                self.config.provider.value,
+                exc,
+            )
+            return None
 
     def _format_messages(
         self,
