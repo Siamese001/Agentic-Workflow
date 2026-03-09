@@ -104,7 +104,7 @@ class TestImportGraphContract:
     def test_forbidden_edge_count_non_growing(self) -> None:
         """Forbidden edge count must not exceed snapshot ceiling (§29)."""
         if not SNAPSHOT_PATH.exists():
-            pytest.skip("No snapshot yet — run test_snapshot_persisted first")
+            pytest.fail("No snapshot yet — run test_snapshot_persisted first")
         snapshot = json.loads(SNAPSHOT_PATH.read_text(encoding="utf-8"))
         ceiling = snapshot["forbidden_edge_count"]
         edges = _extract_import_edges()

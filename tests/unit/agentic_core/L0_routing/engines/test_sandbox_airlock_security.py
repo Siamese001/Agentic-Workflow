@@ -15,7 +15,6 @@ from __future__ import annotations
 
 import hashlib
 from dataclasses import dataclass, field
-from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
@@ -30,7 +29,6 @@ from agentic_core.L0_routing.engines.escalation_router import (
 )
 from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 from agentic_core.L0_routing.engines.path_router import Path, PathRouter
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -210,7 +208,7 @@ class TestSizeBoundary:
     @pytest.mark.governance
     def test_shred_limits_to_reasonable_check_ids_for_large_input(self):
         # 100 numbered items → should produce exactly 100 check_ids
-        lines = "\n".join(f"{i+1}. item {i+1}" for i in range(100))
+        lines = "\n".join(f"{i + 1}. item {i + 1}" for i in range(100))
         result = AirlockAssembler._shred(lines)
         assert len(result) == 100
 
@@ -312,7 +310,6 @@ class TestSecurityHashIntegrity:
         int(payload.manifest_hash, 16)  # valid hex
 
 
-
 # ===========================================================================
 # 5. Tool allowlist via PathRouter semantics (Phase 4 spec)
 # ===========================================================================
@@ -333,8 +330,12 @@ class TestToolAllowlistViaPath:
     def test_read_only_path_selected_when_no_check_ids(self):
         router = PathRouter()
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u",
-            check_ids=(), sanitized=False,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=(),
+            sanitized=False,
         )
         assert router.select_path(payload) == Path.A
 
@@ -342,8 +343,12 @@ class TestToolAllowlistViaPath:
     def test_policy_check_path_selected_when_sanitized(self):
         router = PathRouter()
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u",
-            check_ids=("search",), sanitized=True,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=("search",),
+            sanitized=True,
         )
         assert router.select_path(payload) == Path.B
 
@@ -351,8 +356,12 @@ class TestToolAllowlistViaPath:
     def test_direct_path_selected_when_single_unsanitized_check_id(self):
         router = PathRouter()
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u",
-            check_ids=("create_file",), sanitized=False,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=("create_file",),
+            sanitized=False,
         )
         assert router.select_path(payload) == Path.C
 
@@ -360,8 +369,12 @@ class TestToolAllowlistViaPath:
     def test_human_review_path_selected_when_multiple_unsanitized_check_ids(self):
         router = PathRouter()
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u",
-            check_ids=("task1", "task2"), sanitized=False,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=("task1", "task2"),
+            sanitized=False,
         )
         assert router.select_path(payload) == Path.D
 

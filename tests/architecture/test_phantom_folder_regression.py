@@ -87,7 +87,7 @@ class TestDepthAlignedRegression:
         """Specific guard: agentic_core/ must never contain depth_aligned/."""
         ac = REPO_ROOT / "agentic_core"
         if not ac.exists():
-            pytest.skip("agentic_core not present")
+            pytest.fail("agentic_core not present")
         violations = [d for d in ac.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
         assert not violations, "depth_aligned/ found inside agentic_core/:\n  " + "\n  ".join(
             str(d.relative_to(REPO_ROOT)) for d in violations
@@ -97,7 +97,7 @@ class TestDepthAlignedRegression:
         """Specific guard: tests/ must never contain depth_aligned/."""
         t = REPO_ROOT / "tests"
         if not t.exists():
-            pytest.skip("tests/ not present")
+            pytest.fail("tests/ not present")
         violations = [d for d in t.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
         assert not violations, "depth_aligned/ found inside tests/:\n  " + "\n  ".join(
             str(d.relative_to(REPO_ROOT)) for d in violations
@@ -107,7 +107,7 @@ class TestDepthAlignedRegression:
         """Specific guard: system_learning/ must never contain depth_aligned/."""
         sl = REPO_ROOT / "system_learning"
         if not sl.exists():
-            pytest.skip("system_learning not present")
+            pytest.fail("system_learning not present")
         violations = [d for d in sl.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
         assert not violations, "depth_aligned/ found inside system_learning/:\n  " + "\n  ".join(
             str(d.relative_to(REPO_ROOT)) for d in violations
@@ -124,7 +124,7 @@ class TestDepthAlignedRegression:
                 SOVEREIGN_TERRITORIES,
             )
         except ImportError:
-            pytest.skip("SOVEREIGN_TERRITORIES not importable")
+            pytest.fail("SOVEREIGN_TERRITORIES not importable")
 
         def _walk(obj: object, path: str = "") -> list[str]:
             found = []
@@ -202,7 +202,7 @@ class TestTestsSupportFlatStructure:
         """
         support = REPO_ROOT / "tests" / "support"
         if not support.exists():
-            pytest.skip("tests/support not present")
+            pytest.fail("tests/support not present")
         violations = [d for d in support.iterdir() if d.is_dir() and L_LAYER_PATTERN.match(d.name)]
         assert not violations, "L-layer phantom subdirectories found under tests/support/: " + ", ".join(
             d.name for d in violations
@@ -216,7 +216,7 @@ class TestTestsSupportFlatStructure:
         """
         support = REPO_ROOT / "tests" / "support"
         if not support.exists():
-            pytest.skip("tests/support not present")
+            pytest.fail("tests/support not present")
 
         root_agents = {f.name for f in support.iterdir() if f.is_file() and f.suffix == ".py"}
         subdirs = [d for d in support.iterdir() if d.is_dir() and d.name != "__pycache__"]
@@ -247,7 +247,7 @@ class TestTestsSupportFlatStructure:
         """Each known-bad subdirectory name must not exist under tests/support/."""
         support = REPO_ROOT / "tests" / "support"
         if not support.exists():
-            pytest.skip("tests/support not present")
+            pytest.fail("tests/support not present")
         bad = support / forbidden_name
         assert not bad.exists(), (
             f"Forbidden subdirectory tests/support/{forbidden_name}/ exists — "

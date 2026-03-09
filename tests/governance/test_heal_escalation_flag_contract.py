@@ -130,9 +130,7 @@ class TestObserverSeamSafety:
         # Check the observer is None (or has been reset) - no reload needed
         # The default value defined at module scope must be None
         current_observer = agentic_core.utils.decorators_util._HEAL_TIER_OBSERVER
-        assert current_observer is None, (
-            "Observer seam must default to None"
-        )
+        assert current_observer is None, "Observer seam must default to None"
 
     def test_observer_not_reassigned_at_module_scope(self) -> None:
         """Observer seam must not be reassigned anywhere at module scope (AST check)."""

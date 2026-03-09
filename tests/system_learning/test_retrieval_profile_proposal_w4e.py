@@ -26,7 +26,7 @@ class TestW4EProposalDeterminism:
             profile_id="test-profile",
             recommended_changes={
                 "similarity_cutoff": 0.842500,  # -0.0075 from 0.85
-                "influence_cap": 0.503000,      # +0.003 from 0.5
+                "influence_cap": 0.503000,  # +0.003 from 0.5
             },
             rationale="Drift detected: Lower similarity_cutoff from 0.850000 to 0.842500 (drift_score=0.150000); Increase influence_cap from 0.500000 to 0.503000 (drift_score=0.150000)",
             confidence_score=0.300000,
@@ -62,8 +62,9 @@ class TestW4EProposalDeterminism:
         )
 
         # Verify deterministic digest
-        assert proposal1.deterministic_digest == proposal2.deterministic_digest, \
+        assert proposal1.deterministic_digest == proposal2.deterministic_digest, (
             "Proposal digest must be deterministic"
+        )
 
         # Emit digest for test verification
         proposal1.emit_digest()
@@ -140,7 +141,7 @@ class TestW4EProposalAdvisoryOnly:
             profile_id="test-profile",
             recommended_changes={
                 "similarity_cutoff": -0.5,  # Would go negative
-                "influence_cap": 2.0,       # Would exceed 1.0
+                "influence_cap": 2.0,  # Would exceed 1.0
             },
             rationale="Test extreme recommendation",
             confidence_score=0.5,
@@ -170,18 +171,19 @@ class TestW4EProposalAdvisoryOnly:
         )
 
         # Verify bounds are enforced
-        assert proposal.proposed_profile.similarity_cutoff >= 0.1, \
+        assert proposal.proposed_profile.similarity_cutoff >= 0.1, (
             "Similarity cutoff should not go below minimum"
-        assert proposal.proposed_profile.similarity_cutoff <= 1.0, \
+        )
+        assert proposal.proposed_profile.similarity_cutoff <= 1.0, (
             "Similarity cutoff should not exceed maximum"
-        assert proposal.proposed_profile.influence_cap >= 0.0, \
-            "Influence cap should not go below minimum"
-        assert proposal.proposed_profile.influence_cap <= 1.0, \
-            "Influence cap should not exceed maximum"
+        )
+        assert proposal.proposed_profile.influence_cap >= 0.0, "Influence cap should not go below minimum"
+        assert proposal.proposed_profile.influence_cap <= 1.0, "Influence cap should not exceed maximum"
 
         # Verify rounding to 6 decimals
-        assert len(str(proposal.proposed_profile.similarity_cutoff).split('.')[-1]) <= 6, \
+        assert len(str(proposal.proposed_profile.similarity_cutoff).split(".")[-1]) <= 6, (
             "Values should be rounded to 6 decimals"
+        )
 
 
 @pytest.mark.unit_min_deps
@@ -235,8 +237,9 @@ class TestW4EProposalApproval:
 
         # Verify approval is recorded
         assert approved_proposal.approved == True
-        assert approved_proposal.deterministic_digest != proposal.deterministic_digest, \
+        assert approved_proposal.deterministic_digest != proposal.deterministic_digest, (
             "Approved proposal should have different digest"
+        )
 
         # Verify original profile is still unchanged
         assert active_profile.similarity_cutoff == 0.85
@@ -255,6 +258,7 @@ class TestW4ENegativeControl:
 
         # Monkey patch the json.dumps to use different separator order
         import system_learning.engines.retrieval_profile_proposal as proposal_module
+
         original_json_dumps = proposal_module.json.dumps
 
         def tampered_json_dumps(obj, *, sort_keys=False, separators=None):
@@ -308,7 +312,9 @@ class TestW4ENegativeControl:
 
             # Tampering should cause different results - this should FAIL the test
             if proposal_tampered.deterministic_digest != proposal_normal.deterministic_digest:
-                assert False, f"TAMPERING DETECTED: tampered digest {proposal_tampered.deterministic_digest} != normal digest {proposal_normal.deterministic_digest}"
+                assert False, (
+                    f"TAMPERING DETECTED: tampered digest {proposal_tampered.deterministic_digest} != normal digest {proposal_normal.deterministic_digest}"
+                )
 
             # If we get here, tampering wasn't effective
             assert False, "Tampering was not effective - digests are identical"
@@ -362,7 +368,9 @@ class TestW4ENegativeControl:
         )
 
         # Should be identical when not tampering
-        assert proposal1.deterministic_digest == proposal2.deterministic_digest, \
+        assert proposal1.deterministic_digest == proposal2.deterministic_digest, (
             "Digest must be identical when not tampering"
-        assert proposal1.proposed_profile.similarity_cutoff == proposal2.proposed_profile.similarity_cutoff, \
+        )
+        assert proposal1.proposed_profile.similarity_cutoff == proposal2.proposed_profile.similarity_cutoff, (
             "Proposed profiles must be identical when not tampering"
+        )

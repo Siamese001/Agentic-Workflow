@@ -67,7 +67,7 @@ class TestNoAgentsOutsideReasoning:
         """No Agent classes should exist in types/ folders."""
         base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
-            pytest.skip("agentic_core not found")
+            pytest.fail("agentic_core not found")
 
         violations = []
         for types_dir in base.rglob("types"):
@@ -95,7 +95,7 @@ class TestNoAgentsOutsideReasoning:
         """No Agent classes should exist in config/ folders."""
         base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
-            pytest.skip("agentic_core not found")
+            pytest.fail("agentic_core not found")
 
         violations = []
         for config_dir in base.rglob("config"):
@@ -122,7 +122,7 @@ class TestNoAgentsOutsideReasoning:
         """No Agent classes should exist in validators/ folders."""
         base = Path(__file__).resolve().parents[3] / "agentic_core"
         if not base.exists():
-            pytest.skip("agentic_core not found")
+            pytest.fail("agentic_core not found")
 
         violations = []
         for validators_dir in base.rglob("validators"):

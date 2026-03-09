@@ -4,35 +4,41 @@ Tests that discovery scan is deterministic and promotion decisions are
 replay-stable.
 """
 
-import pytest
-from dataclasses import dataclass
-from typing import List, Dict, Any, Set
 import hashlib
 import json
-from pathlib import Path
+from dataclasses import dataclass
+from typing import Any
+
+import pytest
 
 pytestmark = pytest.mark.governance
+
 
 @dataclass(frozen=True)
 class AgentCandidate:
     """A candidate agent discovered during scan."""
+
     file_path: str
     class_name: str
     layer: str
     confidence_score: float
     discovery_hash: str
 
+
 @dataclass(frozen=True)
 class DiscoveryResult:
     """Result of a discovery scan."""
+
     scan_id: str
-    candidates: List[AgentCandidate]
+    candidates: list[AgentCandidate]
     scan_timestamp: float
     total_files_scanned: int
+
 
 @dataclass(frozen=True)
 class PromotionDecision:
     """Decision to promote a candidate."""
+
     decision_id: str
     candidate: AgentCandidate
     promote: bool
@@ -40,13 +46,16 @@ class PromotionDecision:
     blueprint_hash: str
     semantic_clock_tick: int
 
+
 @dataclass(frozen=True)
 class SurgicalManifest:
     """Manifest for surgical changes."""
+
     manifest_id: str
-    changes: List[Dict[str, Any]]
+    changes: list[dict[str, Any]]
     ssot_hash: str
     timestamp: float
+
 
 class MockDiscoveryScanner:
     """Mock discovery scanner for testing."""
@@ -54,7 +63,7 @@ class MockDiscoveryScanner:
     def __init__(self):
         self.scan_count = 0
 
-    def scan_agents(self, root_path: str, file_patterns: List[str]) -> DiscoveryResult:
+    def scan_agents(self, root_path: str, file_patterns: list[str]) -> DiscoveryResult:
         """Perform deterministic scan of agents."""
         self.scan_count += 1
 
@@ -63,9 +72,13 @@ class MockDiscoveryScanner:
 
         # Mock file discovery based on patterns
         mock_files = [
-            ('agentic_core/L1_cognition/reasoning/TestAgent.py', 'TestAgent', 'L1_cognition'),
-            ('agentic_core/L2_execution/engines/ExecutorAgent.py', 'ExecutorAgent', 'L2_execution'),
-            ('agentic_core/L3_orchestration/agents/OrchestratorAgent.py', 'OrchestratorAgent', 'L3_orchestration'),
+            ("agentic_core/L1_cognition/reasoning/TestAgent.py", "TestAgent", "L1_cognition"),
+            ("agentic_core/L2_execution/engines/ExecutorAgent.py", "ExecutorAgent", "L2_execution"),
+            (
+                "agentic_core/L3_orchestration/agents/OrchestratorAgent.py",
+                "OrchestratorAgent",
+                "L3_orchestration",
+            ),
         ]
 
         for file_path, class_name, layer in mock_files:
@@ -79,7 +92,7 @@ class MockDiscoveryScanner:
                     class_name=class_name,
                     layer=layer,
                     confidence_score=0.9,  # Fixed for determinism
-                    discovery_hash=content_hash
+                    discovery_hash=content_hash,
                 )
                 candidates.append(candidate)
 
@@ -91,10 +104,11 @@ class MockDiscoveryScanner:
             scan_id=scan_id,
             candidates=candidates,
             scan_timestamp=1234567890.0 + self.scan_count,  # Fixed base + offset
-            total_files_scanned=len(mock_files)
+            total_files_scanned=len(mock_files),
         )
 
         return result
+
 
 class MockPromotionDecider:
     """Mock promotion decider for testing."""
@@ -121,19 +135,20 @@ class MockPromotionDecider:
             promote=promote,
             reason="Deterministic decision based on hash parity",
             blueprint_hash=blueprint_hash,
-            semantic_clock_tick=self.semantic_clock
+            semantic_clock_tick=self.semantic_clock,
         )
 
         return decision
+
 
 class MockSurgicalManifest:
     """Mock surgical manifest for testing."""
 
     @staticmethod
-    def create_manifest(changes: List[Dict[str, Any]]) -> SurgicalManifest:
+    def create_manifest(changes: list[dict[str, Any]]) -> SurgicalManifest:
         """Create manifest with deterministic hash."""
         # Sort changes for determinism
-        sorted_changes = sorted(changes, key=lambda c: c.get('target', ''))
+        sorted_changes = sorted(changes, key=lambda c: c.get("target", ""))
 
         # Generate SSOT hash
         ssot_content = json.dumps(sorted_changes, sort_keys=True)
@@ -143,10 +158,11 @@ class MockSurgicalManifest:
             manifest_id=f"manifest_{ssot_hash[:12]}",
             changes=sorted_changes,
             ssot_hash=ssot_hash,
-            timestamp=1234567890.0  # Fixed timestamp
+            timestamp=1234567890.0,  # Fixed timestamp
         )
 
         return manifest
+
 
 def test_req298_discovery_scan_determinism():
     """REQ-298: Test that discovery scan is deterministic."""
@@ -176,18 +192,19 @@ def test_req298_discovery_scan_determinism():
     candidate_paths2 = [c.file_path for c in result2.candidates]
     assert candidate_paths1 == candidate_paths2, "Candidate ordering must be identical"
 
+
 def test_req337_promotion_decision_determinism():
     """REQ-337: Test that promotion decisions are replay-stable."""
     # Given
     decider = MockPromotionDecider()
-    blueprint_hash = hashlib.sha256("blueprint_content".encode()).hexdigest()
+    blueprint_hash = hashlib.sha256(b"blueprint_content").hexdigest()
 
     candidate = AgentCandidate(
         file_path="test/agent.py",
         class_name="TestAgent",
         layer="L1_cognition",
         confidence_score=0.9,
-        discovery_hash=hashlib.sha256("test_agent".encode()).hexdigest()
+        discovery_hash=hashlib.sha256(b"test_agent").hexdigest(),
     )
 
     # When - Make decision twice with identical inputs
@@ -206,6 +223,7 @@ def test_req337_promotion_decision_determinism():
     # Verify candidate is identical
     assert decision1.candidate.file_path == decision2.candidate.file_path
     assert decision1.candidate.discovery_hash == decision2.candidate.discovery_hash
+
 
 def test_discovery_scan_different_inputs():
     """Test that different scan inputs produce different but deterministic results."""
@@ -228,11 +246,12 @@ def test_discovery_scan_different_inputs():
     result1_replay = scanner.scan_agents("agentic_core", patterns1)
     assert result1.scan_id == result1_replay.scan_id, "Replay must be identical"
 
+
 def test_promotion_decision_different_candidates():
     """Test that different candidates produce different but deterministic decisions."""
     # Given
     decider = MockPromotionDecider()
-    blueprint_hash = hashlib.sha256("blueprint".encode()).hexdigest()
+    blueprint_hash = hashlib.sha256(b"blueprint").hexdigest()
 
     candidate1 = AgentCandidate("file1.py", "Agent1", "L1", 0.9, "1a2b3c4d")
     candidate2 = AgentCandidate("file2.py", "Agent2", "L2", 0.8, "2b3c4d5e")
@@ -242,7 +261,9 @@ def test_promotion_decision_different_candidates():
     decision2 = decider.decide_promotion(candidate2, blueprint_hash)
 
     # Then - Decisions should be different
-    assert decision1.decision_id != decision2.decision_id, "Different candidates should produce different decisions"
+    assert decision1.decision_id != decision2.decision_id, (
+        "Different candidates should produce different decisions"
+    )
     assert decision1.candidate != decision2.candidate, "Candidates should be different"
 
     # But replay should be identical
@@ -251,13 +272,14 @@ def test_promotion_decision_different_candidates():
     decision1_replay = decider.decide_promotion(candidate1, blueprint_hash)
     assert decision1.decision_id == decision1_replay.decision_id, "Replay must be identical"
 
+
 def test_surgical_manifest_determinism():
     """Test that surgical manifest creation is deterministic."""
     # Given
     changes = [
         {"action": "add", "target": "file1.py", "content": "code1"},
         {"action": "modify", "target": "file2.py", "content": "code2"},
-        {"action": "delete", "target": "file3.py"}
+        {"action": "delete", "target": "file3.py"},
     ]
 
     # When - Create manifest twice
@@ -272,6 +294,7 @@ def test_surgical_manifest_determinism():
     # Verify changes are sorted deterministically
     target_order = [c["target"] for c in manifest1.changes]
     assert target_order == sorted(target_order), "Changes must be sorted by target"
+
 
 def test_surgical_manifest_ssot_hash():
     """Test that SSOT hash is deterministic and content-based."""
@@ -291,12 +314,13 @@ def test_surgical_manifest_ssot_hash():
     # Different content should produce different hash
     assert manifest1.ssot_hash != manifest3.ssot_hash, "Different content should produce different hash"
 
+
 def test_discovery_promotion_integration():
     """Test integration between discovery and promotion decisions."""
     # Given
     scanner = MockDiscoveryScanner()
     decider = MockPromotionDecider()
-    blueprint_hash = hashlib.sha256("integration_test".encode()).hexdigest()
+    blueprint_hash = hashlib.sha256(b"integration_test").hexdigest()
 
     # When - Scan and then make promotion decisions
     scan_result = scanner.scan_agents("agentic_core", ["**/*.py"])
@@ -329,6 +353,7 @@ def test_discovery_promotion_integration():
         assert orig.decision_id == replay.decision_id
         assert orig.promote == replay.promote
 
+
 def test_candidate_immutability():
     """Test that candidate objects are immutable."""
     # Given
@@ -337,7 +362,7 @@ def test_candidate_immutability():
         class_name="TestClass",
         layer="L1",
         confidence_score=0.9,
-        discovery_hash="hash123"
+        discovery_hash="hash123",
     )
 
     # When/Then - Attempting to modify should fail
@@ -346,6 +371,7 @@ def test_candidate_immutability():
 
     with pytest.raises(AttributeError):
         candidate.confidence_score = 1.0
+
 
 def test_decision_immutability():
     """Test that decision objects are immutable."""
@@ -357,7 +383,7 @@ def test_decision_immutability():
         promote=True,
         reason="test",
         blueprint_hash="blueprint",
-        semantic_clock_tick=1
+        semantic_clock_tick=1,
     )
 
     # When/Then - Attempting to modify should fail

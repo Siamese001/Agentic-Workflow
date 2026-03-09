@@ -87,10 +87,10 @@ from tools.semantic_gap_analyzer import (
     SemanticGapAnalyzer,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
@@ -101,15 +101,15 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
-def _make_analyzer(analyze_map: dict[Path, FileAnalysis],
-                   file_lists: dict[str, list[Path]] | None = None,
-                   existing_paths: set[Path] | None = None) -> tuple[SemanticGapAnalyzer, dict]:
+def _make_analyzer(
+    analyze_map: dict[Path, FileAnalysis],
+    file_lists: dict[str, list[Path]] | None = None,
+    existing_paths: set[Path] | None = None,
+) -> tuple[SemanticGapAnalyzer, dict]:
     """Return a SemanticGapAnalyzer with mocked analyze_file and find_hot_paths.
     file_lists maps a pattern substring to a list of paths to return.
     existing_paths controls which paths report Path.exists() == True.
@@ -138,12 +138,17 @@ def _make_analyzer(analyze_map: dict[Path, FileAnalysis],
     return analyzer, {"exists_side_effect": _exists_side_effect}
 
 
-def _make_gap(gap_id: str, layer: str, artery: str,
-              priority: str, evidence: list[str] | None = None) -> SemanticGap:
+def _make_gap(
+    gap_id: str, layer: str, artery: str, priority: str, evidence: list[str] | None = None
+) -> SemanticGap:
     return SemanticGap(
-        gap_id=gap_id, layer=layer, artery=artery,
-        intent="test intent", reality="test reality",
-        impact="test impact", priority=priority,
+        gap_id=gap_id,
+        layer=layer,
+        artery=artery,
+        intent="test intent",
+        reality="test reality",
+        impact="test impact",
+        priority=priority,
         evidence_files=evidence or [f"fake/{gap_id}.py"],
         recommended_fix="test fix",
     )
@@ -152,6 +157,7 @@ def _make_gap(gap_id: str, layer: str, artery: str,
 # ===========================================================================
 # 1. analyze_l2_execution
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_l2_validator_cache_in_name_skipped():
@@ -261,9 +267,7 @@ def test_l3_orchestrator_parse_fail_no_gap():
 @pytest.mark.architecture
 def test_l3_orchestrator_no_cache_generates_gap():
     """L3: orchestrator exists + no plan cache import -> L3-GAP-001 MEDIUM."""
-    orch_analysis = _ok_analysis(
-        ORCHESTRATOR, imported_module_names={"os"}, imported_symbol_names=set()
-    )
+    orch_analysis = _ok_analysis(ORCHESTRATOR, imported_module_names={"os"}, imported_symbol_names=set())
     analyzer, ctx = _make_analyzer(
         {ORCHESTRATOR: orch_analysis},
         existing_paths={ORCHESTRATOR},
@@ -361,6 +365,7 @@ def test_l4_blob_file_missing_no_gap():
 # 4. analyze_l5_safety
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_l5_enforcement_cache_in_name_skipped():
     """L5: enforcement file with 'cache' in name is excluded."""
@@ -447,6 +452,7 @@ def test_l5_no_enforcement_files_no_gap():
 # 5. analyze_l6_observability
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_l6_telemetry_parse_fail_skipped():
     """L6: telemetry parse failure -> skipped, no L6-GAP-CONFIG."""
@@ -523,6 +529,7 @@ def test_l6_no_telemetry_files_no_gap():
 # 6. analyze_architecture_component_presence
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_arch_component_missing_file_generates_missing_gap():
     """ARCH: rule file does not exist -> ARCH-COMPONENT-MISSING gap."""
@@ -589,6 +596,7 @@ def test_arch_component_no_signals_generates_weak_gap():
 # 7. _dedupe_gaps
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_dedupe_gaps_empty_input():
     """_dedupe_gaps: empty input -> empty output."""
@@ -634,6 +642,7 @@ def test_dedupe_gaps_sorted_by_priority():
 # ===========================================================================
 # 8. Real codebase invariants
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_analyze_l2_execution_returns_list():

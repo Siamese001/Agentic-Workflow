@@ -35,7 +35,7 @@ def _load_module():
             "agentic_core.L0_routing.scripts.execute_ssot",
         )
     except ImportError as exc:
-        pytest.skip(f"Cannot import execute_ssot: {exc}")
+        pytest.fail(f"Cannot import execute_ssot: {exc}")
 
 
 def _parse_ast(path: Path) -> ast.Module:

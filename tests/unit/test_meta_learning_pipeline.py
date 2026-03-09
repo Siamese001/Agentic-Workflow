@@ -22,11 +22,9 @@ from system_learning.arbitration.types import (
 )
 from system_learning.confidence.engine import HealingConfidenceScorer
 from system_learning.confidence.types import (
-    ConfidenceDecision,
     HealingAttempt,
     HealingConfidenceReport,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -386,8 +384,12 @@ class TestArbitrationEngine:
     @pytest.mark.governance
     def test_created_at_does_not_affect_ordering(self):
         eng = ArbitrationEngine()
-        c1 = ArbitrationCandidate(id="c1", kind="analysis", payload={}, score=0.7, cost=1.0, provenance="x", created_at=1000)
-        c2 = ArbitrationCandidate(id="c2", kind="analysis", payload={}, score=0.7, cost=1.0, provenance="x", created_at=9999)
+        c1 = ArbitrationCandidate(
+            id="c1", kind="analysis", payload={}, score=0.7, cost=1.0, provenance="x", created_at=1000
+        )
+        c2 = ArbitrationCandidate(
+            id="c2", kind="analysis", payload={}, score=0.7, cost=1.0, provenance="x", created_at=9999
+        )
         policy = _policy(caps={"max_winners": 1})
         dec = eng.arbitrate([c1, c2], policy)
         # Ordering should be by id (alphabetical), not created_at
@@ -430,14 +432,21 @@ class TestCanonicalHashIntegrity:
 
     @pytest.mark.governance
     def test_arbitration_decision_content_hash_differs_when_winner_changes(self):
-        d1 = ArbitrationDecision(winner_ids=("c1",), merged_payload=None, rationale_codes=(), deterministic_fingerprint="a" * 64)
-        d2 = ArbitrationDecision(winner_ids=("c2",), merged_payload=None, rationale_codes=(), deterministic_fingerprint="a" * 64)
+        d1 = ArbitrationDecision(
+            winner_ids=("c1",), merged_payload=None, rationale_codes=(), deterministic_fingerprint="a" * 64
+        )
+        d2 = ArbitrationDecision(
+            winner_ids=("c2",), merged_payload=None, rationale_codes=(), deterministic_fingerprint="a" * 64
+        )
         assert d1.content_hash() != d2.content_hash()
 
     @pytest.mark.governance
     def test_healing_confidence_report_fingerprint_deterministic(self):
         report = HealingConfidenceReport.from_canonical_bytes([], b"{}")
-        assert report.confidence_fingerprint == HealingConfidenceReport.from_canonical_bytes([], b"{}").confidence_fingerprint
+        assert (
+            report.confidence_fingerprint
+            == HealingConfidenceReport.from_canonical_bytes([], b"{}").confidence_fingerprint
+        )
 
     @pytest.mark.governance
     def test_healing_attempt_canonical_bytes_deterministic(self):
@@ -446,6 +455,10 @@ class TestCanonicalHashIntegrity:
 
     @pytest.mark.governance
     def test_arbitration_candidate_canonical_bytes_excludes_created_at(self):
-        c1 = ArbitrationCandidate(id="c", kind="analysis", payload={}, score=0.5, cost=1.0, provenance="x", created_at=100)
-        c2 = ArbitrationCandidate(id="c", kind="analysis", payload={}, score=0.5, cost=1.0, provenance="x", created_at=999)
+        c1 = ArbitrationCandidate(
+            id="c", kind="analysis", payload={}, score=0.5, cost=1.0, provenance="x", created_at=100
+        )
+        c2 = ArbitrationCandidate(
+            id="c", kind="analysis", payload={}, score=0.5, cost=1.0, provenance="x", created_at=999
+        )
         assert c1.canonical_bytes() == c2.canonical_bytes()

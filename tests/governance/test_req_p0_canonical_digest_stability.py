@@ -8,8 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional
+from dataclasses import asdict, dataclass
 
 import pytest
 
@@ -20,9 +19,11 @@ pytestmark = pytest.mark.governance
 # Canonical digest engine (self-contained for testing)
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class CanonicalDigestInputs:
     """All inputs that contribute to the canonical replay digest."""
+
     plan_hash: str
     tool_transcript_hash: str
     capability_scope: str
@@ -88,6 +89,7 @@ _FIXED_INPUTS = CanonicalDigestInputs(
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.governance
 def test_canonical_digest_two_run_identical():
     """Two independent runs with identical inputs produce identical digest."""
@@ -112,21 +114,21 @@ def test_canonical_digest_field_sensitivity():
     base = compute_canonical_digest(_FIXED_INPUTS)
 
     # Mutate plan_hash
-    alt1 = compute_canonical_digest(CanonicalDigestInputs(
-        **{**asdict(_FIXED_INPUTS), "plan_hash": "00000000" * 8}
-    ))
+    alt1 = compute_canonical_digest(
+        CanonicalDigestInputs(**{**asdict(_FIXED_INPUTS), "plan_hash": "00000000" * 8})
+    )
     assert alt1 != base, "plan_hash change must alter digest"
 
     # Mutate clock tick
-    alt2 = compute_canonical_digest(CanonicalDigestInputs(
-        **{**asdict(_FIXED_INPUTS), "semantic_clock_tick": 99}
-    ))
+    alt2 = compute_canonical_digest(
+        CanonicalDigestInputs(**{**asdict(_FIXED_INPUTS), "semantic_clock_tick": 99})
+    )
     assert alt2 != base, "clock_tick change must alter digest"
 
     # Mutate provider
-    alt3 = compute_canonical_digest(CanonicalDigestInputs(
-        **{**asdict(_FIXED_INPUTS), "provider_binding": "provider_openai_gpt4"}
-    ))
+    alt3 = compute_canonical_digest(
+        CanonicalDigestInputs(**{**asdict(_FIXED_INPUTS), "provider_binding": "provider_openai_gpt4"})
+    )
     assert alt3 != base, "provider_binding change must alter digest"
 
 
@@ -155,13 +157,16 @@ def test_canonical_digest_all_fields_present():
     inputs = _FIXED_INPUTS
     data = asdict(inputs)
     required_fields = {
-        "plan_hash", "tool_transcript_hash", "capability_scope",
-        "activation_flags_hash", "provider_binding",
-        "semantic_clock_tick", "guardian_policy_hash", "trace_id",
+        "plan_hash",
+        "tool_transcript_hash",
+        "capability_scope",
+        "activation_flags_hash",
+        "provider_binding",
+        "semantic_clock_tick",
+        "guardian_policy_hash",
+        "trace_id",
     }
-    assert required_fields <= set(data.keys()), (
-        f"Missing digest fields: {required_fields - set(data.keys())}"
-    )
+    assert required_fields <= set(data.keys()), f"Missing digest fields: {required_fields - set(data.keys())}"
 
 
 @pytest.mark.governance

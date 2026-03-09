@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.insert(0, '.')
+sys.path.insert(0, ".")
 
 import hashlib
 import json
@@ -34,11 +34,14 @@ def create_test_pack():
     }
 
     # Create embeddings file
-    embeddings = np.array([
-        [1.0, 0.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0, 0.0],
-        [0.0, 0.0, 1.0, 0.0],
-    ], dtype=np.float32)
+    embeddings = np.array(
+        [
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+        ],
+        dtype=np.float32,
+    )
 
     manifest["matrix_hash"] = hashlib.sha256(embeddings.tobytes()).hexdigest()
 
@@ -81,6 +84,7 @@ def run_deterministic_test(run_num):
 
     # Cleanup
     import shutil
+
     shutil.rmtree(pack_dir, ignore_errors=True)
 
     return results
@@ -99,10 +103,12 @@ if __name__ == "__main__":
     if results1 and results2:
         match = True
         for r1, r2 in zip(results1, results2):
-            if (r1.content_hash != r2.content_hash or
-                r1.score_round6 != r2.score_round6 or
-                r1.row_idx != r2.row_idx or
-                r1.embedding_artifact_hash != r2.embedding_artifact_hash):
+            if (
+                r1.content_hash != r2.content_hash
+                or r1.score_round6 != r2.score_round6
+                or r1.row_idx != r2.row_idx
+                or r1.embedding_artifact_hash != r2.embedding_artifact_hash
+            ):
                 match = False
                 break
 

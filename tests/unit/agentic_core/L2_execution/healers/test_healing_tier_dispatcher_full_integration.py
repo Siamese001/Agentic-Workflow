@@ -22,7 +22,6 @@ from system_learning.ports.healing_pattern_advisor import (
     NullHealingPatternAdvisor,
 )
 from system_learning.ports.meta_outcome_bus_hook import (
-    DefaultMetaOutcomeBusHook,
     NullMetaOutcomeBusHook,
 )
 from system_learning.ports.meta_prior_provider import (

@@ -42,7 +42,7 @@ class TestRgReflectionAgent:
 
             return RgReflectionAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import RgReflectionAgent: {e}")
+            pytest.fail(f"Cannot import RgReflectionAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgReflectionAgent exists and is importable."""

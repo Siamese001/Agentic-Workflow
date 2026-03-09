@@ -32,7 +32,7 @@ def _load():
     try:
         return importlib.import_module("agentic_core.L0_routing.scripts.execute_ssot")
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable: {exc}")
+        pytest.fail(f"execute_ssot not importable: {exc}")
 
 
 @pytest.fixture(scope="module")
@@ -665,7 +665,7 @@ class TestAdvisoryBoundaryEnforcement:
         try:
             from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError
         except ImportError:
-            pytest.skip("healing_memory_retriever not available")
+            pytest.fail("healing_memory_retriever not available")
 
         bad_incident = MagicMock()
         bad_incident.advisory_only = False

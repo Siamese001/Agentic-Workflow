@@ -59,8 +59,9 @@ class TestW5ReplayEngine:
         )
 
         # Verify deterministic digest
-        assert result1.replay_digest == result2.replay_digest, \
+        assert result1.replay_digest == result2.replay_digest, (
             "Replay digest must be deterministic across runs"
+        )
 
         # Verify other fields are identical
         assert result1.case_count == result2.case_count
@@ -118,8 +119,9 @@ class TestW5ReplayEngine:
         engine._synthetic_cases = original_cases
 
         # Verify digest is identical despite shuffling
-        assert result_original.replay_digest == result_shuffled.replay_digest, \
+        assert result_original.replay_digest == result_shuffled.replay_digest, (
             "Replay digest must be invariant to case ordering"
+        )
 
         # Verify results are otherwise identical
         assert result_original.case_count == result_shuffled.case_count
@@ -141,8 +143,7 @@ class TestW5ReplayEngine:
 
         # Verify activation succeeded
         assert result.activated == True
-        assert result.replay_digest is not None, \
-            "ActivationResult should contain replay_digest"
+        assert result.replay_digest is not None, "ActivationResult should contain replay_digest"
 
         # Verify replay digest format
         assert len(result.replay_digest) == 64  # SHA-256 hex length
@@ -185,8 +186,7 @@ class TestW5ReplayEngine:
         )
 
         # Verify no changed cases
-        assert result_identical.changed_cases == 0, \
-            "Identical profiles should have 0 changed cases"
+        assert result_identical.changed_cases == 0, "Identical profiles should have 0 changed cases"
 
         # Create different profile (should have changed cases)
         different_profile = RetrievalProfile(
@@ -207,12 +207,12 @@ class TestW5ReplayEngine:
         )
 
         # Verify some changed cases
-        assert result_different.changed_cases > 0, \
-            "Different profiles should have > 0 changed cases"
+        assert result_different.changed_cases > 0, "Different profiles should have > 0 changed cases"
 
         # Verify case count is consistent
-        assert result_identical.case_count == result_different.case_count, \
+        assert result_identical.case_count == result_different.case_count, (
             "Case count should be consistent across runs"
+        )
 
     def test_determinism_self_check_failure(self):
         """Test that determinism self-check failure raises ValueError."""
@@ -282,6 +282,7 @@ class TestW5NegativeControl:
         import json
 
         import system_learning.engines.deterministic_replay_engine as engine_module
+
         original_json_dumps = json.dumps
 
         def tampered_json_dumps(obj, *, sort_keys=False, separators=None):
@@ -335,7 +336,9 @@ class TestW5NegativeControl:
 
             # Tampering should cause different results - this should FAIL the test
             if result_tampered.replay_digest != result_normal.replay_digest:
-                assert False, f"TAMPERING DETECTED: tampered digest {result_tampered.replay_digest} != normal digest {result_normal.replay_digest}"
+                assert False, (
+                    f"TAMPERING DETECTED: tampered digest {result_tampered.replay_digest} != normal digest {result_normal.replay_digest}"
+                )
 
             # If we get here, tampering wasn't effective
             assert False, "Tampering was not effective - replay digests are identical"
@@ -389,9 +392,10 @@ class TestW5NegativeControl:
         )
 
         # Should be identical when not tampering
-        assert result1.replay_digest == result2.replay_digest, \
+        assert result1.replay_digest == result2.replay_digest, (
             "Replay digest must be identical when not tampering"
-        assert result1.case_count == result2.case_count, \
-            "Case count must be identical when not tampering"
-        assert result1.changed_cases == result2.changed_cases, \
+        )
+        assert result1.case_count == result2.case_count, "Case count must be identical when not tampering"
+        assert result1.changed_cases == result2.changed_cases, (
             "Changed cases must be identical when not tampering"
+        )

@@ -3,6 +3,7 @@ Strict gap analysis: a source module is COVERED only if a test file imports
 it by its *exact* dotted module name (or one of its direct children).
 Parent-package membership alone does NOT count as coverage.
 """
+
 import ast
 import json
 from collections import defaultdict
@@ -40,9 +41,7 @@ def collect_source_modules():
                 top_funcs = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
                 all_classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                 all_funcs = [
-                    n.name
-                    for n in ast.walk(tree)
-                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
                 ]
                 modules[mod_name] = {
                     "path": rel,
@@ -113,8 +112,7 @@ def is_covered(mod_name, index):
         return True
     # One level down (direct children only, not deep descendants)
     prefix = mod_name + "."
-    return any(k.startswith(prefix) and k.count(".") == mod_name.count(".") + 1
-               for k in index)
+    return any(k.startswith(prefix) and k.count(".") == mod_name.count(".") + 1 for k in index)
 
 
 # ---------------------------------------------------------------------------
@@ -135,8 +133,12 @@ def main():
         layer_key = info["target"] + "/" + info["layer"]
         if layer_key not in layer_stats:
             layer_stats[layer_key] = {
-                "files": 0, "covered": 0, "uncovered": 0,
-                "n_classes": 0, "n_funcs": 0, "uncovered_paths": [],
+                "files": 0,
+                "covered": 0,
+                "uncovered": 0,
+                "n_classes": 0,
+                "n_funcs": 0,
+                "uncovered_paths": [],
             }
         layer_stats[layer_key]["files"] += 1
 
@@ -165,17 +167,19 @@ def main():
             layer_stats[layer_key]["uncovered_paths"].append(path)
             n_sym = n_cls + n_fn
             sev = "CRITICAL" if n_sym > 5 else ("HIGH" if n_sym > 1 else "LOW")
-            uncovered_list.append({
-                "mod": mod_name,
-                "path": path,
-                "target": info["target"],
-                "layer": info["layer"],
-                "n_classes": n_cls,
-                "n_funcs": n_fn,
-                "top_classes": info["top_classes"],
-                "top_funcs": info["top_funcs"],
-                "severity": sev,
-            })
+            uncovered_list.append(
+                {
+                    "mod": mod_name,
+                    "path": path,
+                    "target": info["target"],
+                    "layer": info["layer"],
+                    "n_classes": n_cls,
+                    "n_funcs": n_fn,
+                    "top_classes": info["top_classes"],
+                    "top_funcs": info["top_funcs"],
+                    "severity": sev,
+                }
+            )
 
     # ---- print layer breakdown ----
     print()
@@ -190,13 +194,15 @@ def main():
         pct = int(100 * s["covered"] / s["files"]) if s["files"] > 0 else 0
         flag = "  *** ZERO ***" if s["covered"] == 0 and s["files"] > 0 else ""
         row = (
-            "  " + lk.ljust(52)
+            "  "
+            + lk.ljust(52)
             + str(s["files"]).rjust(5)
             + str(s["covered"]).rjust(5)
             + str(s["uncovered"]).rjust(5)
             + str(s["n_classes"]).rjust(5)
             + str(s["n_funcs"]).rjust(5)
-            + str(pct).rjust(5) + "%"
+            + str(pct).rjust(5)
+            + "%"
             + flag
         )
         print(row)

@@ -122,7 +122,7 @@ def test_sovereign_engine_accepts_retriever_kwarg():
     try:
         from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     retriever = NullHealingMemoryRetriever()
     engine = SovereignDecisionEngine(healing_memory_retriever=retriever)
@@ -134,7 +134,7 @@ def test_sovereign_engine_default_retriever_is_none():
     try:
         from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     engine = SovereignDecisionEngine()
     assert engine._healing_memory_retriever is None
@@ -151,7 +151,7 @@ def test_advisory_result_never_alters_routing_score():
             SovereignDecisionEngine,
         )
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         SimilarIncident,

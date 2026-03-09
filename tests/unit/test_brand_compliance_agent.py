@@ -41,7 +41,7 @@ class TestBrandComplianceAgent:
 
             return BrandComplianceAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import BrandComplianceAgent: {e}")
+            pytest.fail(f"Cannot import BrandComplianceAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify BrandComplianceAgent exists and is importable."""

@@ -115,7 +115,7 @@ class TestL1Reachability:
         classes = _parse_top_level_classes(agent_file)
         agent_classes = [c for c in classes if c.endswith("Agent")]
         if not agent_classes:
-            pytest.skip(f"No agent class in {agent_file}")
+            pytest.fail(f"No agent class in {agent_file}")
 
         agent_name = agent_classes[0]
         if agent_name in REACHABILITY_ALLOWLIST:

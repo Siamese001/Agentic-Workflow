@@ -14,12 +14,12 @@ from system_learning.engines.healing_config_optimizer import (
     ThresholdAdjustment,
     ThresholdAdjustmentProposal,
 )
+from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_learning_types import (
     HealingOutcomeAggregate,
     HealingOutcomeAggregateKey,
     HealingOutcomeAggregateSnapshot,
 )
-from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_types import HealingOutcomeStats
 
 
@@ -29,28 +29,23 @@ class TestHealingConfigOptimizer:
     def test_threshold_proposal_deterministic(self):
         """Test that proposals are deterministic given same input."""
         optimizer = HealingConfigOptimizer(
-            min_sample_size=10,
-            low_success_rate_threshold=0.6,
-            escalation_delta=0.1,
-            max_threshold=2.0
+            min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=2.0
         )
 
         # Create test snapshot
         aggregates = [
             (
                 HealingOutcomeAggregateKey("healer1", "LOCAL_AGENT", "failure1"),
-                HealingOutcomeAggregate(success_count=3, failure_count=7, total_count=10)
+                HealingOutcomeAggregate(success_count=3, failure_count=7, total_count=10),
             ),
             (
                 HealingOutcomeAggregateKey("healer2", "REMOTE_AGENT", "failure2"),
-                HealingOutcomeAggregate(success_count=8, failure_count=2, total_count=10)
+                HealingOutcomeAggregate(success_count=8, failure_count=2, total_count=10),
             ),
         ]
 
         snapshot = HealingOutcomeAggregateSnapshot(
-            version_id="test123",
-            created_utc=2000,
-            aggregates=tuple(aggregates)
+            version_id="test123", created_utc=2000, aggregates=tuple(aggregates)
         )
 
         # Generate proposals twice
@@ -75,11 +70,7 @@ class TestHealingConfigOptimizer:
         optimizer = HealingConfigOptimizer()
 
         # Create empty snapshot
-        snapshot = HealingOutcomeAggregateSnapshot(
-            version_id="empty",
-            created_utc=2000,
-            aggregates=tuple()
-        )
+        snapshot = HealingOutcomeAggregateSnapshot(version_id="empty", created_utc=2000, aggregates=())
 
         # Should not raise any errors and produce no adjustments
         proposal = optimizer.propose_threshold_adjustments(snapshot)
@@ -95,14 +86,12 @@ class TestHealingConfigOptimizer:
         aggregates = [
             (
                 HealingOutcomeAggregateKey("healer1", "LOCAL_AGENT", "failure1"),
-                HealingOutcomeAggregate(success_count=1, failure_count=9, total_count=10)
+                HealingOutcomeAggregate(success_count=1, failure_count=9, total_count=10),
             ),
         ]
 
         snapshot = HealingOutcomeAggregateSnapshot(
-            version_id="test",
-            created_utc=2000,
-            aggregates=tuple(aggregates)
+            version_id="test", created_utc=2000, aggregates=tuple(aggregates)
         )
 
         # Should not propose adjustment due to insufficient sample size
@@ -115,21 +104,19 @@ class TestHealingConfigOptimizer:
             min_sample_size=10,
             low_success_rate_threshold=0.5,
             escalation_delta=1.5,  # Large delta
-            max_threshold=1.0  # Low max
+            max_threshold=1.0,  # Low max
         )
 
         # Create snapshot with low success rate
         aggregates = [
             (
                 HealingOutcomeAggregateKey("healer1", "LOCAL_AGENT", "failure1"),
-                HealingOutcomeAggregate(success_count=1, failure_count=9, total_count=10)
+                HealingOutcomeAggregate(success_count=1, failure_count=9, total_count=10),
             ),
         ]
 
         snapshot = HealingOutcomeAggregateSnapshot(
-            version_id="test",
-            created_utc=2000,
-            aggregates=tuple(aggregates)
+            version_id="test", created_utc=2000, aggregates=tuple(aggregates)
         )
 
         proposal = optimizer.propose_threshold_adjustments(snapshot)
@@ -155,7 +142,7 @@ class TestHealingConfigOptimizer:
             window_size=100,
             snapshot=stats,
             proposal=None,  # type: ignore
-            source="test"
+            source="test",
         )
 
         # Create snapshot
@@ -188,12 +175,8 @@ class TestHealingConfigOptimizer:
         optimizer = HealingConfigOptimizer(min_sample_size=10)
 
         # Test with different sample sizes
-        small_aggregate = HealingOutcomeAggregate(
-            success_count=3, failure_count=7, total_count=10
-        )
-        large_aggregate = HealingOutcomeAggregate(
-            success_count=30, failure_count=70, total_count=100
-        )
+        small_aggregate = HealingOutcomeAggregate(success_count=3, failure_count=7, total_count=10)
+        large_aggregate = HealingOutcomeAggregate(success_count=30, failure_count=70, total_count=100)
 
         # Large sample should have higher confidence
         large_confidence = optimizer._compute_confidence(large_aggregate)
@@ -212,7 +195,7 @@ class TestHealingConfigOptimizer:
             current_threshold=0.5,
             proposed_threshold=0.6,
             reason="Low success rate",
-            confidence=0.8
+            confidence=0.8,
         )
 
         bytes1 = adjustment.canonical_bytes()
@@ -223,7 +206,8 @@ class TestHealingConfigOptimizer:
 
         # Verify it's valid JSON
         import json
-        data = json.loads(bytes1.decode('utf-8'))
+
+        data = json.loads(bytes1.decode("utf-8"))
         assert data["healer_name"] == "healer1"
         assert data["proposed_threshold"] == 0.6
 
@@ -236,13 +220,11 @@ class TestHealingConfigOptimizer:
             current_threshold=0.5,
             proposed_threshold=0.6,
             reason="Low success rate",
-            confidence=0.8
+            confidence=0.8,
         )
 
         proposal = ThresholdAdjustmentProposal(
-            snapshot_version_id="test123",
-            created_utc=2000,
-            adjustments=(adjustment,)
+            snapshot_version_id="test123", created_utc=2000, adjustments=(adjustment,)
         )
 
         bytes1 = proposal.canonical_bytes()
@@ -253,7 +235,8 @@ class TestHealingConfigOptimizer:
 
         # Verify it's valid JSON
         import json
-        data = json.loads(bytes1.decode('utf-8'))
+
+        data = json.loads(bytes1.decode("utf-8"))
         assert data["snapshot_version_id"] == "test123"
         assert len(data["adjustments"]) == 1
 
@@ -261,10 +244,7 @@ class TestHealingConfigOptimizer:
         """Test optimizer parameter validation."""
         # Valid initialization
         optimizer = HealingConfigOptimizer(
-            min_sample_size=10,
-            low_success_rate_threshold=0.5,
-            escalation_delta=0.1,
-            max_threshold=2.0
+            min_sample_size=10, low_success_rate_threshold=0.5, escalation_delta=0.1, max_threshold=2.0
         )
         assert optimizer._min_sample_size == 10
 

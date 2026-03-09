@@ -36,7 +36,7 @@ class TestRgResumeOrchestratorAgent:
 
             return RgResumeOrchestrator
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import RgResumeOrchestrator: {e}")
+            pytest.fail(f"Cannot import RgResumeOrchestrator: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgResumeOrchestrator exists and is importable."""

@@ -39,7 +39,7 @@ class TestRgHealingOrchestratorAgent:
 
             return RgHealingOrchestrator
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import RgHealingOrchestrator: {e}")
+            pytest.fail(f"Cannot import RgHealingOrchestrator: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgHealingOrchestrator exists and is importable."""

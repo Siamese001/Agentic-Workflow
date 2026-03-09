@@ -4,49 +4,55 @@ Tests that meta-learning stage and proposer are replay-proof with
 identical ChangePackage lists across runs.
 """
 
-import pytest
-from dataclasses import dataclass
-from typing import List, Dict, Any
 import hashlib
 import json
+from dataclasses import dataclass
+from typing import Any
+
+import pytest
 
 pytestmark = pytest.mark.governance
+
 
 @dataclass(frozen=True)
 class ChangePackage:
     """A change package in meta-learning."""
+
     package_id: str
-    changes: List[Dict[str, Any]]
+    changes: list[dict[str, Any]]
     timestamp: float
     semantic_clock_tick: int
+
 
 @dataclass(frozen=True)
 class Stage6Proposal:
     """Stage 6 meta-learning proposal."""
+
     proposal_id: str
-    change_packages: List[ChangePackage]
+    change_packages: list[ChangePackage]
     proposer_confidence: float
     semantic_clock_tick: int
+
 
 class MockMetaLearningStage:
     """Mock meta-learning stage for testing."""
 
     def __init__(self):
-        self.proposals: List[Stage6Proposal] = []
+        self.proposals: list[Stage6Proposal] = []
         self.semantic_clock = 0
 
-    def generate_proposal(self, input_data: Dict[str, Any]) -> Stage6Proposal:
+    def generate_proposal(self, input_data: dict[str, Any]) -> Stage6Proposal:
         """Generate a deterministic proposal based on input."""
         self.semantic_clock += 1
 
         # Create deterministic change packages
         packages = []
-        for i, change in enumerate(input_data.get('changes', [])):
+        for i, change in enumerate(input_data.get("changes", [])):
             package = ChangePackage(
                 package_id=f"pkg_{i}_{self.semantic_clock}",
                 changes=[change],
                 timestamp=1234567890.0 + i,  # Fixed timestamp for determinism
-                semantic_clock_tick=self.semantic_clock
+                semantic_clock_tick=self.semantic_clock,
             )
             packages.append(package)
 
@@ -54,11 +60,12 @@ class MockMetaLearningStage:
             proposal_id=f"prop_{hashlib.sha256(str(input_data).encode()).hexdigest()[:8]}",
             change_packages=packages,
             proposer_confidence=0.85,  # Fixed confidence for determinism
-            semantic_clock_tick=self.semantic_clock
+            semantic_clock_tick=self.semantic_clock,
         )
 
         self.proposals.append(proposal)
         return proposal
+
 
 class MockMetaLearningProposer:
     """Mock meta-learning proposer for testing."""
@@ -66,12 +73,12 @@ class MockMetaLearningProposer:
     def __init__(self):
         self.stage = MockMetaLearningStage()
 
-    def order_proposals(self, proposals: List[Stage6Proposal]) -> List[Stage6Proposal]:
+    def order_proposals(self, proposals: list[Stage6Proposal]) -> list[Stage6Proposal]:
         """Order proposals deterministically."""
         # Sort by semantic_clock_tick then proposal_id for deterministic ordering
         return sorted(proposals, key=lambda p: (p.semantic_clock_tick, p.proposal_id))
 
-    def replay_proposal_generation(self, input_data: Dict[str, Any]) -> List[ChangePackage]:
+    def replay_proposal_generation(self, input_data: dict[str, Any]) -> list[ChangePackage]:
         """Replay proposal generation and return ChangePackage list."""
         proposal = self.stage.generate_proposal(input_data)
         ordered_proposals = self.order_proposals([proposal])
@@ -83,14 +90,15 @@ class MockMetaLearningProposer:
 
         return all_packages
 
+
 def test_req060_meta_learning_stage_replay_proof():
     """REQ-060: Test that meta-learning stage is replay-proof."""
     # Given
     proposer = MockMetaLearningProposer()
     input_data = {
-        'changes': [
-            {'type': 'add', 'target': 'agent.py', 'content': 'new_function'},
-            {'type': 'modify', 'target': 'config.py', 'content': 'update_config'}
+        "changes": [
+            {"type": "add", "target": "agent.py", "content": "new_function"},
+            {"type": "modify", "target": "config.py", "content": "update_config"},
         ]
     }
 
@@ -112,6 +120,7 @@ def test_req060_meta_learning_stage_replay_proof():
     package_ids2 = [p.package_id for p in packages2]
     assert package_ids1 == package_ids2, "Package ordering must be identical"
 
+
 def test_req063_meta_learning_proposer_replay_proof():
     """REQ-063: Test that meta-learning proposer ordering is replay-proof."""
     # Given
@@ -120,9 +129,7 @@ def test_req063_meta_learning_proposer_replay_proof():
     # Create multiple proposals with different timestamps
     proposals = []
     for i in range(3):
-        input_data = {
-            'changes': [{'type': 'add', 'target': f'file_{i}.py', 'content': f'content_{i}'}]
-        }
+        input_data = {"changes": [{"type": "add", "target": f"file_{i}.py", "content": f"content_{i}"}]}
         proposal = proposer.stage.generate_proposal(input_data)
         proposals.append(proposal)
 
@@ -143,15 +150,16 @@ def test_req063_meta_learning_proposer_replay_proof():
     assert clock_ticks1 == clock_ticks2, "Clock tick ordering must be identical"
     assert clock_ticks1 == sorted(clock_ticks1), "Must be sorted by clock tick"
 
+
 def test_meta_learning_deterministic_input_hashing():
     """Test that input hashing is deterministic."""
     # Given
     input_data = {
-        'changes': [
-            {'type': 'add', 'target': 'test.py', 'content': 'test content'},
-            {'type': 'modify', 'target': 'config.json', 'content': '{"key": "value"}'}
+        "changes": [
+            {"type": "add", "target": "test.py", "content": "test content"},
+            {"type": "modify", "target": "config.json", "content": '{"key": "value"}'},
         ],
-        'metadata': {'author': 'test', 'version': 1}
+        "metadata": {"author": "test", "version": 1},
     }
 
     # When - Hash input twice
@@ -161,6 +169,7 @@ def test_meta_learning_deterministic_input_hashing():
     # Then - Hashes must be identical
     assert hash1 == hash2, "Input hashing must be deterministic"
 
+
 def test_meta_learning_semantic_clock_determinism():
     """Test that semantic clock advancement is deterministic."""
     # Given
@@ -168,9 +177,9 @@ def test_meta_learning_semantic_clock_determinism():
 
     # When - Generate multiple proposals
     initial_clock = stage.semantic_clock
-    proposal1 = stage.generate_proposal({'changes': []})
-    proposal2 = stage.generate_proposal({'changes': []})
-    proposal3 = stage.generate_proposal({'changes': []})
+    proposal1 = stage.generate_proposal({"changes": []})
+    proposal2 = stage.generate_proposal({"changes": []})
+    proposal3 = stage.generate_proposal({"changes": []})
 
     # Then - Clock must advance deterministically
     assert stage.semantic_clock == initial_clock + 3, "Clock must advance by number of proposals"
@@ -178,15 +187,13 @@ def test_meta_learning_semantic_clock_determinism():
     assert proposal2.semantic_clock_tick == initial_clock + 2, "Second proposal tick must be 2"
     assert proposal3.semantic_clock_tick == initial_clock + 3, "Third proposal tick must be 3"
 
+
 def test_meta_learning_change_package_immutability():
     """Test that ChangePackages are immutable."""
     # Given
-    changes = [{'type': 'add', 'target': 'test.py', 'content': 'content'}]
+    changes = [{"type": "add", "target": "test.py", "content": "content"}]
     package = ChangePackage(
-        package_id="test_pkg",
-        changes=changes,
-        timestamp=1234567890.0,
-        semantic_clock_tick=1
+        package_id="test_pkg", changes=changes, timestamp=1234567890.0, semantic_clock_tick=1
     )
 
     # When/Then - Attempting to modify should fail
@@ -199,15 +206,13 @@ def test_meta_learning_change_package_immutability():
     with pytest.raises(AttributeError):
         package.semantic_clock_tick = 2
 
+
 def test_meta_learning_proposal_immutability():
     """Test that Stage6Proposals are immutable."""
     # Given
     packages = [ChangePackage("pkg1", [], 0.0, 1)]
     proposal = Stage6Proposal(
-        proposal_id="test_prop",
-        change_packages=packages,
-        proposer_confidence=0.9,
-        semantic_clock_tick=1
+        proposal_id="test_prop", change_packages=packages, proposer_confidence=0.9, semantic_clock_tick=1
     )
 
     # When/Then - Attempting to modify should fail
@@ -220,13 +225,14 @@ def test_meta_learning_proposal_immutability():
     with pytest.raises(AttributeError):
         proposal.semantic_clock_tick = 2
 
+
 def test_meta_learning_replay_with_different_inputs():
     """Test that different inputs produce different but deterministic outputs."""
     # Given
     proposer = MockMetaLearningProposer()
 
-    input1 = {'changes': [{'type': 'add', 'target': 'file1.py', 'content': 'content1'}]}
-    input2 = {'changes': [{'type': 'add', 'target': 'file2.py', 'content': 'content2'}]}
+    input1 = {"changes": [{"type": "add", "target": "file1.py", "content": "content1"}]}
+    input2 = {"changes": [{"type": "add", "target": "file2.py", "content": "content2"}]}
 
     # When - Generate proposals for different inputs
     packages1 = proposer.replay_proposal_generation(input1)

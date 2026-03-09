@@ -75,8 +75,10 @@ class TestMetaLearningPipelinePatterns:
         # Enable embeddings and mock the embedding service
         mock_emb_service = MagicMock()
         mock_emb_service.is_disabled.return_value = False
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}), \
-             patch.object(EmbeddingServiceFactory, "get_or_disabled", return_value=mock_emb_service):
+        with (
+            patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}),
+            patch.object(EmbeddingServiceFactory, "get_or_disabled", return_value=mock_emb_service),
+        ):
             result = _analyze_historical_patterns(mock_deps, mock_snapshot)
 
         # Should return pattern summary
@@ -139,8 +141,10 @@ class TestMetaLearningPipelinePatterns:
         # Enable embeddings and mock the embedding service
         mock_emb_service = MagicMock()
         mock_emb_service.is_disabled.return_value = False
-        with patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}), \
-             patch.object(EmbeddingServiceFactory, "get_or_disabled", return_value=mock_emb_service):
+        with (
+            patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"}),
+            patch.object(EmbeddingServiceFactory, "get_or_disabled", return_value=mock_emb_service),
+        ):
             # Run twice with same inputs
             result1 = _analyze_historical_patterns(mock_deps, mock_snapshot)
             result2 = _analyze_historical_patterns(mock_deps, mock_snapshot)
@@ -210,8 +214,8 @@ class TestMetaLearningPipelinePatterns:
 
         # Verify informational-only nature
         assert isinstance(summary, PatternSummary)
-        assert hasattr(summary, 'clusters')
-        assert hasattr(summary, 'pattern_digest')
+        assert hasattr(summary, "clusters")
+        assert hasattr(summary, "pattern_digest")
         # No direct configuration changes
 
     def test_pattern_analysis_kill_switch(self) -> None:

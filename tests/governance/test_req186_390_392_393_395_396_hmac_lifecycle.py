@@ -12,10 +12,8 @@ from __future__ import annotations
 
 import hashlib
 import hmac
-import os
 import time
 from dataclasses import dataclass
-from typing import Dict, Optional, Set
 
 import pytest
 
@@ -26,6 +24,7 @@ pytestmark = pytest.mark.governance
 # HMAC key lifecycle manager (self-contained)
 # ---------------------------------------------------------------------------
 
+
 class HMACKeyError(ValueError):
     """Raised on HMAC key policy violation."""
 
@@ -33,25 +32,24 @@ class HMACKeyError(ValueError):
 @dataclass
 class HMACKeyRecord:
     key_id: str
-    secret: bytes          # never stored as plaintext in real code
-    scopes: Set[str]       # artifact types this key may sign
+    secret: bytes  # never stored as plaintext in real code
+    scopes: set[str]  # artifact types this key may sign
     issued_at: float
     ttl_seconds: float
     rotated: bool = False
 
-    def is_expired(self, now: Optional[float] = None) -> bool:
+    def is_expired(self, now: float | None = None) -> bool:
         t = now if now is not None else time.time()
         return t >= self.issued_at + self.ttl_seconds
 
-    def assert_not_expired(self, now: Optional[float] = None) -> None:
+    def assert_not_expired(self, now: float | None = None) -> None:
         if self.is_expired(now):
             raise HMACKeyError(f"Key '{self.key_id}' has expired")
 
     def assert_scope(self, artifact_type: str) -> None:
         if artifact_type not in self.scopes:
             raise HMACKeyError(
-                f"Key '{self.key_id}' not scoped for '{artifact_type}'. "
-                f"Allowed: {self.scopes}"
+                f"Key '{self.key_id}' not scoped for '{artifact_type}'. Allowed: {self.scopes}"
             )
 
 
@@ -59,8 +57,8 @@ class HMACKeystore:
     """Minimal HMAC keystore with rotation and scope enforcement."""
 
     def __init__(self):
-        self._keys: Dict[str, HMACKeyRecord] = {}
-        self._active_key_id: Optional[str] = None
+        self._keys: dict[str, HMACKeyRecord] = {}
+        self._active_key_id: str | None = None
 
     def register_key(self, record: HMACKeyRecord) -> None:
         self._keys[record.key_id] = record
@@ -72,13 +70,17 @@ class HMACKeystore:
         if self._active_key_id and self._active_key_id in self._keys:
             old = self._keys[self._active_key_id]
             self._keys[self._active_key_id] = HMACKeyRecord(
-                key_id=old.key_id, secret=old.secret, scopes=old.scopes,
-                issued_at=old.issued_at, ttl_seconds=old.ttl_seconds, rotated=True,
+                key_id=old.key_id,
+                secret=old.secret,
+                scopes=old.scopes,
+                issued_at=old.issued_at,
+                ttl_seconds=old.ttl_seconds,
+                rotated=True,
             )
         self._keys[new_record.key_id] = new_record
         self._active_key_id = new_record.key_id
 
-    def sign(self, artifact_type: str, data: bytes, now: Optional[float] = None) -> bytes:
+    def sign(self, artifact_type: str, data: bytes, now: float | None = None) -> bytes:
         if not self._active_key_id:
             raise HMACKeyError("No active key registered")
         key = self._keys[self._active_key_id]
@@ -86,9 +88,7 @@ class HMACKeystore:
         key.assert_scope(artifact_type)
         return hmac.new(key.secret, data, hashlib.sha256).digest()
 
-    def verify(
-        self, artifact_type: str, data: bytes, sig: bytes, now: Optional[float] = None
-    ) -> bool:
+    def verify(self, artifact_type: str, data: bytes, sig: bytes, now: float | None = None) -> bool:
         if not self._active_key_id:
             raise HMACKeyError("No active key")
         key = self._keys[self._active_key_id]
@@ -97,7 +97,7 @@ class HMACKeystore:
         expected = hmac.new(key.secret, data, hashlib.sha256).digest()
         return hmac.compare_digest(expected, sig)
 
-    def get_active(self) -> Optional[HMACKeyRecord]:
+    def get_active(self) -> HMACKeyRecord | None:
         if self._active_key_id:
             return self._keys.get(self._active_key_id)
         return None
@@ -107,13 +107,13 @@ class HMACKeystore:
 # Helpers
 # ---------------------------------------------------------------------------
 
-_BASE_TIME = 1_000_000.0   # deterministic "now" for tests
+_BASE_TIME = 1_000_000.0  # deterministic "now" for tests
 
 
 def _make_key(
     key_id: str = "key_001",
     secret: bytes = b"test-secret-32bytes-padded-here!",
-    scopes: Optional[Set[str]] = None,
+    scopes: set[str] | None = None,
     ttl: float = 3600.0,
     issued_at: float = _BASE_TIME,
 ) -> HMACKeyRecord:
@@ -129,6 +129,7 @@ def _make_key(
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_req186_hmac_key_not_hardcoded_in_test():

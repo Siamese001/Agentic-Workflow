@@ -64,7 +64,7 @@ class TestLatencyBudget:
             assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
             assert agent is not None
         except Exception as e:
-            pytest.skip(f"CodeHealerAgent not available: {e}")
+            pytest.fail(f"CodeHealerAgent not available: {e}")
 
     def test_file_hash_computation_latency(self, temp_file):
         """Test file hash computation meets latency budget."""
@@ -147,4 +147,4 @@ class TestLatencyBudget:
                 f"{agent_name} must inherit from AtomicExecutionMixin"
             )
         except ImportError as e:
-            pytest.skip(f"Could not import {agent_name}: {e}")
+            pytest.fail(f"Could not import {agent_name}: {e}")

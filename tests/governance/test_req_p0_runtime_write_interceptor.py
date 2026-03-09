@@ -6,13 +6,8 @@ replay_mode; monkeypatch is effective; direct writes raise.
 
 from __future__ import annotations
 
-import io
 import os
-import tempfile
-from contextlib import contextmanager
-from pathlib import Path
-from typing import Any, Callable, List, Optional
-from unittest.mock import MagicMock, patch
+from typing import Any
 
 import pytest
 
@@ -22,6 +17,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Minimal self-contained runtime interceptor for testing
 # ---------------------------------------------------------------------------
+
 
 class WriteInterceptViolation(RuntimeError):
     """Raised when a non-gateway write is attempted in replay_mode."""
@@ -36,9 +32,9 @@ class RuntimeWriteInterceptor:
 
     def __init__(self):
         self._replay_mode = False
-        self._gateway_ref: Optional[Any] = None
-        self._write_log: List[str] = []
-        self._blocked_attempts: List[str] = []
+        self._gateway_ref: Any | None = None
+        self._write_log: list[str] = []
+        self._blocked_attempts: list[str] = []
 
     def enable_replay_mode(self, gateway: Any) -> None:
         self._replay_mode = True
@@ -64,16 +60,14 @@ class RuntimeWriteInterceptor:
         if not self._replay_mode:
             return
         self._blocked_attempts.append(path)
-        raise WriteInterceptViolation(
-            f"Direct write to '{path}' blocked in replay_mode — use write_gateway"
-        )
+        raise WriteInterceptViolation(f"Direct write to '{path}' blocked in replay_mode — use write_gateway")
 
     @property
-    def write_log(self) -> List[str]:
+    def write_log(self) -> list[str]:
         return list(self._write_log)
 
     @property
-    def blocked_attempts(self) -> List[str]:
+    def blocked_attempts(self) -> list[str]:
         return list(self._blocked_attempts)
 
     def clear_logs(self) -> None:
@@ -85,7 +79,7 @@ class MockGateway:
     """Minimal mock gateway that records writes."""
 
     def __init__(self):
-        self.writes: List[tuple] = []
+        self.writes: list[tuple] = []
 
     def write(self, path: str, content: bytes) -> None:
         self.writes.append((path, content))
@@ -98,6 +92,7 @@ class MockGateway:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def interceptor():

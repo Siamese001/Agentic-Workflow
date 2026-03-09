@@ -79,7 +79,7 @@ class TestLeafDomainNoSubdirs:
         """prompt_governance must not contain domain/ or other LCD subdirs."""
         pg = AGENTIC_CORE / "prompt_governance"
         if not pg.is_dir():
-            pytest.skip("prompt_governance not found")
+            pytest.fail("prompt_governance not found")
         declared = _get_declared_subfolders("prompt_governance")
         declared.update(ALWAYS_ALLOWED_SUBDIRS)
         illegal = []

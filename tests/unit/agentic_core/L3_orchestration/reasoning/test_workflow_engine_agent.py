@@ -28,7 +28,7 @@ class TestDAGExecutorAgent:
         """DAG types should be defined in types/."""
         types_path = Path("agentic_core/L3_orchestration/types")
         if not types_path.exists():
-            pytest.skip("L3_orchestration/types/ not found")
+            pytest.fail("L3_orchestration/types/ not found")
 
         type_files = list(types_path.glob("*.py"))
         assert len(type_files) > 0, "L3_orchestration/types/ should have type definitions"
@@ -41,7 +41,7 @@ class TestMetaLearningAgent:
         """Meta-learning config should exist."""
         config_path = Path("agentic_core/L3_orchestration/config")
         if not config_path.exists():
-            pytest.skip("L3_orchestration/config/ not found")
+            pytest.fail("L3_orchestration/config/ not found")
 
         config_files = list(config_path.glob("*.py"))
         assert len(config_files) > 0, "L3_orchestration/config/ should have config files"
@@ -54,7 +54,7 @@ class TestOrchestrationLayerIntegrity:
         """L3 orchestration should not make direct LLM calls (delegate to L1)."""
         base = Path("agentic_core/L3_orchestration")
         if not base.exists():
-            pytest.skip("L3_orchestration/ not found")
+            pytest.fail("L3_orchestration/ not found")
 
         # Check for direct OpenAI/Anthropic imports (should go through L1)
         suspicious_imports = ["openai", "anthropic", "langchain"]
@@ -70,13 +70,13 @@ class TestOrchestrationLayerIntegrity:
 
         # This is a soft check - some orchestrators may legitimately use these
         if violations:
-            pytest.skip(f"Found LLM imports (may be legitimate): {len(violations)}")
+            pytest.fail(f"Found LLM imports (may be legitimate): {len(violations)}")
 
     def test_orchestration_agents_in_reasoning(self):
         """Agent classes in L3 should be in reasoning/."""
         base = Path("agentic_core/L3_orchestration")
         if not base.exists():
-            pytest.skip("L3_orchestration/ not found")
+            pytest.fail("L3_orchestration/ not found")
 
         # Known exceptions (documented architectural decisions)
         # Some types/config files have embedded Agent classes (legacy pattern)

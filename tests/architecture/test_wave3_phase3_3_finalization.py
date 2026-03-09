@@ -57,7 +57,6 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,
-    FileAnalysis,
     ParseFailure,
     SemanticGap,
     SemanticGapAnalyzer,
@@ -80,12 +79,16 @@ RUN_ANALYSIS_KEYS = {
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_gap(gap_id: str, layer: str, priority: str) -> SemanticGap:
     return SemanticGap(
-        gap_id=gap_id, layer=layer,
+        gap_id=gap_id,
+        layer=layer,
         artery=f"Artery {gap_id}",
-        intent="test intent", reality="test reality",
-        impact="test impact", priority=priority,
+        intent="test intent",
+        reality="test reality",
+        impact="test impact",
+        priority=priority,
         evidence_files=[f"fake/{gap_id}.py"],
         recommended_fix="test fix",
     )
@@ -105,6 +108,7 @@ def _analyzer_with_gaps(gaps: list[SemanticGap]) -> SemanticGapAnalyzer:
 # ===========================================================================
 # 1. run_analysis return-value contract
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_run_analysis_returns_dict():
@@ -218,6 +222,7 @@ def test_run_analysis_low_priority_count_correct():
 # 2. generate_report structural sections
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_generate_report_creates_file():
     """generate_report: output file is created."""
@@ -330,8 +335,13 @@ def test_generate_report_arch_section_present_when_findings():
     """generate_report: Architecture Component Presence section present when findings exist."""
     analyzer = _analyzer_with_gaps([])
     analyzer.architecture_component_findings = [
-        {"component": "test_comp", "file": "some/file.py", "exists": True,
-         "required_any": "marker", "signals_present": "marker"}
+        {
+            "component": "test_comp",
+            "file": "some/file.py",
+            "exists": True,
+            "required_any": "marker",
+            "signals_present": "marker",
+        }
     ]
     with tempfile.TemporaryDirectory() as tmpdir:
         out = Path(tmpdir) / "report.md"
@@ -357,8 +367,13 @@ def test_generate_report_taxonomy_section_present_when_findings():
     """generate_report: Prompt Taxonomy Coverage section present when findings exist."""
     analyzer = _analyzer_with_gaps([])
     analyzer.prompt_taxonomy_findings = [
-        {"file": "some/prompt.py", "coverage_score": 3,
-         "slot_status": "S0=present", "manifest_hash": True, "boundary_snapshot": False}
+        {
+            "file": "some/prompt.py",
+            "coverage_score": 3,
+            "slot_status": "S0=present",
+            "manifest_hash": True,
+            "boundary_snapshot": False,
+        }
     ]
     with tempfile.TemporaryDirectory() as tmpdir:
         out = Path(tmpdir) / "report.md"
@@ -384,9 +399,16 @@ def test_generate_report_layer_connection_present_when_findings():
     """generate_report: Layer Connection Integrity section present when findings exist."""
     analyzer = _analyzer_with_gaps([])
     analyzer.layer_connection_findings = [
-        {"file": "some/file.py", "layer": "L0", "upward_imports": "",
-         "direct_provider_imports": "", "embedding_mentions": 0,
-         "governance_mentions": 0, "path_d_mentions": 0, "elevator_shaft_mentions": 0}
+        {
+            "file": "some/file.py",
+            "layer": "L0",
+            "upward_imports": "",
+            "direct_provider_imports": "",
+            "embedding_mentions": 0,
+            "governance_mentions": 0,
+            "path_d_mentions": 0,
+            "elevator_shaft_mentions": 0,
+        }
     ]
     with tempfile.TemporaryDirectory() as tmpdir:
         out = Path(tmpdir) / "report.md"
@@ -467,6 +489,7 @@ def test_generate_report_gap_id_appears_in_report():
 # 3. Real codebase end-to-end
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_real_run_analysis_and_generate_report_e2e():
     """E2E: run_analysis + generate_report produces a valid report file."""
@@ -486,8 +509,9 @@ def test_real_run_analysis_result_totals_consistent():
     """E2E: run_analysis total and priority counts are self-consistent."""
     result = SemanticGapAnalyzer().run_analysis()
     assert result["total_gaps"] == len(result["gaps"])
-    assert (result["high_priority"] + result["medium_priority"] + result["low_priority"]
-            == result["total_gaps"])
+    assert (
+        result["high_priority"] + result["medium_priority"] + result["low_priority"] == result["total_gaps"]
+    )
 
 
 @pytest.mark.architecture

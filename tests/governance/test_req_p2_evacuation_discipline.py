@@ -9,7 +9,6 @@ from __future__ import annotations
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from typing import List, Optional
 
 import pytest
 
@@ -22,12 +21,14 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # EvacuationDiscipline with semantic clock only
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class EvacuationDiscipline:
     """Evacuation record using semantic clock ticks only — no wall-clock."""
+
     evacuation_id: str
-    trigger_tick: int           # semantic clock tick at trigger
-    completion_tick: int        # semantic clock tick at completion
+    trigger_tick: int  # semantic clock tick at trigger
+    completion_tick: int  # semantic clock tick at completion
     l2_tokens_revoked: int
     leases_killed: int
     flags_overridden: bool
@@ -35,8 +36,7 @@ class EvacuationDiscipline:
     def __post_init__(self):
         if self.completion_tick < self.trigger_tick:
             raise ValueError(
-                f"completion_tick ({self.completion_tick}) must be >= "
-                f"trigger_tick ({self.trigger_tick})"
+                f"completion_tick ({self.completion_tick}) must be >= trigger_tick ({self.trigger_tick})"
             )
 
     @property
@@ -49,7 +49,7 @@ class EvacuationController:
 
     def __init__(self):
         self._current_tick: int = 0
-        self._evacuations: List[EvacuationDiscipline] = []
+        self._evacuations: list[EvacuationDiscipline] = []
 
     def advance_tick(self, tick: int) -> None:
         self._current_tick = tick
@@ -82,7 +82,7 @@ class EvacuationController:
         return len(self._evacuations)
 
     @property
-    def latest(self) -> Optional[EvacuationDiscipline]:
+    def latest(self) -> EvacuationDiscipline | None:
         return self._evacuations[-1] if self._evacuations else None
 
 
@@ -93,7 +93,7 @@ class EvacuationController:
 _WALL_CLOCK_CALLS = frozenset(["time", "now", "utcnow", "monotonic", "perf_counter"])
 
 
-def _find_wallclock_in_file(path: Path) -> List[str]:
+def _find_wallclock_in_file(path: Path) -> list[str]:
     if not path.exists():
         return []
     source = path.read_text(encoding="utf-8", errors="replace")
@@ -113,6 +113,7 @@ def _find_wallclock_in_file(path: Path) -> List[str]:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def controller() -> EvacuationController:
@@ -198,6 +199,4 @@ def test_no_wallclock_in_telemetry_module():
     """REQ-244: No wall-clock calls in telemetry module (if it exists)."""
     telemetry_path = REPO_ROOT / "agentic_core/L4_state/types/telemetry.py"
     violations = _find_wallclock_in_file(telemetry_path)
-    assert violations == [], (
-        f"Wall-clock calls in telemetry.py:\n" + "\n".join(violations)
-    )
+    assert violations == [], "Wall-clock calls in telemetry.py:\n" + "\n".join(violations)

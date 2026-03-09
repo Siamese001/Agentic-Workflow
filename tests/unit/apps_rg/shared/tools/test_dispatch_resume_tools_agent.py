@@ -36,7 +36,7 @@ class TestDispatchResumeToolsAgent:
 
             return DispatchResumeToolsAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import DispatchResumeToolsAgent: {e}")
+            pytest.fail(f"Cannot import DispatchResumeToolsAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify DispatchResumeToolsAgent exists and is importable."""

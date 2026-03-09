@@ -10,8 +10,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, field
-from typing import Dict, FrozenSet, List, Optional, Set, Tuple
+from dataclasses import dataclass
 
 import pytest
 
@@ -21,6 +20,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Side-effect registry
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class SideEffectEntry:
@@ -46,14 +46,14 @@ class SideEffectRegistry:
     """Deterministic registry of authorised side effects."""
 
     def __init__(self):
-        self._entries: Dict[str, SideEffectEntry] = {}
+        self._entries: dict[str, SideEffectEntry] = {}
 
     def register(self, entry: SideEffectEntry) -> None:
         if entry.effect_id in self._entries:
             raise ValueError(f"Duplicate effect_id: {entry.effect_id}")
         self._entries[entry.effect_id] = entry
 
-    def query(self, effect_type: str) -> List[SideEffectEntry]:
+    def query(self, effect_type: str) -> list[SideEffectEntry]:
         """Return all entries of a given type, sorted by effect_id (deterministic)."""
         return sorted(
             [e for e in self._entries.values() if e.effect_type == effect_type],
@@ -63,15 +63,10 @@ class SideEffectRegistry:
     def registry_hash(self) -> str:
         """Deterministic hash of all entries (sorted by effect_id)."""
         sorted_entries = sorted(self._entries.values(), key=lambda e: e.effect_id)
-        entries_data = [
-            {"effect_id": e.effect_id, "hash": e.entry_hash}
-            for e in sorted_entries
-        ]
-        return hashlib.sha256(
-            json.dumps(entries_data, sort_keys=True).encode()
-        ).hexdigest()
+        entries_data = [{"effect_id": e.effect_id, "hash": e.entry_hash} for e in sorted_entries]
+        return hashlib.sha256(json.dumps(entries_data, sort_keys=True).encode()).hexdigest()
 
-    def compare(self, other: "SideEffectRegistry") -> bool:
+    def compare(self, other: SideEffectRegistry) -> bool:
         """Deterministic comparison — equal iff registry_hash matches."""
         return self.registry_hash() == other.registry_hash()
 
@@ -79,6 +74,7 @@ class SideEffectRegistry:
 # ---------------------------------------------------------------------------
 # Artifact legality
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class ArtifactLegalityRecord:
@@ -107,7 +103,7 @@ def asdict_manual(obj) -> dict:
 class ArtifactLegalityChecker:
     """Deterministic artifact legality checker."""
 
-    def __init__(self, allowed_types: FrozenSet[str], required_signer: str):
+    def __init__(self, allowed_types: frozenset[str], required_signer: str):
         self._allowed_types = allowed_types
         self._required_signer = required_signer
 
@@ -124,18 +120,18 @@ class ArtifactLegalityChecker:
 # Capability acquisition lock
 # ---------------------------------------------------------------------------
 
+
 class CapabilityAcquisitionLock:
     """Ensures capability acquisition is atomic and non-concurrent."""
 
     def __init__(self):
-        self._held_by: Optional[str] = None
-        self._acquisitions: List[Tuple[str, str]] = []  # (acquirer, capability)
+        self._held_by: str | None = None
+        self._acquisitions: list[tuple[str, str]] = []  # (acquirer, capability)
 
     def acquire(self, acquirer_id: str, capability: str) -> None:
         if self._held_by is not None:
             raise RuntimeError(
-                f"Capability lock held by '{self._held_by}'; "
-                f"'{acquirer_id}' cannot acquire '{capability}'"
+                f"Capability lock held by '{self._held_by}'; '{acquirer_id}' cannot acquire '{capability}'"
             )
         self._held_by = acquirer_id
         self._acquisitions.append((acquirer_id, capability))
@@ -150,7 +146,7 @@ class CapabilityAcquisitionLock:
         return self._held_by is None
 
     @property
-    def acquisition_log(self) -> List[Tuple[str, str]]:
+    def acquisition_log(self) -> list[tuple[str, str]]:
         return list(self._acquisitions)
 
 
@@ -158,11 +154,12 @@ class CapabilityAcquisitionLock:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
 def registry() -> SideEffectRegistry:
     r = SideEffectRegistry()
     r.register(SideEffectEntry("se_001", "write", "ns_a/file.txt", "guardian", 10))
-    r.register(SideEffectEntry("se_002", "read",  "ns_b/data.json", "agent_x", 11))
+    r.register(SideEffectEntry("se_002", "read", "ns_b/data.json", "agent_x", 11))
     r.register(SideEffectEntry("se_003", "write", "ns_a/config.yaml", "guardian", 12))
     return r
 
@@ -182,7 +179,7 @@ def test_req331_registry_comparison_deterministic(registry):
     # Two registries built identically must compare equal
     r2 = SideEffectRegistry()
     r2.register(SideEffectEntry("se_001", "write", "ns_a/file.txt", "guardian", 10))
-    r2.register(SideEffectEntry("se_002", "read",  "ns_b/data.json", "agent_x", 11))
+    r2.register(SideEffectEntry("se_002", "read", "ns_b/data.json", "agent_x", 11))
     r2.register(SideEffectEntry("se_003", "write", "ns_a/config.yaml", "guardian", 12))
 
     assert registry.compare(r2) is True
@@ -235,7 +232,7 @@ def test_req360_illegal_artifact_rejected():
     art = ArtifactLegalityRecord(
         artifact_id="art_bad",
         artifact_type="SurgicalManifest",
-        signed_by="rogue_agent",   # wrong signer
+        signed_by="rogue_agent",  # wrong signer
         policy_hash="p" * 64,
         is_legal=True,
     )

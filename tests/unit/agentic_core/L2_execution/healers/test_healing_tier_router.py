@@ -414,7 +414,7 @@ class TestNoTieringEnforcement:
         """Get all agent files NOT in the tiering allowlist."""
         csv_path = REPO_ROOT / "docs" / "technical" / "agent_confidence_tiering_recommendations.csv"
         if not csv_path.exists():
-            pytest.skip("CSV SSOT not found")
+            pytest.fail("CSV SSOT not found")
 
         no_tiering_files = []
         with open(csv_path, encoding="utf-8") as f:

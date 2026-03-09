@@ -112,8 +112,7 @@ class TestActivationGateW4F:
         )
 
         # Verify deterministic digest
-        assert result1.replay_digest == result2.replay_digest, \
-            "Replay check digest must be deterministic"
+        assert result1.replay_digest == result2.replay_digest, "Replay check digest must be deterministic"
 
         # Verify digest format
         assert len(result1.replay_digest) == 64  # SHA-256 hex length
@@ -126,6 +125,7 @@ class TestActivationGateW4F:
 
         # Monkey patch the invariant checker to always fail
         original_validate = gate.invariant_checker.validate
+
         def failing_validate(*args, **kwargs):
             raise ValueError("Test invariant violation: similarity_cutoff out of bounds")
 
@@ -202,6 +202,7 @@ class TestW4FNegativeControl:
         import json
 
         import system_learning.engines.retrieval_profile_activation_gate as gate_module
+
         original_json_dumps = json.dumps
 
         def tampered_json_dumps(obj, *, sort_keys=False, separators=None):
@@ -238,7 +239,9 @@ class TestW4FNegativeControl:
 
             # Tampering should cause different results - this should FAIL the test
             if result_tampered.activation_digest != result_normal.activation_digest:
-                assert False, f"TAMPERING DETECTED: tampered digest {result_tampered.activation_digest} != normal digest {result_normal.activation_digest}"
+                assert False, (
+                    f"TAMPERING DETECTED: tampered digest {result_tampered.activation_digest} != normal digest {result_normal.activation_digest}"
+                )
 
             # If we get here, tampering wasn't effective
             assert False, "Tampering was not effective - activation digests are identical"
@@ -275,7 +278,9 @@ class TestW4FNegativeControl:
         )
 
         # Should be identical when not tampering
-        assert result1.activation_digest == result2.activation_digest, \
+        assert result1.activation_digest == result2.activation_digest, (
             "Activation digest must be identical when not tampering"
-        assert result1.activated == result2.activated, \
+        )
+        assert result1.activated == result2.activated, (
             "Activation status must be identical when not tampering"
+        )

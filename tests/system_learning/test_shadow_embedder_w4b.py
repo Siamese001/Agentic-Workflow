@@ -17,10 +17,12 @@ class TestShadowEmbedderW4B:
 
     def setup_method(self):
         from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
         get_retrieval_profile_manager().clear_cache()
 
     def teardown_method(self):
         from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
         get_retrieval_profile_manager().clear_cache()
 
     def test_shadow_embedder_non_influential(self):
@@ -137,6 +139,7 @@ class TestShadowEmbedderW4B:
 
         # Activate the profile using global manager
         from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
         manager = get_retrieval_profile_manager()
         manager.activate_profile(profile, 1234567890)
 
@@ -168,6 +171,7 @@ class TestShadowEmbedderW4B:
                 f"|{result1['primary_shadow_cosine']}"
             )
             import hashlib
+
             digest1 = hashlib.sha256(shadow_data.encode()).hexdigest()
 
             shadow_data2 = (
@@ -187,6 +191,7 @@ class TestShadowEmbedderW4B:
             # Shadow telemetry not available - emit deterministic fallback
             fallback_data = f"no_shadow_telemetry|{now_utc}|test-shadow-determinism"
             import hashlib
+
             digest = hashlib.sha256(fallback_data.encode()).hexdigest()
             print(f"W4B-SHADOW-DIGEST: {digest}")
 
@@ -197,10 +202,12 @@ class TestW4BNegativeControl:
 
     def setup_method(self):
         from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
         get_retrieval_profile_manager().clear_cache()
 
     def teardown_method(self):
         from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
         get_retrieval_profile_manager().clear_cache()
 
     @pytest.mark.xfail(reason="W4B tamper guard", strict=False)
@@ -211,6 +218,7 @@ class TestW4BNegativeControl:
 
         # Monkey patch the rounding function to use different precision
         import system_learning.pipelines.meta_learning_pipeline as pipeline
+
         original_round = round
 
         def tampered_round(x, ndigits=None):
@@ -237,6 +245,7 @@ class TestW4BNegativeControl:
 
             # Activate the profile using global manager
             from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
             manager = get_retrieval_profile_manager()
             manager.clear_cache()  # Clear any cached profile
             manager.activate_profile(profile, 1234567890)
@@ -275,10 +284,14 @@ class TestW4BNegativeControl:
 
                 # If tampering is detected, the test should FAIL
                 if tampered_decimals != normal_decimals:
-                    assert False, f"TAMPERING DETECTED: tampered has {tampered_decimals} decimals, normal has {normal_decimals}"
+                    assert False, (
+                        f"TAMPERING DETECTED: tampered has {tampered_decimals} decimals, normal has {normal_decimals}"
+                    )
 
                 if result_tampered["primary_shadow_cosine"] != result_normal["primary_shadow_cosine"]:
-                    assert False, f"TAMPERING DETECTED: cosine values differ: {result_tampered['primary_shadow_cosine']} vs {result_normal['primary_shadow_cosine']}"
+                    assert False, (
+                        f"TAMPERING DETECTED: cosine values differ: {result_tampered['primary_shadow_cosine']} vs {result_normal['primary_shadow_cosine']}"
+                    )
 
                 # If we get here, tampering wasn't effective
                 assert False, "Tampering was not effective - values are identical"
@@ -292,6 +305,7 @@ class TestW4BNegativeControl:
             os.environ.pop("W4B_NEGCTRL_TAMPER", None)
             # Reset profile manager cache to prevent cross-test contamination
             from system_learning.engines.retrieval_profile_manager import get_retrieval_profile_manager
+
             get_retrieval_profile_manager().clear_cache()
 
     def test_shadow_determinism_violation_negative_control_guard_intact(self):
@@ -339,6 +353,7 @@ class TestW4BNegativeControl:
                 f"|{result1['primary_shadow_cosine']}"
             )
             import hashlib
+
             digest = hashlib.sha256(shadow_data.encode()).hexdigest()
             print(f"W4B-NEGCTRL-GUARD-INTACT: digest={digest}")
 

@@ -568,7 +568,7 @@ class TestSSOTAlignment:
         agentic_core_path = self.project_root / "agentic_core"
 
         if not agentic_core_path.exists():
-            pytest.skip("agentic_core directory not found")
+            pytest.fail("agentic_core directory not found")
 
         missing_layers: list[str] = []
         existing_layers: list[str] = []

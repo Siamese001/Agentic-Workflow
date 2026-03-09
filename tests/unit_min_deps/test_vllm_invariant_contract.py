@@ -108,7 +108,10 @@ def test_invariant_violation_as_dict_includes_hash():
 def test_invariant_id_enum_values_stable():
     """Test that InvariantId enum values are stable strings."""
     assert InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value == "INV_NO_GPU_IMPORTS_IN_L0_L6"
-    assert InvariantId.INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS.value == "INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS"
+    assert (
+        InvariantId.INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS.value
+        == "INV_LOCAL_REQUEST_HAS_EXPLICIT_MAX_TOKENS"
+    )
     assert InvariantId.INV_LOCAL_REQUEST_TEMPERATURE_ZERO.value == "INV_LOCAL_REQUEST_TEMPERATURE_ZERO"
     assert InvariantId.INV_LOCAL_REQUEST_SEED_PRESENT.value == "INV_LOCAL_REQUEST_SEED_PRESENT"
     assert InvariantId.INV_TELEMETRY_HAS_FINGERPRINT_HASH.value == "INV_TELEMETRY_HAS_FINGERPRINT_HASH"

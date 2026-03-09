@@ -11,7 +11,7 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L2_execution.engines.execution_gateway import ExecutionGateway, SignatureBoundaryError
-from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope, SignatureVerificationError
+from agentic_core.L2_execution.types.sandbox_envelope_types import SandboxEnvelope
 from agentic_core.L2_execution.UniversalWriteGateway import (
     MutationRecord,
     SimulationResult,
@@ -36,7 +36,7 @@ def sample_envelope():
         tool_args={"param": "value"},
         instruction_packet_id="test_instruction_1",
         invocation_metadata={"agent_id": "test_agent"},
-        budget=ToolBudget()
+        budget=ToolBudget(),
     )
 
 
@@ -65,10 +65,11 @@ class TestSignatureBoundary:
         succeeds, and assert no SignatureBoundaryError is raised.
         """
         from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+
         correct_secret = TestKeySource.TEST_SECRET
 
         with patch(
-            'agentic_core.L2_execution.engines.execution_gateway.get_current_secret',
+            "agentic_core.L2_execution.engines.execution_gateway.get_current_secret",
             return_value=correct_secret,
         ):
             try:
@@ -77,7 +78,7 @@ class TestSignatureBoundary:
                     lambda: None,
                     policy_hash="test_policy",
                     prev_hash="test_prev",
-                    transcript_hash="test_transcript"
+                    transcript_hash="test_transcript",
                 )
             except SignatureBoundaryError:
                 pytest.fail("Valid signature must NOT raise SignatureBoundaryError")
@@ -92,8 +93,8 @@ class TestSignatureBoundary:
         with a different key so hmac.compare_digest fails -> SignatureBoundaryError.
         """
         with patch(
-            'agentic_core.L2_execution.engines.execution_gateway.get_current_secret',
-            return_value=b'wrong-key-that-does-not-match',
+            "agentic_core.L2_execution.engines.execution_gateway.get_current_secret",
+            return_value=b"wrong-key-that-does-not-match",
         ):
             with pytest.raises(SignatureBoundaryError) as exc_info:
                 await execution_gateway.execute_with_trace(
@@ -101,7 +102,7 @@ class TestSignatureBoundary:
                     lambda: None,
                     policy_hash="test_policy",
                     prev_hash="test_prev",
-                    transcript_hash="test_transcript"
+                    transcript_hash="test_transcript",
                 )
 
         assert "Invalid SandboxEnvelope signature" in str(exc_info.value)
@@ -113,8 +114,8 @@ class TestSignatureBoundary:
         SandboxEnvelope is a frozen dataclass so we use object.__setattr__
         to force-clear the signature field on a fresh instance.
         """
-        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
         from agentic_core.L2_execution.enforcement.key_source import TestKeySource
+        from agentic_core.L2_execution.types.sandbox_envelope_types import ToolBudget
 
         unsigned_envelope = SandboxEnvelope(
             envelope_id="unsigned_envelope",
@@ -122,13 +123,13 @@ class TestSignatureBoundary:
             tool_args={"param": "value"},
             instruction_packet_id="test_instruction",
             invocation_metadata={"agent_id": "test_agent"},
-            budget=ToolBudget()
+            budget=ToolBudget(),
         )
         # Force-clear the signature on the frozen dataclass
         object.__setattr__(unsigned_envelope, "signature", "")
 
         with patch(
-            'agentic_core.L2_execution.engines.execution_gateway.get_current_secret',
+            "agentic_core.L2_execution.engines.execution_gateway.get_current_secret",
             return_value=TestKeySource.TEST_SECRET,
         ):
             with pytest.raises(SignatureBoundaryError) as exc_info:
@@ -137,7 +138,7 @@ class TestSignatureBoundary:
                     lambda: None,
                     policy_hash="test_policy",
                     prev_hash="test_prev",
-                    transcript_hash="test_transcript"
+                    transcript_hash="test_transcript",
                 )
 
         assert "Invalid SandboxEnvelope signature" in str(exc_info.value)
@@ -248,12 +249,12 @@ class TestNegativeControl:
     def test_tamper_environment_variable(self):
         """Test that W_HARDEN_NEGCTRL_TAMPER environment variable is recognized."""
         # Test with tampering enabled
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
-            assert os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1'
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
+            assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
 
         # Test without tampering
         with patch.dict(os.environ, {}, clear=True):
-            assert os.environ.get('W_HARDEN_NEGCTRL_TAMPER') is None
+            assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") is None
 
     def test_negative_control_xfail(self):
         """Negative control: XFAIL when tampered, PASS when restored.
@@ -263,7 +264,7 @@ class TestNegativeControl:
         When the env var is unset this test passes normally.
         No @xfail decorator is used, eliminating any XPASS possibility.
         """
-        if os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1':
+        if os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1":
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
         # Restore path: normal PASS
         assert True

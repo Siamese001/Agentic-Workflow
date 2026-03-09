@@ -15,18 +15,16 @@ Tests for LocationHealerAgent._heal_depth_violation (depth_aligned bug fix).
 | LocationHealerAgent.py | _heal_depth_violation | SHALLOW result structure | all keys present | test_shallow_result_has_required_keys |
 | LocationHealerAgent.py | _heal_depth_violation | depth == 0 edge | SHALLOW path | test_boundary_depth_zero |
 """
+
 from __future__ import annotations
 
 from pathlib import Path
-from types import SimpleNamespace
 from unittest.mock import MagicMock, patch
-
-import pytest
-
 
 # ---------------------------------------------------------------------------
 # Minimal agent factory
 # ---------------------------------------------------------------------------
+
 
 def _make_agent(project_root: Path):
     from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
@@ -67,6 +65,7 @@ def _call(agent, file_path, dry_run=False, affected=None, import_touched=None):
 # depth == expected → race-condition SKIP
 # ---------------------------------------------------------------------------
 
+
 class TestDepthAlreadyCorrect:
     def test_depth_already_correct_returns_skipped(self, tmp_path):
         """Success path: depth == expected → SKIPPED, no I/O."""
@@ -85,6 +84,7 @@ class TestDepthAlreadyCorrect:
 # ---------------------------------------------------------------------------
 # DEEP violation (depth > expected)
 # ---------------------------------------------------------------------------
+
 
 class TestDeepViolation:
     def test_deep_violation_calls_safe_move(self, tmp_path):
@@ -163,8 +163,11 @@ class TestDeepViolation:
         ):
             affected = []
             result = agent._heal_depth_violation(
-                f, msg="test", dry_run=False,
-                affected_paths=affected, import_touched_paths=[],
+                f,
+                msg="test",
+                dry_run=False,
+                affected_paths=affected,
+                import_touched_paths=[],
             )
 
         # depth=2 > expected=1 → DEEP path; target = agentic_core/agent.py
@@ -192,8 +195,11 @@ class TestDeepViolation:
         ):
             agent.safe_move.return_value = {"applied": False, "action_taken": "DENIED"}
             result = agent._heal_depth_violation(
-                f, msg="test", dry_run=False,
-                affected_paths=[], import_touched_paths=[],
+                f,
+                msg="test",
+                dry_run=False,
+                affected_paths=[],
+                import_touched_paths=[],
             )
 
         # depth=1 > expected=0 → DEEP, identity guard: target=tmp_path/agent.py != source
@@ -203,6 +209,7 @@ class TestDeepViolation:
 # ---------------------------------------------------------------------------
 # SHALLOW violation (depth < expected) — the depth_aligned bug fix
 # ---------------------------------------------------------------------------
+
 
 class TestShallowViolation:
     def test_shallow_returns_applied_false(self, tmp_path):
@@ -305,8 +312,11 @@ class TestShallowViolation:
             registry,
         ):
             result = agent._heal_depth_violation(
-                f, msg="test", dry_run=False,
-                affected_paths=[], import_touched_paths=[],
+                f,
+                msg="test",
+                dry_run=False,
+                affected_paths=[],
+                import_touched_paths=[],
             )
 
         assert result.get("violation") == "SHALLOW_DEPTH"
@@ -320,6 +330,7 @@ class TestShallowViolation:
 # ---------------------------------------------------------------------------
 # Exception path (§1.5)
 # ---------------------------------------------------------------------------
+
 
 class TestExceptionPath:
     def test_exception_returns_error_dict(self, tmp_path):
@@ -368,6 +379,7 @@ class TestExceptionPath:
 # Boundary / edge cases (§1.8)
 # ---------------------------------------------------------------------------
 
+
 class TestBoundaries:
     def test_boundary_depth_zero(self, tmp_path):
         """Boundary: expected_depth=0 and file at depth 0 → equality branch fires."""
@@ -384,8 +396,11 @@ class TestBoundaries:
         ):
             agent.safe_move.return_value = {"applied": False, "action_taken": "DENIED"}
             result = agent._heal_depth_violation(
-                f, msg="test", dry_run=False,
-                affected_paths=[], import_touched_paths=[],
+                f,
+                msg="test",
+                dry_run=False,
+                affected_paths=[],
+                import_touched_paths=[],
             )
         # Should enter DEEP path without crashing
         assert "error" not in result or result.get("error") is None or True  # no exception
@@ -405,8 +420,11 @@ class TestBoundaries:
         ):
             agent.safe_move.return_value = {"applied": False, "action_taken": "DENIED"}
             result = agent._heal_depth_violation(
-                f, msg="test", dry_run=False,
-                affected_paths=[], import_touched_paths=[],
+                f,
+                msg="test",
+                dry_run=False,
+                affected_paths=[],
+                import_touched_paths=[],
             )
 
         # depth=5 > default 3 → DEEP path entered, safe_move called

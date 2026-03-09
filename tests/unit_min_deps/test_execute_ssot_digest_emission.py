@@ -16,7 +16,6 @@ from __future__ import annotations
 
 import io
 import os
-import sys
 from contextlib import redirect_stdout
 from unittest.mock import patch
 
@@ -29,9 +28,11 @@ pytestmark = pytest.mark.unit_min_deps
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _get_compute_fn():
     """Import _compute_pipeline_digest from execute_ssot."""
     from agentic_core.L0_routing.scripts.execute_ssot import _compute_pipeline_digest
+
     return _compute_pipeline_digest
 
 
@@ -40,6 +41,7 @@ def _emit_for_targets(targets: list[str]) -> str:
     from agentic_core.L6_observability.engines.determinism_digest_emitter import (
         DeterminismDigestEmitter,
     )
+
     compute = _get_compute_fn()
     digest = compute(targets)
     return DeterminismDigestEmitter().emit_once(digest)
@@ -59,6 +61,7 @@ def _capture_emit(targets: list[str]) -> str:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 class TestComputePipelineDigestExists:
     @pytest.mark.unit_min_deps
@@ -85,9 +88,7 @@ class TestTwoRunIdenticalDigest:
         fn = _get_compute_fn()
         run1 = fn(self._TARGETS)
         run2 = fn(self._TARGETS)
-        assert run1 == run2, (
-            f"Two-run digest mismatch:\n  run1={run1}\n  run2={run2}"
-        )
+        assert run1 == run2, f"Two-run digest mismatch:\n  run1={run1}\n  run2={run2}"
 
     @pytest.mark.unit_min_deps
     def test_run1_equals_run2_single_target(self):
@@ -134,9 +135,7 @@ class TestEmitLineFormat:
     def test_two_runs_emit_identical_line(self):
         line1 = _emit_for_targets(["agentic_core"])
         line2 = _emit_for_targets(["agentic_core"])
-        assert line1 == line2, (
-            f"Emitted lines differ:\n  run1={line1!r}\n  run2={line2!r}"
-        )
+        assert line1 == line2, f"Emitted lines differ:\n  run1={line1!r}\n  run2={line2!r}"
 
     @pytest.mark.unit_min_deps
     def test_duplicate_emitter_raises(self):
@@ -144,6 +143,7 @@ class TestEmitLineFormat:
             DeterminismDigestEmitter,
             DuplicateEmissionError,
         )
+
         fn = _get_compute_fn()
         emitter = DeterminismDigestEmitter()
         digest = fn(["agentic_core"])
@@ -173,8 +173,7 @@ class TestTwoRunStdoutCapture:
         lines_run1 = _capture_emit(self._TARGETS)
         lines_run2 = _capture_emit(self._TARGETS)
         assert lines_run1[0] == lines_run2[0], (
-            f"Captured digest lines differ:\n"
-            f"  run1={lines_run1[0]!r}\n  run2={lines_run2[0]!r}"
+            f"Captured digest lines differ:\n  run1={lines_run1[0]!r}\n  run2={lines_run2[0]!r}"
         )
 
     @pytest.mark.unit_min_deps
@@ -200,9 +199,7 @@ class TestNegativeControlTwoRun:
             clean = fn(self._TARGETS)
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             tampered = fn(self._TARGETS)
-        assert clean != tampered, (
-            "Negative control FAILED: W_HARDEN_NEGCTRL_TAMPER=1 did not change digest"
-        )
+        assert clean != tampered, "Negative control FAILED: W_HARDEN_NEGCTRL_TAMPER=1 did not change digest"
 
     @pytest.mark.unit_min_deps
     def test_restore_after_tamper_gives_clean_digest(self):
@@ -218,6 +215,5 @@ class TestNegativeControlTwoRun:
                 del os.environ["W_HARDEN_NEGCTRL_TAMPER"]
             restored = fn(self._TARGETS)
         assert clean1 == restored, (
-            f"Digest did not restore after tamper removal:\n"
-            f"  clean1={clean1}\n  restored={restored}"
+            f"Digest did not restore after tamper removal:\n  clean1={clean1}\n  restored={restored}"
         )

@@ -1,4 +1,5 @@
 """AST-based dependency graph analysis: what exists, what is missing, what would be needed."""
+
 import ast
 import json
 from collections import defaultdict
@@ -47,6 +48,7 @@ for d in SSOT_DIRS:
             if any(dep.startswith(d.replace("/", ".")) for d in SSOT_DIRS):
                 import_graph[mod].add(dep)
 
+
 # 2. Detect cycles (DFS)
 def find_cycles(graph):
     visited = set()
@@ -73,6 +75,7 @@ def find_cycles(graph):
             dfs(node, [node])
     return cycles
 
+
 cycles = find_cycles(import_graph)
 
 # 3. Detect layer inversions (lower layer importing higher layer)
@@ -86,11 +89,13 @@ LAYER_ORDER = {
     "L6_observability": 6,
 }
 
+
 def get_layer(mod):
     for layer_name, rank in LAYER_ORDER.items():
         if layer_name in mod:
             return rank, layer_name
     return -1, None
+
 
 layer_inversions = []
 for mod, deps in import_graph.items():
@@ -117,10 +122,9 @@ top_fan_out = sorted(fan_out.items(), key=lambda x: x[1], reverse=True)[:15]
 # 5. Orphan detection (no imports, not imported by anyone)
 all_imported = set(fan_in.keys())
 orphans = [
-    mod for mod in module_to_file
-    if mod not in all_imported
-    and not import_graph.get(mod)
-    and not mod.endswith("__init__")
+    mod
+    for mod in module_to_file
+    if mod not in all_imported and not import_graph.get(mod) and not mod.endswith("__init__")
 ]
 
 print("=== CYCLE DETECTION ===")
@@ -163,7 +167,9 @@ for py in ROOT.rglob("*.py"):
         src = py.read_text(encoding="utf-8", errors="replace")
     except:
         continue
-    if any(kw in src for kw in ["import_graph", "dependency_graph", "dep_graph", "cycle_detect", "ImportGraph"]):
+    if any(
+        kw in src for kw in ["import_graph", "dependency_graph", "dep_graph", "cycle_detect", "ImportGraph"]
+    ):
         rel = py.relative_to(ROOT).as_posix()
         existing_tools.append(rel)
 

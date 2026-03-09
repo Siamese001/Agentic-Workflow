@@ -13,10 +13,8 @@ Wave 1 Phase 2 — SSOT Structure Validation Enforcer Tests
 
 from __future__ import annotations
 
-from dataclasses import dataclass
 from pathlib import Path
-from typing import Optional
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -24,9 +22,9 @@ from agentic_core.L5_safety.enforcement.registry_verification_enforcer import Ag
 from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
     BASE_AGENT_REQUIRED_PATH,
     LAYER_PATTERNS,
+    SSOTStructureValidator,
     StructureValidationResult,
     StructureViolation,
-    SSOTStructureValidator,
     run_structure_validation,
 )
 
@@ -627,8 +625,6 @@ class TestSideEffectSafety:
     def test_structure_validation_result_violations_list_independent_across_instances(self):
         r1 = StructureValidationResult()
         r2 = StructureValidationResult()
-        v = StructureViolation(
-            agent_class="X", agent_path="x.py", violation_type="root_file", message="m"
-        )
+        v = StructureViolation(agent_class="X", agent_path="x.py", violation_type="root_file", message="m")
         r1.violations.append(v)
         assert r2.violations == []

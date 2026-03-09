@@ -39,7 +39,7 @@ class TestContentStrategyAgent:
 
             return ContentStrategyAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import ContentStrategyAgent: {e}")
+            pytest.fail(f"Cannot import ContentStrategyAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify ContentStrategyAgent exists and is importable."""

@@ -311,7 +311,7 @@ class TestP4_3A:
             if orch.Bm25Store is not None:
                 assert orch.Bm25Store is get_bm25_store()
         except ImportError:
-            pytest.skip("bm25_store or rag_orchestrator not importable in this environment")
+            pytest.fail("bm25_store or rag_orchestrator not importable in this environment")
 
 
 # ===========================================================================

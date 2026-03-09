@@ -32,16 +32,15 @@ sys.path.insert(0, str(REPO_ROOT))
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,
     EMBEDDING_HINT_PATTERNS,
-    ASTAnalyzer,
     FileAnalysis,
     ParseFailure,
     SemanticGapAnalyzer,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
@@ -52,9 +51,7 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
@@ -77,6 +74,7 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 # 1. No embedding_mentions -> file skipped
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_no_embedding_mentions_produces_no_gap():
     """File with empty embedding_mentions is skipped — no EMBEDDING-PLACEMENT-GAP."""
@@ -91,6 +89,7 @@ def test_no_embedding_mentions_produces_no_gap():
 # ===========================================================================
 # 2. Allowed path tokens -> no gap regardless of layer
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_embedding_in_path_name_no_gap():
@@ -156,6 +155,7 @@ def test_seed_in_path_name_no_gap():
 # 3. Allowed layers -> no gap
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_l1_layer_file_with_embedding_no_gap():
     """L1 is an allowed layer for embedding — no EMBEDDING-PLACEMENT-GAP."""
@@ -183,6 +183,7 @@ def test_l4_layer_file_with_embedding_no_gap():
 # ===========================================================================
 # 4. Disallowed placement -> EMBEDDING-PLACEMENT-GAP generated
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_l0_file_no_allowed_token_generates_embedding_gap():
@@ -237,6 +238,7 @@ def test_unknown_layer_file_no_allowed_token_generates_embedding_gap():
 # 5. Parse failure -> skipped
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_parse_failed_file_skipped_no_embedding_gap():
     """Parse-failed file with embedding context is skipped — no EMBEDDING-PLACEMENT-GAP."""
@@ -252,6 +254,7 @@ def test_parse_failed_file_skipped_no_embedding_gap():
 # 6. Boundary conditions
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_allowed_token_in_path_overrides_bad_layer():
     """Boundary: L0 file with 'embedding' in path -> allowed despite bad layer."""
@@ -261,9 +264,7 @@ def test_allowed_token_in_path_overrides_bad_layer():
 
     gaps = analyzer.analyze_rag_embedding_sovereignty()
     emb_gaps = [g for g in gaps if g.gap_id.startswith("EMBEDDING-PLACEMENT-GAP")]
-    assert not emb_gaps, (
-        f"Allowed token 'embedding' in path must suppress gap even for L0: {emb_gaps}"
-    )
+    assert not emb_gaps, f"Allowed token 'embedding' in path must suppress gap even for L0: {emb_gaps}"
 
 
 @pytest.mark.architecture
@@ -275,14 +276,13 @@ def test_l4_layer_without_allowed_token_still_no_gap():
 
     gaps = analyzer.analyze_rag_embedding_sovereignty()
     emb_gaps = [g for g in gaps if g.gap_id.startswith("EMBEDDING-PLACEMENT-GAP")]
-    assert not emb_gaps, (
-        f"L4 layer exemption should suppress gap regardless of path token: {emb_gaps}"
-    )
+    assert not emb_gaps, f"L4 layer exemption should suppress gap regardless of path token: {emb_gaps}"
 
 
 # ===========================================================================
 # 7. EMBEDDING_HINT_PATTERNS invariants
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_embedding_hint_patterns_non_empty():
@@ -305,6 +305,7 @@ def test_embedding_hint_patterns_contains_expected_entries():
 # ===========================================================================
 # 8. Real codebase invariants
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_embedding_sovereignty_returns_list():
@@ -331,9 +332,7 @@ def test_all_embedding_gaps_have_evidence_files():
     analyzer = SemanticGapAnalyzer()
     gaps = analyzer.analyze_rag_embedding_sovereignty()
     for gap in gaps:
-        assert gap.evidence_files, (
-            f"EMBEDDING-PLACEMENT-GAP must have evidence_files: {gap.gap_id}"
-        )
+        assert gap.evidence_files, f"EMBEDDING-PLACEMENT-GAP must have evidence_files: {gap.gap_id}"
 
 
 @pytest.mark.architecture
@@ -343,9 +342,7 @@ def test_l1_files_not_in_embedding_gaps():
     gaps = analyzer.analyze_rag_embedding_sovereignty()
     for gap in gaps:
         for ef in gap.evidence_files:
-            assert "L1_cognition" not in ef, (
-                f"L1 file should never be in EMBEDDING-PLACEMENT-GAP: {ef}"
-            )
+            assert "L1_cognition" not in ef, f"L1 file should never be in EMBEDDING-PLACEMENT-GAP: {ef}"
 
 
 @pytest.mark.architecture
@@ -355,6 +352,4 @@ def test_l4_files_not_in_embedding_gaps():
     gaps = analyzer.analyze_rag_embedding_sovereignty()
     for gap in gaps:
         for ef in gap.evidence_files:
-            assert "L4_state" not in ef, (
-                f"L4 file should never be in EMBEDDING-PLACEMENT-GAP: {ef}"
-            )
+            assert "L4_state" not in ef, f"L4 file should never be in EMBEDDING-PLACEMENT-GAP: {ef}"

@@ -11,7 +11,6 @@ Branch coverage for all 6 metrics:
 """
 
 import pytest
-
 from agentic_core.evaluation.metrics.answer_correctness import AnswerCorrectness
 from agentic_core.evaluation.metrics.groundedness import Groundedness, _token_f1, _tokenize
 from agentic_core.evaluation.metrics.mrr import MeanReciprocalRank
@@ -22,6 +21,7 @@ from agentic_core.evaluation.metrics.recall_at_k import RecallAtK
 # ---------------------------------------------------------------------------
 # PrecisionAtK
 # ---------------------------------------------------------------------------
+
 
 class TestPrecisionAtK:
     def test_invalid_k_raises(self):
@@ -43,28 +43,23 @@ class TestPrecisionAtK:
     def test_perfect_precision(self):
         # All top-k retrieved are relevant
         assert PrecisionAtK(k=3).compute(
-            ["doc_1", "doc_2", "doc_3", "doc_4"],
-            ["doc_1", "doc_2", "doc_3"]
+            ["doc_1", "doc_2", "doc_3", "doc_4"], ["doc_1", "doc_2", "doc_3"]
         ) == pytest.approx(1.0)
 
     def test_zero_precision(self):
-        assert PrecisionAtK(k=3).compute(
-            ["doc_x", "doc_y", "doc_z"],
-            ["doc_1", "doc_2"]
-        ) == pytest.approx(0.0)
+        assert PrecisionAtK(k=3).compute(["doc_x", "doc_y", "doc_z"], ["doc_1", "doc_2"]) == pytest.approx(
+            0.0
+        )
 
     def test_partial_precision(self):
-        score = PrecisionAtK(k=4).compute(
-            ["doc_1", "doc_x", "doc_2", "doc_y"],
-            ["doc_1", "doc_2"]
-        )
+        score = PrecisionAtK(k=4).compute(["doc_1", "doc_x", "doc_2", "doc_y"], ["doc_1", "doc_2"])
         assert score == pytest.approx(0.5)  # 2/4
 
     def test_truncates_to_k(self):
         # Only top-k (3) considered; docs beyond ignored
         score = PrecisionAtK(k=3).compute(
             ["doc_x", "doc_y", "doc_z", "doc_1"],  # doc_1 is 4th, outside k=3
-            ["doc_1"]
+            ["doc_1"],
         )
         assert score == pytest.approx(0.0)
 
@@ -91,6 +86,7 @@ class TestPrecisionAtK:
 # RecallAtK
 # ---------------------------------------------------------------------------
 
+
 class TestRecallAtK:
     def test_invalid_k_raises(self):
         with pytest.raises(ValueError):
@@ -107,52 +103,37 @@ class TestRecallAtK:
 
     def test_perfect_recall(self):
         assert RecallAtK(k=5).compute(
-            ["doc_1", "doc_2", "doc_3"],
-            ["doc_1", "doc_2", "doc_3"]
+            ["doc_1", "doc_2", "doc_3"], ["doc_1", "doc_2", "doc_3"]
         ) == pytest.approx(1.0)
 
     def test_zero_recall(self):
-        assert RecallAtK(k=5).compute(
-            ["doc_x", "doc_y"],
-            ["doc_1", "doc_2"]
-        ) == pytest.approx(0.0)
+        assert RecallAtK(k=5).compute(["doc_x", "doc_y"], ["doc_1", "doc_2"]) == pytest.approx(0.0)
 
     def test_partial_recall(self):
         # 1 of 2 relevant docs in top-5
-        score = RecallAtK(k=5).compute(
-            ["doc_1", "doc_x", "doc_y"],
-            ["doc_1", "doc_2"]
-        )
+        score = RecallAtK(k=5).compute(["doc_1", "doc_x", "doc_y"], ["doc_1", "doc_2"])
         assert score == pytest.approx(0.5)
 
     def test_recall_caps_at_one(self):
         # Duplicates in prediction shouldn't inflate recall past 1.0
-        score = RecallAtK(k=5).compute(
-            ["doc_1", "doc_1", "doc_1"],
-            ["doc_1"]
-        )
+        score = RecallAtK(k=5).compute(["doc_1", "doc_1", "doc_1"], ["doc_1"])
         assert score == pytest.approx(1.0)
 
     def test_k_boundary_plus_one(self):
         # Relevant doc at position k+1 should NOT be counted
-        score = RecallAtK(k=3).compute(
-            ["doc_x", "doc_y", "doc_z", "doc_1"],
-            ["doc_1"]
-        )
+        score = RecallAtK(k=3).compute(["doc_x", "doc_y", "doc_z", "doc_1"], ["doc_1"])
         assert score == pytest.approx(0.0)
 
     def test_k_boundary_exact(self):
         # Relevant doc at exactly position k should be counted
-        score = RecallAtK(k=3).compute(
-            ["doc_x", "doc_y", "doc_1"],
-            ["doc_1"]
-        )
+        score = RecallAtK(k=3).compute(["doc_x", "doc_y", "doc_1"], ["doc_1"])
         assert score == pytest.approx(1.0)
 
 
 # ---------------------------------------------------------------------------
 # MeanReciprocalRank
 # ---------------------------------------------------------------------------
+
 
 class TestMeanReciprocalRank:
     def test_name(self):
@@ -196,6 +177,7 @@ class TestMeanReciprocalRank:
 # ---------------------------------------------------------------------------
 # NDCG
 # ---------------------------------------------------------------------------
+
 
 class TestNDCG:
     def test_invalid_k_raises(self):
@@ -248,6 +230,7 @@ class TestNDCG:
 # Groundedness helpers
 # ---------------------------------------------------------------------------
 
+
 class TestGroundednessHelpers:
     def test_tokenize_lowercases(self):
         tokens = _tokenize("Hello World")
@@ -280,6 +263,7 @@ class TestGroundednessHelpers:
 # Groundedness metric
 # ---------------------------------------------------------------------------
 
+
 class TestGroundedness:
     def test_name(self):
         assert Groundedness().name == "groundedness"
@@ -299,37 +283,35 @@ class TestGroundedness:
         score = Groundedness().compute(
             "governance validator enforces safety",
             "",
-            context=["governance validator", "enforces safety rules"]
+            context=["governance validator", "enforces safety rules"],
         )
         assert score > 0.0
 
     def test_str_context(self):
-        score = Groundedness().compute(
-            "the cat sat on the mat",
-            "",
-            context="the cat sat on the mat"
-        )
+        score = Groundedness().compute("the cat sat on the mat", "", context="the cat sat on the mat")
         assert score == pytest.approx(1.0)
 
     def test_judge_injection(self):
-        fixed_judge = lambda pred, ctx: 0.77
+        def fixed_judge(pred, ctx):
+            return 0.77
+
         m = Groundedness(judge=fixed_judge)
         assert m.compute("anything", "anything", context="ctx") == pytest.approx(0.77)
 
     def test_judge_receives_concatenated_list_context(self):
         received = {}
+
         def capture_judge(pred, ctx):
             received["ctx"] = ctx
             return 0.5
+
         m = Groundedness(judge=capture_judge)
         m.compute("answer", "", context=["part_a", "part_b"])
         assert received["ctx"] == "part_a part_b"
 
     def test_partial_overlap(self):
         score = Groundedness().compute(
-            "the governance validator is important",
-            "",
-            context="the governance validator enforces rules"
+            "the governance validator is important", "", context="the governance validator enforces rules"
         )
         assert 0.0 < score < 1.0
 
@@ -337,6 +319,7 @@ class TestGroundedness:
 # ---------------------------------------------------------------------------
 # AnswerCorrectness
 # ---------------------------------------------------------------------------
+
 
 class TestAnswerCorrectness:
     def test_name(self):
@@ -356,13 +339,14 @@ class TestAnswerCorrectness:
 
     def test_partial_overlap(self):
         score = AnswerCorrectness().compute(
-            "governance validator enforces safety rules",
-            "governance validator checks policy"
+            "governance validator enforces safety rules", "governance validator checks policy"
         )
         assert 0.0 < score < 1.0
 
     def test_judge_injection(self):
-        fixed_judge = lambda pred, gt: 0.91
+        def fixed_judge(pred, gt):
+            return 0.91
+
         m = AnswerCorrectness(judge=fixed_judge)
         assert m.compute("any", "any") == pytest.approx(0.91)
 

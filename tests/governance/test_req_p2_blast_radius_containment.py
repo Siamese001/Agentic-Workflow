@@ -4,15 +4,17 @@ Tests that blast radius is deterministically bounded and proposals
 exceeding limits are rejected.
 """
 
-import pytest
 from dataclasses import dataclass
-from typing import Any, Dict, List
+from typing import Any
+
+import pytest
 
 pytestmark = pytest.mark.governance
 
 # Import the modules we're testing
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent.parent / "agentic_core" / "L4_state" / "enforcement"))
 
 try:
@@ -20,30 +22,35 @@ try:
         BlastRadiusCalculator,
         BlastRadiusEnforcer,
         BlastRadiusMetrics,
+        clear_proposal,
         enforce_blast_radius,
         get_proposal_metrics,
-        clear_proposal,
-        validate_total_impact
+        validate_total_impact,
     )
 except ImportError:
-    pytest.skip("blast_radius module not available", allow_module_level=True)
+    pytest.fail("blast_radius module not available", allow_module_level=True)
+
 
 @dataclass(frozen=True)
 class MockMetaLearningProposal:
     """Mock meta-learning proposal for testing."""
+
     proposal_id: str
-    changes: Dict[str, Any]
-    affected_files: List[str]
+    changes: dict[str, Any]
+    affected_files: list[str]
     confidence: float
-    cross_layer_impacts: List[str]
+    cross_layer_impacts: list[str]
+
 
 @dataclass(frozen=True)
 class ComplexProposal:
     """Complex proposal with nested structures."""
+
     proposal_id: str
-    nested_data: Dict[str, Any]
-    collection_data: List[Any]
+    nested_data: dict[str, Any]
+    collection_data: list[Any]
     simple_field: str
+
 
 class TestBlastRadiusCalculator:
     """Test blast radius calculation functionality."""
@@ -60,7 +67,7 @@ class TestBlastRadiusCalculator:
             changes={"add": "file.py"},
             affected_files=["file.py"],
             confidence=0.9,
-            cross_layer_impacts=[]
+            cross_layer_impacts=[],
         )
 
         # When
@@ -76,17 +83,11 @@ class TestBlastRadiusCalculator:
     def test_calculate_blast_radius_complex_proposal(self):
         """Test blast radius calculation for complex proposal."""
         # Given
-        nested = {
-            "inner_dict": {"key": "value"},
-            "inner_list": [1, 2, 3]
-        }
+        nested = {"inner_dict": {"key": "value"}, "inner_list": [1, 2, 3]}
         collection = [{"item": i} for i in range(5)]
 
         proposal = ComplexProposal(
-            proposal_id="complex_001",
-            nested_data=nested,
-            collection_data=collection,
-            simple_field="test"
+            proposal_id="complex_001", nested_data=nested, collection_data=collection, simple_field="test"
         )
 
         # When
@@ -98,6 +99,7 @@ class TestBlastRadiusCalculator:
 
     def test_blast_radius_exceeds_limit(self):
         """Test that exceeding blast radius limit raises error."""
+
         # Given - Create proposal that exceeds limit
         class LargeProposal:
             def __init__(self):
@@ -113,6 +115,7 @@ class TestBlastRadiusCalculator:
 
     def test_state_surface_bytes_exceeds_limit(self):
         """Test that exceeding byte limit raises error."""
+
         # Given - Create proposal with large string content
         class LargeByteProposal:
             def __init__(self):
@@ -132,7 +135,7 @@ class TestBlastRadiusCalculator:
             changes={"a": 1, "b": 2, "c": 3, "d": 4},
             affected_files=["f1.py", "f2.py"],
             confidence=0.8,
-            cross_layer_impacts=[]
+            cross_layer_impacts=[],
         )
 
         # When
@@ -149,7 +152,7 @@ class TestBlastRadiusCalculator:
             changes={"test": "data with some length"},
             affected_files=["file1.py", "file2.py"],
             confidence=0.7,
-            cross_layer_impacts=[]
+            cross_layer_impacts=[],
         )
 
         # When
@@ -186,7 +189,7 @@ class TestBlastRadiusCalculator:
             changes={"modifies": "agentic_core/L1_cognition/file.py"},
             affected_files=["agentic_core/L2_execution/executor.py"],
             confidence=0.9,
-            cross_layer_impacts=["L1_cognition", "L2_execution"]
+            cross_layer_impacts=["L1_cognition", "L2_execution"],
         )
 
         # When
@@ -194,6 +197,7 @@ class TestBlastRadiusCalculator:
 
         # Then - Should detect layer patterns
         assert cross_layer_count >= 2, "Should detect at least 2 layer impacts"
+
 
 class TestBlastRadiusEnforcer:
     """Test blast radius enforcement functionality."""
@@ -211,7 +215,7 @@ class TestBlastRadiusEnforcer:
             changes={"test": "change"},
             affected_files=["test.py"],
             confidence=0.8,
-            cross_layer_impacts=[]
+            cross_layer_impacts=[],
         )
 
         # When
@@ -276,7 +280,7 @@ class TestBlastRadiusEnforcer:
                 changes={f"change_{i}": f"value_{i}"},
                 affected_files=[f"file_{i}.py"],
                 confidence=0.8,
-                cross_layer_impacts=[]
+                cross_layer_impacts=[],
             )
             self.enforcer.enforce_blast_radius(proposal_id, proposal)
 
@@ -296,7 +300,7 @@ class TestBlastRadiusEnforcer:
                 changes={"small": "change"},
                 affected_files=["small.py"],
                 confidence=0.9,
-                cross_layer_impacts=[]
+                cross_layer_impacts=[],
             )
             self.enforcer.enforce_blast_radius(proposal_id, proposal)
 
@@ -317,13 +321,14 @@ class TestBlastRadiusEnforcer:
                 changes={"change": f"value_{i}"},
                 affected_files=[f"file_{i}.py"],
                 confidence=0.8,
-                cross_layer_impacts=[]
+                cross_layer_impacts=[],
             )
             self.enforcer.enforce_blast_radius(proposal_id, proposal)
 
         # When/Then - Should raise error
         with pytest.raises(ValueError, match="Total blast radius .* exceeds maximum"):
             self.enforcer.validate_total_impact()
+
 
 class TestBlastRadiusIntegration:
     """Test blast radius integration with other Wave 16 components."""
@@ -337,7 +342,7 @@ class TestBlastRadiusIntegration:
             changes={"integrated": "change"},
             affected_files=["integrated.py"],
             confidence=0.85,
-            cross_layer_impacts=["L1_cognition"]
+            cross_layer_impacts=["L1_cognition"],
         )
 
         # When - Enforce blast radius
@@ -362,7 +367,7 @@ class TestBlastRadiusIntegration:
                 changes={f"key_{i}": f"value_{i}"},
                 affected_files=[f"file_{i}.py"],
                 confidence=0.8 + i * 0.02,
-                cross_layer_impacts=[f"L{i%7}_layer"]
+                cross_layer_impacts=[f"L{i % 7}_layer"],
             )
             proposals.append((proposal_id, proposal))
 
@@ -391,11 +396,11 @@ class TestBlastRadiusIntegration:
             changes={
                 "l1_change": "agentic_core/L1_cognition/reasoning/agent.py",
                 "l2_change": "agentic_core/L2_execution/engines/executor.py",
-                "l4_change": "agentic_core/L4_state/storage/state.py"
+                "l4_change": "agentic_core/L4_state/storage/state.py",
             },
             affected_files=["agent.py", "executor.py", "state.py"],
             confidence=0.9,
-            cross_layer_impacts=["L1_cognition", "L2_execution", "L4_state"]
+            cross_layer_impacts=["L1_cognition", "L2_execution", "L4_state"],
         )
 
         # When

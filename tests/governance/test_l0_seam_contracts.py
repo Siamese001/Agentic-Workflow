@@ -9,7 +9,6 @@ from __future__ import annotations
 
 import importlib
 import inspect
-from typing import Callable
 
 import pytest
 
@@ -41,15 +40,13 @@ def test_seam_imports_without_error(stem, _callable, _type):
     assert mod is not None
 
 
-@pytest.mark.parametrize("stem,callable_name,callable_type", [
-    (s, c, t) for s, c, t in SEAM_REGISTRY if c is not None
-])
+@pytest.mark.parametrize(
+    "stem,callable_name,callable_type", [(s, c, t) for s, c, t in SEAM_REGISTRY if c is not None]
+)
 def test_seam_exports_expected_callable(stem, callable_name, callable_type):
     """Each seam with a declared callable must export it."""
     mod = importlib.import_module(SEAM_MODULE_PREFIX + stem)
-    assert hasattr(mod, callable_name), (
-        f"Seam {stem} missing expected export '{callable_name}'"
-    )
+    assert hasattr(mod, callable_name), f"Seam {stem} missing expected export '{callable_name}'"
     obj = getattr(mod, callable_name)
     if callable_type == "function":
         assert callable(obj), f"{callable_name} must be callable"
@@ -59,23 +56,25 @@ def test_seam_exports_expected_callable(stem, callable_name, callable_type):
 # observability_seam specific contracts
 # ---------------------------------------------------------------------------
 
+
 class TestObservabilitySeam:
     def test_load_meta_learning_agent_returns_class_or_none(self):
         from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+
         result = load_meta_learning_agent()
         # Must be a class or None (fail-open)
-        assert result is None or (inspect.isclass(result)), (
-            f"Expected class or None, got {type(result)}"
-        )
+        assert result is None or (inspect.isclass(result)), f"Expected class or None, got {type(result)}"
 
     def test_load_meta_learning_agent_returns_meta_learning_client(self):
         from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+
         cls = load_meta_learning_agent()
         if cls is not None:
             assert cls.__name__ == "MetaLearningClient"
 
     def test_load_meta_learning_agent_no_exception_on_repeat_calls(self):
         from agentic_core.L0_routing.seams.observability_seam import load_meta_learning_agent
+
         r1 = load_meta_learning_agent()
         r2 = load_meta_learning_agent()
         assert r1 is r2 or (r1 is None and r2 is None)
@@ -85,21 +84,25 @@ class TestObservabilitySeam:
 # elevator_shaft_seam specific contracts
 # ---------------------------------------------------------------------------
 
+
 class TestElevatorShaftSeam:
     def test_load_context_jit_returns_dict(self):
         from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+
         result = load_context_jit("intent_001")
         assert isinstance(result, dict)
 
     def test_load_context_jit_returns_empty_dict(self):
         """Seam is a pure stub — always returns empty dict (no control flow allowed)."""
         from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+
         result = load_context_jit("any_intent")
         assert result == {}
 
     def test_load_context_jit_intent_id_accepted(self):
         """intent_id parameter is accepted without error."""
         from agentic_core.L0_routing.seams.elevator_shaft_seam import load_context_jit
+
         r1 = load_context_jit("intent_a")
         r2 = load_context_jit("intent_b")
         assert r1 == r2 == {}
@@ -107,6 +110,7 @@ class TestElevatorShaftSeam:
     def test_load_context_jit_no_control_flow_in_seam(self):
         """Seam must have no If/Try/For/While (enforced by existing invariant test)."""
         import ast
+
         seam_file = "agentic_core/L0_routing/seams/elevator_shaft_seam.py"
         with open(seam_file, encoding="utf-8") as f:
             content = f.read()

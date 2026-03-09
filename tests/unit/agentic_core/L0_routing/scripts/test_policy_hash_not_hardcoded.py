@@ -57,7 +57,7 @@ def test_policy_hash_deterministic_replay():
         / "v15_policy_pack.json"
     )
     if not policy_file.exists():
-        pytest.skip("Policy file not found")
+        pytest.fail("Policy file not found")
 
     # Compute hash twice with same input
     hash1 = hashlib.sha256(policy_file.read_bytes()).hexdigest()
@@ -117,7 +117,7 @@ def test_policy_hash_not_hardcoded_sentinel():
         / "v15_policy_pack.json"
     )
     if not policy_file.exists():
-        pytest.skip("Policy file not found - cannot validate sentinel rejection")
+        pytest.fail("Policy file not found - cannot validate sentinel rejection")
 
     actual_hash = hashlib.sha256(policy_file.read_bytes()).hexdigest()
 

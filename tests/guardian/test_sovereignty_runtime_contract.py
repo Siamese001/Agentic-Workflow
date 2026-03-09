@@ -114,8 +114,7 @@ class TestStructuralContract:
                         if alias.name.startswith(prefix):
                             violations.append(alias.name)
         assert not violations, (
-            "sovereignty_exceptions must not import from layer modules (layer inversion): "
-            + str(violations)
+            "sovereignty_exceptions must not import from layer modules (layer inversion): " + str(violations)
         )
 
     def test_bootstrap_docstring_references_step_order(self):
@@ -123,6 +122,7 @@ class TestStructuralContract:
         src = BOOTSTRAP_PATH.read_text(encoding="utf-8")
         # The bootstrap order is documented; verify at least 3 numbered steps exist
         import re
+
         steps = re.findall(r"\d+\.\s+\w+", src)
         assert len(steps) >= 3, (
             "sovereignty_bootstrap.py docstring must enumerate bootstrap step order "
@@ -140,6 +140,7 @@ class TestBootstrapSingleUseContract:
 
     def _make_bootstrap(self):
         from agentic_core.runtime.sovereignty_bootstrap import SovereigntyBootstrap
+
         return SovereigntyBootstrap()
 
     def test_double_bootstrap_raises_runtime_error(self, tmp_path):
@@ -153,7 +154,9 @@ class TestBootstrapSingleUseContract:
         with (
             patch("agentic_core.runtime.sovereignty_bootstrap.get_hierarchy_validator") as mock_hv,
             patch("agentic_core.runtime.sovereignty_bootstrap.initialize_determinism_engine"),
-            patch("agentic_core.runtime.sovereignty_bootstrap.start_execution_trace", return_value="trace-001"),
+            patch(
+                "agentic_core.runtime.sovereignty_bootstrap.start_execution_trace", return_value="trace-001"
+            ),
         ):
             mock_hv.return_value = MagicMock(config_hash="cfg-hash-001")
             mock_hv.return_value.config_hash = "cfg-hash-001"
@@ -170,7 +173,10 @@ class TestBootstrapSingleUseContract:
                 with (
                     patch("agentic_core.runtime.sovereignty_bootstrap.get_hierarchy_validator") as mock_hv2,
                     patch("agentic_core.runtime.sovereignty_bootstrap.initialize_determinism_engine"),
-                    patch("agentic_core.runtime.sovereignty_bootstrap.start_execution_trace", return_value="trace-002"),
+                    patch(
+                        "agentic_core.runtime.sovereignty_bootstrap.start_execution_trace",
+                        return_value="trace-002",
+                    ),
                 ):
                     mock_hv2.return_value = MagicMock(config_hash="cfg-hash-002")
                     bs.bootstrap(policy_file)
@@ -190,21 +196,25 @@ class TestBootstrapSingleUseContract:
 class TestSovereigntyExceptions:
     def test_sovereignty_violation_error_importable(self):
         from agentic_core.runtime.sovereignty_exceptions import SovereigntyViolationError
+
         exc = SovereigntyViolationError("boundary crossed")
         assert "boundary crossed" in str(exc)
 
     def test_isolation_violation_error_importable(self):
         from agentic_core.runtime.sovereignty_exceptions import IsolationViolationError
+
         exc = IsolationViolationError("write outside boundary")
         assert "write outside boundary" in str(exc)
 
     def test_capability_token_error_importable(self):
         from agentic_core.runtime.sovereignty_exceptions import CapabilityTokenError
+
         exc = CapabilityTokenError("token expired")
         assert "token expired" in str(exc)
 
     def test_determinism_violation_error_importable(self):
         from agentic_core.runtime.sovereignty_exceptions import DeterminismViolationError
+
         exc = DeterminismViolationError("hash mismatch")
         assert "hash mismatch" in str(exc)
 
@@ -215,6 +225,7 @@ class TestSovereigntyExceptions:
             IsolationViolationError,
             SovereigntyViolationError,
         )
+
         for exc_cls in (
             SovereigntyViolationError,
             IsolationViolationError,

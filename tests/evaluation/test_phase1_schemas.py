@@ -13,7 +13,6 @@ Branch coverage:
 """
 
 import pytest
-
 from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
     EvaluationDataset,
     EvaluationExample,
@@ -33,14 +32,15 @@ from agentic_core.evaluation.schemas.evaluation_result_schema import (
 # EvaluationExample
 # ---------------------------------------------------------------------------
 
+
 class TestEvaluationExample:
     def _make(self, **kwargs):
-        defaults = dict(
-            query="q",
-            ground_truth_documents=["doc_1"],
-            expected_answer="expected",
-            metadata={"source": "test"},
-        )
+        defaults = {
+            "query": "q",
+            "ground_truth_documents": ["doc_1"],
+            "expected_answer": "expected",
+            "metadata": {"source": "test"},
+        }
         defaults.update(kwargs)
         return EvaluationExample(**defaults)
 
@@ -76,6 +76,7 @@ class TestEvaluationExample:
 # ---------------------------------------------------------------------------
 # EvaluationDataset
 # ---------------------------------------------------------------------------
+
 
 class TestEvaluationDataset:
     def _make_example(self, query="q"):
@@ -125,16 +126,17 @@ class TestEvaluationDataset:
 # EvaluationResult
 # ---------------------------------------------------------------------------
 
+
 class TestEvaluationResult:
     def _make(self, **kwargs):
-        defaults = dict(
-            example_id="ex_0",
-            query="q",
-            retrieved_doc_ids=["doc_1"],
-            generated_answer="ans",
-            metric_scores={"precision@5": 0.8},
-            metadata={},
-        )
+        defaults = {
+            "example_id": "ex_0",
+            "query": "q",
+            "retrieved_doc_ids": ["doc_1"],
+            "generated_answer": "ans",
+            "metric_scores": {"precision@5": 0.8},
+            "metadata": {},
+        }
         defaults.update(kwargs)
         return EvaluationResult(**defaults)
 
@@ -163,6 +165,7 @@ class TestEvaluationResult:
 # ---------------------------------------------------------------------------
 # EvaluationReport
 # ---------------------------------------------------------------------------
+
 
 class TestEvaluationReport:
     def _make_result(self, eid="ex_0"):
@@ -211,6 +214,7 @@ class TestEvaluationReport:
 # EvaluationSnapshot
 # ---------------------------------------------------------------------------
 
+
 class TestEvaluationSnapshot:
     def _make(self):
         return EvaluationSnapshot(
@@ -249,6 +253,7 @@ class TestEvaluationSnapshot:
 # DeltaReport
 # ---------------------------------------------------------------------------
 
+
 class TestDeltaReport:
     def _make(self, net=0.12):
         return DeltaReport(
@@ -282,6 +287,7 @@ class TestDeltaReport:
 # ---------------------------------------------------------------------------
 # SystemEvaluationSummary
 # ---------------------------------------------------------------------------
+
 
 class TestSystemEvaluationSummary:
     def _make_report(self, scores=None):
@@ -345,6 +351,7 @@ class TestSystemEvaluationSummary:
 # ---------------------------------------------------------------------------
 # ComparativeEvaluationSummary
 # ---------------------------------------------------------------------------
+
 
 class TestComparativeEvaluationSummary:
     def _make_delta(self, net=0.12):

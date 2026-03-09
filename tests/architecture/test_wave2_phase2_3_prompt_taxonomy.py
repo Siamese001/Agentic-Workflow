@@ -64,10 +64,10 @@ from tools.semantic_gap_analyzer import (
     _slot_coverage_score,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
@@ -78,9 +78,7 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
@@ -121,6 +119,7 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 # ===========================================================================
 # 1. _looks_like_prompt_assembler
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_looks_like_prompt_assembler_prompt_in_name_assembler_in_rel():
@@ -174,6 +173,7 @@ def test_looks_like_prompt_assembler_assembler_hint_in_string_literals():
 # ===========================================================================
 # 2. Helper functions: _slot_coverage_score, _missing_slots, _report_slot_status
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_slot_coverage_score_zero_when_no_hits():
@@ -233,6 +233,7 @@ def test_report_slot_status_marks_missing_and_present():
 # 3. PROMPT_TAXONOMY_PATTERNS and PROMPT_SLOT_ORDER invariants
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_prompt_slot_order_contains_all_canonical_slots():
     """PROMPT_SLOT_ORDER must contain all 5 canonical slots."""
@@ -250,6 +251,7 @@ def test_prompt_taxonomy_patterns_all_slots_have_patterns():
 # ===========================================================================
 # 4. analyze_file prompt slot detection via real AST parsing
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_s0_slot_detected_from_system_prompt_literal():
@@ -298,6 +300,7 @@ def test_no_slot_hit_for_unrelated_content():
 # ===========================================================================
 # 5. analyze_prompt_taxonomy_coverage branch coverage
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_parse_failed_file_skipped_no_taxonomy_gap():
@@ -501,6 +504,7 @@ def test_taxonomy_finding_added_to_prompt_taxonomy_findings():
 # 6. Real codebase invariants
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_prompt_taxonomy_coverage_returns_list():
     """Integration: analyze_prompt_taxonomy_coverage returns a list without exception."""
@@ -528,9 +532,7 @@ def test_all_manifest_gaps_are_medium_priority():
     gaps = analyzer.analyze_prompt_taxonomy_coverage()
     for gap in gaps:
         if gap.gap_id.startswith("PROMPT-MANIFEST-GAP"):
-            assert gap.priority == "MEDIUM", (
-                f"PROMPT-MANIFEST-GAP must be MEDIUM, got {gap.priority}"
-            )
+            assert gap.priority == "MEDIUM", f"PROMPT-MANIFEST-GAP must be MEDIUM, got {gap.priority}"
 
 
 @pytest.mark.architecture
@@ -540,6 +542,4 @@ def test_all_validator_gaps_are_low_priority():
     gaps = analyzer.analyze_prompt_taxonomy_coverage()
     for gap in gaps:
         if gap.gap_id.startswith("PROMPT-VALIDATOR-GAP"):
-            assert gap.priority == "LOW", (
-                f"PROMPT-VALIDATOR-GAP must be LOW, got {gap.priority}"
-            )
+            assert gap.priority == "LOW", f"PROMPT-VALIDATOR-GAP must be LOW, got {gap.priority}"

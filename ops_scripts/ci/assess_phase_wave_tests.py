@@ -69,6 +69,7 @@ def _is_phase_wave_file(path: Path) -> bool:
 # Discovery
 # ---------------------------------------------------------------------------
 
+
 def _find_phase_wave_files() -> list[Path]:
     found = []
     for p in TESTS_ROOT.rglob("*.py"):
@@ -98,6 +99,7 @@ def _find_corpus_files(exclude: set[Path]) -> list[Path]:
 # ---------------------------------------------------------------------------
 # AST helpers — parsing and basic extraction
 # ---------------------------------------------------------------------------
+
 
 def _parse_safe(path: Path) -> ast.Module | None:
     try:
@@ -140,11 +142,11 @@ def _quarantine_headers(path: Path) -> dict[str, str]:
         for line in path.read_text(encoding="utf-8", errors="replace").splitlines()[:10]:
             line = line.strip()
             if line.startswith("# DELETE AFTER:"):
-                headers["delete_after"] = line[len("# DELETE AFTER:"):].strip()
+                headers["delete_after"] = line[len("# DELETE AFTER:") :].strip()
             elif line.startswith("# Superseded by:"):
-                headers["superseded_by"] = line[len("# Superseded by:"):].strip()
+                headers["superseded_by"] = line[len("# Superseded by:") :].strip()
             elif line.startswith("# QUARANTINE:"):
-                headers["quarantine_reason"] = line[len("# QUARANTINE:"):].strip()
+                headers["quarantine_reason"] = line[len("# QUARANTINE:") :].strip()
     except OSError:
         pass
     return headers
@@ -157,7 +159,7 @@ def _resolve_superseding_path(superseded_by_str: str) -> Path | None:
         return candidate
     for prefix in ("tests/", "tests\\"):
         if part.startswith(prefix):
-            candidate = TESTS_ROOT / part[len(prefix):]
+            candidate = TESTS_ROOT / part[len(prefix) :]
             if candidate.exists():
                 return candidate
     return None
@@ -165,11 +167,36 @@ def _resolve_superseding_path(superseded_by_str: str) -> Path | None:
 
 def _check_imports_resolvable(imports: list[str]) -> tuple[list[str], list[str]]:
     _KNOWN_STDLIB_OR_THIRD_PARTY = {
-        "ast", "os", "sys", "pathlib", "hashlib", "json", "re", "textwrap",
-        "unittest", "dataclasses", "collections", "typing", "functools",
-        "importlib", "tempfile", "pytest", "unittest.mock", "contextlib",
-        "itertools", "copy", "abc", "io", "time", "datetime", "math",
-        "random", "string", "struct", "threading", "subprocess",
+        "ast",
+        "os",
+        "sys",
+        "pathlib",
+        "hashlib",
+        "json",
+        "re",
+        "textwrap",
+        "unittest",
+        "dataclasses",
+        "collections",
+        "typing",
+        "functools",
+        "importlib",
+        "tempfile",
+        "pytest",
+        "unittest.mock",
+        "contextlib",
+        "itertools",
+        "copy",
+        "abc",
+        "io",
+        "time",
+        "datetime",
+        "math",
+        "random",
+        "string",
+        "struct",
+        "threading",
+        "subprocess",
     }
     found, missing = [], []
     for mod in imports:
@@ -201,6 +228,7 @@ def _check_imports_resolvable(imports: list[str]) -> tuple[list[str], list[str]]
 # AST node types → node class name.  Docstring-only Expr nodes at the top of
 # the function are skipped (they are documentation, not logic).
 # The token list is joined and SHA-256 hashed.
+
 
 class _FingerprintVisitor(ast.NodeVisitor):
     """Emit a stable, normalised token sequence for an AST subtree."""
@@ -451,6 +479,7 @@ def _structural_fingerprint(
 # Also builds name-normalised index: normalised_name → [(rel_path, func_name)]
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class CorpusEntry:
     rel_path: str
@@ -465,12 +494,13 @@ def _strip_phase_wave_tokens(name: str) -> str:
       test_wave2_upward_import_detected  → upward_import_detected
       test_w10_replay_determinism        → replay_determinism
     """
-    stem = name[len("test_"):] if name.startswith("test_") else name
+    stem = name[len("test_") :] if name.startswith("test_") else name
     # Remove numeric-prefixed tokens like phase10_, wave2_, w10_, p2_
     import re as _re
-    stem = _re.sub(r'^(phase|wave|w|p)\d+[_.]', '', stem, flags=_re.IGNORECASE)
+
+    stem = _re.sub(r"^(phase|wave|w|p)\d+[_.]", "", stem, flags=_re.IGNORECASE)
     # Also strip plain phase/wave prefix without number
-    stem = _re.sub(r'^(phase|wave)[_.]', '', stem, flags=_re.IGNORECASE)
+    stem = _re.sub(r"^(phase|wave)[_.]", "", stem, flags=_re.IGNORECASE)
     return stem.lower().strip("_")
 
 
@@ -525,6 +555,7 @@ def _build_corpus_index(corpus_files: list[Path]) -> CorpusIndex:
 # Per-function duplicate result
 # ---------------------------------------------------------------------------
 
+
 @dataclass
 class FuncDuplicateResult:
     func_name: str
@@ -545,30 +576,21 @@ class FuncDuplicateResult:
         return self.has_structural_duplicate or self.has_name_duplicate
 
 
-def _check_duplicates(
-    path: Path, tree: ast.Module, idx: CorpusIndex
-) -> list[FuncDuplicateResult]:
+def _check_duplicates(path: Path, tree: ast.Module, idx: CorpusIndex) -> list[FuncDuplicateResult]:
     results = []
     for fn in _collect_func_nodes(tree):
         fp = _structural_fingerprint(fn)
         norm = _strip_phase_wave_tokens(fn.name)
         rel_self = str(path.relative_to(REPO_ROOT)).replace("\\", "/")
 
-        struct_matches = [
-            e for e in idx.by_fingerprint.get(fp, [])
-            if e.rel_path != rel_self
-        ]
-        name_matches = [
-            e for e in idx.by_normalised_name.get(norm, [])
-            if e.rel_path != rel_self
-        ] if norm else []
+        struct_matches = [e for e in idx.by_fingerprint.get(fp, []) if e.rel_path != rel_self]
+        name_matches = (
+            [e for e in idx.by_normalised_name.get(norm, []) if e.rel_path != rel_self] if norm else []
+        )
 
         # Deduplicate name matches already captured by structural match
         struct_match_keys = {(e.rel_path, e.func_name) for e in struct_matches}
-        name_matches_deduped = [
-            e for e in name_matches
-            if (e.rel_path, e.func_name) not in struct_match_keys
-        ]
+        name_matches_deduped = [e for e in name_matches if (e.rel_path, e.func_name) not in struct_match_keys]
 
         results.append(
             FuncDuplicateResult(
@@ -696,13 +718,11 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave1_phase1_3_governance": (
         "test_governance_stamp_wiring",
-        "Tests governance/elevator-shaft hint detection and gap generation — "
-        "purely functional.",
+        "Tests governance/elevator-shaft hint detection and gap generation — purely functional.",
     ),
     "test_wave1_phase1_parse_failures_and_ssot_paths": (
         "test_ssot_parse_failures_and_component_paths",
-        "Tests parse-failure remediation + SSOT component path correctness — "
-        "purely functional invariant.",
+        "Tests parse-failure remediation + SSOT component path correctness — purely functional invariant.",
     ),
     "test_wave2_phase2_1_advanced_governance": (
         "test_layer_connection_integrity",
@@ -711,18 +731,15 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave2_phase2_2_embedding_sovereignty": (
         "test_rag_embedding_sovereignty",
-        "Tests analyze_rag_embedding_sovereignty allowed/disallowed placements — "
-        "purely functional.",
+        "Tests analyze_rag_embedding_sovereignty allowed/disallowed placements — purely functional.",
     ),
     "test_wave2_phase2_3_prompt_taxonomy": (
         "test_prompt_taxonomy_coverage",
-        "Tests analyze_prompt_taxonomy_coverage slot/manifest/validator branches — "
-        "purely functional.",
+        "Tests analyze_prompt_taxonomy_coverage slot/manifest/validator branches — purely functional.",
     ),
     "test_wave3_phase3_1_cache_wirings": (
         "test_cache_wiring_gap_detection",
-        "Tests L0/L1 cache-import gap detection in SemanticGapAnalyzer — "
-        "purely functional.",
+        "Tests L0/L1 cache-import gap detection in SemanticGapAnalyzer — purely functional.",
     ),
     "test_wave3_phase3_2_boundary_hardening": (
         "test_layer_boundary_gap_detection",
@@ -731,8 +748,7 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave3_phase3_3_finalization": (
         "test_semantic_gap_analyzer_run_and_report",
-        "Tests run_analysis() + generate_report() output contract — "
-        "purely functional.",
+        "Tests run_analysis() + generate_report() output contract — purely functional.",
     ),
     "test_wave1_cda_sync_wrapper": (
         "test_cognitive_disposition_agent_sync_api",
@@ -741,8 +757,7 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave2_gravity_exclusion": (
         "test_gravity_leak_repair_exclusion_paths",
-        "Tests GravityLeakRepairAgent excluded_paths field in StructureConfig — "
-        "pure structural contract.",
+        "Tests GravityLeakRepairAgent excluded_paths field in StructureConfig — pure structural contract.",
     ),
     "test_wave4_v15_agent_id": (
         "test_v15_gateway_execute_agent_id_required",
@@ -751,8 +766,7 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave5_longpaths_guard": (
         "test_longpaths_bypass_guard",
-        "Tests AGENTIC_BYPASS_LONGPATHS_CHECK guard in execute_ssot.py — "
-        "pure structural invariant.",
+        "Tests AGENTIC_BYPASS_LONGPATHS_CHECK guard in execute_ssot.py — pure structural invariant.",
     ),
     "test_wave6_hitl_gates": (
         "test_hitl_gate_wiring",
@@ -761,8 +775,7 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_healers_wave6": (
         "test_healer_contracts",
-        "Tests healer dry-run/apply modes and registry — "
-        "pure contract test, wave label is cosmetic.",
+        "Tests healer dry-run/apply modes and registry — pure contract test, wave label is cosmetic.",
     ),
     "test_v15_p2_wave2_1_inventory": (
         "test_runtime_entrypoint_inventory_schema",
@@ -771,8 +784,7 @@ _RENAME_MAP: dict[str, tuple[str, str]] = {
     ),
     "test_wave0c_meta_learning_intake_wiring": (
         "test_meta_learning_intake_wiring",
-        "Tests _fire_meta_learning_intake wiring in execute_ssot.py — "
-        "purely functional invariant.",
+        "Tests _fire_meta_learning_intake wiring in execute_ssot.py — purely functional invariant.",
     ),
     "test_req253_254_cross_wave_linkage": (
         "test_cross_wave_audit_hash_linkage",
@@ -851,9 +863,7 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
                         f"{v.superseding_path} which EXISTS. Safe to remove — "
                         f"tracked in QUARANTINE_MANIFEST.json."
                     )
-                    v.duplicate_logic_notes = (
-                        f"Superseding file covers invariants: {v.superseded_by}"
-                    )
+                    v.duplicate_logic_notes = f"Superseding file covers invariants: {v.superseded_by}"
                 elif v.superseded_by and not v.superseding_exists:
                     v.verdict = "NEEDS-REVIEW"
                     v.rationale = (
@@ -874,8 +884,7 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
                     if base_path.exists():
                         v.verdict = "DELETE"
                         v.duplicate_logic_notes = (
-                            f"Mechanical _1 duplicate of "
-                            f"{base_path.relative_to(REPO_ROOT)}"
+                            f"Mechanical _1 duplicate of {base_path.relative_to(REPO_ROOT)}"
                         )
                         v.rationale = (
                             f"Mechanically generated _1 duplicate of {base_stem}.py "
@@ -886,23 +895,15 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
                         v.rationale = "No base file found for _1 suffix duplicate."
                 else:
                     v.verdict = "NEEDS-REVIEW"
-                    v.rationale = (
-                        "In _quarantine but no QUARANTINE header found — unexpected."
-                    )
+                    v.rationale = "In _quarantine but no QUARANTINE header found — unexpected."
             continue
 
         # ── Active (non-quarantine) files ────────────────────────────────────
         stem = v.path.stem
-        dup_summary = _format_dup_results(
-            [r for r in v.func_duplicate_results if r.is_duplicate]
-        )
+        dup_summary = _format_dup_results([r for r in v.func_duplicate_results if r.is_duplicate])
 
         # Rule E: 100% structural duplicate coverage → DELETE
-        if (
-            v.total_funcs > 0
-            and v.structural_dup_count == v.total_funcs
-            and v.unique_func_count == 0
-        ):
+        if v.total_funcs > 0 and v.structural_dup_count == v.total_funcs and v.unique_func_count == 0:
             v.verdict = "DELETE"
             v.functionality_assessment = (
                 f"ALL {v.total_funcs} test functions are structural duplicates "
@@ -953,9 +954,7 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
             existing = v.path.parent / f"{v.suggested_name}" if v.suggested_name else None
             if existing and existing.exists():
                 v.verdict = "NEEDS-REVIEW"
-                v.rationale += (
-                    f" WARNING: {v.suggested_name} already exists — manual merge required."
-                )
+                v.rationale += f" WARNING: {v.suggested_name} already exists — manual merge required."
             continue
 
         # Rule G: in rename map, no structural duplicates
@@ -965,22 +964,17 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
             v.verdict = "RENAME"
             v.rationale = rationale
             v.functionality_assessment = (
-                f"Tests CURRENT functionality. "
-                f"{v.total_funcs} functions, 0 structural duplicates detected."
+                f"Tests CURRENT functionality. {v.total_funcs} functions, 0 structural duplicates detected."
             )
             if v.name_dup_count:
                 v.duplicate_logic_notes = (
                     f"{v.name_dup_count} name-match(es) found (different body): "
-                    + _format_dup_results(
-                        [r for r in v.func_duplicate_results if r.has_name_duplicate]
-                    )
+                    + _format_dup_results([r for r in v.func_duplicate_results if r.has_name_duplicate])
                 )
             existing = v.path.parent / f"{suggested}.py"
             if existing.exists():
                 v.verdict = "NEEDS-REVIEW"
-                v.rationale += (
-                    f" NOTE: {suggested}.py already exists — manual merge required."
-                )
+                v.rationale += f" NOTE: {suggested}.py already exists — manual merge required."
             continue
 
         # Rule H: in eval rename map
@@ -996,17 +990,14 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
             existing = v.path.parent / f"{suggested}.py"
             if existing.exists():
                 v.verdict = "NEEDS-REVIEW"
-                v.rationale += (
-                    f" NOTE: {suggested}.py already exists — manual merge required."
-                )
+                v.rationale += f" NOTE: {suggested}.py already exists — manual merge required."
             continue
 
         # Rule I: missing imports
         if v.missing_imports:
             v.verdict = "NEEDS-REVIEW"
-            v.functionality_assessment = (
-                f"Has {len(v.missing_imports)} unresolvable import(s): "
-                + ", ".join(v.missing_imports[:5])
+            v.functionality_assessment = f"Has {len(v.missing_imports)} unresolvable import(s): " + ", ".join(
+                v.missing_imports[:5]
             )
             v.rationale = "Cannot assess fully without resolving missing imports."
             continue
@@ -1014,8 +1005,7 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
         # Rule J: everything else
         v.verdict = "KEEP-AS-IS"
         v.functionality_assessment = (
-            f"References live modules. {v.total_funcs} functions, "
-            f"{v.structural_dup_count} structural dup(s)."
+            f"References live modules. {v.total_funcs} functions, {v.structural_dup_count} structural dup(s)."
         )
         v.rationale = (
             "Not in rename map — review manually to determine if phase/wave label "
@@ -1029,17 +1019,15 @@ def _apply_verdicts(verdicts: list[FileVerdict]) -> None:
 
 _VERDICT_ORDER = {"DELETE": 0, "RENAME": 1, "KEEP-AS-IS": 2, "NEEDS-REVIEW": 3}
 _VERDICT_SYMBOL = {
-    "DELETE":       "DELETE",
-    "RENAME":       "RENAME",
-    "KEEP-AS-IS":   "KEEP-AS-IS",
+    "DELETE": "DELETE",
+    "RENAME": "RENAME",
+    "KEEP-AS-IS": "KEEP-AS-IS",
     "NEEDS-REVIEW": "NEEDS-REVIEW",
 }
 
 
 def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
-    verdicts_sorted = sorted(
-        verdicts, key=lambda v: (_VERDICT_ORDER[v.verdict], v.rel_path)
-    )
+    verdicts_sorted = sorted(verdicts, key=lambda v: (_VERDICT_ORDER[v.verdict], v.rel_path))
     counts = {k: sum(1 for v in verdicts if v.verdict == k) for k in _VERDICT_ORDER}
 
     W = 100
@@ -1083,9 +1071,7 @@ def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
                     for r in dup_funcs[:8]:
                         kind = "STRUCT" if r.has_structural_duplicate else "NAME"
                         matches = r.structural_matches or r.name_matches
-                        match_str = "; ".join(
-                            f"{e.func_name} @ {e.rel_path}" for e in matches[:2]
-                        )
+                        match_str = "; ".join(f"{e.func_name} @ {e.rel_path}" for e in matches[:2])
                         print(f"         [{kind}] {r.func_name}")
                         print(f"                  → {match_str}")
                     if len(dup_funcs) > 8:
@@ -1095,9 +1081,7 @@ def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
                     if len(unique_funcs) > 6:
                         names += f" (+{len(unique_funcs) - 6} more)"
                     print(f"  UNIQ : {names}")
-            print(
-                f"  WHY  : {textwrap.fill(v.rationale, width=W - 9, subsequent_indent=' ' * 9)}"
-            )
+            print(f"  WHY  : {textwrap.fill(v.rationale, width=W - 9, subsequent_indent=' ' * 9)}")
         print()
 
     # Sprawl summary
@@ -1119,9 +1103,7 @@ def _print_report(verdicts: list[FileVerdict], idx: CorpusIndex) -> None:
     print()
 
 
-def _emit_json(
-    verdicts: list[FileVerdict], idx: CorpusIndex, output_path: Path
-) -> None:
+def _emit_json(verdicts: list[FileVerdict], idx: CorpusIndex, output_path: Path) -> None:
     data = {
         "corpus_stats": {
             "files_indexed": idx.files_indexed,
@@ -1136,12 +1118,10 @@ def _emit_json(
                 "func_name": r.func_name,
                 "fingerprint": r.fingerprint[:16] + "...",
                 "structural_matches": [
-                    {"rel_path": e.rel_path, "func_name": e.func_name}
-                    for e in r.structural_matches[:5]
+                    {"rel_path": e.rel_path, "func_name": e.func_name} for e in r.structural_matches[:5]
                 ],
                 "name_matches": [
-                    {"rel_path": e.rel_path, "func_name": e.func_name}
-                    for e in r.name_matches[:5]
+                    {"rel_path": e.rel_path, "func_name": e.func_name} for e in r.name_matches[:5]
                 ],
             }
             for r in v.func_duplicate_results
@@ -1175,6 +1155,7 @@ def _emit_json(
 # ---------------------------------------------------------------------------
 # Main
 # ---------------------------------------------------------------------------
+
 
 def main() -> int:
     phase_wave_files = _find_phase_wave_files()
@@ -1212,9 +1193,7 @@ def main() -> int:
 
     unresolvable = [v for v in verdicts if v.verdict == "NEEDS-REVIEW"]
     if unresolvable:
-        print(
-            f"\nWARNING: {len(unresolvable)} file(s) require manual review before action."
-        )
+        print(f"\nWARNING: {len(unresolvable)} file(s) require manual review before action.")
         return 1
 
     return 0

@@ -41,7 +41,7 @@ class TestRgStrategicPlannerAgent:
 
             return RgStrategicPlannerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import RgStrategicPlannerAgent: {e}")
+            pytest.fail(f"Cannot import RgStrategicPlannerAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgStrategicPlannerAgent exists and is importable."""

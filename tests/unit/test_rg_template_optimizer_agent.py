@@ -41,7 +41,7 @@ class TestRgTemplateOptimizerAgent:
 
             return RgTemplateOptimizerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import RgTemplateOptimizerAgent: {e}")
+            pytest.fail(f"Cannot import RgTemplateOptimizerAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify RgTemplateOptimizerAgent exists and is importable."""

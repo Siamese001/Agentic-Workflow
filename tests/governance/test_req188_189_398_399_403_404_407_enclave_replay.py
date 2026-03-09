@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Tuple
 
 import pytest
 
@@ -23,6 +22,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Signature Enclave (self-contained)
 # ---------------------------------------------------------------------------
+
 
 class EnclaveViolation(RuntimeError):
     """Raised when signing is attempted outside the enclave boundary."""
@@ -52,7 +52,7 @@ class SignatureEnclave:
 
     def __init__(self, key_id: str, secret: bytes, ttl_ticks: int = 1000):
         self._key_id = key_id
-        self._secret = secret          # private — never exposed
+        self._secret = secret  # private — never exposed
         self._ttl_ticks = ttl_ticks
         self._issued_at_tick = 0
         self._current_tick = 0
@@ -61,9 +61,7 @@ class SignatureEnclave:
 
     def _compute_startup_hash(self) -> str:
         """Compute integrity hash of enclave at startup."""
-        return hashlib.sha256(
-            f"enclave:{self._key_id}:ttl:{self._ttl_ticks}".encode()
-        ).hexdigest()
+        return hashlib.sha256(f"enclave:{self._key_id}:ttl:{self._ttl_ticks}".encode()).hexdigest()
 
     def advance_tick(self, tick: int) -> None:
         self._current_tick = tick
@@ -72,9 +70,7 @@ class SignatureEnclave:
         if not self._active:
             raise EnclaveViolation("Enclave is not active")
         if self._current_tick >= self._issued_at_tick + self._ttl_ticks:
-            raise EnclaveKeyExpired(
-                f"Enclave key '{self._key_id}' expired at tick {self._current_tick}"
-            )
+            raise EnclaveKeyExpired(f"Enclave key '{self._key_id}' expired at tick {self._current_tick}")
 
     def sign(self, artifact_id: str, artifact_hash: str) -> SignatureResult:
         """Sign a single artifact hash."""
@@ -87,22 +83,16 @@ class SignatureEnclave:
             key_id=self._key_id,
         )
 
-    def batch_sign(
-        self, artifacts: List[Tuple[str, str]]
-    ) -> List[SignatureResult]:
+    def batch_sign(self, artifacts: list[tuple[str, str]]) -> list[SignatureResult]:
         """Sign a batch of (artifact_id, artifact_hash) pairs deterministically."""
         self._assert_active()
         # Sort by artifact_id for canonical ordering
         sorted_artifacts = sorted(artifacts, key=lambda x: x[0])
-        return [
-            self.sign(art_id, art_hash) for art_id, art_hash in sorted_artifacts
-        ]
+        return [self.sign(art_id, art_hash) for art_id, art_hash in sorted_artifacts]
 
     def verify_startup_integrity(self) -> bool:
         """Return True iff startup hash matches recomputed value."""
-        recomputed = hashlib.sha256(
-            f"enclave:{self._key_id}:ttl:{self._ttl_ticks}".encode()
-        ).hexdigest()
+        recomputed = hashlib.sha256(f"enclave:{self._key_id}:ttl:{self._ttl_ticks}".encode()).hexdigest()
         return recomputed == self._startup_hash
 
     def deactivate(self) -> None:
@@ -119,7 +109,7 @@ class ExternalSigningAttempt:
     """Simulates code attempting to sign outside the enclave — must be blocked."""
 
     def __init__(self):
-        self._secret: Optional[bytes] = None  # Cannot obtain key
+        self._secret: bytes | None = None  # Cannot obtain key
 
     def attempt_direct_sign(self, enclave: SignatureEnclave, data: bytes) -> bytes:
         """Attempt to get key from enclave (should be impossible)."""
@@ -132,6 +122,7 @@ class ExternalSigningAttempt:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def enclave():
@@ -166,10 +157,8 @@ def test_req398_expired_key_rejected_at_sign(enclave):
 @pytest.mark.governance
 def test_req399_enclave_isolation_no_key_leak(enclave):
     """REQ-399: Enclave has no public get_secret() — key cannot leak."""
-    assert not hasattr(type(enclave), "get_secret"), \
-        "SignatureEnclave must not expose get_secret()"
-    assert not hasattr(type(enclave), "secret"), \
-        "SignatureEnclave must not have a public 'secret' attribute"
+    assert not hasattr(type(enclave), "get_secret"), "SignatureEnclave must not expose get_secret()"
+    assert not hasattr(type(enclave), "secret"), "SignatureEnclave must not have a public 'secret' attribute"
 
 
 @pytest.mark.governance

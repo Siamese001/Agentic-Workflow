@@ -2,7 +2,7 @@
 
 import sys
 
-sys.path.insert(0, '.')
+sys.path.insert(0, ".")
 
 import hashlib
 import json
@@ -34,11 +34,14 @@ def create_test_pack():
     }
 
     # Create embeddings file
-    embeddings = np.array([
-        [1.0, 0.0, 0.0, 0.0],
-        [0.0, 1.0, 0.0, 0.0],
-        [0.0, 0.0, 1.0, 0.0],
-    ], dtype=np.float32)
+    embeddings = np.array(
+        [
+            [1.0, 0.0, 0.0, 0.0],
+            [0.0, 1.0, 0.0, 0.0],
+            [0.0, 0.0, 1.0, 0.0],
+        ],
+        dtype=np.float32,
+    )
 
     # Write files
     with open(tmpdir / "seed_manifest.json", "w") as f:
@@ -82,6 +85,7 @@ def run_negative_control():
     finally:
         # Cleanup
         import shutil
+
         shutil.rmtree(pack_dir, ignore_errors=True)
 
 

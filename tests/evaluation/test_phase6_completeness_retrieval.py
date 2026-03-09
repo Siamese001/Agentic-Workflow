@@ -67,7 +67,6 @@ Coverage per .windsurfrules §1.2 (branch proof) and §1.3 (branch inventory):
 from __future__ import annotations
 
 import pytest
-
 from agentic_core.evaluation.monitoring.completeness_monitors import (
     ConditionLossDriftMonitor,
     HighSimilarityWrongAnswerMonitor,
@@ -88,16 +87,6 @@ from agentic_core.evaluation.retrieval.completeness_scorer import (
     KeywordCompletenessScorer,
 )
 from agentic_core.evaluation.retrieval.interfaces import Document
-from agentic_core.evaluation.retrieval.l4_registries import (
-    ChunkManifest,
-    ChunkManifestRegistry,
-    ContextCompletenessSnapshot,
-    ContextCompletenessSnapshotStore,
-    ParentChildIndexRegistry,
-    ParentChildLink,
-    RetrievalEvaluationRecord,
-    RetrievalEvaluationRegistry,
-)
 from agentic_core.evaluation.retrieval.late_chunking import (
     VALID_MODES,
     LateChunkingPipelineConfig,
@@ -114,6 +103,17 @@ from agentic_core.evaluation.retrieval.parent_child import (
     ChunkEntry,
     ParentChildExpander,
     ParentChildRegistry,
+)
+
+from agentic_core.evaluation.retrieval.l4_registries import (
+    ChunkManifest,
+    ChunkManifestRegistry,
+    ContextCompletenessSnapshot,
+    ContextCompletenessSnapshotStore,
+    ParentChildIndexRegistry,
+    ParentChildLink,
+    RetrievalEvaluationRecord,
+    RetrievalEvaluationRegistry,
 )
 
 # ---------------------------------------------------------------------------

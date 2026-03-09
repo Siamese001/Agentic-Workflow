@@ -167,7 +167,7 @@ class TestEmbeddingRetentionSchedulerPersist:
         )
 
         if not results:
-            pytest.skip("No pruning occurred — rebuild path not exercised")
+            pytest.fail("No pruning occurred — rebuild path not exercised")
 
         dest = tmp_path / index_id
         assert dest.exists(), "Disk artifact must have been created"
@@ -235,7 +235,7 @@ class TestEmbeddingRetentionSchedulerPersist:
         )
 
         if not results:
-            pytest.skip("Prune did not trigger (ch_0000 not found)")
+            pytest.fail("Prune did not trigger (ch_0000 not found)")
 
         dest = tmp_path / index_id
         manifest = json.loads((dest / "manifest.json").read_bytes().decode("ascii"))

@@ -1,4 +1,5 @@
 """Deep gap analysis: per-layer breakdown for agentic_core, SSOT coverage."""
+
 import ast
 import json
 from pathlib import Path
@@ -32,9 +33,7 @@ def get_all_source_modules():
                 top_funcs = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
                 all_classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                 all_funcs = [
-                    n.name
-                    for n in ast.walk(tree)
-                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
                 ]
                 modules[mod_name] = {
                     "path": rel,
@@ -130,9 +129,12 @@ def main():
         layer_key = target + "/" + layer
         if layer_key not in layer_stats:
             layer_stats[layer_key] = {
-                "files": 0, "covered": 0, "uncovered": 0,
-                "n_classes": 0, "n_funcs": 0,
-                "uncovered_paths": []
+                "files": 0,
+                "covered": 0,
+                "uncovered": 0,
+                "n_classes": 0,
+                "n_funcs": 0,
+                "uncovered_paths": [],
             }
         layer_stats[layer_key]["files"] += 1
         layer_stats[layer_key]["n_classes"] += info["n_classes"]
@@ -153,17 +155,19 @@ def main():
             layer_stats[layer_key]["uncovered_paths"].append(path)
             n_sym = info["n_classes"] + info["n_funcs"]
             sev = "CRITICAL" if n_sym > 3 else ("HIGH" if n_sym > 0 else "LOW")
-            uncovered.append({
-                "mod": mod_name,
-                "path": path,
-                "target": target,
-                "layer": layer,
-                "n_classes": info["n_classes"],
-                "n_funcs": info["n_funcs"],
-                "top_classes": info["top_classes"],
-                "top_funcs": info["top_funcs"],
-                "severity": sev,
-            })
+            uncovered.append(
+                {
+                    "mod": mod_name,
+                    "path": path,
+                    "target": target,
+                    "layer": layer,
+                    "n_classes": info["n_classes"],
+                    "n_funcs": info["n_funcs"],
+                    "top_classes": info["top_classes"],
+                    "top_funcs": info["top_funcs"],
+                    "severity": sev,
+                }
+            )
 
     print()
     print("=" * 70)
@@ -174,13 +178,16 @@ def main():
         s = layer_stats[layer_key]
         cov_pct = int(100 * s["covered"] / s["files"]) if s["files"] > 0 else 0
         line = (
-            "  " + layer_key.ljust(50)
+            "  "
+            + layer_key.ljust(50)
             + str(s["files"]).rjust(5)
             + str(s["covered"]).rjust(5)
             + str(s["uncovered"]).rjust(6)
             + str(s["n_classes"]).rjust(9)
             + str(s["n_funcs"]).rjust(7)
-            + "  " + str(cov_pct) + "%"
+            + "  "
+            + str(cov_pct)
+            + "%"
         )
         flag = "  <<< ZERO COVERAGE" if s["covered"] == 0 and s["files"] > 0 else ""
         print(line + flag)
@@ -268,7 +275,7 @@ def main():
             "total_files": total_files,
             "covered": total_cov,
             "uncovered": total_uncov,
-        }
+        },
     }
     out_path = ROOT / "ops_scripts" / "ci" / "ast_gap_deep_results.json"
     out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")

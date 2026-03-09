@@ -22,7 +22,7 @@ DISCOVERY_OUTPUT = PROJECT_ROOT / "docs" / "reports" / "plans" / "v54_discovery_
 def discovery_agents() -> list[dict]:
     """Load the v5.4 discovery output produced by forensic_discovery_prep."""
     if not DISCOVERY_OUTPUT.exists():
-        pytest.skip(f"Discovery output not found: {DISCOVERY_OUTPUT}")
+        pytest.fail(f"Discovery output not found: {DISCOVERY_OUTPUT}")
     with open(DISCOVERY_OUTPUT, encoding="utf-8") as f:
         data = json.load(f)
     return data["agents"]

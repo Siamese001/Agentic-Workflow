@@ -20,21 +20,20 @@ from system_learning.engines.healing_outcome_aggregator import (
     HealingOutcomeAggregator,
     InvocationRecord,
 )
+from system_learning.types.healing_outcome_learning_types import (
+    HealingOutcomeAggregate,
+    HealingOutcomeAggregateKey,
+)
 from system_learning.types.healing_outcome_types import (
     HealingOutcomeEvent,
     HealingOutcomeProposal,
     HealingOutcomeStats,
 )
-from system_learning.types.healing_outcome_learning_types import (
-    HealingOutcomeAggregate,
-    HealingOutcomeAggregateKey,
-    HealingOutcomeAggregateSnapshot,
-)
-
 
 # -------------------------------------------------------------------------
 # Helpers
 # -------------------------------------------------------------------------
+
 
 def _event(
     healer_id: str = "h1",
@@ -167,16 +166,24 @@ class TestAggregatorDeterminism:
 
     def test_order_invariance_shuffled_ingest_yields_identical_snapshot(self) -> None:
         """Shuffled ingest order MUST produce identical snapshot."""
-        events = [
-            _event(healer_id="h1", tier="LOCAL_AGENT", failure_type="syntax_error", success=True, ts=i)
-            for i in range(5)
-        ] + [
-            _event(healer_id="h1", tier="LOCAL_AGENT", failure_type="syntax_error", success=False, ts=i + 100)
-            for i in range(3)
-        ] + [
-            _event(healer_id="h2", tier="QWEN_VLLM", failure_type="import_cycle", success=True, ts=i + 200)
-            for i in range(2)
-        ]
+        events = (
+            [
+                _event(healer_id="h1", tier="LOCAL_AGENT", failure_type="syntax_error", success=True, ts=i)
+                for i in range(5)
+            ]
+            + [
+                _event(
+                    healer_id="h1", tier="LOCAL_AGENT", failure_type="syntax_error", success=False, ts=i + 100
+                )
+                for i in range(3)
+            ]
+            + [
+                _event(
+                    healer_id="h2", tier="QWEN_VLLM", failure_type="import_cycle", success=True, ts=i + 200
+                )
+                for i in range(2)
+            ]
+        )
 
         # Canonical order
         agg_canonical = HealingOutcomeAggregator(window_size=100)
@@ -255,6 +262,7 @@ class TestAggregatorDeterminism:
 # -------------------------------------------------------------------------
 # Phase 6 Tests - New Learning Types
 # -------------------------------------------------------------------------
+
 
 class TestPhase6Aggregation:
     """Test Phase 6 functionality with new learning types."""
@@ -342,7 +350,9 @@ class TestPhase6Aggregation:
         # Clear and test all failures
         aggregator.clear_aggregates()
         for i in range(10):
-            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1000 + i))
+            aggregator.ingest_invocation(
+                InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1000 + i)
+            )
         assert aggregator.compute_success_rate(key) == 0.0
 
         # Test mixed case with rounding
@@ -351,16 +361,14 @@ class TestPhase6Aggregation:
         for i in range(7):
             aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", True, 1000 + i))
         for i in range(3):
-            aggregator.ingest_invocation(InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1010 + i))
+            aggregator.ingest_invocation(
+                InvocationRecord("healer", "LOCAL_AGENT", "failure", False, 1010 + i)
+            )
         assert aggregator.compute_success_rate(key) == 0.7
 
     def test_canonical_bytes_stable(self):
         """Test that canonical_bytes produces stable output."""
-        aggregate = HealingOutcomeAggregate(
-            success_count=10,
-            failure_count=5,
-            total_count=15
-        )
+        aggregate = HealingOutcomeAggregate(success_count=10, failure_count=5, total_count=15)
 
         bytes1 = aggregate.canonical_bytes()
         bytes2 = aggregate.canonical_bytes()
@@ -370,5 +378,6 @@ class TestPhase6Aggregation:
 
         # Verify it's valid JSON
         import json
-        data = json.loads(bytes1.decode('utf-8'))
+
+        data = json.loads(bytes1.decode("utf-8"))
         assert data == {"success_count": 10, "failure_count": 5, "total_count": 15}

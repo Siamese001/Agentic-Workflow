@@ -25,6 +25,7 @@ pytestmark = pytest.mark.unit_min_deps
 # 1. DeterminismDigestEmitter
 # ===========================================================================
 
+
 class TestDeterminismDigestEmitter:
     def _zero(self, char: str = "0") -> str:
         return char * 64
@@ -33,6 +34,7 @@ class TestDeterminismDigestEmitter:
         from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter,
         )
+
         return DeterminismDigestEmitter()
 
     @pytest.mark.unit_min_deps
@@ -52,13 +54,13 @@ class TestDeterminismDigestEmitter:
     @pytest.mark.unit_min_deps
     def test_compute_is_deterministic(self):
         e = self._emitter()
-        kwargs = dict(
-            policy_hash=self._zero("a"),
-            registry_hash=self._zero("b"),
-            config_surface_hash=self._zero("c"),
-            transcript_hash=self._zero("d"),
-            dependency_lock_hash=self._zero("e"),
-        )
+        kwargs = {
+            "policy_hash": self._zero("a"),
+            "registry_hash": self._zero("b"),
+            "config_surface_hash": self._zero("c"),
+            "transcript_hash": self._zero("d"),
+            "dependency_lock_hash": self._zero("e"),
+        }
         assert e.compute(**kwargs) == e.compute(**kwargs)
 
     @pytest.mark.unit_min_deps
@@ -92,6 +94,7 @@ class TestDeterminismDigestEmitter:
         from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DuplicateEmissionError,
         )
+
         e = self._emitter()
         e.emit_once(self._zero("a"))
         with pytest.raises(DuplicateEmissionError):
@@ -117,6 +120,7 @@ class TestDeterminismDigestEmitter:
             build_stable_config_surface,
             hash_config_surface,
         )
+
         s1 = build_stable_config_surface()
         s2 = build_stable_config_surface()
         assert s1 == s2
@@ -127,6 +131,7 @@ class TestDeterminismDigestEmitter:
         from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             build_stable_config_surface,
         )
+
         surface = build_stable_config_surface()
         for key in surface:
             assert "time" not in key.lower(), f"wall-clock key found: {key}"
@@ -138,12 +143,14 @@ class TestDeterminismDigestEmitter:
 # 2. NegativeControlHarness
 # ===========================================================================
 
+
 class TestNegativeControlHarness:
     @pytest.mark.unit_min_deps
     def test_tamper_active_only_when_env_is_1(self):
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             is_tamper_active,
         )
+
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             assert is_tamper_active() is True
         with patch.dict(os.environ, {}, clear=True):
@@ -158,6 +165,7 @@ class TestNegativeControlHarness:
             get_config_surface,
             hash_config_surface,
         )
+
         with patch.dict(os.environ, {}, clear=True):
             clean = hash_config_surface(get_config_surface())
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
@@ -170,6 +178,7 @@ class TestNegativeControlHarness:
             get_config_surface,
             hash_config_surface,
         )
+
         with patch.dict(os.environ, {}, clear=True):
             clean1 = hash_config_surface(get_config_surface())
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
@@ -183,6 +192,7 @@ class TestNegativeControlHarness:
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_differs,
         )
+
         same = "a" * 64
         with pytest.raises(AssertionError, match="identical"):
             assert_digest_differs(same, same)
@@ -192,6 +202,7 @@ class TestNegativeControlHarness:
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_differs,
         )
+
         assert_digest_differs("a" * 64, "b" * 64)
 
     @pytest.mark.unit_min_deps
@@ -199,6 +210,7 @@ class TestNegativeControlHarness:
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_stable,
         )
+
         same = "c" * 64
         assert_digest_stable(same, same)
 
@@ -207,6 +219,7 @@ class TestNegativeControlHarness:
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             assert_digest_stable,
         )
+
         with pytest.raises(AssertionError, match="non-determinism"):
             assert_digest_stable("a" * 64, "b" * 64)
 
@@ -215,6 +228,7 @@ class TestNegativeControlHarness:
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface,
         )
+
         with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             surface = get_config_surface()
         assert surface.get("tampered") is True
@@ -226,20 +240,22 @@ class TestNegativeControlHarness:
 # 3. SemanticClockHashValidator
 # ===========================================================================
 
+
 class TestSemanticClockHashValidator:
     def _make_artifact(self, **kwargs):
         from agentic_core.L0_routing.types.determinism_types import (
             SemanticClockAdvancementArtifact,
         )
-        defaults = dict(
-            advancement_id="adv_001",
-            previous_tick=5,
-            new_tick=6,
-            advancement_reason="phase_transition",
-            l4_version_binding="l4_v1.0.0",
-            provider_id="provider_deterministic",
-            timestamp=1234567890.0,
-        )
+
+        defaults = {
+            "advancement_id": "adv_001",
+            "previous_tick": 5,
+            "new_tick": 6,
+            "advancement_reason": "phase_transition",
+            "l4_version_binding": "l4_v1.0.0",
+            "provider_id": "provider_deterministic",
+            "timestamp": 1234567890.0,
+        }
         defaults.update(kwargs)
         return SemanticClockAdvancementArtifact(**defaults)
 
@@ -248,6 +264,7 @@ class TestSemanticClockHashValidator:
         from agentic_core.L6_observability.engines.semantic_clock_validator import (
             validate_artifact,
         )
+
         artifact = self._make_artifact()
         result = validate_artifact(artifact)
         assert result.valid is True
@@ -274,34 +291,39 @@ class TestSemanticClockHashValidator:
     @pytest.mark.unit_min_deps
     def test_scan_module_finds_no_wallclock_in_clock_types(self):
         from pathlib import Path
+
         from agentic_core.L6_observability.engines.semantic_clock_validator import (
             scan_module_for_wallclock,
         )
+
         clock_module = (
             Path(__file__).resolve().parents[2]
-            / "agentic_core" / "L0_routing" / "types" / "determinism_types.py"
+            / "agentic_core"
+            / "L0_routing"
+            / "types"
+            / "determinism_types.py"
         )
         violations = scan_module_for_wallclock(clock_module)
-        assert violations == [], (
-            f"Wall-clock calls found in determinism_types.py:\n"
-            + "\n".join(violations)
-        )
+        assert violations == [], "Wall-clock calls found in determinism_types.py:\n" + "\n".join(violations)
 
     @pytest.mark.unit_min_deps
     def test_validator_module_itself_has_no_wallclock(self):
         from pathlib import Path
+
         from agentic_core.L6_observability.engines.semantic_clock_validator import (
             scan_module_for_wallclock,
         )
+
         validator_module = (
             Path(__file__).resolve().parents[2]
-            / "agentic_core" / "L6_observability" / "engines"
+            / "agentic_core"
+            / "L6_observability"
+            / "engines"
             / "semantic_clock_validator.py"
         )
         violations = scan_module_for_wallclock(validator_module)
-        assert violations == [], (
-            "Wall-clock calls found in semantic_clock_validator.py:\n"
-            + "\n".join(violations)
+        assert violations == [], "Wall-clock calls found in semantic_clock_validator.py:\n" + "\n".join(
+            violations
         )
 
 
@@ -309,12 +331,14 @@ class TestSemanticClockHashValidator:
 # 4. ProviderBindingFingerprint
 # ===========================================================================
 
+
 class TestProviderBindingFingerprint:
     @pytest.mark.unit_min_deps
     def test_fingerprint_is_64_hex(self):
         from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
+
         fp = capture_provider_bindings()
         assert isinstance(fp.fingerprint, str)
         assert len(fp.fingerprint) == 64
@@ -326,6 +350,7 @@ class TestProviderBindingFingerprint:
             capture_provider_bindings,
             fingerprint_matches,
         )
+
         fp1 = capture_provider_bindings()
         fp2 = capture_provider_bindings()
         assert fingerprint_matches(fp1, fp2)
@@ -336,10 +361,9 @@ class TestProviderBindingFingerprint:
             capture_provider_bindings,
             fingerprint_matches,
         )
+
         fp_clean = capture_provider_bindings()
-        fp_overridden = capture_provider_bindings(
-            overrides={"qwen": "Qwen2.5-72B-different"}
-        )
+        fp_overridden = capture_provider_bindings(overrides={"qwen": "Qwen2.5-72B-different"})
         assert not fingerprint_matches(fp_clean, fp_overridden)
 
     @pytest.mark.unit_min_deps
@@ -347,6 +371,7 @@ class TestProviderBindingFingerprint:
         from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
+
         fp = capture_provider_bindings()
         pids = [b.provider_id for b in fp.bindings]
         assert pids == sorted(pids), "bindings must be in sorted provider_id order"
@@ -356,6 +381,7 @@ class TestProviderBindingFingerprint:
         from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
             capture_provider_bindings,
         )
+
         fp = capture_provider_bindings()
         pids = {b.provider_id for b in fp.bindings}
         assert "deterministic" in pids, "deterministic provider must be registered"
@@ -365,12 +391,14 @@ class TestProviderBindingFingerprint:
 # 5. EmbeddingNonInterferenceGuard
 # ===========================================================================
 
+
 class TestEmbeddingNonInterferenceGuard:
     @pytest.mark.unit_min_deps
     def test_clean_routing_inputs_pass(self):
         from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             assert_no_c0_influence,
         )
+
         clean = {"tier": "DETERMINISTIC", "agent_id": "ssot_audit", "confidence": 0.9}
         assert_no_c0_influence(clean)
 
@@ -380,6 +408,7 @@ class TestEmbeddingNonInterferenceGuard:
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
+
         dirty = {"tier": "DETERMINISTIC", "rag_context": "some retrieved text"}
         with pytest.raises(C0InterferenceViolation):
             assert_no_c0_influence(dirty)
@@ -390,6 +419,7 @@ class TestEmbeddingNonInterferenceGuard:
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
+
         dirty = {"tier": "QWEN", "extra": "c0_context was appended here"}
         with pytest.raises(C0InterferenceViolation):
             assert_no_c0_influence(dirty)
@@ -400,8 +430,9 @@ class TestEmbeddingNonInterferenceGuard:
             C0InterferenceViolation,
             assert_no_c0_influence,
         )
+
         routing = {"tier": "DETERMINISTIC", "agent_id": "x"}
-        c0 = {"agent_id": "injected_from_rag", "docs": ["..."] }
+        c0 = {"agent_id": "injected_from_rag", "docs": ["..."]}
         with pytest.raises(C0InterferenceViolation):
             assert_no_c0_influence(routing, c0_context=c0)
 
@@ -410,6 +441,7 @@ class TestEmbeddingNonInterferenceGuard:
         from agentic_core.L5_safety.enforcement.embedding_non_interference_guardrail import (
             verify_routing_decision_clean,
         )
+
         clean = {"tier": "GEMINI", "confidence": 0.6}
         dirty = {"tier": "GEMINI", "c0_embedding": "data"}
         assert verify_routing_decision_clean(clean) is True
@@ -421,6 +453,7 @@ class TestEmbeddingNonInterferenceGuard:
             C0InterferenceViolation,
             assert_routing_decision_clean,
         )
+
         dirty = {"tier": "QWEN", "embedding_context": "leaked"}
         with pytest.raises(C0InterferenceViolation):
             assert_routing_decision_clean(dirty)
@@ -430,12 +463,14 @@ class TestEmbeddingNonInterferenceGuard:
 # 6. OscillationFirewall
 # ===========================================================================
 
+
 class TestOscillationFirewall:
     def _fw(self, cooldown=4, freeze=3):
         from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewall,
             OscillationFirewallConfig,
         )
+
         cfg = OscillationFirewallConfig(cooldown_window=cooldown, freeze_cycles=freeze)
         fw = OscillationFirewall(cfg)
         return fw
@@ -446,11 +481,10 @@ class TestOscillationFirewall:
             OscillationFirewall,
             OscillationFirewallConfig,
         )
+
         cfg = OscillationFirewallConfig(cooldown_window=4, freeze_cycles=3)
         fw = OscillationFirewall(cfg)
-        for cycle, tier in enumerate(
-            ["DETERMINISTIC", "DETERMINISTIC", "DETERMINISTIC", "QWEN"]
-        ):
+        for cycle, tier in enumerate(["DETERMINISTIC", "DETERMINISTIC", "DETERMINISTIC", "QWEN"]):
             fw.assert_no_oscillation(tier, cycle)
 
     @pytest.mark.unit_min_deps
@@ -460,6 +494,7 @@ class TestOscillationFirewall:
             OscillationFirewallConfig,
             OscillationFirewallTripped,
         )
+
         cfg = OscillationFirewallConfig(cooldown_window=4, freeze_cycles=5)
         fw = OscillationFirewall(cfg)
         fw.assert_no_oscillation("DETERMINISTIC", 0)
@@ -475,6 +510,7 @@ class TestOscillationFirewall:
             OscillationFirewallConfig,
             OscillationFirewallTripped,
         )
+
         cfg = OscillationFirewallConfig(cooldown_window=4, freeze_cycles=5)
         fw = OscillationFirewall(cfg)
         fw.assert_no_oscillation("DETERMINISTIC", 0)
@@ -490,15 +526,17 @@ class TestOscillationFirewall:
         from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             validate_threshold,
         )
+
         stable = ("DETERMINISTIC",) * 6
         assert validate_threshold(stable) is True
 
     @pytest.mark.unit_min_deps
     def test_validate_threshold_oscillating_sequence(self):
         from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
-            validate_threshold,
             OscillationFirewallConfig,
+            validate_threshold,
         )
+
         cfg = OscillationFirewallConfig(cooldown_window=4, freeze_cycles=3)
         osc = ("DETERMINISTIC", "QWEN", "DETERMINISTIC", "QWEN", "DETERMINISTIC", "QWEN")
         assert validate_threshold(osc, cfg) is False
@@ -508,6 +546,7 @@ class TestOscillationFirewall:
         from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
+
         with pytest.raises(ValueError):
             OscillationFirewallConfig(cooldown_window=1, freeze_cycles=5)
 
@@ -516,6 +555,7 @@ class TestOscillationFirewall:
         from agentic_core.L5_safety.enforcement.oscillation_firewall_gate import (
             OscillationFirewallConfig,
         )
+
         with pytest.raises(ValueError):
             OscillationFirewallConfig(cooldown_window=4, freeze_cycles=0)
 
@@ -524,12 +564,12 @@ class TestOscillationFirewall:
 # TWO-RUN IDENTICAL DIGEST PROOF
 # ===========================================================================
 
+
 class TestTwoRunIdenticalDigest:
     """Prove that two independent executions produce identical digest artifacts."""
 
     def _compute_full_digest(self) -> str:
         import hashlib
-        import json
 
         from agentic_core.L2_execution.determinism.negative_control_harness import (
             get_config_surface,
@@ -576,9 +616,7 @@ class TestTwoRunIdenticalDigest:
 
         assert isinstance(run1, str) and len(run1) == 64
         assert isinstance(run2, str) and len(run2) == 64
-        assert run1 == run2, (
-            f"Two-run digest mismatch:\n  run1={run1}\n  run2={run2}"
-        )
+        assert run1 == run2, f"Two-run digest mismatch:\n  run1={run1}\n  run2={run2}"
 
     @pytest.mark.unit_min_deps
     def test_digest_format_is_emission_ready(self):
@@ -586,6 +624,7 @@ class TestTwoRunIdenticalDigest:
         from agentic_core.L6_observability.engines.determinism_digest_emitter import (
             DeterminismDigestEmitter,
         )
+
         digest = self._compute_full_digest()
         emitter = DeterminismDigestEmitter()
         line = emitter.emit_once(digest)
@@ -616,6 +655,5 @@ class TestTwoRunIdenticalDigest:
 
         clean2 = self._compute_full_digest()
         assert clean1 == clean2, (
-            f"Digest did not restore after tamper removal:\n"
-            f"  pre-tamper={clean1}\n  post-restore={clean2}"
+            f"Digest did not restore after tamper removal:\n  pre-tamper={clean1}\n  post-restore={clean2}"
         )

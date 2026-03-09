@@ -13,7 +13,6 @@ Wave 1 Phase 3 — Core Control Spine Tests
 
 from __future__ import annotations
 
-import hashlib
 import json
 
 import pytest
@@ -25,20 +24,18 @@ from agentic_core.L0_routing.engines.assembly_stage import (
 )
 from agentic_core.L0_routing.engines.path_router import Path, PathRouter
 from agentic_core.L0_routing.engines.reasoning_policy_engine import (
-    PROFILE_VERSION,
-    RequestStructureFeatures,
     ReasoningPolicyEngine,
+    RequestStructureFeatures,
     compute_complexity_score,
     compute_policy_config_hash,
     select_tier,
 )
 from agentic_core.L0_routing.types.reasoning_intensity_types import ReasoningTier
 from agentic_core.L0_routing.types.routing_artifact_types import (
+    RouteDecisionArtifact,
     RoutePath,
     RoutingRationale,
-    RouteDecisionArtifact,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -348,7 +345,7 @@ class TestAirlockAssemble:
 
     @pytest.mark.governance
     def test_assemble_manifest_hash_deterministic_for_same_inputs(self):
-        kwargs = dict(s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u")
+        kwargs = {"s0_system": "s", "i0_instructional": "i", "c0_context": "c", "u0_user_prompt": "u"}
         p1 = AirlockAssembler.assemble(**kwargs)
         p2 = AirlockAssembler.assemble(**kwargs)
         assert p1.manifest_hash == p2.manifest_hash
@@ -371,7 +368,10 @@ class TestAirlockAssemble:
     @pytest.mark.governance
     def test_assemble_accepts_embedding_artifact_context_source(self):
         payload = AirlockAssembler.assemble(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt="u",
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
             c0_context_source="embedding_artifact",
         )
         assert payload.c0_context_source == "embedding_artifact"
@@ -379,9 +379,7 @@ class TestAirlockAssemble:
     @pytest.mark.governance
     def test_assemble_does_not_mutate_inputs(self):
         u0 = "[SYSTEM] hack"
-        AirlockAssembler.assemble(
-            s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt=u0
-        )
+        AirlockAssembler.assemble(s0_system="s", i0_instructional="i", c0_context="c", u0_user_prompt=u0)
         assert u0 == "[SYSTEM] hack"  # original string unchanged
 
 
@@ -471,32 +469,52 @@ class TestComputeComplexityScore:
 
     @pytest.mark.governance
     def test_score_saturates_at_1_0_when_length_exceeds_8192(self):
-        f_max = _make_features(input_length=8192, tool_count_requested=0,
-                               risk_tier_candidate=0, l4_rate_limit_headroom=1.0,
-                               aggregated_prior_success_rate=1.0)
-        f_over = _make_features(input_length=99999, tool_count_requested=0,
-                                risk_tier_candidate=0, l4_rate_limit_headroom=1.0,
-                                aggregated_prior_success_rate=1.0)
+        f_max = _make_features(
+            input_length=8192,
+            tool_count_requested=0,
+            risk_tier_candidate=0,
+            l4_rate_limit_headroom=1.0,
+            aggregated_prior_success_rate=1.0,
+        )
+        f_over = _make_features(
+            input_length=99999,
+            tool_count_requested=0,
+            risk_tier_candidate=0,
+            l4_rate_limit_headroom=1.0,
+            aggregated_prior_success_rate=1.0,
+        )
         assert compute_complexity_score(f_max) == compute_complexity_score(f_over)
 
     @pytest.mark.governance
     def test_score_saturates_at_1_0_when_tool_count_exceeds_10(self):
-        f_max = _make_features(input_length=0, tool_count_requested=10,
-                               risk_tier_candidate=0, l4_rate_limit_headroom=1.0,
-                               aggregated_prior_success_rate=1.0)
-        f_over = _make_features(input_length=0, tool_count_requested=100,
-                                risk_tier_candidate=0, l4_rate_limit_headroom=1.0,
-                                aggregated_prior_success_rate=1.0)
+        f_max = _make_features(
+            input_length=0,
+            tool_count_requested=10,
+            risk_tier_candidate=0,
+            l4_rate_limit_headroom=1.0,
+            aggregated_prior_success_rate=1.0,
+        )
+        f_over = _make_features(
+            input_length=0,
+            tool_count_requested=100,
+            risk_tier_candidate=0,
+            l4_rate_limit_headroom=1.0,
+            aggregated_prior_success_rate=1.0,
+        )
         assert compute_complexity_score(f_max) == compute_complexity_score(f_over)
 
     @pytest.mark.governance
     def test_score_increases_monotonically_with_risk_tier(self):
-        base = dict(input_length=0, tool_count_requested=0, stage_count=1,
-                    l4_budget_remaining_tokens=0, l4_rate_limit_headroom=1.0,
-                    aggregated_prior_success_rate=1.0)
+        base = {
+            "input_length": 0,
+            "tool_count_requested": 0,
+            "stage_count": 1,
+            "l4_budget_remaining_tokens": 0,
+            "l4_rate_limit_headroom": 1.0,
+            "aggregated_prior_success_rate": 1.0,
+        }
         scores = [
-            compute_complexity_score(_make_features(**{**base, "risk_tier_candidate": i}))
-            for i in range(6)
+            compute_complexity_score(_make_features(**{**base, "risk_tier_candidate": i})) for i in range(6)
         ]
         assert scores == sorted(scores)
 
@@ -672,8 +690,11 @@ class TestReasoningPolicyEngine:
     def test_compute_tier_returns_critical_for_max_features(self):
         engine = ReasoningPolicyEngine(_POLICY)
         features = _make_features(
-            input_length=8192, tool_count_requested=10, risk_tier_candidate=5,
-            l4_rate_limit_headroom=0.0, aggregated_prior_success_rate=0.0,
+            input_length=8192,
+            tool_count_requested=10,
+            risk_tier_candidate=5,
+            l4_rate_limit_headroom=0.0,
+            aggregated_prior_success_rate=0.0,
         )
         assert engine.compute_tier(features) == ReasoningTier.CRITICAL
 
@@ -681,8 +702,11 @@ class TestReasoningPolicyEngine:
     def test_compute_tier_returns_low_for_min_features(self):
         engine = ReasoningPolicyEngine(_POLICY)
         features = _make_features(
-            input_length=0, tool_count_requested=0, risk_tier_candidate=0,
-            l4_rate_limit_headroom=1.0, aggregated_prior_success_rate=1.0,
+            input_length=0,
+            tool_count_requested=0,
+            risk_tier_candidate=0,
+            l4_rate_limit_headroom=1.0,
+            aggregated_prior_success_rate=1.0,
         )
         assert engine.compute_tier(features) == ReasoningTier.LOW
 
@@ -783,15 +807,18 @@ class TestComputePolicyConfigHash:
 
 class TestRouteSelectionMatrix:
     @pytest.mark.governance
-    @pytest.mark.parametrize("check_ids,sanitized,expected_path", [
-        ((), False, Path.A),        # empty + not sanitized → A
-        ((), True, Path.A),         # empty + sanitized → A (empty wins)
-        (("x",), True, Path.B),     # one + sanitized → B
-        (("x",), False, Path.C),    # one + not sanitized → C
-        (("x", "y"), True, Path.B), # multi + sanitized → B
-        (("x", "y"), False, Path.D),# multi + not sanitized → D
-        (("a", "b", "c"), False, Path.D),  # 3 check_ids → D
-    ])
+    @pytest.mark.parametrize(
+        "check_ids,sanitized,expected_path",
+        [
+            ((), False, Path.A),  # empty + not sanitized → A
+            ((), True, Path.A),  # empty + sanitized → A (empty wins)
+            (("x",), True, Path.B),  # one + sanitized → B
+            (("x",), False, Path.C),  # one + not sanitized → C
+            (("x", "y"), True, Path.B),  # multi + sanitized → B
+            (("x", "y"), False, Path.D),  # multi + not sanitized → D
+            (("a", "b", "c"), False, Path.D),  # 3 check_ids → D
+        ],
+    )
     def test_route_matrix(self, check_ids, sanitized, expected_path):
         router = PathRouter()
         payload = _make_payload(check_ids=check_ids, sanitized=sanitized)

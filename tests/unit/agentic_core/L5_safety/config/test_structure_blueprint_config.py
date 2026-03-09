@@ -21,7 +21,7 @@ class TestStructureBlueprintConfig:
             assert SOVEREIGN_TERRITORIES is not None
             assert isinstance(SOVEREIGN_TERRITORIES, dict)
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
     def test_layer_roots_defined(self):
         """LAYER_ROOTS should be defined."""
@@ -31,7 +31,7 @@ class TestStructureBlueprintConfig:
             assert LAYER_ROOTS is not None
             assert isinstance(LAYER_ROOTS, (list, set, tuple, frozenset))
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
     def test_required_lcd_subfolders_defined(self):
         """REQUIRED_LCD_SUBFOLDERS should be defined."""
@@ -41,7 +41,7 @@ class TestStructureBlueprintConfig:
             assert REQUIRED_LCD_SUBFOLDERS is not None
             assert isinstance(REQUIRED_LCD_SUBFOLDERS, (list, set, tuple, frozenset))
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
 
 class TestBlueprintConsistency:
@@ -60,7 +60,7 @@ class TestBlueprintConsistency:
             for layer in LAYER_ROOTS:
                 assert layer in agentic_core_subfolders, f"{layer} should be in agentic_core subfolders"
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
     def test_apps_folders_in_territories(self):
         """apps_rg, apps_lic, apps_shared should be in SOVEREIGN_TERRITORIES."""
@@ -70,7 +70,7 @@ class TestBlueprintConsistency:
             for app in ["apps_rg", "apps_lic", "apps_shared"]:
                 assert app in SOVEREIGN_TERRITORIES, f"{app} should be in SOVEREIGN_TERRITORIES"
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
 
 class TestAllowlistIntegrity:
@@ -84,7 +84,7 @@ class TestAllowlistIntegrity:
             assert L5_SUBPROCESS_ALLOWLIST is not None
             assert isinstance(L5_SUBPROCESS_ALLOWLIST, (set, list, tuple, frozenset))
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")
 
     def test_l6_hybrid_allowlist_exists(self):
         """L6_HYBRID_ALLOWLIST should be defined."""
@@ -94,4 +94,4 @@ class TestAllowlistIntegrity:
             assert L6_HYBRID_ALLOWLIST is not None
             assert isinstance(L6_HYBRID_ALLOWLIST, (set, list, tuple, frozenset))
         except ImportError as e:
-            pytest.skip(f"Could not import: {e}")
+            pytest.fail(f"Could not import: {e}")

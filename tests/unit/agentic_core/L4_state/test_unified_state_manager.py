@@ -12,10 +12,10 @@ Wave 3 Phase 7 — L4 Unified State Manager Tests
 from __future__ import annotations
 
 import datetime
-from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
 from agentic_core.L4_state.engines.fresh_data_validator import (
     FreshnessPolicy,
     StaleDataViolation,
@@ -24,7 +24,6 @@ from agentic_core.L4_state.engines.fresh_data_validator import (
 )
 from agentic_core.L4_state.engines.ghost_mutation_detector import (
     GhostMutationViolation,
-    ReconciliationResult,
     _deep_diff,
     detect_ghost_mutations,
 )
@@ -34,12 +33,10 @@ from agentic_core.L4_state.engines.memory_collision_detector import (
     MemoryCollisionDetector,
     MemoryDeadlockViolation,
 )
-from agentic_core.L4_state.enforcement.violation_event_store import ViolationEventStore
 from agentic_core.L4_state.types.violation_event_types import (
     ViolationEvent,
     emit_violation_event,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -110,9 +107,13 @@ class TestViolationEventConstruction:
     def test_raises_when_schema_version_wrong(self):
         with pytest.raises(ValueError, match="schema_version"):
             ViolationEvent(
-                schema_version=99, mission_id="m", commit_tick=0,
-                guardian_decision="block", violation_codes=[],
-                severity_score=0.5, created_at_utc="2026-01-01T00:00:00Z",
+                schema_version=99,
+                mission_id="m",
+                commit_tick=0,
+                guardian_decision="block",
+                violation_codes=[],
+                severity_score=0.5,
+                created_at_utc="2026-01-01T00:00:00Z",
             )
 
     @pytest.mark.governance
@@ -174,9 +175,13 @@ class TestViolationEventConstruction:
     def test_raises_when_violation_codes_not_list(self):
         with pytest.raises(TypeError, match="violation_codes"):
             ViolationEvent(
-                schema_version=_SCHEMA, mission_id="m", commit_tick=0,
-                guardian_decision="block", violation_codes=("a",),  # type: ignore
-                severity_score=0.5, created_at_utc="2026-01-01T00:00:00Z",
+                schema_version=_SCHEMA,
+                mission_id="m",
+                commit_tick=0,
+                guardian_decision="block",
+                violation_codes=("a",),  # type: ignore
+                severity_score=0.5,
+                created_at_utc="2026-01-01T00:00:00Z",
             )
 
     @pytest.mark.governance
@@ -189,8 +194,12 @@ class TestViolationEventConstruction:
     @pytest.mark.governance
     def test_emit_violation_event_helper_returns_violation_event(self):
         e = emit_violation_event(
-            mission_id="m", commit_tick=1, guardian_decision="block",
-            violation_codes=[], severity_score=0.5, created_at_utc="2026-01-01T00:00:00Z",
+            mission_id="m",
+            commit_tick=1,
+            guardian_decision="block",
+            violation_codes=[],
+            severity_score=0.5,
+            created_at_utc="2026-01-01T00:00:00Z",
         )
         assert isinstance(e, ViolationEvent)
 
@@ -198,8 +207,12 @@ class TestViolationEventConstruction:
     def test_emit_violation_event_appends_to_registry(self):
         registry: list[ViolationEvent] = []
         emit_violation_event(
-            mission_id="m", commit_tick=1, guardian_decision="allow",
-            violation_codes=[], severity_score=0.1, created_at_utc="2026-01-01T00:00:00Z",
+            mission_id="m",
+            commit_tick=1,
+            guardian_decision="allow",
+            violation_codes=[],
+            severity_score=0.1,
+            created_at_utc="2026-01-01T00:00:00Z",
             _registry=registry,
         )
         assert len(registry) == 1

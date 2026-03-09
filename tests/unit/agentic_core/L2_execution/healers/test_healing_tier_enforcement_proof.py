@@ -115,7 +115,9 @@ class TestConfidenceBands:
 
     def test_below_y_routes_gemini(self, default_config):
         # unknown prior=0.30, blast=1.0, retry=2, HIGH entropy -> score=0.395 < Y=0.40
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
+        inp = _make_input(
+            failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH"
+        )
         decision = route_healing_tier(inp, default_config)
         conf = decision.heal_confidence
         assert conf < default_config.heal_confidence_y, (

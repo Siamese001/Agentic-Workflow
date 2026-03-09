@@ -16,7 +16,6 @@ Branch coverage:
 """
 
 import pytest
-
 from agentic_core.evaluation.chunking.policies import (
     Chunk,
     ChunkManifest,
@@ -40,6 +39,7 @@ from agentic_core.evaluation.chunking.validators import (
 # Helpers
 # ---------------------------------------------------------------------------
 
+
 def _make_chunk(chunk_id, content, token_count=None, doc_id="doc_0"):
     return Chunk(
         chunk_id=chunk_id,
@@ -59,6 +59,7 @@ def _make_manifest(chunks, policy="fixed_token"):
 # _approx_token_count
 # ---------------------------------------------------------------------------
 
+
 class TestApproxTokenCount:
     def test_empty_string(self):
         assert _approx_token_count("") == 0
@@ -73,6 +74,7 @@ class TestApproxTokenCount:
 # ---------------------------------------------------------------------------
 # FixedTokenChunkPolicy
 # ---------------------------------------------------------------------------
+
 
 class TestFixedTokenChunkPolicy:
     def test_invalid_chunk_size_raises(self):
@@ -131,6 +133,7 @@ class TestFixedTokenChunkPolicy:
 # OverlapWindowChunkPolicy
 # ---------------------------------------------------------------------------
 
+
 class TestOverlapWindowChunkPolicy:
     def test_invalid_chunk_size_raises(self):
         with pytest.raises(ValueError):
@@ -178,6 +181,7 @@ class TestOverlapWindowChunkPolicy:
 # SectionAwareChunkPolicy
 # ---------------------------------------------------------------------------
 
+
 class TestSectionAwareChunkPolicy:
     def test_name(self):
         assert SectionAwareChunkPolicy().name == "section_aware"
@@ -214,6 +218,7 @@ class TestSectionAwareChunkPolicy:
 # ---------------------------------------------------------------------------
 # SemanticChunkPolicy
 # ---------------------------------------------------------------------------
+
 
 class TestSemanticChunkPolicy:
     def test_name(self):
@@ -252,6 +257,7 @@ class TestSemanticChunkPolicy:
 # MaxChunkSizeValidator
 # ---------------------------------------------------------------------------
 
+
 class TestMaxChunkSizeValidator:
     def test_invalid_max_raises(self):
         with pytest.raises(ValueError):
@@ -284,6 +290,7 @@ class TestMaxChunkSizeValidator:
 # MinChunkSizeValidator
 # ---------------------------------------------------------------------------
 
+
 class TestMinChunkSizeValidator:
     def test_invalid_min_raises(self):
         with pytest.raises(ValueError):
@@ -310,6 +317,7 @@ class TestMinChunkSizeValidator:
 # OverlapSanityValidator
 # ---------------------------------------------------------------------------
 
+
 class TestOverlapSanityValidator:
     def test_no_violations_empty(self):
         assert OverlapSanityValidator().validate([]) == 0
@@ -334,6 +342,7 @@ class TestOverlapSanityValidator:
 # ---------------------------------------------------------------------------
 # DuplicateChunkDetector
 # ---------------------------------------------------------------------------
+
 
 class TestDuplicateChunkDetector:
     def test_no_duplicates(self):
@@ -377,6 +386,7 @@ class TestDuplicateChunkDetector:
 # OrphanChunkDetector
 # ---------------------------------------------------------------------------
 
+
 class TestOrphanChunkDetector:
     def test_no_orphans(self):
         chunks = [_make_chunk(f"c_{i}", f"content {i}") for i in range(3)]
@@ -400,6 +410,7 @@ class TestOrphanChunkDetector:
 # ---------------------------------------------------------------------------
 # ChunkManifestValidator
 # ---------------------------------------------------------------------------
+
 
 class TestChunkManifestValidator:
     def test_valid_manifest_is_valid(self):
@@ -466,18 +477,19 @@ class TestChunkManifestValidator:
 # ChunkQualityReport.is_valid boundary
 # ---------------------------------------------------------------------------
 
+
 class TestChunkQualityReportIsValid:
     def _make_report(self, **kwargs):
-        defaults = dict(
-            doc_id="d",
-            policy_name="fixed_token",
-            total_chunks=5,
-            duplicates=0,
-            orphan_chunks=0,
-            oversized_chunks=0,
-            undersized_chunks=0,
-            overlap_violations=0,
-        )
+        defaults = {
+            "doc_id": "d",
+            "policy_name": "fixed_token",
+            "total_chunks": 5,
+            "duplicates": 0,
+            "orphan_chunks": 0,
+            "oversized_chunks": 0,
+            "undersized_chunks": 0,
+            "overlap_violations": 0,
+        }
         defaults.update(kwargs)
         return ChunkQualityReport(**defaults)
 

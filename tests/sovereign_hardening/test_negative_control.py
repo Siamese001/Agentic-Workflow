@@ -17,12 +17,12 @@ class TestNegativeControl:
     def test_tamper_environment_detection(self):
         """Test that tampering environment variable is detected."""
         # Test with tampering enabled
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
-            assert os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1'
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
+            assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
 
         # Test without tampering
         with patch.dict(os.environ, {}, clear=True):
-            assert os.environ.get('W_HARDEN_NEGCTRL_TAMPER') is None
+            assert os.environ.get("W_HARDEN_NEGCTRL_TAMPER") is None
 
     def test_embedding_config_tampering(self):
         """Test that embedding config is tampered when negative control is active."""
@@ -31,7 +31,7 @@ class TestNegativeControl:
             normal_config = get_embedding_config_surface()
 
         # Tampered config
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             tampered_config = get_embedding_config_surface()
 
         # Verify tampering effects
@@ -51,7 +51,7 @@ class TestNegativeControl:
             normal_digest = compute_lockdown_determinism_digest()
 
         # Tampered digest
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             tampered_digest = compute_lockdown_determinism_digest()
 
         # Digests should be different
@@ -62,7 +62,7 @@ class TestNegativeControl:
     def test_tampering_is_deterministic(self):
         """Test that tampering effects are deterministic."""
         # Get tampered config multiple times
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             config1 = get_embedding_config_surface()
             config2 = get_embedding_config_surface()
 
@@ -70,7 +70,7 @@ class TestNegativeControl:
         assert config1 == config2
 
         # Get tampered digest multiple times
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             digest1 = compute_lockdown_determinism_digest()
             digest2 = compute_lockdown_determinism_digest()
 
@@ -85,7 +85,7 @@ class TestNegativeControl:
         When the env var is unset this test passes normally.
         No @xfail decorator is used, eliminating any XPASS possibility.
         """
-        if os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1':
+        if os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1":
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
         # Restore path: normal PASS
         assert True
@@ -95,7 +95,7 @@ class TestNegativeControl:
         """Test marked with negative_control marker."""
         # This test is marked with @pytest.mark.negative_control
         # It should behave differently based on W_HARDEN_NEGCTRL_TAMPER
-        is_tampered = os.environ.get('W_HARDEN_NEGCTRL_TAMPER') == '1'
+        is_tampered = os.environ.get("W_HARDEN_NEGCTRL_TAMPER") == "1"
 
         if is_tampered:
             pytest.xfail("Negative control tampering active: W_HARDEN_NEGCTRL_TAMPER=1")
@@ -109,7 +109,7 @@ class TestNegativeControl:
             normal_config = get_embedding_config_surface()
             normal_digest = compute_lockdown_determinism_digest()
 
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             # Get all tampered components
             tampered_config = get_embedding_config_surface()
             tampered_digest = compute_lockdown_determinism_digest()
@@ -130,7 +130,7 @@ class TestNegativeControl:
             normal_digest = compute_lockdown_determinism_digest()
 
         # Apply tampering
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             tampered_digest = compute_lockdown_determinism_digest()
             assert tampered_digest != normal_digest
 
@@ -142,13 +142,13 @@ class TestNegativeControl:
     def test_tampering_environment_variable_edge_cases(self):
         """Test edge cases for tampering environment variable."""
         # Test with various values
-        test_values = ['1', 'true', 'True', 'TRUE', 'yes', 'YES']
+        test_values = ["1", "true", "True", "TRUE", "yes", "YES"]
 
         for value in test_values:
-            with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': value}):
+            with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": value}):
                 config = get_embedding_config_surface()
                 # Only '1' should trigger tampering
-                if value == '1':
+                if value == "1":
                     assert config.get("tampered") is True
                 else:
                     assert "tampered" not in config
@@ -157,22 +157,22 @@ class TestNegativeControl:
         """Test tampering detection in concurrent scenarios."""
         # This test ensures tampering detection works even if environment
         # is modified during test execution
-        original_value = os.environ.get('W_HARDEN_NEGCTRL_TAMPER')
+        original_value = os.environ.get("W_HARDEN_NEGCTRL_TAMPER")
 
         try:
             # Set tampering
-            os.environ['W_HARDEN_NEGCTRL_TAMPER'] = '1'
+            os.environ["W_HARDEN_NEGCTRL_TAMPER"] = "1"
             config1 = get_embedding_config_surface()
             assert config1.get("tampered") is True
 
             # Clear tampering
-            del os.environ['W_HARDEN_NEGCTRL_TAMPER']
+            del os.environ["W_HARDEN_NEGCTRL_TAMPER"]
             config2 = get_embedding_config_surface()
             assert "tampered" not in config2
 
         finally:
             # Restore original value
             if original_value is None:
-                os.environ.pop('W_HARDEN_NEGCTRL_TAMPER', None)
+                os.environ.pop("W_HARDEN_NEGCTRL_TAMPER", None)
             else:
-                os.environ['W_HARDEN_NEGCTRL_TAMPER'] = original_value
+                os.environ["W_HARDEN_NEGCTRL_TAMPER"] = original_value

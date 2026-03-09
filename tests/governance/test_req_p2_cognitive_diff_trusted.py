@@ -9,7 +9,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 from dataclasses import dataclass
-from typing import Optional
 
 import pytest
 
@@ -31,6 +30,7 @@ def _verify_trace(trace_bytes: bytes, sig: bytes) -> bool:
 # Sealed execution trace
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class SealedExecutionTrace:
     trace_id: str
@@ -38,7 +38,7 @@ class SealedExecutionTrace:
     guardian_signature: bytes
 
     @classmethod
-    def seal(cls, trace_id: str, canonical_bytes: bytes) -> "SealedExecutionTrace":
+    def seal(cls, trace_id: str, canonical_bytes: bytes) -> SealedExecutionTrace:
         sig = _sign_trace(canonical_bytes)
         return cls(trace_id=trace_id, canonical_bytes=canonical_bytes, guardian_signature=sig)
 
@@ -54,6 +54,7 @@ class SealedExecutionTrace:
 # CognitiveDiff comparator
 # ---------------------------------------------------------------------------
 
+
 class CognitiveDiffError(ValueError):
     pass
 
@@ -64,7 +65,7 @@ class CognitiveDiffResult:
     trusted_trace_hash: str
     current_trace_hash: str
     is_match: bool
-    mismatch_reason: Optional[str]
+    mismatch_reason: str | None
 
 
 class CognitiveDiffComparator:
@@ -86,8 +87,10 @@ class CognitiveDiffComparator:
             )
 
         current_hash = hashlib.sha256(current_bytes).hexdigest()
-        is_match = (current_hash == trusted.trace_hash)
-        reason = None if is_match else f"Hash mismatch: {current_hash[:16]}... != {trusted.trace_hash[:16]}..."
+        is_match = current_hash == trusted.trace_hash
+        reason = (
+            None if is_match else f"Hash mismatch: {current_hash[:16]}... != {trusted.trace_hash[:16]}..."
+        )
 
         return CognitiveDiffResult(
             diff_id=f"diff_{trusted.trace_id}",
@@ -99,7 +102,7 @@ class CognitiveDiffComparator:
 
     def compare_advisory(
         self,
-        trusted: Optional[SealedExecutionTrace],
+        trusted: SealedExecutionTrace | None,
         current_bytes: bytes,
     ) -> CognitiveDiffResult:
         """Advisory diff — rejected if no trusted trace provided."""
@@ -113,6 +116,7 @@ class CognitiveDiffComparator:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def comparator() -> CognitiveDiffComparator:
@@ -162,9 +166,7 @@ def test_cognitive_diff_advisory_without_trusted_rejected(comparator):
 @pytest.mark.governance
 def test_cognitive_diff_advisory_with_trusted_passes(comparator, trusted_trace):
     """Advisory diff with valid trusted trace succeeds."""
-    result = comparator.compare_advisory(
-        trusted_trace, b"canonical execution trace bytes run1"
-    )
+    result = comparator.compare_advisory(trusted_trace, b"canonical execution trace bytes run1")
     assert result.is_match is True
 
 
@@ -179,8 +181,11 @@ def test_sealed_trace_verify_deterministic(trusted_trace):
 def test_cognitive_diff_result_is_frozen():
     """CognitiveDiffResult is immutable after creation."""
     r = CognitiveDiffResult(
-        diff_id="d1", trusted_trace_hash="a"*64,
-        current_trace_hash="b"*64, is_match=False, mismatch_reason="test"
+        diff_id="d1",
+        trusted_trace_hash="a" * 64,
+        current_trace_hash="b" * 64,
+        is_match=False,
+        mismatch_reason="test",
     )
     with pytest.raises((AttributeError, TypeError)):
         r.is_match = True  # type: ignore[misc]

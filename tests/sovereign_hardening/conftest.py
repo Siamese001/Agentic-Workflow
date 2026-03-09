@@ -4,11 +4,11 @@ import os
 
 import pytest
 
-from agentic_core.L2_execution.UniversalWriteGateway import reset_write_gateway
 from agentic_core.L2_execution.enforcement.key_source import (
     TestKeySource,
     inject_key_source,
 )
+from agentic_core.L2_execution.UniversalWriteGateway import reset_write_gateway
 
 
 @pytest.fixture(scope="function", autouse=True)
@@ -18,6 +18,7 @@ def inject_test_key_source():
     yield
     # Reset to None so tests do not leak into each other
     import agentic_core.L2_execution.enforcement.key_source as _ks
+
     _ks._injected_key_source = None
 
 
@@ -32,37 +33,31 @@ def reset_write_gateway_fixture():
 @pytest.fixture(scope="function")
 def tamper_env():
     """Fixture to temporarily enable W_HARDEN_NEGCTRL_TAMPER."""
-    original_value = os.environ.get('W_HARDEN_NEGCTRL_TAMPER')
-    os.environ['W_HARDEN_NEGCTRL_TAMPER'] = '1'
+    original_value = os.environ.get("W_HARDEN_NEGCTRL_TAMPER")
+    os.environ["W_HARDEN_NEGCTRL_TAMPER"] = "1"
     yield
     if original_value is None:
-        os.environ.pop('W_HARDEN_NEGCTRL_TAMPER', None)
+        os.environ.pop("W_HARDEN_NEGCTRL_TAMPER", None)
     else:
-        os.environ['W_HARDEN_NEGCTRL_TAMPER'] = original_value
+        os.environ["W_HARDEN_NEGCTRL_TAMPER"] = original_value
 
 
 @pytest.fixture(scope="function")
 def clean_env():
     """Fixture to ensure clean environment (no tampering)."""
-    original_value = os.environ.get('W_HARDEN_NEGCTRL_TAMPER')
-    os.environ.pop('W_HARDEN_NEGCTRL_TAMPER', None)
+    original_value = os.environ.get("W_HARDEN_NEGCTRL_TAMPER")
+    os.environ.pop("W_HARDEN_NEGCTRL_TAMPER", None)
     yield
     if original_value is not None:
-        os.environ['W_HARDEN_NEGCTRL_TAMPER'] = original_value
+        os.environ["W_HARDEN_NEGCTRL_TAMPER"] = original_value
 
 
 def pytest_configure(config):
     """Configure pytest for sovereign hardening tests."""
     # Add custom markers
-    config.addinivalue_line(
-        "markers", "negative_control: Tests that use W_HARDEN_NEGCTRL_TAMPER"
-    )
-    config.addinivalue_line(
-        "markers", "determinism: Tests for determinism validation"
-    )
-    config.addinivalue_line(
-        "markers", "sovereignty: Tests for sovereignty enforcement"
-    )
+    config.addinivalue_line("markers", "negative_control: Tests that use W_HARDEN_NEGCTRL_TAMPER")
+    config.addinivalue_line("markers", "determinism: Tests for determinism validation")
+    config.addinivalue_line("markers", "sovereignty: Tests for sovereignty enforcement")
 
 
 def pytest_collection_modifyitems(config, items):

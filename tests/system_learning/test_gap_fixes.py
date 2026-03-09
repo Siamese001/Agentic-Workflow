@@ -1416,7 +1416,7 @@ class TestShadowVectorDimRegression:
             with pytest.raises(ValueError):
                 np.dot(query_vector, old_shadow)
         else:
-            pytest.skip("generate_fallback_vector returned dim=4, bug not present in this env")
+            pytest.fail("generate_fallback_vector returned dim=4, bug not present in this env")
 
     def test_cosine_similarity_deterministic_same_signature(self):
         """Same failure_signature → same cosine result (§1.10 determinism)."""

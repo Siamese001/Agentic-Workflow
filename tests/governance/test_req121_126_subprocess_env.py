@@ -7,9 +7,7 @@ REQ-126: Direct os.environ mutation is blocked by guard.
 from __future__ import annotations
 
 import hashlib
-import os
 from dataclasses import dataclass
-from typing import List, Optional
 
 import pytest
 
@@ -20,9 +18,11 @@ pytestmark = pytest.mark.governance
 # ToolTranscript with hash binding
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class ToolTranscript:
     """Canonical tool execution transcript with hash-bound stdout."""
+
     tool_id: str
     command: str
     stdout: bytes
@@ -38,7 +38,7 @@ class ToolTranscript:
         stdout: bytes,
         stderr: bytes,
         exit_code: int,
-    ) -> "ToolTranscript":
+    ) -> ToolTranscript:
         """Create transcript; hash is computed from canonical stdout."""
         canonical = cls._canonicalize(stdout)
         transcript_hash = hashlib.sha256(canonical).hexdigest()
@@ -76,6 +76,7 @@ class ToolTranscript:
 # Env mutation guard
 # ---------------------------------------------------------------------------
 
+
 class EnvMutationViolation(RuntimeError):
     """Raised on direct os.environ mutation in guarded context."""
 
@@ -85,7 +86,7 @@ class EnvMutationGuard:
 
     def __init__(self):
         self._active = False
-        self._blocked: List[str] = []
+        self._blocked: list[str] = []
 
     def __enter__(self):
         self._active = True
@@ -97,18 +98,17 @@ class EnvMutationGuard:
     def assert_write_allowed(self, key: str) -> None:
         if self._active:
             self._blocked.append(key)
-            raise EnvMutationViolation(
-                f"Direct os.environ['{key}'] mutation blocked — use injected config"
-            )
+            raise EnvMutationViolation(f"Direct os.environ['{key}'] mutation blocked — use injected config")
 
     @property
-    def blocked_keys(self) -> List[str]:
+    def blocked_keys(self) -> list[str]:
         return list(self._blocked)
 
 
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_req121_transcript_hash_bound_to_stdout():

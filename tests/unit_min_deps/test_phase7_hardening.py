@@ -290,6 +290,7 @@ print(f"SIGNAL_HASH: {{hashlib.sha256(signal.canonical_bytes()).hexdigest()}}")
 
             # Hashes should match across processes (use sha256, not hash() which is non-deterministic)
             import hashlib as _hl
+
             assert _hl.sha256(local_writer.writes[0]["payload_bytes"]).hexdigest() == payload_hash
             assert _hl.sha256(local_signal.canonical_bytes()).hexdigest() == signal_hash
 

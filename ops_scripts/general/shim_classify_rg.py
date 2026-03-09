@@ -1,4 +1,5 @@
 """Classify shims in apps_rg/reasoning and across all SSOT dirs."""
+
 import ast
 from pathlib import Path
 
@@ -22,10 +23,7 @@ def classify_file(py_file):
         return None
 
     body = tree.body
-    has_func = any(
-        isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-        for n in body
-    )
+    has_func = any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body)
     has_import = any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in body)
 
     # Collect what is imported
@@ -41,10 +39,7 @@ def classify_file(py_file):
     all_assigns = [
         n
         for n in body
-        if isinstance(n, ast.Assign)
-        and any(
-            isinstance(t, ast.Name) and t.id == "__all__" for t in n.targets
-        )
+        if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__all__" for t in n.targets)
     ]
 
     # Get __all__ value if present
@@ -52,16 +47,10 @@ def classify_file(py_file):
     if all_assigns:
         node = all_assigns[0]
         if isinstance(node.value, (ast.List, ast.Tuple)):
-            all_value = [
-                elt.s if isinstance(elt, ast.Constant) else "?"
-                for elt in node.value.elts
-            ]
+            all_value = [elt.s if isinstance(elt, ast.Constant) else "?" for elt in node.value.elts]
 
     stmt_types = [type(n).__name__ for n in body]
-    non_trivial = [
-        t for t in stmt_types
-        if t not in ("Expr", "Import", "ImportFrom", "Assign", "AnnAssign")
-    ]
+    non_trivial = [t for t in stmt_types if t not in ("Expr", "Import", "ImportFrom", "Assign", "AnnAssign")]
 
     # Shim = no functions/classes, has imports, small body
     is_shim_candidate = has_import and not has_func and len(body) <= 20

@@ -172,7 +172,7 @@ class TestImportPreflight:
             with pytest.raises(RuntimeError, match="CRITICAL.*_legacy_main"):
                 _preflight_import_check()
         except AttributeError:
-            pytest.skip("_legacy_main not present on module; preflight test not applicable")
+            pytest.fail("_legacy_main not present on module; preflight test not applicable")
         finally:
             if original is not None:
                 execute_ssot_mod._legacy_main = original

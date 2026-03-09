@@ -128,7 +128,7 @@ class TestL6WritePrimitiveRatchet:
 
     def test_l6_does_not_exceed_write_ceiling(self):
         if not _L6_ROOT.exists():
-            pytest.skip("L6_observability not found")
+            pytest.fail("L6_observability not found")
         hits = _scan_write_primitives(_L6_ROOT)
         assert len(hits) <= _L6_WRITE_CEILING, (
             f"L6 has {len(hits)} write primitives, "
@@ -146,7 +146,7 @@ class TestL6NoFileIoImports:
 
     def test_no_fileio_imports_in_l6(self):
         if not _L6_ROOT.exists():
-            pytest.skip("L6_observability not found")
+            pytest.fail("L6_observability not found")
         hits = _scan_fileio_imports(_L6_ROOT)
         assert not hits, "L6 imports FileIo:\n" + "\n".join(f"  {h}" for h in hits)
 

@@ -453,7 +453,7 @@ class TestAtomicExecutionMixinIntegration:
             ), "AtomicExecutionMixin should have atomic execution method"
             print("\n[OK] Real AtomicExecutionMixin found and has expected interface")
         except ImportError:
-            pytest.skip("AtomicExecutionMixin not yet implemented - using mock for tests")
+            pytest.fail("AtomicExecutionMixin not yet implemented - using mock for tests")
 
 
 if __name__ == "__main__":

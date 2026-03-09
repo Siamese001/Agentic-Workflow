@@ -218,7 +218,9 @@ class TestE2EDispatchGemini:
 
     def test_gemini_dispatch(self, default_config, fake_invoker):
         # unknown + blast=1.0 + retry=2 + HIGH entropy -> score=0.395 < Y=0.40
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
+        inp = _make_input(
+            failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH"
+        )
         decision, record = dispatch_healing(
             inp, default_config, invoker=fake_invoker, agent_name="GeminiTestAgent"
         )
@@ -230,7 +232,9 @@ class TestE2EDispatchGemini:
         assert len(fake_invoker.calls) == 1
 
     def test_no_other_provider_invoked(self, default_config, fake_invoker):
-        inp = _make_input(failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH")
+        inp = _make_input(
+            failure_type="unknown", blast_radius=1.0, retry_count=2, failure_entropy_class="HIGH"
+        )
         dispatch_healing(inp, default_config, invoker=fake_invoker)
         methods = [c.method_called for c in fake_invoker.calls]
         assert methods == ["invoke_gemini"]
