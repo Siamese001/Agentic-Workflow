@@ -15,8 +15,11 @@ Adapts parameters based on performance with persistent configuration
 """
 import asyncio
 import json
+import logging
 from pathlib import Path
 from typing import Any
+
+logger = logging.getLogger(__name__)
 
 from agentic_core.L3_orchestration.types.rag_provider_types import (
     IRagProvider,
@@ -383,6 +386,130 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             "hops": hop + 1,
             "faithfulness": result.get("faithfulness", 0.0),
         }
+
+    # ========================================================================
+    # P3-3A: RerankEngine injection protocol
+    # ========================================================================
+
+    def set_rerank_engine(self, rerank_engine: Any) -> None:
+        """Inject a RerankEngine implementation.
+
+        The engine must implement:
+            async rerank(query: str, candidates: list[Any]) -> list[Any]
+
+        When set, _llm_rerank() routes through this engine instead of
+        falling back to score-sorted truncation.
+        Fail-closed: any exception in reranking returns candidates[:top_k] unchanged.
+        """
+        self.engine = rerank_engine
+
+    async def _llm_rerank(self, candidates: list[Any], query: str, top_k: int) -> list[Any]:
+        """Rerank candidates via injected engine or fall back to score-sorted truncation."""
+        if self.engine is None:
+            # No engine injected: sort by score and truncate
+            try:
+                candidates.sort(key=lambda d: getattr(d, "score", 0.0), reverse=True)
+            except Exception:
+                pass
+            return candidates[:top_k]
+        try:
+            return await self.engine.rerank(query, candidates)
+        except Exception:
+            logger.warning("_llm_rerank: rerank_engine raised — returning candidates[:top_k]", exc_info=True)
+            return candidates[:top_k]
+
+    # ========================================================================
+    # P3-4A: Agentic reflection loop with sufficiency check
+    # ========================================================================
+
+    _SUFFICIENCY_THRESHOLD: float = 0.60
+    _MAX_REFLECTION_ROUNDS: int = 2
+
+    async def _check_sufficiency(self, candidates: list[Any], query: str) -> float:
+        """Compute mean cosine similarity of top results to query embedding.
+
+        Returns a float in [0, 1]. 0.0 means no embedder available.
+        """
+        try:
+            import math
+
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+
+            q_emb = bmg_embed_text(query)
+            if not q_emb or not candidates:
+                return 0.0
+
+            def _cosine(a: list[float], b: list[float]) -> float:
+                dot = sum(x * y for x, y in zip(a, b))
+                na = math.sqrt(sum(x * x for x in a))
+                nb = math.sqrt(sum(x * x for x in b))
+                return dot / (na * nb + 1e-8)
+
+            scores = []
+            for doc in candidates[:self.base_top_k]:
+                text = doc.text if hasattr(doc, "text") else (doc.get("text", "") if isinstance(doc, dict) else str(doc))
+                d_emb = bmg_embed_text(text)
+                if d_emb:
+                    scores.append(_cosine(q_emb, d_emb))
+
+            return sum(scores) / len(scores) if scores else 0.0
+        except Exception:
+            return 0.0
+
+    async def agentic_retrieve_with_reflection(
+        self,
+        query: str,
+        top_k: int | None = None,
+    ) -> dict[str, Any]:
+        """Single-pass retrieval with up to MAX_REFLECTION_ROUNDS refinement rounds.
+
+        If initial retrieval sufficiency < SUFFICIENCY_THRESHOLD (0.60):
+        - Calls query_planner.decompose_query() to produce sub-queries
+        - Executes retrieval for each sub-query, merges with sovereign_retrieve
+        - Hard limit: 2 refinement rounds (no unbounded recursion)
+
+        Returns the same dict shape as sovereign_retrieve().
+        """
+        if top_k is None:
+            top_k = self.base_top_k
+
+        result = await self.sovereign_retrieve(query, top_k=top_k)
+        candidates = result.get("documents", [])
+
+        for _round in range(self._MAX_REFLECTION_ROUNDS):
+            sufficiency = await self._check_sufficiency(candidates, query)
+            if sufficiency >= self._SUFFICIENCY_THRESHOLD:
+                break
+
+            logger.info(
+                "agentic_retrieve_with_reflection: sufficiency=%.3f < %.3f — round %d refinement",
+                sufficiency,
+                self._SUFFICIENCY_THRESHOLD,
+                _round + 1,
+            )
+
+            try:
+                sub_queries = await self.query_planner.decompose_query(query)
+            except Exception:
+                break
+
+            for sq in sub_queries:
+                try:
+                    sub_result = await self.sovereign_retrieve(sq, top_k=top_k)
+                    sub_docs = sub_result.get("documents", [])
+                    # Deduplicate by id/content before merging
+                    seen_ids = {getattr(d, "id", None) or getattr(d, "doc_id", None) for d in candidates}
+                    for doc in sub_docs:
+                        doc_id = getattr(doc, "id", None) or getattr(doc, "doc_id", None)
+                        if doc_id not in seen_ids:
+                            candidates.append(doc)
+                            seen_ids.add(doc_id)
+                except Exception:
+                    continue
+
+        result["documents"] = candidates
+        result["reflection_applied"] = True
+        return result
 
     def get_config(self) -> dict[str, Any]:
         """Get current configuration"""

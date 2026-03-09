@@ -469,8 +469,112 @@ class AnswerQualityMonitor:
             _logger.debug("AnswerQualityMonitor._persist failed", exc_info=True)
 
 
+def emit_alerts_to_registry(
+    alerts: list[DriftAlert],
+    source: str,
+    threshold_map: dict[str, float] | None = None,
+) -> None:
+    """P5-5B: Convert DriftAlerts to DriftRegistryEntry and record in DriftRegistry.
+
+    P5-5C: For critical-severity entries, also publishes to MetaLearningBus.
+
+    Parameters
+    ----------
+    alerts:
+        Alerts produced by any monitor's check_alerts() method.
+    source:
+        DriftSource string — "retrieval", "embedding", or "shadow".
+    threshold_map:
+        Optional mapping of metric_name → threshold_value. Falls back to
+        alert.threshold_value when available.
+    """
+    if not alerts:
+        return
+
+    try:
+        from agentic_core.L6_observability.engines.drift_registry import (
+            DriftRegistryEntry,
+            get_drift_registry,
+        )
+    except Exception:  # guardian: allow-silent-swallow
+        _logger.debug("emit_alerts_to_registry: drift_registry unavailable", exc_info=True)
+        return
+
+    registry = get_drift_registry()
+
+    for alert in alerts:
+        threshold = (threshold_map or {}).get(alert.metric_name, alert.threshold_value)
+        try:
+            import hashlib
+            import json as _json
+
+            digest_payload = _json.dumps(
+                {
+                    "source": source,
+                    "metric": alert.metric_name,
+                    "value": alert.current_value,
+                    "threshold": threshold,
+                    "timestamp": alert.timestamp,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            deterministic_digest = hashlib.sha256(digest_payload.encode()).hexdigest()
+
+            entry = DriftRegistryEntry(
+                source=source,  # type: ignore[arg-type]
+                timestamp_iso=alert.timestamp,
+                metric_name=alert.metric_name,
+                current_value=alert.current_value,
+                threshold_value=threshold,
+                drift_flag=True,
+                severity=alert.severity,  # type: ignore[arg-type]
+                deterministic_digest=deterministic_digest,
+            )
+            registry.record(entry)
+        except Exception:  # guardian: allow-silent-swallow
+            _logger.debug(
+                "emit_alerts_to_registry: failed to record entry for %s",
+                alert.metric_name,
+                exc_info=True,
+            )
+            continue
+
+        # P5-5C: critical entries → MetaLearningBus
+        if alert.severity == "critical":
+            try:
+                from system_learning.ports.meta_learning_bus import MetaLearningBus
+                from system_learning.ports.meta_learning_change_package import (
+                    MetaLearningChangePackage,
+                )
+
+                bus = MetaLearningBus.get_instance()
+                pkg = MetaLearningChangePackage.create(
+                    kind="drift_alert",
+                    payload={
+                        "source": source,
+                        "metric_name": alert.metric_name,
+                        "current_value": alert.current_value,
+                        "threshold_value": threshold,
+                        "severity": alert.severity,
+                        "alert_id": alert.alert_id,
+                        "timestamp": alert.timestamp,
+                        "digest": deterministic_digest,
+                    },
+                    proposal_only=True,
+                )
+                bus.enqueue(pkg)
+            except Exception:  # guardian: allow-silent-swallow
+                _logger.debug(
+                    "emit_alerts_to_registry: MetaLearningBus publish failed for critical alert %s",
+                    alert.alert_id,
+                    exc_info=True,
+                )
+
+
 __all__ = [
     "RetrievalDriftMonitor",
     "EmbeddingDriftMonitor",
     "AnswerQualityMonitor",
+    "emit_alerts_to_registry",
 ]

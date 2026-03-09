@@ -273,34 +273,49 @@ class GeminiInvokerAdapter:
         Returns:
             InvocationRecord with replay-deterministic fields
         """
-        try:
-            import google.generativeai as genai
-        except ImportError as exc:
-            raise ImportError(
-                "google-generativeai SDK is required for Gemini adapter. "
-                "Install with: pip install google-generativeai"
-            ) from exc
+        from apps_shared.types.hardened_gemini_executor_types import (
+            HardenedGeminiConfig,
+            HardenedGeminiExecutor,
+        )
 
         model_id = config.model_gemini_2_5_pro_id
         prompt = self._build_prompt(healing_input, decision, agent_name)
 
-        genai.configure(api_key=self.api_key)
-        model = genai.GenerativeModel(model_id)
-
-        generation_config = genai.types.GenerationConfig(
+        hardened_config = HardenedGeminiConfig(
+            model=model_id,
             temperature=GEMINI_CONFIG["temperature"],
             max_output_tokens=DEFAULT_MAX_OUTPUT_TOKENS,
-            top_p=GEMINI_CONFIG["top_p"],
-            top_k=GEMINI_CONFIG["top_k"],
         )
+        executor = HardenedGeminiExecutor(config=hardened_config)
 
-        gemini_response = model.generate_content(prompt, generation_config=generation_config)
         response_text: str | None = None
-        if gemini_response is not None:
-            try:
-                response_text = gemini_response.text
-            except Exception:  # guardian: allow-silent-swallow — .text raises on safety block
-                response_text = None
+        try:
+            result = executor.invoke_prompt(prompt, api_key=self.api_key)
+            if result is not None:
+                try:
+                    response_text = result.text
+                except Exception:  # guardian: allow-silent-swallow — .text raises on safety block
+                    response_text = None
+        except Exception as _exc:
+            # Map executor errors: context overflow or circuit open → log and continue
+            _exc_name = type(_exc).__name__
+            if "ContextOverflow" in _exc_name:
+                logger.warning(
+                    "Gemini context overflow — response_text=None",
+                    extra={"model": model_id, "trace_id": healing_input.trace_id},
+                )
+            elif "CircuitBreakerOpen" in _exc_name:
+                logger.warning(
+                    "Gemini circuit breaker open — response_text=None",
+                    extra={"model": model_id, "trace_id": healing_input.trace_id},
+                )
+            else:
+                logger.error(
+                    "Gemini invocation failed: %s",
+                    _exc,
+                    extra={"model": model_id, "trace_id": healing_input.trace_id},
+                )
+            response_text = None
 
         record = InvocationRecord(
             tier=HealingTier.GEMINI_2_5_PRO,

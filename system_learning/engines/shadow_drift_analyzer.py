@@ -112,7 +112,7 @@ class ShadowDriftAnalyzer:
         # Compute deterministic digest
         deterministic_digest = self._compute_digest(cosine_values, profile_id, now_utc)
 
-        return DriftSummary(
+        summary = DriftSummary(
             profile_id=profile_id,
             batch_size=len(shadow_records),
             mean_cosine=mean_cosine,
@@ -122,6 +122,77 @@ class ShadowDriftAnalyzer:
             deterministic_digest=deterministic_digest,
             drift_threshold=self._drift_threshold,
         )
+
+        # P5-5B: Emit to DriftRegistry; P5-5C: critical → MetaLearningBus
+        self._emit_to_registry(summary)
+
+        return summary
+
+    def _emit_to_registry(self, summary: DriftSummary) -> None:
+        """Emit shadow drift measurement to unified DriftRegistry (P5-5B/5C)."""
+        try:
+            import hashlib
+            import json as _json
+
+            from agentic_core.L6_observability.engines.drift_registry import (
+                DriftRegistryEntry,
+                get_drift_registry,
+            )
+
+            severity = "critical" if summary.drift_flag else "info"
+            digest_payload = _json.dumps(
+                {
+                    "source": "shadow",
+                    "metric": "p95_cosine",
+                    "value": summary.p95_cosine,
+                    "threshold": summary.drift_threshold,
+                    "digest": summary.deterministic_digest,
+                },
+                sort_keys=True,
+                separators=(",", ":"),
+            )
+            deterministic_digest = hashlib.sha256(digest_payload.encode()).hexdigest()
+
+            entry = DriftRegistryEntry(
+                source="shadow",  # type: ignore[arg-type]
+                timestamp_iso=_json.dumps(summary.profile_id),  # no timestamp on DriftSummary; use profile_id as tag
+                metric_name="p95_cosine",
+                current_value=summary.p95_cosine,
+                threshold_value=summary.drift_threshold,
+                drift_flag=summary.drift_flag,
+                severity=severity,  # type: ignore[arg-type]
+                deterministic_digest=deterministic_digest,
+            )
+            get_drift_registry().record(entry)
+
+            # P5-5C: critical → MetaLearningBus
+            if summary.drift_flag:
+                try:
+                    from system_learning.ports.meta_learning_bus import MetaLearningBus
+                    from system_learning.ports.meta_learning_change_package import (
+                        MetaLearningChangePackage,
+                    )
+
+                    bus = MetaLearningBus.get_instance()
+                    pkg = MetaLearningChangePackage.create(
+                        kind="drift_alert",
+                        payload={
+                            "source": "shadow",
+                            "metric_name": "p95_cosine",
+                            "current_value": summary.p95_cosine,
+                            "threshold_value": summary.drift_threshold,
+                            "severity": severity,
+                            "drift_score": summary.drift_score,
+                            "digest": summary.deterministic_digest,
+                            "profile_id": summary.profile_id,
+                        },
+                        proposal_only=True,
+                    )
+                    bus.enqueue(pkg)
+                except Exception:  # guardian: allow-silent-swallow
+                    pass
+        except Exception:  # guardian: allow-silent-swallow
+            pass
 
     def _compute_percentile(self, values: list[float], percentile: float) -> float:
         """Compute percentile with deterministic method."""

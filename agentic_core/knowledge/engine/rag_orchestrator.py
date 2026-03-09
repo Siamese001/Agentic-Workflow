@@ -13,18 +13,13 @@ Canon Key 9 - Retrieval-Augmented Generation integration
 import json
 from pathlib import Path
 
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
-# Internal imports referencing the mandated structure
+# Canonical document loaders — guarded only for mid-relocation tolerance
 try:
-    from agentic_core.semantic_memory.embeddings.core_embedder import (
-        _embedding_cache,
-        clear_embedding_cache,  # noqa: F401
-    )
-
     from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
     from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
     from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
@@ -33,7 +28,7 @@ try:
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
 except ImportError:
-    # Fallback to avoid mission failure if sub-modules are mid-relocation
+    # guardian: allow-silent-swallow — sub-modules may be mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
     SKILL_TAXONOMY, ALL_SKILLS = {}, []
     TextDocumentLoader = None
@@ -41,8 +36,25 @@ except ImportError:
     HTMLDocumentLoader = None
     CSVDocumentLoader = None
     ResearchCache = None
+
+# Embedding cache — canonical BGE path (no ghost semantic_memory fallback)
+try:
+    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text as _bge_embed
+
+    _embedding_cache: dict = {}
+
+    def clear_embedding_cache() -> None:  # noqa: F811
+        _embedding_cache.clear()
+
+except ImportError as _exc:
+    import logging as _logging
+    _logging.getLogger(__name__).critical(
+        "rag_orchestrator: BGE embedder unavailable — embedding cache disabled: %s", _exc
+    )
     _embedding_cache = {}
-    clear_embedding_cache = lambda: None  # noqa: E731
+
+    def clear_embedding_cache() -> None:  # noqa: F811
+        pass
 
 
 class SovereignRagOrchestrator:
@@ -111,11 +123,17 @@ class SovereignRagOrchestrator:
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
-            self.Bm25Store = None
         except (ImportError, Exception):
-            # Vector search unavailable - will fall back to keyword/static only
+            # guardian: allow-silent-swallow — vector search unavailable, fall back to keyword/static
             self.embedder = None
             self.vector_store = None
+
+        # Wire live BM25 singleton (P4-3A: was always None)
+        try:
+            from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+
+            self.Bm25Store = get_bm25_store()
+        except Exception:  # guardian: allow-silent-swallow
             self.Bm25Store = None
 
         # Optional: Initialize LLM engine for reranking

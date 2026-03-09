@@ -312,8 +312,11 @@ class HybridRetriever:
             self._index_initialized = True
             await self._load_or_rebuild_local_index()
 
+    # P4-4C: default context budget (tokens; 4 chars ≈ 1 token)
+    MAX_CONTEXT_TOKENS: int = 4096
+
     async def hybrid_search(self, query: str, top_k: int = 12) -> list[RetrievalResult]:
-        """Sovereign hybrid search with RRF fusion"""
+        """Sovereign hybrid search with RRF fusion and context budget enforcement."""
         await self._ensure_index()
         dense_results, sparse_results = await asyncio.gather(
             self.dense_search(query, top_k=top_k * 2),
@@ -322,8 +325,109 @@ class HybridRetriever:
         if not dense_results and (not sparse_results):
             return []
         fused: Any = self.reciprocal_rank_fusion(dense_results, sparse_results)
-        return await self.guardrail.rerank_documents(fused[: min(50, len(fused))], query, top_k=top_k)
+        reranked = await self.guardrail.rerank_documents(fused[: min(50, len(fused))], query, top_k=top_k)
+        # P4-4C: enforce context budget — drop trailing docs that exceed token ceiling
+        return self._enforce_context_budget(reranked)
+
+    def _enforce_context_budget(
+        self,
+        docs: list[RetrievalResult],
+        max_tokens: int | None = None,
+    ) -> list[RetrievalResult]:
+        """P4-4C: Return the longest prefix of *docs* whose cumulative token estimate
+        stays within *max_tokens* (default MAX_CONTEXT_TOKENS).
+
+        Token estimate: len(doc.text) // 4 per document (4 chars ≈ 1 token).
+        Always includes at least one document to prevent empty-result on large chunks.
+        """
+        budget = max_tokens if max_tokens is not None else self.MAX_CONTEXT_TOKENS
+        if not docs:
+            return docs
+        accumulated = 0
+        pruned: list[RetrievalResult] = []
+        for doc in docs:
+            doc_tokens = len(doc.text) // 4
+            if pruned and accumulated + doc_tokens > budget:
+                break
+            accumulated += doc_tokens
+            pruned.append(doc)
+        return pruned
 
     async def wait_for_index(self) -> Any:
         """Wait for BM25 index to be ready"""
         await self.index_ready.wait()
+
+
+# ---------------------------------------------------------------------------
+# P4-2B: NoOpGuardrail — rerank_documents returns input unchanged (top_k slice)
+# ---------------------------------------------------------------------------
+
+
+class NoOpGuardrail:
+    """Passthrough guardrail: rerank_documents returns candidates[:top_k] unchanged.
+
+    Used by HybridRetrieverFactory for test/dev environments where no
+    cross-encoder reranker is available.
+    """
+
+    async def rerank_documents(
+        self,
+        candidates: list[RetrievalResult],
+        query: str,  # noqa: ARG002
+        top_k: int = 12,
+    ) -> list[RetrievalResult]:
+        return candidates[:top_k]
+
+
+# ---------------------------------------------------------------------------
+# P4-2B: In-memory vector store for factory default
+# ---------------------------------------------------------------------------
+
+
+class _InMemoryVectorStore:
+    """Minimal in-memory vector store for HybridRetrieverFactory default."""
+
+    def __init__(self) -> None:
+        self._docs: list[dict] = []
+
+    def add_documents(self, docs: list[dict]) -> None:
+        self._docs.extend(docs)
+
+    async def similarity_search(self, query_embedding: list[float], top_k: int = 12) -> list[dict]:
+        return self._docs[:top_k]
+
+
+# ---------------------------------------------------------------------------
+# P4-2B: Factory + singleton
+# ---------------------------------------------------------------------------
+
+
+class HybridRetrieverFactory:
+    """Factory for constructing HybridRetriever with injectable dependencies."""
+
+    @classmethod
+    def from_in_memory_store(cls) -> HybridRetriever:
+        """Construct a HybridRetriever with InMemoryVectorStore + NoOpGuardrail.
+
+        Allows synchronous construction in tests without an event loop.
+        """
+        return HybridRetriever(
+            vector_store=_InMemoryVectorStore(),
+            guardrail=NoOpGuardrail(),
+        )
+
+
+_hybrid_retriever_singleton: HybridRetriever | None = None
+
+
+def get_hybrid_retriever() -> HybridRetriever:
+    """Return the process-global HybridRetriever singleton (lazy-initialized).
+
+    Uses HybridRetrieverFactory.from_in_memory_store() on first call.
+    Production callers may replace this singleton by assigning to
+    ``_hybrid_retriever_singleton`` before first call.
+    """
+    global _hybrid_retriever_singleton
+    if _hybrid_retriever_singleton is None:
+        _hybrid_retriever_singleton = HybridRetrieverFactory.from_in_memory_store()
+    return _hybrid_retriever_singleton

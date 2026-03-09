@@ -551,6 +551,86 @@ class HardenedGeminiExecutor:
             await self.log_interaction_telemetry(telemetry)
             raise
 
+    def invoke_prompt(self, prompt: str, *, api_key: str) -> Any:
+        """Synchronous healing-path invocation using google.generativeai v1 SDK.
+
+        Uses tenacity retry (from config) and circuit breaker.
+        Called by GeminiInvokerAdapter.invoke_gemini() in the sync healing path.
+
+        Parameters
+        ----------
+        prompt:
+            Plain-text prompt to send to the model.
+        api_key:
+            Google API key (explicit; no environment variable access).
+
+        Returns
+        -------
+        GenerateContentResponse with a `.text` attribute, or None on safety block.
+
+        Raises
+        ------
+        CircuitBreakerOpenError:
+            If the circuit breaker is open due to repeated failures.
+        ContextOverflowError:
+            If the prompt exceeds the model's safety token threshold.
+        """
+        try:
+            import google.generativeai as genai
+        except ImportError as exc:
+            raise ImportError(
+                "google-generativeai SDK is required. Install with: pip install google-generativeai"
+            ) from exc
+
+        from tenacity import (
+            retry,
+            retry_if_exception_type,
+            stop_after_attempt,
+            wait_exponential,
+        )
+
+        # Pre-flight: check circuit breaker
+        self._circuit_breaker.raise_if_open()
+
+        # Pre-flight: rough token estimate (4 chars ≈ 1 token)
+        estimated_tokens = len(prompt) // 4
+        if estimated_tokens > self.config.safety_threshold_tokens:
+            raise ContextOverflowError(
+                f"Prompt (~{estimated_tokens} tokens) exceeds safety threshold "
+                f"({self.config.safety_threshold_tokens} for {self.config.model})"
+            )
+
+        genai.configure(api_key=api_key)
+        model_client = genai.GenerativeModel(self.config.model)
+        generation_config = genai.types.GenerationConfig(
+            temperature=self.config.temperature,
+            max_output_tokens=self.config.max_output_tokens,
+        )
+
+        @retry(
+            retry=retry_if_exception_type(Exception),
+            stop=stop_after_attempt(self.config.max_retries),
+            wait=wait_exponential(
+                multiplier=1,
+                min=self.config.retry_min_wait,
+                max=self.config.retry_max_wait,
+            ),
+            before_sleep=lambda _: logger.warning(
+                "invoke_prompt: retrying Gemini call due to transient error"
+            ),
+            reraise=True,
+        )
+        def _call() -> Any:
+            return model_client.generate_content(prompt, generation_config=generation_config)
+
+        try:
+            response = _call()
+            self._circuit_breaker.record_success()
+            return response
+        except Exception:
+            self._circuit_breaker.record_failure()
+            raise
+
     def execute_sync(
         self,
         messages: list[AgentMessage],
