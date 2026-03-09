@@ -1,3 +1,6 @@
+---
+trigger: always_on
+---
 # Plan Location Rule
 
 Plans MUST always be saved to the SSOT-approved location:
