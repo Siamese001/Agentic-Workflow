@@ -38,18 +38,29 @@ class ChangePackage:
 
     No executable closures, callables, function pointers, or object references
     are permitted in parameters.  Runtime validation enforces this.
+
+    ``proposal_only`` defaults to True.  Setting it to False requires an
+    explicit ``approval_token`` to be supplied; without one the constructor
+    raises ValueError, preventing silent runtime activation.
     """
 
     proposal_id: str
     change_type: str
     parameters: dict[str, Any]
     requires_approval: bool = True
+    proposal_only: bool = True
+    approval_token: str | None = None
 
     def __post_init__(self) -> None:
         try:
             json.dumps(self.parameters)
         except (TypeError, ValueError) as exc:
             raise ValueError(f"ChangePackage.parameters must be JSON-serializable: {exc}") from exc
+        if not self.proposal_only and not self.approval_token:
+            raise ValueError(
+                "ChangePackage.proposal_only=False requires an explicit approval_token. "
+                "Runtime mutation without an approval token is prohibited."
+            )
 
 
 class SovereignMetaLearningClient:

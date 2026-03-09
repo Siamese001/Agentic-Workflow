@@ -130,16 +130,19 @@ class MetaLearningClient:
         _singleton_instance = None
 
     def _initialize_redis(self) -> None:
-        """Initialize Redis connection with fallback to local cache."""
-        try:
-            from pathlib import Path
+        """Initialize Redis connection. Raises if Redis is unavailable."""
+        from pathlib import Path
 
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+
+        try:
             redis_agent = _get_redis_sovereign_agent()(Path.cwd())
             self._redis_client = redis_agent.get_client()
             Logger.info("[MetaLearningClient] Redis connection established")
         except Exception as e:
-            Logger.warning(f"[MetaLearningClient] Redis unavailable, using local cache: {e}")
-            self._redis_client = None
+            raise InfrastructureDependencyError(
+                f"[MetaLearningClient] Redis is a mandatory dependency and is unavailable: {e}"
+            ) from e
 
     def _initialize_vector_store(self) -> None:
         """Initialize in-memory FAISS-backed vector store for healing patterns."""
@@ -190,27 +193,22 @@ class MetaLearningClient:
         """
         cache_key = self._get_cache_key(key, domain)
 
-        # Try Redis first
-        if self._redis_client:
-            try:
-                value = self._redis_client.get(cache_key)
-                if value:
-                    self.stats["cache_hits"] += 1
-                    self._update_domain_stats(domain, "cache_hits")
-                    return json.loads(value)
-            except Exception as e:
-                Logger.warning(f"[MetaLearningClient] Redis get failed: {e}")
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
-        # Fallback to local cache
-        if cache_key in self._local_cache:
-            entry = self._local_cache[cache_key]
-            if not entry.is_expired():
-                entry.hit_count += 1
+        if not self._redis_client:
+            raise InfrastructureDependencyError(
+                "[MetaLearningClient] Redis client is not initialised."
+            )
+        try:
+            value = self._redis_client.get(cache_key)
+            if value:
                 self.stats["cache_hits"] += 1
                 self._update_domain_stats(domain, "cache_hits")
-                return entry.value
-            else:
-                del self._local_cache[cache_key]
+                return json.loads(value)
+        except Exception as e:
+            raise InfrastructureDependencyError(
+                f"[MetaLearningClient] Redis get failed: {e}"
+            ) from e
 
         self.stats["cache_misses"] += 1
         self._update_domain_stats(domain, "cache_misses")
@@ -241,40 +239,39 @@ class MetaLearningClient:
         cache_key = self._get_cache_key(key, domain)
         effective_ttl = ttl or self.domain_ttls.get(domain, self.default_ttl)
 
-        # Try Redis first
-        if self._redis_client:
-            try:
-                self._redis_client.setex(
-                    cache_key,
-                    effective_ttl,
-                    json.dumps(value),
-                )
-                return True
-            except Exception as e:
-                Logger.warning(f"[MetaLearningClient] Redis set failed: {e}")
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 
-        # Fallback to local cache
-        self._local_cache[cache_key] = CacheEntry(
-            key=cache_key,
-            value=value,
-            ttl=effective_ttl,
-            domain=domain,
-        )
-        return True
+        if not self._redis_client:
+            raise InfrastructureDependencyError(
+                "[MetaLearningClient] Redis client is not initialised."
+            )
+        try:
+            self._redis_client.setex(
+                cache_key,
+                effective_ttl,
+                json.dumps(value),
+            )
+            return True
+        except Exception as e:
+            raise InfrastructureDependencyError(
+                f"[MetaLearningClient] Redis set failed: {e}"
+            ) from e
 
     def cache_delete(self, key: str, domain: str = "agentic_core") -> bool:
         """Delete value from cache."""
+        from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+
         cache_key = self._get_cache_key(key, domain)
-
-        if self._redis_client:
-            try:
-                self._redis_client.delete(cache_key)
-            except Exception as e:
-                Logger.warning(f"[MetaLearningClient] Redis delete failed: {e}")
-
-        if cache_key in self._local_cache:
-            del self._local_cache[cache_key]
-
+        if not self._redis_client:
+            raise InfrastructureDependencyError(
+                "[MetaLearningClient] Redis client is not initialised."
+            )
+        try:
+            self._redis_client.delete(cache_key)
+        except Exception as e:
+            raise InfrastructureDependencyError(
+                f"[MetaLearningClient] Redis delete failed: {e}"
+            ) from e
         return True
 
     # ==================== PINECONE PATTERN RETRIEVAL ====================

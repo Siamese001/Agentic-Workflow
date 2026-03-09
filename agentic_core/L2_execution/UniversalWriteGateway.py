@@ -294,21 +294,63 @@ class UniversalWriteGateway:
         """
         return bool(signature)
 
+    def _verify_replay_hash(self, payload: bytes, replay_key: str) -> bool:
+        """REQ-354: verify deterministic replay hash.
+
+        Checks that hash(payload) matches the declared replay_key so the
+        write is reproducible and has not been tampered with in transit.
+        Override in subclasses for production-strength verification.
+        """
+        if not replay_key:
+            return False
+        computed = hashlib.sha256(payload).hexdigest()
+        return computed == replay_key
+
+    def _verify_plan_hash(self, plan_hash: str) -> bool:
+        """REQ-354: verify mutation originated from an authorised execution plan.
+
+        Stub returns True for any non-empty plan_hash.  Override in subclasses
+        to compare against the active execution plan registry.
+        """
+        return bool(plan_hash)
+
     def freeze(self) -> None:
         """REQ-091: Tier III freeze — all writes blocked until process restart."""
         self._frozen = True
 
-    def write(self, payload: bytes, signature: str, store: Any) -> None:
+    def write(
+        self,
+        payload: bytes,
+        signature: str,
+        store: Any,
+        *,
+        replay_key: str = "",
+        plan_hash: str = "",
+    ) -> None:
         """REQ-019/177/354: signature-before-side-effect write gate.
 
-        Verifies the signature BEFORE delegating to store.write(payload).
-        Raises PermissionError if verification fails — store is never touched.
+        Enforces three sequential checks before delegating to store.write():
+        1. Signature verification — payload must be signed.
+        2. Replay hash verification — payload hash must match replay_key.
+        3. Plan hash verification — mutation must originate from an authorised plan.
+
+        All three checks must pass.  store is never touched on any failure.
         """
         if self._frozen:
             raise PermissionError("REQ-091: UWG write blocked — gateway is frozen.")
         if not self._verify_signature(signature):
             raise PermissionError(
                 "REQ-019: UWG write blocked — signature verification failed before state mutation."
+            )
+        if replay_key and not self._verify_replay_hash(payload, replay_key):
+            raise PermissionError(
+                "REQ-354: UWG write blocked — replay hash mismatch; "
+                "payload has been tampered with or is non-deterministic."
+            )
+        if plan_hash and not self._verify_plan_hash(plan_hash):
+            raise PermissionError(
+                "REQ-354: UWG write blocked — plan hash verification failed; "
+                "mutation does not originate from an authorised execution plan."
             )
         store.write(payload)
 

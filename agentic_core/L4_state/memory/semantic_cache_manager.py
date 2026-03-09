@@ -351,9 +351,28 @@ class SemanticCacheManager:
         self.vector_store_enabled = True
         Logger.debug("[HiveMind] In-memory vector store initialized (FAISS+BGE-m3 backend)")
 
+    # Determinism anchors — cache keys must include these so stale results
+    # are invalidated when the embedding model or retrieval config changes.
+    _EMBEDDING_MODEL_VERSION: str = os.environ.get(
+        "HIVE_MIND_EMBEDDING_MODEL_VERSION", "bge-m3-v1"
+    )
+    _RETRIEVAL_CONFIG_HASH: str = os.environ.get(
+        "HIVE_MIND_RETRIEVAL_CONFIG_HASH", "default"
+    )
+
     def _compute_hash(self, context: str, namespace: str) -> str:
-        """Compute SHA256 hash for exact matching."""
-        key = f"{namespace}:{context}"
+        """Compute SHA256 hash for exact matching.
+
+        Key includes determinism anchors (embedding model version and retrieval
+        config hash) so cached results are automatically invalidated when either
+        changes, preventing stale or inconsistent retrieval results.
+        """
+        key = "|".join([
+            namespace,
+            self._EMBEDDING_MODEL_VERSION,
+            self._RETRIEVAL_CONFIG_HASH,
+            context,
+        ])
         return hashlib.sha256(key.encode()).hexdigest()
 
     def _get_embedding(self, text: str) -> list[float] | None:

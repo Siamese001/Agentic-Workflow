@@ -56,18 +56,14 @@ class CachedStateLedger(SovereignBaseAgent):
             self.redis = redis.Redis(**connection_kwargs)
             self.redis.ping()
             print("   [OK] CachedStateLedgerAgent: Redis Sovereign cache ONLINE")
-        # guardian: allow-silent-swallow
         except Exception as e:
-            print(f"   [!] Redis unavailable ({e}) → falling back to in-memory ledger")
-            self.redis = None
-            # Critical: Ensure memory fallback has same interface
-            self._memory_cache: dict[str, Any] = {}
-            self._audit_trail: list[str] = []
-            self._successful_traces: list[dict] = []  # NEW: Required by GeminiSpy telemetry
+            from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
+            raise InfrastructureDependencyError(
+                f"[CachedStateLedger] Redis is a mandatory dependency and is unavailable: {e}"
+            ) from e
 
-        # [L4 ETERNAL GUARANTEE] Always initialize successful_traces for ValidationContext
-        # This attribute is checked by GeminiSpy → absence causes zero-latency rejection
-        self._successful_traces = getattr(self, "_successful_traces", [])
+        # Always initialize successful_traces for ValidationContext
+        self._successful_traces: list[dict] = []
 
         # Eternal cache prefixes
         self.prefix_context = f"l4_context:{session_id}"

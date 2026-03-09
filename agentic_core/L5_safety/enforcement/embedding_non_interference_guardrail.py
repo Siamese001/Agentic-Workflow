@@ -30,6 +30,17 @@ class C0InterferenceViolation(RuntimeError):
 # C0 marker taxonomy
 # ---------------------------------------------------------------------------
 
+# Fields that must NEVER appear inside a C0 context object.
+# Their presence would mean C0 is influencing routing, safety, or execution.
+_C0_FORBIDDEN_FIELDS: frozenset[str] = frozenset(
+    {
+        "route_mode",
+        "execution_tier",
+        "safety_threshold",
+        "policy_hash",
+    }
+)
+
 # Keys that indicate C0 provenance when found in routing structures.
 _C0_MARKER_KEYS: frozenset[str] = frozenset(
     {
@@ -62,6 +73,32 @@ _C0_VALUE_FRAGMENTS: tuple[str, ...] = (
 # ---------------------------------------------------------------------------
 # Public API
 # ---------------------------------------------------------------------------
+
+def assert_c0_context_clean(c0_context: dict[str, Any]) -> None:
+    """Assert that *c0_context* does not contain routing-influencing fields.
+
+    C0 context is strictly informational.  The presence of any field from
+    ``_C0_FORBIDDEN_FIELDS`` means C0 is leaking into routing / execution
+    tier / safety configuration — a hard violation.
+
+    Args:
+        c0_context: The C0 context dict to inspect.
+
+    Raises:
+        C0InterferenceViolation: if any forbidden field is present.
+    """
+    violations = [
+        f"forbidden field {field!r} present in c0_context"
+        for field in _C0_FORBIDDEN_FIELDS
+        if field in c0_context
+    ]
+    if violations:
+        raise C0InterferenceViolation(
+            "EmbeddingNonInterferenceGuard: C0 context carries routing-influencing "
+            "fields that violate the informational boundary:\n"
+            + "\n".join(f"  - {v}" for v in violations)
+        )
+
 
 def assert_no_c0_influence(
     routing_inputs: dict[str, Any],
@@ -99,6 +136,10 @@ def assert_no_c0_influence(
 
     # 3. If c0_context provided, verify no verbatim key overlap.
     if c0_context:
+        # 3a. Verify c0_context itself is clean (no routing-influencing fields).
+        assert_c0_context_clean(c0_context)
+
+        # 3b. Verify no verbatim key collision with routing_inputs.
         for c0_key in c0_context:
             if c0_key in routing_inputs:
                 violations.append(
@@ -174,6 +215,7 @@ def scan_file_for_c0_mutations(source_path: Any) -> list[str]:
 
 __all__ = [
     "C0InterferenceViolation",
+    "assert_c0_context_clean",
     "assert_no_c0_influence",
     "assert_routing_decision_clean",
     "scan_file_for_c0_mutations",

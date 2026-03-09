@@ -10,8 +10,8 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
 #!/usr/bin/env python3
 """
-AutonomousRedisOrchestrator – L2 Sovereign Resilience
-Fixes 'ssl' error and provides memory-safe fallback.
+AutonomousRedisOrchestrator – L3 Sovereign Redis Orchestrator.
+Fail-closed: raises InfrastructureDependencyError on connection failure.
 """
 
 # 1. STDLIB
@@ -23,6 +23,7 @@ from typing import Any
 # 2. THIRDPARTY
 import redis
 
+from agentic_core.L2_execution.types.infra_error_types import InfrastructureDependencyError
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 # NAMING FIXED: SovereignRedisOrchestrator → SovereignRedisOrchestrator
@@ -37,11 +38,6 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
         """Initialize the instance."""
         self.redis_url = os.getenv("REDIS_URL", "redis://localhost:6379")
         self.connection: redis.Redis | None = None
-        # BOUNDED FALLBACK: Max 1000 items to prevent MemoryError
-        self.fallback_cache = OrderedDict()
-        # guardian: allow-magic-config
-        self.max_fallback_size = 1000
-        self.use_fallback = False
 
     def _create_connection(self) -> redis.Redis:
         """Version-agnostic connection factory"""
@@ -63,83 +59,67 @@ class SovereignRedisOrchestrator(SovereignBaseAgent):
     # guardian: allow-type-erasure
     def get(self, key: str) -> Any:
         """Execute get operation."""
-        if not self.use_fallback:
-            try:
-                if not self.connection:
-                    self.connection = self._create_connection()
-                return self.connection.get(key)
-            except (redis.ConnectionError, redis.TimeoutError):
-                self.use_fallback = True
-                print("   [L2] Redis failed -> Switching to Bounded Fallback")
-
-        return self.fallback_cache.get(key)
+        try:
+            if not self.connection:
+                self.connection = self._create_connection()
+            return self.connection.get(key)
+        except (redis.ConnectionError, redis.TimeoutError) as exc:
+            raise InfrastructureDependencyError(
+                f"Redis unavailable at {self.redis_url}: {exc}"
+            ) from exc
 
     # guardian: allow-type-erasure
     def set(self, key: str, value: Any) -> Any:
         """Execute set operation."""
-        if not self.use_fallback:
-            try:
-                if not self.connection:
-                    self.connection = self._create_connection()
-                self.connection.set(key, value)
-                return
-            except (redis.ConnectionError, redis.TimeoutError):
-                self.use_fallback = True
-
-        # Managed Fallback (LRU logic)
-        self.fallback_cache[key] = value
-        if len(self.fallback_cache) > self.max_fallback_size:
-            self.fallback_cache.popitem(last=False)
+        try:
+            if not self.connection:
+                self.connection = self._create_connection()
+            self.connection.set(key, value)
+        except (redis.ConnectionError, redis.TimeoutError) as exc:
+            raise InfrastructureDependencyError(
+                f"Redis unavailable at {self.redis_url}: {exc}"
+            ) from exc
 
     def delete(self, key: str) -> bool:
-        """Delete a key from Redis or fallback cache"""
-        if not self.use_fallback:
-            try:
-                if not self.connection:
-                    self.connection = self._create_connection()
-                return self.connection.delete(key) > 0
-            except (redis.ConnectionError, redis.TimeoutError):
-                self.use_fallback = True
-
-        # Try to delete from fallback cache
-        if key in self.fallback_cache:
-            del self.fallback_cache[key]
-            return True
-        return False
+        """Delete a key from Redis."""
+        try:
+            if not self.connection:
+                self.connection = self._create_connection()
+            return self.connection.delete(key) > 0
+        except (redis.ConnectionError, redis.TimeoutError) as exc:
+            raise InfrastructureDependencyError(
+                f"Redis unavailable at {self.redis_url}: {exc}"
+            ) from exc
 
     def exists(self, key: str) -> bool:
-        """Check if key exists in Redis or fallback cache"""
-        if not self.use_fallback:
-            try:
-                if not self.connection:
-                    self.connection = self._create_connection()
-                return self.connection.exists(key) > 0
-            except (redis.ConnectionError, redis.TimeoutError):
-                self.use_fallback = True
-
-        return key in self.fallback_cache
+        """Check if key exists in Redis."""
+        try:
+            if not self.connection:
+                self.connection = self._create_connection()
+            return self.connection.exists(key) > 0
+        except (redis.ConnectionError, redis.TimeoutError) as exc:
+            raise InfrastructureDependencyError(
+                f"Redis unavailable at {self.redis_url}: {exc}"
+            ) from exc
 
     # guardian: allow-type-erasure
     def clear(self) -> Any:
-        """Clear all data from Redis and fallback cache"""
-        if not self.use_fallback:
-            try:
-                if not self.connection:
-                    self.connection = self._create_connection()
-                self.connection.flushdb()
-            except (redis.ConnectionError, redis.TimeoutError):
-                self.use_fallback = True
-
-        self.fallback_cache.clear()
+        """Clear all data from Redis."""
+        try:
+            if not self.connection:
+                self.connection = self._create_connection()
+            self.connection.flushdb()
+        except (redis.ConnectionError, redis.TimeoutError) as exc:
+            raise InfrastructureDependencyError(
+                f"Redis unavailable at {self.redis_url}: {exc}"
+            ) from exc
 
     # guardian: allow-type-erasure
     def get_connection_info(self) -> dict:
-        """Get information about the current connection state"""
+        """Get information about the current connection state."""
         return {
             "redis_url": self.redis_url,
-            "using_fallback": self.use_fallback,
-            "fallback_size": len(self.fallback_cache),
-            "max_fallback_size": self.max_fallback_size,
+            "connected": self.connection is not None,
         }
 
     @timeout(300)

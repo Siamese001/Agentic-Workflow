@@ -281,8 +281,8 @@ If unrelated files appear:
 
 ### 3.3 Deterministic analysis
 
-- Code analysis MUST use AST parsing.
-- Regex or grep for structural logic is FORBIDDEN.
+- Code analysis MUST use AST detailed parsing by default.
+- Regex or grep for structural logic is FORBIDDEN unless explicitly stated by user.
 - Repository paths MUST be canonicalized.
 - Scan roots MUST be explicitly defined.
 - No heuristic scanning.
