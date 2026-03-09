@@ -1533,12 +1533,18 @@ class HealContext:
       --heal ON  => heal, auto_approve, enable_llm, enable_telemetry,
                     enable_meta_learning all True
       --heal OFF => scan/report only, everything passive
+
+    Per hostile audit Section B1: trace_id must appear in every artifact.
+    Per hostile audit Section E1: trace_id threads through all artifacts and HealContext.
+    Per hostile audit Section E10: execution_mode distinguishes scan/heal/validate modes.
     """
 
     heal: bool  # True = mutations active; False = scan/report only
     auto_approve: bool  # True = no interactive prompts (always True when heal=True)
     enable_telemetry: bool  # Active telemetry collection (always tied to heal)
     enable_meta_learning: bool  # Meta-learning pipeline runs (always tied to heal)
+    trace_id: str  # Unique run identifier for artifact correlation (E1)
+    execution_mode: str  # "scan" | "heal" | "validate" - run mode for audit (E10)
     # CDA (CognitiveDispositionAgent) is always active — no toggle
 
     @property
@@ -1594,11 +1600,30 @@ class HealContext:
             )
         # --heal is the single source of truth for ALL active-mode flags
         heal = getattr(args, "heal", False)
+
+        # E1: Generate trace_id for artifact correlation
+        import uuid
+        from datetime import datetime, timezone
+
+        timestamp = datetime.now(timezone.utc).strftime("%Y%m%d-%H%M%S")
+        trace_id = f"SSOT-{timestamp}-{uuid.uuid4().hex[:8]}"
+
+        # E10: Determine execution_mode from flags
+        validate = getattr(args, "validate", False)
+        if validate:
+            execution_mode = "validate"
+        elif heal:
+            execution_mode = "heal"
+        else:
+            execution_mode = "scan"
+
         return cls(
             heal=heal,
             auto_approve=heal,
             enable_telemetry=heal,
             enable_meta_learning=heal,
+            trace_id=trace_id,
+            execution_mode=execution_mode,
         )
 
 
@@ -7753,18 +7778,21 @@ def _legacy_main(
         _l4_policy_hash = get_active_configs().policy.config_hash
     except ImportError:
         _l4_policy_hash = "fallback-no-l4"
+
+    # [HEAL CONTEXT] Single source of truth for all healing flags
+    # E1: Create HealContext first to get trace_id for ExecutionContext
+    ctx = HealContext.from_args(args)
+
+    # E1: Build ExecutionContext with trace_id from HealContext
     _exec_ctx = ExecutionContext(
         mission_id=args.territory or "default",
-        trace_id=f"mission-{int(time.time())}",
+        trace_id=ctx.trace_id,
         replay_mode=False,
         active_policy_hash=_l4_policy_hash,
         safety_status="CLEARED",
     )
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
-
-    # [HEAL CONTEXT] Single source of truth for all healing flags
-    ctx = HealContext.from_args(args)
 
     # [META-LEARNING] Tied to --heal: proposals always applied when healing is active
     state_mgr.state["apply_proposals"] = ctx.heal
