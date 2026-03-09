@@ -5689,7 +5689,14 @@ def _write_heal_run_complete(
     # ── Meta-learning run comparison ──────────────────────────────────────────
     prev_meta = state_mgr.state.get("prior_meta", {})
     prev_success = prev_meta.get("success_rate")
-    cur_success = round(len(successful) / len(healing_actions), 4) if healing_actions else None
+    # Use adjusted rate: exclude PARTIAL (scan-OK, no-further-work) and SKIPPED from denominator
+    # to avoid masking real success rate with expected non-failure outcomes.
+    # Raw rate (all 83 actions): len(successful)/len(all) -- stored in cur_success_raw
+    # Adjusted rate (countable only): len(SUCCESS) / len(non-PARTIAL, non-SKIPPED)
+    # Delta comparison uses adjusted rate for meaningful run-over-run signal
+    cur_success_raw = round(len(successful) / len(healing_actions), 4) if healing_actions else None
+    # cur_success_adjusted computed below after PARTIAL list is built; placeholder here
+    cur_success = cur_success_raw  # will be overridden after _partial_acts is computed
     success_delta = (
         round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
     )
@@ -5730,7 +5737,8 @@ def _write_heal_run_complete(
     # ── Healing effectiveness: parse fix_summary strings ─────────────────────
     import re as _re
 
-    _fix_pat = _re.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
+    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc.
+    _fix_pat = _re.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
     _scan_pat = _re.compile(r"(\d+)\s+(?:violation|found)", _re.IGNORECASE)
 
     _total_found = 0
@@ -5740,6 +5748,9 @@ def _write_heal_run_complete(
     for _a in healing_actions:
         _summary = str(_a.get("fix_summary", "") or "")
         _outcome = str(_a.get("outcome", "")).upper()
+        # Skip PARTIAL/SKIPPED — these are not failure outcomes
+        if _outcome in ("PARTIAL", "SKIPPED"):
+            continue
         _m = _fix_pat.search(_summary)
         if _m:
             _fixed = int(_m.group(1))
@@ -5751,6 +5762,23 @@ def _write_heal_run_complete(
                 _zero_fix_agents.append(_agent_label)
 
     _healing_effectiveness = round(_total_fixed / _total_found, 4) if _total_found > 0 else None
+
+    # PARTIAL outcomes = scan succeeded, no further work found; exclude from success/fail denominator
+    _partial_acts = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "PARTIAL"]
+    _skipped_acts = [a for a in healing_actions if str(a.get("outcome", "")).upper() == "SKIPPED"]
+    _countable_acts = [  # actions that should be judged SUCCESS vs FAIL (exclude PARTIAL+SKIPPED)
+        a for a in healing_actions if str(a.get("outcome", "")).upper() not in ("PARTIAL", "SKIPPED")
+    ]
+    _countable_success = [a for a in _countable_acts if str(a.get("outcome", "")).upper() == "SUCCESS"]
+    cur_success_adjusted = (
+        round(len(_countable_success) / len(_countable_acts), 4) if _countable_acts else None
+    )
+    # Override cur_success with adjusted rate now that PARTIAL list is known;
+    # recompute success_delta against prior baseline using adjusted rate
+    cur_success = cur_success_adjusted if cur_success_adjusted is not None else cur_success_raw
+    success_delta = (
+        round(cur_success - prev_success, 4) if cur_success is not None and prev_success is not None else None
+    )
     # Agents that reported violations but fixed zero of them (excluding plan-only)
     _zero_fix_blocker = (
         f"{len(_zero_fix_agents)} agent(s) found violations but fixed 0: "
@@ -5773,26 +5801,69 @@ def _write_heal_run_complete(
             tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
 
     pattern_success = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 1.0
-    subphase_ok = all(
-        a.get("subphases", {}).get("heal", {}).get("status") in (None, "success", "skipped")
-        for a in healing_actions
-    )
+
+    # Gate 6: Subphase Integrity — only real if at least one action has explicit subphase data
+    _actions_with_subphase = [
+        a for a in healing_actions if a.get("subphases", {}).get("heal", {}).get("status") is not None
+    ]
+    _has_subphase_infra = bool(_actions_with_subphase)
+    subphase_ok = (
+        all(
+            a.get("subphases", {}).get("heal", {}).get("status") in ("success", "skipped")
+            for a in _actions_with_subphase
+        )
+        if _has_subphase_infra
+        else None
+    )  # None = no infrastructure present
     subphase_integrity = (
         1.0
-        if subphase_ok
-        else round(
-            sum(1 for a in healing_actions if a.get("subphases", {}).get("heal", {}).get("status") != "error")
-            / max(len(healing_actions), 1),
-            4,
+        if subphase_ok is True
+        else (
+            None  # N/A — no subphase infrastructure
+            if subphase_ok is None
+            else round(
+                sum(
+                    1
+                    for a in _actions_with_subphase
+                    if a.get("subphases", {}).get("heal", {}).get("status") != "error"
+                )
+                / max(len(_actions_with_subphase), 1),
+                4,
+            )
         )
     )
-    file_mod_proven = all(
-        bool(a.get("subphases", {}).get("heal", {}).get("proof"))
-        for a in healing_actions
-        if a.get("subphases", {}).get("heal", {}).get("status") == "success"
+
+    # Gate 7: File Modification Proof — only real if subphase.heal infrastructure exists
+    _heal_success_acts = [
+        a for a in healing_actions if a.get("subphases", {}).get("heal", {}).get("status") == "success"
+    ]
+    _has_file_proof_infra = bool(_heal_success_acts)
+    file_mod_proven = (
+        all(bool(a.get("subphases", {}).get("heal", {}).get("proof")) for a in _heal_success_acts)
+        if _has_file_proof_infra
+        else None  # None = no subphase.heal.success actions to prove against
     )
-    llm_calls_proven = all(bool(c.get("proof", {}).get("request_hash")) for c in llm_trace["call_trace"])
-    blockers_documented = all(bool(b.get("blocker_type")) for b in blockers)
+
+    # Gate 8: LLM Crypto Proof — only real if there are LLM calls to prove
+    _has_llm_calls = bool(llm_trace["call_trace"])
+    llm_calls_proven = (
+        all(bool(c.get("proof", {}).get("request_hash")) for c in llm_trace["call_trace"])
+        if _has_llm_calls
+        else None  # None = no LLM calls this run, nothing to prove
+    )
+
+    # Gate 9: Blocker Documentation — only real if there are blockers to document
+    _has_blockers = bool(blockers)
+    blockers_documented = (
+        all(bool(b.get("blocker_type")) for b in blockers)
+        if _has_blockers
+        else None  # None = no blockers this run
+    )
+
+    # Gate 10: Meta-Learning Records Written — verifies pipeline actually ran and wrote data
+    _ml_records = ml.get("total_experiences", 0)
+    _ml_pipeline_ran = bool(ml) and _ml_records > 0
+
     learning_improving = success_delta is None or success_delta >= 0.0
 
     gate_criteria = [
@@ -5858,8 +5929,16 @@ def _write_heal_run_complete(
             "target": ">=0.0",
             "threshold": 0.0,
             "actual": success_delta,
-            "status": "PASS" if (success_delta is None or success_delta >= 0.0) else "FAIL",
-            "blocker": None if learning_improving else f"Success rate declined {success_delta}",
+            # Vacuous pass: no prior run means delta=None; cannot measure improvement without baseline
+            "status": (
+                "N/A (NO BASELINE)" if success_delta is None else ("PASS" if success_delta >= 0.0 else "FAIL")
+            ),
+            "blocker": (
+                "AUDIT: No prior run stored in state — delta cannot be computed. "
+                "This gate requires 2+ runs to produce real signal."
+                if success_delta is None
+                else (None if success_delta >= 0.0 else f"Success rate declined {success_delta:+.4f}")
+            ),
             "severity": "medium",
         },
         {
@@ -5885,62 +5964,111 @@ def _write_heal_run_complete(
             "target": ">=0.90",
             "threshold": 0.90,
             "actual": subphase_integrity,
-            "status": "PASS" if subphase_integrity >= 0.90 else "FAIL",
-            "blocker": None if subphase_integrity >= 0.90 else "Agents gated or failed in subphases",
+            "status": (
+                "N/A (NO SUBPHASE INFRASTRUCTURE)"
+                if subphase_integrity is None
+                else ("PASS" if subphase_integrity >= 0.90 else "FAIL")
+            ),
+            "blocker": (
+                "AUDIT: No agent reported explicit subphase.heal.status. "
+                "Subphase tracking not implemented in current agent set."
+                if subphase_integrity is None
+                else (None if subphase_integrity >= 0.90 else "Agents failed in subphases")
+            ),
             "severity": "medium",
         },
         {
             "criterion": "File Modification Proof",
             "target": "==1.0",
             "threshold": 1.0,
-            "actual": 1.0 if file_mod_proven else 0.0,
-            "status": "PASS" if file_mod_proven else "FAIL",
-            "blocker": None if file_mod_proven else "Some file modifications lack before/after hashes",
+            "actual": (1.0 if file_mod_proven is True else (0.0 if file_mod_proven is False else None)),
+            "status": (
+                "N/A (NO SUBPHASE PROOF INFRA)"
+                if file_mod_proven is None
+                else ("PASS" if file_mod_proven else "FAIL")
+            ),
+            "blocker": (
+                "AUDIT: No agent uses subphase.heal.proof infrastructure. "
+                "File modification before/after hashes are NOT being written — cannot prove what changed."
+                if file_mod_proven is None
+                else (None if file_mod_proven else "Some file modifications lack before/after hashes")
+            ),
             "severity": "high",
         },
         {
             "criterion": "LLM Call Cryptographic Proof",
             "target": "==1.0",
             "threshold": 1.0,
-            "actual": 1.0 if llm_calls_proven else 0.0,
-            "status": "PASS" if llm_calls_proven else "FAIL",
-            "blocker": None if llm_calls_proven else "LLM calls missing request_hash proof",
+            "actual": (1.0 if llm_calls_proven is True else (0.0 if llm_calls_proven is False else None)),
+            "status": (
+                "N/A (NO LLM CALLS)" if llm_calls_proven is None else ("PASS" if llm_calls_proven else "FAIL")
+            ),
+            "blocker": (
+                "AUDIT: No LLM calls made this run — cryptographic proof gate has no data to verify."
+                if llm_calls_proven is None
+                else (None if llm_calls_proven else "LLM calls missing request_hash proof")
+            ),
             "severity": "high",
         },
         {
             "criterion": "Blocker Documentation",
             "target": "==1.0",
             "threshold": 1.0,
-            "actual": 1.0 if blockers_documented else 0.0,
-            "status": "PASS" if blockers_documented else "FAIL",
-            "blocker": None if blockers_documented else "Some blockers missing blocker_type",
+            "actual": (
+                1.0 if blockers_documented is True else (0.0 if blockers_documented is False else None)
+            ),
+            "status": (
+                "N/A (NO BLOCKERS)"
+                if blockers_documented is None
+                else ("PASS" if blockers_documented else "FAIL")
+            ),
+            "blocker": (
+                None  # No blockers = nothing to document; informational not a concern
+                if blockers_documented is None
+                else (None if blockers_documented else "Some blockers missing blocker_type field")
+            ),
             "severity": "low",
         },
         {
-            "criterion": "Run-Over-Run Healing Trend",
-            "target": ">=0.0",
-            "threshold": 0.0,
-            "actual": success_delta,
-            "status": "PASS" if (success_delta is None or success_delta >= 0.0) else "FAIL",
-            "blocker": None
-            if (success_delta is None or success_delta >= 0.0)
-            else "Healing trending downward",
+            # Replaced Gate 10 duplicate (Run-Over-Run Healing Trend used identical logic to Gate 4).
+            # New gate: Meta-Learning Records Written — verifies the ML pipeline actually ran.
+            "criterion": "Meta-Learning Records Written",
+            "target": ">=1 experience",
+            "threshold": 1,
+            "actual": _ml_records,
+            "status": "PASS" if _ml_pipeline_ran else "FAIL",
+            "blocker": (
+                None
+                if _ml_pipeline_ran
+                else (
+                    "Meta-learning pipeline did not write any experience records this run. "
+                    f"total_experiences={_ml_records}, pipeline_state_present={bool(ml)}. "
+                    "Check _fire_meta_learning_intake invocation."
+                )
+            ),
             "severity": "high",
         },
         {
             "criterion": "Healing Effectiveness Rate",
-            "target": ">=0.50 or N/A",
+            "target": ">=0.50",
             "threshold": 0.50,
             "actual": _healing_effectiveness,
             "status": (
-                "PASS" if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else "FAIL"
+                "N/A (NO VIOLATIONS FOUND)"
+                if _healing_effectiveness is None
+                else ("PASS" if _healing_effectiveness >= 0.50 else "FAIL")
             ),
             "blocker": (
-                None
-                if _healing_effectiveness is None or _healing_effectiveness >= 0.50
+                "AUDIT: No fix_summary matched 'Fixed/Healed N of M' pattern. "
+                "Either no violations were found this run, or agents use non-standard summary format."
+                if _healing_effectiveness is None
                 else (
-                    f"Only {_healing_effectiveness:.0%} of found violations were fixed "
-                    f"({_total_fixed}/{_total_found})"
+                    None
+                    if _healing_effectiveness >= 0.50
+                    else (
+                        f"Only {_healing_effectiveness:.0%} of found violations were fixed "
+                        f"({_total_fixed}/{_total_found})"
+                    )
                 )
             ),
             "severity": "critical",
@@ -5958,7 +6086,11 @@ def _write_heal_run_complete(
 
     n_pass = sum(1 for g in gate_criteria if g["status"] == "PASS")
     n_fail = sum(1 for g in gate_criteria if g["status"] == "FAIL")
+    n_na = sum(1 for g in gate_criteria if str(g["status"]).startswith("N/A"))
+    # OVERALL: PASS requires zero FAILs; N/A gates are excluded from pass/fail signal
     overall_status = "PASS" if n_fail == 0 else "FAIL"
+    # Warn if most gates are N/A (output is low signal)
+    _low_signal_warning = n_na > len(gate_criteria) // 2
 
     output = {
         "meta": {
@@ -5984,7 +6116,11 @@ def _write_heal_run_complete(
                     "comparison_timestamp": run_ts,
                 },
                 "previous_success_rate": prev_success,
-                "current_success_rate": cur_success,
+                "current_success_rate": cur_success,  # adjusted: PARTIAL/SKIPPED excluded
+                "current_success_rate_raw": cur_success_raw,  # raw: all actions
+                "partial_outcome_count": len(_partial_acts),
+                "skipped_outcome_count": len(_skipped_acts),
+                "countable_actions": len(_countable_acts),
                 "success_rate_delta": success_delta,
                 "improvement_trend": (
                     "positive"
@@ -6024,7 +6160,9 @@ def _write_heal_run_complete(
             "overall_status": overall_status,
             "criteria_passed": n_pass,
             "criteria_failed": n_fail,
+            "criteria_na": n_na,
             "criteria_total": len(gate_criteria),
+            "low_signal_warning": _low_signal_warning,
             "gate_criteria": gate_criteria,
         },
     }
@@ -6065,14 +6203,24 @@ def _write_heal_run_complete(
                 f"| {_gi} | {g.get('criterion', '')[:35]} "
                 f"| {g.get('target', '')[:10]} | {_act_str} | {_status} | {_note} |"
             )
-        print(
-            f"| | **OVERALL** | **{len(gate_criteria)} gates** | **{n_pass}/{len(gate_criteria)} PASS** | **{overall}** | |"
+        _t4_sig_note = f"\u26a0 LOW SIGNAL: {n_na} gates N/A" if _low_signal_warning else ""
+        _overall_row = (
+            f"| | **OVERALL** | **{len(gate_criteria)} gates** "
+            f"| **PASS={n_pass} N/A={n_na} FAIL={n_fail}** | **{overall_status}** "
+            f"| {_t4_sig_note} |"
         )
+        print(_overall_row)
+        if _low_signal_warning:
+            print("")
+            print(
+                f"  ⚠ LOW SIGNAL WARNING: {n_na}/{len(gate_criteria)} gates are N/A. "
+                "Enable BGE embeddings + trigger LLM workload to get real gate signal."
+            )
         print("")
         print("Table 5: Coverage and Capability Summary")
         print("")
-        print("| Metric | Value | Status |")
-        print("|--------|-------|--------|")
+        print("| Metric | Value | Notes |")
+        print("|--------|-------|-------|")
         print(
             f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} "
             f"| {'OK' if coverage['coverage_ratio'] >= 0.90 else 'GAP'} |"
@@ -6084,17 +6232,36 @@ def _write_heal_run_complete(
         _llm_rate_str = (
             "N/A (VACUOUS 0/0)" if _llm_exp == 0 else f"{llm_trace['stats']['execution_rate']:.4f}"
         )
-        print(f"| LLM Execution Rate | {_llm_rate_str} | {'N/A' if _llm_exp == 0 else 'OK'} |")
-        _rr_str = f"{reuse_success_rate:.4f}" if reuse_success_rate is not None else "N/A (no FAISS index)"
-        print(f"| Pattern Reuse Rate | {_rr_str} | {'N/A' if reuse_success_rate is None else 'OK'} |")
         print(
-            f"| Healing Effectiveness | {_healing_effectiveness if _healing_effectiveness is not None else 'N/A'} | {'OK' if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else 'LOW'} |"
+            f"| LLM Execution Rate | {_llm_rate_str} | {'N/A — no LLM workload' if _llm_exp == 0 else 'OK'} |"
+        )
+        _rr_str = f"{reuse_success_rate:.4f}" if reuse_success_rate is not None else "N/A"
+        print(
+            f"| Pattern Reuse Rate | {_rr_str} | {'N/A — FAISS index empty' if reuse_success_rate is None else 'OK'} |"
+        )
+        _heff_str = f"{_healing_effectiveness:.4f}" if _healing_effectiveness is not None else "N/A"
+        print(
+            f"| Healing Effectiveness | {_heff_str} ({_total_fixed}/{_total_found} violations) | {'OK' if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else 'LOW'} |"
         )
         print(
-            f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'hash-fallback-v1')} | {'ACTIVE' if 'bge-m3' in _ml_pipeline_state.get('bge_model', '') else 'DISABLED'} |"
+            f"| Success Rate (adjusted) | {cur_success} "
+            f"| excludes {len(_partial_acts)} PARTIAL + {len(_skipped_acts)} SKIPPED |"
         )
         print(
-            f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} misses={_semantic_cache_stats.get('misses', 0)} | {'ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT'} |"
+            f"| Success Rate (raw) | {cur_success_raw} "
+            f"| all {len(healing_actions)} actions incl. PARTIAL/SKIPPED |"
+        )
+        print(
+            f"| Meta-Learning Records | {_ml_records} | {'PASS' if _ml_pipeline_ran else 'FAIL — no records written'} |"
+        )
+        print(
+            f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'hash-fallback-v1')} "
+            f"| {'ACTIVE' if 'bge-m3' in _ml_pipeline_state.get('bge_model', '') else 'DISABLED — set BMG_EMBEDDINGS_ENABLED=true'} |"
+        )
+        print(
+            f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} "
+            f"misses={_semantic_cache_stats.get('misses', 0)} "
+            f"| {'ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT'} |"
         )
         print("")
     except Exception as _e:  # guardian: allow-silent-swallower
@@ -6325,7 +6492,8 @@ def _print_executive_summary(
     pattern_reuse = learning.get("pattern_reuse", {})
     import re as _re2
 
-    _fp2 = _re2.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
+    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc. (same as upstream fix)
+    _fp2 = _re2.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
     _heal_rows = []
     for _a in complete_output.get("healing_actions", []):
         _m2 = _fp2.search(str(_a.get("fix_summary", "") or ""))
@@ -6360,19 +6528,41 @@ def _print_executive_summary(
                     "To test LLM path, introduce violations above routing score threshold."
                 )
         elif criterion == "Confidence Calibration Error":
+            _llm_exp_g3 = llm_stats.get("expected_calls", 0)
+            if _llm_exp_g3 == 0:
+                lines.append(
+                    "    AUDIT: No LLM calls this run. Calibration only covers DETERMINISTIC "
+                    "tier (rule-based, zero variance). LLM calibration data requires real LLM invocations."
+                )
             for tier, cd in (calib or {}).items():
                 err = cd.get("calibration_error", 0.0)
-                cnt = cd.get("count", 0)
-                avg = cd.get("avg_confidence", 0.0)
-                lines.append(f"    {tier:<22} err={err:.4f}  avg_conf={avg:.4f}  n={cnt}")
+                # Correct keys from _build_calibration_proof: sample_size, actual_success (not count/avg_confidence)
+                cnt = cd.get("sample_size", cd.get("count", 0))
+                actual_sr = cd.get("actual_success", cd.get("avg_confidence", 0.0))
+                pred_sr = cd.get("predicted_success", 0.0)
+                lines.append(
+                    f"    {tier:<22} err={err:.4f}  predicted={pred_sr:.4f}  actual={actual_sr:.4f}  n={cnt}"
+                )
         elif criterion == "Meta-Learning Improvement (Success Delta)":
             prev_sr = run_cmp.get("previous_success_rate")
             cur_sr = run_cmp.get("current_success_rate")
+            cur_sr_raw = run_cmp.get("current_success_rate_raw")
             delta = run_cmp.get("success_rate_delta")
             trend = run_cmp.get("improvement_trend", "no_baseline")
             prev_id = run_cmp.get("proof", {}).get("previous_run_id", "none")
-            lines.append(f"    prev_rate: {prev_sr}  cur_rate: {cur_sr}  delta: {delta}  trend: {trend}")
-            lines.append(f"    prev_run : {prev_id}")
+            partial_c = run_cmp.get("partial_outcome_count", 0)
+            skipped_c = run_cmp.get("skipped_outcome_count", 0)
+            lines.append(
+                f"    prev_rate : {prev_sr}  cur_rate(adj): {cur_sr}  delta: {delta}  trend: {trend}"
+            )
+            lines.append(
+                f"    cur_rate(raw): {cur_sr_raw}  excluded: {partial_c} PARTIAL + {skipped_c} SKIPPED"
+            )
+            lines.append(f"    prev_run  : {prev_id}")
+            if prev_sr is None:
+                lines.append(
+                    "    AUDIT: prev_rate=None — no baseline. Gate requires 2+ runs for real signal."
+                )
         elif criterion == "Pattern Reuse Success Rate":
             avail = pattern_reuse.get("patterns_available", 0)
             matched = pattern_reuse.get("patterns_matched", 0)
@@ -6391,26 +6581,75 @@ def _print_executive_summary(
                     lines.append(f"    {_tag:<10} fixed {_fx}/{_fd}  {_lbl}")
             else:
                 lines.append("    no violations found this run (N/A)")
+        elif criterion == "Subphase Execution Integrity":
+            _sp_acts = [
+                _a
+                for _a in complete_output.get("healing_actions", [])
+                if _a.get("subphases", {}).get("heal", {}).get("status") is not None
+            ]
+            if not _sp_acts:
+                lines.append(
+                    "    AUDIT: 0 agents reported subphase.heal.status. "
+                    "No subphase infrastructure in current agent set. Gate N/A."
+                )
+            else:
+                for _spa in _sp_acts:
+                    _sp_st = _spa.get("subphases", {}).get("heal", {}).get("status", "?")
+                    lines.append(f"    {_spa.get('agent', '?')}: subphase.heal.status={_sp_st}")
         elif criterion == "File Modification Proof":
             proven_mods = sum(
                 1
                 for _a in complete_output.get("healing_actions", [])
                 if _a.get("subphases", {}).get("heal", {}).get("proof")
             )
-            lines.append(f"    proven file modifications: {proven_mods}")
-        elif criterion == "LLM Call Cryptographic Proof":
-            lines.append(f"    proven hashes: {proven_calls}/{total_calls}")
-        elif criterion == "Blocker Documentation":
-            lines.append(
-                f"    blockers: {len(all_blockers)}  all_documented: {'yes' if all_blockers_doc else 'no'}"
+            _heal_succ = sum(
+                1
+                for _a in complete_output.get("healing_actions", [])
+                if _a.get("subphases", {}).get("heal", {}).get("status") == "success"
             )
+            if _heal_succ == 0:
+                lines.append(
+                    "    AUDIT: No actions with subphase.heal.status==success. "
+                    "File modification proof infrastructure not implemented. Gate N/A."
+                )
+            else:
+                lines.append(f"    proven: {proven_mods}/{_heal_succ} heal-success actions")
+        elif criterion == "LLM Call Cryptographic Proof":
+            if total_calls == 0:
+                lines.append(
+                    "    AUDIT: 0 LLM calls this run. Cryptographic proof gate N/A (nothing to verify)."
+                )
+            else:
+                lines.append(f"    proven hashes: {proven_calls}/{total_calls}")
+        elif criterion == "Blocker Documentation":
+            if not all_blockers:
+                lines.append("    AUDIT: 0 blockers this run. Gate N/A (vacuous all() over empty list).")
+            else:
+                lines.append(
+                    f"    blockers: {len(all_blockers)}  all_documented: {'yes' if all_blockers_doc else 'no'}"
+                )
+        elif criterion == "Meta-Learning Records Written":
+            ml_pipe = learning.get("meta_learning_pipeline", {})
+            total_exp = ml_pipe.get("total_experiences", 0)
+            pipe_ran = ml_pipe.get("pipeline_ran", False)
+            fail_vecs = ml_pipe.get("failure_vector_count", 0)
+            bge_m = ml_pipe.get("bge_model", "hash-fallback-v1")
+            lines.append(
+                f"    pipeline_ran={pipe_ran}  total_experiences={total_exp}  "
+                f"failure_vectors={fail_vecs}  bge_model={bge_m}"
+            )
+            if not pipe_ran or total_exp == 0:
+                lines.append(
+                    "    FAIL: Meta-learning pipeline wrote 0 experiences. "
+                    "_fire_meta_learning_intake may not have been called."
+                )
         elif criterion == "Zero-Fix Healer Penalty":
             zero_fix = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
             if zero_fix:
                 for _ag, _terr, _fx, _fd, _ in zero_fix:
                     lines.append(f"    ZERO-FIX  found {_fd}  fixed 0  {_ag} [{_terr}]")
             else:
-                lines.append("    no zero-fix healers")
+                lines.append("    no zero-fix healers (all matched agents fixed >= 1 violation)")
         return lines
 
     for g in gate_criteria:
@@ -6428,8 +6667,16 @@ def _print_executive_summary(
         print(f"| {crit} | {tgt} | {actual_str} | {status} | {blocker} |")
         for _dl in _gate_detail(str(g.get("criterion", ""))):
             print(f"| | | | | {_dl} |")
+    _n_pass_es = es.get("criteria_passed", n_pass)
+    _n_fail_es = es.get("criteria_failed", n_fail)
+    _n_na_es = es.get("criteria_na", n_na)
+    _low_sig = es.get("low_signal_warning", False)
+    _sig_note = f"\u26a0 LOW SIGNAL: {_n_na_es} gates N/A" if _low_sig else "Signal sufficient"
     print(
-        f"| **OVERALL** | **{len(gate_criteria)} gates** | **{n_pass}/{len(gate_criteria)}** | **{overall}** | **{n_fail} failed** |"
+        f"| **OVERALL** | **{len(gate_criteria)} gates** "
+        f"| **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}** "
+        f"| **{overall}** "
+        f"| {_sig_note} |"
     )
     print("")
 

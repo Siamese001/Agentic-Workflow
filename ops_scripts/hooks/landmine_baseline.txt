@@ -624,30 +624,30 @@ agentic_core/L0_routing/scripts/execute_ssot.py:540:silent_swallower:Silent exce
 agentic_core/L0_routing/scripts/execute_ssot.py:545:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:5462:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:5649:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:5722:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
-agentic_core/L0_routing/scripts/execute_ssot.py:5724:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6100:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6268:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6704:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6802:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6898:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:6965:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7155:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7228:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:7375:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
-agentic_core/L0_routing/scripts/execute_ssot.py:7389:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7530:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7581:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7611:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7619:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7899:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7953:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:7993:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:8021:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:8039:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:8044:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:8057:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L0_routing/scripts/execute_ssot.py:8093:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:5729:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+agentic_core/L0_routing/scripts/execute_ssot.py:5731:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6267:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6435:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:6951:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7049:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7212:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7402:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7475:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:7622:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
+agentic_core/L0_routing/scripts/execute_ssot.py:7636:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7777:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7828:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7858:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:7866:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8146:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8200:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8268:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8286:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8291:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8304:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L0_routing/scripts/execute_ssot.py:8340:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execution_context.py:198:type_erasure:Type erasure: BaseTaskExecutor.heal_repository returns dict instead of structured type
 agentic_core/L0_routing/scripts/find_remaining_missing_heal_util.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L0_routing/scripts/ssot_adapters.py:406:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
