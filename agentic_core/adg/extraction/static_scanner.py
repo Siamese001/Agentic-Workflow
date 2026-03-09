@@ -52,11 +52,11 @@ _SCAN_ROOTS: tuple[str, ...] = (
 _SCANNER_VERSION = "2.0.0"
 _SCHEMA_VERSION = "2.0"
 
-# S9: Cardinality ranges for sanity checking
+# S9: Cardinality ranges for sanity checking (upper bounds include tests/ scan territory)
 _CARDINALITY_RANGES: dict[str, tuple[int, int]] = {
-    "implements": (100, 5000),
-    "reads_from": (50, 2000),
-    "instantiates": (50, 3000),
+    "implements": (100, 10000),
+    "reads_from": (50, 5000),
+    "instantiates": (50, 5000),
 }
 
 # A2: Minimum evidence floors per graph
@@ -912,4 +912,8 @@ __all__ = [
     "run_scanner_self_test",
     "_SCANNER_VERSION",
     "_SCHEMA_VERSION",
+    "_InheritanceVisitor",
+    "_AttributeVisitor",
+    "_CompositionVisitor",
+    "_DynamicExecutionVisitor",
 ]

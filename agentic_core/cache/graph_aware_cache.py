@@ -27,11 +27,17 @@ class GraphAwareCache:
     def __init__(self, query_engine: ADGRuntimeQueryEngine) -> None:
         self.query_engine = query_engine
         self._cache: dict[str, dict[str, Any]] = {}
+        self._hits: int = 0
+        self._misses: int = 0
 
     def get(self, key: str) -> Any | None:
         """Return cached value or None if not present."""
         entry = self._cache.get(key)
-        return entry["value"] if entry is not None else None
+        if entry is not None:
+            self._hits += 1
+            return entry["value"]
+        self._misses += 1
+        return None
 
     def set(self, key: str, value: Any, depends_on: list[str]) -> None:
         """Store a cache entry with explicit dependency tracking.
@@ -86,7 +92,7 @@ class GraphAwareCache:
 
     def stats(self) -> dict[str, int]:
         """Return cache statistics."""
-        return {"size": self.size()}
+        return {"size": self.size(), "hits": self._hits, "misses": self._misses}
 
 
 __all__ = ["GraphAwareCache"]

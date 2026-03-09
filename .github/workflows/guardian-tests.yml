@@ -94,6 +94,18 @@ jobs:
             exit 1
           fi
 
+      - name: Run ADG graph coverage guardian (H9)
+        run: |
+          pytest tests/guardian/test_adg_graph_coverage_guardian.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
+      - name: Run ADG scanner governance (S10)
+        run: |
+          pytest tests/guardian/test_scanner_governance.py -v --tb=short
+        env:
+          PYTHONPATH: .
+
       - name: Upload guardian artifacts on failure
         if: failure()
         uses: actions/upload-artifact@v4
