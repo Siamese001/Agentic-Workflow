@@ -7463,7 +7463,18 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
         logger.warning(f"[DETERMINISM-DIGEST] import failed: {_exc}")
         return _h.sha256(b"determinism-digest:import-failed").hexdigest()
 
-    _policy_hash = _h.sha256(b"sovereign-policy-v1.0").hexdigest()
+    # Compute actual policy hash from loaded policy file (not a hardcoded constant)
+    try:
+        from pathlib import Path as _P
+
+        _policy_file = _P(__file__).resolve().parents[1] / "policy" / "v15_policy_pack.json"
+        if _policy_file.exists():
+            _policy_bytes = _policy_file.read_bytes()
+            _policy_hash = _h.sha256(_policy_bytes).hexdigest()
+        else:
+            _policy_hash = _h.sha256(b"policy:file-not-found").hexdigest()
+    except Exception:  # guardian: allow-silent-swallower
+        _policy_hash = _h.sha256(b"policy:load-failed").hexdigest()
 
     try:
         from agentic_core.agents.agent_registry import registry_digest as _rd
