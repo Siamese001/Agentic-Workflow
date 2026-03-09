@@ -26,6 +26,14 @@ def _utcnow() -> str:
     return datetime.utcnow().isoformat() + "Z"
 
 
+class DriftClock:
+    """Injectable clock for deterministic testing of drift timestamps."""
+
+    @staticmethod
+    def utcnow() -> str:
+        return _utcnow()
+
+
 def _std(values: list[float]) -> float:
     if len(values) < 2:
         return 0.0
@@ -64,6 +72,7 @@ class RetrievalDriftMonitor:
         retrieved_doc_ids: list[list[str]],
         ground_truth_doc_ids: list[list[str]],
         scores: list[list[float]],
+        now_iso: str | None = None,
     ) -> RetrievalDriftSnapshot:
         """Compute a retrieval drift snapshot from a batch of queries.
 
@@ -80,11 +89,7 @@ class RetrievalDriftMonitor:
         if n == 0:
             raise ValueError("queries must be non-empty")
 
-        hits = sum(
-            1
-            for ret, gt in zip(retrieved_doc_ids, ground_truth_doc_ids)
-            if set(ret) & set(gt)
-        )
+        hits = sum(1 for ret, gt in zip(retrieved_doc_ids, ground_truth_doc_ids) if set(ret) & set(gt))
         hit_rate = hits / n
 
         all_scores = [s for query_scores in scores for s in query_scores]
@@ -96,7 +101,7 @@ class RetrievalDriftMonitor:
         top_k_stability = 1.0 - (unique_top1 / n) if n > 1 else 1.0
 
         snapshot = RetrievalDriftSnapshot(
-            timestamp=_utcnow(),
+            timestamp=now_iso if now_iso is not None else _utcnow(),
             system_version=self.system_version,
             retrieval_hit_rate=hit_rate,
             score_distribution_mean=score_mean,
@@ -110,63 +115,75 @@ class RetrievalDriftMonitor:
 
         return snapshot
 
-    def check_alerts(self, snapshot: RetrievalDriftSnapshot) -> list[DriftAlert]:
+    def check_alerts(
+        self,
+        snapshot: RetrievalDriftSnapshot,
+        now_iso: str | None = None,
+    ) -> list[DriftAlert]:
         """Return DriftAlerts for any metrics below threshold."""
+        _ts = now_iso if now_iso is not None else _utcnow()
         alerts: list[DriftAlert] = []
 
         if snapshot.retrieval_hit_rate < self.hit_rate_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="retrieval_drift",
-                metric_name="retrieval_hit_rate",
-                current_value=snapshot.retrieval_hit_rate,
-                threshold_value=self.hit_rate_threshold,
-                delta=snapshot.retrieval_hit_rate - self.hit_rate_threshold,
-                severity="warning",
-                message=(
-                    f"Retrieval hit rate {snapshot.retrieval_hit_rate:.3f} "
-                    f"below threshold {self.hit_rate_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="retrieval_hit_rate",
+                    current_value=snapshot.retrieval_hit_rate,
+                    threshold_value=self.hit_rate_threshold,
+                    delta=snapshot.retrieval_hit_rate - self.hit_rate_threshold,
+                    severity="warning",
+                    message=(
+                        f"Retrieval hit rate {snapshot.retrieval_hit_rate:.3f} "
+                        f"below threshold {self.hit_rate_threshold:.3f}"
+                    ),
+                )
+            )
 
         if snapshot.score_distribution_std > self.score_std_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="retrieval_drift",
-                metric_name="score_distribution_std",
-                current_value=snapshot.score_distribution_std,
-                threshold_value=self.score_std_threshold,
-                delta=snapshot.score_distribution_std - self.score_std_threshold,
-                severity="warning",
-                message=(
-                    f"Score distribution std {snapshot.score_distribution_std:.3f} "
-                    f"exceeds threshold {self.score_std_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="score_distribution_std",
+                    current_value=snapshot.score_distribution_std,
+                    threshold_value=self.score_std_threshold,
+                    delta=snapshot.score_distribution_std - self.score_std_threshold,
+                    severity="warning",
+                    message=(
+                        f"Score distribution std {snapshot.score_distribution_std:.3f} "
+                        f"exceeds threshold {self.score_std_threshold:.3f}"
+                    ),
+                )
+            )
 
         if snapshot.top_k_stability < self.stability_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="retrieval_drift",
-                metric_name="top_k_stability",
-                current_value=snapshot.top_k_stability,
-                threshold_value=self.stability_threshold,
-                delta=snapshot.top_k_stability - self.stability_threshold,
-                severity="info",
-                message=(
-                    f"Top-k stability {snapshot.top_k_stability:.3f} "
-                    f"below threshold {self.stability_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_ts,
+                    alert_type="retrieval_drift",
+                    metric_name="top_k_stability",
+                    current_value=snapshot.top_k_stability,
+                    threshold_value=self.stability_threshold,
+                    delta=snapshot.top_k_stability - self.stability_threshold,
+                    severity="info",
+                    message=(
+                        f"Top-k stability {snapshot.top_k_stability:.3f} "
+                        f"below threshold {self.stability_threshold:.3f}"
+                    ),
+                )
+            )
 
         return alerts
 
     def _persist(self, snapshot: RetrievalDriftSnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
+
             artifact = create_artifact(
                 kind="retrieval_drift_snapshot",
                 logical_id=f"retrieval_drift_{snapshot.timestamp[:10]}",
@@ -241,59 +258,66 @@ class EmbeddingDriftMonitor:
         alerts: list[DriftAlert] = []
 
         if snapshot.version_mismatch_detected:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="embedding_drift",
-                metric_name="embedding_model_version",
-                current_value=0.0,
-                threshold_value=0.0,
-                delta=0.0,
-                severity="critical",
-                message=(
-                    f"Embedding model version mismatch: "
-                    f"expected {self.current_model_version!r}, "
-                    f"got {snapshot.embedding_model_version!r}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="embedding_drift",
+                    metric_name="embedding_model_version",
+                    current_value=0.0,
+                    threshold_value=0.0,
+                    delta=0.0,
+                    severity="critical",
+                    message=(
+                        f"Embedding model version mismatch: "
+                        f"expected {self.current_model_version!r}, "
+                        f"got {snapshot.embedding_model_version!r}"
+                    ),
+                )
+            )
 
         if snapshot.vector_norm_std > self.norm_std_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="embedding_drift",
-                metric_name="vector_norm_std",
-                current_value=snapshot.vector_norm_std,
-                threshold_value=self.norm_std_threshold,
-                delta=snapshot.vector_norm_std - self.norm_std_threshold,
-                severity="warning",
-                message=(
-                    f"Vector norm std {snapshot.vector_norm_std:.3f} "
-                    f"exceeds threshold {self.norm_std_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="embedding_drift",
+                    metric_name="vector_norm_std",
+                    current_value=snapshot.vector_norm_std,
+                    threshold_value=self.norm_std_threshold,
+                    delta=snapshot.vector_norm_std - self.norm_std_threshold,
+                    severity="warning",
+                    message=(
+                        f"Vector norm std {snapshot.vector_norm_std:.3f} "
+                        f"exceeds threshold {self.norm_std_threshold:.3f}"
+                    ),
+                )
+            )
 
         if snapshot.similarity_distribution_mean < self.similarity_mean_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="embedding_drift",
-                metric_name="similarity_distribution_mean",
-                current_value=snapshot.similarity_distribution_mean,
-                threshold_value=self.similarity_mean_threshold,
-                delta=snapshot.similarity_distribution_mean - self.similarity_mean_threshold,
-                severity="warning",
-                message=(
-                    f"Similarity distribution mean {snapshot.similarity_distribution_mean:.3f} "
-                    f"below threshold {self.similarity_mean_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="embedding_drift",
+                    metric_name="similarity_distribution_mean",
+                    current_value=snapshot.similarity_distribution_mean,
+                    threshold_value=self.similarity_mean_threshold,
+                    delta=snapshot.similarity_distribution_mean - self.similarity_mean_threshold,
+                    severity="warning",
+                    message=(
+                        f"Similarity distribution mean {snapshot.similarity_distribution_mean:.3f} "
+                        f"below threshold {self.similarity_mean_threshold:.3f}"
+                    ),
+                )
+            )
 
         return alerts
 
     def _persist(self, snapshot: EmbeddingHealthSnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
+
             artifact = create_artifact(
                 kind="embedding_health_snapshot",
                 logical_id=f"embedding_health_{snapshot.timestamp[:10]}",
@@ -344,7 +368,9 @@ class AnswerQualityMonitor:
             raise ValueError("groundedness_scores must be non-empty")
 
         groundedness_rate = _mean(groundedness_scores)
-        hallucination_rate = sum(hallucination_flags) / len(hallucination_flags) if hallucination_flags else 0.0
+        hallucination_rate = (
+            sum(hallucination_flags) / len(hallucination_flags) if hallucination_flags else 0.0
+        )
         override_rate = sum(human_override_flags) / len(human_override_flags) if human_override_flags else 0.0
         correctness_mean = _mean(correctness_scores)
 
@@ -368,58 +394,65 @@ class AnswerQualityMonitor:
         alerts: list[DriftAlert] = []
 
         if snapshot.groundedness_rate < self.groundedness_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="answer_quality_drift",
-                metric_name="groundedness_rate",
-                current_value=snapshot.groundedness_rate,
-                threshold_value=self.groundedness_threshold,
-                delta=snapshot.groundedness_rate - self.groundedness_threshold,
-                severity="warning",
-                message=(
-                    f"Groundedness rate {snapshot.groundedness_rate:.3f} "
-                    f"below threshold {self.groundedness_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="answer_quality_drift",
+                    metric_name="groundedness_rate",
+                    current_value=snapshot.groundedness_rate,
+                    threshold_value=self.groundedness_threshold,
+                    delta=snapshot.groundedness_rate - self.groundedness_threshold,
+                    severity="warning",
+                    message=(
+                        f"Groundedness rate {snapshot.groundedness_rate:.3f} "
+                        f"below threshold {self.groundedness_threshold:.3f}"
+                    ),
+                )
+            )
 
         if snapshot.hallucination_rate > self.hallucination_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="answer_quality_drift",
-                metric_name="hallucination_rate",
-                current_value=snapshot.hallucination_rate,
-                threshold_value=self.hallucination_threshold,
-                delta=snapshot.hallucination_rate - self.hallucination_threshold,
-                severity="critical",
-                message=(
-                    f"Hallucination rate {snapshot.hallucination_rate:.3f} "
-                    f"exceeds threshold {self.hallucination_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="answer_quality_drift",
+                    metric_name="hallucination_rate",
+                    current_value=snapshot.hallucination_rate,
+                    threshold_value=self.hallucination_threshold,
+                    delta=snapshot.hallucination_rate - self.hallucination_threshold,
+                    severity="critical",
+                    message=(
+                        f"Hallucination rate {snapshot.hallucination_rate:.3f} "
+                        f"exceeds threshold {self.hallucination_threshold:.3f}"
+                    ),
+                )
+            )
 
         if snapshot.human_override_rate > self.override_threshold:
-            alerts.append(DriftAlert(
-                alert_id=str(uuid.uuid4()),
-                timestamp=_utcnow(),
-                alert_type="answer_quality_drift",
-                metric_name="human_override_rate",
-                current_value=snapshot.human_override_rate,
-                threshold_value=self.override_threshold,
-                delta=snapshot.human_override_rate - self.override_threshold,
-                severity="warning",
-                message=(
-                    f"Human override rate {snapshot.human_override_rate:.3f} "
-                    f"exceeds threshold {self.override_threshold:.3f}"
-                ),
-            ))
+            alerts.append(
+                DriftAlert(
+                    alert_id=str(uuid.uuid4()),
+                    timestamp=_utcnow(),
+                    alert_type="answer_quality_drift",
+                    metric_name="human_override_rate",
+                    current_value=snapshot.human_override_rate,
+                    threshold_value=self.override_threshold,
+                    delta=snapshot.human_override_rate - self.override_threshold,
+                    severity="warning",
+                    message=(
+                        f"Human override rate {snapshot.human_override_rate:.3f} "
+                        f"exceeds threshold {self.override_threshold:.3f}"
+                    ),
+                )
+            )
 
         return alerts
 
     def _persist(self, snapshot: AnswerQualitySnapshot) -> None:
         try:
             from agentic_core.L4_state.storage.persistent_store import create_artifact
+
             artifact = create_artifact(
                 kind="answer_quality_snapshot",
                 logical_id=f"answer_quality_{snapshot.timestamp[:10]}",

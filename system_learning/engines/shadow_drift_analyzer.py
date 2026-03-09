@@ -11,6 +11,8 @@ import statistics
 from dataclasses import dataclass
 from typing import Any
 
+_DEFAULT_DRIFT_THRESHOLD = 0.92
+
 
 @dataclass(frozen=True, slots=True)
 class DriftSummary:
@@ -23,6 +25,7 @@ class DriftSummary:
     drift_flag: bool
     drift_score: float  # bounded 0.0-1.0
     deterministic_digest: str  # SHA-256 of canonical data
+    drift_threshold: float = _DEFAULT_DRIFT_THRESHOLD  # externalized, L4-governable
 
     def emit_digest(self) -> None:
         """Print the drift digest for determinism verification."""
@@ -44,6 +47,9 @@ class DriftSummary:
 
 class ShadowDriftAnalyzer:
     """Analyzes shadow embedding telemetry for drift detection."""
+
+    def __init__(self, drift_threshold: float = _DEFAULT_DRIFT_THRESHOLD) -> None:
+        self._drift_threshold = drift_threshold
 
     def analyze_batch(
         self,
@@ -99,8 +105,8 @@ class ShadowDriftAnalyzer:
         mean_cosine = round(statistics.mean(cosine_values), 6)
         p95_cosine = round(self._compute_percentile(cosine_values, 0.95), 6)
 
-        # Apply deterministic drift rule
-        drift_flag = p95_cosine < 0.92
+        # Apply deterministic drift rule (threshold externalized via constructor)
+        drift_flag = p95_cosine < self._drift_threshold
         drift_score = round(max(0.0, min(1.0, 1.0 - p95_cosine)), 6)
 
         # Compute deterministic digest
@@ -114,6 +120,7 @@ class ShadowDriftAnalyzer:
             drift_flag=drift_flag,
             drift_score=drift_score,
             deterministic_digest=deterministic_digest,
+            drift_threshold=self._drift_threshold,
         )
 
     def _compute_percentile(self, values: list[float], percentile: float) -> float:
@@ -145,7 +152,7 @@ class ShadowDriftAnalyzer:
             "profile_id": profile_id,
             "now_utc": now_utc,
             "cosine_values": [round(v, 6) for v in sorted(cosine_values)],
-            "drift_threshold": 0.92,
+            "drift_threshold": self._drift_threshold,
         }
 
         # Serialize to canonical JSON
