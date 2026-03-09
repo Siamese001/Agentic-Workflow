@@ -5521,21 +5521,32 @@ def _write_mandatory_json_output(
         print(f"  {_uri}")
         print("=" * 60)
         print("")
-        print("| Metric | Value |")
-        print("|--------|-------|")
-        print(f"| Healing Actions | {len(healing_actions)} |")
-        print(f"| Successful | {len(successful)} |")
-        print(f"| Failed | {len(failed_acts)} |")
+        print("| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total |")
+        print("|----------------|:---:|:---:|:---:|:---:|")
+        _hm_totals = {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0}
+        for _ag, _tiers in sorted(heatmap.items()):
+            _d = _tiers.get("DETERMINISTIC", 0)
+            _q = _tiers.get("QWEN_VLLM", 0)
+            _g = _tiers.get("GEMINI_2_5_PRO", 0)
+            _t = _d + _q + _g
+            _hm_totals["DETERMINISTIC"] += _d
+            _hm_totals["QWEN_VLLM"] += _q
+            _hm_totals["GEMINI_2_5_PRO"] += _g
+            print(f"| {_ag} | {_d} | {_q} | {_g} | {_t} |")
+        _tot_all = sum(_hm_totals.values())
         print(
-            f"| Success Rate | {round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 'N/A'} |"
+            f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** |"
+            f" **{_hm_totals['QWEN_VLLM']}** |"
+            f" **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** |"
         )
-        print(f"| Routing Decisions | {len(decisions)} |")
-        print(f"| DETERMINISTIC | {tier_counts.get('DETERMINISTIC', 0)} |")
-        print(f"| QWEN_VLLM | {tier_counts.get('QWEN_VLLM', 0)} |")
-        print(f"| GEMINI_2_5_PRO | {tier_counts.get('GEMINI_2_5_PRO', 0)} |")
-        print(f"| Meta-Learning Records | {ml.get('total_experiences', 0)} |")
-        print(f"| Semantic Cache Hits | {_semantic_cache_stats.get('hits', 0)} |")
-        print(f"| Semantic Cache Misses | {_semantic_cache_stats.get('misses', 0)} |")
+        print("")
+        print(
+            f"Run totals: {len(healing_actions)} actions  "
+            f"{len(successful)} OK  {len(failed_acts)} FAIL  "
+            f"success_rate={round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 'N/A'}  "
+            f"meta_learning_records={ml.get('total_experiences', 0)}  "
+            f"cache_hits={_semantic_cache_stats.get('hits', 0)}"
+        )
         print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
@@ -6302,6 +6313,126 @@ def _print_executive_summary(
         print(f"  LLM call rate   : {llm_stats.get('execution_rate', 0.0):.4f} -> {predicted_llm:.4f}")
         if predicted_sr is not None:
             print(f"  Success rate    : {cur_sr:.4f} -> {predicted_sr:.4f} (est.)")
+
+    # ── Meta-Learning Narrative ───────────────────────────────────────────────
+    print("")
+    print("=" * _W)
+    print("META-LEARNING NARRATIVE  (what the system learned + will apply next run)")
+    print("=" * _W)
+    _run_actions = complete_output.get("healing_actions", [])
+    _strat_evo = learning.get("strategy_evolution", {})
+    _cur_weights = _strat_evo.get("current_weights", {})
+    _prev_weights = _strat_evo.get("previous_weights", {})
+    _weight_shift = _strat_evo.get("weight_shift", {})
+    _cur_sr = run_cmp.get("current_success_rate")
+    _prev_sr = run_cmp.get("previous_success_rate")
+    _delta = run_cmp.get("success_rate_delta")
+    _trend = run_cmp.get("improvement_trend", "no_baseline")
+    _fv_count = learning.get("meta_learning_pipeline", {}).get("failure_vector_count", 0)
+    _pr_matched = pattern_reuse.get("patterns_matched", 0)
+    _pr_applied = pattern_reuse.get("patterns_applied", 0)
+
+    # 1. Per-agent findings this run
+    print("")
+    print("THIS RUN — Agent Findings")
+    print(sep)
+    _agent_summaries: dict = {}
+    for _a in _run_actions:
+        _ag = _a.get("agent", "?")
+        _fs = _a.get("fix_summary", "")
+        _oc = _a.get("outcome", "?")
+        _agent_summaries.setdefault(_ag, []).append((_fs, _oc, _a.get("territory", "")))
+    for _ag, _items in sorted(_agent_summaries.items()):
+        for _fs, _oc, _terr in _items:
+            _tag = "✓" if _oc == "SUCCESS" else "✗"
+            _terr_str = f" [{_terr}]" if _terr and _terr != "__global__" else ""
+            print(f"  {_tag} {_ag}{_terr_str}: {_fs}")
+
+    # 2. Strategy weight insights
+    print("")
+    print("STRATEGY ROUTING WEIGHTS  (governs LLM tier selection)")
+    print(sep)
+    if _cur_weights:
+        print("  | Strategy | Weight | Shift |")
+        print("  |----------|--------|-------|")
+        for _s, _w in sorted(_cur_weights.items()):
+            _prev_w = _prev_weights.get(_s, 0.0)
+            _shift = _weight_shift.get(_s, 0.0)
+            _arrow = "▲" if _shift > 0 else ("▼" if _shift < 0 else "—")
+            print(f"  | {_s} | {_w:.3f} | {_arrow} {abs(_shift):.3f} |")
+        print("  Interpretation: Higher weight = strategy preferred for ambiguous routing decisions.")
+    else:
+        print("  No strategy weights recorded (all decisions DETERMINISTIC this run).")
+
+    # 3. Success rate trajectory
+    print("")
+    print("SUCCESS RATE TRAJECTORY")
+    print(sep)
+    if _prev_sr is not None and _cur_sr is not None:
+        _arrow = "▲" if (_delta or 0) > 0 else ("▼" if (_delta or 0) < 0 else "—")
+        print(f"  Previous run : {_prev_sr:.4f}")
+        print(f"  This run     : {_cur_sr:.4f}  ({_arrow} {abs(_delta or 0):.4f})")
+        print(f"  Trend        : {_trend}")
+        if (_delta or 0) < -0.05:
+            print("  ⚠ Significant regression detected. Review failure forensics.")
+        elif (_delta or 0) > 0.05:
+            print("  ✓ Meaningful improvement. Winning strategies will be upweighted.")
+    elif _cur_sr is not None:
+        print(f"  This run     : {_cur_sr:.4f}  (no prior baseline — first recorded run)")
+        print("  Next run     : this rate becomes the baseline for delta calculation.")
+    else:
+        print("  No success rate data available this run.")
+
+    # 4. Pattern reuse learning
+    print("")
+    print("PATTERN REUSE LEARNING")
+    print(sep)
+    if _pr_matched > 0:
+        print(
+            f"  {_pr_matched} patterns matched from corpus  →  {_pr_applied} applied  "
+            f"(reuse_rate={pattern_reuse.get('reuse_success_rate', 0):.4f})"
+        )
+        print("  Future runs: matched patterns are preferred before attempting novel fixes.")
+    else:
+        print("  No patterns matched from corpus this run.")
+        print("  Future runs: outcomes from this run will be encoded as new patterns.")
+
+    # 5. Failure vector accumulation
+    print("")
+    print("FAILURE VECTOR CORPUS")
+    print(sep)
+    print(f"  Accumulated failure vectors : {_fv_count}")
+    if _fv_count > 0:
+        print("  Purpose: failure vectors bias routing away from strategies that previously failed")
+        print("           on similar violations. Higher count = more refined avoidance.")
+    else:
+        print("  No failure vectors recorded yet.")
+
+    # 6. What will change next run
+    print("")
+    print("WHAT CHANGES NEXT RUN")
+    print(sep)
+    _changes: list[str] = []
+    if _cur_sr is not None:
+        _changes.append(f"• Success rate baseline set to {_cur_sr:.4f} — delta tracking active.")
+    if _pr_applied > 0:
+        _changes.append(
+            f"• {_pr_applied} applied patterns reinforced in corpus — reuse probability increases."
+        )
+    if _fv_count > 0:
+        _changes.append(f"• {_fv_count} failure vectors loaded — routing will avoid repeat failure modes.")
+    _zero_fix_agents = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
+    if _zero_fix_agents:
+        _zf_names = ", ".join(r[0] for r in _zero_fix_agents)
+        _changes.append(f"• Zero-fix penalty recorded for: {_zf_names} — will be flagged if repeated.")
+    skipped_now = coverage.get("skipped_agents", {}).get("agents", [])
+    if skipped_now:
+        _changes.append(f"• Skipped agents {skipped_now} — will retry if block condition resolves.")
+    if not _changes:
+        _changes.append("• All gates PASS and no regressions — system state is stable.")
+        _changes.append("• Corpus will accumulate this run's patterns for future reuse.")
+    for _c in _changes:
+        print(f"  {_c}")
 
     # Report links (clickable file:/// URIs)
     try:
