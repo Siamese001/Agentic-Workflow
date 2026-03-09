@@ -5514,10 +5514,11 @@ def _write_mandatory_json_output(
         out_path = out_dir / "heal_run_output.json"
         with open(out_path, "w", encoding="utf-8") as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
+        _uri = out_path.as_uri()
         print("")
         print("=" * 60)
         print("MANDATORY JSON OUTPUT")
-        print(f"  {out_path}")
+        print(f"  {_uri}")
         print("=" * 60)
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
@@ -5887,10 +5888,11 @@ def _write_heal_run_complete(
         out_path = out_dir / "heal_run_complete.json"
         with open(out_path, "w", encoding="utf-8") as _fh:
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
+        _uri = out_path.as_uri()
         print("")
         print("=" * 60)
         print("MANDATORY JSON OUTPUT (heal_run_complete.json)")
-        print(f"  {out_path}")
+        print(f"  {_uri}")
         print("=" * 60)
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s", _e)
@@ -6042,7 +6044,8 @@ def _write_failure_forensics(
             json.dump(output, _fh, indent=2, default=str, ensure_ascii=False)
         clean = not failed_agents and not blockers and not misrouted_agents
         status_tag = "CLEAN" if clean else "FAILURES_PRESENT"
-        print(f"[FORENSICS] failure_forensics.json ({status_tag}) -> {out_path}")
+        _uri = out_path.as_uri()
+        print(f"[FORENSICS] failure_forensics.json ({status_tag}) -> {_uri}")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[FORENSICS] Failed to write failure_forensics.json: %s", _e)
 
@@ -6094,6 +6097,98 @@ def _print_executive_summary(
         f"{'STATUS':<{col_st}} | BLOCKER"
     )
     print(hdr)
+    # ── Precompute detail values for inline annotation ────────────────────────
+    cov_ratio = coverage.get("coverage_ratio", 0.0)
+    exec_count = coverage.get("executed_agents", {}).get("count", 0)
+    exp_count = coverage.get("expected_agents", {}).get("count", 0)
+    llm_calls = routing.get("llm_call_trace", [])
+    proven_calls = sum(1 for c in llm_calls if c.get("proof", {}).get("request_hash"))
+    total_calls = len(llm_calls)
+    all_blockers = blockers_sec.get("blocked_agents", [])
+    all_blockers_doc = all(bool(b.get("blocker_type")) for b in all_blockers)
+    llm_stats = routing.get("llm_invocation_stats", {})
+    calib = routing.get("confidence_calibration", {})
+    run_cmp = learning.get("run_comparison", {})
+    pattern_reuse = learning.get("pattern_reuse", {})
+    import re as _re2
+
+    _fp2 = _re2.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
+    _heal_rows = []
+    for _a in complete_output.get("healing_actions", []):
+        _m2 = _fp2.search(str(_a.get("fix_summary", "") or ""))
+        if _m2:
+            _fx, _fd = int(_m2.group(1)), int(_m2.group(2))
+            if _fd > 0:
+                _tag = "OK" if _fx == _fd else ("PARTIAL" if _fx > 0 else "ZERO-FIX")
+                _heal_rows.append((_a.get("agent", "?"), _a.get("territory", ""), _fx, _fd, _tag))
+
+    # ── Inline detail lookup per gate ─────────────────────────────────────────
+    def _gate_detail(criterion: str) -> list[str]:
+        """Return 0-N inline detail lines for a gate criterion."""
+        lines: list[str] = []
+        if criterion == "Agent Coverage":
+            skipped = coverage.get("skipped_agents", {}).get("names", [])
+            lines.append(f"    agents ran: {exec_count}/{exp_count}  ratio: {cov_ratio:.4f}")
+            if skipped:
+                lines.append(
+                    f"    skipped   : {', '.join(str(s) for s in skipped[:6])}"
+                    + (" ..." if len(skipped) > 6 else "")
+                )
+        elif criterion == "LLM Call Execution Rate":
+            exp = llm_stats.get("expected_calls", 0)
+            act = llm_stats.get("actual_calls", 0)
+            rate = llm_stats.get("execution_rate", 1.0)
+            blocked = llm_stats.get("blocked_by_flags", 0)
+            lines.append(f"    expected: {exp}  actual: {act}  rate: {rate:.4f}  blocked: {blocked}")
+        elif criterion == "Confidence Calibration Error":
+            for tier, cd in (calib or {}).items():
+                err = cd.get("calibration_error", 0.0)
+                cnt = cd.get("count", 0)
+                avg = cd.get("avg_confidence", 0.0)
+                lines.append(f"    {tier:<22} err={err:.4f}  avg_conf={avg:.4f}  n={cnt}")
+        elif criterion == "Meta-Learning Improvement (Success Delta)":
+            prev_sr = run_cmp.get("previous_success_rate")
+            cur_sr = run_cmp.get("current_success_rate")
+            delta = run_cmp.get("success_rate_delta")
+            trend = run_cmp.get("improvement_trend", "no_baseline")
+            prev_id = run_cmp.get("proof", {}).get("previous_run_id", "none")
+            lines.append(f"    prev_rate: {prev_sr}  cur_rate: {cur_sr}  delta: {delta}  trend: {trend}")
+            lines.append(f"    prev_run : {prev_id}")
+        elif criterion == "Pattern Reuse Success Rate":
+            avail = pattern_reuse.get("patterns_available", 0)
+            matched = pattern_reuse.get("patterns_matched", 0)
+            applied = pattern_reuse.get("patterns_applied", 0)
+            rate = pattern_reuse.get("reuse_success_rate", 1.0)
+            lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate:.4f}")
+        elif criterion == "Healing Effectiveness Rate":
+            if _heal_rows:
+                for _ag, _terr, _fx, _fd, _tag in _heal_rows:
+                    _lbl = f"{_ag} [{_terr}]" if _terr else _ag
+                    lines.append(f"    {_tag:<10} fixed {_fx}/{_fd}  {_lbl}")
+            else:
+                lines.append("    no violations found this run (N/A)")
+        elif criterion == "File Modification Proof":
+            proven_mods = sum(
+                1
+                for _a in complete_output.get("healing_actions", [])
+                if _a.get("subphases", {}).get("heal", {}).get("proof")
+            )
+            lines.append(f"    proven file modifications: {proven_mods}")
+        elif criterion == "LLM Call Cryptographic Proof":
+            lines.append(f"    proven hashes: {proven_calls}/{total_calls}")
+        elif criterion == "Blocker Documentation":
+            lines.append(
+                f"    blockers: {len(all_blockers)}  all_documented: {'yes' if all_blockers_doc else 'no'}"
+            )
+        elif criterion == "Zero-Fix Healer Penalty":
+            zero_fix = [r for r in _heal_rows if r[4] == "ZERO-FIX"]
+            if zero_fix:
+                for _ag, _terr, _fx, _fd, _ in zero_fix:
+                    lines.append(f"    ZERO-FIX  found {_fd}  fixed 0  {_ag} [{_terr}]")
+            else:
+                lines.append("    no zero-fix healers")
+        return lines
+
     print(sep)
     for g in gate_criteria:
         crit = str(g.get("criterion", ""))[:col_crit]
@@ -6112,6 +6207,8 @@ def _print_executive_summary(
             f"{crit:<{col_crit}} | {tgt:>{col_tgt}} | {actual_str:>{col_act}} | "
             f"{status_disp:<{col_st + 2}} | {blocker}"
         )
+        for _dl in _gate_detail(str(g.get("criterion", ""))):
+            print(_dl)
     print(sep)
     print(
         f"{'OVERALL GATE STATUS':<{col_crit}} | {'':>{col_tgt}} | {'':>{col_act}} | "
@@ -6120,7 +6217,6 @@ def _print_executive_summary(
     print("=" * _W)
 
     # Critical blockers
-    all_blockers = blockers_sec.get("blocked_agents", [])
     if all_blockers:
         print("")
         print("CRITICAL BLOCKERS (Must Fix Before Next Run)")
@@ -6137,62 +6233,43 @@ def _print_executive_summary(
     print("")
     print("PROOF INTEGRITY")
     print(sep)
-    llm_calls = routing.get("llm_call_trace", [])
-    proven_calls = sum(1 for c in llm_calls if c.get("proof", {}).get("request_hash"))
-    total_calls = len(llm_calls)
-    all_hashes_present = proven_calls == total_calls
-    all_blockers_doc = all(bool(b.get("blocker_type")) for b in all_blockers)
     print(
-        f"  {'All hashes present':<40} {'OK' if all_hashes_present else 'MISSING'} ({proven_calls}/{total_calls})"
+        f"  {'All hashes present':<40} {'OK' if proven_calls == total_calls else 'MISSING'} ({proven_calls}/{total_calls})"
     )
     print(
         f"  {'All blockers documented':<40} {'OK' if all_blockers_doc else 'MISSING'} ({len(all_blockers)} blockers)"
     )
-    cov_ratio = coverage.get("coverage_ratio", 0.0)
-    exec_count = coverage.get("executed_agents", {}).get("count", 0)
-    exp_count = coverage.get("expected_agents", {}).get("count", 0)
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
-
-    # Healing effectiveness breakdown (per-agent signal)
-    import re as _re2
-
-    _fp2 = _re2.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
-    _heal_rows = []
-    for _a in complete_output.get("healing_actions", []):
-        _m2 = _fp2.search(str(_a.get("fix_summary", "") or ""))
-        if _m2:
-            _fx, _fd = int(_m2.group(1)), int(_m2.group(2))
-            if _fd > 0:
-                _pct = f"{_fx}/{_fd}"
-                _tag = "OK" if _fx == _fd else ("PARTIAL" if _fx > 0 else "ZERO-FIX")
-                _heal_rows.append((_a.get("agent", "?"), _a.get("territory", ""), _pct, _tag))
-    if _heal_rows:
-        print(f"  {'Healing effectiveness (agents with violations)':<40}")
-        for _ag, _terr, _pct, _tag in _heal_rows:
-            _lbl = f"{_ag} [{_terr}]" if _terr else _ag
-            print(f"    {_tag:<10} {_pct:<8} {_lbl}")
 
     # Next-run prediction (if blockers present)
     skipped_count = coverage.get("skipped_agents", {}).get("count", 0)
-    blocked_llm = routing.get("llm_invocation_stats", {}).get("blocked_by_flags", 0)
+    blocked_llm = llm_stats.get("blocked_by_flags", 0)
     if skipped_count > 0 or blocked_llm > 0:
         print("")
         print("NEXT RUN PREDICTION (if blockers resolved)")
         print(sep)
         predicted_coverage = min(round(cov_ratio + (skipped_count / max(exp_count, 1)), 4), 1.0)
-        llm_exp = routing.get("llm_invocation_stats", {}).get("expected_calls", 0)
-        llm_act = routing.get("llm_invocation_stats", {}).get("actual_calls", 0)
-        predicted_llm = 1.0 if llm_exp > 0 else 1.0
-        cur_sr = learning.get("run_comparison", {}).get("current_success_rate")
+        predicted_llm = 1.0
+        cur_sr = run_cmp.get("current_success_rate")
         predicted_sr = round(min((cur_sr or 0.0) + 0.10, 1.0), 4) if cur_sr is not None else None
         print(
             f"  Agent coverage  : {cov_ratio:.4f} -> {predicted_coverage:.4f} (+{predicted_coverage - cov_ratio:.4f})"
         )
-        print(
-            f"  LLM call rate   : {routing.get('llm_invocation_stats', {}).get('execution_rate', 0.0):.4f} -> {predicted_llm:.4f}"
-        )
+        print(f"  LLM call rate   : {llm_stats.get('execution_rate', 0.0):.4f} -> {predicted_llm:.4f}")
         if predicted_sr is not None:
             print(f"  Success rate    : {cur_sr:.4f} -> {predicted_sr:.4f} (est.)")
+
+    # Report links (clickable file:/// URIs)
+    try:
+        _base = Path(getattr(complete_output.get("meta", {}), "__file__", "") or __file__).resolve()
+        _rdir = _base.parents[3] / "logs" / "compliance_reports"
+        _link_complete = (_rdir / "heal_run_complete.json").as_uri()
+        _link_forensics = (_rdir / "failure_forensics.json").as_uri()
+        _link_output = (_rdir / "heal_run_output.json").as_uri()
+    except Exception:
+        _link_complete = "logs/compliance_reports/heal_run_complete.json"
+        _link_forensics = "logs/compliance_reports/failure_forensics.json"
+        _link_output = "logs/compliance_reports/heal_run_output.json"
 
     print("")
     print("=" * _W)
@@ -6201,11 +6278,10 @@ def _print_executive_summary(
     if overall == "PASS":
         print("  All diagnostic gates satisfied. Healing pipeline operating as intended.")
     else:
-        print(
-            f"  {n_fail} gate(s) failed. See logs/compliance_reports/failure_forensics.json for drill-down."
-        )
-    print("  Detailed reports: logs/compliance_reports/heal_run_complete.json")
-    print("                    logs/compliance_reports/failure_forensics.json")
+        print(f"  {n_fail} gate(s) failed. See failure_forensics.json for drill-down.")
+    print(f"  heal_run_complete.json : {_link_complete}")
+    print(f"  failure_forensics.json : {_link_forensics}")
+    print(f"  heal_run_output.json   : {_link_output}")
     print("=" * _W)
     print("")
 
