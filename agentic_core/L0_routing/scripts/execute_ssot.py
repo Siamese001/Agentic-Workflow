@@ -137,20 +137,20 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         healing_actions = state_mgr.state.get("healing_actions", [])
         aggregator = HealingOutcomeAggregator(window_size=max(len(healing_actions), 1))
 
-        # Attempt to load embedding helpers (guarded — no-op when unavailable)
-        _bmg_embed = None
-        _normalizer = None
-        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
-            try:
-                from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-                    normalize_failure_signal,
-                )
+        # Load embedding helpers (hard requirement - fail fast if unavailable)
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+            from agentic_core.L2_execution.healers.failure_signal_normalizer import (
+                normalize_failure_signal,
+            )
 
-                _bmg_embed = bmg_embed_text
-                _normalizer = normalize_failure_signal
-            except ImportError:
-                pass
+            _bmg_embed = bmg_embed_text
+            _normalizer = normalize_failure_signal
+        except ImportError as e:
+            raise ImportError(
+                "BGE embeddings are required for meta-learning. "
+                "Install sentence-transformers: pip install sentence-transformers"
+            ) from e
 
         new_vectors: list[list[float]] = []
         # A4: accumulators for LocalFAISSStore wiring (populated per-action below)
@@ -255,12 +255,11 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                 )
             )
 
-        # BGE routing_novelty calls: one embed per routing decision when BGE enabled
-        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
-            for _dec in getattr(decision_engine, "decisions_made", []):
-                _dagent = _dec.get("agent", "unknown")
-                _bge_per_agent[_dagent] = _bge_per_agent.get(_dagent, 0) + 1
-                _bge_arch_counts["routing_novelty"] += 1
+        # BGE routing_novelty calls: one embed per routing decision
+        for _dec in getattr(decision_engine, "decisions_made", []):
+            _dagent = _dec.get("agent", "unknown")
+            _bge_per_agent[_dagent] = _bge_per_agent.get(_dagent, 0) + 1
+            _bge_arch_counts["routing_novelty"] += 1
 
         # BGE semantic_cache calls: from hot cache stats
         try:
@@ -277,11 +276,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         # Persist BGE usage to state for downstream consumers (_write_mandatory_json_output)
         state_mgr.state.setdefault("meta_learning", {})["bge_per_agent"] = _bge_per_agent
         state_mgr.state["meta_learning"]["bge_arch_counts"] = _bge_arch_counts
-        state_mgr.state["meta_learning"]["bge_model"] = (
-            "BAAI/bge-m3-v1"
-            if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
-            else "hash-fallback-v1"
-        )
+        state_mgr.state["meta_learning"]["bge_model"] = "BAAI/bge-m3-v1"
 
         # Wave 1: Record outcomes into HealingSuccessRateStore (EMA per error_sig)
         try:
@@ -412,9 +407,8 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                 _faiss_base = REPO_ROOT / "logs" / "faiss_store"
                 _faiss_base.mkdir(parents=True, exist_ok=True)
                 _faiss_disk_dir = _faiss_base / _faiss_idx
-                _is_bge = os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
-                _vec_source_str = "bge-m3" if _is_bge else "hash-fallback"
-                _model_ver = "BAAI/bge-m3-v1" if _is_bge else "hash-fallback-v1"
+                _vec_source_str = "bge-m3"
+                _model_ver = "BAAI/bge-m3-v1"
 
                 # [CROSS-RUN] Load existing persisted index and carry forward its vectors
                 _prior_vecs: list[list[float]] = []
@@ -1653,19 +1647,17 @@ class SovereignDecisionEngine:
     def _calculate_semantic_similarity(self, unknown: str, existing: list[str]) -> float:
         """Calculate semantic similarity for unknown items against a candidate list.
 
-        When BMG_EMBEDDINGS_ENABLED=true and sentence-transformers is installed,
-        uses BAAI/bge-m3 cosine similarity (GPU-accelerated on RTX 5090).
-        Falls back to Jaccard word-overlap when embeddings are unavailable.
+        Uses BAAI/bge-m3 cosine similarity (GPU-accelerated on RTX 5090).
+        Falls back to Jaccard word-overlap only on exception.
         """
         if not existing:
             return 0.0
 
-        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
-            try:
-                bmg_fn = self._get_bmg_cosine_similarity()
-                return bmg_fn(unknown, existing)
-            except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
-                pass
+        try:
+            bmg_fn = self._get_bmg_cosine_similarity()
+            return bmg_fn(unknown, existing)
+        except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+            pass
 
         # Jaccard word-overlap fallback (original implementation)
         unknown_words = set(unknown.lower().replace("_", " ").replace("-", " ").split())
@@ -1792,77 +1784,16 @@ class SovereignDecisionEngine:
     ) -> int:
         """Compute the novelty score N (0-3) for RoutingInputs.
 
-        When BMG_EMBEDDINGS_ENABLED=true and recent failure vectors exist in L4
-        state, embeds the current failure signal text and compares against stored
+        Embeds the current failure signal text and compares against stored
         vectors to produce a true novelty score:
           N=0  max_similarity >= 0.85  (seen before)
-          N=1  0.70 <= max_similarity < 0.85
-          N=2  0.50 <= max_similarity < 0.70
-          N=3  max_similarity < 0.50   (completely novel)
+          N=1  max_similarity >= 0.70  (similar)
+          N=2  max_similarity >= 0.50  (somewhat novel)
+          N=3  max_similarity <  0.50  (highly novel)
 
-        Falls back to a hash-fallback vector comparison when embeddings are
-        disabled, replacing the legacy [BMG-GPU] string heuristic.
-        Raises VectorSourceMismatchError if stored vectors and the fallback
-        vector have incompatible dimensions (e.g., bge-m3 vs hash-fallback).
+        Raises VectorSourceMismatchError if stored vectors and the current
+        vector have incompatible dimensions.
         """
-        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() != "true":
-            # Debt-1: deterministic hash-fallback novelty instead of [BMG-GPU] string heuristic.
-            try:
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                    VectorSourceMismatchError as _VectorSrcErr,
-                )
-                from agentic_core.L2_execution.healers.failure_signal_normalizer import (
-                    generate_fallback_vector as _gen_fallback,
-                )
-
-                ft_str = failure_type.value if failure_type is not None else "UNKNOWN"
-                _signal_text = f"{ft_str} {territory}"
-                _fallback_vec = _gen_fallback(_signal_text)
-
-                _recent: list = []
-                if self.state_mgr is not None:
-                    _recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
-
-                if not _recent:
-                    return 1
-
-                import numpy as _np
-
-                _q = _np.array(_fallback_vec, dtype=_np.float32)
-                _mat = _np.array(_recent, dtype=_np.float32)
-
-                # Debt-2: dim mismatch between hash-fallback (16-dim) and bge-m3 vectors.
-                if _mat.shape[1] != _q.shape[0]:
-                    raise _VectorSrcErr(
-                        f"Cannot compare hash-fallback vector (dim={_q.shape[0]}) "
-                        f"against L4 state vectors (dim={_mat.shape[1]}): "
-                        "source mismatch -- stored vectors are likely bge-m3."
-                    )
-
-                _max_sim = float((_np.dot(_mat, _q)).max())
-                if _max_sim >= 0.85:
-                    return 0
-                if _max_sim >= 0.70:
-                    return 1
-                if _max_sim >= 0.50:
-                    return 2
-                return 3
-            except Exception as _fb_exc:  # guardian: allow-silent-swallower
-                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-                    VectorSourceMismatchError as _VSMErr,
-                )
-
-                if isinstance(_fb_exc, _VSMErr):
-                    raise
-                return 1  # conservative default when fallback computation unavailable
-
-        recent: list = []
-        if self.state_mgr is not None:
-            recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
-
-        if not recent:
-            return 1
-
         try:
             from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
@@ -1873,6 +1804,13 @@ class SovereignDecisionEngine:
             import numpy as _np
 
             q = _np.array(vec, dtype=_np.float32)
+            recent: list = []
+            if self.state_mgr is not None:
+                recent = self.state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
+
+            if not recent:
+                return 1
+
             mat = _np.array(recent, dtype=_np.float32)
             max_sim = float((_np.dot(mat, q)).max())
 
@@ -1884,7 +1822,7 @@ class SovereignDecisionEngine:
                 return 2
             return 3
         except Exception:  # guardian: allow-silent-swallower
-            return 1  # conservative default: mildly novel, not completely new
+            return 1  # conservative default when computation unavailable
 
     def _route_decision(
         self,
@@ -2023,9 +1961,8 @@ class SovereignDecisionEngine:
     ) -> ConfidenceScore:
         """Calculates weighted confidence score.
 
-        When BMG_EMBEDDINGS_ENABLED=true and agent_name is in BMG_EMBEDDING_AGENT_KEYS,
-        uses GPU-accelerated BAAI/bge-m3 cosine similarity instead of Jaccard pattern
-        matching for the pattern_score component.
+        Uses GPU-accelerated BAAI/bge-m3 cosine similarity for pattern matching
+        when agent_name is in BMG_EMBEDDING_AGENT_KEYS.
         """
         if violations_count == 0:
             return ConfidenceScore(value=1.0, reasoning="Zero violations")
@@ -2034,25 +1971,24 @@ class SovereignDecisionEngine:
         # 1. Base Score (Inverse of violations, capped at 10)
         base_score = max(0.0, 1.0 - (min(violations_count, 10) * 0.1))
 
-        # 2. Pattern Score — BMG GPU path or Jaccard fallback
+        # 2. Pattern Score — BMG GPU path
         pattern_score = 0.5
         bmg_used = False
-        if violation_types:
-            if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true" and agent_name:
-                try:
-                    BMG_EMBEDDING_AGENT_KEYS = self._get_bmg_embedding_agent_keys()
+        if violation_types and agent_name:
+            try:
+                BMG_EMBEDDING_AGENT_KEYS = self._get_bmg_embedding_agent_keys()
 
-                    if agent_name in BMG_EMBEDDING_AGENT_KEYS:
-                        sem_score = self._calculate_semantic_similarity(territory, violation_types)
-                        pattern_score = sem_score
-                        bmg_used = True
-                        logger.warning(
-                            "[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)",
-                            agent_name,
-                            sem_score,
-                        )
-                except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
-                    pass
+                if agent_name in BMG_EMBEDDING_AGENT_KEYS:
+                    sem_score = self._calculate_semantic_similarity(territory, violation_types)
+                    pattern_score = sem_score
+                    bmg_used = True
+                    logger.warning(
+                        "[BMG-GPU] %s: semantic score=%.4f (CUDA/bge-m3)",
+                        agent_name,
+                        sem_score,
+                    )
+            except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+                pass
 
             if not bmg_used:
                 scores = [self._calculate_pattern_confidence(v) for v in violation_types]
@@ -5779,13 +5715,6 @@ def _write_mandatory_json_output(
         print(f"| routing/novelty_score (1×/decision) | {_bge_rn} | {_bge_status} |")
         print(f"| semantic_cache/lookup | {_bge_sc} | {_bge_status} |")
         print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** | **{_bge_status}** |")
-        if _bge_model == "hash-fallback-v1":
-            print("")
-            print(
-                "  AUDIT NOTE: BMG_EMBEDDINGS_ENABLED not set. "
-                "Set BMG_EMBEDDINGS_ENABLED=true to activate BAAI/bge-m3 semantic embeddings, "
-                "FAISS corpus search, and novelty-based routing."
-            )
         print("")
         _sr = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else "N/A"
         _partial_count = sum(1 for _a in healing_actions if _a.get("outcome") == "PARTIAL")
@@ -6145,8 +6074,7 @@ def _write_heal_run_complete(
                 else ("PASS" if (reuse_success_rate or 0.0) >= 0.75 else "FAIL")
             ),
             "blocker": (
-                "AUDIT: FAISS index not populated — pattern matching unavailable. "
-                "Enable BMG_EMBEDDINGS_ENABLED=true to build corpus."
+                "AUDIT: FAISS index not populated — pattern matching unavailable."
                 if reuse_success_rate is None
                 else (None if reuse_success_rate >= 0.75 else "Pattern application below threshold")
             ),
@@ -6479,10 +6407,7 @@ def _write_heal_run_complete(
         print(
             f"| Meta-Learning Records | {_ml_records} | {'PASS' if _ml_pipeline_ran else 'FAIL — no records written'} |"
         )
-        print(
-            f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'hash-fallback-v1')} "
-            f"| {'ACTIVE' if 'bge-m3' in _ml_pipeline_state.get('bge_model', '') else 'DISABLED — set BMG_EMBEDDINGS_ENABLED=true'} |"
-        )
+        print(f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'BAAI/bge-m3-v1')} | ACTIVE |")
         print(
             f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} "
             f"misses={_semantic_cache_stats.get('misses', 0)} "
@@ -6796,9 +6721,7 @@ def _print_executive_summary(
             rate_str = f"{rate:.4f}" if rate is not None else "N/A"
             lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate_str}")
             if avail == 0:
-                lines.append(
-                    "    NOTE: FAISS index empty — enable BMG_EMBEDDINGS_ENABLED=true to build corpus"
-                )
+                lines.append("    NOTE: FAISS index empty — run with --heal to build corpus")
         elif criterion == "Healing Effectiveness Rate":
             if _heal_rows:
                 for _ag, _terr, _fx, _fd, _tag in _heal_rows:
@@ -6951,14 +6874,8 @@ def _print_executive_summary(
         .get("bge_model", "hash-fallback-v1")
     )
     if "bge-m3" not in str(_bge_md):
-        _known_gaps.append(
-            (
-                "BGE Embeddings Disabled",
-                "BMG_EMBEDDINGS_ENABLED not set. Semantic embeddings, FAISS corpus, "
-                "novelty scoring, and semantic cache ALL dormant.",
-                "Set BMG_EMBEDDINGS_ENABLED=true and re-run to activate full intelligence layer.",
-            )
-        )
+        # BGE embeddings are now mandatory - no gap to report
+        pass
     # Gap 3: FAISS index not built
     _pr = complete_output.get("learning", {}).get("pattern_reuse", {})
     if _pr.get("patterns_available", 0) == 0:
@@ -7709,7 +7626,6 @@ def _legacy_main(
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
         os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"  # guardian: allow-global-mutation
-        os.environ["BMG_EMBEDDINGS_ENABLED"] = "true"  # guardian: allow-global-mutation
         os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"  # guardian: allow-global-mutation
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)

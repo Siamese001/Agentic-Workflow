@@ -5,8 +5,8 @@ Layer: L1 (Cognition) — read-only consumer of L4/system_learning vector store.
 Design invariants:
 - Advisory-only: results MUST NOT be used to mutate routing tier, thresholds, or safety gates.
 - Fail-closed: any retrieval error raises SovereigntyError immediately; no silent best-effort.
-- Activation-guarded: retrieval only proceeds when BMG_EMBEDDINGS_ENABLED=true AND the
-  FAISS index exists; otherwise returns empty list (safe no-op).
+- Activation-guarded: retrieval only proceeds when the FAISS index exists; otherwise returns
+  empty list (safe no-op). BGE embeddings are mandatory.
 - L1 must not import from L0 or L5. This module imports only from L4 state stores and
   system_learning engines — layer boundaries enforced at import time.
 """
@@ -226,22 +226,16 @@ def build_retriever(
     """Factory: return a live HealingMemoryRetriever or NullHealingMemoryRetriever.
 
     Returns NullHealingMemoryRetriever when:
-    - BMG_EMBEDDINGS_ENABLED != "true"
     - LocalFAISSStore import fails
     - base_path is None
 
-    Args:
-        base_path: Base path for LocalFAISSStore.  None disables retrieval.
-        profile: Optional RetrievalProfile.
-        index_id: FAISS index identifier.
+    Returns HealingMemoryRetriever when:
+    - LocalFAISSStore import succeeds
+    - base_path is not None
 
-    Returns:
-        HealingMemoryRetriever or NullHealingMemoryRetriever.
+    BGE embeddings are mandatory. This factory ensures that the retriever is only
+    active when the FAISS index is available.
     """
-    import os
-
-    if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() != "true":
-        return NullHealingMemoryRetriever()
     if base_path is None:
         return NullHealingMemoryRetriever()
     try:

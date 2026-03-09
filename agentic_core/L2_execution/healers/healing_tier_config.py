@@ -75,7 +75,7 @@ class HealingTierConfig:
     model_qwen_vllm_id: str = "Qwen/Qwen2.5-7B-Instruct"
     model_gemini_2_5_pro_id: str = "gemini-2.5-pro"
     model_qwen_14b_vllm_id: str = QWEN_14B_MODEL_ID
-    enable_bmg_embeddings: bool = False
+    enable_bmg_embeddings: bool = True  # BGE embeddings are now mandatory
 
     def __post_init__(self) -> None:
         if not (0.0 < self.heal_confidence_x <= 1.0):
@@ -103,10 +103,11 @@ def load_default_healing_tier_config() -> HealingTierConfig:
     In production, these values would be loaded from L4 state store.
     This function provides the explicit, auditable defaults.
 
+    BGE embeddings are mandatory for deterministic failure classification.
+
     Returns:
         Validated HealingTierConfig instance.
     """
-    bmg_available = os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
     return HealingTierConfig(
         heal_confidence_x=HEALING_CONFIDENCE_X,
         heal_confidence_y=HEALING_CONFIDENCE_Y,
@@ -114,7 +115,7 @@ def load_default_healing_tier_config() -> HealingTierConfig:
         model_qwen_vllm_id="Qwen/Qwen2.5-7B-Instruct",
         model_qwen_14b_vllm_id=QWEN_14B_MODEL_ID,
         model_gemini_2_5_pro_id="gemini-2.5-pro",
-        enable_bmg_embeddings=bmg_available,
+        enable_bmg_embeddings=True,
     )
 
 
