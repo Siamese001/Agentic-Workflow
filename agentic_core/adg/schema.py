@@ -91,16 +91,33 @@ LAYER_PREFIXES: dict[str, str] = {
     "agentic_core/L4_state": "L4",
     "agentic_core/L5_safety": "L5",
     "agentic_core/L6_observability": "L6",
+    # H2: previously L_UNKNOWN subdirs now mapped to named labels
+    "agentic_core/base_agents": "L_SHARED",
+    "agentic_core/interfaces": "L_SHARED",
+    "agentic_core/config": "L_SHARED",
+    "agentic_core/mixins": "L_SHARED",
+    "agentic_core/utils": "L_SHARED",
+    "agentic_core/seams": "L_SHARED",
+    "agentic_core/cache": "L_SHARED",
+    "agentic_core/agents": "L_SHARED",
+    "agentic_core/evaluation": "L_SHARED",
+    "agentic_core/runtime": "L_RUNTIME",
+    "agentic_core/prompt_governance": "L_PG",
+    "agentic_core/knowledge": "L_PG",
+    "agentic_core/adg": "L_TOOLS",
+    # App and infra layers
     "apps_rg": "L_APP",
     "apps_lic": "L_APP",
     "apps_shared": "L_APP",
     "system_learning": "L_SL",
     "tools": "L_TOOLS",
     "ops_scripts": "L_OPS",
+    "tests": "L_TEST",
 }
 
 ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
     {
+        # Core downward edges
         ("L6", "L5"),
         ("L6", "L4"),
         ("L6", "L3"),
@@ -122,6 +139,7 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L2", "L1"),
         ("L2", "L0"),
         ("L1", "L0"),
+        # App layer
         ("L_APP", "L6"),
         ("L_APP", "L5"),
         ("L_APP", "L4"),
@@ -129,23 +147,95 @@ ALLOWED_LAYER_EDGES: frozenset[tuple[str, str]] = frozenset(
         ("L_APP", "L2"),
         ("L_APP", "L1"),
         ("L_APP", "L0"),
+        # System learning
         ("L_SL", "L2"),
         ("L_SL", "L1"),
         ("L_SL", "L0"),
+        # Tools
         ("L_TOOLS", "L5"),
         ("L_TOOLS", "L4"),
         ("L_TOOLS", "L3"),
         ("L_TOOLS", "L2"),
         ("L_TOOLS", "L1"),
         ("L_TOOLS", "L0"),
+        # Ops
         ("L_OPS", "L5"),
         ("L_OPS", "L4"),
         ("L_OPS", "L3"),
         ("L_OPS", "L2"),
         ("L_OPS", "L1"),
         ("L_OPS", "L0"),
+        # H2: L_SHARED importable from all named layers (it's a shared utility layer)
+        ("L0", "L_SHARED"),
+        ("L1", "L_SHARED"),
+        ("L2", "L_SHARED"),
+        ("L3", "L_SHARED"),
+        ("L4", "L_SHARED"),
+        ("L5", "L_SHARED"),
+        ("L6", "L_SHARED"),
+        ("L_APP", "L_SHARED"),
+        ("L_SL", "L_SHARED"),
+        ("L_TOOLS", "L_SHARED"),
+        ("L_OPS", "L_SHARED"),
+        ("L_RUNTIME", "L_SHARED"),
+        ("L_PG", "L_SHARED"),
+        ("L_TEST", "L_SHARED"),
+        # H2: L_RUNTIME importable from L3+
+        ("L3", "L_RUNTIME"),
+        ("L4", "L_RUNTIME"),
+        ("L5", "L_RUNTIME"),
+        ("L6", "L_RUNTIME"),
+        ("L_APP", "L_RUNTIME"),
+        # H2: L_PG importable from L1+
+        ("L1", "L_PG"),
+        ("L2", "L_PG"),
+        ("L3", "L_PG"),
+        ("L4", "L_PG"),
+        ("L5", "L_PG"),
+        ("L6", "L_PG"),
+        ("L_APP", "L_PG"),
+        # L_TEST can import anything (test files are unrestricted consumers)
+        ("L_TEST", "L0"),
+        ("L_TEST", "L1"),
+        ("L_TEST", "L2"),
+        ("L_TEST", "L3"),
+        ("L_TEST", "L4"),
+        ("L_TEST", "L5"),
+        ("L_TEST", "L6"),
+        ("L_TEST", "L_APP"),
+        ("L_TEST", "L_SL"),
+        ("L_TEST", "L_TOOLS"),
+        ("L_TEST", "L_OPS"),
+        ("L_TEST", "L_RUNTIME"),
+        ("L_TEST", "L_PG"),
+        # L_TOOLS can import L_SHARED
+        ("L_TOOLS", "L_SHARED"),
+        # L_OPS can import L_SHARED + L_TOOLS
+        ("L_OPS", "L_SHARED"),
+        ("L_OPS", "L_TOOLS"),
+        # L_SHARED internal cross-imports allowed
+        ("L_SHARED", "L_SHARED"),
+        # L_RUNTIME can import L0-L2
+        ("L_RUNTIME", "L0"),
+        ("L_RUNTIME", "L1"),
+        ("L_RUNTIME", "L2"),
+        # L_PG can import L0-L1
+        ("L_PG", "L0"),
+        ("L_PG", "L1"),
     }
 )
+
+
+def verify_layer_graph_consistency(module_layer_map: dict[str, str]) -> list[str]:
+    """S4: Verify every module has exactly one layer label (no L_UNKNOWN remaining).
+
+    Returns list of error strings; empty list means consistent.
+    """
+    errors: list[str] = []
+    for module, layer in sorted(module_layer_map.items()):
+        if layer == "L_UNKNOWN":
+            errors.append(f"L_UNKNOWN module (unmapped): {module}")
+    return errors
 
 
 def module_path_to_layer(rel_path: str) -> str:
@@ -240,6 +330,7 @@ __all__ = [
     "EdgeKind",
     "canonical_name",
     "module_path_to_layer",
+    "verify_layer_graph_consistency",
     "LAYER_PREFIXES",
     "ALLOWED_LAYER_EDGES",
     "GATEWAY_ALLOWLIST",

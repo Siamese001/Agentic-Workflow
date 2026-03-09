@@ -17,16 +17,36 @@ from pathlib import Path
 
 
 def _cmd_scan(args: argparse.Namespace) -> int:
+    import json
+    from pathlib import Path
+
     from agentic_core.adg.ci.invariant_scanner import run_ci_scan
 
     diff_files = args.diff_files if args.diff_files else None
+    include_tests = not getattr(args, "exclude_tests", False)
     report = run_ci_scan(
         repo_root=args.repo_root,
         diff_files=diff_files,
         commit_sha=args.commit or "",
         print_digest=True,
+        include_tests=include_tests,
     )
     report.print_summary()
+
+    # A1: write scan_manifest.json if requested
+    if (
+        getattr(args, "write_manifest", False)
+        and hasattr(report, "scan_result")
+        and report.scan_result is not None
+    ):
+        manifest_path = Path(args.repo_root) / "artifacts" / "adg" / "scan_manifest.json"
+        manifest_path.parent.mkdir(parents=True, exist_ok=True)
+        manifest_path.write_text(
+            json.dumps(report.scan_result.manifest.to_dict(), indent=2),
+            encoding="utf-8",
+        )
+        print(f"ADG-MANIFEST: {manifest_path}")
+
     return report.exit_code()
 
 
@@ -63,6 +83,18 @@ def main(argv: list[str] | None = None) -> int:
         nargs="*",
         metavar="FILE",
         help="Scan only these files (PR diff mode)",
+    )
+    scan_p.add_argument(
+        "--exclude-tests",
+        action="store_true",
+        default=False,
+        help="Exclude tests/ and ops_scripts/ from scan roots",
+    )
+    scan_p.add_argument(
+        "--write-manifest",
+        action="store_true",
+        default=False,
+        help="Write artifacts/adg/scan_manifest.json after scan (A1)",
     )
 
     br_p = subparsers.add_parser("blast-radius", help="Compute blast-radius score")

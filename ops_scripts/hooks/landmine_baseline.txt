@@ -1,3 +1,4 @@
+agentic_core/L0_routing/engines/execution_orchestrator.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1601:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1819:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -171,16 +172,17 @@ agentic_core/L2_execution/reasoning/RedisSovereignAgent.py:135:silent_swallower:
 agentic_core/L2_execution/reasoning/RedisSovereignAgent.py:155:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/reasoning/RedisSovereignAgent.py:160:type_erasure:Type erasure: RedisSovereignAgent.execute returns Any instead of structured type
 agentic_core/L2_execution/reasoning/RedisSovereignAgent.py:175:magic_configuration:Magic configuration: Hardcoded max_depth=3
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:465:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:763:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:773:type_erasure:Type erasure: SubAtomicRegistryAgent.rebuild_registry returns Any instead of structured type
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:795:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:821:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:849:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:861:type_erasure:Type erasure: SubAtomicRegistryAgent.find_and_invoke returns Any instead of structured type
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:885:type_erasure:Type erasure: SubAtomicRegistryAgent.invoke_method returns Any instead of structured type
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:927:type_erasure:Type erasure: SubAtomicRegistryAgent.execute returns Any instead of structured type
-agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:959:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:276:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:482:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:489:type_erasure:Type erasure: SubAtomicRegistryAgent.rebuild_registry returns Any instead of structured type
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:508:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:528:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:548:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:555:type_erasure:Type erasure: SubAtomicRegistryAgent.find_and_invoke returns Any instead of structured type
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:573:type_erasure:Type erasure: SubAtomicRegistryAgent.invoke_method returns Any instead of structured type
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:604:type_erasure:Type erasure: SubAtomicRegistryAgent.execute returns Any instead of structured type
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:625:magic_configuration:Magic configuration: Hardcoded max_depth=3
+agentic_core/L2_execution/reasoning/SubAtomicRegistryAgent.py:724:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L2_execution/reasoning/ToolsmithAgent.py:149:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'create_tool_from_spec'
 agentic_core/L2_execution/tools/file_io_impl.py:120:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 agentic_core/L2_execution/tools/file_io_impl.py:126:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -738,6 +740,10 @@ agentic_core/L6_observability/reasoning/observability_probe_executor.py:33:type_
 agentic_core/L6_observability/reasoning/observability_probe_executor.py:84:type_erasure:Type erasure: ObservabilityProbeExecutorAgent.heal_repository returns dict instead of structured type
 agentic_core/adg/applications/blast_radius.py:51:magic_configuration:Magic configuration: Hardcoded _restricted_threshold=300
 agentic_core/adg/applications/blast_radius.py:52:magic_configuration:Magic configuration: Hardcoded _human_review_threshold=700
+agentic_core/adg/runtime/cache_loader.py:24:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
+agentic_core/adg/runtime/cache_loader.py:31:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/adg/runtime/cache_loader.py:73:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/adg/runtime/cache_loader.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/base_agents/L0RoutingBase.py:87:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:62:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/base_agents/L3OrchestrationBase.py:88:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

@@ -36,6 +36,17 @@ logger = logging.getLogger(__name__)
 _POLICY_LLM_EGRESS = "ADG::Policy::LLM_EGRESS_SINGLETON"
 _POLICY_EMBEDDING_FACTORY = "ADG::Policy::EMBEDDING_FACTORY_SINGLETON"
 _POLICY_LAYER_BOUNDARY = "ADG::Policy::LAYER_BOUNDARY_DOWNWARD_ONLY"
+_POLICY_DYNAMIC_EXEC = "ADG::Policy::NO_DYNAMIC_EXECUTION"
+
+# S3: Allowlisted paths for dynamic execution (e.g. REPL, test harnesses)
+_DYNAMIC_EXEC_ALLOWLIST: frozenset[str] = frozenset(
+    {
+        "tests/",
+        "ops_scripts/",
+        "tools/",
+        "agentic_core/adg/",
+    }
+)
 
 _SOVEREIGN_LLM_GW_PATH = GATEWAY_ALLOWLIST["SovereignLLMGateway"]
 _EMBEDDING_GW_PATH = GATEWAY_ALLOWLIST["EmbeddingSovereignAgent"]
@@ -72,6 +83,7 @@ class ScanReport:
     violations: list[Violation] = field(default_factory=list)
     new_edges_count: int = 0
     digest: str = ""
+    scan_result: object = field(default=None, repr=False)
 
     @property
     def passed(self) -> bool:
@@ -122,10 +134,12 @@ class InvariantScanner:
         report = ScanReport(
             new_edges_count=len(result.edges),
             digest=result.digest,
+            scan_result=result,
         )
         report.violations.extend(self._rule_a_no_llm_bypass(result))
         report.violations.extend(self._rule_b_no_embedding_bypass(result))
         report.violations.extend(self._rule_c_no_upward_layer_mutation(result))
+        report.violations.extend(self._rule_f_dynamic_exec(result))
         return report
 
     def _rule_a_no_llm_bypass(self, result: ScanResult) -> list[Violation]:
@@ -247,19 +261,52 @@ class InvariantScanner:
                 )
         return violations
 
+    def _rule_f_dynamic_exec(self, result: ScanResult) -> list[Violation]:
+        """RULE F (S3): No dynamic execution (eval/exec/importlib) in sovereign layers.
+
+        Allowlisted: tests/, ops_scripts/, tools/, agentic_core/adg/
+        """
+        violations: list[Violation] = []
+
+        for edge in result.edges:
+            if edge.edge_kind != "dynamic_exec":
+                continue
+            from_rel = _module_rel(edge.from_name)
+            # Check allowlist
+            if any(from_rel.startswith(allowed) for allowed in _DYNAMIC_EXEC_ALLOWLIST):
+                continue
+            sym = edge.symbol or _symbol_name(edge.to_name)
+            witness = (
+                f"{from_rel} uses dynamic execution '{sym}' which bypasses static analysis and governance."
+            )
+            violations.append(
+                Violation(
+                    rule="RULE_F",
+                    policy_id=_POLICY_DYNAMIC_EXEC,
+                    offending_edge=f"{edge.from_name} --{edge.relation_type}--> {edge.to_name}",
+                    from_module=from_rel,
+                    to_symbol=sym,
+                    source_file=edge.source_file,
+                    line_no=edge.line_no,
+                    witness=witness,
+                )
+            )
+        return violations
+
 
 def run_ci_scan(
     repo_root: str = ".",
     diff_files: list[str] | None = None,
     commit_sha: str = "",
     print_digest: bool = True,
+    include_tests: bool = True,
 ) -> ScanReport:
     """Main CI entry point."""
     from pathlib import Path
 
     from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
-    scanner = ADGStaticScanner(repo_root=Path(repo_root))
+    scanner = ADGStaticScanner(repo_root=Path(repo_root), include_tests=include_tests)
 
     if diff_files is not None:
         result = scanner.scan_files(diff_files, commit_sha=commit_sha)
@@ -273,4 +320,4 @@ def run_ci_scan(
     return inv_scanner.scan(result)
 
 
-__all__ = ["InvariantScanner", "Violation", "ScanReport", "run_ci_scan"]
+__all__ = ["InvariantScanner", "Violation", "ScanReport", "run_ci_scan", "_POLICY_DYNAMIC_EXEC"]
