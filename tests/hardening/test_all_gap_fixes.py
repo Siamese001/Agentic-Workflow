@@ -21,6 +21,10 @@ from unittest.mock import AsyncMock, MagicMock, patch
 
 import pytest
 
+# Module-level guard: rank-bm25 is a MANDATORY pyproject.toml dependency.
+# If missing, all P4 tests skip AND the zero-skip conftest gate fires CI failure.
+_RANK_BM25_MISSING = importlib.util.find_spec("rank_bm25") is None
+
 # ===========================================================================
 # P1-G3: HardenedGeminiExecutor.invoke_prompt exists + circuit breaker
 # ===========================================================================
@@ -218,9 +222,12 @@ class TestP3G1GhostImportRemoved:
 # ===========================================================================
 
 
+@pytest.mark.skipif(
+    _RANK_BM25_MISSING,
+    reason="rank-bm25 is a MANDATORY pyproject.toml dependency — install it: pip install rank-bm25>=0.2.0",
+)
 class TestP4_2B:
     def test_noopguardrail_returns_top_k_slice(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import (
             NoOpGuardrail,
             RetrievalResult,
@@ -237,7 +244,6 @@ class TestP4_2B:
         assert result[0].text == "doc0"  # preserves order
 
     def test_hybrid_retriever_factory_returns_retriever(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import (
             HybridRetriever,
             HybridRetrieverFactory,
@@ -247,7 +253,6 @@ class TestP4_2B:
         assert isinstance(retriever, HybridRetriever)
 
     def test_get_hybrid_retriever_singleton(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config import hybrid_retriever_config as hrc
 
         # Reset singleton
@@ -257,7 +262,6 @@ class TestP4_2B:
         assert r1 is r2
 
     def test_noopguardrail_empty_candidates(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import NoOpGuardrail
 
         guardrail = NoOpGuardrail()
@@ -272,10 +276,13 @@ class TestP4_2B:
 # ===========================================================================
 
 
+@pytest.mark.skipif(
+    _RANK_BM25_MISSING,
+    reason="rank-bm25 is a MANDATORY pyproject.toml dependency — install it: pip install rank-bm25>=0.2.0",
+)
 class TestP4_3A:
     def test_rag_orchestrator_has_bm25store_attribute(self):
         """SovereignRagOrchestrator must expose a .Bm25Store attribute (not None)."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from pathlib import Path
 
         from agentic_core.knowledge.engine.rag_orchestrator import SovereignRagOrchestrator
@@ -286,7 +293,6 @@ class TestP4_3A:
 
     def test_bm25store_singleton_is_same_object(self):
         """get_bm25_store() returns the same singleton each call."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L4_state.memory.bm25_store import get_bm25_store
 
         s1 = get_bm25_store()
@@ -295,7 +301,6 @@ class TestP4_3A:
 
     def test_bm25store_wired_is_get_bm25_store_singleton(self):
         """Bm25Store on the orchestrator is the same object as get_bm25_store()."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from pathlib import Path
 
         try:
@@ -314,15 +319,17 @@ class TestP4_3A:
 # ===========================================================================
 
 
+@pytest.mark.skipif(
+    _RANK_BM25_MISSING,
+    reason="rank-bm25 is a MANDATORY pyproject.toml dependency — install it: pip install rank-bm25>=0.2.0",
+)
 class TestP4_4C:
     def _make_doc(self, text: str, score: float = 1.0):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import RetrievalResult
 
         return RetrievalResult(text=text, score=score, source="test", metadata={})
 
     def _make_retriever(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         from agentic_core.L2_execution.config.hybrid_retriever_config import (
             HybridRetrieverFactory,
         )
@@ -330,13 +337,11 @@ class TestP4_4C:
         return HybridRetrieverFactory.from_in_memory_store()
 
     def test_empty_docs_returns_empty(self):
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         r = self._make_retriever()
         assert r._enforce_context_budget([]) == []
 
     def test_single_doc_always_included(self):
         """First doc is always included even if it exceeds the budget."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         r = self._make_retriever()
         big_doc = self._make_doc("x" * 10000)  # ~2500 tokens
         result = r._enforce_context_budget([big_doc], max_tokens=100)
@@ -344,7 +349,6 @@ class TestP4_4C:
 
     def test_budget_limits_output(self):
         """Total token estimate stays within budget."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         r = self._make_retriever()
         docs = [self._make_doc("a" * 400) for _ in range(10)]  # each ~100 tokens
         result = r._enforce_context_budget(docs, max_tokens=350)
@@ -354,7 +358,6 @@ class TestP4_4C:
 
     def test_budget_exact_boundary(self):
         """Docs that exactly hit the budget are included; next is excluded."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         r = self._make_retriever()
         doc_a = self._make_doc("a" * 400)  # 100 tokens
         doc_b = self._make_doc("b" * 400)  # 100 tokens — total 200 at boundary
@@ -364,7 +367,6 @@ class TestP4_4C:
 
     def test_identical_input_identical_output(self):
         """Determinism: same docs + same budget → same result every time."""
-        pytest.importorskip("rank_bm25", reason="rank-bm25 not installed")
         r = self._make_retriever()
         docs = [self._make_doc("word " * 80) for _ in range(5)]
         r1 = r._enforce_context_budget(docs[:], max_tokens=512)
@@ -781,9 +783,6 @@ class TestG9IdFactory:
 # ===========================================================================
 # P4-4B: Deterministic RRF correctness tests
 # ===========================================================================
-
-
-_RANK_BM25_MISSING = importlib.util.find_spec("rank_bm25") is None
 
 
 @pytest.mark.skipif(
