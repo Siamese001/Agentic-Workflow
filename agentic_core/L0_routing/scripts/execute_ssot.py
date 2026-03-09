@@ -1480,6 +1480,121 @@ def _write_post_validation_json(
     )
 
 
+def _write_run_manifest_json(
+    trace_id: str,
+    execution_mode: str,
+    territories: list[str],
+    agents_executed: list[str],
+    output_dir: Path,
+) -> None:
+    """E6: Write run_manifest.json with run metadata and execution summary.
+
+    Per hostile audit Section E6: run_manifest.json provides high-level run metadata.
+    """
+    from datetime import datetime, timezone
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    manifest = {
+        "trace_id": trace_id,
+        "execution_mode": execution_mode,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "territories": territories,
+        "agents_executed": agents_executed,
+        "agent_count": len(agents_executed),
+        "territory_count": len(territories),
+    }
+
+    output_path = output_dir / "run_manifest.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(manifest, f, indent=2, ensure_ascii=True)
+
+    logger.info(
+        f"[RUN-MANIFEST] Wrote run_manifest.json with {len(agents_executed)} agents, {len(territories)} territories"
+    )
+
+
+def _write_decision_summary_json(
+    trace_id: str,
+    decisions_made: list[dict],
+    output_dir: Path,
+) -> None:
+    """E6: Write decision_summary.json with routing decision audit trail.
+
+    Per hostile audit Section E6: decision_summary.json provides routing decision audit.
+    """
+    from datetime import datetime, timezone
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Aggregate decision statistics
+    tier_counts = {}
+    agent_counts = {}
+    for decision in decisions_made:
+        tier = decision.get("tier", "UNKNOWN")
+        agent = decision.get("agent", "unknown")
+        tier_counts[tier] = tier_counts.get(tier, 0) + 1
+        agent_counts[agent] = agent_counts.get(agent, 0) + 1
+
+    summary = {
+        "trace_id": trace_id,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "total_decisions": len(decisions_made),
+        "tier_distribution": tier_counts,
+        "agent_distribution": agent_counts,
+        "decisions": decisions_made,
+    }
+
+    output_path = output_dir / "decision_summary.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(summary, f, indent=2, ensure_ascii=True)
+
+    logger.info(f"[DECISION-SUMMARY] Wrote decision_summary.json with {len(decisions_made)} decisions")
+
+
+def _write_artifact_integrity_json(
+    trace_id: str,
+    output_dir: Path,
+) -> None:
+    """E7: Write artifact_integrity.json as final step with SHA256 hashes of all artifacts.
+
+    Per hostile audit Section E7: artifact_integrity.json provides cryptographic proof of artifact set.
+    """
+    import hashlib
+    from datetime import datetime, timezone
+
+    output_dir.mkdir(parents=True, exist_ok=True)
+
+    # Collect all artifacts in the output directory
+    artifacts = {}
+    for artifact_path in output_dir.glob("*.json"):
+        if artifact_path.name == "artifact_integrity.json":
+            continue  # Don't hash the integrity file itself
+
+        try:
+            content = artifact_path.read_bytes()
+            sha256_hash = hashlib.sha256(content).hexdigest()
+            artifacts[artifact_path.name] = {
+                "sha256": sha256_hash,
+                "size_bytes": len(content),
+            }
+        except Exception as e:
+            logger.warning(f"[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}")
+
+    integrity = {
+        "trace_id": trace_id,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "artifact_count": len(artifacts),
+        "artifacts": artifacts,
+    }
+
+    output_path = output_dir / "artifact_integrity.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(integrity, f, indent=2, ensure_ascii=True)
+
+    logger.info(f"[ARTIFACT-INTEGRITY] Wrote artifact_integrity.json with {len(artifacts)} artifact hashes")
+
+
 def _record_healing_action(
     state_mgr,
     agent: str,
