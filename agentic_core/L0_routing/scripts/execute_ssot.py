@@ -1332,6 +1332,160 @@ class ASTCodeQualityValidator:
 # ============================================================================
 
 
+def _normalize_finding_id(finding: dict, validator: str, index: int) -> str:
+    """Generate normalized finding ID: {validator}:{path}:{rule}:{index}.
+
+    Per hostile audit Section B3: Finding IDs must be normalized and deterministic.
+    Per .windsurfrules §1.7: Identical input → identical output.
+    """
+    path = finding.get("file", finding.get("path", "UNKNOWN"))
+    rule = finding.get("type", finding.get("rule", "UNKNOWN"))
+    # Normalize path separators for cross-platform determinism
+    path_normalized = str(path).replace("\\", "/")
+    return f"{validator}:{path_normalized}:{rule}:{index:04d}"
+
+
+def _write_pre_validation_json(
+    violations: list[dict],
+    trace_id: str,
+    territory: str,
+    validators_used: list[str],
+    output_dir: Path,
+) -> None:
+    """Write pre_validation.json before any healing occurs.
+
+    Per hostile audit Section C2: Pre-heal state must be captured in structured artifact.
+    Per hostile audit Section B3: Findings must have normalized IDs and validator provenance.
+    Per .windsurfrules §2.2: Evidence must be deterministic, ASCII-only.
+    """
+    from datetime import datetime, timezone
+
+    # Assign normalized IDs to findings
+    findings = []
+    severity_counts = {"high": 0, "medium": 0, "low": 0}
+    targeted_paths = set()
+
+    for idx, violation in enumerate(violations):
+        validator = violation.get("suggested_agent", "UNKNOWN")
+        finding_id = _normalize_finding_id(violation, validator, idx)
+
+        # Infer severity from violation type
+        vtype = violation.get("type", "")
+        if "FORBIDDEN" in vtype or "ARCHIVED" in vtype:
+            severity = "high"
+        elif "DUPLICATE" in vtype:
+            severity = "medium"
+        else:
+            severity = "low"
+
+        severity_counts[severity] += 1
+        path = violation.get("file", violation.get("path", ""))
+        if path:
+            targeted_paths.add(str(path))
+
+        findings.append(
+            {
+                "id": finding_id,
+                "validator": validator,
+                "path": str(path),
+                "severity": severity,
+                "rule": violation.get("type", "UNKNOWN"),
+                "description": violation.get("message", ""),
+            }
+        )
+
+    pre_validation = {
+        "trace_id": trace_id,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "territory": territory,
+        "validators": validators_used,
+        "findings": findings,
+        "counts": {
+            "total": len(findings),
+            "high": severity_counts["high"],
+            "medium": severity_counts["medium"],
+            "low": severity_counts["low"],
+        },
+        "targeted_paths": sorted(targeted_paths),
+    }
+
+    output_path = output_dir / "pre_validation.json"
+    output_path.parent.mkdir(parents=True, exist_ok=True)
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(pre_validation, f, indent=2, ensure_ascii=True)
+
+    logger.info(f"[PRE-VALIDATION] Wrote {len(findings)} findings to {output_path}")
+
+
+def _write_post_validation_json(
+    pre_validation_path: Path,
+    phase3_result: dict,
+    trace_id: str,
+    territory: str,
+    output_dir: Path,
+) -> None:
+    """Write post_validation.json after Phase 3 revalidation.
+
+    Per hostile audit Section C4: Post-heal proof with resolved/residual/regression breakdown.
+    Per hostile audit Section B5: Must show resolved, remaining, and newly introduced findings.
+    """
+    from datetime import datetime, timezone
+
+    # Load pre_validation to compute resolved/residual
+    pre_validation = {}
+    if pre_validation_path.exists():
+        with open(pre_validation_path, encoding="utf-8") as f:
+            pre_validation = json.load(f)
+
+    pre_finding_ids = {f["id"] for f in pre_validation.get("findings", [])}
+    pre_finding_count = len(pre_finding_ids)
+
+    # Extract post-heal violations from phase3_result
+    remaining_violations = phase3_result.get("remaining_violations", [])
+
+    # Assign IDs to remaining violations
+    remaining_findings = []
+    for idx, violation in enumerate(remaining_violations):
+        validator = violation.get("suggested_agent", "UNKNOWN")
+        finding_id = _normalize_finding_id(violation, validator, idx)
+        remaining_findings.append(
+            {
+                "id": finding_id,
+                "validator": validator,
+                "path": str(violation.get("file", violation.get("path", ""))),
+                "rule": violation.get("type", "UNKNOWN"),
+            }
+        )
+
+    remaining_ids = {f["id"] for f in remaining_findings}
+
+    # Compute resolved and regressions
+    resolved_ids = list(pre_finding_ids - remaining_ids)
+    regression_ids = list(remaining_ids - pre_finding_ids)
+
+    post_validation = {
+        "trace_id": trace_id,
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "territory": territory,
+        "pre_finding_count": pre_finding_count,
+        "resolved_findings": resolved_ids,
+        "residual_findings": list(remaining_ids),
+        "regressions": regression_ids,
+        "post_finding_count": len(remaining_ids),
+        "resolution_rate": round(len(resolved_ids) / max(pre_finding_count, 1), 4),
+        "validators_rerun": ["Phase3Validator"],
+    }
+
+    output_path = output_dir / "post_validation.json"
+    with open(output_path, "w", encoding="utf-8") as f:
+        json.dump(post_validation, f, indent=2, ensure_ascii=True)
+
+    logger.info(
+        f"[POST-VALIDATION] Resolved: {len(resolved_ids)}, "
+        f"Residual: {len(remaining_ids)}, Regressions: {len(regression_ids)}"
+    )
+
+
 def _record_healing_action(
     state_mgr,
     agent: str,
@@ -8037,6 +8191,22 @@ def _legacy_main(
                                 )
                         plan = {"violations_found": _phase1_violations}
 
+                        # [E4] Write pre_validation.json before healing
+                        if _phase1_violations and trace_id:
+                            try:
+                                validation_dir = REPO_ROOT / "logs" / "validation" / trace_id / territory
+                                _write_pre_validation_json(
+                                    violations=_phase1_violations,
+                                    trace_id=trace_id,
+                                    territory=territory,
+                                    validators_used=["Phase1Discovery"],
+                                    output_dir=validation_dir,
+                                )
+                            except Exception as _pre_err:
+                                logger.warning(
+                                    f"[PRE-VALIDATION] Failed to write pre_validation.json: {_pre_err}"
+                                )
+
                         # Execute Phase 2 with decision engine gating
                         phase2_result = execute_phase2_reconciliation(
                             agents,
@@ -8067,6 +8237,23 @@ def _legacy_main(
                             _phase1_violations,
                             False,
                         )
+
+                        # [E5] Write post_validation.json after Phase 3 revalidation
+                        if trace_id:
+                            try:
+                                validation_dir = REPO_ROOT / "logs" / "validation" / trace_id / territory
+                                pre_validation_path = validation_dir / "pre_validation.json"
+                                _write_post_validation_json(
+                                    pre_validation_path=pre_validation_path,
+                                    phase3_result=phase3_result,
+                                    trace_id=trace_id,
+                                    territory=territory,
+                                    output_dir=validation_dir,
+                                )
+                            except Exception as _post_err:
+                                logger.warning(
+                                    f"[POST-VALIDATION] Failed to write post_validation.json: {_post_err}"
+                                )
 
                         if phase3_result["status"] == "clean":
                             logger.info("✅ Phase 3: All files pass validation")
