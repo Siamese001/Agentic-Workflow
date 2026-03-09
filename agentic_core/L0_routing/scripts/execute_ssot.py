@@ -3535,15 +3535,20 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
 
         if gravity_violations > 0:
             status_msg = f"Violations: {gravity_violations} | Fixed: {gravity_fixed}"
+            state_mgr.complete_agent(
+                "GravityValidatorAgent", True, f"Scanned: {gravity_violations} gravity violation(s) found"
+            )
             state_mgr.complete_agent("GravityLeakHealerAgent", True, status_msg)
             logger.info(f"Gravity violations processed: {gravity_violations} found, {gravity_fixed} fixed")
         else:
+            state_mgr.complete_agent("GravityValidatorAgent", True, "Scanned: 0 gravity violations found")
             state_mgr.complete_agent("GravityLeakHealerAgent", True, "No gravity violations found")
             logger.info("No gravity violations detected")
 
     # guardian: allow-silent-swallow
     except Exception as e:
         logger.error(f"Gravity violation detection failed: {e}")
+        state_mgr.complete_agent("GravityValidatorAgent", False, f"Detection failed: {str(e)}")
         state_mgr.complete_agent("GravityLeakHealerAgent", False, f"Detection failed: {str(e)}")
         _record_healing_action(
             state_mgr,
@@ -5612,12 +5617,10 @@ def _write_heal_run_complete(
             _total_found += _found
             _total_fixed += _fixed
             if _found > 0 and _fixed == 0:
-                _agent_label = f"{_a.get('agent','?')} [{_a.get('territory','__global__')}]"
+                _agent_label = f"{_a.get('agent', '?')} [{_a.get('territory', '__global__')}]"
                 _zero_fix_agents.append(_agent_label)
 
-    _healing_effectiveness = (
-        round(_total_fixed / _total_found, 4) if _total_found > 0 else None
-    )
+    _healing_effectiveness = round(_total_fixed / _total_found, 4) if _total_found > 0 else None
     # Agents that reported violations but fixed zero of them (excluding plan-only)
     _zero_fix_blocker = (
         f"{len(_zero_fix_agents)} agent(s) found violations but fixed 0: "
@@ -5780,9 +5783,7 @@ def _write_heal_run_complete(
             "threshold": 0.50,
             "actual": _healing_effectiveness,
             "status": (
-                "PASS"
-                if _healing_effectiveness is None or _healing_effectiveness >= 0.50
-                else "FAIL"
+                "PASS" if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else "FAIL"
             ),
             "blocker": (
                 None
@@ -6154,6 +6155,7 @@ def _print_executive_summary(
 
     # Healing effectiveness breakdown (per-agent signal)
     import re as _re2
+
     _fp2 = _re2.compile(r"Fixed\s+(\d+)\s+of\s+(\d+)", _re2.IGNORECASE)
     _heal_rows = []
     for _a in complete_output.get("healing_actions", []):
@@ -7116,9 +7118,7 @@ def _legacy_main(
             # location scans — skip them from the full pipeline entirely.
             # Code territories outside agentic_core (apps_*, tests, ops_scripts,
             # system_learning) are NOT in this set and still get the full pipeline.
-            _DATA_ONLY_TERRITORIES = frozenset(
-                {"logs", "docs", "data", "archives", "artifacts", "tools"}
-            )
+            _DATA_ONLY_TERRITORIES = frozenset({"logs", "docs", "data", "archives", "artifacts", "tools"})
 
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
@@ -7523,18 +7523,34 @@ def _legacy_main(
             low_conf = sum(1 for d in decision_engine.decisions_made if d["confidence"] < 0.5)
             logger.info(f"  High confidence: {high_conf}, Medium: {med_conf}, Low: {low_conf}")
 
-            _print_healing_heatmap(state_mgr, decision_engine)
-            _print_meta_learning_summary(state_mgr, decision_engine)
+            try:
+                _print_healing_heatmap(state_mgr, decision_engine)
+            except Exception as _hm_exc:  # guardian: allow-silent-swallower
+                logger.error(f"[HEATMAP] Output failed (non-fatal): {_hm_exc}")
+
+            try:
+                _print_meta_learning_summary(state_mgr, decision_engine)
+            except Exception as _ml_exc:  # guardian: allow-silent-swallower
+                logger.error(f"[META-LEARNING] Output failed (non-fatal): {_ml_exc}")
 
             # [ZERO-TOLERANCE] Print full agent/phase coverage manifest.
             # Any agent or phase that did not run is explicitly named here.
-            _manifest_gaps = _print_run_manifest(state_mgr, targets)
-            if _manifest_gaps > 0:
-                logger.error(
-                    f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
-                    "See RUN MANIFEST output above for full details."
-                )
+            _manifest_gaps = 0
+            try:
+                _manifest_gaps = _print_run_manifest(state_mgr, targets)
+                if _manifest_gaps > 0:
+                    logger.error(
+                        f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
+                        "See RUN MANIFEST output above for full details."
+                    )
+            except Exception as _rm_exc:  # guardian: allow-silent-swallower
+                logger.error(f"[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}")
 
+            # [MANDATORY-OBSERVABILITY] These outputs MUST always emit regardless of
+            # pre-summary failures. Banner makes them findable when scrolling ~1000 lines.
+            print("\n" + "=" * 80)
+            print("\u2193  END OF PIPELINE — MANDATORY OBSERVABILITY OUTPUT BELOW")
+            print("=" * 80 + "\n")
             _write_mandatory_json_output(state_mgr, decision_engine)
 
             # [OBSERVABILITY] Wave 2-4: prove-it outputs + executive summary table
@@ -7542,16 +7558,29 @@ def _legacy_main(
             _write_failure_forensics(state_mgr, decision_engine)
             if isinstance(_complete_output, dict):
                 _print_executive_summary(_complete_output)
+            sys.stdout.flush()
 
             return results
 
     # guardian: allow-silent-swallow
     except Exception as fatal_e:  # guardian: allow-silent-swallower
         # Catch-all for top-level crashes (e.g., initialization failure)
-        logger.critical(f"🔥 FATAL PROTOCOL ERROR: {fatal_e}")
+        logger.critical(f"\U0001f525 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
         _fire_meta_learning_intake(state_mgr, now_utc=int(time.time()))
         state_mgr.finish_mission(status="fatal_error")
+        try:
+            print("\n" + "=" * 80)
+            print("\u2193  FATAL ERROR — MANDATORY OBSERVABILITY OUTPUT (PARTIAL RUN)")
+            print("=" * 80 + "\n")
+            _write_mandatory_json_output(state_mgr, decision_engine)
+            _complete_output = _write_heal_run_complete(state_mgr, decision_engine)
+            _write_failure_forensics(state_mgr, decision_engine)
+            if isinstance(_complete_output, dict):
+                _print_executive_summary(_complete_output)
+            sys.stdout.flush()
+        except Exception:  # guardian: allow-silent-swallower
+            pass
         sys.exit(1)
 
 
