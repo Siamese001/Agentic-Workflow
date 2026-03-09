@@ -8,7 +8,6 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import List
 
 import pytest
 
@@ -29,12 +28,14 @@ _CONTROL_SPINE_PREFIXES = (
 )
 
 # Patterns that constitute unauthorised metric emission
-_FORBIDDEN_EMISSION_CALLS = frozenset([
-    "emit_metric",
-    "record_metric",
-    "publish_metric",
-    "send_metric",
-])
+_FORBIDDEN_EMISSION_CALLS = frozenset(
+    [
+        "emit_metric",
+        "record_metric",
+        "publish_metric",
+        "send_metric",
+    ]
+)
 
 # Scan these roots for violations
 _SCAN_ROOTS = [
@@ -53,7 +54,7 @@ def _is_allowlisted(rel_path: str) -> bool:
     return False
 
 
-def _scan_for_rogue_emissions(path: Path) -> List[str]:
+def _scan_for_rogue_emissions(path: Path) -> list[str]:
     """AST-scan for metric emission calls outside control spine."""
     source = path.read_text(encoding="utf-8", errors="replace")
     try:
@@ -67,18 +68,14 @@ def _scan_for_rogue_emissions(path: Path) -> List[str]:
             func = node.func
             # Direct calls: emit_metric(...)
             if isinstance(func, ast.Name) and func.id in _FORBIDDEN_EMISSION_CALLS:
-                violations.append(
-                    f"{path.name}:{node.lineno}: direct call '{func.id}()'"
-                )
+                violations.append(f"{path.name}:{node.lineno}: direct call '{func.id}()'")
             # Method calls: self.emit_metric(...) / obj.emit_metric(...)
             elif isinstance(func, ast.Attribute) and func.attr in _FORBIDDEN_EMISSION_CALLS:
-                violations.append(
-                    f"{path.name}:{node.lineno}: method call '.{func.attr}()'"
-                )
+                violations.append(f"{path.name}:{node.lineno}: method call '.{func.attr}()'")
     return violations
 
 
-def _collect_python_files(roots: List[str]) -> List[Path]:
+def _collect_python_files(roots: list[str]) -> list[Path]:
     files = []
     for root in roots:
         root_path = REPO_ROOT / root
@@ -96,13 +93,12 @@ def test_req063_zero_rogue_metric_emissions_ast_scan():
     files = _collect_python_files(_SCAN_ROOTS)
     assert len(files) > 0, "Must find files to scan"
 
-    all_violations: List[str] = []
+    all_violations: list[str] = []
     for f in files:
         all_violations.extend(_scan_for_rogue_emissions(f))
 
-    assert all_violations == [], (
-        f"Found {len(all_violations)} rogue metric emission(s):\n"
-        + "\n".join(all_violations)
+    assert all_violations == [], f"Found {len(all_violations)} rogue metric emission(s):\n" + "\n".join(
+        all_violations
     )
 
 
@@ -110,9 +106,7 @@ def test_req063_zero_rogue_metric_emissions_ast_scan():
 def test_req298_scan_roots_all_exist():
     """REQ-298: All declared scan roots must exist."""
     found = sum(1 for r in _SCAN_ROOTS if (REPO_ROOT / r).exists())
-    assert found >= 3, (
-        f"Expected >=3 scan roots to exist, found {found}. Roots: {_SCAN_ROOTS}"
-    )
+    assert found >= 3, f"Expected >=3 scan roots to exist, found {found}. Roots: {_SCAN_ROOTS}"
 
 
 @pytest.mark.governance
@@ -139,8 +133,6 @@ def test_forbidden_emission_patterns_defined():
 def test_scan_produces_python_files():
     """AST scan collects real Python files from scan roots."""
     files = _collect_python_files(_SCAN_ROOTS)
-    assert len(files) >= 10, (
-        f"Expected >=10 Python files to scan, found {len(files)}"
-    )
+    assert len(files) >= 10, f"Expected >=10 Python files to scan, found {len(files)}"
     for f in files:
         assert f.suffix == ".py"

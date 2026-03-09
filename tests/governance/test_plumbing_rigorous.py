@@ -15,17 +15,15 @@ Compliance: .windsurfrules §1.2 branch proof, §1.4 boundary, §1.5 exception p
 
 from __future__ import annotations
 
-from collections import deque
 from dataclasses import dataclass
-from typing import Any
 from unittest.mock import MagicMock, patch
 
 import pytest
 
-
 # ===========================================================================
 # A. D0EngineAdapter — full branch coverage
 # ===========================================================================
+
 
 class TestD0EngineAdapterBranches:
     """
@@ -48,6 +46,7 @@ class TestD0EngineAdapterBranches:
     # ------------------------------------------------------------------
     def test_import_error_sets_null_fallback(self):
         from apps_shared.spine import d0_engine_adapter as mod
+
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
         assert adapter.is_real is False
@@ -56,6 +55,7 @@ class TestD0EngineAdapterBranches:
 
     def test_null_fallback_render_d0_returns_input_unchanged(self):
         from apps_shared.spine import d0_engine_adapter as mod
+
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
         assert adapter.render_d0("fence_a:text_a") == "fence_a:text_a"
@@ -63,6 +63,7 @@ class TestD0EngineAdapterBranches:
     # B-D0-1: negative control — null fallback does NOT call any engine
     def test_null_fallback_never_calls_engine(self):
         from apps_shared.spine import d0_engine_adapter as mod
+
         with patch.object(mod, "_build_real_engine", side_effect=ImportError("missing")):
             adapter = mod.D0EngineAdapter()
         # render_d0 with complex input must still return unchanged string
@@ -81,6 +82,7 @@ class TestD0EngineAdapterBranches:
     # ------------------------------------------------------------------
     def test_render_d0_not_real_returns_any_string_unchanged(self):
         from apps_shared.spine import d0_engine_adapter as mod
+
         with patch.object(mod, "_build_real_engine", side_effect=ImportError):
             adapter = mod.D0EngineAdapter()
         for val in ["", "hello", "a:b|c:d", "DENY_EXECUTION"]:
@@ -222,6 +224,7 @@ class TestD0EngineAdapterBranches:
 # B. RiskGateAdapter — full branch coverage
 # ===========================================================================
 
+
 class TestRiskGateAdapterBranches:
     """
     BRANCH_INVENTORY:
@@ -242,6 +245,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-1
     def test_import_error_sets_null_fallback(self):
         from apps_shared.spine import risk_gate_adapter as mod
+
         with patch.object(mod, "_build_real_gate", side_effect=ImportError("missing")):
             adapter = mod.RiskGateAdapter()
         assert adapter.is_real is False
@@ -249,6 +253,7 @@ class TestRiskGateAdapterBranches:
 
     def test_null_fallback_evaluate_returns_allow_true(self):
         from apps_shared.spine import risk_gate_adapter as mod
+
         with patch.object(mod, "_build_real_gate", side_effect=ImportError):
             adapter = mod.RiskGateAdapter()
 
@@ -261,12 +266,14 @@ class TestRiskGateAdapterBranches:
     # B-RG-2
     def test_successful_import_sets_real_true(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real is True
 
     # B-RG-3: negative control — null fallback does NOT block even on DENY_EXECUTION
     def test_null_fallback_never_blocks(self):
         from apps_shared.spine import risk_gate_adapter as mod
+
         with patch.object(mod, "_build_real_gate", side_effect=ImportError):
             adapter = mod.RiskGateAdapter()
 
@@ -282,6 +289,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-4: d0_injections already a string
     def test_evaluate_str_d0_injections_passed_through(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -296,6 +304,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-5: d0_injections not str → converted via str()
     def test_evaluate_non_str_d0_injections_converted(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -310,6 +319,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-6/7: real gate allow=True
     def test_evaluate_real_gate_clean_payload_allows(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -323,6 +333,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-8: real gate allow=False on DENY_EXECUTION
     def test_evaluate_real_gate_deny_execution_blocks(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -338,6 +349,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-9: level.value → string
     def test_evaluate_level_is_string(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -351,6 +363,7 @@ class TestRiskGateAdapterBranches:
     # B-RG-10: reasons is tuple
     def test_evaluate_reasons_is_tuple(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
 
         class _P:
@@ -363,6 +376,7 @@ class TestRiskGateAdapterBranches:
     # §1.4 Boundary: check_ids length threshold (gate raises at >= 5)
     def test_evaluate_exactly_4_check_ids_is_low(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -375,6 +389,7 @@ class TestRiskGateAdapterBranches:
 
     def test_evaluate_exactly_5_check_ids_is_medium(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -388,6 +403,7 @@ class TestRiskGateAdapterBranches:
 
     def test_evaluate_6_check_ids_is_medium(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -400,6 +416,7 @@ class TestRiskGateAdapterBranches:
 
     def test_evaluate_0_check_ids_is_low(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -413,6 +430,7 @@ class TestRiskGateAdapterBranches:
     # §1.6 Negative control: missing .sanitized attribute
     def test_evaluate_payload_missing_sanitized_attr(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
 
         class _P:
@@ -425,6 +443,7 @@ class TestRiskGateAdapterBranches:
 
     def test_evaluate_payload_missing_check_ids_attr(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
 
         class _P:
@@ -452,6 +471,7 @@ class TestRiskGateAdapterBranches:
     # §1.11 Fail-closed: DENY_EXECUTION blocks + side-effect-free
     def test_deny_execution_has_no_side_effects_on_adapter_state(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
 
         class _P:
@@ -468,6 +488,7 @@ class TestRiskGateAdapterBranches:
     # §1.8 Malformed: empty d0_injections
     def test_evaluate_empty_d0_injections_does_not_block(self):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
 
         class _P:
@@ -478,14 +499,18 @@ class TestRiskGateAdapterBranches:
         assert result.allow is True
 
     # §1.12 Matrix: sanitized × DENY_EXECUTION
-    @pytest.mark.parametrize("sanitized,d0,expected_allow", [
-        (False, "", True),
-        (False, "DENY_EXECUTION", False),
-        (True, "", True),   # sanitized alone is MEDIUM but still allows
-        (True, "DENY_EXECUTION", False),  # DENY_EXECUTION dominates
-    ])
+    @pytest.mark.parametrize(
+        "sanitized,d0,expected_allow",
+        [
+            (False, "", True),
+            (False, "DENY_EXECUTION", False),
+            (True, "", True),  # sanitized alone is MEDIUM but still allows
+            (True, "DENY_EXECUTION", False),  # DENY_EXECUTION dominates
+        ],
+    )
     def test_evaluate_matrix_sanitized_x_deny(self, sanitized, d0, expected_allow):
         from apps_shared.spine.risk_gate_adapter import RiskGateAdapter
+
         adapter = RiskGateAdapter()
         assert adapter.is_real
 
@@ -502,6 +527,7 @@ class TestRiskGateAdapterBranches:
 # ===========================================================================
 # C. VigilanceDispatcherAdapter — full branch coverage
 # ===========================================================================
+
 
 class TestVigilanceDispatcherAdapterBranches:
     """
@@ -521,11 +547,13 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def setup_method(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+
         _drain_event_queue()
 
     # B-VD-1
     def test_import_error_sets_null_fallback(self):
         from apps_shared.spine import vigilance_dispatcher_adapter as mod
+
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError("missing")):
             adapter = mod.VigilanceDispatcherAdapter()
         assert adapter.is_real is False
@@ -533,16 +561,19 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def test_null_fallback_dispatch_is_no_op(self):
         from apps_shared.spine import vigilance_dispatcher_adapter as mod
+
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError):
             adapter = mod.VigilanceDispatcherAdapter()
         # Must not raise, must not enqueue anything
         adapter.dispatch(trace_id="t", signals=("s",), summary="test")
         from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+
         assert _drain_event_queue() == []
 
     # B-VD-2
     def test_successful_import_sets_real_true(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real is True
 
@@ -550,6 +581,7 @@ class TestVigilanceDispatcherAdapterBranches:
     def test_null_fallback_dispatch_does_not_enqueue(self):
         from apps_shared.spine import vigilance_dispatcher_adapter as mod
         from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+
         with patch.object(mod, "_build_real_dispatcher", side_effect=ImportError):
             adapter = mod.VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="x", signals=("y",), summary="z")
@@ -558,8 +590,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-4: signals is str → wrapped in tuple
     def test_dispatch_signals_str_wrapped_in_tuple(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
         adapter.dispatch(trace_id="t1", signals="single_signal_str", summary="test")
@@ -570,8 +604,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-5: signals is tuple
     def test_dispatch_signals_tuple_passed(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t2", signals=("sig_a", "sig_b"), summary="test")
         events = _drain_event_queue()
@@ -582,8 +618,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-5 (list variant)
     def test_dispatch_signals_list_converted_to_tuple(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t3", signals=["list_sig"], summary="test")
         events = _drain_event_queue()
@@ -593,8 +631,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-6: trace_id=None → str("None")
     def test_dispatch_none_trace_id_does_not_raise(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id=None, signals=("s",), summary="test")
         events = _drain_event_queue()
@@ -604,8 +644,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-7: summary=None → str("None")
     def test_dispatch_none_summary_does_not_raise(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t", signals=("s",), summary=None)
         events = _drain_event_queue()
@@ -614,8 +656,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-8: event enqueued
     def test_dispatch_enqueues_event(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="trace_enqueue", signals=("SIGNAL_X",), summary="verify enqueue")
         events = _drain_event_queue()
@@ -625,6 +669,7 @@ class TestVigilanceDispatcherAdapterBranches:
     # B-VD-9: exception in try-block swallowed
     def test_dispatch_exception_swallowed_never_reraises(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
         # Patch _ArtifactCls.create to raise
@@ -635,6 +680,7 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def test_dispatch_dispatcher_raises_swallowed(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
         # Patch dispatcher.dispatch to raise
@@ -646,6 +692,7 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.5 Exception path: unrelated exception also swallowed
     def test_dispatch_unexpected_exception_swallowed(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
         with patch.object(adapter, "_ArtifactCls") as mock_cls:
@@ -656,8 +703,11 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.4 Boundary: queue bounded at 256
     def test_event_queue_bounded_at_256(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _EVENT_QUEUE, _drain_event_queue,
+            _EVENT_QUEUE,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         _drain_event_queue()
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real
@@ -669,8 +719,11 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def test_event_queue_exactly_256_items(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _EVENT_QUEUE, _drain_event_queue,
+            _EVENT_QUEUE,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         _drain_event_queue()
         adapter = VigilanceDispatcherAdapter()
         for i in range(256):
@@ -680,8 +733,11 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def test_event_queue_255_items_under_max(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _EVENT_QUEUE, _drain_event_queue,
+            _EVENT_QUEUE,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         _drain_event_queue()
         adapter = VigilanceDispatcherAdapter()
         for i in range(255):
@@ -692,8 +748,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.8 Empty signals
     def test_dispatch_empty_signals_tuple(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t", signals=(), summary="empty signals")
         events = _drain_event_queue()
@@ -701,8 +759,10 @@ class TestVigilanceDispatcherAdapterBranches:
 
     def test_dispatch_empty_signals_list(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t", signals=[], summary="empty signals list")
         events = _drain_event_queue()
@@ -711,8 +771,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.11 Side-effect safety: dispatch does not mutate adapter state
     def test_dispatch_does_not_mutate_adapter_state(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         assert adapter.is_real is True
         adapter.dispatch(trace_id="t", signals=("s",), summary="test")
@@ -722,8 +784,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.17 Stateful: drain + re-enqueue
     def test_drain_then_reenqueue_is_clean(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="first", signals=("s",), summary="test")
         drained = _drain_event_queue()
@@ -739,8 +803,10 @@ class TestVigilanceDispatcherAdapterBranches:
     # §1.10 Determinism: identical dispatch → identical enqueued content
     def test_dispatch_deterministic_event_content(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import (
-            VigilanceDispatcherAdapter, _drain_event_queue,
+            VigilanceDispatcherAdapter,
+            _drain_event_queue,
         )
+
         a1, a2 = VigilanceDispatcherAdapter(), VigilanceDispatcherAdapter()
         _drain_event_queue()
         a1.dispatch(trace_id="same_trace", signals=("S1",), summary="same_summary")
@@ -754,6 +820,7 @@ class TestVigilanceDispatcherAdapterBranches:
 # ===========================================================================
 # D. ExecutionOrchestrator — _delegate_to_l3 + execute() branches
 # ===========================================================================
+
 
 class TestExecutionOrchestratorBranches:
     """
@@ -863,12 +930,14 @@ class TestExecutionOrchestratorBranches:
     # B-EO-11: _L3_PATHS constant
     def test_l3_paths_contains_b_c_d(self):
         from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+
         assert "B" in ExecutionOrchestrator._L3_PATHS
         assert "C" in ExecutionOrchestrator._L3_PATHS
         assert "D" in ExecutionOrchestrator._L3_PATHS
 
     def test_l3_paths_does_not_contain_a(self):
         from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+
         assert "A" not in ExecutionOrchestrator._L3_PATHS
 
     # §1.4 Boundary: max_reentry = 1 (minimum)
@@ -934,17 +1003,20 @@ class TestExecutionOrchestratorBranches:
         assert mock_l3.mock_calls == []
 
     # §1.12 Matrix: path × allow × l3 injection × max_reentry
-    @pytest.mark.parametrize("path,allow,has_l3,max_reentry,expected_state", [
-        ("A", True,  False, 3, "success"),
-        ("A", False, False, 3, "retry"),
-        ("A", False, False, 1, "blocked"),
-        ("B", True,  True,  3, "success"),
-        ("C", True,  True,  3, "success"),
-        ("D", True,  True,  3, "success"),
-        ("B", True,  False, 3, "success"),
-        ("B", False, True,  1, "blocked"),
-        ("B", False, True,  3, "retry"),
-    ])
+    @pytest.mark.parametrize(
+        "path,allow,has_l3,max_reentry,expected_state",
+        [
+            ("A", True, False, 3, "success"),
+            ("A", False, False, 3, "retry"),
+            ("A", False, False, 1, "blocked"),
+            ("B", True, True, 3, "success"),
+            ("C", True, True, 3, "success"),
+            ("D", True, True, 3, "success"),
+            ("B", True, False, 3, "success"),
+            ("B", False, True, 1, "blocked"),
+            ("B", False, True, 3, "retry"),
+        ],
+    )
     def test_execute_matrix(self, path, allow, has_l3, max_reentry, expected_state):
         mock_l3 = MagicMock()
         mock_l3.orchestrate.return_value = _FakeOrchResult()
@@ -956,6 +1028,7 @@ class TestExecutionOrchestratorBranches:
     # §1.13 Contradiction: removing _L3_PATHS would make B/C/D not delegate
     def test_l3_paths_is_frozenset(self):
         from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+
         assert isinstance(ExecutionOrchestrator._L3_PATHS, frozenset)
 
     # §1.15 Mutation sensitivity: L3 exception error message preserved
@@ -989,11 +1062,13 @@ class TestExecutionOrchestratorBranches:
 # Shared helpers
 # ===========================================================================
 
+
 def _make_real_d0_adapter():
     from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
+
     a = D0EngineAdapter()
     if not a.is_real:
-        pytest.skip("D0InjectionEngine not available")
+        pytest.fail("D0InjectionEngine not available")
     return a
 
 
@@ -1033,6 +1108,7 @@ class _FakeAssembler:
             d0_injections = ""
             sanitized = False
             check_ids = ()
+
         return _P()
 
 
@@ -1091,6 +1167,7 @@ class _FakeMetaBus:
 
 def _make_orchestrator(path="A", allow=True, l3=None, max_reentry=3):
     from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
+
     return ExecutionOrchestrator(
         assembler=_FakeAssembler(),
         path_router=_FakeRouter(path_value=path),

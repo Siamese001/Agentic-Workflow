@@ -1,10 +1,13 @@
 """Hardening tests for execute_ssot.py technical-debt removal.
 
 Covers:
-- Debt-1: _compute_novelty_score uses hash-fallback vector when embeddings disabled
+- Debt-1: _compute_novelty_score uses BGE vector (always-on; no fallback path)
 - Debt-2: VectorSourceMismatchError raised on dimension mismatch
 - Debt-4: _fire_meta_learning_intake adapter sentinel (no NameError when intake fails)
 - Debt-5: _wc_digest uses module-level hashlib (no inline import)
+
+BGE embeddings are a mandatory system dependency. BMG_EMBEDDINGS_ENABLED env flag
+has been removed. All tests exercise the BGE-always-on code path.
 """
 
 import inspect
@@ -35,60 +38,71 @@ def _dummy_confidence(value=0.8, reasoning=""):
 
 
 # ---------------------------------------------------------------------------
-# Debt-1: hash-fallback novelty replaces [BMG-GPU] heuristic
+# Debt-1: novelty score uses BGE embeddings (always-on, no disabled path)
 # ---------------------------------------------------------------------------
 
 
 @pytest.mark.unit
-def test_novelty_score_disabled_no_vectors_returns_1():
-    """When embeddings disabled and no stored vectors, novelty must be 1 (not [BMG-GPU])."""
+def test_novelty_score_no_vectors_returns_1():
+    """When no stored vectors, novelty must return 1 regardless of confidence.
+
+    BGE is always active; empty vector store is a valid cold-start state.
+    """
     engine = _make_engine(recent_vecs=[])
-    with patch.dict("os.environ", {"BMG_EMBEDDINGS_ENABLED": "false"}):
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=[0.1] * 1024,
+    ):
         score = engine._compute_novelty_score(None, "agentic_core/L1", _dummy_confidence())
     assert score == 1
 
 
 @pytest.mark.unit
-def test_novelty_score_disabled_uses_fallback_vector_not_bmg_string():
-    """When embeddings disabled, score must use generate_fallback_vector, not reason string heuristic.
-
-    _compute_novelty_score builds signal_text as f"{ft_str} {territory}" where
-    ft_str is "UNKNOWN" when failure_type is None.  The stored vector must use
-    that exact same text so the dot product is 1.0 (identical unit vectors).
-    """
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-
-    same_vec = generate_fallback_vector("UNKNOWN agentic_core/L1")
-    engine = _make_engine(recent_vecs=[same_vec])
-    with patch.dict("os.environ", {"BMG_EMBEDDINGS_ENABLED": "false"}):
-        score = engine._compute_novelty_score(None, "agentic_core/L1", _dummy_confidence(reasoning=""))
-
-    assert score == 0, "Identical stored and query hash vectors should give max similarity >= 0.85 -> N=0"
-
-
-@pytest.mark.unit
-def test_novelty_score_disabled_completely_novel_returns_3():
-    """Hash-fallback novelty for a completely different vector should return 3."""
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-
-    stored = generate_fallback_vector("COMPLETELY_DIFFERENT zzz")
+def test_novelty_score_identical_bge_vector_returns_0():
+    """When stored and query BGE vectors are identical (max_sim=1.0), novelty must be 0."""
     import numpy as np
 
-    stored_flipped = list(-np.array(stored, dtype=np.float32))
-    engine = _make_engine(recent_vecs=[stored_flipped])
-    with patch.dict("os.environ", {"BMG_EMBEDDINGS_ENABLED": "false"}):
-        score = engine._compute_novelty_score(None, "brand_new_territory", _dummy_confidence())
-    assert score in {2, 3}, f"Opposite/distant vector should yield high novelty (got {score})"
+    unit_vec = list(np.ones(1024, dtype=np.float32) / np.sqrt(1024))
+    engine = _make_engine(recent_vecs=[unit_vec])
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=unit_vec,
+    ):
+        score = engine._compute_novelty_score(None, "agentic_core/L1", _dummy_confidence(reasoning=""))
+    assert score == 0, "Identical BGE vectors should give max similarity=1.0 -> N=0"
 
 
 @pytest.mark.unit
-def test_novelty_score_disabled_legacy_bmg_gpu_string_no_longer_used():
-    """[BMG-GPU] string in reasoning MUST NOT affect the novelty score in disabled mode."""
-    from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
+def test_novelty_score_distant_bge_vector_returns_high_novelty():
+    """When stored and query BGE vectors are orthogonal, novelty must be >= 2."""
+    import numpy as np
 
-    same_vec = generate_fallback_vector("LAYER_VIOLATION territory_x")
-    engine = _make_engine(recent_vecs=[same_vec])
-    with patch.dict("os.environ", {"BMG_EMBEDDINGS_ENABLED": "false"}):
+    stored_vec = list(np.ones(1024, dtype=np.float32) / np.sqrt(1024))
+    # Orthogonal: stored is all-positive, query is all-negative
+    query_vec = list(-np.ones(1024, dtype=np.float32) / np.sqrt(1024))
+    engine = _make_engine(recent_vecs=[stored_vec])
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=query_vec,
+    ):
+        score = engine._compute_novelty_score(None, "brand_new_territory", _dummy_confidence())
+    assert score in {2, 3}, f"Opposite BGE vectors should yield high novelty (got {score})"
+
+
+@pytest.mark.unit
+def test_novelty_score_reasoning_tag_has_no_effect():
+    """[BMG-GPU] string in reasoning MUST NOT affect the novelty score.
+
+    Novelty is computed from BGE vector similarity only, never from reasoning text.
+    """
+    import numpy as np
+
+    unit_vec = list(np.ones(1024, dtype=np.float32) / np.sqrt(1024))
+    engine = _make_engine(recent_vecs=[unit_vec])
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=unit_vec,
+    ):
         score_with_tag = engine._compute_novelty_score(
             None, "territory_x", _dummy_confidence(reasoning="Base: 0.80 [BMG-GPU]")
         )
@@ -117,12 +131,20 @@ def test_vector_source_mismatch_error_exported():
 
 @pytest.mark.unit
 def test_novelty_score_dim_mismatch_raises_vector_source_mismatch_error():
-    """Mixing hash-fallback query (16-dim) with bge-m3-like stored vectors raises VectorSourceMismatchError."""
+    """Mixing 16-dim query with 1024-dim stored vectors raises VectorSourceMismatchError.
+
+    Even with BGE always active, a dimension mismatch (e.g. stale FAISS index
+    built with hash-fallback vectors) must raise VectorSourceMismatchError.
+    """
     from agentic_core.L1_cognition.memory.healing_memory_retriever import VectorSourceMismatchError
 
     stored_high_dim = [[0.1] * 1024]
     engine = _make_engine(recent_vecs=stored_high_dim)
-    with patch.dict("os.environ", {"BMG_EMBEDDINGS_ENABLED": "false"}):
+    # Inject a 16-dim query vector to trigger dimension mismatch
+    with patch(
+        "agentic_core.L2_execution.healers.bmg_embedding_similarity.bmg_embed_text",
+        return_value=[0.1] * 16,
+    ):
         with pytest.raises(VectorSourceMismatchError, match="source mismatch"):
             engine._compute_novelty_score(None, "agentic_core/L1", _dummy_confidence())
 

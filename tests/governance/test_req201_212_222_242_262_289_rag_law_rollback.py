@@ -13,8 +13,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List, Optional, Tuple
+from dataclasses import dataclass
+from typing import Any
 
 import pytest
 
@@ -24,6 +24,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Minimal deterministic RAG retrieval stub
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class RAGDocument:
@@ -36,7 +37,7 @@ class RAGDocument:
         return hashlib.sha256(self.content.encode()).hexdigest()
 
 
-def deterministic_rag_retrieve(query: str, corpus: List[RAGDocument], top_k: int = 3) -> List[RAGDocument]:
+def deterministic_rag_retrieve(query: str, corpus: list[RAGDocument], top_k: int = 3) -> list[RAGDocument]:
     """
     Deterministic RAG: score = len(intersection of words), tie-break by doc_id.
     Identical query + corpus → identical ranked output.
@@ -57,10 +58,11 @@ def deterministic_rag_retrieve(query: str, corpus: List[RAGDocument], top_k: int
 # LawSlot token scope
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class LawSlotToken:
     token_id: str
-    allowed_slots: Tuple[str, ...]
+    allowed_slots: tuple[str, ...]
     semantic_clock_tick: int
     replay_digest: str
 
@@ -72,6 +74,7 @@ class LawSlotToken:
 # ---------------------------------------------------------------------------
 # Rollback artifact
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class RollbackArtifact:
@@ -97,11 +100,12 @@ class RollbackArtifact:
 # Governance enforcement stub
 # ---------------------------------------------------------------------------
 
+
 class GovernanceEnforcer:
     def __init__(self, policy_hash: str):
         self._policy_hash = policy_hash
 
-    def enforce(self, action: str, context: Dict[str, Any]) -> bool:
+    def enforce(self, action: str, context: dict[str, Any]) -> bool:
         """Deterministic enforcement: same action + context → same result."""
         decision_input = json.dumps(
             {"action": action, "context": context, "policy": self._policy_hash},
@@ -117,8 +121,9 @@ class GovernanceEnforcer:
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.fixture()
-def corpus() -> List[RAGDocument]:
+def corpus() -> list[RAGDocument]:
     return [
         RAGDocument("doc_a", "governance replay determinism proof", 0.9),
         RAGDocument("doc_b", "replay hash canonical serializer", 0.8),

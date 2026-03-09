@@ -19,8 +19,14 @@ from system_learning.engines.embedding_service_factory import (
     _DisabledEmbeddingService,
 )
 
-pytest.importorskip("numpy")
-pytest.importorskip("psutil")
+try:
+    import numpy  # noqa: F401
+except ImportError:
+    pytest.fail("numpy is a mandatory dependency — install it")
+try:
+    import psutil  # noqa: F401
+except ImportError:
+    pytest.fail("psutil is a mandatory dependency — install it")
 
 
 @pytest.mark.unit_min_deps
@@ -111,8 +117,8 @@ class TestEmbeddingServiceFactory:
             assert r1.row_idx == r2.row_idx == r3.row_idx
             assert r1.embedding_artifact_hash == r2.embedding_artifact_hash == r3.embedding_artifact_hash
 
-# Close memmap to release Windows file lock before fixture teardown
-        if hasattr(service, '_raw') and hasattr(service._raw, '_mmap'):
+        # Close memmap to release Windows file lock before fixture teardown
+        if hasattr(service, "_raw") and hasattr(service._raw, "_mmap"):
             service._raw._mmap.close()
         del service._raw
         EmbeddingServiceFactory._INSTANCE = None
@@ -133,12 +139,13 @@ class TestEmbeddingServiceFactory:
         assert key1 == key2
         assert key1 != "uninitialized"
 
-# Close memmap to release Windows file lock before fixture teardown
-        if hasattr(service1, '_raw') and hasattr(service1._raw, '_mmap'):
+        # Close memmap to release Windows file lock before fixture teardown
+        if hasattr(service1, "_raw") and hasattr(service1._raw, "_mmap"):
             service1._raw._mmap.close()
         del service1._raw
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
+
     @patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"})
     def test_kill_switch_total_coverage(self, temp_pack_dir):
         """T2: embedding_enabled=false bypasses everything."""
@@ -185,8 +192,8 @@ class TestEmbeddingServiceFactory:
             # Restore for cleanup
             EmbeddingServiceFactory._INSTANCE_IDENTITY = original_identity
 
-# Close memmap to release Windows file lock before fixture teardown
-        if hasattr(svc, '_raw') and hasattr(svc._raw, '_mmap'):
+        # Close memmap to release Windows file lock before fixture teardown
+        if hasattr(svc, "_raw") and hasattr(svc._raw, "_mmap"):
             svc._raw._mmap.close()
         del svc._raw
         EmbeddingServiceFactory._INSTANCE = None
@@ -252,8 +259,8 @@ class TestEmbeddingServiceFactory:
             assert not np.isnan(result.score_round6)
             assert not np.isinf(result.score_round6)
 
-# Close memmap to release Windows file lock before fixture teardown
-        if hasattr(service, '_raw') and hasattr(service._raw, '_mmap'):
+        # Close memmap to release Windows file lock before fixture teardown
+        if hasattr(service, "_raw") and hasattr(service._raw, "_mmap"):
             service._raw._mmap.close()
         del service._raw
         EmbeddingServiceFactory._INSTANCE = None
@@ -265,10 +272,11 @@ class TestEmbeddingServiceFactory:
         EmbeddingServiceFactory._INSTANCE = None
         EmbeddingServiceFactory._INSTANCE_IDENTITY = None
 
-# Skip this test on newer numpy versions where tobytes is immutable
+        # Skip this test on newer numpy versions where tobytes is immutable
         # The streaming hash implementation is verified by other tests
         import pytest
-        pytest.skip("numpy.ndarray.tobytes patching not supported on this numpy version")
+
+        pytest.fail("numpy.ndarray.tobytes patching not supported on this numpy version")
 
 
 class TestDisabledEmbeddingService:

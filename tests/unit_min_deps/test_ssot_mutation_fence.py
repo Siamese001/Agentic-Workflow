@@ -112,8 +112,8 @@ class TestBlockEventEmission:
         # Monkeypatch the log path
         with patch("agentic_core.L0_routing.enforcement.mutation_prohibition.Path") as mock_path_cls:
             # Make Path() constructor work normally for target_path
-            mock_path_cls.side_effect = (
-                lambda x: Path(x) if x != "logs/ssot_protected_root_blocks.jsonl" else log_file
+            mock_path_cls.side_effect = lambda x: (
+                Path(x) if x != "logs/ssot_protected_root_blocks.jsonl" else log_file
             )
 
             # Also need to patch the open call to use our tmp_path

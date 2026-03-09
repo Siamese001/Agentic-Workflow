@@ -592,60 +592,27 @@ def _analyze_historical_patterns(
 
 
 def _create_deterministic_embedding(failure_signature: Any) -> List[float]:
-    """Create embedding from failure signature using BGE-m3 with 4-dim hash fallback.
+    """Create embedding from failure signature using BGE-m3.
 
-    Primary: real BGE-m3 1024-dim embedding when BMG_EMBEDDINGS_ENABLED=true.
-    Fallback: deterministic 4-dim hash vector (stdlib-only, reproducible).
+    BGE-m3 is a mandatory system dependency. Raises ImportError if unavailable.
 
     Args:
         failure_signature: Failure signature object
 
     Returns:
-        Embedding vector (1024-dim BGE or 4-dim hash)
+        Embedding vector (1024-dim BGE-m3)
     """
-    import os
+    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-    # Primary path: real BGE-m3 embedding when enabled
-    if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
-        try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
-
-            text_parts = []
-            if hasattr(failure_signature, "component"):
-                text_parts.append(failure_signature.component)
-            if hasattr(failure_signature, "failure_type"):
-                text_parts.append(failure_signature.failure_type)
-            if hasattr(failure_signature, "healer_name"):
-                text_parts.append(failure_signature.healer_name)
-            text = " ".join(text_parts) if text_parts else "unknown_failure"
-            return bmg_embed_text(text)
-        except Exception:  # guardian: allow-silent-swallower
-            pass
-
-    # Fallback: deterministic 4-dim hash vector (stdlib-only)
-    import hashlib
-
-    components = []
+    text_parts = []
     if hasattr(failure_signature, "component"):
-        comp_hash = hashlib.sha256(failure_signature.component.encode()).hexdigest()
-        components.append(int(comp_hash[:8], 16) / 2**32)
-    else:
-        components.append(0.0)
+        text_parts.append(failure_signature.component)
     if hasattr(failure_signature, "failure_type"):
-        type_hash = hashlib.sha256(failure_signature.failure_type.encode()).hexdigest()
-        components.append(int(type_hash[:8], 16) / 2**32)
-    else:
-        components.append(0.0)
+        text_parts.append(failure_signature.failure_type)
     if hasattr(failure_signature, "healer_name"):
-        healer_hash = hashlib.sha256(failure_signature.healer_name.encode()).hexdigest()
-        components.append(int(healer_hash[:8], 16) / 2**32)
-    else:
-        components.append(0.0)
-    if hasattr(failure_signature, "timestamp_utc"):
-        components.append((failure_signature.timestamp_utc & 0xFFFFFFFF) / 2**32)
-    else:
-        components.append(0.0)
-    return components
+        text_parts.append(failure_signature.healer_name)
+    text = " ".join(text_parts) if text_parts else "unknown_failure"
+    return bmg_embed_text(text)
 
 
 # =============================================================================
@@ -735,31 +702,17 @@ def _retrieve_semantic_context(
     failure_signature = "|".join(sorted(query_components)) if query_components else "generic_failure"
 
     import hashlib
-    import os
 
     import numpy as np
 
-    # C3: Use real bge-m3 embedding when BMG_EMBEDDINGS_ENABLED=true;
-    # fall back to 16-dim hash vector otherwise (generate_fallback_vector).
+    # C3: Use bge-m3 embedding — BGE is a mandatory system dependency.
     # The vector_source tag is propagated to all return dicts so downstream
     # code can assert it never uses a hash-fallback for semantic decisions.
-    _vector_source = "hash-fallback"
-    if (
-        os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
-        and retrieval_profile.embeddings_enabled
-    ):
-        try:
-            from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
+    from agentic_core.L2_execution.healers.bmg_embedding_similarity import bmg_embed_text
 
-            _live_vec = bmg_embed_text(failure_signature)
-            query_vector = np.array(_live_vec, dtype=np.float32)
-            _vector_source = "bge-m3"
-        except Exception:  # guardian: allow-silent-swallower
-            _vector_source = "hash-fallback"
-    if _vector_source == "hash-fallback":
-        from agentic_core.L2_execution.healers.failure_signal_normalizer import generate_fallback_vector
-
-        query_vector = np.array(generate_fallback_vector(failure_signature), dtype=np.float32)
+    _live_vec = bmg_embed_text(failure_signature)
+    query_vector = np.array(_live_vec, dtype=np.float32)
+    _vector_source = "bge-m3"
 
     # W4-B: Compute shadow embedding if configured (non-influential telemetry)
     shadow_telemetry = {}
@@ -1285,7 +1238,7 @@ def run_pipeline(
                 deps.l4_state_writer.write_l4b_healing_snapshot(
                     payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
                 )
-            except Exception:  # guardian: allow-silent_swallower
+            except Exception:  # guardian: allow-silent-swallow
                 # L4B write failure should not break pipeline
                 # In production, this would be logged
                 pass

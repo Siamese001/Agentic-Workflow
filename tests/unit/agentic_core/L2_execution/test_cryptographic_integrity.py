@@ -27,7 +27,6 @@ from agentic_core.L6_observability.engines.provider_binding_fingerprint import (
     fingerprint_matches,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -36,13 +35,13 @@ _HEX64 = "a" * 64
 
 
 def _five_hashes(**overrides) -> dict:
-    base = dict(
-        policy_hash="a" * 64,
-        registry_hash="b" * 64,
-        config_surface_hash="c" * 64,
-        transcript_hash="d" * 64,
-        dependency_lock_hash="e" * 64,
-    )
+    base = {
+        "policy_hash": "a" * 64,
+        "registry_hash": "b" * 64,
+        "config_surface_hash": "c" * 64,
+        "transcript_hash": "d" * 64,
+        "dependency_lock_hash": "e" * 64,
+    }
     return {**base, **overrides}
 
 
@@ -92,28 +91,46 @@ class TestDigestCalculator:
         assert _compute(dependency_lock_hash="e" * 64) != _compute(dependency_lock_hash="5" * 64)
 
     @pytest.mark.governance
-    @pytest.mark.parametrize("field", [
-        "policy_hash", "registry_hash", "config_surface_hash",
-        "transcript_hash", "dependency_lock_hash",
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "policy_hash",
+            "registry_hash",
+            "config_surface_hash",
+            "transcript_hash",
+            "dependency_lock_hash",
+        ],
+    )
     def test_raises_when_component_is_not_64_chars(self, field):
         with pytest.raises(ValueError, match=field):
             DigestCalculator.compute(**_five_hashes(**{field: "short"}))
 
     @pytest.mark.governance
-    @pytest.mark.parametrize("field", [
-        "policy_hash", "registry_hash", "config_surface_hash",
-        "transcript_hash", "dependency_lock_hash",
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "policy_hash",
+            "registry_hash",
+            "config_surface_hash",
+            "transcript_hash",
+            "dependency_lock_hash",
+        ],
+    )
     def test_raises_when_component_is_too_long(self, field):
         with pytest.raises(ValueError, match=field):
             DigestCalculator.compute(**_five_hashes(**{field: "a" * 65}))
 
     @pytest.mark.governance
-    @pytest.mark.parametrize("field", [
-        "policy_hash", "registry_hash", "config_surface_hash",
-        "transcript_hash", "dependency_lock_hash",
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "policy_hash",
+            "registry_hash",
+            "config_surface_hash",
+            "transcript_hash",
+            "dependency_lock_hash",
+        ],
+    )
     def test_raises_when_component_is_none(self, field):
         with pytest.raises((ValueError, TypeError)):
             DigestCalculator.compute(**_five_hashes(**{field: None}))
@@ -127,8 +144,11 @@ class TestDigestCalculator:
     def test_zero_hash_is_valid_input_to_compute(self):
         z = DigestCalculator.zero_hash()
         result = DigestCalculator.compute(
-            policy_hash=z, registry_hash=z, config_surface_hash=z,
-            transcript_hash=z, dependency_lock_hash=z,
+            policy_hash=z,
+            registry_hash=z,
+            config_surface_hash=z,
+            transcript_hash=z,
+            dependency_lock_hash=z,
         )
         assert len(result) == 64
 
@@ -136,8 +156,11 @@ class TestDigestCalculator:
     def test_component_keys_tuple_contains_all_five(self):
         keys = set(DigestCalculator.COMPONENT_KEYS)
         assert keys == {
-            "policy_hash", "registry_hash", "config_surface_hash",
-            "transcript_hash", "dependency_lock_hash",
+            "policy_hash",
+            "registry_hash",
+            "config_surface_hash",
+            "transcript_hash",
+            "dependency_lock_hash",
         }
 
 
@@ -168,10 +191,16 @@ class TestDeterminismDigestEmitter:
         assert dc_result == em_result
 
     @pytest.mark.governance
-    @pytest.mark.parametrize("field", [
-        "policy_hash", "registry_hash", "config_surface_hash",
-        "transcript_hash", "dependency_lock_hash",
-    ])
+    @pytest.mark.parametrize(
+        "field",
+        [
+            "policy_hash",
+            "registry_hash",
+            "config_surface_hash",
+            "transcript_hash",
+            "dependency_lock_hash",
+        ],
+    )
     def test_compute_raises_when_component_not_64_chars(self, field):
         e = DeterminismDigestEmitter()
         with pytest.raises(ValueError, match=field):

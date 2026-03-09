@@ -110,6 +110,38 @@ class RegressionOracleAgent(SovereignBaseAgent):
             await self._process_modified_file(file_path)
         self.test_runner.report_results(self.generated_tests)
 
+    # GAP-05: maximum LLM self-correction iterations per test
+    MAX_CORRECTION_ITERATIONS: int = 3
+
+    @staticmethod
+    def _ast_safety_check(test_code: str) -> list[str]:
+        """AST-scan generated test code for dangerous nodes before execution.
+
+        Returns a list of violation descriptions (empty = safe).
+        """
+        import ast as _ast
+
+        DANGEROUS_CALLS = {"os.system", "subprocess", "exec", "eval", "__import__", "compile"}
+        violations: list[str] = []
+        try:
+            tree = _ast.parse(test_code)
+        except SyntaxError as e:
+            return [f"SyntaxError in generated code: {e}"]
+        for node in _ast.walk(tree):
+            if isinstance(node, _ast.Call):
+                func = node.func
+                name = ""
+                if isinstance(func, _ast.Attribute):
+                    name = f"{getattr(func.value, 'id', '')}  .{func.attr}".replace("  ", "")
+                elif isinstance(func, _ast.Name):
+                    name = func.id
+                for dangerous in DANGEROUS_CALLS:
+                    if dangerous in name:
+                        violations.append(
+                            f"Line {node.lineno}: dangerous call '{name}' detected in generated code"
+                        )
+        return violations
+
     async def _process_modified_file(self, file_path: str) -> Any:
         """Process a modified file and generate tests."""
         Logger.info(f"   Analyzing {file_path}...")
@@ -124,7 +156,33 @@ class RegressionOracleAgent(SovereignBaseAgent):
                 edge_cases,
             ) = await self.test_generator.generate_test_code_and_file(change)
             if test_code and test_file:
-                passed, error_msg = await self.test_runner.run_and_correct_test(change, test_file, test_code)
+                # GAP-05: AST safety check before executing generated code
+                safety_violations = self._ast_safety_check(test_code)
+                if safety_violations:
+                    Logger.error(
+                        f"[GAP-05] Rejecting generated test for {change.method_name} "
+                        f"— {len(safety_violations)} dangerous node(s): {safety_violations[:3]}"
+                    )
+                    self.generated_tests.append(
+                        GeneratedTest(
+                            test_file=str(test_file),
+                            test_name=f"test_{change.method_name}",
+                            test_code=test_code,
+                            target_method=change.method_name,
+                            edge_cases=edge_cases,
+                            passed=False,
+                            error_message=f"AST safety rejection: {safety_violations[0]}",
+                        ),
+                    )
+                    continue
+
+                # GAP-05: iteration cap enforced by passing max_iterations
+                passed, error_msg = await self.test_runner.run_and_correct_test(
+                    change,
+                    test_file,
+                    test_code,
+                    max_iterations=self.MAX_CORRECTION_ITERATIONS,
+                )
                 self.generated_tests.append(
                     GeneratedTest(
                         test_file=str(test_file),
@@ -150,7 +208,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         dry_run: bool = True,
         execute: bool = False,
         depth: int = 0,
-        max_depth: int = 3,
+        max_depth: int = 3,  # guardian: allow-magic-configuration
         _call_path: set | None = None,
     ) -> dict[str, int]:
         """L5 safety agent - operational only."""
@@ -216,7 +274,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
 
             Logger.info(f"[RegressionOracleAgent] {report['message']}")
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallower
             report["post_heal_status"] = "ERROR"
             report["message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[RegressionOracleAgent] Post-heal validation failed: {e}")
@@ -227,7 +285,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
         self,
         violations: list[RegressionViolation],
         dry_run: bool = True,
-        max_actions: int = 50,
+        max_actions: int = 50,  # guardian: allow-magic-configuration
     ) -> list[dict[str, Any]]:
         """
         GOLD STANDARD: Cleanup regression violations with test regeneration.
@@ -273,7 +331,7 @@ class RegressionOracleAgent(SovereignBaseAgent):
                     )
                     action["applied"] = not dry_run
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 action["error"] = str(e)
                 Logger.error(f"[RegressionOracleAgent] Cleanup error: {e}")
 

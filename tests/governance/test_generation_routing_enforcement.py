@@ -317,7 +317,7 @@ def test_full_repo_scan():
     scanner_path = Path("ops_scripts/ci/audit_generation_routing_enforcement.py")
 
     if not scanner_path.exists():
-        pytest.skip("AST scanner not available")
+        pytest.fail("AST scanner not available")
 
     # Run scanner on entire repo
     result = subprocess.run(

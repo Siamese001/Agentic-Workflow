@@ -5,7 +5,7 @@ does not directly couple to PipelineDependencies construction details.
 
 Design invariants:
 - No wall-clock reads (timestamps provided by caller).
-- Activation-guarded: when BMG_EMBEDDINGS_ENABLED=false, embed step is skipped.
+- BGE embeddings are always active (mandatory system dependency).
 - Fail-closed: any adapter error propagates; no silent fallback.
 """
 
@@ -35,8 +35,8 @@ class LiveRunPipelineAdapter:
     into the telemetry/audit format expected by run_pipeline(), avoiding direct
     coupling between execute_ssot and pipeline internals.
 
-    Activation: the adapter is instantiated unconditionally but is a no-op when
-    BMG_EMBEDDINGS_ENABLED=false (embed step skipped, store returns 0 records).
+    Activation: the adapter is instantiated unconditionally. BGE embeddings are
+    a mandatory system dependency; import failure raises at startup.
     """
 
     def __init__(

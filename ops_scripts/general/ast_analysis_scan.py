@@ -1,4 +1,5 @@
 """AST analysis scan: pinecone refs, semantic cache, shim classification."""
+
 import ast
 import json
 from pathlib import Path
@@ -70,10 +71,7 @@ def scan_semantic_cache(rel, src, tree, imports):
 
 def classify_shim(rel, tree):
     body = tree.body
-    has_func = any(
-        isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef))
-        for n in body
-    )
+    has_func = any(isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef, ast.ClassDef)) for n in body)
     has_import = any(isinstance(n, (ast.Import, ast.ImportFrom)) for n in body)
     if has_func or not has_import:
         return None
@@ -82,16 +80,11 @@ def classify_shim(rel, tree):
     all_assigns = [
         n
         for n in body
-        if isinstance(n, ast.Assign)
-        and any(
-            isinstance(t, ast.Name) and t.id == "__all__" for t in n.targets
-        )
+        if isinstance(n, ast.Assign) and any(isinstance(t, ast.Name) and t.id == "__all__" for t in n.targets)
     ]
     stmt_types = [type(n).__name__ for n in body]
     # True shim: only imports + __all__ + optional docstring
-    is_pure_shim = all(
-        t in ("Expr", "Import", "ImportFrom", "Assign") for t in stmt_types
-    )
+    is_pure_shim = all(t in ("Expr", "Import", "ImportFrom", "Assign") for t in stmt_types)
     return {
         "file": rel,
         "body_count": len(body),

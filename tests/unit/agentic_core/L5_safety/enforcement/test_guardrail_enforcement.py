@@ -33,7 +33,7 @@ class TestSafeSubprocessHandler:
         """Subprocess security utility should exist."""
         util_path = Path("agentic_core/L5_safety/utils/subprocess_security_util.py")
         if not util_path.exists():
-            pytest.skip("subprocess_security_util.py not found")
+            pytest.fail("subprocess_security_util.py not found")
 
         content = util_path.read_text(encoding="utf-8", errors="ignore")
         assert "def " in content, "Should have utility functions"
@@ -46,7 +46,7 @@ class TestHealingStrategy:
         """Healing strategy should exist in enforcement/."""
         strategy_path = Path("agentic_core/L5_safety/enforcement/HealingStrategy.py")
         if not strategy_path.exists():
-            pytest.skip("HealingStrategy.py not found")
+            pytest.fail("HealingStrategy.py not found")
 
         content = strategy_path.read_text(encoding="utf-8", errors="ignore")
         assert "class " in content, "Should have class definition"
@@ -59,7 +59,7 @@ class TestEnforcementLayerIntegrity:
         """Enforcement files should be enforcement, not reasoning."""
         enforcement_path = Path("agentic_core/L5_safety/enforcement")
         if not enforcement_path.exists():
-            pytest.skip("L5_safety/enforcement/ not found")
+            pytest.fail("L5_safety/enforcement/ not found")
 
         # Enforcement files should have enforcement-related names
 
@@ -74,7 +74,7 @@ class TestEnforcementLayerIntegrity:
         """Agent classes should not be in enforcement/ (should be in reasoning/)."""
         enforcement_path = Path("agentic_core/L5_safety/enforcement")
         if not enforcement_path.exists():
-            pytest.skip("L5_safety/enforcement/ not found")
+            pytest.fail("L5_safety/enforcement/ not found")
 
         violations = []
         for py_file in enforcement_path.glob("*.py"):
@@ -87,4 +87,4 @@ class TestEnforcementLayerIntegrity:
 
         # Note: Some enforcement files may have Agent classes (legacy)
         if violations:
-            pytest.skip(f"Found {len(violations)} Agent classes in enforcement/ (may be legacy)")
+            pytest.fail(f"Found {len(violations)} Agent classes in enforcement/ (may be legacy)")

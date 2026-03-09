@@ -16,9 +16,9 @@ W2: Informational semantic retrieval + bounded scoring (C0-only).
 from __future__ import annotations
 
 import os
+from unittest.mock import patch
 
 import pytest
-from unittest.mock import MagicMock, patch
 
 from system_learning.engines.healing_config_optimizer import (
     HealingConfigOptimizer,
@@ -111,9 +111,7 @@ class TestW2NegativeControl:
 
             conf1 = proposal1.adjustments[0].confidence
             conf2 = proposal2.adjustments[0].confidence
-            assert conf1 == conf2, (
-                f"Determinism guard violated: run1={conf1} != run2={conf2}"
-            )
+            assert conf1 == conf2, f"Determinism guard violated: run1={conf1} != run2={conf2}"
             print(f"W2-NEGCTRL-GUARD-INTACT: conf1={conf1} conf2={conf2}")
 
     def test_small_n_guard_violation_negative_control(self) -> None:

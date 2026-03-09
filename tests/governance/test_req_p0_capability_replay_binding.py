@@ -8,9 +8,7 @@ from __future__ import annotations
 
 import hashlib
 import json
-import time
-from dataclasses import dataclass, field
-from typing import Optional
+from dataclasses import dataclass
 
 import pytest
 
@@ -20,6 +18,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Replay-bound capability token (self-contained)
 # ---------------------------------------------------------------------------
+
 
 class CapabilityTokenError(ValueError):
     """Raised when token validation fails."""
@@ -31,13 +30,14 @@ class ReplayBoundCapabilityToken:
     Capability token bound to a canonical replay digest.
     A token without a replay_digest_hash is structurally invalid.
     """
+
     token_id: str
     capability_scope: str
     target_namespace: str
     allowed_action: str
     issued_at_tick: int
     window_size: int
-    replay_digest_hash: str          # REQUIRED — empty string = invalid
+    replay_digest_hash: str  # REQUIRED — empty string = invalid
     issuer_id: str
     nonce: str
     used: bool = False
@@ -55,8 +55,7 @@ class ReplayBoundCapabilityToken:
         """
         if not self.is_replay_bound():
             raise CapabilityTokenError(
-                f"Token '{self.token_id}' is not replay-bound: "
-                f"replay_digest_hash='{self.replay_digest_hash}'"
+                f"Token '{self.token_id}' is not replay-bound: replay_digest_hash='{self.replay_digest_hash}'"
             )
         if self.used:
             raise CapabilityTokenError(f"Token '{self.token_id}' already used (single-use)")
@@ -71,7 +70,7 @@ class ReplayBoundCapabilityToken:
                 f"tick={current_tick} >= {self.issued_at_tick + self.window_size}"
             )
 
-    def bind_to_digest(self, digest_hash: str) -> "ReplayBoundCapabilityToken":
+    def bind_to_digest(self, digest_hash: str) -> ReplayBoundCapabilityToken:
         """Return a new token bound to the given digest."""
         return ReplayBoundCapabilityToken(
             token_id=self.token_id,
@@ -116,6 +115,7 @@ def _make_token(
 # Tests
 # ---------------------------------------------------------------------------
 
+
 @pytest.mark.governance
 def test_token_with_valid_digest_passes_validation():
     """Token with valid replay_digest_hash passes validate()."""
@@ -136,7 +136,7 @@ def test_token_missing_digest_is_rejected():
 @pytest.mark.governance
 def test_token_short_digest_is_rejected():
     """Token with too-short digest (not 64 hex) is rejected."""
-    token = _make_token(replay_digest_hash="abc123")   # too short
+    token = _make_token(replay_digest_hash="abc123")  # too short
 
     assert not token.is_replay_bound()
     with pytest.raises(CapabilityTokenError, match="not replay-bound"):

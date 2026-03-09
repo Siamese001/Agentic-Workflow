@@ -115,6 +115,7 @@ class InvocationRecord:
     provider_config_hash: str  # New: ensures replay determinism
     historical_data_hash: str  # New: versioned historical data
     replay_key: str  # New: mathematical replay key
+    response_text: str | None = None  # Captured model output for downstream consumers
 
 
 @dataclass(frozen=True, slots=True)

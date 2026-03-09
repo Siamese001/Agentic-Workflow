@@ -38,7 +38,7 @@ class TestProactiveAgent:
 
             return ProactiveAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import ProactiveAgent: {e}")
+            pytest.fail(f"Cannot import ProactiveAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify ProactiveAgent exists and is importable."""

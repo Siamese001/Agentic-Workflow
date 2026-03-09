@@ -27,6 +27,7 @@ from system_learning.engines.embedding_service_factory import (
 # Test Infrastructure
 # ---------------------------------------------------------------------------
 
+
 def compute_w3_determinism_digest() -> str:
     """Compute deterministic digest over embedding sovereignty test vectors."""
     # Use fixed test vectors for determinism
@@ -37,6 +38,7 @@ def compute_w3_determinism_digest() -> str:
 # ---------------------------------------------------------------------------
 # Single Entrypoint Tests
 # ---------------------------------------------------------------------------
+
 
 def test_single_entrypoint_enforced():
     """Test that only EmbeddingServiceFactory.get_or_disabled() is used."""
@@ -63,8 +65,8 @@ def test_defensive_assertion_duplicate_construction():
     try:
         # Create first instance
         pack1 = Path("/fake/path1")
-        with patch.object(EmbeddingServiceFactory, '_load_pack'):
-            with patch('psutil.Process') as mock_process:
+        with patch.object(EmbeddingServiceFactory, "_load_pack"):
+            with patch("psutil.Process") as mock_process:
                 mock_process.return_value.create_time.return_value = 123.45
                 EmbeddingServiceFactory.get(pack1)
 
@@ -82,6 +84,7 @@ def test_defensive_assertion_duplicate_construction():
 # Kill-Switch Tests
 # ---------------------------------------------------------------------------
 
+
 def test_kill_switch_hard_fail():
     """Test that EMBEDDING_ENABLED=false causes hard fail."""
     from system_learning.engines.embedding_service_factory import _DisabledEmbeddingService
@@ -96,6 +99,7 @@ def test_kill_switch_hard_fail():
 
         # Retrieve should return None (no fallback)
         import numpy as np
+
         query = np.random.rand(1024).astype(np.float32)
         result = service.retrieve(query, k=5, cutoff=0.5)
         assert result is None
@@ -108,7 +112,7 @@ def test_kill_switch_no_instantiation():
     """Test that kill-switch prevents any model instantiation."""
     with patch.dict(os.environ, {"EMBEDDING_ENABLED": "false"}):
         # Should not attempt to load any packs or models
-        with patch('system_learning.engines.embedding_service_factory.Path') as mock_path:
+        with patch("system_learning.engines.embedding_service_factory.Path") as mock_path:
             mock_path.return_value.exists.return_value = False
 
             service = EmbeddingServiceFactory.get_or_disabled()
@@ -122,6 +126,7 @@ def test_kill_switch_no_instantiation():
 # C0-Only Protection Tests
 # ---------------------------------------------------------------------------
 
+
 def test_c0_only_protection():
     """Test that embedding metadata cannot alter routing/safety/tier logic."""
     # This test verifies embedding outputs are C0-only (informational)
@@ -129,33 +134,27 @@ def test_c0_only_protection():
 
     # EmbeddingResult contains only informational fields
     result = EmbeddingResult(
-        content_hash="abc123",
-        score_round6=0.987654,
-        row_idx=42,
-        embedding_artifact_hash="def456"
+        content_hash="abc123", score_round6=0.987654, row_idx=42, embedding_artifact_hash="def456"
     )
 
     # Verify no behavioral control fields
-    assert hasattr(result, 'content_hash')
-    assert hasattr(result, 'score_round6')
-    assert hasattr(result, 'row_idx')
-    assert hasattr(result, 'embedding_artifact_hash')
+    assert hasattr(result, "content_hash")
+    assert hasattr(result, "score_round6")
+    assert hasattr(result, "row_idx")
+    assert hasattr(result, "embedding_artifact_hash")
 
     # No fields like: tier_threshold, route_override, safety_bypass, etc.
-    assert not hasattr(result, 'tier_threshold')
-    assert not hasattr(result, 'route_override')
-    assert not hasattr(result, 'safety_bypass')
-    assert not hasattr(result, 'execution_authority')
+    assert not hasattr(result, "tier_threshold")
+    assert not hasattr(result, "route_override")
+    assert not hasattr(result, "safety_bypass")
+    assert not hasattr(result, "execution_authority")
 
 
 def test_embedding_metadata_readonly():
     """Test that embedding metadata is read-only and cannot mutate system state."""
     # EmbeddingResult is frozen (immutable)
     result = EmbeddingResult(
-        content_hash="test",
-        score_round6=0.5,
-        row_idx=1,
-        embedding_artifact_hash="artifact"
+        content_hash="test", score_round6=0.5, row_idx=1, embedding_artifact_hash="artifact"
     )
 
     # Attempting to modify should fail
@@ -167,6 +166,7 @@ def test_embedding_metadata_readonly():
 # Replay Key Completeness Tests
 # ---------------------------------------------------------------------------
 
+
 @patch.dict(os.environ, {"EMBEDDING_ENABLED": "true"})
 def test_replay_key_completeness():
     """Test that replay key includes all required embedder metadata."""
@@ -177,18 +177,18 @@ def test_replay_key_completeness():
     try:
         # Mock manifest with all required fields
         mock_manifest = {
-            'hf_repo': 'BAAI/bge-large-en-v1.5',
-            'revision': 'main',
-            'embedding_dim': 1024,
-            'dtype': 'float32',
-            'normalize': True,
-            'seed_index_version_hash': 'abc123',
-            'embedding_model_version': 'v1.0'
+            "hf_repo": "BAAI/bge-large-en-v1.5",
+            "revision": "main",
+            "embedding_dim": 1024,
+            "dtype": "float32",
+            "normalize": True,
+            "seed_index_version_hash": "abc123",
+            "embedding_model_version": "v1.0",
         }
 
         pack_path = Path("/fake/pack")
-        with patch.object(EmbeddingServiceFactory, '_load_pack'):
-            with patch('psutil.Process') as mock_process:
+        with patch.object(EmbeddingServiceFactory, "_load_pack"):
+            with patch("psutil.Process") as mock_process:
                 mock_process.return_value.create_time.return_value = 123.45
 
                 factory = EmbeddingServiceFactory(pack_path)
@@ -201,7 +201,7 @@ def test_replay_key_completeness():
 
         # Verify replay key is a valid SHA256 hash
         assert len(replay_key) == 64
-        assert all(c in '0123456789abcdef' for c in replay_key)
+        assert all(c in "0123456789abcdef" for c in replay_key)
 
         # Verify different parameters produce different keys
         key2 = factory.replay_key(k=5, cutoff=0.3)
@@ -217,6 +217,7 @@ def test_replay_key_completeness():
 # Determinism Tests
 # ---------------------------------------------------------------------------
 
+
 def test_w3_determinism_digest_printed():
     """Print the W3-DETERMINISM-DIGEST marker exactly once per run."""
     digest = compute_w3_determinism_digest()
@@ -231,6 +232,7 @@ def test_w3_determinism_digest_printed():
 # Negative Control Tests
 # ---------------------------------------------------------------------------
 
+
 def test_negative_control_tamper_detection():
     """Negative control: detect tampering when W3_NEGCTRL_TAMPER=1."""
     if os.environ.get("W3_NEGCTRL_TAMPER") == "1":
@@ -243,22 +245,20 @@ def test_negative_control_tamper_detection():
 
         try:
             pack_path = Path("/fake/pack")
-            with patch.object(EmbeddingServiceFactory, '_load_pack'):
-                with patch('psutil.Process') as mock_process:
+            with patch.object(EmbeddingServiceFactory, "_load_pack"):
+                with patch("psutil.Process") as mock_process:
                     mock_process.return_value.create_time.return_value = 123.45
 
                     factory = EmbeddingServiceFactory(pack_path)
-                    factory._manifest = {'embedding_model_version': 'v1.0'}
+                    factory._manifest = {"embedding_model_version": "v1.0"}
                     factory._normalized_pack_hash = "original_hash"
                     factory._blas_impl = "openblas"
 
             # Simulate tampering by modifying manifest after construction
-            factory._manifest['embedding_model_version'] = "TAMPERED"
+            factory._manifest["embedding_model_version"] = "TAMPERED"
 
             # This should detect tampering
-            original_key = hashlib.sha256(
-                b"v1.0original_hash10.5openblas"
-            ).hexdigest()
+            original_key = hashlib.sha256(b"v1.0original_hash10.5openblas").hexdigest()
 
             tampered_key = factory.replay_key(k=10, cutoff=0.5)
 
@@ -279,6 +279,7 @@ def test_negative_control_tamper_detection():
 # ---------------------------------------------------------------------------
 # Integration Tests
 # ---------------------------------------------------------------------------
+
 
 def test_embedding_service_end_to_end():
     """End-to-end test of embedding service with all sovereign controls."""
@@ -307,6 +308,7 @@ def test_no_bypass_retrieval_paths():
         service = EmbeddingServiceFactory.get_or_disabled()
 
         import numpy as np
+
         query = np.random.rand(1024).astype(np.float32)
 
         # Should return None, not attempt any fallback

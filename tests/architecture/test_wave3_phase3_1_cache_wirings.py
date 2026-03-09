@@ -47,7 +47,7 @@ from __future__ import annotations
 import pathlib
 import sys
 from pathlib import Path
-from unittest.mock import MagicMock, patch
+from unittest.mock import patch
 
 import pytest
 
@@ -64,10 +64,10 @@ from tools.semantic_gap_analyzer import (
     _contains_symbol_reference,
 )
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
@@ -78,15 +78,15 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
-def _make_analyzer(analyze_map: dict[Path, FileAnalysis],
-                   prompt_files: list[Path] | None = None,
-                   existing_paths: set[Path] | None = None) -> tuple[SemanticGapAnalyzer, dict]:
+def _make_analyzer(
+    analyze_map: dict[Path, FileAnalysis],
+    prompt_files: list[Path] | None = None,
+    existing_paths: set[Path] | None = None,
+) -> tuple[SemanticGapAnalyzer, dict]:
     """Return a SemanticGapAnalyzer with mocked analyze_file and find_hot_paths.
     existing_paths controls which paths report Path.exists() == True.
     Returns (analyzer, ctx) where ctx['exists_side_effect'] is the side_effect fn.
@@ -116,6 +116,7 @@ def _make_analyzer(analyze_map: dict[Path, FileAnalysis],
 # 1. _analysis_mentions_cache helper
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_analysis_mentions_cache_module_hint_match():
     """_analysis_mentions_cache returns True when module_hint found in imported_module_names."""
@@ -129,7 +130,9 @@ def test_analysis_mentions_cache_symbol_hint_match():
     """_analysis_mentions_cache returns True when symbol_hint found in imported_symbol_names."""
     p = AGENTIC_CORE / "utils" / "fake.py"
     analysis = _ok_analysis(p, imported_symbol_names={"AgentDiscoveryCache"})
-    assert _analysis_mentions_cache(analysis, module_hint="discovery_cache", symbol_hint="AgentDiscoveryCache")
+    assert _analysis_mentions_cache(
+        analysis, module_hint="discovery_cache", symbol_hint="AgentDiscoveryCache"
+    )
 
 
 @pytest.mark.architecture
@@ -137,7 +140,9 @@ def test_analysis_mentions_cache_no_match():
     """_analysis_mentions_cache returns False when neither hint matches."""
     p = AGENTIC_CORE / "utils" / "fake.py"
     analysis = _ok_analysis(p, imported_module_names={"os"}, imported_symbol_names={"Path"})
-    assert not _analysis_mentions_cache(analysis, module_hint="discovery_cache", symbol_hint="AgentDiscoveryCache")
+    assert not _analysis_mentions_cache(
+        analysis, module_hint="discovery_cache", symbol_hint="AgentDiscoveryCache"
+    )
 
 
 @pytest.mark.architecture
@@ -262,6 +267,7 @@ def test_discovery_py_with_symbol_cache_no_l0_gap001():
 # ===========================================================================
 # 3. analyze_l0_routing_gate — policy_engine branch
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_policy_engine_parse_fail_no_l0_gap002():
@@ -418,6 +424,7 @@ def test_cognitive_engine_with_symbol_cache_no_l1_gap001():
 # 5. analyze_l1_cognition — prompt_files loop branches
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_prompt_file_no_cache_generates_l1_gap_prompt():
     """L1 prompt loop: prompt file with no cache import, 'cache' not in name -> L1-GAP-PROMPT."""
@@ -541,6 +548,7 @@ def test_no_prompt_files_no_l1_gap_prompt():
 # ===========================================================================
 # 6. Real codebase invariants
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_analyze_l0_routing_gate_returns_list():

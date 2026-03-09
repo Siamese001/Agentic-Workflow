@@ -61,8 +61,9 @@ class TestPolicyRecommendationW4D:
         )
 
         # Verify deterministic digest
-        assert rec1.deterministic_digest == rec2.deterministic_digest, \
+        assert rec1.deterministic_digest == rec2.deterministic_digest, (
             "Policy recommendation must be deterministic"
+        )
 
         # Emit digest for test verification
         rec1.emit_digest()
@@ -117,8 +118,9 @@ class TestPolicyRecommendationW4D:
             # Max reduction: min(0.02, 0.15 * 0.05) = min(0.02, 0.0075) = 0.0075
             expected_max_reduction = 0.0075
             actual_reduction = active_profile.similarity_cutoff - new_cutoff
-            assert actual_reduction <= expected_max_reduction + 0.000001, \
+            assert actual_reduction <= expected_max_reduction + 0.000001, (
                 f"Cutoff reduction {actual_reduction} exceeds max {expected_max_reduction}"
+            )
             assert new_cutoff >= 0.1, "Cutoff should not go below minimum safe value"
 
         # Verify bounded influence_cap increase
@@ -127,13 +129,15 @@ class TestPolicyRecommendationW4D:
             # Max increase: min(0.01, 0.15 * 0.02) = min(0.01, 0.003) = 0.003
             expected_max_increase = 0.003
             actual_increase = new_cap - active_profile.influence_cap
-            assert actual_increase <= expected_max_increase + 0.000001, \
+            assert actual_increase <= expected_max_increase + 0.000001, (
                 f"Cap increase {actual_increase} exceeds max {expected_max_increase}"
+            )
             assert new_cap <= 1.0, "Cap should not exceed maximum safe value"
 
         # Verify confidence is bounded
-        assert 0.0 <= recommendation.confidence_score <= 1.0, \
+        assert 0.0 <= recommendation.confidence_score <= 1.0, (
             "Confidence score must be bounded between 0 and 1"
+        )
 
     def test_policy_recommendation_no_drift_case(self):
         """Test recommendation when no drift is detected."""
@@ -170,8 +174,9 @@ class TestPolicyRecommendationW4D:
         )
 
         # Verify no changes recommended
-        assert recommendation.recommended_changes == {}, \
+        assert recommendation.recommended_changes == {}, (
             "No changes should be recommended when drift_flag is False"
+        )
         assert "No drift detected" in recommendation.rationale
         assert f"{drift_summary.p95_cosine:.6f}" in recommendation.rationale
         assert recommendation.confidence_score == 0.95
@@ -209,6 +214,7 @@ class TestPolicyRecommendationW4D:
 
         # Make copies for comparison
         import copy
+
         drift_summary_copy = copy.deepcopy(drift_summary)
         active_profile_copy = copy.deepcopy(active_profile)
 
@@ -220,10 +226,8 @@ class TestPolicyRecommendationW4D:
         )
 
         # Verify inputs are unchanged
-        assert drift_summary == drift_summary_copy, \
-            "Drift summary must not be modified"
-        assert active_profile == active_profile_copy, \
-            "Active profile must not be modified"
+        assert drift_summary == drift_summary_copy, "Drift summary must not be modified"
+        assert active_profile == active_profile_copy, "Active profile must not be modified"
 
         # Verify recommendation is computed correctly
         assert recommendation.profile_id == "test-profile"
@@ -264,7 +268,9 @@ class TestPolicyRecommendationW4D:
 
         # Should still recommend changes but very small
         if "similarity_cutoff" in recommendation.recommended_changes:
-            reduction = active_profile.similarity_cutoff - recommendation.recommended_changes["similarity_cutoff"]
+            reduction = (
+                active_profile.similarity_cutoff - recommendation.recommended_changes["similarity_cutoff"]
+            )
             assert reduction <= 0.02, "Reduction should be bounded by max"
             assert reduction > 0, "Should recommend some reduction"
 
@@ -281,6 +287,7 @@ class TestW4DNegativeControl:
 
         # Monkey patch the rounding function to use different precision
         import system_learning.engines.policy_recommendation_engine as engine_module
+
         original_round = round
 
         def tampered_round(x, ndigits=None):
@@ -336,11 +343,15 @@ class TestW4DNegativeControl:
 
             # Tampering should cause different results - this should FAIL the test
             if rec_tampered.deterministic_digest != rec_normal.deterministic_digest:
-                assert False, f"TAMPERING DETECTED: tampered digest {rec_tampered.deterministic_digest} != normal digest {rec_normal.deterministic_digest}"
+                assert False, (
+                    f"TAMPERING DETECTED: tampered digest {rec_tampered.deterministic_digest} != normal digest {rec_normal.deterministic_digest}"
+                )
 
             # Also check for rounding differences
             if rec_tampered.confidence_score != rec_normal.confidence_score:
-                assert False, f"TAMPERING DETECTED: tampered confidence {rec_tampered.confidence_score} != normal confidence {rec_normal.confidence_score}"
+                assert False, (
+                    f"TAMPERING DETECTED: tampered confidence {rec_tampered.confidence_score} != normal confidence {rec_normal.confidence_score}"
+                )
 
             # If we get here, tampering wasn't effective
             assert False, "Tampering was not effective - values are identical"
@@ -396,7 +407,9 @@ class TestW4DNegativeControl:
         )
 
         # Should be identical when not tampering
-        assert rec1.deterministic_digest == rec2.deterministic_digest, \
+        assert rec1.deterministic_digest == rec2.deterministic_digest, (
             "Digest must be identical when not tampering"
-        assert rec1.confidence_score == rec2.confidence_score, \
+        )
+        assert rec1.confidence_score == rec2.confidence_score, (
             "Confidence score must be identical when not tampering"
+        )

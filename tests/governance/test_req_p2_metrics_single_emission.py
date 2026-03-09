@@ -9,7 +9,7 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Set
+from typing import Any
 
 import pytest
 
@@ -19,6 +19,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Metrics emission types
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class MetricsArtifact:
@@ -55,8 +56,8 @@ class MetricsEmissionChokepoint:
 
     def __init__(self, emitter_id: str):
         self._emitter_id = emitter_id
-        self._emitted_trace_ids: Set[str] = set()
-        self._emissions: List[MetricsArtifact] = []
+        self._emitted_trace_ids: set[str] = set()
+        self._emissions: list[MetricsArtifact] = []
 
     def emit(self, trace_id: str, metric_name: str, value: Any, tick: int) -> MetricsArtifact:
         """Emit a metric. Raises DuplicateEmissionError if trace_id already emitted."""
@@ -81,10 +82,10 @@ class MetricsEmissionChokepoint:
         return len(self._emissions)
 
     @property
-    def emitted_trace_ids(self) -> Set[str]:
+    def emitted_trace_ids(self) -> set[str]:
         return frozenset(self._emitted_trace_ids)
 
-    def get_emission(self, trace_id: str) -> Optional[MetricsArtifact]:
+    def get_emission(self, trace_id: str) -> MetricsArtifact | None:
         for a in self._emissions:
             if a.trace_id == trace_id:
                 return a
@@ -99,6 +100,7 @@ class MetricsEmissionChokepoint:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def chokepoint() -> MetricsEmissionChokepoint:

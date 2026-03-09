@@ -28,7 +28,7 @@ def test_BootstrapAgent_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class BootstrapAgent not found in module")
+        pytest.fail("Class BootstrapAgent not found in module")
 
 
 def test_run_bootstrap_exists():
@@ -37,7 +37,7 @@ def test_run_bootstrap_exists():
         func = agentic_core.L5_safety.reasoning.BootstrapAgent.run_bootstrap
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function run_bootstrap not found in module")
+        pytest.fail("Function run_bootstrap not found in module")
 
 
 def test_heal_repository_exists():
@@ -46,7 +46,7 @@ def test_heal_repository_exists():
         func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal_repository
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function heal_repository not found in module")
+        pytest.fail("Function heal_repository not found in module")
 
 
 def test_heal_exists():
@@ -55,7 +55,7 @@ def test_heal_exists():
         func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function heal not found in module")
+        pytest.fail("Function heal not found in module")
 
 
 def test_module_has_minimum_coverage():

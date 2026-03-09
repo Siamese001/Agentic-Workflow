@@ -9,11 +9,15 @@ from __future__ import annotations
 
 import logging
 
+from agentic_core.L2_execution.healers.healing_tier_config import (
+    HEALING_CONFIDENCE_X,
+    HEALING_CONFIDENCE_Y,
+)
+
 logger = logging.getLogger(__name__)
 
-# FIXED THRESHOLDS - IMMUTABLE BY META-LEARNING
-HEALING_CONFIDENCE_X = 0.75  # Upper threshold - CANNOT BE MODIFIED
-HEALING_CONFIDENCE_Y = 0.40  # Lower threshold - CANNOT BE MODIFIED
+# THRESHOLDS ARE IMPORTED FROM THE SINGLE SOURCE OF TRUTH: healing_tier_config.py
+# HEALING_CONFIDENCE_X and HEALING_CONFIDENCE_Y must NOT be redefined here.
 
 # Historical success rate store (in production backed by L4)
 _historical_success_rates: dict[str, float] = {}
@@ -59,16 +63,16 @@ def update_qwen_confidence_prior(error_signature: str, success: bool) -> None:
 
     logger.info(f"Updated confidence prior for {error_signature}: {current_rate:.2f} -> {new_rate:.2f}")
 
-    # THRESHOLDS REMAIN IMMUTABLE
-    assert HEALING_CONFIDENCE_X == 0.75, "X threshold is immutable"
-    assert HEALING_CONFIDENCE_Y == 0.40, "Y threshold is immutable"
+    # THRESHOLDS REMAIN IMMUTABLE (values from healing_tier_config.py SSOT)
+    assert HEALING_CONFIDENCE_X == 0.80, "X threshold is immutable"
+    assert HEALING_CONFIDENCE_Y == 0.50, "Y threshold is immutable"
 
 
 def validate_threshold_immutability() -> None:
     """Ensure healing thresholds cannot be modified."""
     # These values must never change
-    assert HEALING_CONFIDENCE_X == 0.75, f"X threshold modified: {HEALING_CONFIDENCE_X}"
-    assert HEALING_CONFIDENCE_Y == 0.40, f"Y threshold modified: {HEALING_CONFIDENCE_Y}"
+    assert HEALING_CONFIDENCE_X == 0.80, f"X threshold modified: {HEALING_CONFIDENCE_X}"
+    assert HEALING_CONFIDENCE_Y == 0.50, f"Y threshold modified: {HEALING_CONFIDENCE_Y}"
 
     logger.debug("Threshold immutability validated")
 

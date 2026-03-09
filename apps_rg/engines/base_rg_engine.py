@@ -14,21 +14,27 @@ try:
     )
 
     _OUTPUT_CONTRACT_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     _OUTPUT_CONTRACT_AVAILABLE = False
+    # Optional dependency - continue without output contracts
+    logging.getLogger(__name__).debug(f"Output contracts not available: {e}")
 
 try:
     from pydantic import BaseModel
-except ImportError:
+except ImportError as e:
     BaseModel = Any  # type: ignore
+    # Optional dependency - continue without pydantic validation
+    logging.getLogger(__name__).debug(f"Pydantic not available: {e}")
 
 # Import mixins - fall back to stubs if not available
 try:
     from apps_rg.utils.mixins import HealerMixin, MCPHardenedMixin
 
     MIXINS_AVAILABLE = True
-except ImportError:
+except ImportError as e:
     MIXINS_AVAILABLE = False
+    # Optional mixins - continue with stubs
+    logging.getLogger(__name__).debug(f"RG mixins not available: {e}")
 
     class MCPHardenedMixin:
         """Stub MCPHardenedMixin for standalone usage."""

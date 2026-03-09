@@ -100,9 +100,10 @@ def extract_failure_metadata(action: dict) -> dict:
 def generate_fallback_vector(text: str) -> list[float]:
     """Produce a deterministic 16-dimensional L2-normalised fallback vector.
 
-    Used when bge-m3 is unavailable (BMG_EMBEDDINGS_ENABLED=false) to ensure
+    Used in BOOTSTRAP_MODE only (initial environment setup) to ensure
     failure_vector is never None. The vector carries no semantic meaning but
     preserves determinism and allows FAISS storage to proceed.
+    Normal operation MUST use bge-m3 (mandatory system dependency).
 
     The vector is tagged with ``vector_source="hash-fallback"`` metadata by
     the caller; downstream novelty/cluster logic MUST NOT interpret it as a

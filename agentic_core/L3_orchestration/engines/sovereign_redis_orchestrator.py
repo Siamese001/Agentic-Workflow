@@ -213,7 +213,4 @@ _orchestrator = None
 
 def get_sovereign_redis_orchestrator() -> SovereignRedisOrchestrator:
     """Factory function to get sovereign redis orchestrator instance."""
-    # CRITICAL FIRST: Shared HealerMixin chain (diagnostics, rollback, MCP hardening)
-    super().heal_repository()
-
     return SovereignRedisOrchestrator()

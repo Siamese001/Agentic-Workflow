@@ -108,25 +108,20 @@ class RedisCacheMixin:
         """
         Lazy-load Hardened Redis Client.
 
-        [PHASE 2 MIGRATION] Now routes through the RedisSovereignAgent singleton
+        [PHASE 2 MIGRATION] Now routes through the canonical DeterministicRedisCache
         to ensure connection pool reuse and centralized auditing.
         """
         if not self.redis_enabled:
             return None
         if self._redis_client is None:
             try:
-                from pathlib import Path
+                from agentic_core.cache.redis_cache_client import get_hot_cache
 
-                from agentic_core.L4_state.reasoning.RedisSovereignAgent import (
-                    RedisSovereignAgent,
-                )
-
-                # Retrieve the singleton instance
-                root = Path(__file__).resolve().parents[3]  # Adjusted for utils location
-                gateway = RedisSovereignAgent(root)
-                self._redis_client = gateway.get_client()
+                # Get the canonical hot cache instance
+                self._redis_client = get_hot_cache()
                 log.info(f"[{self.__class__.__name__}] Connected to Hardened Redis Gateway")
             except Exception as e:
+                # guardian: allow-silent-swallow
                 if not GRACEFUL_DEGRADATION:
                     raise
                 log.warning(f"Redis client init failed ({e}) - using local cache fallback")
@@ -167,6 +162,7 @@ class RedisCacheMixin:
                     self._circuit_breaker.record_success()
                     return value
             except Exception as e:
+                # guardian: allow-silent-swallow
                 self._circuit_breaker.record_failure()
                 if CACHE_METRICS_ENABLED:
                     metrics.record_error("redis_get")
@@ -227,6 +223,7 @@ class RedisCacheMixin:
                 self._circuit_breaker.record_success()
                 return
             except Exception as e:
+                # guardian: allow-silent-swallow
                 self._circuit_breaker.record_failure()
                 log.debug(f"Redis set suppressed error (local fallback used): {str(e)[:80]}")
                 if CACHE_METRICS_ENABLED:

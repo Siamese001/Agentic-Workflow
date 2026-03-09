@@ -1,0 +1,452 @@
+"""Plan 5 — Evaluation & Drift Tracking Hardening Tests.
+
+Covers:
+- Gap 1: RetrievalDriftMonitor injectable timestamps (DriftClock)
+- Gap 5: ShadowDriftAnalyzer externalized threshold
+- Gap 2: DriftRegistry record/query round-trip
+- Gap 4: RAGAS-style metrics (FaithfulnessMetric, AnswerRelevancyMetric,
+         ContextPrecisionMetric, GroundednessMetric)
+- Gap 7: LLM-as-Judge harness (JudgeScore, NullJudge, GeminiJudge)
+"""
+
+from __future__ import annotations
+
+import pytest
+
+pytestmark = pytest.mark.unit
+
+
+# ---------------------------------------------------------------------------
+# Gap 1: Injectable timestamps in RetrievalDriftMonitor
+# ---------------------------------------------------------------------------
+
+
+class TestDriftMonitorInjectableTimestamps:
+    _FIXED_TS = "2024-01-01T00:00:00Z"
+
+    def _make_monitor(self):
+        from agentic_core.utils.workflow_engines.drift_monitor import RetrievalDriftMonitor
+
+        return RetrievalDriftMonitor()
+
+    def test_measure_with_explicit_now_iso_sets_snapshot_timestamp(self):
+        monitor = self._make_monitor()
+        snapshot = monitor.measure(
+            queries=["q1"],
+            retrieved_doc_ids=[["d1"]],
+            ground_truth_doc_ids=[["d1"]],
+            scores=[[0.9]],
+            now_iso=self._FIXED_TS,
+        )
+        assert snapshot.timestamp == self._FIXED_TS
+
+    def test_measure_two_calls_same_now_iso_produce_equal_timestamps(self):
+        monitor = self._make_monitor()
+        kwargs = {
+            "queries": ["q1"],
+            "retrieved_doc_ids": [["d1"]],
+            "ground_truth_doc_ids": [["d1"]],
+            "scores": [[0.9]],
+            "now_iso": self._FIXED_TS,
+        }
+        s1 = monitor.measure(**kwargs)
+        s2 = monitor.measure(**kwargs)
+        assert s1.timestamp == s2.timestamp == self._FIXED_TS
+
+    def test_check_alerts_with_explicit_now_iso_sets_alert_timestamp(self):
+        from agentic_core.utils.workflow_engines.drift_monitor import RetrievalDriftMonitor
+
+        monitor = RetrievalDriftMonitor(hit_rate_threshold=0.99)
+        snapshot = monitor.measure(
+            queries=["q1"],
+            retrieved_doc_ids=[["miss"]],
+            ground_truth_doc_ids=[["d1"]],
+            scores=[[0.5]],
+            now_iso=self._FIXED_TS,
+        )
+        alerts = monitor.check_alerts(snapshot, now_iso=self._FIXED_TS)
+        assert len(alerts) > 0
+        assert all(a.timestamp == self._FIXED_TS for a in alerts)
+
+    def test_drift_clock_utcnow_returns_string(self):
+        from agentic_core.utils.workflow_engines.drift_monitor import DriftClock
+
+        ts = DriftClock.utcnow()
+        assert isinstance(ts, str)
+        assert ts.endswith("Z")
+
+    def test_measure_without_now_iso_uses_wall_clock(self):
+        monitor = self._make_monitor()
+        snapshot = monitor.measure(
+            queries=["q1"],
+            retrieved_doc_ids=[["d1"]],
+            ground_truth_doc_ids=[["d1"]],
+            scores=[[0.9]],
+        )
+        assert snapshot.timestamp is not None
+        assert snapshot.timestamp.endswith("Z")
+
+
+# ---------------------------------------------------------------------------
+# Gap 5: ShadowDriftAnalyzer externalized threshold
+# ---------------------------------------------------------------------------
+
+
+class TestShadowDriftAnalyzerThreshold:
+    def _records(self, cosine: float) -> list[dict]:
+        return [{"primary_shadow_cosine": cosine}]
+
+    def test_default_threshold_is_0_92(self):
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer()
+        assert analyzer._drift_threshold == 0.92
+
+    def test_custom_threshold_stored(self):
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer(drift_threshold=0.85)
+        assert analyzer._drift_threshold == 0.85
+
+    def test_summary_contains_drift_threshold_field(self):
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer()
+        summary = analyzer.analyze_batch(shadow_records=self._records(0.95), profile_id="p1", now_utc=0)
+        assert hasattr(summary, "drift_threshold")
+        assert summary.drift_threshold == 0.92
+
+    def test_custom_threshold_reflected_in_summary(self):
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer(drift_threshold=0.85)
+        summary = analyzer.analyze_batch(shadow_records=self._records(0.90), profile_id="p1", now_utc=0)
+        assert summary.drift_threshold == 0.85
+
+    def test_drift_flag_respects_custom_threshold(self):
+        """Analyzer(threshold=0.85): cosine=0.84 < 0.85 → drift_flag=True."""
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer(drift_threshold=0.85)
+        summary = analyzer.analyze_batch(shadow_records=self._records(0.84), profile_id="p1", now_utc=0)
+        assert summary.drift_flag is True
+
+    def test_drift_flag_false_when_above_custom_threshold(self):
+        """Analyzer(threshold=0.85): cosine=0.90 >= 0.85 → drift_flag=False."""
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        analyzer = ShadowDriftAnalyzer(drift_threshold=0.85)
+        summary = analyzer.analyze_batch(shadow_records=self._records(0.90), profile_id="p1", now_utc=0)
+        assert summary.drift_flag is False
+
+    def test_digest_includes_threshold_value(self):
+        """Two analyzers with different thresholds must produce different digests."""
+        from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+        records = self._records(0.90)
+        a1 = ShadowDriftAnalyzer(drift_threshold=0.85)
+        a2 = ShadowDriftAnalyzer(drift_threshold=0.95)
+        s1 = a1.analyze_batch(shadow_records=records, profile_id="p1", now_utc=0)
+        s2 = a2.analyze_batch(shadow_records=records, profile_id="p1", now_utc=0)
+        assert s1.deterministic_digest != s2.deterministic_digest
+
+
+# ---------------------------------------------------------------------------
+# Gap 2: DriftRegistry
+# ---------------------------------------------------------------------------
+
+
+class TestDriftRegistry:
+    def _make_entry(self, source="retrieval", metric="hit_rate", value=0.5, flag=True, sev="warning"):
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistryEntry
+
+        return DriftRegistryEntry.create(
+            source=source,
+            timestamp_iso="2024-01-01T00:00:00Z",
+            metric_name=metric,
+            current_value=value,
+            threshold_value=0.70,
+            drift_flag=flag,
+            severity=sev,
+        )
+
+    def _make_registry(self):
+        from pathlib import Path
+
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistry
+
+        return DriftRegistry(timeline_path=Path("/dev/null") if True else None)
+
+    def test_record_and_query_round_trip(self):
+        from pathlib import Path
+
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistry
+
+        reg = DriftRegistry(timeline_path=Path("nul"))
+        entry = self._make_entry()
+        reg.record(entry)
+        results = reg.query()
+        assert len(results) == 1
+        assert results[0].source == "retrieval"
+
+    def test_query_source_filter_returns_only_matching(self):
+        from pathlib import Path
+
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistry
+
+        reg = DriftRegistry(timeline_path=Path("nul"))
+        reg.record(self._make_entry(source="retrieval"))
+        reg.record(self._make_entry(source="shadow"))
+        reg.record(self._make_entry(source="shadow"))
+        results = reg.query(source_filter="shadow")
+        assert len(results) == 2
+        assert all(r.source == "shadow" for r in results)
+
+    def test_query_source_filter_retrieval_excludes_shadow(self):
+        from pathlib import Path
+
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistry
+
+        reg = DriftRegistry(timeline_path=Path("nul"))
+        reg.record(self._make_entry(source="retrieval"))
+        reg.record(self._make_entry(source="shadow"))
+        results = reg.query(source_filter="retrieval")
+        assert len(results) == 1
+
+    def test_registry_entry_has_deterministic_digest(self):
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistryEntry
+
+        e1 = DriftRegistryEntry.create(
+            source="shadow",
+            timestamp_iso="2024-01-01T00:00:00Z",
+            metric_name="p95_cosine",
+            current_value=0.88,
+            threshold_value=0.92,
+            drift_flag=True,
+            severity="warning",
+        )
+        e2 = DriftRegistryEntry.create(
+            source="shadow",
+            timestamp_iso="2024-01-01T00:00:00Z",
+            metric_name="p95_cosine",
+            current_value=0.88,
+            threshold_value=0.92,
+            drift_flag=True,
+            severity="warning",
+        )
+        assert e1.deterministic_digest == e2.deterministic_digest
+
+    def test_different_values_produce_different_digests(self):
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistryEntry
+
+        e1 = DriftRegistryEntry.create(
+            source="shadow",
+            timestamp_iso="2024-01-01T00:00:00Z",
+            metric_name="p95",
+            current_value=0.88,
+            threshold_value=0.92,
+            drift_flag=True,
+            severity="warning",
+        )
+        e2 = DriftRegistryEntry.create(
+            source="shadow",
+            timestamp_iso="2024-01-01T00:00:00Z",
+            metric_name="p95",
+            current_value=0.99,
+            threshold_value=0.92,
+            drift_flag=False,
+            severity="info",
+        )
+        assert e1.deterministic_digest != e2.deterministic_digest
+
+    def test_all_entries_returns_insertion_order(self):
+        from pathlib import Path
+
+        from agentic_core.L6_observability.engines.drift_registry import DriftRegistry
+
+        reg = DriftRegistry(timeline_path=Path("nul"))
+        sources = ["retrieval", "shadow", "embedding", "c0_context"]
+        for src in sources:
+            reg.record(self._make_entry(source=src))
+        all_e = reg.all_entries()
+        assert [e.source for e in all_e] == sources
+
+
+# ---------------------------------------------------------------------------
+# Gap 4: RAGAS metrics — determinism + edge cases
+# ---------------------------------------------------------------------------
+
+
+class TestRagasMetricsDeterminism:
+    def test_context_precision_perfect_recall(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import ContextPrecisionMetric
+
+        m = ContextPrecisionMetric()
+        score = m.compute(prediction=["a", "b", "c"], ground_truth={"a", "b", "c"})
+        assert score == pytest.approx(1.0)
+
+    def test_context_precision_zero_overlap(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import ContextPrecisionMetric
+
+        m = ContextPrecisionMetric()
+        score = m.compute(prediction=["a", "b"], ground_truth={"x", "y"})
+        assert score == pytest.approx(0.0)
+
+    def test_context_precision_partial(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import ContextPrecisionMetric
+
+        m = ContextPrecisionMetric()
+        score = m.compute(prediction=["a", "b", "c", "d"], ground_truth={"a", "b"})
+        assert score == pytest.approx(0.5)
+
+    def test_context_precision_empty_prediction_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import ContextPrecisionMetric
+
+        m = ContextPrecisionMetric()
+        assert m.compute(prediction=[], ground_truth={"a"}) == pytest.approx(0.0)
+
+    def test_faithfulness_empty_answer_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import FaithfulnessMetric
+
+        m = FaithfulnessMetric()
+        assert m.compute(prediction="", context=["some context"]) == pytest.approx(0.0)
+
+    def test_faithfulness_empty_context_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import FaithfulnessMetric
+
+        m = FaithfulnessMetric()
+        assert m.compute(prediction="The sky is blue.", context=[]) == pytest.approx(0.0)
+
+    def test_faithfulness_deterministic_identical_inputs(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import FaithfulnessMetric
+
+        m = FaithfulnessMetric()
+        answer = "Paris is the capital of France."
+        context = ["Paris is the capital of France and a major European city."]
+        s1 = m.compute(prediction=answer, context=context)
+        s2 = m.compute(prediction=answer, context=context)
+        assert s1 == s2
+
+    def test_answer_relevancy_empty_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import AnswerRelevancyMetric
+
+        m = AnswerRelevancyMetric()
+        assert m.compute(prediction="", ground_truth="query") == pytest.approx(0.0)
+        assert m.compute(prediction="answer", ground_truth="") == pytest.approx(0.0)
+
+    def test_answer_relevancy_deterministic(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import AnswerRelevancyMetric
+
+        m = AnswerRelevancyMetric()
+        s1 = m.compute(prediction="The capital is Paris.", ground_truth="What is the capital?")
+        s2 = m.compute(prediction="The capital is Paris.", ground_truth="What is the capital?")
+        assert s1 == s2
+
+    def test_groundedness_empty_answer_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import GroundednessMetric
+
+        m = GroundednessMetric()
+        assert m.compute(prediction="", context=["context"]) == pytest.approx(0.0)
+
+    def test_groundedness_no_context_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import GroundednessMetric
+
+        m = GroundednessMetric()
+        assert m.compute(prediction="Some claim.", context=[]) == pytest.approx(0.0)
+        assert m.compute(prediction="Some claim.", context=None) == pytest.approx(0.0)
+
+    def test_cosine_helper_zero_norm_returns_zero(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import _cosine
+
+        assert _cosine([0.0, 0.0], [1.0, 0.0]) == pytest.approx(0.0)
+        assert _cosine([0.0, 0.0], [0.0, 0.0]) == pytest.approx(0.0)
+
+    def test_cosine_identical_vectors_returns_one(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import _cosine
+
+        v = [1.0, 2.0, 3.0]
+        assert _cosine(v, v) == pytest.approx(1.0)
+
+    def test_split_sentences_handles_empty(self):
+        from agentic_core.evaluation.metrics.ragas_metrics import _split_sentences
+
+        assert _split_sentences("") == []
+        assert _split_sentences("   ") == []
+
+
+# ---------------------------------------------------------------------------
+# Gap 7: LLM-as-Judge harness
+# ---------------------------------------------------------------------------
+
+
+class TestJudgeScore:
+    def test_judge_score_deterministic_digest(self):
+        from agentic_core.evaluation.judges.llm_judge import JudgeScore
+
+        s1 = JudgeScore.create(3.0, 4.0, 2.0, 3.0, "ok", "null")
+        s2 = JudgeScore.create(3.0, 4.0, 2.0, 3.0, "ok", "null")
+        assert s1.deterministic_digest == s2.deterministic_digest
+
+    def test_different_scores_different_digest(self):
+        from agentic_core.evaluation.judges.llm_judge import JudgeScore
+
+        s1 = JudgeScore.create(3.0, 4.0, 2.0, 3.0, "ok", "null")
+        s2 = JudgeScore.create(5.0, 5.0, 5.0, 5.0, "ok", "null")
+        assert s1.deterministic_digest != s2.deterministic_digest
+
+    def test_judge_score_has_all_required_fields(self):
+        from agentic_core.evaluation.judges.llm_judge import JudgeScore
+
+        s = JudgeScore.create(3.0, 3.0, 3.0, 3.0, "reason", "model")
+        assert hasattr(s, "faithfulness")
+        assert hasattr(s, "answer_relevancy")
+        assert hasattr(s, "context_precision")
+        assert hasattr(s, "groundedness")
+        assert hasattr(s, "reasoning")
+        assert hasattr(s, "judge_model")
+        assert hasattr(s, "deterministic_digest")
+
+    def test_judge_score_is_frozen(self):
+        from agentic_core.evaluation.judges.llm_judge import JudgeScore
+
+        s = JudgeScore.create(3.0, 3.0, 3.0, 3.0, "r", "m")
+        with pytest.raises((AttributeError, TypeError)):
+            s.faithfulness = 5.0  # type: ignore[misc]
+
+
+class TestNullJudge:
+    def test_null_judge_returns_fixed_score(self):
+        from agentic_core.evaluation.judges.llm_judge import NullJudge
+
+        judge = NullJudge()
+        score = judge.score("query", "context", "answer")
+        assert score.faithfulness == NullJudge.FIXED_SCORE
+        assert score.answer_relevancy == NullJudge.FIXED_SCORE
+
+    def test_null_judge_is_deterministic(self):
+        from agentic_core.evaluation.judges.llm_judge import NullJudge
+
+        judge = NullJudge()
+        s1 = judge.score("q", "c", "a")
+        s2 = judge.score("q", "c", "a")
+        assert s1.deterministic_digest == s2.deterministic_digest
+
+    def test_null_judge_same_digest_different_inputs(self):
+        """NullJudge ignores input — same digest regardless of query."""
+        from agentic_core.evaluation.judges.llm_judge import NullJudge
+
+        judge = NullJudge()
+        s1 = judge.score("query A", "ctx A", "ans A")
+        s2 = judge.score("query B", "ctx B", "ans B")
+        assert s1.deterministic_digest == s2.deterministic_digest
+
+    def test_null_judge_implements_llm_judge_protocol(self):
+        from agentic_core.evaluation.judges.llm_judge import LLMJudge, NullJudge
+
+        assert isinstance(NullJudge(), LLMJudge)
+
+    def test_null_judge_judge_model_is_null(self):
+        from agentic_core.evaluation.judges.llm_judge import NullJudge
+
+        score = NullJudge().score("q", "c", "a")
+        assert score.judge_model == "null"

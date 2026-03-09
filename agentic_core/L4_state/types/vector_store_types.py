@@ -3,7 +3,7 @@
 
 from abc import ABC, abstractmethod
 
-from agentic_core.semantic_memory.models import MemoryItem, MemoryQuery
+from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
 
 
 class BaseVectorStore(ABC):

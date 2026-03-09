@@ -9,7 +9,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Dict, List, Tuple
 
 import pytest
 
@@ -20,10 +19,11 @@ pytestmark = pytest.mark.governance
 # Deterministic velocity calculator
 # ---------------------------------------------------------------------------
 
+
 @dataclass(frozen=True)
 class VelocitySignal:
     signal_id: str
-    tick: int       # integer semantic clock tick only
+    tick: int  # integer semantic clock tick only
 
 
 @dataclass(frozen=True)
@@ -55,7 +55,7 @@ class DeterministicVelocityCalculator:
 
     def __init__(self, window_size: int = 100):
         self._window_size = window_size
-        self._signals: List[VelocitySignal] = []
+        self._signals: list[VelocitySignal] = []
 
     def record_signal(self, signal: VelocitySignal) -> None:
         self._signals.append(signal)
@@ -99,10 +99,7 @@ class DeterministicVelocityCalculator:
 # Test fixtures
 # ---------------------------------------------------------------------------
 
-_TEST_SIGNALS = [
-    VelocitySignal(f"sig_{i:03d}", tick=i * 2)
-    for i in range(40)
-]
+_TEST_SIGNALS = [VelocitySignal(f"sig_{i:03d}", tick=i * 2) for i in range(40)]
 
 
 def _build_calculator_with_signals() -> DeterministicVelocityCalculator:
@@ -115,6 +112,7 @@ def _build_calculator_with_signals() -> DeterministicVelocityCalculator:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_velocity_two_run_identical():
@@ -188,7 +186,7 @@ def test_velocity_stable_ordering_deterministic():
     calc = DeterministicVelocityCalculator(window_size=50)
     # All signals at same tick
     for i in range(10):
-        calc.record_signal(VelocitySignal(f"sig_{9-i:02d}", tick=25))
+        calc.record_signal(VelocitySignal(f"sig_{9 - i:02d}", tick=25))
 
     d1 = calc.calculate_anomaly_digest(at_tick=50)
     d2 = calc.calculate_anomaly_digest(at_tick=50)

@@ -67,6 +67,14 @@ from agentic_core.L0_routing.types.routing_contracts_types import (
 Logger = logging.getLogger(__name__)
 
 
+class ExecutionGatewayError(RuntimeError):
+    """Raised when critical execution gateway operations fail."""
+
+    def __init__(self, message: str, original_error: Exception | None = None):
+        super().__init__(message)
+        self.original_error = original_error
+
+
 class UnregisteredAgentError(RuntimeError):
     """Raised when an agent is not found in AgentExecutionProfileRegistry."""
 
@@ -338,11 +346,17 @@ class V15ExecutionGateway:
         try:
             healing_output = heal_fn(manifest)
             commit_valid = healing_output.get("errors", 0) == 0
-        except Exception as exc:
-            # guardian: allow-silent-swallower - Logged error, sets commit_valid=False
-            error = str(exc)
+        except (ValueError, KeyError, AttributeError) as e:
+            # Expected healing errors - log and continue with commit_valid=False
+            error = str(e)
             commit_valid = False
-            Logger.error(f"[V15-GW] Healing failed: {exc}")
+            Logger.error(f"[V15-GW] Healing failed with known error: {e}")
+        except Exception as e:
+            # Unexpected errors - log, set commit_valid=False, and re-raise to surface critical issues
+            error = str(e)
+            commit_valid = False
+            Logger.critical(f"[V15-GW] Unexpected healing error: {e}")
+            raise ExecutionGatewayError(f"Critical healing operation failed: {e}") from e
 
         # Verify mutations occurred only in L2.2
         final_mutation_count = MUTATION_COUNTER
@@ -364,12 +378,20 @@ class V15ExecutionGateway:
                     current_mem,
                 )
                 rollback_verified = True
-            except Exception as exc:
-                # guardian: allow-silent-swallower - Logged error, sets rollback_verified=False
-                Logger.error(f"[V15-GW] Rollback integrity FAILED: {exc}")
+            except (OSError, ValueError) as e:
+                # Expected rollback verification errors - log and continue
+                Logger.error(f"[V15-GW] Rollback integrity check failed: {e}")
                 rollback_verified = False
                 if error is None:
-                    error = str(exc)
+                    error = str(e)
+            except Exception as e:
+                # Critical rollback errors - log and surface to caller
+                Logger.critical(f"[V15-GW] Critical rollback integrity error: {e}")
+                rollback_verified = False
+                if error is None:
+                    error = str(e)
+                # Re-raise as this indicates a serious system state issue
+                raise ExecutionGatewayError(f"Rollback integrity verification failed: {e}") from e
         else:
             # Success path
             post_fs, post_git, post_mem = state_hash_fn()
@@ -420,7 +442,9 @@ class V15ExecutionGateway:
         # modify manifest in-memory only
         try:
             return self._execute_with_envelope(manifest, heal_fn, state_hash_fn, trace_id, **kwargs)
-        except Exception as exc:
+        except (ValueError, KeyError, AttributeError) as e:
+            # Expected healing errors - return failure result with specific error
+            Logger.error(f"[V15-GW] Healing loop failed with known error: {e}")
             return GatewayResult(
                 success=False,
                 manifest=manifest,
@@ -429,7 +453,21 @@ class V15ExecutionGateway:
                 post_snapshot=None,
                 rollback_verified=False,
                 healing_output={},
-                error=f"Healing failed: {exc}",
+                error=f"Healing failed with known error: {e}",
+                dedupe_hit=False,
+            )
+        except Exception as e:
+            # Critical healing errors - log and return failure result
+            Logger.critical(f"[V15-GW] Critical healing loop error: {e}")
+            return GatewayResult(
+                success=False,
+                manifest=manifest,
+                semantic_clock_tick=self._clock.step_id,
+                pre_snapshot=None,
+                post_snapshot=None,
+                rollback_verified=False,
+                healing_output={},
+                error=f"Critical healing failure: {e}",
                 dedupe_hit=False,
             )
 

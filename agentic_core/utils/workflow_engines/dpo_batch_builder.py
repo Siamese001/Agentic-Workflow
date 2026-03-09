@@ -91,9 +91,7 @@ class DPOBatchBuilder:
                             chosen_response=pos.model_answer,
                             rejected_response=neg.model_answer,
                             context_documents=list(
-                                dict.fromkeys(
-                                    pos.context_documents + neg.context_documents
-                                )
+                                dict.fromkeys(pos.context_documents + neg.context_documents)
                             ),
                             chosen_score=chosen_score,
                             rejected_score=rejected_score,
@@ -125,8 +123,12 @@ class DPOBatchBuilder:
                 payload=batch.to_dict(),
             )
             self.l4_store.put(artifact)
-        except Exception:
-            pass
+        except (ValueError, KeyError, AttributeError) as e:
+            # Expected storage errors - log and continue
+            logging.getLogger(__name__).warning(f"Failed to store DPO batch {batch.batch_id[:8]}: {e}")
+        except (OSError, RuntimeError, MemoryError) as e:
+            # Critical storage errors - log and continue
+            logging.getLogger(__name__).error(f"Critical error storing DPO batch {batch.batch_id[:8]}: {e}")
 
 
 __all__ = ["DPOBatchBuilder"]

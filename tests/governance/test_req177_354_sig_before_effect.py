@@ -13,7 +13,6 @@ from __future__ import annotations
 import hashlib
 import hmac
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional, Tuple
 
 import pytest
 
@@ -24,11 +23,12 @@ pytestmark = pytest.mark.governance
 # Execution ordering tracker
 # ---------------------------------------------------------------------------
 
+
 class ExecutionOrderTracker:
     """Records verify/effect events to enforce ordering invariant."""
 
     def __init__(self):
-        self._events: List[Tuple[str, str]] = []  # (event_type, artifact_id)
+        self._events: list[tuple[str, str]] = []  # (event_type, artifact_id)
 
     def record_verify(self, artifact_id: str) -> None:
         self._events.append(("verify", artifact_id))
@@ -40,9 +40,7 @@ class ExecutionOrderTracker:
                 verify_idx = i
                 break
         if verify_idx is None:
-            raise AssertionError(
-                f"Side-effect for '{artifact_id}' attempted before signature verification"
-            )
+            raise AssertionError(f"Side-effect for '{artifact_id}' attempted before signature verification")
         self._events.append(("effect", artifact_id))
 
     def assert_ordering(self, artifact_id: str) -> None:
@@ -94,7 +92,7 @@ class ArtifactConsumer:
 
     def __init__(self, tracker: ExecutionOrderTracker):
         self._tracker = tracker
-        self._applied: List[str] = []
+        self._applied: list[str] = []
 
     def consume(self, artifact: SignedArtifact) -> None:
         """Verify then apply. Raises if sig fails or ordering violated."""
@@ -110,7 +108,7 @@ class ArtifactConsumer:
         self._tracker.record_effect(artifact.artifact_id)  # effect without verify → raises
 
     @property
-    def applied(self) -> List[str]:
+    def applied(self) -> list[str]:
         return list(self._applied)
 
 

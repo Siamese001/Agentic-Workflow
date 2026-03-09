@@ -14,7 +14,7 @@ import os
 # =============================================================================
 
 # Feature flag to enable/disable Redis caching
-USE_REDIS_CACHE: bool = os.getenv("USE_REDIS_CACHE", "false").lower() == "true"
+USE_REDIS_CACHE: bool = os.getenv("USE_REDIS_CACHE", "true").lower() == "true"
 
 # Enable graceful degradation to local dict when Redis is unavailable
 GRACEFUL_DEGRADATION: bool = os.getenv("GRACEFUL_DEGRADATION", "true").lower() == "true"

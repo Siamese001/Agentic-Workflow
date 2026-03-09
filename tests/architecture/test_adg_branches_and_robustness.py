@@ -15,11 +15,9 @@ Markers: architecture, determinism, negative_control, governance
 
 from __future__ import annotations
 
-import ast
-import hashlib
-import pytest
-from dataclasses import dataclass, field
 from pathlib import Path
+
+import pytest
 
 REPO_ROOT = Path(__file__).parent.parent.parent
 
@@ -28,22 +26,26 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # §4 canonical_name -- boundary / malformed / encoding
 # ---------------------------------------------------------------------------
 
+
 class TestCanonicalNameBranches:
     """schema.canonical_name: all branch and edge-case paths."""
 
     @pytest.mark.architecture
     def test_single_part(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         assert canonical_name("Module", "a.py") == "ADG::Module::a.py"
 
     @pytest.mark.architecture
     def test_multi_part(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         assert canonical_name("Snapshot", "sha1", "dig1") == "ADG::Snapshot::sha1::dig1"
 
     @pytest.mark.architecture
     def test_backslash_in_single_part(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         result = canonical_name("Module", "a\\b\\c.py")
         assert "\\" not in result
         assert result == "ADG::Module::a/b/c.py"
@@ -51,24 +53,28 @@ class TestCanonicalNameBranches:
     @pytest.mark.architecture
     def test_backslash_in_multi_part(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         result = canonical_name("Module", "a\\b", "c\\d")
         assert "\\" not in result
 
     @pytest.mark.architecture
     def test_empty_part_preserved(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         result = canonical_name("Symbol", "")
         assert result == "ADG::Symbol::"
 
     @pytest.mark.architecture
     def test_forward_slash_unchanged(self) -> None:
         from agentic_core.adg.schema import canonical_name
+
         result = canonical_name("Module", "a/b/c.py")
         assert result == "ADG::Module::a/b/c.py"
 
     @pytest.mark.architecture
     def test_namespace_prefix_correct(self) -> None:
-        from agentic_core.adg.schema import canonical_name, ADG_NS
+        from agentic_core.adg.schema import ADG_NS, canonical_name
+
         result = canonical_name("Layer", "L0")
         assert result.startswith(f"{ADG_NS}::")
 
@@ -76,6 +82,7 @@ class TestCanonicalNameBranches:
     def test_two_calls_same_input_identical(self) -> None:
         """Determinism: same input always produces same output."""
         from agentic_core.adg.schema import canonical_name
+
         r1 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
         r2 = canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py")
         assert r1 == r2
@@ -87,6 +94,7 @@ class TestModulePathToLayerBranches:
     @pytest.mark.architecture
     def test_each_layer_prefix_maps_correctly(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
+
         cases = [
             ("agentic_core/L0_routing/x.py", "L0"),
             ("agentic_core/L1_cognition/x.py", "L1"),
@@ -108,28 +116,33 @@ class TestModulePathToLayerBranches:
     @pytest.mark.architecture
     def test_unknown_prefix_returns_l_unknown(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
+
         assert module_path_to_layer("totally/random/path.py") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_backslash_path_normalized(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
+
         assert module_path_to_layer("agentic_core\\L2_execution\\x.py") == "L2"
 
     @pytest.mark.architecture
     def test_empty_path_returns_l_unknown(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
+
         assert module_path_to_layer("") == "L_UNKNOWN"
 
     @pytest.mark.architecture
     def test_longer_prefix_wins_over_shorter(self) -> None:
         """Longer prefix must win (no false L_UNKNOWN from prefix collision)."""
         from agentic_core.adg.schema import module_path_to_layer
+
         result = module_path_to_layer("agentic_core/L0_routing/engines/deep/path.py")
         assert result == "L0"
 
     @pytest.mark.architecture
     def test_determinism_two_calls(self) -> None:
         from agentic_core.adg.schema import module_path_to_layer
+
         r1 = module_path_to_layer("agentic_core/L5_safety/x.py")
         r2 = module_path_to_layer("agentic_core/L5_safety/x.py")
         assert r1 == r2
@@ -139,13 +152,14 @@ class TestModulePathToLayerBranches:
 # §4 Static scanner -- exception paths, malformed inputs, empty/boundary
 # ---------------------------------------------------------------------------
 
+
 class TestStaticScannerExceptionPaths:
     """ADGStaticScanner: SyntaxError and OSError paths must be silently skipped."""
 
     @pytest.mark.architecture
     def test_syntax_error_file_skipped_no_crash(self, tmp_path: Path) -> None:
         """SyntaxError in source file must not crash the scanner."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner, _SCAN_ROOTS
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         bad_file = tmp_path / "agentic_core" / "L2_execution" / "bad.py"
         bad_file.parent.mkdir(parents=True)
@@ -290,6 +304,7 @@ class TestStaticScannerMalformedInputs:
 # §4 ScanResult digest -- determinism and boundary
 # ---------------------------------------------------------------------------
 
+
 class TestScanResultDigestBranches:
     """ScanResult.compute_digest: all branches."""
 
@@ -376,13 +391,13 @@ class TestScanResultDigestBranches:
 # §4 Blast-radius -- threshold boundary (exact 300, 700, 299, 301, 699, 701)
 # ---------------------------------------------------------------------------
 
+
 class TestBlastRadiusThresholdBoundary:
     """Blast-radius scoring: exact threshold boundary values per §4."""
 
-    def _make_result_with_weight(self, total_weight: int) -> "ScanResult":
+    def _make_result_with_weight(self, total_weight: int) -> ScanResult:
         """Build a ScanResult whose impacted modules sum to exactly total_weight."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="threshold-test")
         result.compute_digest()
@@ -391,8 +406,8 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_weight_zero_is_normal(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.applications.blast_radius import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="t")
         result.compute_digest()
@@ -404,7 +419,8 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_boundary_exactly_restricted_threshold(self, tmp_path: Path) -> None:
         """risk_score == 300 is RESTRICTED (>= 300, < 700)."""
-        from agentic_core.adg.applications.blast_radius import _RESTRICTED_THRESHOLD, _HUMAN_REVIEW_THRESHOLD
+        from agentic_core.adg.applications.blast_radius import _HUMAN_REVIEW_THRESHOLD, _RESTRICTED_THRESHOLD
+
         assert _RESTRICTED_THRESHOLD == 300
         assert _HUMAN_REVIEW_THRESHOLD == 700
 
@@ -413,6 +429,7 @@ class TestBlastRadiusThresholdBoundary:
     def test_boundary_exactly_human_review_threshold(self) -> None:
         """_HUMAN_REVIEW_THRESHOLD must be 700."""
         from agentic_core.adg.applications.blast_radius import _HUMAN_REVIEW_THRESHOLD
+
         assert _HUMAN_REVIEW_THRESHOLD == 700
 
     @pytest.mark.architecture
@@ -420,8 +437,9 @@ class TestBlastRadiusThresholdBoundary:
     def test_route_mode_normal_below_300(self) -> None:
         """risk_score < 300 -> NORMAL."""
         from agentic_core.adg.applications.blast_radius import (
-            _RESTRICTED_THRESHOLD, BlastRadiusResult,
+            _RESTRICTED_THRESHOLD,
         )
+
         score = _RESTRICTED_THRESHOLD - 1
         mode = "HUMAN_REVIEW" if score >= 700 else "RESTRICTED" if score >= 300 else "NORMAL"
         assert mode == "NORMAL"
@@ -431,6 +449,7 @@ class TestBlastRadiusThresholdBoundary:
     def test_route_mode_restricted_at_300(self) -> None:
         """risk_score == 300 -> RESTRICTED."""
         from agentic_core.adg.applications.blast_radius import _RESTRICTED_THRESHOLD
+
         score = _RESTRICTED_THRESHOLD
         mode = "HUMAN_REVIEW" if score >= 700 else "RESTRICTED" if score >= 300 else "NORMAL"
         assert mode == "RESTRICTED"
@@ -456,6 +475,7 @@ class TestBlastRadiusThresholdBoundary:
     def test_route_mode_human_review_at_700(self) -> None:
         """risk_score == 700 -> HUMAN_REVIEW."""
         from agentic_core.adg.applications.blast_radius import _HUMAN_REVIEW_THRESHOLD
+
         score = _HUMAN_REVIEW_THRESHOLD
         mode = "HUMAN_REVIEW" if score >= 700 else "RESTRICTED" if score >= 300 else "NORMAL"
         assert mode == "HUMAN_REVIEW"
@@ -472,8 +492,8 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_impact_digest_changes_with_different_changed_files(self) -> None:
         """Materially distinct changed files must produce different impact digest."""
-        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
         from agentic_core.adg.applications.blast_radius import compute_blast_radius
+        from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
         scanner = ADGStaticScanner(repo_root=REPO_ROOT)
         result = scanner.scan(commit_sha="br-distinct")
@@ -496,24 +516,28 @@ class TestBlastRadiusThresholdBoundary:
     @pytest.mark.determinism
     def test_l0_weight_is_100(self) -> None:
         from agentic_core.adg.applications.blast_radius import _LAYER_WEIGHTS
+
         assert _LAYER_WEIGHTS["L0"] == 100
 
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_l2_weight_is_90(self) -> None:
         from agentic_core.adg.applications.blast_radius import _LAYER_WEIGHTS
+
         assert _LAYER_WEIGHTS["L2"] == 90
 
     @pytest.mark.architecture
     @pytest.mark.determinism
     def test_l5_weight_is_85(self) -> None:
         from agentic_core.adg.applications.blast_radius import _LAYER_WEIGHTS
+
         assert _LAYER_WEIGHTS["L5"] == 85
 
 
 # ---------------------------------------------------------------------------
 # §4 InvariantScanner -- exception handler branches
 # ---------------------------------------------------------------------------
+
 
 class TestInvariantScannerBranches:
     """InvariantScanner: all conditional branches."""
@@ -522,9 +546,9 @@ class TestInvariantScannerBranches:
     def test_rule_a_skips_l_unknown_modules(self) -> None:
         """Modules with L_UNKNOWN source (no module prefix) must not trigger RULE_A
         for their destination if the destination is also ambiguous."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         edge = Edge(
             from_name=canonical_name("Module", "totally/random/module.py"),
@@ -547,9 +571,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_b_edge_kind_not_embedding_skipped(self) -> None:
         """Non-embedding edge_kind must not trigger RULE_B even for embedding symbol."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeEngine.py"),
@@ -572,9 +596,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_same_layer_not_flagged(self) -> None:
         """Edge within same layer must not be flagged by RULE_C."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L2_execution/UniversalWriteGateway.py"),
@@ -600,9 +624,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_downward_l6_to_l0_not_flagged(self) -> None:
         """L6 importing L0 is allowed (downward)."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L6_observability/engines/monitor.py"),
@@ -628,9 +652,9 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_rule_c_l_app_to_any_layer_not_flagged(self) -> None:
         """L_APP importing L2 is allowed."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         edge = Edge(
             from_name=canonical_name("Module", "apps_rg/engines/SomeAgent.py"),
@@ -656,8 +680,8 @@ class TestInvariantScannerBranches:
     @pytest.mark.architecture
     def test_empty_scan_result_no_violations(self) -> None:
         """Empty ScanResult produces zero violations."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="empty")
         result.compute_digest()
@@ -720,6 +744,7 @@ class TestInvariantScannerBranches:
 # ---------------------------------------------------------------------------
 # §4 MCP client -- idempotency, malformed, stale-state, duplicate-submit
 # ---------------------------------------------------------------------------
+
 
 class TestADGMCPClientRobustness:
     """ADGMCPClient: state transitions, malformed, replay, idempotent re-entry."""
@@ -832,8 +857,7 @@ class TestADGMCPClientRobustness:
         client = ADGMCPClient()
         for _ in range(3):
             client.upsert_relation("ADG::Module::a.py", "imports", "ADG::Symbol::b")
-        rels = [r for r in client.get_store().get_relations()
-                if r["from"] == "ADG::Module::a.py"]
+        rels = [r for r in client.get_store().get_relations() if r["from"] == "ADG::Module::a.py"]
         assert len(rels) == 1
 
     @pytest.mark.architecture
@@ -871,15 +895,16 @@ class TestADGMCPClientRobustness:
 # §4 Matrix tests: policy x module x relation type
 # ---------------------------------------------------------------------------
 
+
 class TestInvariantScannerMatrix:
     """Matrix: policy gate x relation type x module type."""
 
     @pytest.mark.architecture
     def test_matrix_rule_a_invokes_provider_not_imports(self) -> None:
         """RULE_A must also fire for invokes_provider relation (not just imports)."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         for rel_type in ("imports", "invokes_provider"):
             edge = Edge(
@@ -903,13 +928,18 @@ class TestInvariantScannerMatrix:
     @pytest.mark.architecture
     def test_matrix_rule_c_all_upward_pairs_flagged(self) -> None:
         """Every upward L_low -> L_high pair (low num < high num) must be RULE_C."""
+        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.ci.invariant_scanner import InvariantScanner
 
         upward_pairs = [
-            ("L0", "L1"), ("L0", "L5"), ("L1", "L2"), ("L2", "L3"),
-            ("L3", "L4"), ("L4", "L5"), ("L5", "L6"),
+            ("L0", "L1"),
+            ("L0", "L5"),
+            ("L1", "L2"),
+            ("L2", "L3"),
+            ("L3", "L4"),
+            ("L4", "L5"),
+            ("L5", "L6"),
         ]
         layer_to_path = {
             "L0": "agentic_core/L0_routing/engines/x.py",
@@ -939,16 +969,14 @@ class TestInvariantScannerMatrix:
 
             report = InvariantScanner().scan(result)
             rule_c = [v for v in report.violations if v.rule == "RULE_C"]
-            assert len(rule_c) >= 1, (
-                f"RULE_C must fire for {from_layer}->{to_layer} but got 0 violations"
-            )
+            assert len(rule_c) >= 1, f"RULE_C must fire for {from_layer}->{to_layer} but got 0 violations"
 
     @pytest.mark.architecture
     def test_matrix_rule_a_all_provider_sdk_symbols(self) -> None:
         """RULE_A must fire for each provider SDK symbol from a non-gateway module."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name, PROVIDER_SDK_SYMBOLS
         from agentic_core.adg.ci.invariant_scanner import InvariantScanner
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema import PROVIDER_SDK_SYMBOLS, canonical_name
 
         provider_bases = sorted({s.split(".")[0] for s in PROVIDER_SDK_SYMBOLS})
         for sym_base in provider_bases:
@@ -975,17 +1003,17 @@ class TestInvariantScannerMatrix:
 # §4 Gateway topology -- side-effect safety on blocked path
 # ---------------------------------------------------------------------------
 
+
 class TestGatewayTopologyBranches:
     """Gateway topology: blocked path produces no side-effects in client."""
 
     @pytest.mark.architecture
     def test_bypass_violation_does_not_persist_to_client(self) -> None:
         """When gateway is bypassed, proof node must be stored but violation must be flagged."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.schema import canonical_name
         from agentic_core.adg.applications.gateway_topology import check_gateway_topology
         from agentic_core.adg.client.mcp_client import ADGMCPClient
-        from agentic_core.adg.extraction.static_scanner import Edge
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema import canonical_name
 
         client = ADGMCPClient()
         bad_edge = Edge(
@@ -1011,8 +1039,8 @@ class TestGatewayTopologyBranches:
     @pytest.mark.architecture
     def test_empty_scan_no_client_call_needed(self) -> None:
         """Empty scan with no client: no exception raised."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.applications.gateway_topology import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="gw-empty-no-client")
         result.compute_digest()
@@ -1022,8 +1050,8 @@ class TestGatewayTopologyBranches:
     @pytest.mark.architecture
     def test_proof_digest_is_sha256_hex(self) -> None:
         """snapshot_digest must always be 64-char lowercase hex."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.applications.gateway_topology import check_gateway_topology
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="gw-proof-hex")
         result.compute_digest()
@@ -1036,15 +1064,16 @@ class TestGatewayTopologyBranches:
 # §4 UWG write authority -- blocked path, allowed modules, side-effect safety
 # ---------------------------------------------------------------------------
 
+
 class TestUWGWriteAuthorityBranches:
     """UWG: blocked paths, allowed modules, side-effect safety."""
 
     @pytest.mark.architecture
     def test_tests_module_is_allowed(self) -> None:
         """Modules under tests/ prefix must not be flagged."""
+        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
 
         edge = Edge(
             from_name=canonical_name("Module", "tests/architecture/test_foo.py"),
@@ -1066,9 +1095,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_ops_scripts_module_is_allowed(self) -> None:
         """Modules under ops_scripts/ci/ prefix must not be flagged."""
+        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
 
         edge = Edge(
             from_name=canonical_name("Module", "ops_scripts/ci/run_contract_gates.py"),
@@ -1090,9 +1119,9 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_non_write_edge_kind_not_flagged(self) -> None:
         """Only write edge_kind triggers UWG check (not import/network/etc)."""
+        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
 
         edge = Edge(
             from_name=canonical_name("Module", "agentic_core/L1_cognition/engines/x.py"),
@@ -1114,10 +1143,10 @@ class TestUWGWriteAuthorityBranches:
     @pytest.mark.architecture
     def test_uwg_violation_persisted_to_client(self) -> None:
         """UWG violation must persist a proof snapshot to client."""
-        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-        from agentic_core.adg.schema import canonical_name
         from agentic_core.adg.applications.uwg_write_authority import check_uwg_write_authority
         from agentic_core.adg.client.mcp_client import ADGMCPClient
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+        from agentic_core.adg.schema import canonical_name
 
         client = ADGMCPClient()
         edge = Edge(
@@ -1159,15 +1188,16 @@ class TestUWGWriteAuthorityBranches:
 # §4 Graph persister -- edge cases and idempotency
 # ---------------------------------------------------------------------------
 
+
 class TestGraphPersisterBranches:
     """Graph persister: empty result, no commit_sha, idempotent re-entry."""
 
     @pytest.mark.architecture
     def test_persist_empty_result_no_crash(self) -> None:
         """Persisting empty ScanResult must not crash."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
         from agentic_core.adg.client.mcp_client import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="")
         result.compute_digest()
@@ -1179,9 +1209,9 @@ class TestGraphPersisterBranches:
     @pytest.mark.architecture
     def test_persist_no_commit_sha_no_commit_node(self) -> None:
         """Empty commit_sha must not create a commit entity."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
         from agentic_core.adg.client.mcp_client import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="")
         result.compute_digest()
@@ -1193,9 +1223,9 @@ class TestGraphPersisterBranches:
     @pytest.mark.architecture
     def test_persist_with_commit_sha_creates_snapshot(self) -> None:
         """Non-empty commit_sha + digest creates snapshot entity."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
         from agentic_core.adg.client.mcp_client import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="deadbeef1234567890abcdef1234567890123456")
         result.compute_digest()
@@ -1207,9 +1237,9 @@ class TestGraphPersisterBranches:
     @pytest.mark.architecture
     def test_persist_three_times_idempotent(self) -> None:
         """Three calls with same result must not grow the store."""
-        from agentic_core.adg.extraction.static_scanner import ScanResult
-        from agentic_core.adg.extraction.graph_persister import persist_scan_result
         from agentic_core.adg.client.mcp_client import ADGMCPClient
+        from agentic_core.adg.extraction.graph_persister import persist_scan_result
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="triple-test")
         result.compute_digest()
@@ -1227,13 +1257,14 @@ class TestGraphPersisterBranches:
 # §4 RAG sovereignty -- decision node boundary, extra_edges=None
 # ---------------------------------------------------------------------------
 
+
 class TestRAGSovereigntyBranches:
     """RAG sovereignty: all branch paths."""
 
     @pytest.mark.architecture
     def test_no_extra_edges_no_violations(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="rag-none-extra")
         result.compute_digest()
@@ -1242,8 +1273,8 @@ class TestRAGSovereigntyBranches:
 
     @pytest.mark.architecture
     def test_extra_edges_empty_list_no_violations(self) -> None:
-        from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
+        from agentic_core.adg.extraction.static_scanner import ScanResult
 
         result = ScanResult(commit_sha="rag-empty-extra")
         result.compute_digest()
@@ -1253,9 +1284,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_extra_edges_non_influences_relation_not_flagged(self) -> None:
         """Extra edges with relation != 'influences' must not be flagged."""
+        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
 
         result = ScanResult(commit_sha="rag-non-influences")
         result.compute_digest()
@@ -1270,9 +1301,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_extra_edges_influences_non_decision_node_not_flagged(self) -> None:
         """C0Context influences non-decision node must NOT be flagged."""
+        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
 
         result = ScanResult(commit_sha="rag-non-decision")
         result.compute_digest()
@@ -1287,11 +1318,12 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_all_three_decision_nodes_are_flagged(self) -> None:
         """All three defined decision nodes must individually trigger the violation."""
+        from agentic_core.adg.applications.rag_sovereignty import (
+            _DECISION_NODES,
+            check_rag_sovereignty,
+        )
         from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty import (
-            check_rag_sovereignty, _DECISION_NODES,
-        )
 
         for decision_node in sorted(_DECISION_NODES):
             result = ScanResult(commit_sha=f"rag-dn-{decision_node[-10:]}")
@@ -1308,9 +1340,9 @@ class TestRAGSovereigntyBranches:
     @pytest.mark.architecture
     def test_snapshot_digest_changes_when_violations_change(self) -> None:
         """Proof digest must differ when violations are present vs absent."""
+        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
         from agentic_core.adg.extraction.static_scanner import ScanResult
         from agentic_core.adg.schema import canonical_name
-        from agentic_core.adg.applications.rag_sovereignty import check_rag_sovereignty
 
         result = ScanResult(commit_sha="rag-digest-diff")
         result.compute_digest()
@@ -1318,11 +1350,13 @@ class TestRAGSovereigntyBranches:
         report_clean = check_rag_sovereignty(result)
         report_violated = check_rag_sovereignty(
             result,
-            extra_edges=[{
-                "from": canonical_name("Retrieval", "C0Context"),
-                "relation": "influences",
-                "to": canonical_name("Decision", "RoutingDecision"),
-            }],
+            extra_edges=[
+                {
+                    "from": canonical_name("Retrieval", "C0Context"),
+                    "relation": "influences",
+                    "to": canonical_name("Decision", "RoutingDecision"),
+                }
+            ],
         )
         assert report_clean.snapshot_digest != report_violated.snapshot_digest
 
@@ -1330,6 +1364,7 @@ class TestRAGSovereigntyBranches:
 # ---------------------------------------------------------------------------
 # §4 CLI -- entry points and exit codes
 # ---------------------------------------------------------------------------
+
 
 class TestCLIBranches:
     """CLI: all command branches and exit codes."""
@@ -1363,9 +1398,13 @@ class TestCLIBranches:
         """CLI scan --diff-files with nonexistent files must not crash."""
         from agentic_core.adg.cli import main
 
-        result = main([
-            "--repo-root", str(REPO_ROOT),
-            "scan",
-            "--diff-files", "does/not/exist.py",
-        ])
+        result = main(
+            [
+                "--repo-root",
+                str(REPO_ROOT),
+                "scan",
+                "--diff-files",
+                "does/not/exist.py",
+            ]
+        )
         assert result in (0, 1)

@@ -77,7 +77,7 @@ class TestGHONoDirectWrites:
     def test_no_open_write_calls(self) -> None:
         """AST scan: no open() calls with write mode in GHO script."""
         if not _GHO_PATH.exists():
-            pytest.skip("guardian_heal_orchestrator.py not present")
+            pytest.fail("guardian_heal_orchestrator.py not present")
         src = _GHO_PATH.read_text(encoding="utf-8")
         tree = ast.parse(src)
         violations = []
@@ -116,7 +116,7 @@ class TestGHOMutationDelegation:
     def test_no_direct_mutation_primitives(self) -> None:
         """No direct filesystem mutation primitives in GHO."""
         if not _GHO_PATH.exists():
-            pytest.skip("guardian_heal_orchestrator.py not present")
+            pytest.fail("guardian_heal_orchestrator.py not present")
         src = _GHO_PATH.read_text(encoding="utf-8")
         violations = []
         for i, line in enumerate(src.splitlines(), 1):
@@ -133,7 +133,7 @@ class TestGHOMutationDelegation:
     def test_write_gateway_is_sole_mutation_path(self) -> None:
         """_wg usage confirms L2 write gateway delegation."""
         if not _GHO_PATH.exists():
-            pytest.skip("guardian_heal_orchestrator.py not present")
+            pytest.fail("guardian_heal_orchestrator.py not present")
         src = _GHO_PATH.read_text(encoding="utf-8")
         wg_calls = [
             line.strip() for line in src.splitlines() if "_wg." in line and not line.strip().startswith("#")

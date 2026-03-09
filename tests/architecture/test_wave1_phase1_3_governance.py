@@ -37,7 +37,6 @@ from __future__ import annotations
 import sys
 from pathlib import Path
 from textwrap import dedent
-from unittest.mock import MagicMock
 
 import pytest
 
@@ -68,15 +67,14 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     """Build a FileAnalysis with ok=False (parse_failure set)."""
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_analysis(source: str) -> FileAnalysis:
     tmp = REPO_ROOT / "tests" / "architecture" / "_tmp_governance_test.py"
@@ -91,6 +89,7 @@ def _make_analysis(source: str) -> FileAnalysis:
 # ===========================================================================
 # 1. governance_mentions detection — string literal path
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_governance_hint_in_string_literal_detected():
@@ -132,13 +131,11 @@ def test_governance_hint_case_insensitive_in_literal():
 # 2. governance_mentions detection — used_names path
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_governance_hint_in_used_name_detected():
     """Success: used name 'compliance_hash_value' matches hint -> governance_mentions populated."""
-    analysis = _make_analysis(
-        "compliance_hash_value = compute()\n"
-        "result = compliance_hash_value\n"
-    )
+    analysis = _make_analysis("compliance_hash_value = compute()\nresult = compliance_hash_value\n")
     assert analysis.governance_mentions, (
         f"Expected governance_mentions from used name, got: {analysis.governance_mentions}"
     )
@@ -154,6 +151,7 @@ def test_unrelated_used_name_not_governance():
 # ===========================================================================
 # 3. elevator_shaft_mentions detection
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_elevator_hint_jit_in_string_detected():
@@ -172,10 +170,7 @@ def test_elevator_hint_semantic_clock_detected():
 @pytest.mark.architecture
 def test_elevator_hint_tool_budget_detected():
     """Success: 'tool_budget' in used name -> elevator_shaft_mentions populated."""
-    analysis = _make_analysis(
-        "tool_budget_limit = 10\n"
-        "use(tool_budget_limit)\n"
-    )
+    analysis = _make_analysis("tool_budget_limit = 10\nuse(tool_budget_limit)\n")
     assert analysis.elevator_shaft_mentions
 
 
@@ -189,16 +184,14 @@ def test_no_elevator_hint_produces_empty():
 @pytest.mark.architecture
 def test_elevator_hint_capability_token_in_name():
     """Success: 'capabilitytoken' in used name detected as elevator hint."""
-    analysis = _make_analysis(
-        "capabilitytoken_id = get_token()\n"
-        "check(capabilitytoken_id)\n"
-    )
+    analysis = _make_analysis("capabilitytoken_id = get_token()\ncheck(capabilitytoken_id)\n")
     assert analysis.elevator_shaft_mentions
 
 
 # ===========================================================================
 # 4. path_d_mentions detection
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_path_d_hint_modify_diff_detected():
@@ -224,6 +217,7 @@ def test_no_path_d_hint_produces_empty():
 # ===========================================================================
 # 5. _has_any_marker branch coverage
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_has_any_marker_true_via_governance_mentions():
@@ -252,10 +246,7 @@ def test_has_any_marker_false_when_all_empty():
 @pytest.mark.architecture
 def test_has_any_marker_true_via_used_names():
     """Boundary: _has_any_marker finds hint in used_names set."""
-    analysis = _make_analysis(
-        "compliance_hash = compute()\n"
-        "use(compliance_hash)\n"
-    )
+    analysis = _make_analysis("compliance_hash = compute()\nuse(compliance_hash)\n")
     result = _has_any_marker(analysis, GOVERNANCE_STAMP_HINTS)
     assert result is True
 
@@ -271,6 +262,7 @@ def test_has_any_marker_case_insensitive():
 # ===========================================================================
 # 6. analyze_elevator_shaft_and_governance_wiring branch coverage
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_elevator_gap_generated_for_control_spine_file_without_hints():
@@ -292,9 +284,7 @@ def test_elevator_gap_generated_for_control_spine_file_without_hints():
 
     gaps = analyzer.analyze_elevator_shaft_and_governance_wiring()
     elevator_gaps = [g for g in gaps if g.gap_id.startswith("ELEVATOR-SHAFT-GAP")]
-    assert elevator_gaps, (
-        "Expected ELEVATOR-SHAFT-GAP for control-spine file with no elevator hints"
-    )
+    assert elevator_gaps, "Expected ELEVATOR-SHAFT-GAP for control-spine file with no elevator hints"
 
 
 @pytest.mark.architecture
@@ -317,9 +307,7 @@ def test_elevator_gap_not_generated_when_hints_present():
 
     gaps = analyzer.analyze_elevator_shaft_and_governance_wiring()
     elevator_gaps = [g for g in gaps if g.gap_id.startswith("ELEVATOR-SHAFT-GAP")]
-    assert not elevator_gaps, (
-        f"Should not generate elevator gap when hints are present: {elevator_gaps}"
-    )
+    assert not elevator_gaps, f"Should not generate elevator gap when hints are present: {elevator_gaps}"
 
 
 @pytest.mark.architecture
@@ -342,9 +330,7 @@ def test_governance_gap_generated_for_enforcement_file_without_stamps():
 
     gaps = analyzer.analyze_elevator_shaft_and_governance_wiring()
     gov_gaps = [g for g in gaps if g.gap_id.startswith("GOVERNANCE-STAMP-GAP")]
-    assert gov_gaps, (
-        "Expected GOVERNANCE-STAMP-GAP for enforcement file with no governance stamps"
-    )
+    assert gov_gaps, "Expected GOVERNANCE-STAMP-GAP for enforcement file with no governance stamps"
 
 
 @pytest.mark.architecture
@@ -367,9 +353,7 @@ def test_governance_gap_not_generated_when_stamps_present():
 
     gaps = analyzer.analyze_elevator_shaft_and_governance_wiring()
     gov_gaps = [g for g in gaps if g.gap_id.startswith("GOVERNANCE-STAMP-GAP")]
-    assert not gov_gaps, (
-        f"Should not generate governance gap when stamps present: {gov_gaps}"
-    )
+    assert not gov_gaps, f"Should not generate governance gap when stamps present: {gov_gaps}"
 
 
 @pytest.mark.architecture
@@ -423,12 +407,13 @@ def test_parse_failure_file_skipped_no_gap():
 # 7. Real codebase invariants
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_capability_chokepoint_has_governance_mentions():
     """Success: capability_chokepoint.py contains governance markers (real file)."""
     target = AGENTIC_CORE / "L2_execution" / "enforcement" / "capability_chokepoint.py"
     if not target.exists():
-        pytest.skip(f"capability_chokepoint.py not found at {target}")
+        pytest.fail(f"capability_chokepoint.py not found at {target}")
     aa = ASTAnalyzer(AGENTIC_CORE)
     analysis = aa.analyze_file(target)
     assert analysis.ok, "capability_chokepoint.py should parse cleanly"

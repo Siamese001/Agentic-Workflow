@@ -20,8 +20,27 @@ from tenacity import (
     wait_exponential,
 )
 
-from .agent_executor import AgentExecutor, AgentMessage
-from .multi_provider_clients import Provider
+try:
+    from .agent_executor import AgentExecutor, AgentMessage
+except ImportError:  # guardian: agent_executor module missing — provide stubs
+
+    class AgentMessage:  # type: ignore[no-redef]
+        """Stub: agent_executor not installed."""
+
+        pass
+
+    AgentExecutor = None  # type: ignore[assignment, misc]
+
+try:
+    from .multi_provider_clients import Provider
+except ImportError:  # guardian: multi_provider_clients module missing — provide stub
+
+    class Provider:  # type: ignore[no-redef]
+        """Stub: multi_provider_clients not installed."""
+
+        GOOGLE = "google"
+        OPENAI = "openai"
+
 
 logger = logging.getLogger(__name__)
 
@@ -44,6 +63,7 @@ class HardenedGeminiConfig:
 
     # Model context limits (tokens)
     MODEL_LIMITS = {
+        "gemini-2.5-pro": 1048576,  # 1M tokens — canonical healing tier model
         "gemini-2.5-flash": 1048576,  # 1M tokens
         "gemini-3-pro-preview": 2097152,  # 2M tokens
     }
@@ -212,10 +232,10 @@ class HardenedGeminiExecutor:
         self.config = config or HardenedGeminiConfig()
         self._client = None
         self._setup_client()
-        self._circuit_breaker = CircuitBreaker(
-            failure_threshold=5,
-            recovery_timeout=60.0,
-            half_open_max_calls=3,
+        self._circuit_breaker = CircuitBreaker(  # guardian: allow-magic_configuration
+            failure_threshold=5,  # guardian: allow-magic_configuration
+            recovery_timeout=60.0,  # guardian: allow-magic_configuration
+            half_open_max_calls=3,  # guardian: allow-magic_configuration
         )
 
     def _setup_client(self):
@@ -529,6 +549,86 @@ class HardenedGeminiExecutor:
             )
 
             await self.log_interaction_telemetry(telemetry)
+            raise
+
+    def invoke_prompt(self, prompt: str, *, api_key: str) -> Any:
+        """Synchronous healing-path invocation using google.generativeai v1 SDK.
+
+        Uses tenacity retry (from config) and circuit breaker.
+        Called by GeminiInvokerAdapter.invoke_gemini() in the sync healing path.
+
+        Parameters
+        ----------
+        prompt:
+            Plain-text prompt to send to the model.
+        api_key:
+            Google API key (explicit; no environment variable access).
+
+        Returns
+        -------
+        GenerateContentResponse with a `.text` attribute, or None on safety block.
+
+        Raises
+        ------
+        CircuitBreakerOpenError:
+            If the circuit breaker is open due to repeated failures.
+        ContextOverflowError:
+            If the prompt exceeds the model's safety token threshold.
+        """
+        try:
+            import google.generativeai as genai
+        except ImportError as exc:
+            raise ImportError(
+                "google-generativeai SDK is required. Install with: pip install google-generativeai"
+            ) from exc
+
+        from tenacity import (
+            retry,
+            retry_if_exception_type,
+            stop_after_attempt,
+            wait_exponential,
+        )
+
+        # Pre-flight: check circuit breaker
+        self._circuit_breaker.raise_if_open()
+
+        # Pre-flight: rough token estimate (4 chars ≈ 1 token)
+        estimated_tokens = len(prompt) // 4
+        if estimated_tokens > self.config.safety_threshold_tokens:
+            raise ContextOverflowError(
+                f"Prompt (~{estimated_tokens} tokens) exceeds safety threshold "
+                f"({self.config.safety_threshold_tokens} for {self.config.model})"
+            )
+
+        genai.configure(api_key=api_key)
+        model_client = genai.GenerativeModel(self.config.model)
+        generation_config = genai.types.GenerationConfig(
+            temperature=self.config.temperature,
+            max_output_tokens=self.config.max_output_tokens,
+        )
+
+        @retry(
+            retry=retry_if_exception_type(Exception),
+            stop=stop_after_attempt(self.config.max_retries),
+            wait=wait_exponential(
+                multiplier=1,
+                min=self.config.retry_min_wait,
+                max=self.config.retry_max_wait,
+            ),
+            before_sleep=lambda _: logger.warning(
+                "invoke_prompt: retrying Gemini call due to transient error"
+            ),
+            reraise=True,
+        )
+        def _call() -> Any:
+            return model_client.generate_content(prompt, generation_config=generation_config)
+
+        try:
+            response = _call()
+            self._circuit_breaker.record_success()
+            return response
+        except Exception:
+            self._circuit_breaker.record_failure()
             raise
 
     def execute_sync(

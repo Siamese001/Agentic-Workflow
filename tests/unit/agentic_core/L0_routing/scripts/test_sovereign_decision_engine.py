@@ -32,7 +32,7 @@ def _load():
     try:
         return importlib.import_module("agentic_core.L0_routing.scripts.execute_ssot")
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable: {exc}")
+        pytest.fail(f"execute_ssot not importable: {exc}")
 
 
 @pytest.fixture(scope="module")
@@ -174,9 +174,9 @@ class TestCalculateHealingConfidence:
         expected = (base_score * 0.4) + (0.5 * 0.4) + (hist * 0.2)
         assert cs.value == pytest.approx(min(1.0, expected), abs=0.01)
 
-    def test_bmg_disabled_uses_jaccard(self, sde):
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "false"}):
-            cs = sde.calculate_healing_confidence(1, ["LAYER_VIOLATION"], "neutral")
+    def test_no_agent_name_uses_jaccard(self, sde):
+        """Without agent_name, pattern_score falls back to Jaccard (BGE path requires agent_name)."""
+        cs = sde.calculate_healing_confidence(1, ["LAYER_VIOLATION"], "neutral")
         assert 0.0 <= cs.value <= 1.0
 
     def test_pattern_score_matched_types(self, sde):
@@ -311,7 +311,8 @@ class TestShouldProceedWithHealing:
                         )
         assert ok is False or "LLM Disabled" in reason or "QWEN" in reason
 
-    def test_llm_disabled_hitl_approved(self, sde, cs, mod):
+    def test_llm_disabled_does_not_block_qwen_routing(self, sde, cs, mod):
+        """enable_llm=False is no longer a blocking gate — QWEN arbitration fires directly."""
         eng = mod.SovereignDecisionEngine(enable_llm=False)
         conf = cs(value=0.50)
         with patch.object(eng, "_route_decision") as mock_route:
@@ -322,11 +323,17 @@ class TestShouldProceedWithHealing:
             decision.determinism_digest = "abc"
             decision.model_id = "Qwen2.5-14B"
             mock_route.return_value = decision
-            with patch.object(eng, "_hitl_gate", return_value=(True, "HITL-APPROVED")) as m_hitl:
+            with patch.object(eng, "_get_qwen_vllm_arbiter") as mock_arbiter:
+                mock_arbiter.return_value = lambda agent_name, violation_types, territory, score, gate: {
+                    "decision": True,
+                    "reason": "QWEN-OK",
+                }
                 ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
         assert ok is True
+        assert "QWEN" in reason or "LLM" in reason
 
-    def test_llm_disabled_hitl_denied_wraps_llm_disabled(self, mod, cs):
+    def test_llm_disabled_qwen_arbitration_fires_not_hitl(self, mod, cs):
+        """Routing to QWEN bypasses the HITL gate entirely — _hitl_gate is never called."""
         eng = mod.SovereignDecisionEngine(enable_llm=False)
         conf = cs(value=0.50)
         with patch.object(eng, "_route_decision") as mock_route:
@@ -337,10 +344,15 @@ class TestShouldProceedWithHealing:
             decision.determinism_digest = "abc"
             decision.model_id = "Qwen2.5-14B"
             mock_route.return_value = decision
-            with patch.object(eng, "_hitl_gate", return_value=(False, "HITL-SKIPPED")):
-                ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
-        assert ok is False
-        assert "LLM Disabled" in reason
+            with patch.object(eng, "_hitl_gate") as mock_hitl:
+                with patch.object(eng, "_get_qwen_vllm_arbiter") as mock_arbiter:
+                    mock_arbiter.return_value = lambda agent_name, violation_types, territory, score, gate: {
+                        "decision": True,
+                        "reason": "QWEN-OK",
+                    }
+                    ok, reason = eng.should_proceed_with_healing(conf, "QwenAgent")
+        mock_hitl.assert_not_called()
+        assert ok is True
 
 
 # ===========================================================================
@@ -653,7 +665,7 @@ class TestAdvisoryBoundaryEnforcement:
         try:
             from agentic_core.L1_cognition.memory.healing_memory_retriever import SovereigntyError
         except ImportError:
-            pytest.skip("healing_memory_retriever not available")
+            pytest.fail("healing_memory_retriever not available")
 
         bad_incident = MagicMock()
         bad_incident.advisory_only = False

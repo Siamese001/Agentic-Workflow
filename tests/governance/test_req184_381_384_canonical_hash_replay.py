@@ -8,8 +8,8 @@ from __future__ import annotations
 
 import hashlib
 import json
-from dataclasses import dataclass, asdict
-from typing import Any, Dict, List
+from dataclasses import dataclass
+from typing import Any
 
 import pytest
 
@@ -41,9 +41,9 @@ _ARTIFACT_A = {
     "nested": {"level1": {"level2": {"value": True}}},
 }
 
-_ARTIFACT_B: List[Dict[str, Any]] = [
+_ARTIFACT_B: list[dict[str, Any]] = [
     {"id": 1, "name": "alpha", "score": 0.99},
-    {"id": 2, "name": "beta",  "score": 0.88},
+    {"id": 2, "name": "beta", "score": 0.88},
     {"id": 3, "name": "gamma", "score": 0.77},
 ]
 
@@ -61,6 +61,7 @@ _ARTIFACT_C = {
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_canonical_hash_two_run_dict():
@@ -122,6 +123,7 @@ def test_canonical_hash_known_value():
 @pytest.mark.governance
 def test_req381_canonical_hash_used_in_artifact_binding():
     """REQ-381: Artifacts must carry canonical hash binding."""
+
     @dataclass(frozen=True)
     class BoundArtifact:
         artifact_id: str

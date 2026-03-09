@@ -1,0 +1,109 @@
+{
+  "_comment": "Allowlist of LLM calls inside validation/scoring/enforcement paths. Each entry is a known gap that has been audited. New entries require human reviewer sign-off.",
+  "_schema": {
+    "file": "repo-relative posix path",
+    "func": "function or method name",
+    "gap_id": "GAP-XX from ai-checking-ai-full-ast-review-plan.md",
+    "hardened": "true = remediation complete, false = pending",
+    "justification": "why this call is permitted or in-progress",
+    "reviewer": "human or auto"
+  },
+  "allowed_llm_validators": [
+    {
+      "file": "apps_shared/types/judge_evaluator_types.py",
+      "func": "evaluate_async",
+      "gap_id": "GAP-01",
+      "hardened": false,
+      "justification": "LM-as-a-Judge in scoring path. Pending: audit log, deterministic anchor, gateway routing.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "apps_shared/types/judge_evaluator_types.py",
+      "func": "_evaluate_criterion",
+      "gap_id": "GAP-01",
+      "hardened": false,
+      "justification": "LLM call per criterion. Pending hardening.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/config/core/reflection_config.py",
+      "func": "_llm_path_evaluate",
+      "gap_id": "GAP-02",
+      "hardened": false,
+      "justification": "Mock LLM critique path. Pending: wire to SovereignLLMGateway, fail-closed circuit breaker.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/config/core/reflection_config.py",
+      "func": "evaluate",
+      "gap_id": "GAP-02",
+      "hardened": false,
+      "justification": "Outer evaluate calls _llm_path_evaluate. Pending hardening.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/ConstitutionalReviewerAgent.py",
+      "func": "run_async",
+      "gap_id": "GAP-03",
+      "hardened": false,
+      "justification": "Single LLM call for constitutional review. Pending: pre-filter, second-opinion gate.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+      "func": "_socratic_verify",
+      "gap_id": "GAP-04",
+      "hardened": false,
+      "justification": "LLM used to suppress security violations. Pending: audit log, rate limit, prompt sanitization.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/SafetyInspectorAgent.py",
+      "func": "scan_file",
+      "gap_id": "GAP-04",
+      "hardened": false,
+      "justification": "scan_file calls _socratic_verify. Pending hardening.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L5_safety/reasoning/RegressionOracleAgent.py",
+      "func": "_process_modified_file",
+      "gap_id": "GAP-05",
+      "hardened": false,
+      "justification": "LLM-generated test code executed. Pending: iteration cap, AST safety check.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/utils/workflow_engines/answer_correctness.py",
+      "func": "compute",
+      "gap_id": "GAP-06",
+      "hardened": false,
+      "justification": "Optional judge callable may be LLM. Pending: fallback guard, audit path field.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/utils/workflow_engines/groundedness.py",
+      "func": "compute",
+      "gap_id": "GAP-06",
+      "hardened": false,
+      "justification": "Optional judge callable may be LLM. Pending: fallback guard, audit path field.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L3_orchestration/engines/agent_gym_engine.py",
+      "func": "run_benchmark",
+      "gap_id": "GAP-07",
+      "hardened": false,
+      "justification": "JudgeEvaluator drives self-evolution. Pending: human checkpoint, golden consensus.",
+      "reviewer": "auto"
+    },
+    {
+      "file": "agentic_core/L1_cognition/validators/truth_keeper_validator.py",
+      "func": "_check_function_consistency",
+      "gap_id": "GAP-08",
+      "hardened": false,
+      "justification": "Latent llm_client field, currently unused. Monitor only.",
+      "reviewer": "auto"
+    }
+  ]
+}

@@ -40,7 +40,7 @@ class TestFactCheckAgent:
 
             return FactCheckAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import FactCheckAgent: {e}")
+            pytest.fail(f"Cannot import FactCheckAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify FactCheckAgent exists and is importable."""

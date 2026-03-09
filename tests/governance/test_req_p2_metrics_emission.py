@@ -4,47 +4,53 @@ Tests that metrics artifacts are emitted from single control-spine point
 and duplicate emissions are rejected.
 """
 
-import pytest
-import time
 from dataclasses import dataclass
-from typing import Any, Dict
+from typing import Any
+
+import pytest
 
 pytestmark = pytest.mark.governance
 
 # Import the modules we're testing
 import sys
 from pathlib import Path
+
 sys.path.append(str(Path(__file__).parent.parent.parent / "agentic_core" / "L4_state" / "enforcement"))
 
 try:
+    from blast_radius import BlastRadiusMetrics, enforce_blast_radius
     from metrics_emission import (
-        MetricsEmissionEnforcer,
+        ActivationFlags,
         BlastRadiusEnforcer,
+        MetricsEmissionEnforcer,
+        persist_activation_flags,
+        persist_phase_lock,
+        restore_activation_flags,
+        restore_phase_lock,
         single_authoritative_emission,
         validate_blast_radius,
-        persist_phase_lock,
-        restore_phase_lock,
-        persist_activation_flags,
-        restore_activation_flags,
-        ActivationFlags
     )
-    from blast_radius import BlastRadiusMetrics, enforce_blast_radius
 except ImportError:
-    pytest.skip("metrics_emission or blast_radius modules not available", allow_module_level=True)
+    pytest.fail("metrics_emission or blast_radius modules not available", allow_module_level=True)
+
 
 @dataclass(frozen=True)
 class MockMetricArtifact:
     """Mock metric artifact for testing."""
+
     metric_id: str
     value: float
-    metadata: Dict[str, Any]
+    metadata: dict[str, Any]
+
 
 @dataclass(frozen=True)
 class MockMetaLearningProposal:
     """Mock meta-learning proposal for blast radius testing."""
+
     proposal_id: str
-    changes: Dict[str, Any]
+    changes: dict[str, Any]
     confidence: float
+
 
 class TestMetricsEmissionEnforcement:
     """Test metrics emission enforcement functionality."""
@@ -60,9 +66,7 @@ class TestMetricsEmissionEnforcement:
         trace_id = "test_trace_001"
         artifact_type = "MetaLearningMetrics"
         artifact = MockMetricArtifact(
-            metric_id="ml_001",
-            value=0.85,
-            metadata={"model": "test", "version": "1.0"}
+            metric_id="ml_001", value=0.85, metadata={"model": "test", "version": "1.0"}
         )
 
         # When
@@ -126,7 +130,9 @@ class TestMetricsEmissionEnforcement:
         trace_id = "test_trace_005"
         self.enforcer.single_authoritative_emission(trace_id, "Metrics1", MockMetricArtifact("m1", 0.1, {}))
         self.enforcer.single_authoritative_emission(trace_id, "Metrics2", MockMetricArtifact("m2", 0.2, {}))
-        self.enforcer.single_authoritative_emission("other_trace", "Metrics1", MockMetricArtifact("m3", 0.3, {}))
+        self.enforcer.single_authoritative_emission(
+            "other_trace", "Metrics1", MockMetricArtifact("m3", 0.3, {})
+        )
 
         # Verify initial state
         assert self.enforcer.verify_emission_chokepoint(trace_id, "Metrics1")
@@ -154,6 +160,7 @@ class TestMetricsEmissionEnforcement:
 
     def test_blast_radius_complex_object(self):
         """Test blast radius for complex objects with mutable attributes."""
+
         # Given - Complex object with mutable attributes
         class ComplexArtifact:
             def __init__(self):
@@ -170,6 +177,7 @@ class TestMetricsEmissionEnforcement:
         # Then - Should count non-private attributes
         assert radius == 2, "Should count 2 mutable attributes (list and dict)"
 
+
 class TestBlastRadiusEnforcement:
     """Test blast radius enforcement functionality."""
 
@@ -181,9 +189,7 @@ class TestBlastRadiusEnforcement:
         """Test successful blast radius validation."""
         # Given
         proposal = MockMetaLearningProposal(
-            proposal_id="prop_001",
-            changes={"add": "file.py", "modify": "config.json"},
-            confidence=0.9
+            proposal_id="prop_001", changes={"add": "file.py", "modify": "config.json"}, confidence=0.9
         )
         state_surface_bytes = 1000  # Small size
 
@@ -195,6 +201,7 @@ class TestBlastRadiusEnforcement:
 
     def test_blast_radius_exceeds_limit(self):
         """Test blast radius exceeding limits."""
+
         # Given - Proposal with many attributes
         class LargeProposal:
             def __init__(self):
@@ -228,6 +235,7 @@ class TestBlastRadiusEnforcement:
         # Then - Should count dictionary attributes
         assert radius == len(proposal.__dict__), "Should count all attributes"
 
+
 class TestPhaseLockPersistence:
     """Test phase lock persistence functionality."""
 
@@ -260,6 +268,7 @@ class TestPhaseLockPersistence:
         restored = restore_phase_lock()
         assert restored["locked"] is False, "Phase should be unlocked"
 
+
 class TestActivationFlagsPersistence:
     """Test activation flags persistence functionality."""
 
@@ -276,7 +285,7 @@ class TestActivationFlagsPersistence:
             meta_learning_enabled=False,  # Not yet enabled
             semantic_clock_tick=42,
             replay_digest_hash="digest123",
-            signature="guardian_sig"
+            signature="guardian_sig",
         )
 
         # When - Persist flags
@@ -301,6 +310,7 @@ class TestActivationFlagsPersistence:
         """Test activation flags default initialization."""
         # Remove any previously persisted flags file to test clean state
         from pathlib import Path
+
         flags_file = Path("agentic_core/L4_state/.activation_flags.json")
         if flags_file.exists():
             flags_file.unlink()
@@ -310,6 +320,7 @@ class TestActivationFlagsPersistence:
 
         # Then - Should return None (no flags persisted yet)
         assert restored is None, "Should return None when no flags exist"
+
 
 class TestIntegratedWave16Functionality:
     """Test integrated Wave 16 functionality."""
@@ -335,9 +346,7 @@ class TestIntegratedWave16Functionality:
         # Given
         proposal_id = "test_proposal_001"
         proposal = MockMetaLearningProposal(
-            proposal_id=proposal_id,
-            changes={"test": "change"},
-            confidence=0.9
+            proposal_id=proposal_id, changes={"test": "change"}, confidence=0.9
         )
 
         # When
@@ -350,5 +359,6 @@ class TestIntegratedWave16Functionality:
 
         # Should be able to retrieve metrics
         from blast_radius import get_proposal_metrics
+
         retrieved = get_proposal_metrics(proposal_id)
         assert retrieved == metrics

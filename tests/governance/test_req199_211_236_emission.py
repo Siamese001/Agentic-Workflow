@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Any, Dict, List, Optional
 
 import pytest
 
@@ -21,6 +20,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # Artifact types
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class CitationBundle:
@@ -68,7 +68,7 @@ class CognitiveDiffBundle:
 class PromotionDecisionArtifact:
     decision_id: str
     decision: str
-    blueprint_hash: str     # REQ-236 — must be present
+    blueprint_hash: str  # REQ-236 — must be present
     prev_wave_hash: str
     semantic_clock_tick: int
     artifact_hash: str = ""
@@ -92,13 +92,14 @@ class PromotionDecisionArtifact:
 # Emission registry
 # ---------------------------------------------------------------------------
 
+
 class ArtifactEmissionRegistry:
     """Records emitted artifacts by type."""
 
     def __init__(self):
-        self._citations: List[CitationBundle] = []
-        self._diffs: List[CognitiveDiffBundle] = []
-        self._promotions: List[PromotionDecisionArtifact] = []
+        self._citations: list[CitationBundle] = []
+        self._diffs: list[CognitiveDiffBundle] = []
+        self._promotions: list[PromotionDecisionArtifact] = []
 
     def emit_citation_bundle(self, bundle: CitationBundle) -> None:
         self._citations.append(bundle)
@@ -123,13 +124,14 @@ class ArtifactEmissionRegistry:
     def promotion_count(self) -> int:
         return len(self._promotions)
 
-    def get_latest_promotion(self) -> Optional[PromotionDecisionArtifact]:
+    def get_latest_promotion(self) -> PromotionDecisionArtifact | None:
         return self._promotions[-1] if self._promotions else None
 
 
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def registry() -> ArtifactEmissionRegistry:
@@ -194,7 +196,7 @@ def test_req236_promotion_missing_blueprint_hash_rejected():
         PromotionDecisionArtifact(
             decision_id="dec_bad",
             decision="promote",
-            blueprint_hash="",   # missing
+            blueprint_hash="",  # missing
             prev_wave_hash="d" * 64,
             semantic_clock_tick=13,
         )
@@ -203,12 +205,12 @@ def test_req236_promotion_missing_blueprint_hash_rejected():
 @pytest.mark.governance
 def test_req199_citation_bundle_hash_deterministic():
     """REQ-199: CitationBundle hash is deterministic across runs."""
-    kwargs = dict(
-        bundle_id="cite_002",
-        citations=("c1", "c2"),
-        emitted_by="tier3",
-        semantic_clock_tick=5,
-    )
+    kwargs = {
+        "bundle_id": "cite_002",
+        "citations": ("c1", "c2"),
+        "emitted_by": "tier3",
+        "semantic_clock_tick": 5,
+    }
     b1 = CitationBundle(**kwargs)
     b2 = CitationBundle(**kwargs)
     assert b1.bundle_hash == b2.bundle_hash
@@ -217,13 +219,13 @@ def test_req199_citation_bundle_hash_deterministic():
 @pytest.mark.governance
 def test_req211_cognitive_diff_hash_deterministic():
     """REQ-211: CognitiveDiffBundle hash is deterministic."""
-    kwargs = dict(
-        diff_id="diff_002",
-        trace_hash_before="e" * 64,
-        trace_hash_after="f" * 64,
-        emitted_on_tier3=True,
-        semantic_clock_tick=7,
-    )
+    kwargs = {
+        "diff_id": "diff_002",
+        "trace_hash_before": "e" * 64,
+        "trace_hash_after": "f" * 64,
+        "emitted_on_tier3": True,
+        "semantic_clock_tick": 7,
+    }
     d1 = CognitiveDiffBundle(**kwargs)
     d2 = CognitiveDiffBundle(**kwargs)
     assert d1.diff_hash == d2.diff_hash

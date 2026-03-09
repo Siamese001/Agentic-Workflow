@@ -28,7 +28,7 @@ def test_IBlackboardLeaseVerifier_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class IBlackboardLeaseVerifier not found in module")
+        pytest.fail("Class IBlackboardLeaseVerifier not found in module")
 
 
 def test_SandboxViolationError_exists():
@@ -44,7 +44,7 @@ def test_SandboxViolationError_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class SandboxViolationError not found in module")
+        pytest.fail("Class SandboxViolationError not found in module")
 
 
 def test_HealingLeaseError_exists():
@@ -60,7 +60,7 @@ def test_HealingLeaseError_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class HealingLeaseError not found in module")
+        pytest.fail("Class HealingLeaseError not found in module")
 
 
 def test_PreservationViolationError_exists():
@@ -76,7 +76,7 @@ def test_PreservationViolationError_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class PreservationViolationError not found in module")
+        pytest.fail("Class PreservationViolationError not found in module")
 
 
 def test_get_project_root_exists():
@@ -85,7 +85,7 @@ def test_get_project_root_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.get_project_root
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function get_project_root not found in module")
+        pytest.fail("Function get_project_root not found in module")
 
 
 def test_validate_sandbox_exists():
@@ -94,7 +94,7 @@ def test_validate_sandbox_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.validate_sandbox
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function validate_sandbox not found in module")
+        pytest.fail("Function validate_sandbox not found in module")
 
 
 def test_require_healing_lease_exists():
@@ -103,7 +103,7 @@ def test_require_healing_lease_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.require_healing_lease
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function require_healing_lease not found in module")
+        pytest.fail("Function require_healing_lease not found in module")
 
 
 def test_read_file_exists():
@@ -112,7 +112,7 @@ def test_read_file_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.read_file
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function read_file not found in module")
+        pytest.fail("Function read_file not found in module")
 
 
 def test_write_file_exists():
@@ -121,7 +121,7 @@ def test_write_file_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.write_file
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function write_file not found in module")
+        pytest.fail("Function write_file not found in module")
 
 
 def test_move_file_exists():
@@ -130,7 +130,7 @@ def test_move_file_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.move_file
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function move_file not found in module")
+        pytest.fail("Function move_file not found in module")
 
 
 def test_list_files_exists():
@@ -139,7 +139,7 @@ def test_list_files_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.list_files
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function list_files not found in module")
+        pytest.fail("Function list_files not found in module")
 
 
 def test_delete_file_exists():
@@ -148,7 +148,7 @@ def test_delete_file_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.delete_file
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function delete_file not found in module")
+        pytest.fail("Function delete_file not found in module")
 
 
 def test_create_directory_exists():
@@ -157,7 +157,7 @@ def test_create_directory_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.create_directory
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function create_directory not found in module")
+        pytest.fail("Function create_directory not found in module")
 
 
 def test_verify_healing_lease_exists():
@@ -166,7 +166,7 @@ def test_verify_healing_lease_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.verify_healing_lease
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function verify_healing_lease not found in module")
+        pytest.fail("Function verify_healing_lease not found in module")
 
 
 def test_log_security_event_exists():
@@ -175,7 +175,7 @@ def test_log_security_event_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.log_security_event
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function log_security_event not found in module")
+        pytest.fail("Function log_security_event not found in module")
 
 
 def test_wrapper_exists():
@@ -184,7 +184,7 @@ def test_wrapper_exists():
         func = agentic_core.interfaces.IBlackboardLeaseVerifierProtocol.wrapper
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function wrapper not found in module")
+        pytest.fail("Function wrapper not found in module")
 
 
 def test_module_has_minimum_coverage():

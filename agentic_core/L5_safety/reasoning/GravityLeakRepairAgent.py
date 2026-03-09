@@ -40,12 +40,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
-from agentic_core.L5_safety.validators.context_validator import get_context_manager
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L4_state.utils.layer_gravity_util import LAYER_ORDER
+from agentic_core.L5_safety.validators.context_validator import get_context_manager
 
 Logger = logging.getLogger(__name__)
 
@@ -70,7 +70,7 @@ class GravityFix:
     line_number: int
     old_import: str
     new_import: str
-    fix_type: str  # 'RELOCATE', 'ABSTRACT', 'INJECT', 'REMOVE'
+    fix_type: str  # 'RELOCATE', 'ABSTRACT', 'INJECT', 'REMOVE', 'DEFERRED'
     rationale: str
 
 
@@ -156,9 +156,24 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             return GravityFix(**cached_analysis)
 
         # Determine fix strategy based on violation pattern
+        # DEFERRED: move top-level upward import inside function body — always
+        # mechanically safe; eliminates gravity violation at module-load time
+        # without breaking any call sites.
+        if import_statement and import_statement.strip().startswith(("import ", "from ")):
+            fix = GravityFix(
+                file_path=file_path,
+                line_number=0,
+                old_import=import_statement,
+                new_import=self._build_deferred_import(import_statement),
+                fix_type="DEFERRED",
+                rationale=(
+                    f"Defer top-level {file_layer}→{import_layer} import into function scope "
+                    "to eliminate gravity violation at module-load time"
+                ),
+            )
 
-        # Strategy 1: If importing from L0, likely a shared utility
-        if import_layer == "L0":
+        # Strategy 2: If importing from L0, likely a shared utility (no import stmt available)
+        elif import_layer == "L0":
             fix = GravityFix(
                 file_path=file_path,
                 line_number=0,
@@ -168,7 +183,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 rationale=f"Move shared L0 code to utils/ to avoid upward import from {file_layer}",
             )
 
-        # Strategy 2: Cross-layer dependency - suggest abstraction
+        # Strategy 3: Cross-layer dependency — fallback abstraction note
         else:
             fix = GravityFix(
                 file_path=file_path,
@@ -191,6 +206,16 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         self.context.cache_set(cache_key, fix_dict, agent="GravityLeakRepairAgent", ttl=3600)
 
         return fix
+
+    def _build_deferred_import(self, import_statement: str) -> str:
+        """Return a 4-space-indented version of the import for placement inside a function body.
+
+        The caller is responsible for finding the first function that uses the
+        imported name and inserting this line at the top of that function body.
+        When used via _apply_deferred_import_ast, the top-level import line is
+        removed and the indented form is inserted.
+        """
+        return "    " + import_statement.strip()
 
     def _suggest_utils_import(self, import_statement: str) -> str:
         """
@@ -264,6 +289,141 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             "requires": "privileged_mutation_context",
         }
 
+    def _apply_deferred_import(self, file_path: Path, import_stmt: str) -> bool:
+        """Move a top-level import to inside the first function/method body that follows it.
+
+        Uses AST to:
+          1. Find the import node at module level.
+          2. Collect the names it introduces.
+          3. Verify ALL usages of those names are inside function/method bodies
+             (not at module level) — abort if any module-level usage found.
+          4. Find the first function definition that follows the import.
+          5. Determine insertion line = first statement line of that function body.
+          6. Rewrite file: remove original import line, insert indented import.
+
+        Returns True if the transformation was applied, False otherwise.
+        Raises ValueError on catastrophic-replace guard.
+        """
+        import ast as _ast
+
+        stripped = import_stmt.strip()
+        if len(stripped) <= 1:
+            raise ValueError(f"Refusing deferred import: statement too short ({stripped!r})")
+
+        source = file_path.read_text(encoding="utf-8")
+        try:
+            tree = _ast.parse(source)
+        except SyntaxError:
+            return False
+
+        # --- Step 1: find the import node at module level ---
+        import_node = None
+        for node in tree.body:
+            if isinstance(node, (_ast.Import, _ast.ImportFrom)):
+                src_line = source.splitlines()[node.lineno - 1].strip()
+                if src_line == stripped:
+                    import_node = node
+                    break
+        if import_node is None:
+            return False
+
+        # --- Step 2: collect introduced names ---
+        if isinstance(import_node, _ast.ImportFrom):
+            introduced = {alias.asname or alias.name.split(".")[0] for alias in import_node.names}
+        else:
+            introduced = {alias.asname or alias.name.split(".")[0] for alias in import_node.names}
+
+        # --- Step 3: verify no module-level usage of introduced names ---
+        # Collect all Name/Attribute nodes that are NOT inside a function/class
+        class _UsageChecker(_ast.NodeVisitor):
+            def __init__(self) -> None:
+                self.module_level_uses: list[str] = []
+                self._depth = 0
+
+            def visit_FunctionDef(self, node: _ast.FunctionDef) -> None:
+                self._depth += 1
+                self.generic_visit(node)
+                self._depth -= 1
+
+            visit_AsyncFunctionDef = visit_FunctionDef
+
+            def visit_ClassDef(self, node: _ast.ClassDef) -> None:
+                self._depth += 1
+                self.generic_visit(node)
+                self._depth -= 1
+
+            def visit_Name(self, node: _ast.Name) -> None:
+                if self._depth == 0 and node.id in introduced:
+                    if node.lineno != import_node.lineno:
+                        self.module_level_uses.append(node.id)
+                self.generic_visit(node)
+
+        checker = _UsageChecker()
+        checker.visit(tree)
+        if checker.module_level_uses:
+            return False  # name used at module level — cannot safely defer
+
+        # --- Step 4: find the first FunctionDef/method after the import ---
+        # Prefer a top-level function; fall back to the first method of the first class.
+        target_func = None
+        for node in tree.body:
+            if isinstance(node, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                if node.lineno > import_node.lineno:
+                    target_func = node
+                    break
+            elif isinstance(node, _ast.ClassDef) and node.lineno > import_node.lineno:
+                for item in node.body:
+                    if isinstance(item, (_ast.FunctionDef, _ast.AsyncFunctionDef)):
+                        target_func = item
+                        break
+                if target_func is not None:
+                    break
+        if target_func is None:
+            return False
+
+        # --- Step 5: insertion line = first statement in function body (1-indexed) ---
+        if not target_func.body:
+            return False
+        first_stmt = target_func.body[0]
+        # Skip docstring (Expr with Constant/Str) if present
+        insert_lineno = first_stmt.lineno  # 1-indexed
+        if (
+            isinstance(first_stmt, _ast.Expr)
+            and isinstance(getattr(first_stmt, "value", None), (_ast.Constant,))
+            and isinstance(first_stmt.value.value, str)
+            and len(target_func.body) > 1
+        ):
+            insert_lineno = target_func.body[1].lineno
+
+        # --- Step 6: rewrite file ---
+        lines = source.splitlines(keepends=True)
+        import_line_idx = import_node.lineno - 1  # 0-indexed
+
+        # Determine body indentation from the insert line
+        insert_line_content = lines[insert_lineno - 1]
+        body_indent = " " * (len(insert_line_content) - len(insert_line_content.lstrip()))
+
+        deferred_line = body_indent + stripped + "\n"
+
+        # Remove import line first
+        new_lines = [line for idx, line in enumerate(lines) if idx != import_line_idx]
+
+        # Recalculate insert_idx (0-indexed) after removal
+        insert_idx = insert_lineno - 1
+        if insert_idx > import_line_idx:
+            insert_idx -= 1
+
+        new_lines.insert(insert_idx, deferred_line)
+
+        # Validate the result parses before writing
+        try:
+            _ast.parse("".join(new_lines))
+        except SyntaxError:
+            return False
+
+        file_path.write_text("".join(new_lines), encoding="utf-8")
+        return True
+
     def _apply_import_replacement_ast(self, file_path: Path, old_import: str, new_import: str) -> bool:
         """Replace exactly the matching import line(s) using line-level comparison.
 
@@ -318,6 +478,18 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
 
             if not fix.file_path.exists():
                 return {"status": "error", "error": "File not found"}
+
+            # DEFERRED: move top-level import into function scope — fully auto-fixable.
+            if fix.fix_type == "DEFERRED":
+                try:
+                    changed = self._apply_deferred_import(fix.file_path, fix.old_import)
+                    if changed:
+                        self.logger.info(f"[DEFERRED] {fix.file_path.name}: moved import into function scope")
+                        return {"status": "fixed", "fix_type": "DEFERRED"}
+                    return {"status": "no_change", "fix_type": "DEFERRED"}
+                except Exception as deferred_err:
+                    self.logger.warning(f"[DEFERRED] Failed for {fix.file_path.name}: {deferred_err}")
+                    return self._emit_plan_only(fix)
 
             # ABSTRACT replaces import with a TODO comment — always plan-only (corrupts code).
             # RELOCATE rewrites to an unverified path — always plan-only (breaks imports).
@@ -463,7 +635,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             f"[GravityLeakRepairAgent.heal_violations] {len(violations)} violations (dry_run={dry_run})"
         )
 
-        fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0}
+        fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0, "DEFERRED": 0}
         fixes_applied = 0
 
         for v in violations:
@@ -502,8 +674,11 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     import_layer=v.get("import_layer", ""),
                 )
 
+            fix_summary.setdefault(fix.fix_type, 0)
             fix_summary[fix.fix_type] += 1
-            self.apply_fix(fix, dry_run=dry_run)
+            result = self.apply_fix(fix, dry_run=dry_run)
+            if isinstance(result, dict) and result.get("status") == "fixed":
+                fixes_applied += 1
 
         return {
             "agent": "GravityLeakRepairAgent",
@@ -593,6 +768,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.config.structure_blueprint_config import (
                 SOVEREIGN_TERRITORIES as _ST,
             )
+
             _APPS_ROOTS: frozenset[str] = frozenset(k for k in _ST if k.startswith("apps_"))
 
             def _in_sovereign_scope(v: object) -> bool:
@@ -640,7 +816,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
         self.logger.info(f"Analyzing {len(violations)} gravity violations...")
 
         # Group violations by fix type
-        fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0}
+        fix_summary = {"RELOCATE": 0, "ABSTRACT": 0, "INJECT": 0, "REMOVE": 0, "DEFERRED": 0}
 
         fixes_applied = 0
 
@@ -680,6 +856,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     import_layer=v.get("import_layer", ""),
                 )
 
+            fix_summary.setdefault(fix.fix_type, 0)
             fix_summary[fix.fix_type] += 1
 
             result = self.apply_fix(fix, dry_run=dry_run, privileged_mutation_context=not dry_run)

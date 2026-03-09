@@ -28,7 +28,7 @@ class TestDiscoveryAgent:
         """Discovery types should be defined in types/."""
         types_path = Path("agentic_core/L0_routing/types")
         if not types_path.exists():
-            pytest.skip("L0_routing/types/ not found")
+            pytest.fail("L0_routing/types/ not found")
 
         type_files = list(types_path.glob("*.py"))
         assert len(type_files) > 0, "L0_routing/types/ should have type definitions"
@@ -41,7 +41,7 @@ class TestBootstrapAgent:
         """Bootstrap config should exist."""
         config_path = Path("agentic_core/L0_routing/config")
         if not config_path.exists():
-            pytest.skip("L0_routing/config/ not found")
+            pytest.fail("L0_routing/config/ not found")
 
         config_files = list(config_path.glob("*.py"))
         assert len(config_files) > 0, "L0_routing/config/ should have config files"
@@ -54,7 +54,7 @@ class TestMaintenanceLayerIntegrity:
         """L0 scripts should be pure scripts (no Agent classes)."""
         scripts_path = Path("agentic_core/L0_routing/scripts")
         if not scripts_path.exists():
-            pytest.skip("L0_routing/scripts/ not found")
+            pytest.fail("L0_routing/scripts/ not found")
 
         violations = []
         for py_file in scripts_path.glob("*.py"):
@@ -69,13 +69,13 @@ class TestMaintenanceLayerIntegrity:
 
         # Note: Some legacy files may still exist
         if violations:
-            pytest.skip(f"Found {len(violations)} Agent classes in scripts/ (legacy)")
+            pytest.fail(f"Found {len(violations)} Agent classes in scripts/ (legacy)")
 
     def test_maintenance_agents_in_reasoning(self):
         """Agent classes in L0 should be in reasoning/."""
         base = Path("agentic_core/L0_routing")
         if not base.exists():
-            pytest.skip("L0_routing/ not found")
+            pytest.fail("L0_routing/ not found")
 
         violations = []
         for subfolder in ["types", "config"]:
@@ -93,7 +93,7 @@ class TestMaintenanceLayerIntegrity:
         """L0 utils should be utility functions, not agents."""
         utils_path = Path("agentic_core/L0_routing/utils")
         if not utils_path.exists():
-            pytest.skip("L0_routing/utils/ not found")
+            pytest.fail("L0_routing/utils/ not found")
 
         violations = []
         for py_file in utils_path.glob("*.py"):

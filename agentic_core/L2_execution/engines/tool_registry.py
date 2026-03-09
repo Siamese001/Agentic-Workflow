@@ -298,8 +298,9 @@ def ast_analysis(code: str, mode: str = "audit_classes") -> dict[str, Any]:
 
     try:
         tree = ast.parse(code)
-    except SyntaxError:
-        return {"error": "syntax_error", "message": "Invalid Python syntax"}
+    except SyntaxError as e:
+        # Expected syntax error - return error details
+        return {"error": "syntax_error", "message": f"Invalid Python syntax: {e}"}
 
     if mode == "audit_classes":
         # Count snake_case vs PascalCase classes
@@ -381,16 +382,19 @@ predefined_tool_categories["code_manipulation"] = "AST-based code transformation
 # =============================================================================
 # DEPENDENCY GRAPH ANALYZER (DGA) — Phase 2 Tool
 # =============================================================================
+
+LOGGER = logging.getLogger(__name__)
+
 try:
     from agentic_core.L2_execution.tools.dependency_graph_tool import (
         DependencyGraph,
         DependencyGraphArgs,
     )
-except ImportError:
+except ImportError as e:
+    # Expected import error - log and set to None
+    LOGGER.warning(f"Could not import dependency graph tool: {e}")
     DependencyGraph = None  # type: ignore[misc,assignment]
     DependencyGraphArgs = None  # type: ignore[misc,assignment]
-
-LOGGER = logging.getLogger(__name__)
 
 
 def dependency_graph_tool(args: DependencyGraphArgs) -> dict[str, Any]:

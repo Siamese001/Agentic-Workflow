@@ -31,7 +31,7 @@ try:
         verify_replay_binding,
     )
 except ImportError:
-    pytest.skip("activation_flags module not available", allow_module_level=True)
+    pytest.fail("activation_flags module not available", allow_module_level=True)
 
 
 class TestActivationFlags:

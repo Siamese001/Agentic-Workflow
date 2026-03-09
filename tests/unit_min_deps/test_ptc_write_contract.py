@@ -135,7 +135,7 @@ class TestPTCWriteContract:
         tools_dir = Path("agentic_core/L2_execution/tools")
 
         if not tools_dir.exists():
-            pytest.skip("L2_execution/tools directory does not exist")
+            pytest.fail("L2_execution/tools directory does not exist")
 
         # Scan for Python files in tools directory (excluding write_gateway itself)
         for py_file in tools_dir.glob("*.py"):

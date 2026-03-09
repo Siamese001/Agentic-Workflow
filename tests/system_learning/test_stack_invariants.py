@@ -173,7 +173,7 @@ class TestEmbeddingServiceFactoryGpuHelpers:
         import faiss
 
         if hasattr(faiss, "StandardGpuResources"):
-            pytest.skip("faiss-gpu is installed; this test covers faiss-cpu build only")
+            pytest.fail("faiss-gpu is installed but this test requires faiss-cpu build only — remove faiss-gpu or run on a cpu-only environment")
 
         from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 
@@ -211,7 +211,7 @@ class TestEmbeddingServiceFactoryGpuHelpers:
         import faiss
 
         if hasattr(faiss, "StandardGpuResources"):
-            pytest.skip("faiss-gpu is installed; testing CPU fallback path only")
+            pytest.fail("faiss-gpu is installed but this test requires faiss-cpu build to test the CPU fallback path — remove faiss-gpu or run on a cpu-only environment")
 
         from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 
@@ -242,7 +242,7 @@ class TestEmbeddingServiceFactoryGpuHelpers:
         import faiss
 
         if hasattr(faiss, "StandardGpuResources"):
-            pytest.skip("faiss-gpu installed; not testing absent-faiss-gpu path")
+            pytest.fail("faiss-gpu is installed but this test requires faiss-gpu to be absent — remove faiss-gpu or run on a cpu-only environment")
 
         EmbeddingServiceFactory = _get_esf()
         pack_dir = _make_seed_pack(tmp_path, n=3, dim=4)

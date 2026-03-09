@@ -29,10 +29,11 @@ from agentic_core.cache.redis_cache_client import (
 
 _health = check_redis_health()
 if not _health["healthy"]:
-    pytest.skip(
-        f"Redis not running — skipping integration suite.\n"
-        f"Error: {_health['error']}\nFix:   {_health['fix']}",
-        allow_module_level=True,
+    pytest.fail(
+        f"Redis not running — integration suite cannot execute.\n"
+        f"Error: {_health['error']}\nFix:   {_health['fix']}\n"
+        f"Redis is a mandatory dependency (pyproject.toml redis>=5.0.0). "
+        f"Start Redis before running this suite or set REDIS_URL.",
     )
 
 pytestmark = pytest.mark.integration_full_deps

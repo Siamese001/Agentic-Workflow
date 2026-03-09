@@ -28,7 +28,7 @@ class TestTypeFileNaming:
         """Type files should end with _types.py."""
         types_path = Path("agentic_core/L5_safety/types")
         if not types_path.exists():
-            pytest.skip("L5_safety/types/ not found")
+            pytest.fail("L5_safety/types/ not found")
 
         non_types_files = []
         for py_file in types_path.glob("*.py"):
@@ -39,7 +39,7 @@ class TestTypeFileNaming:
 
         # This is a soft check - some files may have different naming
         if non_types_files:
-            pytest.skip(f"Found {len(non_types_files)} files not ending in _types")
+            pytest.fail(f"Found {len(non_types_files)} files not ending in _types")
 
 
 class TestTypeContentIntegrity:
@@ -49,7 +49,7 @@ class TestTypeContentIntegrity:
         """Type files should not contain Agent classes."""
         types_path = Path("agentic_core/L5_safety/types")
         if not types_path.exists():
-            pytest.skip("L5_safety/types/ not found")
+            pytest.fail("L5_safety/types/ not found")
 
         violations = []
         for py_file in types_path.glob("*.py"):
@@ -62,13 +62,13 @@ class TestTypeContentIntegrity:
 
         # Note: Some legacy files may have embedded agents
         if violations:
-            pytest.skip(f"Found {len(violations)} files with Agent classes (legacy)")
+            pytest.fail(f"Found {len(violations)} files with Agent classes (legacy)")
 
     def test_types_use_dataclass_or_typeddict(self):
         """Type files should use dataclass, TypedDict, or Protocol."""
         types_path = Path("agentic_core/L5_safety/types")
         if not types_path.exists():
-            pytest.skip("L5_safety/types/ not found")
+            pytest.fail("L5_safety/types/ not found")
 
         type_patterns = ["@dataclass", "TypedDict", "Protocol", "Enum", "NamedTuple"]
 

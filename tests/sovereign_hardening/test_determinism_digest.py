@@ -73,6 +73,7 @@ class TestDeterminismDigest:
         """Test embedding configuration surface extraction (restore/clean mode)."""
         import os
         from unittest.mock import patch
+
         with patch.dict(os.environ, {}, clear=False) as env:
             env.pop("W_HARDEN_NEGCTRL_TAMPER", None)
             config = get_embedding_config_surface()
@@ -90,7 +91,7 @@ class TestDeterminismDigest:
 
     def test_embedding_config_tampering(self):
         """Test that embedding config is tampered when negative control is active."""
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             config = get_embedding_config_surface()
 
             assert config.get("tampered") is True
@@ -135,7 +136,7 @@ class TestDeterminismDigest:
             normal_digest = compute_lockdown_determinism_digest()
 
         # Tampered digest
-        with patch.dict(os.environ, {'W_HARDEN_NEGCTRL_TAMPER': '1'}):
+        with patch.dict(os.environ, {"W_HARDEN_NEGCTRL_TAMPER": "1"}):
             tampered_digest = compute_lockdown_determinism_digest()
 
         assert normal_digest != tampered_digest, "Digest should change with tampering"

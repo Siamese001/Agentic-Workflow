@@ -6,15 +6,16 @@ Tests for Phase 2 reconciliation hang fixes:
 """
 
 import time
-from concurrent.futures import ThreadPoolExecutor, TimeoutError as FuturesTimeoutError
-from unittest.mock import MagicMock, patch
+from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import TimeoutError as FuturesTimeoutError
+from unittest.mock import patch
 
 import pytest
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 class FakeAgent:
     """Agent whose heal_repository captures kwargs for assertion."""
@@ -58,7 +59,9 @@ class TestPhase2HangFixes:
 
         # Simulate the reconciliation call pattern from execute_ssot line ~1928
         agent.heal_repository(
-            dry_run=False, execute=True, target_territory=territory,
+            dry_run=False,
+            execute=True,
+            target_territory=territory,
         )
 
         assert agent.last_kwargs.get("target_territory") == territory
@@ -75,15 +78,15 @@ class TestPhase2HangFixes:
             try:
                 future = pool.submit(
                     agent.heal_repository,
-                    dry_run=False, execute=True, target_territory="test",
+                    dry_run=False,
+                    execute=True,
+                    target_territory="test",
                 )
                 try:
                     future.result(timeout=_HEAL_TIMEOUT_S)
                 except FuturesTimeoutError:
                     agent._cancel = True  # signal thread to stop
-                    raise RuntimeError(
-                        f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for test_agent"
-                    )
+                    raise RuntimeError(f"heal_repository timed out after {_HEAL_TIMEOUT_S}s for test_agent")
             finally:
                 pool.shutdown(wait=False, cancel_futures=True)
 
@@ -103,7 +106,9 @@ class TestPhase2HangFixes:
         with ThreadPoolExecutor(max_workers=1) as pool:
             future = pool.submit(
                 agent.heal_repository,
-                dry_run=False, execute=True, target_territory="knowledge",
+                dry_run=False,
+                execute=True,
+                target_territory="knowledge",
             )
             result = future.result(timeout=_HEAL_TIMEOUT_S)
 
@@ -124,7 +129,9 @@ class TestPhase2HangFixes:
 
         agent = TrackingAgent()
         agent.heal_repository(
-            dry_run=False, execute=True, target_territory="prompt_governance",
+            dry_run=False,
+            execute=True,
+            target_territory="prompt_governance",
         )
 
         assert len(calls) == 1

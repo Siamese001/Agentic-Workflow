@@ -24,8 +24,7 @@ class TestNormalizeFailureSignal:
         }
         result = normalize_failure_signal(action)
         assert result == (
-            "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check "
-            "DependencyRepairAgent yaml config loader"
+            "IMPORT_BOUNDARY_VIOLATION gate:import_boundary_check DependencyRepairAgent yaml config loader"
         )
 
     def test_routing_gate_included_when_present(self) -> None:

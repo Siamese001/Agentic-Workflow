@@ -1,0 +1,52 @@
+name: Redis Integration Tests
+
+on:
+  push:
+    branches: [main, develop, new_execute_ssot]
+  pull_request:
+    branches: [main, develop]
+
+jobs:
+  redis-integration:
+    runs-on: ubuntu-latest
+
+    services:
+      redis:
+        image: redis:7-alpine
+        ports:
+          - 6379:6379
+        options: >-
+          --health-cmd "redis-cli ping"
+          --health-interval 5s
+          --health-timeout 3s
+          --health-retries 5
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.11"
+
+      - name: Install dependencies
+        run: pip install -e ".[dev]"
+
+      - name: Wait for Redis
+        run: |
+          python -c "
+          import redis, time
+          for _ in range(10):
+              try:
+                  redis.Redis(host='localhost', port=6379).ping()
+                  print('Redis ready')
+                  break
+              except Exception:
+                  time.sleep(1)
+          "
+
+      - name: Run Redis integration tests
+        env:
+          REDIS_URL: redis://localhost:6379
+        run: |
+          python -m pytest tests/integration/test_redis_integration.py \
+            -v --tb=short --no-header

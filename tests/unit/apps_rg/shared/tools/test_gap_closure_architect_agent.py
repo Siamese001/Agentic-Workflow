@@ -40,7 +40,7 @@ class TestGapClosureArchitectAgent:
 
             return GapClosureArchitectAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import GapClosureArchitectAgent: {e}")
+            pytest.fail(f"Cannot import GapClosureArchitectAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify GapClosureArchitectAgent exists and is importable."""

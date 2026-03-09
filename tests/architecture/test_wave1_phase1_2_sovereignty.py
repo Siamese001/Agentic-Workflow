@@ -29,7 +29,6 @@ Branch inventory:
 
 from __future__ import annotations
 
-import ast
 import sys
 from pathlib import Path
 from textwrap import dedent
@@ -41,18 +40,16 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,
-    ARCH_LAYER_ORDER,
     DIRECT_PROVIDER_IMPORT_PATTERNS,
     ASTAnalyzer,
     FileAnalysis,
     _detect_upward_imports,
-    _path_to_layer,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_analysis_from_source(source: str, file_path: Path | None = None) -> FileAnalysis:
     """Parse source with ASTAnalyzer by writing to a temp file."""
@@ -68,6 +65,7 @@ def _make_analysis_from_source(source: str, file_path: Path | None = None) -> Fi
 # ===========================================================================
 # 1. ast.Import branch — direct provider detection
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_import_openai_flagged_as_direct_provider():
@@ -93,9 +91,7 @@ def test_import_vllm_submodule_flagged_as_direct_provider():
 @pytest.mark.architecture
 def test_import_agentic_core_vllm_type_not_flagged():
     """Negative: internal 'import agentic_core.L2_execution.types.vllm_token_budget_types' must NOT be flagged."""
-    analysis = _make_analysis_from_source(
-        "import agentic_core.L2_execution.types.vllm_token_budget_types\n"
-    )
+    analysis = _make_analysis_from_source("import agentic_core.L2_execution.types.vllm_token_budget_types\n")
     assert not analysis.direct_provider_imports, (
         f"Internal vllm type module wrongly flagged: {analysis.direct_provider_imports}"
     )
@@ -139,6 +135,7 @@ def test_import_agentic_core_never_flagged():
 # 2. ast.ImportFrom branch — direct provider detection
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_from_openai_import_flagged():
     """Success: 'from openai import OpenAI' is flagged."""
@@ -179,10 +176,7 @@ def test_from_agentic_core_vllm_infra_fingerprint_not_flagged():
 def test_google_generativeai_lazy_import_still_detected():
     """Boundary: lazy 'import google.generativeai' inside a function body is still
     detected because AST walk finds all Import nodes regardless of nesting depth."""
-    analysis = _make_analysis_from_source(
-        "def f():\n"
-        "    import google.generativeai as genai\n"
-    )
+    analysis = _make_analysis_from_source("def f():\n    import google.generativeai as genai\n")
     # AST walk finds all nodes regardless of nesting
     assert "google.generativeai" in analysis.direct_provider_imports, (
         f"Expected google.generativeai in direct_provider_imports, got: {analysis.direct_provider_imports}"
@@ -192,6 +186,7 @@ def test_google_generativeai_lazy_import_still_detected():
 # ===========================================================================
 # 3. _detect_upward_imports branch coverage
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_detect_upward_imports_l2_importing_l1_is_upward():
@@ -274,6 +269,7 @@ def test_detect_upward_imports_l2_importing_l3_is_not_flagged():
 # 4. DIRECT_PROVIDER_IMPORT_PATTERNS tuple — top-level pkg contract
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_direct_provider_patterns_are_top_level_package_names():
     """Contract: all patterns in DIRECT_PROVIDER_IMPORT_PATTERNS must be
@@ -298,13 +294,21 @@ def test_direct_provider_patterns_does_not_contain_agentic_core():
 # 5. Real codebase invariants — non-L2 files must have no real provider imports
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_no_real_provider_imports_outside_l2():
     """Invariant: only L2_execution files may import real provider SDKs directly.
     Files in L0/L1/L3/L4/L5/L6 must have zero direct_provider_imports."""
     aa = ASTAnalyzer(AGENTIC_CORE)
     violations = []
-    for layer in ("L0_routing", "L1_cognition", "L3_orchestration", "L4_state", "L5_safety", "L6_observability"):
+    for layer in (
+        "L0_routing",
+        "L1_cognition",
+        "L3_orchestration",
+        "L4_state",
+        "L5_safety",
+        "L6_observability",
+    ):
         layer_dir = AGENTIC_CORE / layer
         if not layer_dir.exists():
             continue
@@ -315,9 +319,8 @@ def test_no_real_provider_imports_outside_l2():
             if analysis.direct_provider_imports:
                 rel = fp.relative_to(AGENTIC_CORE.parent)
                 violations.append(f"{rel}: {sorted(analysis.direct_provider_imports)}")
-    assert not violations, (
-        "Provider SDK imports found outside L2_execution:\n"
-        + "\n".join(f"  {v}" for v in violations)
+    assert not violations, "Provider SDK imports found outside L2_execution:\n" + "\n".join(
+        f"  {v}" for v in violations
     )
 
 
@@ -337,9 +340,7 @@ def test_l2_real_provider_imports_are_in_expected_files():
     assert "healing_provider_adapters.py" in found, (
         "Expected healing_provider_adapters.py to have openai import"
     )
-    assert "qwen_vllm_inference.py" in found, (
-        "Expected qwen_vllm_inference.py to have vllm import"
-    )
+    assert "qwen_vllm_inference.py" in found, "Expected qwen_vllm_inference.py to have vllm import"
     # Both are allowlisted as L2 SDK adapter seams — not violations
 
 

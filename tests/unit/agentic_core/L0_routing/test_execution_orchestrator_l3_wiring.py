@@ -13,17 +13,16 @@ Covers:
 from __future__ import annotations
 
 from dataclasses import dataclass
-from typing import Any
 from unittest.mock import MagicMock
 
 import pytest
 
 from agentic_core.L0_routing.engines.execution_orchestrator import ExecutionOrchestrator
 
-
 # ---------------------------------------------------------------------------
 # Minimal fakes (no mocks for the component under test)
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class _FakePath:
@@ -50,6 +49,7 @@ class _FakeAssembler:
             d0_injections = ""
             sanitized = False
             check_ids = ()
+
         p = _P()
         p.d0_injections = self._d0
         return p
@@ -139,6 +139,7 @@ def _make_orch(path="A", allow=True, l3=None, max_reentry=3):
 # Tests: backwards compatibility
 # ---------------------------------------------------------------------------
 
+
 class TestL3WiringBackwardsCompat:
     def test_no_l3_injected_defaults_to_none(self):
         orch = ExecutionOrchestrator(
@@ -170,6 +171,7 @@ class TestL3WiringBackwardsCompat:
 # ---------------------------------------------------------------------------
 # Tests: L3 delegation for Paths B/C/D
 # ---------------------------------------------------------------------------
+
 
 class TestL3DelegationPaths:
     @pytest.mark.parametrize("path", ["B", "C", "D"])
@@ -213,6 +215,7 @@ class TestL3DelegationPaths:
 # Tests: L3 exception isolation
 # ---------------------------------------------------------------------------
 
+
 class TestL3ExceptionIsolation:
     @pytest.mark.parametrize("path", ["B", "C", "D"])
     def test_l3_exception_does_not_propagate(self, path):
@@ -238,6 +241,7 @@ class TestL3ExceptionIsolation:
 # Tests: risk gate + re-entry flow unchanged by L3 wiring
 # ---------------------------------------------------------------------------
 
+
 class TestRiskGateWithL3:
     def test_risk_blocked_max_retries_returns_blocked(self):
         l3 = MagicMock()
@@ -257,6 +261,7 @@ class TestRiskGateWithL3:
 # ---------------------------------------------------------------------------
 # Tests: determinism
 # ---------------------------------------------------------------------------
+
 
 class TestOrchestrationDeterminism:
     def test_identical_input_produces_same_state(self):

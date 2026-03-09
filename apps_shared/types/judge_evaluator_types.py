@@ -5,7 +5,7 @@ Uses LLM to evaluate agent outputs against quality criteria.
 """
 
 import logging
-from collections.abc import Callable
+from collections.abc import Awaitable, Callable
 from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
@@ -100,6 +100,8 @@ class JudgeEvaluator:
         criteria: list[JudgmentCriterion] | None = None,
         pass_threshold: float = 0.7,
         enable_logging: bool = True,
+        model_id: str | None = None,
+        deterministic_anchor_tolerance: float = 0.15,
     ):
         """Initialize judge evaluator.
 
@@ -108,11 +110,16 @@ class JudgeEvaluator:
             criteria: Criteria to evaluate (default: all)
             pass_threshold: Minimum score to pass (0.0-1.0)
             enable_logging: Enable logging
+            model_id: Identifier of the LLM model used (required when llm_client provided)
+            deterministic_anchor_tolerance: Max allowed deviation between LLM and heuristic score
         """
         self.llm_client = llm_client
         self.criteria = criteria or list(JudgmentCriterion)
         self.pass_threshold = pass_threshold
         self.enable_logging = enable_logging
+        self.model_id = model_id or ("unknown" if llm_client else "heuristic")
+        self.deterministic_anchor_tolerance = deterministic_anchor_tolerance
+        self._audit_log: list[dict] = []
 
         if self.enable_logging:
             logger.info(
@@ -120,6 +127,7 @@ class JudgeEvaluator:
                 extra={
                     "criteria_count": len(self.criteria),
                     "pass_threshold": pass_threshold,
+                    "model_id": self.model_id,
                 },
             )
 
@@ -167,6 +175,14 @@ class JudgeEvaluator:
         # Generate summary
         summary = self._generate_summary(verdicts, overall_score, passed)
 
+        # GAP-01: compute deterministic heuristic anchor for cross-validation
+        import hashlib
+        import time
+
+        anchor_score = self._compute_heuristic_anchor(output, expected)
+        anchor_deviation = abs(overall_score - anchor_score)
+        anchor_alert = self.llm_client is not None and anchor_deviation > self.deterministic_anchor_tolerance
+
         result = JudgeEvaluationResult(
             overall_score=overall_score,
             verdicts=verdicts,
@@ -176,16 +192,47 @@ class JudgeEvaluator:
             metadata={
                 "criteria_count": len(self.criteria),
                 "output_length": len(output),
+                "model_id": self.model_id,
+                "heuristic_anchor": anchor_score,
+                "anchor_deviation": anchor_deviation,
+                "anchor_alert": anchor_alert,
+                "evaluation_path": "llm" if self.llm_client else "heuristic",
             },
         )
 
+        # GAP-01: structured audit log entry
+        audit_entry = {
+            "ts": time.time(),
+            "model_id": self.model_id,
+            "output_hash": hashlib.sha256(output.encode()).hexdigest()[:16],
+            "overall_score": overall_score,
+            "heuristic_anchor": anchor_score,
+            "anchor_deviation": anchor_deviation,
+            "anchor_alert": anchor_alert,
+            "passed": passed,
+            "evaluation_path": "llm" if self.llm_client else "heuristic",
+        }
+        self._audit_log.append(audit_entry)
+
         if self.enable_logging:
+            if anchor_alert:
+                logger.warning(
+                    "judge_anchor_deviation",
+                    extra={
+                        "overall_score": overall_score,
+                        "anchor_score": anchor_score,
+                        "deviation": anchor_deviation,
+                        "tolerance": self.deterministic_anchor_tolerance,
+                    },
+                )
             logger.info(
                 "evaluation_completed",
                 extra={
                     "overall_score": overall_score,
                     "passed": passed,
                     "failing_criteria": [c.value for c in result.get_failing_criteria()],
+                    "model_id": self.model_id,
+                    "anchor_alert": anchor_alert,
                 },
             )
 
@@ -222,20 +269,51 @@ class JudgeEvaluator:
             try:
                 response = await self.llm_client(prompt)
                 verdict = self._parse_llm_response(response, criterion)
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 if self.enable_logging:
                     logger.error(
                         "llm_evaluation_failed",
-                        extra={"criterion": criterion.value, "error": str(e)},
+                        extra={"criterion": criterion.value, "error": str(e), "model_id": self.model_id},
                         exc_info=True,
                     )
-                # Fallback to heuristic
+                # Fallback to heuristic on LLM error
                 verdict = self._heuristic_evaluation(output, expected, criterion)
         else:
             # Use heuristic evaluation
             verdict = self._heuristic_evaluation(output, expected, criterion)
 
         return verdict
+
+    def _compute_heuristic_anchor(self, output: str, expected: str | None) -> float:
+        """Compute a deterministic heuristic score for anchor cross-validation.
+
+        Uses token overlap (F1) against expected when available,
+        otherwise length and keyword density heuristics.
+
+        Args:
+            output: Agent output
+            expected: Optional golden output
+
+        Returns:
+            Anchor score in [0.0, 1.0]
+        """
+        if expected:
+            out_tokens = set(output.lower().split())
+            exp_tokens = set(expected.lower().split())
+            if not exp_tokens:
+                return 0.5
+            precision = len(out_tokens & exp_tokens) / max(len(out_tokens), 1)
+            recall = len(out_tokens & exp_tokens) / len(exp_tokens)
+            if precision + recall == 0:
+                return 0.0
+            return 2 * precision * recall / (precision + recall)
+        # No expected: length + non-empty heuristic
+        if not output or not output.strip():
+            return 0.0
+        length_score = min(len(output) / 200.0, 1.0)
+        word_count = len(output.split())
+        density_score = min(word_count / 30.0, 1.0)
+        return (length_score + density_score) / 2.0
 
     def _build_evaluation_prompt(
         self,
@@ -528,7 +606,7 @@ class JudgeEvaluator:
 
 def create_judge_evaluator(
     llm_client: Callable[[str], Awaitable[str]] | None = None,
-    pass_threshold: float = 0.7,
+    pass_threshold: float = 0.7,  # guardian: allow-magic-configuration
 ) -> JudgeEvaluator:
     """Factory function to create judge evaluator.
 

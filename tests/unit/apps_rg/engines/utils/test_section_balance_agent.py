@@ -40,7 +40,7 @@ class TestSectionBalanceAgent:
 
             return SectionBalanceAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import SectionBalanceAgent: {e}")
+            pytest.fail(f"Cannot import SectionBalanceAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify SectionBalanceAgent exists and is importable."""

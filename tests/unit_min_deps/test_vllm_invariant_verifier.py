@@ -179,8 +179,7 @@ def test_gemini_fallback_with_reason_no_violation():
 
     # Should have no INV_GEMINI_FALLBACK_REQUIRES_REASON violation
     gemini_violations = [
-        v for v in violations
-        if v.invariant_id == InvariantId.INV_GEMINI_FALLBACK_REQUIRES_REASON.value
+        v for v in violations if v.invariant_id == InvariantId.INV_GEMINI_FALLBACK_REQUIRES_REASON.value
     ]
     assert gemini_violations == []
 
@@ -292,8 +291,7 @@ def test_inv_replay_hash_present_when_enabled_no_violation():
 
     # Should have no INV_REPLAY_HASH_PRESENT_WHEN_ENABLED violation
     replay_violations = [
-        v for v in violations
-        if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+        v for v in violations if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
     ]
     assert replay_violations == []
 
@@ -321,8 +319,7 @@ def test_inv_replay_hash_disabled_no_violation():
 
     # Should have no INV_REPLAY_HASH_PRESENT_WHEN_ENABLED violation
     replay_violations = [
-        v for v in violations
-        if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
+        v for v in violations if v.invariant_id == InvariantId.INV_REPLAY_HASH_PRESENT_WHEN_ENABLED.value
     ]
     assert replay_violations == []
 
@@ -371,7 +368,6 @@ def test_inv_gpu_import_policy_ok_no_violation():
 
     # Should have no INV_NO_GPU_IMPORTS_IN_L0_L6 violation
     gpu_violations = [
-        v for v in violations
-        if v.invariant_id == InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value
+        v for v in violations if v.invariant_id == InvariantId.INV_NO_GPU_IMPORTS_IN_L0_L6.value
     ]
     assert gpu_violations == []

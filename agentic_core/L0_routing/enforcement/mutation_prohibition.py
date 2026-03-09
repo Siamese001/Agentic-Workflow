@@ -71,7 +71,8 @@ def get_default_protected_root_policy() -> ProtectedRootPolicy:
         ProtectedRootPolicy with canonical immutable roots and log path
     """
     return ProtectedRootPolicy(
-        immutable_roots=("agentic_core", "tests", ".github"), log_path="logs/ssot_protected_root_blocks.jsonl"
+        immutable_roots=("agentic_core", "tests", ".github", ".windsurfrules"),
+        log_path="logs/ssot_protected_root_blocks.jsonl",
     )
 
 

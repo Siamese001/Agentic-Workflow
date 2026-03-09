@@ -1,4 +1,5 @@
 """AST-based gap analysis: scans source modules and test coverage."""
+
 import ast
 import json
 import sys
@@ -35,9 +36,7 @@ def scan_source():
                 top_funcs = [n.name for n in tree.body if isinstance(n, ast.FunctionDef)]
                 all_classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                 all_funcs = [
-                    n.name
-                    for n in ast.walk(tree)
-                    if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
+                    n.name for n in ast.walk(tree) if isinstance(n, (ast.FunctionDef, ast.AsyncFunctionDef))
                 ]
                 modules.append(
                     {

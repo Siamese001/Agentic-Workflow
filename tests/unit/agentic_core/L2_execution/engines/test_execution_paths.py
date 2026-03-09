@@ -11,7 +11,6 @@ Wave 2 Phase 5 — Four Execution Paths Tests
 
 from __future__ import annotations
 
-import tempfile
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -21,11 +20,9 @@ from agentic_core.L0_routing.engines.path_router import Path as RoutePath
 from agentic_core.L0_routing.engines.path_router import PathRouter
 from agentic_core.L0_routing.engines.timeshift_router import (
     RoutingMode,
-    TimeshiftRoutingDecision,
     evaluate_timeshift_routing,
 )
 from agentic_core.L2_execution.engines.secure_tools_impl import SecureToolsImpl
-
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -278,6 +275,7 @@ class TestSecureToolsRunCommand:
     def test_run_command_returns_timeout_message_on_timeout(self, tmp_path):
         tools = _tools(tmp_path)
         import subprocess
+
         with patch("subprocess.run", side_effect=subprocess.TimeoutExpired("cmd", 30)):
             result = tools.tool_run_command("echo hello")
         assert "timed out" in result.lower()
@@ -504,12 +502,15 @@ class TestPathSemanticMatrix:
     """
 
     @pytest.mark.governance
-    @pytest.mark.parametrize("path,expected_label", [
-        (RoutePath.A, "read_only"),
-        (RoutePath.B, "policy_check"),
-        (RoutePath.C, "direct"),
-        (RoutePath.D, "human_review"),
-    ])
+    @pytest.mark.parametrize(
+        "path,expected_label",
+        [
+            (RoutePath.A, "read_only"),
+            (RoutePath.B, "policy_check"),
+            (RoutePath.C, "direct"),
+            (RoutePath.D, "human_review"),
+        ],
+    )
     def test_path_enum_value_is_correct(self, path, expected_label):
         label_map = {
             RoutePath.A: "read_only",
@@ -531,21 +532,31 @@ class TestPathSemanticMatrix:
     @pytest.mark.governance
     def test_negative_path_d_requires_multiple_check_ids(self):
         from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+
         router = PathRouter()
         # Single check_id NOT sanitized → C, not D
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c",
-            u0_user_prompt="u", check_ids=("only",), sanitized=False,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=("only",),
+            sanitized=False,
         )
         assert router.select_path(payload) == RoutePath.C
 
     @pytest.mark.governance
     def test_negative_path_b_requires_sanitized_flag(self):
         from agentic_core.L0_routing.engines.assembly_stage import GovernedPayload
+
         router = PathRouter()
         # check_ids present, NOT sanitized → C (not B)
         payload = GovernedPayload(
-            s0_system="s", i0_instructional="i", c0_context="c",
-            u0_user_prompt="u", check_ids=("task",), sanitized=False,
+            s0_system="s",
+            i0_instructional="i",
+            c0_context="c",
+            u0_user_prompt="u",
+            check_ids=("task",),
+            sanitized=False,
         )
         assert router.select_path(payload) != RoutePath.B

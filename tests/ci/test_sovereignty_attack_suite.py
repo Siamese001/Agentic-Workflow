@@ -368,12 +368,19 @@ class TestAttackSuiteIntegration:
         assert guard.start_operation("integration_test", OptimizationPriority.MEDIUM)
 
         # 4. Replay key
-        key = compute_replay_key(ReplayKeyComponents(
-            tier_selection="LOCAL_AGENT", retry_count=0,
-            threshold_config={}, tool_budget_caps={}, freshness_windows={},
-            config_surface_hash="x", embedding_pack_hash="y",
-            embedding_model_version="z", c0_context_hash="w",
-        ))
+        key = compute_replay_key(
+            ReplayKeyComponents(
+                tier_selection="LOCAL_AGENT",
+                retry_count=0,
+                threshold_config={},
+                tool_budget_caps={},
+                freshness_windows={},
+                config_surface_hash="x",
+                embedding_pack_hash="y",
+                embedding_model_version="z",
+                c0_context_hash="w",
+            )
+        )
         assert len(key) == 64
 
         # 5. Surface isolation

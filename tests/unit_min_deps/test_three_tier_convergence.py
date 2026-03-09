@@ -16,7 +16,6 @@ import pytest
 from agentic_core.L2_execution.heal_result_adapter import adapt_heal_result
 from agentic_core.L2_execution.types.heal_contract_types import HealCheckResult, HealStatus
 
-
 # ---------------------------------------------------------------------------
 # Tier 1 — UniversalWriteGateway lifecycle
 # ---------------------------------------------------------------------------
@@ -62,8 +61,8 @@ class TestTier1UWG:
         assert uwg.check_write_permission("apps_rg/engines/foo.py")
 
     def test_get_write_gateway_returns_uwg_instance(self) -> None:
-        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
         from agentic_core.interfaces.write_gateway import get_write_gateway
+        from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway
 
         assert isinstance(get_write_gateway(), UniversalWriteGateway)
 
@@ -206,7 +205,9 @@ class TestTier3Adapter:
         assert hcr.needs_llm_escalation is True
 
     def test_complex_error_triggers_escalation(self) -> None:
-        hcr = adapt_heal_result("AgentA", {"success": False, "error": "complex rewrite required"}, repo_root=REPO_ROOT)
+        hcr = adapt_heal_result(
+            "AgentA", {"success": False, "error": "complex rewrite required"}, repo_root=REPO_ROOT
+        )
         assert hcr.needs_llm_escalation is True
 
     def test_simple_failure_does_not_trigger_escalation(self) -> None:
@@ -223,7 +224,9 @@ class TestTier3Adapter:
         assert hcr.needs_llm_escalation is True
 
     def test_explicit_no_escalation_flag_respected(self) -> None:
-        hcr = adapt_heal_result("AgentA", {"status": "PARTIAL", "needs_llm_escalation": False}, repo_root=REPO_ROOT)
+        hcr = adapt_heal_result(
+            "AgentA", {"status": "PARTIAL", "needs_llm_escalation": False}, repo_root=REPO_ROOT
+        )
         assert hcr.needs_llm_escalation is False
 
     # --- escalation hint ---

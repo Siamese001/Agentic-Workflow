@@ -41,6 +41,36 @@ if TYPE_CHECKING:
 logger = logging.getLogger(__name__)
 
 # ---------------------------------------------------------------------------
+# P2-G3: Lazy process-global L4MetaPriorProvider singleton
+# ---------------------------------------------------------------------------
+
+_l4_prior_provider: Any | None = None
+
+
+def _get_l4_prior_provider() -> Any:
+    """Return a process-global L4MetaPriorProvider backed by HealingSuccessRateStore.
+
+    Falls back to NeutralMetaPriorProvider if the adapter is unavailable (cold start).
+    """
+    global _l4_prior_provider
+    if _l4_prior_provider is None:
+        try:
+            from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+            _l4_prior_provider = L4MetaPriorProvider.from_default_store()
+            logger.debug("dispatch_healing: L4MetaPriorProvider singleton initialised")
+        except Exception:
+            from system_learning.ports.meta_prior_provider import NeutralMetaPriorProvider
+
+            _l4_prior_provider = NeutralMetaPriorProvider()
+            logger.debug(
+                "dispatch_healing: L4MetaPriorProvider unavailable — using NeutralMetaPriorProvider",
+                exc_info=True,
+            )
+    return _l4_prior_provider
+
+
+# ---------------------------------------------------------------------------
 # Invocation trace record (immutable, serialisable)
 # ---------------------------------------------------------------------------
 
@@ -236,9 +266,12 @@ def dispatch_healing(
     if invoker is None:
         invoker = DefaultHealingProviderInvoker()
 
+    # P2-G3: Wire live L4-backed prior provider when caller does not supply one
+    effective_prior_provider = meta_prior_provider if meta_prior_provider is not None else _get_l4_prior_provider()
+
     decision = route_healing_tier(
         healing_input,
-        meta_prior_provider=meta_prior_provider,
+        meta_prior_provider=effective_prior_provider,
     )
 
     # Emit proposal-only resource prediction if predictor available

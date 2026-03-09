@@ -7,7 +7,6 @@ outside SovereignLLMGateway and UniversalWriteGateway in L0-L5 core modules.
 from __future__ import annotations
 
 import ast
-import os
 from pathlib import Path
 
 import pytest
@@ -15,27 +14,31 @@ import pytest
 pytestmark = pytest.mark.governance
 
 # Allowlisted paths where direct IO imports ARE permitted
-_ALLOWED_IO_PATHS = frozenset([
-    "agentic_core/L2_execution",          # UWG lives here
-    "agentic_core/L0_routing/seam",       # seam audit is IO-adjacent
-    "ops_scripts",                         # CI/tooling
-    "tools",
-    "tests",
-    "data",
-    "docs",
-])
+_ALLOWED_IO_PATHS = frozenset(
+    [
+        "agentic_core/L2_execution",  # UWG lives here
+        "agentic_core/L0_routing/seam",  # seam audit is IO-adjacent
+        "ops_scripts",  # CI/tooling
+        "tools",
+        "tests",
+        "data",
+        "docs",
+    ]
+)
 
-_FORBIDDEN_IO_SYMBOLS = frozenset([
-    # Direct file-write bypasses
-    "open",
-    "write_text",
-    "write_bytes",
-    "Path.open",
-    # Direct SDK imports
-    "google.generativeai",
-    "anthropic",
-    "openai",
-])
+_FORBIDDEN_IO_SYMBOLS = frozenset(
+    [
+        # Direct file-write bypasses
+        "open",
+        "write_text",
+        "write_bytes",
+        "Path.open",
+        # Direct SDK imports
+        "google.generativeai",
+        "anthropic",
+        "openai",
+    ]
+)
 
 _SCAN_ROOTS = [
     "agentic_core/L0_routing",
@@ -71,9 +74,7 @@ def _scan_file_for_io_imports(path: Path) -> list[str]:
                 module = node.module
                 for forbidden in ["google.generativeai", "anthropic", "openai"]:
                     if module == forbidden or module.startswith(forbidden + "."):
-                        violations.append(
-                            f"{path}: forbidden SDK import '{module}' at line {node.lineno}"
-                        )
+                        violations.append(f"{path}: forbidden SDK import '{module}' at line {node.lineno}")
             elif isinstance(node, ast.Import):
                 for alias in node.names:
                     for forbidden in ["google.generativeai", "anthropic", "openai"]:
@@ -108,9 +109,8 @@ def test_req_p0_zero_sdk_imports_outside_gateway():
     for f in files:
         all_violations.extend(_scan_file_for_io_imports(f))
 
-    assert all_violations == [], (
-        f"Found {len(all_violations)} SDK import violation(s):\n"
-        + "\n".join(all_violations)
+    assert all_violations == [], f"Found {len(all_violations)} SDK import violation(s):\n" + "\n".join(
+        all_violations
     )
 
 
@@ -134,10 +134,7 @@ def test_req_p0_scan_roots_non_empty():
         if root_path.exists():
             found_roots += 1
 
-    assert found_roots >= 3, (
-        f"Expected >=3 scan roots to exist, found {found_roots}. "
-        f"Roots: {_SCAN_ROOTS}"
-    )
+    assert found_roots >= 3, f"Expected >=3 scan roots to exist, found {found_roots}. Roots: {_SCAN_ROOTS}"
 
 
 @pytest.mark.governance

@@ -44,17 +44,15 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from tools.semantic_gap_analyzer import (
     AGENTIC_CORE,
-    ASTAnalyzer,
     FileAnalysis,
     ParseFailure,
     SemanticGapAnalyzer,
-    _detect_upward_imports,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
@@ -65,9 +63,7 @@ def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
 
 def _failed_analysis(file_path: Path) -> FileAnalysis:
     a = FileAnalysis(file_path=file_path)
-    a.parse_failure = ParseFailure(
-        file_path=file_path, error_type="SyntaxError", message="fake"
-    )
+    a.parse_failure = ParseFailure(file_path=file_path, error_type="SyntaxError", message="fake")
     return a
 
 
@@ -90,6 +86,7 @@ def _make_analyzer_with_files(file_map: dict[Path, FileAnalysis]) -> SemanticGap
 # ===========================================================================
 # 1. LAYER-UPWARD-IMPORT gap
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_upward_import_generates_layer_upward_import_gap():
@@ -145,6 +142,7 @@ def test_higher_layer_import_produces_no_upward_gap():
 # 2. GATEWAY-BYPASS-RISK gap
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_direct_provider_import_generates_gateway_bypass_risk():
     """Success: file with direct_provider_imports (non-gateway) generates GATEWAY-BYPASS-RISK."""
@@ -179,9 +177,7 @@ def test_sovereign_llm_gateway_excluded_from_gateway_bypass_gap():
 
     gaps = analyzer.analyze_layer_connection_integrity()
     gw_gaps = [g for g in gaps if g.gap_id.startswith("GATEWAY-BYPASS-RISK")]
-    assert not gw_gaps, (
-        f"SovereignLLMGateway.py must be excluded from GATEWAY-BYPASS-RISK, got: {gw_gaps}"
-    )
+    assert not gw_gaps, f"SovereignLLMGateway.py must be excluded from GATEWAY-BYPASS-RISK, got: {gw_gaps}"
 
 
 @pytest.mark.architecture
@@ -200,6 +196,7 @@ def test_gateway_bypass_gap_lists_provider_in_reality():
 # ===========================================================================
 # 3. NON-L2-MUTATION-RISK gap
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_l0_file_with_write_paths_generates_mutation_risk():
@@ -278,6 +275,7 @@ def test_l0_file_with_empty_write_paths_no_mutation_gap():
 # 4. PATHD-PLAN-HASH-GAP
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_path_d_file_without_plan_hash_generates_pathd_gap():
     """Success: file with path_d_mentions but no original_plan_hash generates PATHD-PLAN-HASH-GAP."""
@@ -306,9 +304,7 @@ def test_path_d_file_with_plan_hash_no_pathd_gap():
 
     gaps = analyzer.analyze_layer_connection_integrity()
     pathd_gaps = [g for g in gaps if g.gap_id.startswith("PATHD-PLAN-HASH-GAP")]
-    assert not pathd_gaps, (
-        f"original_plan_hash present should suppress PATHD-PLAN-HASH-GAP: {pathd_gaps}"
-    )
+    assert not pathd_gaps, f"original_plan_hash present should suppress PATHD-PLAN-HASH-GAP: {pathd_gaps}"
 
 
 @pytest.mark.architecture
@@ -339,6 +335,7 @@ def test_no_path_d_no_hitl_no_pathd_gap():
 # 5. layer_connection_findings accumulation
 # ===========================================================================
 
+
 @pytest.mark.architecture
 def test_layer_connection_finding_keys_are_present():
     """Each successfully processed file must produce a finding dict with required keys."""
@@ -347,9 +344,16 @@ def test_layer_connection_finding_keys_are_present():
     analyzer = _make_analyzer_with_files({fake_path: fake_analysis})
 
     analyzer.analyze_layer_connection_integrity()
-    required_keys = {"file", "layer", "upward_imports", "direct_provider_imports",
-                     "embedding_mentions", "governance_mentions", "path_d_mentions",
-                     "elevator_shaft_mentions"}
+    required_keys = {
+        "file",
+        "layer",
+        "upward_imports",
+        "direct_provider_imports",
+        "embedding_mentions",
+        "governance_mentions",
+        "path_d_mentions",
+        "elevator_shaft_mentions",
+    }
     assert analyzer.layer_connection_findings, "Expected at least one finding"
     for finding in analyzer.layer_connection_findings:
         missing = required_keys - set(finding.keys())
@@ -373,6 +377,7 @@ def test_parse_failed_file_not_added_to_findings():
 # ===========================================================================
 # 6. Real codebase invariants
 # ===========================================================================
+
 
 @pytest.mark.architecture
 def test_healing_provider_adapters_generates_gateway_bypass_risk():

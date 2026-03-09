@@ -28,7 +28,7 @@ class TestMCPClientAgent:
         """MCP types should be defined in types/."""
         types_path = Path("agentic_core/L2_execution/types")
         if not types_path.exists():
-            pytest.skip("L2_execution/types/ not found")
+            pytest.fail("L2_execution/types/ not found")
 
         type_files = list(types_path.glob("*.py"))
         assert len(type_files) > 0, "L2_execution/types/ should have type definitions"
@@ -41,7 +41,7 @@ class TestActionHandlerAgent:
         """Action handlers should be in enforcement/."""
         enforcement_path = Path("agentic_core/L2_execution/enforcement")
         if not enforcement_path.exists():
-            pytest.skip("L2_execution/enforcement/ not found")
+            pytest.fail("L2_execution/enforcement/ not found")
 
         py_files = list(enforcement_path.glob("*.py"))
         assert len(py_files) > 0, "L2_execution/enforcement/ should have files"
@@ -59,7 +59,7 @@ class TestExecutionLayerIntegrity:
         """Agent classes in L2 should be in reasoning/."""
         base = Path("agentic_core/L2_execution")
         if not base.exists():
-            pytest.skip("L2_execution/ not found")
+            pytest.fail("L2_execution/ not found")
 
         # Known exceptions (documented architectural decisions)
         # Some config files have embedded Agent classes (legacy pattern)

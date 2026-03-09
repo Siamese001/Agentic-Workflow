@@ -1,0 +1,419 @@
+"""Plan 2 — System Learning / Meta-Learning Bus Hardening Tests.
+
+Covers:
+- Gap 1: DefaultMetaOutcomeBusHook uses correct MetaLearningChangePackage.create()
+- Gap 2: drain_and_apply() drains bus and updates HealingSuccessRateStore
+- Gap 3: L4MetaPriorProvider delegates to store, falls back to neutral on cold start
+- End-to-end: publish → drain → prior reflects outcome
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from agentic_core.L0_routing.meta_control.meta_learning_bus import (
+    MetaLearningBus,
+    MetaLearningChangePackage,
+)
+from system_learning.engines.bus_consumer import drain_and_apply
+from system_learning.engines.healing_success_rate_store import (
+    _MIN_SAMPLE_SIZE,
+    _NEUTRAL_PRIOR,
+    HealingSuccessRateStore,
+)
+
+pytestmark = pytest.mark.unit
+
+
+# ---------------------------------------------------------------------------
+# Gap 1: DefaultMetaOutcomeBusHook schema fix
+# ---------------------------------------------------------------------------
+
+
+class TestDefaultMetaOutcomeBusHookSchema:
+    """DefaultMetaOutcomeBusHook must use MetaLearningChangePackage.create()."""
+
+    def _make_healing_input(self, error_signature="syntax_error", trace_id="t-001"):
+        from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
+
+        return HealingInput(
+            failure_type="syntax_error",
+            error_signature=error_signature,
+            trace_id=trace_id,
+            retry_count=0,
+            blast_radius_estimate=0.3,
+        )
+
+    def _make_decision(self):
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+            HealingDecision,
+            HealingTier,
+        )
+
+        return HealingDecision(
+            tier=HealingTier.LOCAL_AGENT,
+            heal_confidence=0.90,
+            reason_codes=("high_conf",),
+        )
+
+    def test_publish_outcome_enqueues_one_package(self):
+        """publish_outcome must enqueue exactly one package on the bus."""
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_decision(),
+            record=None,
+            success=True,
+        )
+
+        assert bus.size() == 1
+
+    def test_published_package_has_correct_kind(self):
+        """Published package must have kind == 'healing_outcome'."""
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_decision(),
+            record=None,
+            success=False,
+        )
+
+        pkg = bus.dequeue()
+        assert pkg is not None
+        assert pkg.kind == "healing_outcome"
+
+    def test_published_package_carries_error_signature(self):
+        """Payload must include error_signature from HealingInput."""
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(error_signature="import_cycle"),
+            decision=self._make_decision(),
+            record=None,
+            success=True,
+        )
+
+        pkg = bus.dequeue()
+        assert pkg.payload["error_signature"] == "import_cycle"
+        assert pkg.payload["success"] is True
+        assert pkg.payload["proposal_only"] is True
+
+    def test_published_package_carries_trace_id(self):
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(trace_id="trace-xyz"),
+            decision=self._make_decision(),
+            record=None,
+            success=True,
+        )
+
+        pkg = bus.dequeue()
+        assert pkg.trace_id == "trace-xyz"
+
+    def test_null_bus_publish_outcome_is_no_op(self):
+        """NullMetaOutcomeBusHook must silently do nothing."""
+        from system_learning.ports.meta_outcome_bus_hook import NullMetaOutcomeBusHook
+
+        hook = NullMetaOutcomeBusHook()
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_decision(),
+            record=None,
+            success=True,
+        )
+
+    def test_none_bus_publish_outcome_is_no_op(self):
+        """DefaultMetaOutcomeBusHook with bus=None must silently do nothing."""
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        hook = DefaultMetaOutcomeBusHook(bus=None)
+        hook.publish_outcome(
+            healing_input=self._make_healing_input(),
+            decision=self._make_decision(),
+            record=None,
+            success=True,
+        )
+
+
+# ---------------------------------------------------------------------------
+# Gap 2: bus_consumer.drain_and_apply()
+# ---------------------------------------------------------------------------
+
+
+class TestDrainAndApply:
+    """drain_and_apply() must drain queue and update HealingSuccessRateStore."""
+
+    def test_drain_three_packages_updates_store(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        for i in range(3):
+            pkg = MetaLearningChangePackage.create(
+                trace_id=f"t-{i}",
+                kind="healing_outcome",
+                payload={"error_signature": "syntax_error", "success": True},
+            )
+            bus.enqueue(pkg)
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 3
+        assert bus.size() == 0
+        assert store.get_counts().get("syntax_error", 0) == 3
+
+    def test_drain_empty_bus_returns_zero(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 0
+
+    def test_drain_twice_empty_second_time(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        pkg = MetaLearningChangePackage.create(
+            trace_id="t-0",
+            kind="healing_outcome",
+            payload={"error_signature": "runtime_error", "success": False},
+        )
+        bus.enqueue(pkg)
+
+        first = drain_and_apply(bus, store)
+        second = drain_and_apply(bus, store)
+
+        assert first == 1
+        assert second == 0
+
+    def test_drain_skips_unknown_kind(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        pkg = MetaLearningChangePackage.create(
+            trace_id="t-0",
+            kind="config_proposal",
+            payload={"something": "else"},
+        )
+        bus.enqueue(pkg)
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 1
+        assert store.get_counts() == {}
+
+    def test_drain_mixed_kinds_only_updates_healing_outcomes(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        bus.enqueue(
+            MetaLearningChangePackage.create(
+                trace_id="t-0",
+                kind="healing_outcome",
+                payload={"error_signature": "type_error", "success": True},
+            )
+        )
+        bus.enqueue(
+            MetaLearningChangePackage.create(
+                trace_id="t-1",
+                kind="config_proposal",
+                payload={"something": "else"},
+            )
+        )
+        bus.enqueue(
+            MetaLearningChangePackage.create(
+                trace_id="t-2",
+                kind="healing_outcome",
+                payload={"error_signature": "type_error", "success": False},
+            )
+        )
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 3
+        assert store.get_counts().get("type_error", 0) == 2
+
+    def test_drain_missing_error_signature_skips_store_update(self):
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+
+        pkg = MetaLearningChangePackage.create(
+            trace_id="t-0",
+            kind="healing_outcome",
+            payload={"success": True},  # no error_signature
+        )
+        bus.enqueue(pkg)
+
+        count = drain_and_apply(bus, store)
+
+        assert count == 1
+        assert store.get_counts() == {}
+
+
+# ---------------------------------------------------------------------------
+# Gap 3: L4MetaPriorProvider
+# ---------------------------------------------------------------------------
+
+
+class TestL4MetaPriorProvider:
+    """L4MetaPriorProvider must delegate to store and fall back on cold start."""
+
+    def test_returns_neutral_when_store_is_none(self):
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        provider = L4MetaPriorProvider(store=None)
+        assert provider.get_prior("syntax_error") == _NEUTRAL_PRIOR
+
+    def test_returns_neutral_for_unknown_signature(self):
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        store = HealingSuccessRateStore()
+        provider = L4MetaPriorProvider(store=store)
+        assert provider.get_prior("unknown_sig") == _NEUTRAL_PRIOR
+
+    def test_returns_neutral_before_min_sample_size(self):
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        store = HealingSuccessRateStore()
+        # Record fewer than _MIN_SAMPLE_SIZE outcomes
+        for _ in range(_MIN_SAMPLE_SIZE - 1):
+            store.record_outcome("import_error", True)
+
+        provider = L4MetaPriorProvider(store=store)
+        assert provider.get_prior("import_error") == _NEUTRAL_PRIOR
+
+    def test_returns_live_rate_after_min_sample_size(self):
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        store = HealingSuccessRateStore()
+        for _ in range(_MIN_SAMPLE_SIZE):
+            store.record_outcome("import_error", True)
+
+        provider = L4MetaPriorProvider(store=store)
+        prior = provider.get_prior("import_error")
+        assert prior > _NEUTRAL_PRIOR, f"Expected > {_NEUTRAL_PRIOR}, got {prior}"
+
+    def test_falls_back_to_neutral_when_store_raises(self):
+        from unittest.mock import Mock
+
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        bad_store = Mock()
+        bad_store.get_prior.side_effect = RuntimeError("store unavailable")
+
+        provider = L4MetaPriorProvider(store=bad_store)
+        result = provider.get_prior("syntax_error")
+        assert result == _NEUTRAL_PRIOR
+
+    def test_satisfies_meta_prior_provider_protocol(self):
+        """L4MetaPriorProvider must satisfy MetaPriorProvider structural protocol."""
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+
+        provider = L4MetaPriorProvider(store=None)
+        assert hasattr(provider, "get_prior")
+        result = provider.get_prior("any_sig")
+        assert isinstance(result, float)
+        assert 0.0 <= result <= 1.0
+
+
+# ---------------------------------------------------------------------------
+# End-to-end: publish → drain → prior
+# ---------------------------------------------------------------------------
+
+
+class TestEndToEndBusFlow:
+    """Full loop: hook publishes → drain_and_apply updates store → prior reflects outcome."""
+
+    def test_end_to_end_success_raises_prior_above_neutral(self):
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+            HealingDecision,
+            HealingInput,
+            HealingTier,
+        )
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+        provider = L4MetaPriorProvider(store=store)
+
+        healing_input = HealingInput(
+            failure_type="import_cycle",
+            error_signature="import_cycle",
+            trace_id="e2e-001",
+            retry_count=0,
+            blast_radius_estimate=0.2,
+        )
+        decision = HealingDecision(
+            tier=HealingTier.LOCAL_AGENT,
+            heal_confidence=0.90,
+            reason_codes=("high_conf",),
+        )
+
+        # Publish _MIN_SAMPLE_SIZE successful outcomes
+        for i in range(_MIN_SAMPLE_SIZE):
+            hi = HealingInput(
+                failure_type="import_cycle",
+                error_signature="import_cycle",
+                trace_id=f"e2e-{i:03d}",
+                retry_count=0,
+                blast_radius_estimate=0.2,
+            )
+            hook.publish_outcome(healing_input=hi, decision=decision, record=None, success=True)
+
+        drain_and_apply(bus, store)
+
+        prior = provider.get_prior("import_cycle")
+        assert prior > _NEUTRAL_PRIOR, f"Expected prior > {_NEUTRAL_PRIOR}, got {prior}"
+
+    def test_end_to_end_failure_lowers_prior_below_neutral(self):
+        from agentic_core.L2_execution.healers.healing_tier_types import (
+            HealingDecision,
+            HealingInput,
+            HealingTier,
+        )
+        from system_learning.adapters.l4_meta_prior_provider import L4MetaPriorProvider
+        from system_learning.ports.meta_outcome_bus_hook import DefaultMetaOutcomeBusHook
+
+        bus = MetaLearningBus()
+        store = HealingSuccessRateStore()
+        hook = DefaultMetaOutcomeBusHook(bus=bus)
+        provider = L4MetaPriorProvider(store=store)
+
+        decision = HealingDecision(
+            tier=HealingTier.LOCAL_AGENT,
+            heal_confidence=0.50,
+            reason_codes=("low_conf",),
+        )
+
+        # Publish _MIN_SAMPLE_SIZE failure outcomes
+        for i in range(_MIN_SAMPLE_SIZE):
+            hi = HealingInput(
+                failure_type="runtime_error",
+                error_signature="runtime_error",
+                trace_id=f"e2e-f-{i:03d}",
+                retry_count=0,
+                blast_radius_estimate=0.5,
+            )
+            hook.publish_outcome(healing_input=hi, decision=decision, record=None, success=False)
+
+        drain_and_apply(bus, store)
+
+        prior = provider.get_prior("runtime_error")
+        assert prior < _NEUTRAL_PRIOR, f"Expected prior < {_NEUTRAL_PRIOR}, got {prior}"

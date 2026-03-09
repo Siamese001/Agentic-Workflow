@@ -16,7 +16,6 @@ from __future__ import annotations
 import math
 
 import pytest
-
 from agentic_core.evaluation.chunking.policies import (
     FixedTokenChunkPolicy,
     OverlapWindowChunkPolicy,
@@ -74,6 +73,7 @@ from agentic_core.evaluation.schemas.evaluation_result_schema import (
 # HELPERS
 # ===========================================================================
 
+
 def _make_doc(doc_id, score=0.5, content="test content"):
     return Document(doc_id=doc_id, content=content, score=score, metadata={})
 
@@ -92,8 +92,11 @@ def _make_report(scores):
 
 def _make_rubric(grounded=True, useful=True, correct=True, safe=True, missing=False):
     return ReviewRubric(
-        grounded=grounded, useful=useful, correct=correct,
-        safe=safe, missing_context=missing,
+        grounded=grounded,
+        useful=useful,
+        correct=correct,
+        safe=safe,
+        missing_context=missing,
     )
 
 
@@ -111,6 +114,7 @@ def _make_feedback(example_id, query="q", answer="answer", rubric=None):
 # ===========================================================================
 # §1.4 BOUNDARY TESTING
 # ===========================================================================
+
 
 class TestBoundaryPrecisionAtK:
     """§1.4: PrecisionAtK denominator is always k, not len(retrieved)."""
@@ -217,10 +221,13 @@ class TestBoundaryDriftMonitorThresholds:
 
     def test_hit_rate_exactly_at_threshold_no_alert(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.70,  # == threshold
-            score_distribution_mean=0.7, score_distribution_std=0.10,
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.10,
+            top_k_stability=0.80,
+            sample_size=10,
         )
         alerts = self._monitor(hit_threshold=0.70).check_alerts(snap)
         hit_alerts = [a for a in alerts if a.metric_name == "retrieval_hit_rate"]
@@ -228,20 +235,26 @@ class TestBoundaryDriftMonitorThresholds:
 
     def test_hit_rate_one_below_threshold_alerts(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.699,  # < 0.70
-            score_distribution_mean=0.7, score_distribution_std=0.10,
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.10,
+            top_k_stability=0.80,
+            sample_size=10,
         )
         alerts = self._monitor(hit_threshold=0.70).check_alerts(snap)
         assert any(a.metric_name == "retrieval_hit_rate" for a in alerts)
 
     def test_score_std_exactly_at_threshold_no_alert(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.90,
-            score_distribution_mean=0.7, score_distribution_std=0.20,  # == threshold
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.20,  # == threshold
+            top_k_stability=0.80,
+            sample_size=10,
         )
         alerts = self._monitor(std_threshold=0.20).check_alerts(snap)
         std_alerts = [a for a in alerts if a.metric_name == "score_distribution_std"]
@@ -249,19 +262,24 @@ class TestBoundaryDriftMonitorThresholds:
 
     def test_score_std_one_above_threshold_alerts(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.90,
-            score_distribution_mean=0.7, score_distribution_std=0.201,  # > 0.20
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.201,  # > 0.20
+            top_k_stability=0.80,
+            sample_size=10,
         )
         alerts = self._monitor(std_threshold=0.20).check_alerts(snap)
         assert any(a.metric_name == "score_distribution_std" for a in alerts)
 
     def test_stability_exactly_at_threshold_no_alert(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.90,
-            score_distribution_mean=0.7, score_distribution_std=0.05,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.05,
             top_k_stability=0.60,  # == threshold
             sample_size=10,
         )
@@ -271,9 +289,11 @@ class TestBoundaryDriftMonitorThresholds:
 
     def test_stability_one_below_threshold_alerts(self):
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.90,
-            score_distribution_mean=0.7, score_distribution_std=0.05,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.05,
             top_k_stability=0.599,  # < 0.60
             sample_size=10,
         )
@@ -325,11 +345,15 @@ class TestBoundaryProposerBridgeThresholds:
 
     def test_retrieval_hit_rate_exactly_at_ok_boundary(self):
         from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.75,  # == target → delta = 0
-            score_distribution_mean=0.7, score_distribution_std=0.05,
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.05,
+            top_k_stability=0.80,
+            sample_size=10,
         )
         proposal = self._bridge().propose(retrieval_snapshot=snap)
         sig = next(s for s in proposal.signals if s.metric_name == "retrieval_hit_rate")
@@ -338,11 +362,15 @@ class TestBoundaryProposerBridgeThresholds:
     def test_retrieval_hit_critical_threshold(self):
         # hit_rate = 0.75 - 0.21 = 0.54 → delta = -0.21 < -0.20 → critical
         from agentic_core.evaluation.monitoring.snapshots import RetrievalDriftSnapshot
+
         snap = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             retrieval_hit_rate=0.54,
-            score_distribution_mean=0.7, score_distribution_std=0.05,
-            top_k_stability=0.80, sample_size=10,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.05,
+            top_k_stability=0.80,
+            sample_size=10,
         )
         proposal = self._bridge().propose(retrieval_snapshot=snap)
         sig = next(s for s in proposal.signals if s.metric_name == "retrieval_hit_rate")
@@ -352,15 +380,23 @@ class TestBoundaryProposerBridgeThresholds:
         """dpo_count == 10 is NOT > 10, so should be accumulate, not finetune."""
         pairs = [
             DPOPair(
-                pair_id=f"p_{i}", query="q", chosen_response="c",
-                rejected_response="r", context_documents=[],
-                chosen_score=0.9, rejected_score=0.1, source_example_ids=[],
+                pair_id=f"p_{i}",
+                query="q",
+                chosen_response="c",
+                rejected_response="r",
+                context_documents=[],
+                chosen_score=0.9,
+                rejected_score=0.1,
+                source_example_ids=[],
             )
             for i in range(10)
         ]
         batch = DPOBatch(
-            batch_id="b", timestamp="t", pair_count=10,
-            pairs=pairs, source_feedback_count=20,
+            batch_id="b",
+            timestamp="t",
+            pair_count=10,
+            pairs=pairs,
+            source_feedback_count=20,
         )
         proposal = EvaluatorProposerBridge().propose(dpo_batch=batch)
         assert "accumulate_more_dpo_pairs" in proposal.recommended_actions
@@ -370,15 +406,23 @@ class TestBoundaryProposerBridgeThresholds:
         """dpo_count == 11 IS > 10, triggers finetuning."""
         pairs = [
             DPOPair(
-                pair_id=f"p_{i}", query="q", chosen_response="c",
-                rejected_response="r", context_documents=[],
-                chosen_score=0.9, rejected_score=0.1, source_example_ids=[],
+                pair_id=f"p_{i}",
+                query="q",
+                chosen_response="c",
+                rejected_response="r",
+                context_documents=[],
+                chosen_score=0.9,
+                rejected_score=0.1,
+                source_example_ids=[],
             )
             for i in range(11)
         ]
         batch = DPOBatch(
-            batch_id="b", timestamp="t", pair_count=11,
-            pairs=pairs, source_feedback_count=22,
+            batch_id="b",
+            timestamp="t",
+            pair_count=11,
+            pairs=pairs,
+            source_feedback_count=22,
         )
         proposal = EvaluatorProposerBridge().propose(dpo_batch=batch)
         assert "trigger_dpo_finetuning" in proposal.recommended_actions
@@ -386,13 +430,15 @@ class TestBoundaryProposerBridgeThresholds:
     def test_health_score_boundary_requires_intervention_at_0_59(self):
         """health < 0.60 → requires_intervention. Exact boundary: 0.60 does NOT trigger."""
         # 3 ok + 2 warning → health = 3/5 = 0.60 (exactly at boundary, NOT < 0.60)
-        report = _make_report({
-            "precision@5": 0.85,     # ok (above 0.80)
-            "recall@10": 0.90,       # ok
-            "MRR": 0.85,             # ok
-            "groundedness": 0.90,    # ok
-            "answer_correctness": 0.60,  # warning (0.60 - 0.80 = -0.20, not critical)
-        })
+        report = _make_report(
+            {
+                "precision@5": 0.85,  # ok (above 0.80)
+                "recall@10": 0.90,  # ok
+                "MRR": 0.85,  # ok
+                "groundedness": 0.90,  # ok
+                "answer_correctness": 0.60,  # warning (0.60 - 0.80 = -0.20, not critical)
+            }
+        )
         proposal = EvaluatorProposerBridge().propose(eval_report=report)
         # health = ok_count / total → if no critical signals, requires_intervention = False
         if not any(s.priority == "critical" for s in proposal.signals):
@@ -410,10 +456,14 @@ class TestBoundaryEmbeddingDriftMonitor:
 
     def test_norm_std_exactly_at_threshold_no_alert(self):
         snap = EmbeddingHealthSnapshot(
-            timestamp="t", embedding_model_version="v1",
-            vector_norm_mean=1.0, vector_norm_std=0.15,  # == threshold
-            similarity_distribution_mean=0.7, similarity_distribution_std=0.05,
-            version_mismatch_detected=False, sample_size=10,
+            timestamp="t",
+            embedding_model_version="v1",
+            vector_norm_mean=1.0,
+            vector_norm_std=0.15,  # == threshold
+            similarity_distribution_mean=0.7,
+            similarity_distribution_std=0.05,
+            version_mismatch_detected=False,
+            sample_size=10,
         )
         alerts = self._monitor(norm_threshold=0.15).check_alerts(snap)
         norm_alerts = [a for a in alerts if a.metric_name == "vector_norm_std"]
@@ -421,21 +471,28 @@ class TestBoundaryEmbeddingDriftMonitor:
 
     def test_norm_std_one_above_threshold_alerts(self):
         snap = EmbeddingHealthSnapshot(
-            timestamp="t", embedding_model_version="v1",
-            vector_norm_mean=1.0, vector_norm_std=0.151,  # > 0.15
-            similarity_distribution_mean=0.7, similarity_distribution_std=0.05,
-            version_mismatch_detected=False, sample_size=10,
+            timestamp="t",
+            embedding_model_version="v1",
+            vector_norm_mean=1.0,
+            vector_norm_std=0.151,  # > 0.15
+            similarity_distribution_mean=0.7,
+            similarity_distribution_std=0.05,
+            version_mismatch_detected=False,
+            sample_size=10,
         )
         alerts = self._monitor(norm_threshold=0.15).check_alerts(snap)
         assert any(a.metric_name == "vector_norm_std" for a in alerts)
 
     def test_similarity_exactly_at_threshold_no_alert(self):
         snap = EmbeddingHealthSnapshot(
-            timestamp="t", embedding_model_version="v1",
-            vector_norm_mean=1.0, vector_norm_std=0.05,
+            timestamp="t",
+            embedding_model_version="v1",
+            vector_norm_mean=1.0,
+            vector_norm_std=0.05,
             similarity_distribution_mean=0.50,  # == threshold
             similarity_distribution_std=0.05,
-            version_mismatch_detected=False, sample_size=10,
+            version_mismatch_detected=False,
+            sample_size=10,
         )
         alerts = self._monitor(sim_threshold=0.50).check_alerts(snap)
         sim_alerts = [a for a in alerts if a.metric_name == "similarity_distribution_mean"]
@@ -443,11 +500,14 @@ class TestBoundaryEmbeddingDriftMonitor:
 
     def test_similarity_one_below_threshold_alerts(self):
         snap = EmbeddingHealthSnapshot(
-            timestamp="t", embedding_model_version="v1",
-            vector_norm_mean=1.0, vector_norm_std=0.05,
+            timestamp="t",
+            embedding_model_version="v1",
+            vector_norm_mean=1.0,
+            vector_norm_std=0.05,
             similarity_distribution_mean=0.499,  # < 0.50
             similarity_distribution_std=0.05,
-            version_mismatch_detected=False, sample_size=10,
+            version_mismatch_detected=False,
+            sample_size=10,
         )
         alerts = self._monitor(sim_threshold=0.50).check_alerts(snap)
         assert any(a.metric_name == "similarity_distribution_mean" for a in alerts)
@@ -465,10 +525,13 @@ class TestBoundaryAnswerQualityMonitor:
 
     def test_groundedness_exactly_at_threshold_no_alert(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             groundedness_rate=0.70,  # == threshold
-            hallucination_rate=0.05, human_override_rate=0.10,
-            answer_correctness_mean=0.80, sample_size=10,
+            hallucination_rate=0.05,
+            human_override_rate=0.10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         g_alerts = [a for a in alerts if a.metric_name == "groundedness_rate"]
@@ -476,19 +539,26 @@ class TestBoundaryAnswerQualityMonitor:
 
     def test_groundedness_one_below_threshold_alerts(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
+            timestamp="t",
+            system_version="v1",
             groundedness_rate=0.699,  # < 0.70
-            hallucination_rate=0.05, human_override_rate=0.10,
-            answer_correctness_mean=0.80, sample_size=10,
+            hallucination_rate=0.05,
+            human_override_rate=0.10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         assert any(a.metric_name == "groundedness_rate" for a in alerts)
 
     def test_hallucination_exactly_at_threshold_no_alert(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
-            groundedness_rate=0.90, hallucination_rate=0.15,  # == threshold
-            human_override_rate=0.10, answer_correctness_mean=0.80, sample_size=10,
+            timestamp="t",
+            system_version="v1",
+            groundedness_rate=0.90,
+            hallucination_rate=0.15,  # == threshold
+            human_override_rate=0.10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         h_alerts = [a for a in alerts if a.metric_name == "hallucination_rate"]
@@ -496,19 +566,26 @@ class TestBoundaryAnswerQualityMonitor:
 
     def test_hallucination_one_above_threshold_critical(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
-            groundedness_rate=0.90, hallucination_rate=0.151,  # > 0.15
-            human_override_rate=0.10, answer_correctness_mean=0.80, sample_size=10,
+            timestamp="t",
+            system_version="v1",
+            groundedness_rate=0.90,
+            hallucination_rate=0.151,  # > 0.15
+            human_override_rate=0.10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         assert any(a.metric_name == "hallucination_rate" for a in alerts)
 
     def test_override_exactly_at_threshold_no_alert(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
-            groundedness_rate=0.90, hallucination_rate=0.05,
+            timestamp="t",
+            system_version="v1",
+            groundedness_rate=0.90,
+            hallucination_rate=0.05,
             human_override_rate=0.20,  # == threshold
-            answer_correctness_mean=0.80, sample_size=10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         o_alerts = [a for a in alerts if a.metric_name == "human_override_rate"]
@@ -516,10 +593,13 @@ class TestBoundaryAnswerQualityMonitor:
 
     def test_override_one_above_threshold_alerts(self):
         snap = AnswerQualitySnapshot(
-            timestamp="t", system_version="v1",
-            groundedness_rate=0.90, hallucination_rate=0.05,
+            timestamp="t",
+            system_version="v1",
+            groundedness_rate=0.90,
+            hallucination_rate=0.05,
             human_override_rate=0.201,  # > 0.20
-            answer_correctness_mean=0.80, sample_size=10,
+            answer_correctness_mean=0.80,
+            sample_size=10,
         )
         alerts = self._monitor().check_alerts(snap)
         assert any(a.metric_name == "human_override_rate" for a in alerts)
@@ -529,21 +609,26 @@ class TestBoundaryAnswerQualityMonitor:
 # §1.5 EXCEPTION PATH VERIFICATION
 # ===========================================================================
 
+
 class TestExceptionPathGroundedness:
     """§1.5: judge callable exceptions must not mask failures silently."""
 
     def test_judge_raises_propagates(self):
         """If judge raises, exception must propagate (no silent swallow)."""
+
         def bad_judge(pred, ctx):
             raise RuntimeError("judge service unavailable")
+
         g = Groundedness(judge=bad_judge)
         with pytest.raises(RuntimeError, match="judge service unavailable"):
             g.compute("some answer", "context", context="ctx docs")
 
     def test_judge_returns_value_above_one_is_passed_through(self):
         """Judge returning >1.0 — caller's responsibility; we don't clamp."""
+
         def permissive_judge(pred, ctx):
             return 1.5
+
         g = Groundedness(judge=permissive_judge)
         score = g.compute("answer", "", context="ctx")
         assert score == pytest.approx(1.5)
@@ -551,9 +636,11 @@ class TestExceptionPathGroundedness:
     def test_judge_returns_zero_for_empty_prediction(self):
         """Empty prediction → returns 0 before calling judge (guard branch)."""
         called = []
+
         def judge(p, c):
             called.append(True)
             return 0.9
+
         g = Groundedness(judge=judge)
         score = g.compute("", "ground truth", context="ctx")
         assert score == 0.0
@@ -562,9 +649,11 @@ class TestExceptionPathGroundedness:
     def test_judge_receives_context_string(self):
         """When context is a list, judge should receive joined string."""
         received = {}
+
         def capture_judge(pred, ctx):
             received["ctx"] = ctx
             return 0.8
+
         g = Groundedness(judge=capture_judge)
         g.compute("answer", "", context=["doc_a", "doc_b"])
         assert received["ctx"] == "doc_a doc_b"
@@ -585,34 +674,41 @@ class TestExceptionPathAnswerCorrectness:
     def test_judge_raises_propagates(self):
         def bad_judge(pred, gt):
             raise ValueError("scorer down")
+
         m = AnswerCorrectness(judge=bad_judge)
         with pytest.raises(ValueError, match="scorer down"):
             m.compute("answer", "reference")
 
     def test_judge_not_called_when_prediction_empty(self):
         called = []
+
         def judge(p, gt):
             called.append(True)
             return 0.9
+
         m = AnswerCorrectness(judge=judge)
         assert m.compute("", "reference") == 0.0
         assert not called
 
     def test_judge_not_called_when_ground_truth_empty(self):
         called = []
+
         def judge(p, gt):
             called.append(True)
             return 0.9
+
         m = AnswerCorrectness(judge=judge)
         assert m.compute("answer", "") == 0.0
         assert not called
 
     def test_judge_receives_correct_args(self):
         received = {}
+
         def capture(pred, gt):
             received["pred"] = pred
             received["gt"] = gt
             return 0.7
+
         m = AnswerCorrectness(judge=capture)
         m.compute("my answer", "expected answer")
         assert received["pred"] == "my answer"
@@ -624,7 +720,9 @@ class TestExceptionPathL4Persist:
 
     def test_dpo_builder_persist_ioerror_does_not_raise(self):
         class FailStore:
-            def put(self, a): raise OSError("disk full")
+            def put(self, a):
+                raise OSError("disk full")
+
         decisions = [
             _make_feedback("e0", "q", rubric=_make_rubric()),
             _make_feedback("e1", "q", rubric=_make_rubric(correct=False)),
@@ -634,21 +732,29 @@ class TestExceptionPathL4Persist:
 
     def test_bridge_persist_typeerror_does_not_raise(self):
         class FailStore:
-            def put(self, a): raise TypeError("unexpected type")
+            def put(self, a):
+                raise TypeError("unexpected type")
+
         proposal = EvaluatorProposerBridge(l4_store=FailStore()).propose()
         assert proposal is not None
 
     def test_bridge_persist_called_once_per_propose(self):
         calls = []
+
         class CountingStore:
-            def put(self, a): calls.append(a)
+            def put(self, a):
+                calls.append(a)
+
         EvaluatorProposerBridge(l4_store=CountingStore()).propose()
         assert len(calls) == 1
 
     def test_dpo_builder_persist_called_once(self):
         calls = []
+
         class CountingStore:
-            def put(self, a): calls.append(a)
+            def put(self, a):
+                calls.append(a)
+
         decisions = [
             _make_feedback("e0", "q", rubric=_make_rubric()),
             _make_feedback("e1", "q", rubric=_make_rubric(correct=False)),
@@ -658,8 +764,11 @@ class TestExceptionPathL4Persist:
 
     def test_persist_no_side_effects_before_completion(self):
         """Verify main return value valid even when persist fails."""
+
         class FailStore:
-            def put(self, a): raise RuntimeError("network error")
+            def put(self, a):
+                raise RuntimeError("network error")
+
         decisions = [
             _make_feedback("e0", "q", rubric=_make_rubric()),
             _make_feedback("e1", "q", rubric=_make_rubric(correct=False)),
@@ -671,6 +780,7 @@ class TestExceptionPathL4Persist:
 # ===========================================================================
 # §1.10 DETERMINISTIC DECISION SURFACES
 # ===========================================================================
+
 
 class TestDeterministicRRF:
     """§1.10: RRF identical input → identical output; distinct input no collapse."""
@@ -788,26 +898,35 @@ class TestDeterministicDPOBuilder:
 # §1.12 MATRIX TESTING
 # ===========================================================================
 
+
 class TestMatrixGroundednessJudge:
     """§1.12: judge=None × judge=callable × empty prediction × empty context."""
 
-    @pytest.mark.parametrize("pred,ctx,expected", [
-        ("", "context",    0.0),   # empty pred → 0
-        ("answer", "",     0.0),   # empty context → 0
-        ("answer", None,   0.0),   # None context + no GT → 0
-        ("answer", "answer", 1.0), # identical → 1.0
-    ])
+    @pytest.mark.parametrize(
+        "pred,ctx,expected",
+        [
+            ("", "context", 0.0),  # empty pred → 0
+            ("answer", "", 0.0),  # empty context → 0
+            ("answer", None, 0.0),  # None context + no GT → 0
+            ("answer", "answer", 1.0),  # identical → 1.0
+        ],
+    )
     def test_no_judge_matrix(self, pred, ctx, expected):
         score = Groundedness().compute(pred, "", context=ctx)
         assert score == pytest.approx(expected, abs=0.01)
 
-    @pytest.mark.parametrize("pred,ctx,judge_val,expected", [
-        ("",       "ctx",  0.9,  0.0),  # guard fires before judge
-        ("answer", "ctx",  0.9,  0.9),  # judge called
-        ("answer", "",     0.9,  0.0),  # empty context_str → 0 before judge
-    ])
+    @pytest.mark.parametrize(
+        "pred,ctx,judge_val,expected",
+        [
+            ("", "ctx", 0.9, 0.0),  # guard fires before judge
+            ("answer", "ctx", 0.9, 0.9),  # judge called
+            ("answer", "", 0.9, 0.0),  # empty context_str → 0 before judge
+        ],
+    )
     def test_with_judge_matrix(self, pred, ctx, judge_val, expected):
-        judge = lambda p, c: judge_val
+        def judge(p, c):
+            return judge_val
+
         score = Groundedness(judge=judge).compute(pred, "", context=ctx)
         assert score == pytest.approx(expected)
 
@@ -815,22 +934,30 @@ class TestMatrixGroundednessJudge:
 class TestMatrixAnswerCorrectnessJudge:
     """§1.12: judge=None × judge=callable × empty inputs."""
 
-    @pytest.mark.parametrize("pred,gt,expected", [
-        ("",       "ref",  0.0),
-        ("answer", "",     0.0),
-        ("hello",  "hello", 1.0),
-    ])
+    @pytest.mark.parametrize(
+        "pred,gt,expected",
+        [
+            ("", "ref", 0.0),
+            ("answer", "", 0.0),
+            ("hello", "hello", 1.0),
+        ],
+    )
     def test_no_judge_matrix(self, pred, gt, expected):
         score = AnswerCorrectness().compute(pred, gt)
         assert score == pytest.approx(expected, abs=0.01)
 
-    @pytest.mark.parametrize("pred,gt,judge_val,expected", [
-        ("",       "ref",  0.9, 0.0),  # guard fires before judge
-        ("answer", "",     0.9, 0.0),  # guard fires
-        ("answer", "ref",  0.7, 0.7),  # judge called
-    ])
+    @pytest.mark.parametrize(
+        "pred,gt,judge_val,expected",
+        [
+            ("", "ref", 0.9, 0.0),  # guard fires before judge
+            ("answer", "", 0.9, 0.0),  # guard fires
+            ("answer", "ref", 0.7, 0.7),  # judge called
+        ],
+    )
     def test_with_judge_matrix(self, pred, gt, judge_val, expected):
-        judge = lambda p, g: judge_val
+        def judge(p, g):
+            return judge_val
+
         score = AnswerCorrectness(judge=judge).compute(pred, gt)
         assert score == pytest.approx(expected)
 
@@ -839,23 +966,34 @@ class TestMatrixRetrievalPipelineMode:
     """§1.12: mode × retriever-presence matrix for RetrievalPipeline."""
 
     class _StubLexical:
-        def __init__(self, docs): self._docs = docs
-        def retrieve(self, query, top_k): return self._docs[:top_k]
+        def __init__(self, docs):
+            self._docs = docs
+
+        def retrieve(self, query, top_k):
+            return self._docs[:top_k]
 
     class _StubVector:
-        def __init__(self, docs): self._docs = docs
-        def embed_query(self, q): return [0.0]
-        def retrieve(self, emb, top_k): return self._docs[:top_k]
+        def __init__(self, docs):
+            self._docs = docs
 
-    @pytest.mark.parametrize("mode,has_lex,has_vec,expect_empty", [
-        (PROFILE_VECTOR_ONLY,    False, False, True),
-        (PROFILE_VECTOR_ONLY,    False, True,  False),
-        (PROFILE_HYBRID,         False, False, True),
-        (PROFILE_HYBRID,         True,  False, False),
-        (PROFILE_HYBRID,         False, True,  False),
-        (PROFILE_HYBRID_RERANKED, False, False, True),
-        (PROFILE_HYBRID_RERANKED, True,  False, False),
-    ])
+        def embed_query(self, q):
+            return [0.0]
+
+        def retrieve(self, emb, top_k):
+            return self._docs[:top_k]
+
+    @pytest.mark.parametrize(
+        "mode,has_lex,has_vec,expect_empty",
+        [
+            (PROFILE_VECTOR_ONLY, False, False, True),
+            (PROFILE_VECTOR_ONLY, False, True, False),
+            (PROFILE_HYBRID, False, False, True),
+            (PROFILE_HYBRID, True, False, False),
+            (PROFILE_HYBRID, False, True, False),
+            (PROFILE_HYBRID_RERANKED, False, False, True),
+            (PROFILE_HYBRID_RERANKED, True, False, False),
+        ],
+    )
     def test_mode_x_retriever_matrix(self, mode, has_lex, has_vec, expect_empty):
         lex_docs = [_make_doc("lex", content="governance policy")] if has_lex else []
         vec_docs = [_make_doc("vec", content="governance policy")] if has_vec else []
@@ -874,17 +1012,25 @@ class TestMatrixRetrievalPipelineMode:
 class TestMatrixChunkPolicyValidator:
     """§1.12: policy × validator combinations."""
 
-    @pytest.mark.parametrize("chunk_size,max_tokens,expect_violation", [
-        (10, 10, False),   # exact boundary: no violation
-        (10, 9,  True),    # chunk_size > max_tokens → violation
-        (5,  10, False),   # well under: no violation
-    ])
+    @pytest.mark.parametrize(
+        "chunk_size,max_tokens,expect_violation",
+        [
+            (10, 10, False),  # exact boundary: no violation
+            (10, 9, True),  # chunk_size > max_tokens → violation
+            (5, 10, False),  # well under: no violation
+        ],
+    )
     def test_max_validator_x_policy_size(self, chunk_size, max_tokens, expect_violation):
         doc = " ".join(f"w{i}" for i in range(chunk_size))
         from agentic_core.evaluation.chunking.policies import Chunk
+
         chunk = Chunk(
-            chunk_id="c0", doc_id="d", content=doc,
-            token_count=chunk_size, start_char=0, end_char=len(doc),
+            chunk_id="c0",
+            doc_id="d",
+            content=doc,
+            token_count=chunk_size,
+            start_char=0,
+            end_char=len(doc),
         )
         violations = MaxChunkSizeValidator(max_tokens=max_tokens).validate([chunk])
         assert (len(violations) > 0) == expect_violation
@@ -899,10 +1045,13 @@ class TestMatrixDPOBuilderDeltaFilter:
     def _neg(self, eid):
         return _make_feedback(eid, "q", answer="bad", rubric=_make_rubric(correct=False))
 
-    @pytest.mark.parametrize("delta_threshold,expect_pairs", [
-        (0.00, 1),   # any gap → pair
-        (0.99, 0),   # very high threshold → no pairs (gap likely < 0.99)
-    ])
+    @pytest.mark.parametrize(
+        "delta_threshold,expect_pairs",
+        [
+            (0.00, 1),  # any gap → pair
+            (0.99, 0),  # very high threshold → no pairs (gap likely < 0.99)
+        ],
+    )
     def test_delta_filter_matrix(self, delta_threshold, expect_pairs):
         decisions = [self._pos("e0"), self._neg("e1")]
         batch = DPOBatchBuilder(min_score_delta=delta_threshold).generate_pairs(decisions)
@@ -912,6 +1061,7 @@ class TestMatrixDPOBuilderDeltaFilter:
 # ===========================================================================
 # §1.13 METAMORPHIC AND CONTRADICTION TESTS
 # ===========================================================================
+
 
 class TestMetamorphicTokenF1:
     """§1.13: _token_f1 invariants — symmetry, idempotency, contradiction."""
@@ -940,6 +1090,7 @@ class TestMetamorphicTokenF1:
 
     def test_f1_range_always_zero_to_one(self):
         import random
+
         rng = random.Random(42)
         words = [f"word_{i}" for i in range(20)]
         for _ in range(20):
@@ -985,8 +1136,10 @@ class TestMetamorphicSerializationRoundtrip:
 
     def test_delta_report_roundtrip(self):
         d = DeltaReport(
-            run_id_a="r1", run_id_b="r2",
-            config_a_name="baseline", config_b_name="candidate",
+            run_id_a="r1",
+            run_id_b="r2",
+            config_a_name="baseline",
+            config_b_name="candidate",
             timestamp="2025-01-01T00:00:00Z",
             metric_deltas={"precision@5": 0.05},
             scores_a={"precision@5": 0.75},
@@ -997,10 +1150,15 @@ class TestMetamorphicSerializationRoundtrip:
 
     def test_drift_alert_to_dict_preserves_delta_sign(self):
         alert = DriftAlert(
-            alert_id="a1", timestamp="t",
-            alert_type="drift", metric_name="hit_rate",
-            current_value=0.60, threshold_value=0.70,
-            delta=-0.10, severity="warning", message="test",
+            alert_id="a1",
+            timestamp="t",
+            alert_type="drift",
+            metric_name="hit_rate",
+            current_value=0.60,
+            threshold_value=0.70,
+            delta=-0.10,
+            severity="warning",
+            message="test",
         )
         d = alert.to_dict()
         assert d["delta"] == pytest.approx(-0.10)
@@ -1008,9 +1166,13 @@ class TestMetamorphicSerializationRoundtrip:
 
     def test_dpo_pair_roundtrip(self):
         p = DPOPair(
-            pair_id="p1", query="q",
-            chosen_response="good", rejected_response="bad",
-            context_documents=["d1"], chosen_score=0.9, rejected_score=0.2,
+            pair_id="p1",
+            query="q",
+            chosen_response="good",
+            rejected_response="bad",
+            context_documents=["d1"],
+            chosen_score=0.9,
+            rejected_score=0.2,
             source_example_ids=["e0", "e1"],
         )
         d = p.to_dict()
@@ -1022,11 +1184,18 @@ class TestMetamorphicSerializationRoundtrip:
         proposal = ImprovementProposal(
             proposal_id="prop_001",
             timestamp="2025-01-01T00:00:00Z",
-            signals=[ImprovementSignal(
-                signal_type="eval_metric", metric_name="precision@5",
-                current_value=0.70, target_value=0.80, delta=-0.10,
-                priority="warning", source="run:abc", message="below target",
-            )],
+            signals=[
+                ImprovementSignal(
+                    signal_type="eval_metric",
+                    metric_name="precision@5",
+                    current_value=0.70,
+                    target_value=0.80,
+                    delta=-0.10,
+                    priority="warning",
+                    source="run:abc",
+                    message="below target",
+                )
+            ],
             dpo_pair_count=5,
             recommended_actions=["tune_reranker"],
             overall_health_score=0.75,
@@ -1043,26 +1212,38 @@ class TestContradictionImmutability:
 
     def test_evaluation_snapshot_is_frozen(self):
         s = EvaluationSnapshot(
-            timestamp="t", system_version="v1", dataset_version="1.0",
-            metric_results={}, run_id="r",
+            timestamp="t",
+            system_version="v1",
+            dataset_version="1.0",
+            metric_results={},
+            run_id="r",
         )
         with pytest.raises((AttributeError, TypeError)):
             s.run_id = "modified"
 
     def test_dpo_pair_is_frozen(self):
         p = DPOPair(
-            pair_id="p", query="q", chosen_response="c",
-            rejected_response="r", context_documents=[],
-            chosen_score=0.9, rejected_score=0.1, source_example_ids=[],
+            pair_id="p",
+            query="q",
+            chosen_response="c",
+            rejected_response="r",
+            context_documents=[],
+            chosen_score=0.9,
+            rejected_score=0.1,
+            source_example_ids=[],
         )
         with pytest.raises((AttributeError, TypeError)):
             p.chosen_response = "changed"
 
     def test_retrieval_snapshot_is_frozen(self):
         s = RetrievalDriftSnapshot(
-            timestamp="t", system_version="v1",
-            retrieval_hit_rate=0.8, score_distribution_mean=0.7,
-            score_distribution_std=0.05, top_k_stability=0.8, sample_size=10,
+            timestamp="t",
+            system_version="v1",
+            retrieval_hit_rate=0.8,
+            score_distribution_mean=0.7,
+            score_distribution_std=0.05,
+            top_k_stability=0.8,
+            sample_size=10,
         )
         with pytest.raises((AttributeError, TypeError)):
             s.retrieval_hit_rate = 0.1
@@ -1071,6 +1252,7 @@ class TestContradictionImmutability:
 # ===========================================================================
 # §1.15 REGRESSION AND MUTATION TESTS
 # ===========================================================================
+
 
 class TestRegressionRecallDuplicates:
     """§1.15: RecallAtK duplicate-inflation bug — minimal reproducer + near-miss."""
@@ -1127,6 +1309,7 @@ class TestRegressionNDCGGradedContext:
 # §1.17 STATEFUL SURFACE TESTS
 # ===========================================================================
 
+
 class TestStatefulRetrievalOrderingStability:
     """§1.17: retrieval behavior — single result, cutoff equality, ordering."""
 
@@ -1164,8 +1347,11 @@ class TestStatefulSerializationKeyOrder:
 
     def test_evaluation_result_to_dict_contains_all_keys(self):
         r = EvaluationResult(
-            example_id="e0", query="q", retrieved_doc_ids=["d1"],
-            generated_answer="ans", metric_scores={"p@5": 0.8},
+            example_id="e0",
+            query="q",
+            retrieved_doc_ids=["d1"],
+            generated_answer="ans",
+            metric_scores={"p@5": 0.8},
         )
         d = r.to_dict()
         for key in ("example_id", "query", "retrieved_doc_ids", "generated_answer", "metric_scores"):
@@ -1173,21 +1359,40 @@ class TestStatefulSerializationKeyOrder:
 
     def test_improvement_signal_to_dict_all_keys(self):
         s = ImprovementSignal(
-            signal_type="eval_metric", metric_name="p@5",
-            current_value=0.7, target_value=0.8, delta=-0.1,
-            priority="warning", source="run:x", message="below target",
+            signal_type="eval_metric",
+            metric_name="p@5",
+            current_value=0.7,
+            target_value=0.8,
+            delta=-0.1,
+            priority="warning",
+            source="run:x",
+            message="below target",
         )
         d = s.to_dict()
-        for key in ("signal_type", "metric_name", "current_value", "target_value",
-                    "delta", "priority", "source", "message"):
+        for key in (
+            "signal_type",
+            "metric_name",
+            "current_value",
+            "target_value",
+            "delta",
+            "priority",
+            "source",
+            "message",
+        ):
             assert key in d
 
     def test_chunk_to_dict_roundtrip(self):
         from agentic_core.evaluation.chunking.policies import Chunk
+
         c = Chunk(
-            chunk_id="c0", doc_id="d0", content="hello world",
-            token_count=2, start_char=0, end_char=11,
-            parent_section="intro", metadata={"policy": "fixed_token"},
+            chunk_id="c0",
+            doc_id="d0",
+            content="hello world",
+            token_count=2,
+            start_char=0,
+            end_char=11,
+            parent_section="intro",
+            metadata={"policy": "fixed_token"},
         )
         restored = Chunk.from_dict(c.to_dict())
         assert restored.chunk_id == c.chunk_id
@@ -1246,11 +1451,11 @@ class TestStatefulSemanticEdge:
 
     def test_embedder_injection_does_not_break_chunking(self):
         """With a mock embedder present, chunking must still complete."""
+
         class MockEmbedder:
             def encode(self, text):
                 return [1.0, 0.0]
+
         doc = " ".join(f"sentence {i} ends here." for i in range(5))
-        chunks = SemanticChunkPolicy(
-            target_size=5, embedder=MockEmbedder()
-        ).chunk(doc, "d")
+        chunks = SemanticChunkPolicy(target_size=5, embedder=MockEmbedder()).chunk(doc, "d")
         assert len(chunks) >= 1

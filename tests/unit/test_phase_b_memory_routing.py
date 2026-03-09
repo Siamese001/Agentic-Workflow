@@ -10,7 +10,6 @@ B-test hardenings verified:
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -87,27 +86,27 @@ def test_healing_retriever_returns_advisory_only_incidents():
 
 @pytest.mark.unit
 @pytest.mark.negative_control
-def test_build_retriever_returns_null_when_embeddings_disabled(tmp_path):
+def test_build_retriever_returns_active_when_base_path_provided(tmp_path):
+    """BGE is always active; build_retriever returns live retriever when base_path is given."""
     from agentic_core.L1_cognition.memory.healing_memory_retriever import (
-        NullHealingMemoryRetriever,
+        HealingMemoryRetriever,
         build_retriever,
     )
 
-    with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "false"}):
-        r = build_retriever(base_path=tmp_path)
-    assert isinstance(r, NullHealingMemoryRetriever)
+    r = build_retriever(base_path=tmp_path)
+    assert isinstance(r, HealingMemoryRetriever)
 
 
 @pytest.mark.unit
 @pytest.mark.negative_control
 def test_build_retriever_returns_null_when_base_path_none():
+    """build_retriever returns NullHealingMemoryRetriever when base_path is None."""
     from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         NullHealingMemoryRetriever,
         build_retriever,
     )
 
-    with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "true"}):
-        r = build_retriever(base_path=None)
+    r = build_retriever(base_path=None)
     assert isinstance(r, NullHealingMemoryRetriever)
 
 
@@ -123,7 +122,7 @@ def test_sovereign_engine_accepts_retriever_kwarg():
     try:
         from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     retriever = NullHealingMemoryRetriever()
     engine = SovereignDecisionEngine(healing_memory_retriever=retriever)
@@ -135,7 +134,7 @@ def test_sovereign_engine_default_retriever_is_none():
     try:
         from agentic_core.L0_routing.scripts.execute_ssot import SovereignDecisionEngine
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     engine = SovereignDecisionEngine()
     assert engine._healing_memory_retriever is None
@@ -152,7 +151,7 @@ def test_advisory_result_never_alters_routing_score():
             SovereignDecisionEngine,
         )
     except ImportError as exc:
-        pytest.skip(f"execute_ssot not importable in min-deps env: {exc}")
+        pytest.fail(f"execute_ssot not importable in min-deps env: {exc}")
 
     from agentic_core.L1_cognition.memory.healing_memory_retriever import (
         SimilarIncident,

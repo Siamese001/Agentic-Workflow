@@ -39,7 +39,7 @@ class TestContentQualityAgent:
 
             return ContentQualityAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import ContentQualityAgent: {e}")
+            pytest.fail(f"Cannot import ContentQualityAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify ContentQualityAgent exists and is importable."""

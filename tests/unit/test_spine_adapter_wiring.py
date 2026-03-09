@@ -10,17 +10,17 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
 from apps_lic.engines.lic_spine_adapter import LicSpineAdapter
 from apps_rg.engines.rg_spine_adapter import RgSpineAdapter
 from apps_shared.spine.d0_engine_adapter import D0EngineAdapter
 from apps_shared.spine.risk_gate_adapter import RiskGateAdapter, RiskResult
 from apps_shared.spine.vigilance_dispatcher_adapter import VigilanceDispatcherAdapter
-from agentic_core.L0_routing.meta_control.meta_learning_bus import MetaLearningBus
-
 
 # ---------------------------------------------------------------------------
 # D0EngineAdapter contract tests
 # ---------------------------------------------------------------------------
+
 
 class TestD0EngineAdapter:
     def test_instantiates_without_error(self):
@@ -87,6 +87,7 @@ class TestD0EngineAdapter:
 # RiskGateAdapter contract tests
 # ---------------------------------------------------------------------------
 
+
 class TestRiskGateAdapter:
     def test_instantiates_without_error(self):
         adapter = RiskGateAdapter()
@@ -115,15 +116,13 @@ class TestRiskGateAdapter:
     def test_evaluate_blocks_on_deny_execution_in_d0(self):
         adapter = RiskGateAdapter()
         if not adapter.is_real:
-            pytest.skip("Real gate not available")
+            pytest.fail("Real gate not available")
 
         class _Payload:
             sanitized = False
             check_ids = ()
 
-        result = adapter.evaluate(
-            payload_like=_Payload(), d0_injections="DENY_EXECUTION"
-        )
+        result = adapter.evaluate(payload_like=_Payload(), d0_injections="DENY_EXECUTION")
         assert result.allow is False
         assert result.level == "HIGH"
         assert "D0_DENY_EXECUTION" in result.reasons
@@ -131,7 +130,7 @@ class TestRiskGateAdapter:
     def test_evaluate_medium_risk_on_sanitized_input(self):
         adapter = RiskGateAdapter()
         if not adapter.is_real:
-            pytest.skip("Real gate not available")
+            pytest.fail("Real gate not available")
 
         class _SanitizedPayload:
             sanitized = True
@@ -144,7 +143,7 @@ class TestRiskGateAdapter:
     def test_evaluate_medium_risk_on_many_check_ids(self):
         adapter = RiskGateAdapter()
         if not adapter.is_real:
-            pytest.skip("Real gate not available")
+            pytest.fail("Real gate not available")
 
         class _HeavyPayload:
             sanitized = False
@@ -171,7 +170,7 @@ class TestRiskGateAdapter:
         """When real gate unavailable, adapter returns allow=True."""
         adapter = RiskGateAdapter()
         if adapter.is_real:
-            pytest.skip("Real gate available, null fallback test not applicable")
+            pytest.fail("Real gate available, null fallback test not applicable")
 
         class _P:
             pass
@@ -183,6 +182,7 @@ class TestRiskGateAdapter:
 # ---------------------------------------------------------------------------
 # VigilanceDispatcherAdapter contract tests
 # ---------------------------------------------------------------------------
+
 
 class TestVigilanceDispatcherAdapter:
     def test_instantiates_without_error(self):
@@ -198,7 +198,8 @@ class TestVigilanceDispatcherAdapter:
         adapter.dispatch()
 
     def test_dispatch_enqueues_event_when_real(self):
-        from apps_shared.spine.vigilance_dispatcher_adapter import _EVENT_QUEUE, _drain_event_queue
+        from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
+
         _drain_event_queue()  # clear
         adapter = VigilanceDispatcherAdapter()
         if adapter.is_real:
@@ -216,6 +217,7 @@ class TestVigilanceDispatcherAdapter:
 
     def test_event_queue_bounded(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import _EVENT_QUEUE, _drain_event_queue
+
         _drain_event_queue()
         adapter = VigilanceDispatcherAdapter()
         if adapter.is_real:
@@ -228,6 +230,7 @@ class TestVigilanceDispatcherAdapter:
 # ---------------------------------------------------------------------------
 # MetaLearningBus integration with spine (G1-d)
 # ---------------------------------------------------------------------------
+
 
 class TestMetaLearningBusInSpine:
     def test_lic_spine_has_meta_learning_bus(self):
@@ -246,10 +249,9 @@ class TestMetaLearningBusInSpine:
             MetaLearningBus,
             MetaLearningChangePackage,
         )
+
         bus = MetaLearningBus()
-        pkg = MetaLearningChangePackage.create(
-            trace_id="trace_001", kind="threshold", payload={"key": "val"}
-        )
+        pkg = MetaLearningChangePackage.create(trace_id="trace_001", kind="threshold", payload={"key": "val"})
         bus.enqueue(pkg)
         assert bus.size() == 1
         result = bus.dequeue()
@@ -266,6 +268,7 @@ class TestMetaLearningBusInSpine:
             MetaLearningBus,
             MetaLearningChangePackage,
         )
+
         bus = MetaLearningBus()
         pkg = MetaLearningChangePackage.create("t1", "kind_x", {"a": 1})
         bus.enqueue(pkg)
@@ -278,6 +281,7 @@ class TestMetaLearningBusInSpine:
 # ---------------------------------------------------------------------------
 # LicSpineAdapter / RgSpineAdapter: real adapter wiring end-to-end
 # ---------------------------------------------------------------------------
+
 
 class TestSpineAdapterRealWiring:
     def test_lic_spine_d0_engine_is_adapter(self):
@@ -348,10 +352,11 @@ class TestSpineAdapterRealWiring:
 # BaseSpineAdapter error paths (G14)
 # ---------------------------------------------------------------------------
 
+
 class TestBaseSpineAdapterErrorPaths:
     def test_invalid_prefix_no_dash_raises(self):
-        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
         from agentic_core.interfaces.execution import CIDRegistry
+        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
         class _MinAdapter(BaseSpineAdapter):
             pass
@@ -364,8 +369,8 @@ class TestBaseSpineAdapterErrorPaths:
             )
 
     def test_invalid_prefix_uppercase_raises(self):
-        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
         from agentic_core.interfaces.execution import CIDRegistry
+        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
         class _MinAdapter(BaseSpineAdapter):
             pass
@@ -378,8 +383,8 @@ class TestBaseSpineAdapterErrorPaths:
             )
 
     def test_invalid_prefix_too_short_raises(self):
-        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
         from agentic_core.interfaces.execution import CIDRegistry
+        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
         class _MinAdapter(BaseSpineAdapter):
             pass
@@ -392,8 +397,8 @@ class TestBaseSpineAdapterErrorPaths:
             )
 
     def test_valid_prefix_accepted(self):
-        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
         from agentic_core.interfaces.execution import CIDRegistry
+        from apps_shared.spine.base_spine_adapter import BaseSpineAdapter
 
         class _MinAdapter(BaseSpineAdapter):
             pass

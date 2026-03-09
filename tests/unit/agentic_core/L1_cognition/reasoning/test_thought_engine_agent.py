@@ -25,7 +25,7 @@ class TestThoughtEngineAgent:
         """L1 cognition agents should inherit from appropriate base."""
         reasoning_path = Path("agentic_core/L1_cognition/reasoning")
         if not reasoning_path.exists():
-            pytest.skip("L1_cognition/reasoning/ not found")
+            pytest.fail("L1_cognition/reasoning/ not found")
 
         for agent_file in reasoning_path.glob("*Agent.py"):
             content = agent_file.read_text(encoding="utf-8", errors="ignore")
@@ -52,7 +52,7 @@ class TestPlanningAgent:
         """Planning types should be defined in types/."""
         types_path = Path("agentic_core/L1_cognition/types")
         if not types_path.exists():
-            pytest.skip("L1_cognition/types/ not found")
+            pytest.fail("L1_cognition/types/ not found")
 
         type_files = list(types_path.glob("*.py"))
         assert len(type_files) > 0, "L1_cognition/types/ should have type definitions"
@@ -65,7 +65,7 @@ class TestCognitionLayerIntegrity:
         """L1 cognition should not import subprocess."""
         base = Path("agentic_core/L1_cognition")
         if not base.exists():
-            pytest.skip("L1_cognition/ not found")
+            pytest.fail("L1_cognition/ not found")
 
         violations = []
         for py_file in base.rglob("*.py"):
@@ -81,7 +81,7 @@ class TestCognitionLayerIntegrity:
         """Agent classes in L1 should be in reasoning/."""
         base = Path("agentic_core/L1_cognition")
         if not base.exists():
-            pytest.skip("L1_cognition/ not found")
+            pytest.fail("L1_cognition/ not found")
 
         violations = []
         for subfolder in ["types", "config", "utils", "enforcement"]:

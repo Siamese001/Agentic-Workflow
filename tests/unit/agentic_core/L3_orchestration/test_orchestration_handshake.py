@@ -17,17 +17,14 @@ import pytest
 
 from agentic_core.L3_orchestration.arbitration.arbitration_contract import (
     AdvisorProposal,
-    ArbitrationDecision,
     ArbitrationInput,
 )
 from agentic_core.L3_orchestration.arbitration.arbitrator import Arbitrator
 from agentic_core.L3_orchestration.engines.handshake_state_machine import (
     HandshakeState,
     HandshakeStateMachine,
-    StateTransition,
     create_handshake_machine,
 )
-
 
 # ---------------------------------------------------------------------------
 # Helpers

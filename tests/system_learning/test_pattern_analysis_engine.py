@@ -28,7 +28,9 @@ class TestPatternAnalysisEngine:
 
         assert isinstance(summary, PatternSummary)
         assert summary.clusters == []
-        assert summary.pattern_digest == "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"  # SHA-256 of []
+        assert (
+            summary.pattern_digest == "4f53cda18c2baa0c0354bb5f9a3ecbe5ed12ab4d8e11ba873c2f11161202b945"
+        )  # SHA-256 of []
 
     def test_single_embedding_returns_empty(self) -> None:
         """T2: Single embedding should return empty clusters."""
@@ -103,6 +105,7 @@ class TestPatternAnalysisEngine:
         # Run with shuffled order
         shuffled_embeddings = list(zip(embeddings, metadata))
         import random
+
         random.seed(42)  # Fixed seed for reproducible shuffle
         random.shuffle(shuffled_embeddings)
         embeddings_shuffled, metadata_shuffled = zip(*shuffled_embeddings)
@@ -157,7 +160,7 @@ class TestPatternAnalysisEngine:
             centroid = summary.clusters[0].centroid
             for val in centroid:
                 # Check that value has at most 3 decimal places
-                assert len(str(val).split('.')[-1]) <= 3
+                assert len(str(val).split(".")[-1]) <= 3
 
     def test_mismatched_lengths_raises_error(self) -> None:
         """T7: Mismatched embedding and metadata lengths should raise ValueError."""

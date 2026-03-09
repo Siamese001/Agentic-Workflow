@@ -12,9 +12,7 @@ Branch coverage:
 - RetrievalProfileConfig: to_dict, from_dict roundtrip
 """
 
-
 import pytest
-
 from agentic_core.evaluation.retrieval.fusion import ReciprocalRankFusion, ScoreFusion
 from agentic_core.evaluation.retrieval.interfaces import (
     Document,
@@ -35,9 +33,11 @@ from agentic_core.evaluation.retrieval.reranker import HeuristicReranker, Passth
 # Stub retrievers for testing
 # ---------------------------------------------------------------------------
 
+
 class StubLexicalRetriever(IRetrieverLexical):
     def __init__(self, docs):
         self._docs = docs
+
     def retrieve(self, query: str, top_k: int = 50) -> list[Document]:
         return self._docs[:top_k]
 
@@ -45,8 +45,10 @@ class StubLexicalRetriever(IRetrieverLexical):
 class StubVectorRetriever(IRetrieverVector):
     def __init__(self, docs):
         self._docs = docs
+
     def retrieve(self, query_embedding, top_k=50) -> list[Document]:
         return self._docs[:top_k]
+
     def embed_query(self, query: str) -> list[float]:
         return [0.1, 0.2, 0.3]
 
@@ -58,6 +60,7 @@ def _make_doc(doc_id, score=1.0, content="content"):
 # ---------------------------------------------------------------------------
 # Document
 # ---------------------------------------------------------------------------
+
 
 class TestDocument:
     def test_to_dict_keys(self):
@@ -73,6 +76,7 @@ class TestDocument:
 # ---------------------------------------------------------------------------
 # ReciprocalRankFusion
 # ---------------------------------------------------------------------------
+
 
 class TestReciprocalRankFusion:
     def test_invalid_k_raises(self):
@@ -130,6 +134,7 @@ class TestReciprocalRankFusion:
 # ScoreFusion
 # ---------------------------------------------------------------------------
 
+
 class TestScoreFusion:
     def test_empty_both(self):
         sf = ScoreFusion()
@@ -171,6 +176,7 @@ class TestScoreFusion:
 # HeuristicReranker
 # ---------------------------------------------------------------------------
 
+
 class TestHeuristicReranker:
     def test_empty_candidates(self):
         reranker = HeuristicReranker()
@@ -184,9 +190,11 @@ class TestHeuristicReranker:
 
     def test_scorer_injection(self):
         scored = {}
+
         def custom_scorer(query, content):
             scored["called"] = True
             return 0.99
+
         reranker = HeuristicReranker(scorer=custom_scorer)
         docs = [_make_doc("doc_1", content="some text")]
         result = reranker.rerank("query", docs)
@@ -222,6 +230,7 @@ class TestHeuristicReranker:
 # PassthroughReranker
 # ---------------------------------------------------------------------------
 
+
 class TestPassthroughReranker:
     def test_empty(self):
         assert PassthroughReranker().rerank("q", []) == []
@@ -244,6 +253,7 @@ class TestPassthroughReranker:
 # RetrievalProfileConfig
 # ---------------------------------------------------------------------------
 
+
 class TestRetrievalProfileConfig:
     def test_to_dict_roundtrip(self):
         cfg = RetrievalProfileConfig(mode="hybrid_reranked", lexical_k=50, vector_k=50, rerank_k=10)
@@ -262,6 +272,7 @@ class TestRetrievalProfileConfig:
 # ---------------------------------------------------------------------------
 # make_profile
 # ---------------------------------------------------------------------------
+
 
 class TestMakeProfile:
     def test_valid_modes(self):
@@ -283,6 +294,7 @@ class TestMakeProfile:
 # ---------------------------------------------------------------------------
 # RetrievalPipeline
 # ---------------------------------------------------------------------------
+
 
 class TestRetrievalPipeline:
     def _make_lexical_docs(self, n=5):

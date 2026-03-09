@@ -20,7 +20,7 @@ DISCOVERY_JSON = (
 @pytest.fixture(scope="module")
 def active_agents() -> list[dict]:
     if not DISCOVERY_JSON.exists():
-        pytest.skip(f"Discovery artifact not found: {DISCOVERY_JSON}")
+        pytest.fail(f"Discovery artifact not found: {DISCOVERY_JSON}")
     data = json.loads(DISCOVERY_JSON.read_text(encoding="utf-8"))
     return [a for a in data["agents"] if a.get("status") == "ACTIVE"]
 

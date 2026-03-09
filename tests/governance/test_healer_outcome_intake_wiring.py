@@ -20,10 +20,10 @@ from system_learning.engines.healing_outcome_intake_adapter import HealingOutcom
 from system_learning.ports.healing_outcome_intake_store import HealingOutcomeIntakeStore
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent
 
-
 # ---------------------------------------------------------------------------
 # In-memory store for testing (implements write() protocol)
 # ---------------------------------------------------------------------------
+
 
 class InMemoryHealingOutcomeIntakeStore(HealingOutcomeIntakeStore):
     """Simple in-memory store for tests."""
@@ -44,6 +44,7 @@ class InMemoryHealingOutcomeIntakeStore(HealingOutcomeIntakeStore):
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_event(healer_id="healer_1", tier="T1", failure_type="OOM", success=True):
     return HealingOutcomeEvent(
@@ -68,6 +69,7 @@ def _populated_aggregator():
 # TestAdapterBuildRecord
 # ---------------------------------------------------------------------------
 
+
 class TestAdapterBuildRecord:
     def test_build_record_returns_intake_record(self):
         store = InMemoryHealingOutcomeIntakeStore()
@@ -75,6 +77,7 @@ class TestAdapterBuildRecord:
         agg = _populated_aggregator()
         record = adapter.build_record(agg, created_utc=1000)
         from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
+
         assert isinstance(record, HealingOutcomeIntakeRecord)
 
     def test_build_record_schema_version_is_1(self):
@@ -119,9 +122,7 @@ class TestAdapterBuildRecord:
         agg = _populated_aggregator()
         record = adapter.build_record(agg, created_utc=1000)
         snap = record.snapshot
-        sorted_snap = tuple(
-            sorted(snap, key=lambda s: (s.healer_id, s.tier, s.failure_type))
-        )
+        sorted_snap = tuple(sorted(snap, key=lambda s: (s.healer_id, s.tier, s.failure_type)))
         assert snap == sorted_snap
 
     def test_build_record_deterministic_for_identical_aggregator(self):
@@ -145,6 +146,7 @@ class TestAdapterBuildRecord:
 # ---------------------------------------------------------------------------
 # TestAdapterPersistRecord
 # ---------------------------------------------------------------------------
+
 
 class TestAdapterPersistRecord:
     def test_persist_record_writes_to_store(self):
@@ -176,6 +178,7 @@ class TestAdapterPersistRecord:
 
     def test_store_write_called_once_per_persist(self):
         from unittest.mock import MagicMock
+
         store_mock = MagicMock(spec=HealingOutcomeIntakeStore)
         adapter = HealingOutcomeIntakeAdapter(store_mock)
         agg = _populated_aggregator()
@@ -187,6 +190,7 @@ class TestAdapterPersistRecord:
 # ---------------------------------------------------------------------------
 # TestEmptyAggregatorRejection
 # ---------------------------------------------------------------------------
+
 
 class TestEmptyAggregatorRejection:
     def test_empty_aggregator_build_record_raises_value_error(self):
@@ -202,6 +206,7 @@ class TestEmptyAggregatorRejection:
 # ---------------------------------------------------------------------------
 # TestFullPipeline
 # ---------------------------------------------------------------------------
+
 
 class TestFullPipeline:
     def test_full_pipeline_healer_to_store(self):

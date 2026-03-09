@@ -23,7 +23,6 @@ from apps_rg.engines.contact_safety_engine import ContactSafetyEngine
 from apps_rg.engines.hallucination_detector import HallucinationDetector
 from apps_rg.engines.skill_score_normalizer import SkillScoreNormalizer
 
-
 # ---------------------------------------------------------------------------
 # Helpers — minimal context stub so engines can construct without a real ctx
 # ---------------------------------------------------------------------------
@@ -171,20 +170,24 @@ class TestHallucinationDetectorCheckBatch:
     def test_score_is_average_of_all_texts(self):
         engine = _hallucination_detector()
         # Two clean texts → avg score 1.0
-        result = engine.check_batch([
-            "Led a development team through an agile transformation.",
-            "Architected a distributed microservices platform.",
-        ])
+        result = engine.check_batch(
+            [
+                "Led a development team through an agile transformation.",
+                "Architected a distributed microservices platform.",
+            ]
+        )
         assert result["score"] == 1.0
 
     @pytest.mark.governance
     def test_valid_threshold_at_07(self):
         engine = _hallucination_detector()
         # 1 suspicious (0.3) + 1 clean (1.0) → avg 0.65 → invalid
-        result = engine.check_batch([
-            "Improved by 100%",
-            "Managed core infrastructure services effectively.",
-        ])
+        result = engine.check_batch(
+            [
+                "Improved by 100%",
+                "Managed core infrastructure services effectively.",
+            ]
+        )
         # avg = (0.3 + 1.0) / 2 = 0.65 < 0.7
         assert result["valid"] is False
 
@@ -215,6 +218,7 @@ class TestSkillScoreNormalizer:
     def test_empty_scores_returns_empty_dict(self):
         engine = _skill_normalizer()
         import asyncio
+
         result = asyncio.run(engine.execute({}))
         assert result == {}
 
@@ -222,6 +226,7 @@ class TestSkillScoreNormalizer:
     def test_normalised_scores_all_in_0_to_1_range(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"python": 80.0, "java": 60.0, "sql": 40.0}
         result = asyncio.run(engine.execute(raw))
         for v in result.values():
@@ -231,6 +236,7 @@ class TestSkillScoreNormalizer:
     def test_max_score_normalises_to_1(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"python": 80.0, "java": 40.0}
         result = asyncio.run(engine.execute(raw))
         assert result["python"] == 1.0
@@ -239,6 +245,7 @@ class TestSkillScoreNormalizer:
     def test_min_score_normalises_to_0(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"python": 80.0, "java": 40.0}
         result = asyncio.run(engine.execute(raw))
         assert result["java"] == 0.0
@@ -247,6 +254,7 @@ class TestSkillScoreNormalizer:
     def test_all_equal_scores_normalise_to_1(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"python": 70.0, "java": 70.0, "sql": 70.0}
         result = asyncio.run(engine.execute(raw))
         for v in result.values():
@@ -256,6 +264,7 @@ class TestSkillScoreNormalizer:
     def test_single_skill_normalises_to_1(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"python": 55.0}
         result = asyncio.run(engine.execute(raw))
         assert result["python"] == 1.0
@@ -264,6 +273,7 @@ class TestSkillScoreNormalizer:
     def test_preserves_all_skill_keys(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"a": 1.0, "b": 2.0, "c": 3.0}
         result = asyncio.run(engine.execute(raw))
         assert set(result.keys()) == set(raw.keys())
@@ -272,6 +282,7 @@ class TestSkillScoreNormalizer:
     def test_normalisation_deterministic_for_same_input_twice(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"x": 10.0, "y": 50.0, "z": 90.0}
         r1 = asyncio.run(engine.execute(raw))
         r2 = asyncio.run(engine.execute(raw))
@@ -281,6 +292,7 @@ class TestSkillScoreNormalizer:
     def test_normalisation_does_not_mutate_input(self):
         engine = _skill_normalizer()
         import asyncio
+
         raw = {"x": 10.0, "y": 90.0}
         original = dict(raw)
         asyncio.run(engine.execute(raw))

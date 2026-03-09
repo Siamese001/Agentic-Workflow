@@ -19,9 +19,7 @@ import pytest
 # Guard against broken upstream deps in orchestrator_engine (G5 note: the engine
 # depends on agentic_core.utils.ssot_discovery_validator which may be absent).
 try:
-    _orch_engine = importlib.import_module(
-        "agentic_core.L3_orchestration.engines.orchestrator_engine"
-    )
+    _orch_engine = importlib.import_module("agentic_core.L3_orchestration.engines.orchestrator_engine")
     _L3_ENGINE_AVAILABLE = True
 except (ImportError, ModuleNotFoundError):
     _orch_engine = None
@@ -37,25 +35,31 @@ _requires_l3_engine = pytest.mark.skipif(
 # IOrchestrator protocol contract
 # ---------------------------------------------------------------------------
 
+
 class TestIOrchestratorProtocol:
     def test_protocol_is_importable(self):
         from agentic_core.seams.orchestration_protocols import IOrchestrator
+
         assert IOrchestrator is not None
 
     def test_orchestrate_method_in_protocol(self):
         from agentic_core.seams.orchestration_protocols import IOrchestrator
+
         assert hasattr(IOrchestrator, "orchestrate")
 
     def test_iorchestratorprotocol_is_importable(self):
         from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+
         assert IOrchestratorProtocol is not None
 
     def test_iorchestratorprotocol_has_orchestrate(self):
         from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+
         assert hasattr(IOrchestratorProtocol, "orchestrate")
 
     def test_iorchestratorprotocol_has_dispatch(self):
         from agentic_core.interfaces.IOrchestratorProtocol import IOrchestratorProtocol
+
         assert hasattr(IOrchestratorProtocol, "dispatch")
 
 
@@ -63,18 +67,21 @@ class TestIOrchestratorProtocol:
 # L3OrchestrationStrategy
 # ---------------------------------------------------------------------------
 
+
 @_requires_l3_engine
 class TestL3OrchestrationStrategy:
     def test_importable(self):
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             L3OrchestrationStrategy,
         )
+
         assert L3OrchestrationStrategy is not None
 
     def test_instantiates_with_empty_config(self):
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             L3OrchestrationStrategy,
         )
+
         strategy = L3OrchestrationStrategy(config={})
         assert strategy is not None
 
@@ -82,6 +89,7 @@ class TestL3OrchestrationStrategy:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             L3OrchestrationStrategy,
         )
+
         strategy = L3OrchestrationStrategy(config={}, mode="unified")
         assert strategy.mode == "unified"
 
@@ -89,6 +97,7 @@ class TestL3OrchestrationStrategy:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             L3OrchestrationStrategy,
         )
+
         strategy = L3OrchestrationStrategy(config={})
         agents = strategy.get_available_agents()
         assert isinstance(agents, list)
@@ -97,6 +106,7 @@ class TestL3OrchestrationStrategy:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             L3OrchestrationStrategy,
         )
+
         strategy = L3OrchestrationStrategy(config={})
         # Must not raise even if no agents found
         try:
@@ -109,20 +119,22 @@ class TestL3OrchestrationStrategy:
 # get_consolidated_orchestrator factory
 # ---------------------------------------------------------------------------
 
+
 @_requires_l3_engine
 class TestGetConsolidatedOrchestrator:
     def test_factory_returns_orchestrator(self):
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             get_consolidated_orchestrator,
         )
+
         orch = get_consolidated_orchestrator()
         assert orch is not None
 
     def test_factory_resolves_project_root(self):
-        from pathlib import Path
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             get_consolidated_orchestrator,
         )
+
         orch = get_consolidated_orchestrator()
         # project_root should be a resolved absolute path
         assert orch.project_root.is_absolute()
@@ -131,6 +143,7 @@ class TestGetConsolidatedOrchestrator:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             get_consolidated_orchestrator,
         )
+
         orch = get_consolidated_orchestrator(project_root=tmp_path)
         assert orch.project_root == tmp_path.resolve()
 
@@ -138,6 +151,7 @@ class TestGetConsolidatedOrchestrator:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             get_consolidated_orchestrator,
         )
+
         orch = get_consolidated_orchestrator()
         # Mode should be "unified" per factory contract
         assert getattr(orch, "mode", "unified") == "unified"
@@ -147,18 +161,21 @@ class TestGetConsolidatedOrchestrator:
 # OrchestrationResult contract
 # ---------------------------------------------------------------------------
 
+
 @_requires_l3_engine
 class TestOrchestrationResult:
     def test_result_type_importable(self):
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             OrchestrationResult,
         )
+
         assert OrchestrationResult is not None
 
     def test_result_has_required_fields(self):
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             OrchestrationResult,
         )
+
         result = OrchestrationResult(
             completed=True,
             stage="done",
@@ -175,6 +192,7 @@ class TestOrchestrationResult:
         from agentic_core.L3_orchestration.engines.orchestrator_engine import (
             OrchestrationResult,
         )
+
         result = OrchestrationResult(
             completed=False,
             stage="failed",
@@ -189,25 +207,28 @@ class TestOrchestrationResult:
 # IOrchestrator (seams) contract — synchronous orchestrate()
 # ---------------------------------------------------------------------------
 
+
 class TestIOrchestratorsSeamContract:
     def test_canonical_seam_protocol_has_orchestrate(self):
         from agentic_core.seams.orchestration_protocols import IOrchestrator
-        assert callable(getattr(IOrchestrator, "orchestrate", None)) or hasattr(
-            IOrchestrator, "orchestrate"
-        )
+
+        assert callable(getattr(IOrchestrator, "orchestrate", None)) or hasattr(IOrchestrator, "orchestrate")
 
     def test_governed_payload_importable(self):
         from agentic_core.seams.orchestration_protocols import GovernedPayload
+
         assert GovernedPayload is not None
 
     def test_orchestration_result_importable_from_seams(self):
         from agentic_core.seams.orchestration_protocols import OrchestrationResult
+
         assert OrchestrationResult is not None
 
 
 # ---------------------------------------------------------------------------
 # L3 wiring into ExecutionOrchestrator (G5 end-to-end smoke test)
 # ---------------------------------------------------------------------------
+
 
 @_requires_l3_engine
 class TestL3WiringSmoke:
@@ -224,12 +245,14 @@ class TestL3WiringSmoke:
                     d0_injections = ""
                     sanitized = False
                     check_ids = ()
+
                 return _P()
 
         class _FakeRouter:
             def select_path(self, p):
                 class _Path:
                     value = "B"
+
                 return _Path()
 
         class _FakeD0Engine:
@@ -250,12 +273,14 @@ class TestL3WiringSmoke:
         class _FakeCIDRegistry:
             def new_cycle(self, label):
                 return _FakeCycle()
+
             def next_attempt(self, cycle):
                 return cycle
 
         class _FakeReEntry:
             def should_retry(self, c):
                 return False
+
             def advance(self, c):
                 return c
 
@@ -268,14 +293,17 @@ class TestL3WiringSmoke:
                 pass
 
         l3 = L3OrchestrationStrategy(config={}, mode="unified")
+
         # Wrap to provide synchronous orchestrate() from the strategy
         class _SyncWrapper:
             def __init__(self, strategy):
                 self._strategy = strategy
+
             def orchestrate(self, payload, route_mode, trace_id, policy_hash, allowed_tools):
                 from agentic_core.L3_orchestration.engines.orchestrator_engine import (
                     OrchestrationResult,
                 )
+
                 return OrchestrationResult(
                     completed=True,
                     stage="delegated",

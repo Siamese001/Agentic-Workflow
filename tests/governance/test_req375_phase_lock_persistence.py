@@ -4,23 +4,25 @@ Tests that phase lock state survives process restart and is properly
 persisted in L4 storage.
 """
 
-import pytest
 import json
-import tempfile
 import shutil
+import tempfile
 from pathlib import Path
-import time
+
+import pytest
 
 pytestmark = pytest.mark.governance
 
 # Import the modules we're testing
 import sys
+
 sys.path.append(str(Path(__file__).parent.parent.parent / "agentic_core" / "L4_state" / "enforcement"))
 
 try:
-    from phase_lock_store import PhaseLockStore, PhaseLockRecord, PhaseLockValidator
+    from phase_lock_store import PhaseLockRecord, PhaseLockStore, PhaseLockValidator  # noqa: F401
 except ImportError:
-    pytest.skip("phase_lock_store module not available", allow_module_level=True)
+    pytest.fail("phase_lock_store module not available", allow_module_level=True)
+
 
 class TestPhaseLockPersistence:
     """Test phase lock persistence functionality."""
@@ -94,6 +96,7 @@ class TestPhaseLockPersistence:
         # Verify digest is computed correctly
         replay_data = f"{phase}:{lock.timestamp}:{metadata}"
         import hashlib
+
         expected_digest = hashlib.sha256(replay_data.encode()).hexdigest()
         assert lock.replay_digest == expected_digest, "Replay digest should match"
 
@@ -111,14 +114,19 @@ class TestPhaseLockPersistence:
         assert sequence_valid is True, "Phase sequence should be valid"
 
         # Phase 4 is also valid since all previous phases are locked
-        assert self.validator.validate_phase_sequence(4) is True, \
+        assert self.validator.validate_phase_sequence(4) is True, (
             "Phase 4 validation should pass when phases 1-3 are locked"
+        )
 
         # But invalid if phases are missing (fresh validator with empty store)
         import tempfile
+
         with tempfile.TemporaryDirectory() as fresh_dir:
             from pathlib import Path as _Path
-            from phase_lock_store import PhaseLockValidator, PhaseLockStore as FreshStore
+
+            from phase_lock_store import PhaseLockStore as FreshStore
+            from phase_lock_store import PhaseLockValidator
+
             fresh_store = FreshStore(_Path(fresh_dir))
             fresh_validator = PhaseLockValidator(fresh_store)
             with pytest.raises(RuntimeError, match="Phase 1 must be locked"):
@@ -235,7 +243,7 @@ class TestPhaseLockPersistence:
         assert storage_file.exists(), "Storage file should be created"
 
         # Verify file content is valid JSON
-        with open(storage_file, 'r') as f:
+        with open(storage_file) as f:
             data = json.load(f)
 
         assert "1" in data, "Phase 1 should be in stored data"
@@ -264,7 +272,7 @@ class TestPhaseLockPersistence:
         """Test handling of corrupted storage file."""
         # Given - Create corrupted JSON file
         storage_file = self.temp_dir / "phase_locks.json"
-        with open(storage_file, 'w') as f:
+        with open(storage_file, "w") as f:
             f.write("invalid json content")
 
         # When - Create store with corrupted storage

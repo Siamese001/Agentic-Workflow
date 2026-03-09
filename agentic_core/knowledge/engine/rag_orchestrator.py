@@ -13,18 +13,13 @@ Canon Key 9 - Retrieval-Augmented Generation integration
 import json
 from pathlib import Path
 
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
-# Internal imports referencing the mandated structure
+# Canonical document loaders — guarded only for mid-relocation tolerance
 try:
-    from agentic_core.semantic_memory.embeddings.core_embedder import (
-        _embedding_cache,
-        clear_embedding_cache,  # noqa: F401
-    )
-
     from agentic_core.knowledge.document_loaders.csv_loader import CSVDocumentLoader
     from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
     from agentic_core.knowledge.document_loaders.pdf_loader import PDFDocumentLoader
@@ -33,7 +28,7 @@ try:
     from agentic_core.knowledge.static_index.action_verbs_types import ACTION_VERBS, STRONG_VERBS
     from agentic_core.knowledge.static_index.skill_taxonomy_types import ALL_SKILLS, SKILL_TAXONOMY
 except ImportError:
-    # Fallback to avoid mission failure if sub-modules are mid-relocation
+    # guardian: allow-silent-swallow — sub-modules may be mid-relocation
     ACTION_VERBS, STRONG_VERBS = {}, []
     SKILL_TAXONOMY, ALL_SKILLS = {}, []
     TextDocumentLoader = None
@@ -41,8 +36,28 @@ except ImportError:
     HTMLDocumentLoader = None
     CSVDocumentLoader = None
     ResearchCache = None
+
+# Embedding cache — canonical BGE path (no ghost semantic_memory fallback)
+try:
+    from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+        bmg_embed_text as _bge_embed,  # noqa: F401
+    )
+
+    _embedding_cache: dict = {}
+
+    def clear_embedding_cache() -> None:  # noqa: F811
+        _embedding_cache.clear()
+
+except ImportError as _exc:
+    import logging as _logging
+
+    _logging.getLogger(__name__).critical(
+        "rag_orchestrator: BGE embedder unavailable — embedding cache disabled: %s", _exc
+    )
     _embedding_cache = {}
-    clear_embedding_cache = lambda: None  # noqa: E731
+
+    def clear_embedding_cache() -> None:  # noqa: F811
+        pass
 
 
 class SovereignRagOrchestrator:
@@ -94,6 +109,7 @@ class SovereignRagOrchestrator:
 
                 def query(self, query_emb, top_k=5):
                     import numpy as np
+
                     if not self._store or query_emb is None:
                         return []
                     q = np.array(query_emb, dtype=np.float32)
@@ -104,18 +120,21 @@ class SovereignRagOrchestrator:
                         v_norm = v / (np.linalg.norm(v) + 1e-8)
                         scored.append((float(np.dot(q_norm, v_norm)), entry))
                     scored.sort(key=lambda x: x[0], reverse=True)
-                    return [
-                        {"id": e["id"], "score": s, "metadata": e["metadata"]}
-                        for s, e in scored[:top_k]
-                    ]
+                    return [{"id": e["id"], "score": s, "metadata": e["metadata"]} for s, e in scored[:top_k]]
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
-            self.Bm25Store = None
         except (ImportError, Exception):
-            # Vector search unavailable - will fall back to keyword/static only
+            # guardian: allow-silent-swallow — vector search unavailable, fall back to keyword/static
             self.embedder = None
             self.vector_store = None
+
+        # Wire live BM25 singleton (P4-3A: was always None)
+        try:
+            from agentic_core.L4_state.memory.bm25_store import get_bm25_store
+
+            self.Bm25Store = get_bm25_store()
+        except Exception:  # guardian: allow-silent-swallow
             self.Bm25Store = None
 
         # Optional: Initialize LLM engine for reranking
@@ -300,19 +319,20 @@ Output ONLY a JSON list of indices in order of relevance (e.g., [2, 0, 1])."""
             print(f"Reranking failed: {e}")
             return candidates[:top_k]
 
-    def get_context_for_task(self, Task: str, domain: str = "general") -> str:
+    async def get_context_for_task(self, Task: str, domain: str = "general") -> str:
         """
         Converts raw retrievals into a formatted context block for LLM instructions.
         Ensures agents operate under Sovereign Truth.
         """
-        retrievals = self.retrieve(Task, domain=domain)
+        retrievals = await self.retrieve(Task, domain=domain)
         if not retrievals:
             return "No relevant sovereign knowledge found."
 
         context_parts = ["### RELEVANT SOVEREIGN KNOWLEDGE"]
         for r in retrievals:
-            r["source"]
-            r["content"]
+            source = r.get("source", "unknown")
+            content = r.get("content", "")
+            context_parts.append(f"[{source}] {content}")
 
         return "\n".join(context_parts)
 

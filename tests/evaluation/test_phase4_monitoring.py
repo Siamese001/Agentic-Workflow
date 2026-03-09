@@ -14,7 +14,6 @@ Branch coverage:
 """
 
 import pytest
-
 from agentic_core.evaluation.monitoring.drift_monitor import (
     AnswerQualityMonitor,
     EmbeddingDriftMonitor,
@@ -38,6 +37,7 @@ from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_dataset(n=2):
     return EvaluationDataset(
@@ -65,6 +65,7 @@ def _bad_retrieval(query):
 # ---------------------------------------------------------------------------
 # Snapshot dataclasses
 # ---------------------------------------------------------------------------
+
 
 class TestRetrievalDriftSnapshot:
     def _make(self):
@@ -182,6 +183,7 @@ class TestDriftAlert:
 # RetrievalDriftMonitor
 # ---------------------------------------------------------------------------
 
+
 class TestRetrievalDriftMonitor:
     def _monitor(self, **kwargs):
         return RetrievalDriftMonitor(
@@ -281,7 +283,9 @@ class TestRetrievalDriftMonitor:
 
     def test_l4_persist_graceful_on_exception(self):
         class BrokenStore:
-            def put(self, a): raise RuntimeError("broken")
+            def put(self, a):
+                raise RuntimeError("broken")
+
         m = self._monitor(l4_store=BrokenStore())
         queries = ["q1"]
         snapshot = m.measure(["q1"], [["doc_1"]], [["doc_1"]], [[0.9]])
@@ -291,6 +295,7 @@ class TestRetrievalDriftMonitor:
 # ---------------------------------------------------------------------------
 # EmbeddingDriftMonitor
 # ---------------------------------------------------------------------------
+
 
 class TestEmbeddingDriftMonitor:
     def _monitor(self, current_version="v1.2"):
@@ -382,6 +387,7 @@ class TestEmbeddingDriftMonitor:
 # AnswerQualityMonitor
 # ---------------------------------------------------------------------------
 
+
 class TestAnswerQualityMonitor:
     def _monitor(self):
         return AnswerQualityMonitor(
@@ -397,7 +403,7 @@ class TestAnswerQualityMonitor:
 
     def test_groundedness_rate_computed(self):
         scores = [0.8, 0.9, 0.7]
-        snapshot = self._monitor().measure(scores, [False, False, False], [False]*3, [0.8]*3)
+        snapshot = self._monitor().measure(scores, [False, False, False], [False] * 3, [0.8] * 3)
         assert snapshot.groundedness_rate == pytest.approx(0.8)
 
     def test_hallucination_rate_computed(self):
@@ -480,6 +486,7 @@ class TestAnswerQualityMonitor:
 # ---------------------------------------------------------------------------
 # ShadowEvaluationRunner
 # ---------------------------------------------------------------------------
+
 
 class TestShadowEvaluationRunner:
     def _make_configs(self, cand_retrieval=None):

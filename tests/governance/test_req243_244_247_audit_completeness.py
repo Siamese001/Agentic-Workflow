@@ -11,7 +11,6 @@ from __future__ import annotations
 import hashlib
 import json
 from dataclasses import dataclass
-from typing import Dict, List, Optional, Set
 
 import pytest
 
@@ -21,6 +20,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 # WaveAuditSummary
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class WaveAuditSummary:
@@ -44,7 +44,7 @@ class WaveAuditSummary:
             h = hashlib.sha256(json.dumps(data, sort_keys=True).encode()).hexdigest()
             object.__setattr__(self, "summary_hash", h)
 
-    def seal(self) -> "WaveAuditSummary":
+    def seal(self) -> WaveAuditSummary:
         """Return a new sealed version."""
         return WaveAuditSummary(
             wave_id=self.wave_id,
@@ -65,7 +65,7 @@ class WaveAuditStore:
     """Stores wave audit summaries; enforces post-seal immutability."""
 
     def __init__(self):
-        self._summaries: Dict[str, WaveAuditSummary] = {}
+        self._summaries: dict[str, WaveAuditSummary] = {}
 
     def emit(self, summary: WaveAuditSummary) -> None:
         self._summaries[summary.wave_id] = summary
@@ -81,7 +81,7 @@ class WaveAuditStore:
             raise RuntimeError(f"WaveAuditSummary '{wave_id}' is sealed — mutation forbidden")
         self._summaries[wave_id] = new_summary
 
-    def get(self, wave_id: str) -> Optional[WaveAuditSummary]:
+    def get(self, wave_id: str) -> WaveAuditSummary | None:
         return self._summaries.get(wave_id)
 
     @property
@@ -93,6 +93,7 @@ class WaveAuditStore:
 # Capability scope validator (REQ-247: wildcard scope rejected)
 # ---------------------------------------------------------------------------
 
+
 class CapabilityScopeError(ValueError):
     pass
 
@@ -102,9 +103,7 @@ def validate_capability_scope(scope: str) -> None:
     if not scope:
         raise CapabilityScopeError("Empty scope is not allowed")
     if "*" in scope:
-        raise CapabilityScopeError(
-            f"Wildcard scope '{scope}' is rejected — scopes must be explicit"
-        )
+        raise CapabilityScopeError(f"Wildcard scope '{scope}' is rejected — scopes must be explicit")
     if scope.endswith(":*") or scope == "*":
         raise CapabilityScopeError(f"Wildcard scope rejected: '{scope}'")
 
@@ -112,6 +111,7 @@ def validate_capability_scope(scope: str) -> None:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def store() -> WaveAuditStore:

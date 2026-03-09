@@ -11,15 +11,22 @@ Tool ID Prefix: ACT-010
 from __future__ import annotations
 
 import csv
+import hashlib
 import json
 import logging
 import os
 import shutil
 import tempfile
+from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
 Logger: Any = logging.getLogger("L2.WriteGateway")
+
+# Mutation ledger state (thread-local would be better, but global for now)
+_MUTATION_LEDGER_PATH: Path | None = None
+_MUTATION_SEQUENCE: int = 0
+_TRACE_ID: str | None = None
 
 # Import protected-root enforcement
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
@@ -169,6 +176,7 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     This function remains active for non-protected source roots.
     """
     import os as _os
+
     if _os.environ.get("AGENTIC_ALLOW_MUTATION_FOR_TESTS") == "1":
         return
     repo_root = _get_repo_root()
@@ -183,6 +191,62 @@ def _deny_writes_into_source_roots(path: Path, verb: str = "write") -> None:
     top_dir = rel.parts[0] if rel.parts else ""
     if top_dir in _SOURCE_ROOTS_RELATIVE:
         raise RuntimeError(f"SOURCE_MUTATION_BLOCKED: {verb} {rel_str}")
+
+
+def set_mutation_ledger_path(ledger_path: str | Path, trace_id: str | None = None) -> None:
+    """Configure mutation ledger output path and trace_id for this run.
+
+    Must be called before any writes to enable ledger recording.
+    Per hostile audit Section C3: mutation_ledger.jsonl is mandatory.
+    """
+    global _MUTATION_LEDGER_PATH, _MUTATION_SEQUENCE, _TRACE_ID
+    _MUTATION_LEDGER_PATH = Path(ledger_path)
+    _MUTATION_SEQUENCE = 0
+    _TRACE_ID = trace_id
+    # Ensure parent dir exists
+    _MUTATION_LEDGER_PATH.parent.mkdir(parents=True, exist_ok=True)
+    # Clear any existing ledger from prior run
+    if _MUTATION_LEDGER_PATH.exists():
+        _MUTATION_LEDGER_PATH.unlink()
+
+
+def _append_ledger_entry(
+    operation: str,
+    path: Path,
+    before_hash: str | None,
+    after_hash: str | None,
+    gateway_approved: bool,
+    result: str,
+    error: str | None = None,
+) -> None:
+    """Append a JSONL entry to the mutation ledger.
+
+    Per hostile audit Section C3: one line per attempted mutation.
+    Per .windsurfrules §2.2: Evidence must be deterministic, ASCII-only.
+    """
+    global _MUTATION_SEQUENCE
+    if _MUTATION_LEDGER_PATH is None:
+        # Ledger not configured - skip (scan-only mode or legacy invocation)
+        return
+
+    _MUTATION_SEQUENCE += 1
+    entry = {
+        "seq": _MUTATION_SEQUENCE,
+        "trace_id": _TRACE_ID or "UNKNOWN",
+        "timestamp_utc": datetime.now(timezone.utc).isoformat().replace("+00:00", "Z"),
+        "operation": operation,
+        "path": str(path.resolve()).replace("\\", "/"),
+        "before_hash": before_hash,
+        "after_hash": after_hash,
+        "gateway": "L2.WriteGateway",
+        "gateway_approved": gateway_approved,
+        "result": result,
+        "error": error,
+    }
+
+    # Append as JSONL (one JSON object per line)
+    with open(_MUTATION_LEDGER_PATH, "a", encoding="utf-8") as f:
+        f.write(json.dumps(entry, separators=(",", ":"), ensure_ascii=True) + "\n")
 
 
 def write_text(
@@ -211,6 +275,14 @@ def write_text(
     """
     p = Path(path)
 
+    # Capture before_hash (if file exists)
+    before_hash: str | None = None
+    if p.exists():
+        try:
+            before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+        except (OSError, UnicodeDecodeError):
+            before_hash = "READ_ERROR"
+
     # Guard 1: Mutation entropy cap (before any I/O)
     if substitution_count is not None:
         expected_max = expected_max_substitutions if expected_max_substitutions is not None else 1
@@ -221,27 +293,124 @@ def write_text(
     _check_write_amplification(p, content, encoding)
 
     # Guard 3: Protected root enforcement
-    enforce_protected_root(p, allow_override=allow_override)
+    gateway_approved = True
+    try:
+        enforce_protected_root(p, allow_override=allow_override)
+    except Exception as e:
+        gateway_approved = False
+        _append_ledger_entry(
+            operation="write_text",
+            path=p,
+            before_hash=before_hash,
+            after_hash=None,
+            gateway_approved=False,
+            result="BLOCKED",
+            error=str(e),
+        )
+        raise
 
     # Guard 4: Source root fence (legacy defense-in-depth)
     _deny_writes_into_source_roots(p, "write")
 
     # Execute write
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_text(content, encoding=encoding)
-    Logger.debug(f"[WriteGateway] write_text: {p}")
-    return str(p)
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_text(content, encoding=encoding)
+
+        # Capture after_hash
+        after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+
+        # Record successful mutation
+        _append_ledger_entry(
+            operation="write_text",
+            path=p,
+            before_hash=before_hash,
+            after_hash=after_hash,
+            gateway_approved=gateway_approved,
+            result="SUCCESS",
+            error=None,
+        )
+
+        Logger.debug(f"[WriteGateway] write_text: {p}")
+        return str(p)
+    except Exception as e:
+        # Record failed mutation
+        _append_ledger_entry(
+            operation="write_text",
+            path=p,
+            before_hash=before_hash,
+            after_hash=None,
+            gateway_approved=gateway_approved,
+            result="FAILED",
+            error=str(e),
+        )
+        raise
 
 
 def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) -> str:
     """Write binary content to a file, creating parent dirs as needed."""
     p = Path(path)
-    enforce_protected_root(p, allow_override=allow_override)
+
+    # Capture before_hash (if file exists)
+    before_hash: str | None = None
+    if p.exists():
+        try:
+            before_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+        except OSError:
+            before_hash = "READ_ERROR"
+
+    # Protected root enforcement
+    gateway_approved = True
+    try:
+        enforce_protected_root(p, allow_override=allow_override)
+    except Exception as e:
+        gateway_approved = False
+        _append_ledger_entry(
+            operation="write_bytes",
+            path=p,
+            before_hash=before_hash,
+            after_hash=None,
+            gateway_approved=False,
+            result="BLOCKED",
+            error=str(e),
+        )
+        raise
+
     _deny_writes_into_source_roots(p, "write")
-    p.parent.mkdir(parents=True, exist_ok=True)
-    p.write_bytes(data)
-    Logger.debug(f"[WriteGateway] write_bytes: {p}")
-    return str(p)
+
+    # Execute write
+    try:
+        p.parent.mkdir(parents=True, exist_ok=True)
+        p.write_bytes(data)
+
+        # Capture after_hash
+        after_hash = hashlib.sha256(p.read_bytes()).hexdigest()
+
+        # Record successful mutation
+        _append_ledger_entry(
+            operation="write_bytes",
+            path=p,
+            before_hash=before_hash,
+            after_hash=after_hash,
+            gateway_approved=gateway_approved,
+            result="SUCCESS",
+            error=None,
+        )
+
+        Logger.debug(f"[WriteGateway] write_bytes: {p}")
+        return str(p)
+    except Exception as e:
+        # Record failed mutation
+        _append_ledger_entry(
+            operation="write_bytes",
+            path=p,
+            before_hash=before_hash,
+            after_hash=None,
+            gateway_approved=gateway_approved,
+            result="FAILED",
+            error=str(e),
+        )
+        raise
 
 
 def write_json(path: str | Path, obj: Any, indent: int = 2) -> str:
@@ -452,6 +621,7 @@ __all__ = [
     "MutationEntropyError",
     "record_prohibition_hit",
     "get_prohibition_hit_count",
+    "set_mutation_ledger_path",
     "MAX_WRITE_BYTES",
     "MAX_GROWTH_RATIO",
 ]

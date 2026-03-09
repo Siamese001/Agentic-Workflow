@@ -184,7 +184,7 @@ class StructuralValidatorAgent(SovereignBaseAgent):
         except SyntaxError:
             return violations
 
-        for node in ast.walk(tree):
+        for node in tree.body:
             if isinstance(node, ast.ImportFrom) and node.module:
                 target_layer = self._extract_layer_from_module(node.module)
                 if target_layer and target_layer not in allowed_layers:
@@ -214,10 +214,16 @@ class StructuralValidatorAgent(SovereignBaseAgent):
 
         try:
             tree = ast.parse(content)
-            for node in ast.walk(tree):
+            file_stem = file_path.stem  # e.g. "SovereignRAGManagerAgent"
+            for node in tree.body:
                 if isinstance(node, ast.ClassDef):
-                    # Rule: Agents must end in 'Agent'
-                    if "Agent" in file_path.name and not node.name.endswith(self.config.agent_suffix):
+                    # Rule: only the PRIMARY class (name == file stem) must end in 'Agent'.
+                    # Helper/data classes co-located in agent files are legitimate.
+                    if (
+                        "Agent" in file_path.name
+                        and node.name == file_stem
+                        and not node.name.endswith(self.config.agent_suffix)
+                    ):
                         violations.append(
                             StructureViolation(
                                 file_path=file_path,

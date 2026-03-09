@@ -162,7 +162,7 @@ async def test_test_with_input(RedSentinelAgent):
         assert isinstance(result, dict)
     except AttributeError:
         # Method might not be fully implemented yet
-        pytest.skip("_test_with_input method not implemented yet")
+        pytest.fail("_test_with_input method not implemented yet")
 
 
 def test_audit_path_creation(RedSentinelAgent):
@@ -180,7 +180,7 @@ def test_heal_repository_smoke(RedSentinelAgent):
         assert True  # No crash = success
     except AttributeError:
         # heal_repository method may not exist yet, that's expected
-        pytest.skip("heal_repository method not implemented yet")
+        pytest.fail("heal_repository method not implemented yet")
     except Exception as e:
         # Any other exception should not occur
         pytest.fail(f"heal_repository crashed unexpectedly: {e}")

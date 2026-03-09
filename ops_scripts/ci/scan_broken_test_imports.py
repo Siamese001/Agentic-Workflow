@@ -117,7 +117,9 @@ def main() -> int:
 
     print(f"Broken import scan: fully_orphaned={len(fully_orphaned)}  threshold={FULLY_ORPHANED_THRESHOLD}")
     if len(fully_orphaned) > FULLY_ORPHANED_THRESHOLD:
-        print(f"FAIL: {len(fully_orphaned)} fully-orphaned test files (threshold={FULLY_ORPHANED_THRESHOLD}):")
+        print(
+            f"FAIL: {len(fully_orphaned)} fully-orphaned test files (threshold={FULLY_ORPHANED_THRESHOLD}):"
+        )
         for f in sorted(fully_orphaned)[:30]:
             print(f"  {f}")
         violations += len(fully_orphaned)
@@ -126,7 +128,9 @@ def main() -> int:
 
     print(f"Stale mirror scan: stale_mirrors={len(stale_mirrors)}  threshold={STALE_MIRROR_THRESHOLD}")
     if len(stale_mirrors) > STALE_MIRROR_THRESHOLD:
-        print(f"FAIL: {len(stale_mirrors)} stale GENERATED_MIRROR_TEST files (threshold={STALE_MIRROR_THRESHOLD}):")
+        print(
+            f"FAIL: {len(stale_mirrors)} stale GENERATED_MIRROR_TEST files (threshold={STALE_MIRROR_THRESHOLD}):"
+        )
         for f in sorted(stale_mirrors)[:20]:
             print(f"  {f}")
         violations += len(stale_mirrors)

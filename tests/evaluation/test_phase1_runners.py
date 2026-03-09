@@ -9,7 +9,6 @@ Branch coverage:
 """
 
 import pytest
-
 from agentic_core.evaluation.runners.offline_eval_runner import (
     OfflineEvaluationRunner,
     _default_metrics,
@@ -26,6 +25,7 @@ from agentic_core.evaluation.schemas.evaluation_dataset_schema import (
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_example(query="q", docs=None, answer="the answer"):
     return EvaluationExample(
@@ -63,6 +63,7 @@ def _bad_generation(query, docs):
 # _default_metrics
 # ---------------------------------------------------------------------------
 
+
 class TestDefaultMetrics:
     def test_returns_list(self):
         metrics = _default_metrics()
@@ -84,6 +85,7 @@ class TestDefaultMetrics:
 # ---------------------------------------------------------------------------
 # OfflineEvaluationRunner
 # ---------------------------------------------------------------------------
+
 
 class TestOfflineEvaluationRunner:
     def test_empty_dataset_returns_empty_report(self):
@@ -134,6 +136,7 @@ class TestOfflineEvaluationRunner:
 
     def test_custom_metrics_used(self):
         from agentic_core.evaluation.metrics.precision_at_k import PrecisionAtK
+
         runner = OfflineEvaluationRunner(metrics=[PrecisionAtK(k=3)])
         ds = _make_dataset(2)
         report = runner.run(ds)
@@ -157,9 +160,11 @@ class TestOfflineEvaluationRunner:
     def test_l4_persist_called_when_store_provided(self):
         """Verify persist does not raise when store is provided."""
         stored = []
+
         class FakeStore:
             def put(self, artifact):
                 stored.append(artifact)
+
         runner = OfflineEvaluationRunner(l4_store=FakeStore())
         ds = _make_dataset(1)
         runner.run(ds)
@@ -167,9 +172,11 @@ class TestOfflineEvaluationRunner:
 
     def test_l4_persist_graceful_on_exception(self):
         """Persist failure must not crash the runner."""
+
         class BrokenStore:
             def put(self, artifact):
                 raise RuntimeError("disk full")
+
         runner = OfflineEvaluationRunner(l4_store=BrokenStore())
         ds = _make_dataset(1)
         report = runner.run(ds)  # must not raise
@@ -185,6 +192,7 @@ class TestOfflineEvaluationRunner:
 # ---------------------------------------------------------------------------
 # ReplayEvaluationRunner
 # ---------------------------------------------------------------------------
+
 
 class TestReplayEvaluationRunner:
     def _baseline_config(self):
@@ -249,9 +257,11 @@ class TestReplayEvaluationRunner:
 
     def test_l4_persist_on_delta(self):
         stored = []
+
         class FakeStore:
             def put(self, artifact):
                 stored.append(artifact)
+
         runner = ReplayEvaluationRunner(l4_store=FakeStore())
         ds = _make_dataset(1)
         runner.run(ds, self._baseline_config(), self._candidate_config())
@@ -261,6 +271,7 @@ class TestReplayEvaluationRunner:
         class BrokenStore:
             def put(self, artifact):
                 raise OSError("no space left")
+
         runner = ReplayEvaluationRunner(l4_store=BrokenStore())
         ds = _make_dataset(1)
         delta = runner.run(ds, self._baseline_config(), self._candidate_config())
@@ -272,6 +283,7 @@ class TestReplayEvaluationRunner:
         delta = runner.run(ds, self._baseline_config(), self._candidate_config())
         d = delta.to_dict()
         from agentic_core.evaluation.schemas.evaluation_result_schema import DeltaReport
+
         restored = DeltaReport.from_dict(d)
         assert restored.config_a_name == delta.config_a_name
 
@@ -279,6 +291,7 @@ class TestReplayEvaluationRunner:
 # ---------------------------------------------------------------------------
 # SystemConfig
 # ---------------------------------------------------------------------------
+
 
 class TestSystemConfig:
     def test_minimal_creation(self):

@@ -38,7 +38,7 @@ class TestCampaignPlannerAgent:
 
             return CampaignPlannerAgent
         except (ImportError, NameError, AttributeError, TypeError) as e:
-            pytest.skip(f"Cannot import CampaignPlannerAgent: {e}")
+            pytest.fail(f"Cannot import CampaignPlannerAgent: {e}")
 
     def test_class_exists(self, agent_class):
         """Verify CampaignPlannerAgent exists and is importable."""

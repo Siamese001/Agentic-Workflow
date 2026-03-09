@@ -1,11 +1,11 @@
 """Run execute_ssot_entrypoint --heal with L0 mutation fence unlocked."""
+
 import os
 import pathlib
 import subprocess
 import sys
 
 env = os.environ.copy()
-env["BMG_EMBEDDINGS_ENABLED"] = "true"
 env["QWEN_VLLM_ENABLED"] = "true"
 env["SOVEREIGN_AUTO_APPROVE"] = "1"
 env["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"

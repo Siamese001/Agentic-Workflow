@@ -69,7 +69,7 @@ class TestCoreComponents:
         result = validator.validate()
 
         if result["missing"]:
-            pytest.skip(f"Some critical files don't exist: {result['missing']}")
+            pytest.fail(f"Some critical files don't exist: {result['missing']}")
 
         assert result["compliant"]
 

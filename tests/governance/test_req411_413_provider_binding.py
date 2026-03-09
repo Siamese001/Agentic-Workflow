@@ -10,7 +10,6 @@ from __future__ import annotations
 import ast
 import hashlib
 import json
-from dataclasses import asdict
 from pathlib import Path
 
 import pytest
@@ -24,9 +23,16 @@ pytestmark = pytest.mark.governance
 REPO_ROOT = Path(__file__).parent.parent.parent
 _DETERMINISM_MODULE = REPO_ROOT / "agentic_core/L0_routing/types/determinism_types.py"
 
-_WALL_CLOCK_NAMES = frozenset([
-    "time", "monotonic", "perf_counter", "now", "utcnow", "localtime",
-])
+_WALL_CLOCK_NAMES = frozenset(
+    [
+        "time",
+        "monotonic",
+        "perf_counter",
+        "now",
+        "utcnow",
+        "localtime",
+    ]
+)
 
 
 def _wallclock_violations(path: Path) -> list[str]:
@@ -51,10 +57,7 @@ def _wallclock_violations(path: Path) -> list[str]:
         ):
             violations.append(f"line {node.lineno}: time.{func.attr}()")
         # datetime.now() / datetime.utcnow()
-        elif (
-            isinstance(func, ast.Attribute)
-            and func.attr in ("now", "utcnow")
-        ):
+        elif isinstance(func, ast.Attribute) and func.attr in ("now", "utcnow"):
             violations.append(f"line {node.lineno}: .{func.attr}()")
 
     return violations
@@ -65,10 +68,7 @@ def test_req411_no_wallclock_in_determinism_types():
     """REQ-411: No wall-clock calls in determinism_types.py (AST scan)."""
     assert _DETERMINISM_MODULE.exists(), f"Module not found: {_DETERMINISM_MODULE}"
     violations = _wallclock_violations(_DETERMINISM_MODULE)
-    assert violations == [], (
-        f"Wall-clock calls in {_DETERMINISM_MODULE.name}:\n"
-        + "\n".join(violations)
-    )
+    assert violations == [], f"Wall-clock calls in {_DETERMINISM_MODULE.name}:\n" + "\n".join(violations)
 
 
 @pytest.mark.governance
@@ -90,20 +90,16 @@ def test_req413_provider_id_in_advancement_artifact():
 @pytest.mark.governance
 def test_req413_provider_id_affects_digest():
     """REQ-413: Different provider_id values produce different artifact hashes."""
-    base_kwargs = dict(
-        advancement_id="adv_test_002",
-        previous_tick=0,
-        new_tick=1,
-        advancement_reason="test",
-        l4_version_binding="l4_v1.0",
-        timestamp=1234567890.0,
-    )
-    art_anthropic = SemanticClockAdvancementArtifact(
-        **base_kwargs, provider_id="provider_anthropic"
-    )
-    art_openai = SemanticClockAdvancementArtifact(
-        **base_kwargs, provider_id="provider_openai"
-    )
+    base_kwargs = {
+        "advancement_id": "adv_test_002",
+        "previous_tick": 0,
+        "new_tick": 1,
+        "advancement_reason": "test",
+        "l4_version_binding": "l4_v1.0",
+        "timestamp": 1234567890.0,
+    }
+    art_anthropic = SemanticClockAdvancementArtifact(**base_kwargs, provider_id="provider_anthropic")
+    art_openai = SemanticClockAdvancementArtifact(**base_kwargs, provider_id="provider_openai")
     assert art_anthropic.artifact_hash != art_openai.artifact_hash
 
 
@@ -146,15 +142,15 @@ def test_req411_determinism_types_importable():
 @pytest.mark.governance
 def test_req413_two_run_artifact_with_provider_identical():
     """Two-run artifact construction with same provider_id → identical hash."""
-    kwargs = dict(
-        advancement_id="adv_r1",
-        previous_tick=3,
-        new_tick=4,
-        advancement_reason="gate_transition",
-        l4_version_binding="l4_v1.5",
-        provider_id="provider_anthropic",
-        timestamp=5555555.0,
-    )
+    kwargs = {
+        "advancement_id": "adv_r1",
+        "previous_tick": 3,
+        "new_tick": 4,
+        "advancement_reason": "gate_transition",
+        "l4_version_binding": "l4_v1.5",
+        "provider_id": "provider_anthropic",
+        "timestamp": 5555555.0,
+    }
     h1 = SemanticClockAdvancementArtifact(**kwargs).artifact_hash
     h2 = SemanticClockAdvancementArtifact(**kwargs).artifact_hash
     assert h1 == h2

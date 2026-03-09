@@ -15,7 +15,6 @@ Branch coverage:
 """
 
 import pytest
-
 from agentic_core.evaluation.feedback.dpo_batch_builder import DPOBatchBuilder
 from agentic_core.evaluation.feedback.proposer_bridge import (
     EvaluatorProposerBridge,
@@ -37,6 +36,7 @@ from agentic_core.evaluation.schemas.evaluation_result_schema import EvaluationR
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
+
 
 def _make_rubric(grounded=True, useful=True, correct=True, safe=True, missing=False):
     return ReviewRubric(
@@ -72,7 +72,8 @@ def _make_report(scores=None):
         dataset_version="1.0",
         system_version="v1",
         timestamp="2025-01-01T00:00:00Z",
-        aggregate_scores=scores or {
+        aggregate_scores=scores
+        or {
             "precision@5": 0.75,
             "recall@10": 0.80,
             "MRR": 0.70,
@@ -87,6 +88,7 @@ def _make_report(scores=None):
 # ---------------------------------------------------------------------------
 # ReviewRubric
 # ---------------------------------------------------------------------------
+
 
 class TestReviewRubric:
     def test_all_positive_is_positive(self):
@@ -134,8 +136,11 @@ class TestReviewRubric:
 
     def test_from_dict_optional_fields(self):
         d = {
-            "grounded": True, "useful": True, "correct": True,
-            "safe": True, "missing_context": False,
+            "grounded": True,
+            "useful": True,
+            "correct": True,
+            "safe": True,
+            "missing_context": False,
         }
         r = ReviewRubric.from_dict(d)
         assert r.reviewer_id == ""
@@ -145,6 +150,7 @@ class TestReviewRubric:
 # ---------------------------------------------------------------------------
 # FeedbackExample
 # ---------------------------------------------------------------------------
+
 
 class TestFeedbackExample:
     def test_to_dict_roundtrip(self):
@@ -172,6 +178,7 @@ class TestFeedbackExample:
 # ---------------------------------------------------------------------------
 # DPOPair
 # ---------------------------------------------------------------------------
+
 
 class TestDPOPair:
     def _make(self):
@@ -213,6 +220,7 @@ class TestDPOPair:
 # DPOBatch
 # ---------------------------------------------------------------------------
 
+
 class TestDPOBatch:
     def _make_pair(self, n):
         return DPOPair(
@@ -243,6 +251,7 @@ class TestDPOBatch:
 # ---------------------------------------------------------------------------
 # DPOBatchBuilder
 # ---------------------------------------------------------------------------
+
 
 class TestDPOBatchBuilder:
     def test_invalid_min_score_delta_raises(self):
@@ -333,8 +342,11 @@ class TestDPOBatchBuilder:
 
     def test_l4_persist_called(self):
         stored = []
+
         class FakeStore:
-            def put(self, a): stored.append(a)
+            def put(self, a):
+                stored.append(a)
+
         decisions = [
             _make_feedback("ex_0", "q", answer="good", rubric=_make_rubric()),
             _make_feedback("ex_1", "q", answer="bad", rubric=_make_rubric(correct=False)),
@@ -344,7 +356,9 @@ class TestDPOBatchBuilder:
 
     def test_l4_persist_graceful_on_exception(self):
         class BrokenStore:
-            def put(self, a): raise OSError("disk full")
+            def put(self, a):
+                raise OSError("disk full")
+
         decisions = [
             _make_feedback("ex_0", "q", answer="good", rubric=_make_rubric()),
             _make_feedback("ex_1", "q", answer="bad", rubric=_make_rubric(correct=False)),
@@ -356,6 +370,7 @@ class TestDPOBatchBuilder:
 # ---------------------------------------------------------------------------
 # ImprovementSignal
 # ---------------------------------------------------------------------------
+
 
 class TestImprovementSignal:
     def test_to_dict_keys(self):
@@ -377,6 +392,7 @@ class TestImprovementSignal:
 # ---------------------------------------------------------------------------
 # ImprovementProposal
 # ---------------------------------------------------------------------------
+
 
 class TestImprovementProposal:
     def _make(self, health=0.80, requires=False):
@@ -417,6 +433,7 @@ class TestImprovementProposal:
 # EvaluatorProposerBridge
 # ---------------------------------------------------------------------------
 
+
 class TestEvaluatorProposerBridge:
     def test_empty_inputs_produces_proposal(self):
         bridge = EvaluatorProposerBridge()
@@ -442,14 +459,16 @@ class TestEvaluatorProposerBridge:
 
     def test_above_target_scores_generate_ok_signals(self):
         bridge = EvaluatorProposerBridge()
-        report = _make_report(scores={
-            "precision@5": 0.90,
-            "recall@10": 0.95,
-            "MRR": 0.90,
-            "NDCG@10": 0.88,
-            "groundedness": 0.90,
-            "answer_correctness": 0.85,
-        })
+        report = _make_report(
+            scores={
+                "precision@5": 0.90,
+                "recall@10": 0.95,
+                "MRR": 0.90,
+                "NDCG@10": 0.88,
+                "groundedness": 0.90,
+                "answer_correctness": 0.85,
+            }
+        )
         proposal = bridge.propose(eval_report=report)
         ok_signals = [s for s in proposal.signals if s.priority == "ok"]
         assert len(ok_signals) == len(proposal.signals)
@@ -486,17 +505,26 @@ class TestEvaluatorProposerBridge:
     def test_dpo_count_above_ten_triggers_finetuning(self):
         bridge = EvaluatorProposerBridge()
         from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+
         pairs = [
             DPOPair(
-                pair_id=f"p_{i}", query="q", chosen_response="c",
-                rejected_response="r", context_documents=[],
-                chosen_score=0.9, rejected_score=0.1, source_example_ids=[],
+                pair_id=f"p_{i}",
+                query="q",
+                chosen_response="c",
+                rejected_response="r",
+                context_documents=[],
+                chosen_score=0.9,
+                rejected_score=0.1,
+                source_example_ids=[],
             )
             for i in range(11)
         ]
         batch = DPOBatch(
-            batch_id="b", timestamp="2025-01-01T00:00:00Z",
-            pair_count=11, pairs=pairs, source_feedback_count=20,
+            batch_id="b",
+            timestamp="2025-01-01T00:00:00Z",
+            pair_count=11,
+            pairs=pairs,
+            source_feedback_count=20,
         )
         proposal = bridge.propose(dpo_batch=batch)
         assert "trigger_dpo_finetuning" in proposal.recommended_actions
@@ -504,17 +532,26 @@ class TestEvaluatorProposerBridge:
     def test_dpo_count_low_suggests_accumulate(self):
         bridge = EvaluatorProposerBridge()
         from agentic_core.evaluation.feedback.schemas import DPOBatch, DPOPair
+
         pairs = [
             DPOPair(
-                pair_id=f"p_{i}", query="q", chosen_response="c",
-                rejected_response="r", context_documents=[],
-                chosen_score=0.9, rejected_score=0.1, source_example_ids=[],
+                pair_id=f"p_{i}",
+                query="q",
+                chosen_response="c",
+                rejected_response="r",
+                context_documents=[],
+                chosen_score=0.9,
+                rejected_score=0.1,
+                source_example_ids=[],
             )
             for i in range(3)
         ]
         batch = DPOBatch(
-            batch_id="b", timestamp="2025-01-01T00:00:00Z",
-            pair_count=3, pairs=pairs, source_feedback_count=5,
+            batch_id="b",
+            timestamp="2025-01-01T00:00:00Z",
+            pair_count=3,
+            pairs=pairs,
+            source_feedback_count=5,
         )
         proposal = bridge.propose(dpo_batch=batch)
         assert "accumulate_more_dpo_pairs" in proposal.recommended_actions
@@ -532,28 +569,35 @@ class TestEvaluatorProposerBridge:
 
     def test_health_score_zero_when_all_critical(self):
         bridge = EvaluatorProposerBridge()
-        report = _make_report(scores={
-            "precision@5": 0.10,
-            "recall@10": 0.10,
-            "MRR": 0.10,
-            "NDCG@10": 0.10,
-            "groundedness": 0.10,
-            "answer_correctness": 0.10,
-        })
+        report = _make_report(
+            scores={
+                "precision@5": 0.10,
+                "recall@10": 0.10,
+                "MRR": 0.10,
+                "NDCG@10": 0.10,
+                "groundedness": 0.10,
+                "answer_correctness": 0.10,
+            }
+        )
         proposal = bridge.propose(eval_report=report)
         assert proposal.overall_health_score == pytest.approx(0.0)
 
     def test_l4_persist_called(self):
         stored = []
+
         class FakeStore:
-            def put(self, a): stored.append(a)
+            def put(self, a):
+                stored.append(a)
+
         bridge = EvaluatorProposerBridge(l4_store=FakeStore())
         bridge.propose()
         assert len(stored) == 1
 
     def test_l4_persist_graceful_on_exception(self):
         class BrokenStore:
-            def put(self, a): raise RuntimeError("disk full")
+            def put(self, a):
+                raise RuntimeError("disk full")
+
         bridge = EvaluatorProposerBridge(l4_store=BrokenStore())
         proposal = bridge.propose()  # must not raise
         assert proposal is not None

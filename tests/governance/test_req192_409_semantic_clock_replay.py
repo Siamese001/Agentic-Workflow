@@ -14,8 +14,8 @@ import pytest
 
 from agentic_core.L0_routing.types.determinism_types import (
     SemanticClock,
-    SemanticClockSnapshot,
     SemanticClockAdvancementArtifact,
+    SemanticClockSnapshot,
 )
 
 pytestmark = pytest.mark.governance
@@ -40,15 +40,11 @@ def _find_wallclock_calls(path: Path) -> list[str]:
             func = node.func
             # datetime.now() / datetime.utcnow()
             if isinstance(func, ast.Attribute) and func.attr in _WALL_CLOCK_ATTRS:
-                violations.append(
-                    f"line {node.lineno}: wall-clock call '{func.attr}()'"
-                )
+                violations.append(f"line {node.lineno}: wall-clock call '{func.attr}()'")
             # time.time() / time.monotonic()
             if isinstance(func, ast.Attribute) and isinstance(func.value, ast.Name):
                 if func.value.id == "time" and func.attr in _WALL_CLOCK_ATTRS:
-                    violations.append(
-                        f"line {node.lineno}: wall-clock call 'time.{func.attr}()'"
-                    )
+                    violations.append(f"line {node.lineno}: wall-clock call 'time.{func.attr}()'")
     return violations
 
 
@@ -112,7 +108,7 @@ def test_req192_clock_advancement_hash_field_sensitive():
     alt = SemanticClockAdvancementArtifact(
         advancement_id="adv_001",
         previous_tick=5,
-        new_tick=99,   # changed
+        new_tick=99,  # changed
         advancement_reason="phase_transition",
         l4_version_binding="l4_v1.0.0",
         provider_id="provider_anthropic",
@@ -128,10 +124,7 @@ def test_req409_no_wallclock_in_semantic_clock_module():
     violations = _find_wallclock_calls(_CLOCK_MODULE)
     # Filter out calls inside SemanticClockAdvancementArtifact.__post_init__
     # which uses timestamp (a field, not a call) — we check for actual CALLS
-    assert violations == [], (
-        f"Wall-clock calls found in {_CLOCK_MODULE.name}:\n"
-        + "\n".join(violations)
-    )
+    assert violations == [], f"Wall-clock calls found in {_CLOCK_MODULE.name}:\n" + "\n".join(violations)
 
 
 @pytest.mark.governance

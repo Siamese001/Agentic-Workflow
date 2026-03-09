@@ -8,7 +8,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
-from typing import Any, Dict, List, Optional
+from typing import Any
 
 import pytest
 
@@ -21,6 +21,7 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # Minimal UWG routing stub for testing
 # ---------------------------------------------------------------------------
 
+
 class UWGRoutingViolation(RuntimeError):
     """Raised when a write bypasses the Universal Write Gateway."""
 
@@ -29,10 +30,10 @@ class MockUniversalWriteGateway:
     """Test double for the UWG routing layer."""
 
     def __init__(self):
-        self._routed_calls: List[Dict[str, Any]] = []
+        self._routed_calls: list[dict[str, Any]] = []
         self._bypass_attempts: int = 0
 
-    def route(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def route(self, bundle: dict[str, Any]) -> dict[str, Any]:
         """Route a bundle through the gateway."""
         if not bundle.get("agent_id"):
             raise UWGRoutingViolation("Bundle missing agent_id — UWG routing rejected")
@@ -46,7 +47,7 @@ class MockUniversalWriteGateway:
         return len(self._routed_calls)
 
     @property
-    def routed_calls(self) -> List[Dict[str, Any]]:
+    def routed_calls(self) -> list[dict[str, Any]]:
         return list(self._routed_calls)
 
 
@@ -56,22 +57,21 @@ class Stage8IntakeProcessor:
     def __init__(self, gateway: MockUniversalWriteGateway):
         self._gateway = gateway
 
-    def process_intake(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def process_intake(self, bundle: dict[str, Any]) -> dict[str, Any]:
         """Process intake bundle — MUST go through gateway."""
         return self._gateway.route(bundle)
 
-    def process_intake_bypass(self, bundle: Dict[str, Any]) -> Dict[str, Any]:
+    def process_intake_bypass(self, bundle: dict[str, Any]) -> dict[str, Any]:
         """Direct bypass — MUST NOT be used in production."""
-        raise UWGRoutingViolation(
-            "Stage 8 direct bypass attempted — all writes must route through UWG"
-        )
+        raise UWGRoutingViolation("Stage 8 direct bypass attempted — all writes must route through UWG")
 
 
 # ---------------------------------------------------------------------------
 # AST check: no direct file writes in Stage 8 related modules
 # ---------------------------------------------------------------------------
 
-def _check_module_for_uwg_bypass(path: Path) -> List[str]:
+
+def _check_module_for_uwg_bypass(path: Path) -> list[str]:
     """AST-scan for direct open() / write calls that bypass UWG."""
     if not path.exists():
         return []
@@ -97,6 +97,7 @@ def _check_module_for_uwg_bypass(path: Path) -> List[str]:
 # ---------------------------------------------------------------------------
 # Tests
 # ---------------------------------------------------------------------------
+
 
 @pytest.fixture()
 def gateway() -> MockUniversalWriteGateway:

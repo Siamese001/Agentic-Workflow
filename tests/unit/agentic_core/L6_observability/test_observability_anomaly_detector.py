@@ -28,20 +28,19 @@ from agentic_core.L6_observability.engines.replay_key_computer import (
 )
 from agentic_core.L6_observability.types.detection_signal_types import DetectionSignal
 
-
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
-_BASE = dict(
-    mission_id="mission-A",
-    created_at_utc=1_700_000_000,
-    anomaly_score=0.2,
-    escalation_rate=0.1,
-    retry_rate=0.05,
-    violation_density=0.0,
-    schema_version=1,
-)
+_BASE = {
+    "mission_id": "mission-A",
+    "created_at_utc": 1_700_000_000,
+    "anomaly_score": 0.2,
+    "escalation_rate": 0.1,
+    "retry_rate": 0.05,
+    "violation_density": 0.0,
+    "schema_version": 1,
+}
 
 
 def _signal(**overrides) -> DetectionSignal:
@@ -50,17 +49,17 @@ def _signal(**overrides) -> DetectionSignal:
 
 
 def _components(**overrides) -> ReplayKeyComponents:
-    defaults = dict(
-        tier_selection="LOW",
-        retry_count=0,
-        threshold_config={"X": 0.75},
-        tool_budget_caps={"tool_a": 100},
-        freshness_windows={"ctx": 3600},
-        config_surface_hash="abc123",
-        embedding_pack_hash="deadbeef",
-        embedding_model_version="v1.0",
-        c0_context_hash="cafebabe",
-    )
+    defaults = {
+        "tier_selection": "LOW",
+        "retry_count": 0,
+        "threshold_config": {"X": 0.75},
+        "tool_budget_caps": {"tool_a": 100},
+        "freshness_windows": {"ctx": 3600},
+        "config_surface_hash": "abc123",
+        "embedding_pack_hash": "deadbeef",
+        "embedding_model_version": "v1.0",
+        "c0_context_hash": "cafebabe",
+    }
     return ReplayKeyComponents(**{**defaults, **overrides})
 
 

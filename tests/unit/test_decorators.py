@@ -21,7 +21,7 @@ def test_standard_heal_exists():
         func = agentic_core.utils.decorators_base_util.standard_heal
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function standard_heal not found in module")
+        pytest.fail("Function standard_heal not found in module")
 
 
 def test_standard_heal_async_exists():
@@ -30,7 +30,7 @@ def test_standard_heal_async_exists():
         func = agentic_core.utils.decorators_base_util.standard_heal_async
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function standard_heal_async not found in module")
+        pytest.fail("Function standard_heal_async not found in module")
 
 
 def test_wrapper_exists():
@@ -39,7 +39,7 @@ def test_wrapper_exists():
         func = agentic_core.utils.decorators_base_util.wrapper
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function wrapper not found in module")
+        pytest.fail("Function wrapper not found in module")
 
 
 def test_F_exists():
@@ -48,7 +48,7 @@ def test_F_exists():
         value = agentic_core.utils.decorators_base_util.F
         assert value is not None
     except AttributeError:
-        pytest.skip("Constant F not found in module")
+        pytest.fail("Constant F not found in module")
 
 
 def test_HEAL_RESULT_SCHEMA_exists():
@@ -57,7 +57,7 @@ def test_HEAL_RESULT_SCHEMA_exists():
         value = agentic_core.utils.decorators_base_util.HEAL_RESULT_SCHEMA
         assert value is not None
     except AttributeError:
-        pytest.skip("Constant HEAL_RESULT_SCHEMA not found in module")
+        pytest.fail("Constant HEAL_RESULT_SCHEMA not found in module")
 
 
 def test_module_has_minimum_coverage():

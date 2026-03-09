@@ -27,9 +27,10 @@ from pathlib import Path
 # Force UTF-8 encoding for Windows compatibility
 import io
 import locale
-if sys.platform == 'win32':
-    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding='utf-8', errors='replace')
-    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding='utf-8', errors='replace')
+
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Ensure project root is in path - guardian: allow-global-mutation
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -48,11 +49,26 @@ BASELINE_FILE = PROJECT_ROOT / "ops_scripts" / "hooks" / "landmine_baseline.txt"
 
 # Transient / non-source directories excluded from all scans.
 _EXCLUDE_DIRS = {
-    "__pycache__", ".git", ".venv", "venv",
-    ".pytest_cache", ".pytest_tmp", ".mypy_cache", ".ruff_cache",
-    ".coverage", "dist", "build", ".tox", ".nox",
-    "node_modules", "archives", ".backup", "_quarantine",
-    "tests", "ops_scripts",
+    "__pycache__",
+    ".git",
+    ".venv",
+    "venv",
+    ".pytest_cache",
+    ".pytest_tmp",
+    ".mypy_cache",
+    ".ruff_cache",
+    ".coverage",
+    "dist",
+    "build",
+    ".tox",
+    ".nox",
+    "node_modules",
+    "archives",
+    ".backup",
+    "_quarantine",
+    "tests",
+    "ops_scripts",
+    ".healing_backups",
 }
 
 
@@ -112,8 +128,7 @@ def check_files(file_paths: list[str]) -> int:
     if not file_paths:
         all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         python_files = [
-            f for f in all_python_files
-            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            f for f in all_python_files if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
         ]
     else:
         # Filter to only Python files
@@ -190,8 +205,10 @@ def check_files(file_paths: list[str]) -> int:
         return 0
 
     # Only print on failure (Signal vs Noise)
-    print(f"\n[BLOCK] Found {len(new_violations)} NEW anti-pattern landmine(s) "
-          f"(out of {len(current_violations)} total):")
+    print(
+        f"\n[BLOCK] Found {len(new_violations)} NEW anti-pattern landmine(s) "
+        f"(out of {len(current_violations)} total):"
+    )
 
     # Group by category
     new_by_category = {}
@@ -209,16 +226,18 @@ def check_files(file_paths: list[str]) -> int:
         # Handle unicode characters in evidence
         evidence = violation.evidence[:80]
         if isinstance(evidence, str):
-            evidence = evidence.encode('ascii', errors='replace').decode('ascii')
+            evidence = evidence.encode("ascii", errors="replace").decode("ascii")
         print(f"   Evidence: {evidence}...")
         if violation.suggested_fix:
             fix_preview = violation.suggested_fix.split("\n")[0]
             if isinstance(fix_preview, str):
-                fix_preview = fix_preview.encode('ascii', errors='replace').decode('ascii')
+                fix_preview = fix_preview.encode("ascii", errors="replace").decode("ascii")
             print(f"   [FIX] {fix_preview}")
 
     print("\n[ACTION] Fix NEW violations or add '# guardian: allow-<pattern>' to whitelist.")
-    print("         To update baseline with current violations: python ops_scripts/ci/check_anti_patterns.py --write-baseline")
+    print(
+        "         To update baseline with current violations: python ops_scripts/ci/check_anti_patterns.py --write-baseline"
+    )
 
     return 1
 
@@ -227,14 +246,10 @@ def main() -> int:
     """Main entry point."""
     parser = argparse.ArgumentParser(description="Check anti-pattern violations")
     parser.add_argument(
-        "--write-baseline",
-        action="store_true",
-        help="Generate baseline file from current violations"
+        "--write-baseline", action="store_true", help="Generate baseline file from current violations"
     )
     parser.add_argument(
-        "files",
-        nargs="*",
-        help="Files to check (default: all staged files if run from pre-commit)"
+        "files", nargs="*", help="Files to check (default: all staged files if run from pre-commit)"
     )
 
     args = parser.parse_args()
@@ -244,13 +259,14 @@ def main() -> int:
         if os.environ.get("ALLOW_LANDMINE_BASELINE_WRITE") != "1":
             print("[ERROR] --write-baseline requires ALLOW_LANDMINE_BASELINE_WRITE=1 environment variable")
             print("        This prevents accidental baseline dilution in CI/automation")
-            print("        To authorize: ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --write-baseline")
+            print(
+                "        To authorize: ALLOW_LANDMINE_BASELINE_WRITE=1 python ops_scripts/ci/check_anti_patterns.py --write-baseline"
+            )
             return 1
 
         all_python_files = sorted(PROJECT_ROOT.rglob("*.py"))
         all_python_files = [
-            f for f in all_python_files
-            if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
+            f for f in all_python_files if not (set(f.relative_to(PROJECT_ROOT).parts) & _EXCLUDE_DIRS)
         ]
 
         scanner = AntiPatternScanner(

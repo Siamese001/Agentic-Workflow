@@ -97,9 +97,7 @@ class OfflineEvaluationRunner:
 
         return report
 
-    def _evaluate_example(
-        self, example_id: str, example: EvaluationExample
-    ) -> EvaluationResult:
+    def _evaluate_example(self, example_id: str, example: EvaluationExample) -> EvaluationResult:
         """Run retrieval + generation + metric scoring for one example."""
         retrieved_docs = self.retrieval_fn(example.query)
         generated_answer = self.generation_fn(example.query, retrieved_docs)
@@ -110,6 +108,7 @@ class OfflineEvaluationRunner:
                 # Retrieval metrics receive (retrieved_docs, ground_truth_docs)
                 # Generation metrics receive (generated_answer, expected_answer, context)
                 from ..metrics.base import GenerationMetric, RetrievalMetric
+
                 if isinstance(metric, GenerationMetric):
                     score = metric.compute(
                         prediction=generated_answer,
@@ -144,11 +143,7 @@ class OfflineEvaluationRunner:
         metric_names = list(results[0].metric_scores.keys())
         aggregated: dict[str, float] = {}
         for metric_name in metric_names:
-            scores = [
-                r.metric_scores[metric_name]
-                for r in results
-                if metric_name in r.metric_scores
-            ]
+            scores = [r.metric_scores[metric_name] for r in results if metric_name in r.metric_scores]
             aggregated[metric_name] = sum(scores) / len(scores) if scores else 0.0
         return aggregated
 
@@ -170,8 +165,16 @@ class OfflineEvaluationRunner:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except Exception:
-            pass
+        except (ValueError, KeyError, AttributeError) as e:
+            # Expected storage errors - log and continue
+            logging.getLogger(__name__).warning(
+                f"Failed to store evaluation snapshot {report.run_id[:8]}: {e}"
+            )
+        except (OSError, RuntimeError, MemoryError) as e:
+            # Critical storage errors - log and continue
+            logging.getLogger(__name__).error(
+                f"Critical error storing evaluation snapshot {report.run_id[:8]}: {e}"
+            )
 
 
 def _default_metrics() -> list[EvaluationMetric]:

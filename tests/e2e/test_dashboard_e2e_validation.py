@@ -16,7 +16,7 @@ def test_dashboard_html_contains_correct_data():
     """Test that generated dashboard HTML contains correctly calculated data."""
     dashboard_path = Path("reports/autonomy_dashboard.html")
     if not dashboard_path.exists():
-        pytest.skip("Dashboard HTML not found - generate dashboard first")
+        pytest.fail("Dashboard HTML not found - generate dashboard first")
 
     html = dashboard_path.read_text(encoding="utf-8")
 
@@ -53,7 +53,7 @@ def test_dashboard_strategic_recommendations_present():
     """Test that strategic recommendations are injected into HTML."""
     dashboard_path = Path("reports/autonomy_dashboard.html")
     if not dashboard_path.exists():
-        pytest.skip("Dashboard HTML not found")
+        pytest.fail("Dashboard HTML not found")
 
     html = dashboard_path.read_text(encoding="utf-8")
 
@@ -69,7 +69,7 @@ def test_dashboard_territory_table_rendered():
     """Test that territory table is properly rendered in HTML."""
     dashboard_path = Path("reports/autonomy_dashboard.html")
     if not dashboard_path.exists():
-        pytest.skip("Dashboard HTML not found")
+        pytest.fail("Dashboard HTML not found")
 
     html = dashboard_path.read_text(encoding="utf-8")
 
@@ -84,7 +84,7 @@ def test_no_hardcoded_health_scores_in_code():
     """Test that source code doesn't contain hardcoded health = 100."""
     guardian_path = Path("agentic_core/L5_safety/validators/AutonomyGuardianAgent.py")
     if not guardian_path.exists():
-        pytest.skip("AutonomyGuardianAgent.py not found")
+        pytest.fail("AutonomyGuardianAgent.py not found")
 
     code = guardian_path.read_text(encoding="utf-8")
 

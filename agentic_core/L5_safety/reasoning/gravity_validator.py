@@ -84,7 +84,51 @@ class GravityValidatorAgent:
             )
             return not any(ex in fp for ex in _EXCLUDED_PATHS)
 
-        return [v for v in results.violations if _not_excluded(v) and _in_sovereign_scope(v)]
+        def _has_known_layers(v: object) -> bool:
+            """Exclude violations where both layers are unknown — unactionable noise."""
+            src = getattr(v, "source_layer", "?") or "?"
+            tgt = getattr(v, "target_layer", "?") or "?"
+            return not (src == "?" and tgt == "?")
+
+        import ast as _ast
+
+        _ast_cache: dict[str, _ast.Module] = {}
+
+        def _parse_cached(fp_str: str) -> _ast.Module | None:
+            if fp_str in _ast_cache:
+                return _ast_cache[fp_str]
+            try:
+                from pathlib import Path as _Path
+
+                tree = _ast.parse(_Path(fp_str).read_text(encoding="utf-8", errors="replace"))
+                _ast_cache[fp_str] = tree
+                return tree
+            except Exception:
+                _ast_cache[fp_str] = None  # type: ignore[assignment]
+                return None
+
+        def _is_module_level_import(v: object) -> bool:
+            """Return True only if the violation's import is at module scope (not inside a function/class)."""
+            fp = str(getattr(v, "file_path", v.get("file_path", "") if isinstance(v, dict) else ""))
+            ln = int(getattr(v, "line_number", 0) or 0)
+            if not fp or not ln:
+                return True  # can't verify — keep it
+            tree = _parse_cached(fp)
+            if tree is None:
+                return True  # parse failed — keep it
+            for node in tree.body:
+                if isinstance(node, (_ast.Import, _ast.ImportFrom)) and node.lineno == ln:
+                    return True
+            return False  # import is inside a function/class body — false positive
+
+        return [
+            v
+            for v in results.violations
+            if _not_excluded(v)
+            and _in_sovereign_scope(v)
+            and _has_known_layers(v)
+            and _is_module_level_import(v)
+        ]
 
     def to_check_dict(self) -> dict[str, Any]:
         """Return structured check dict for _invoke_healer dispatch."""

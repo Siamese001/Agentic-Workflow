@@ -32,19 +32,19 @@ redis_timeout: Any = 5
 
 
 class SovereignSemanticCache(SovereignBaseAgent):
-    """Ultra-hardened hybrid semantic cache — Redis local + Pinecone eternal."""
+    """Ultra-hardened hybrid semantic cache — Redis local + InMemoryVectorStore eternal."""
 
     def __init__(
         self,
         mission_id: str,
         engine=None,
-        pinecone_agent=None,
     ):
         super().__init__()
         self.mission_id = mission_id
-        self._mcp_audit("init", payload={"mission_id": mission_id})
         self.engine = engine
-        self._vector_store: dict[str, dict] = {}
+        from agentic_core.L4_state.memory.in_memory_vector_store import InMemoryVectorStore
+
+        self._vector_store: InMemoryVectorStore = InMemoryVectorStore()
         self.index_name = "canon-semantic-v1"
         self.namespace = "canon-files"
         try:
@@ -82,12 +82,12 @@ class SovereignSemanticCache(SovereignBaseAgent):
         ]
         return max(child_depths, default=current)
 
-    async def cache_file(self, file_path: str, code: str, metadata: dict) -> None:
+    def cache_file(self, file_path: str, code: str, metadata: dict) -> None:
         """Embed and cache with dual-store synchronization."""
         key: Any = self._cache_key(file_path)
         if self.redis:
             try:
-                cached_data: Any = await self.redis.get(key)
+                cached_data: Any = self.redis.get(key)
                 if cached_data:
                     Logger.info(f"[L4 HIT] Redis MCP recall for {Path(file_path).name}")
                     return
@@ -97,7 +97,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
         ast_features: Any = self._extract_ast_features(code)
         embed_text: Any = f"File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}"
         try:
-            vector: Any = await self.engine.get_embedding(embed_text)
+            vector: Any = self.engine.get_embedding(embed_text)
             entry: Any = {
                 "path": str(file_path),
                 "vector": vector,
@@ -111,7 +111,7 @@ class SovereignSemanticCache(SovereignBaseAgent):
             if self.redis:
                 entry_json: Any = json.dumps(entry)
                 if len(entry_json.encode()) < max_redis_entry_size:
-                    await self.redis.set(key, entry_json, ttl=redis_cache_ttl)
+                    self.redis.set(key, entry_json.encode(), ttl_seconds=redis_cache_ttl)
             self._vector_store[key] = {
                 "vector": vector,
                 "metadata": entry["metadata"],
@@ -123,12 +123,12 @@ class SovereignSemanticCache(SovereignBaseAgent):
             Logger.error(f"[L4 CACHE FAILURE] Could not cache {file_path}: {e}")
 
     # guardian: allow-type-erasure
-    async def invalidate(self, file_path: str) -> Any:
+    def invalidate(self, file_path: str) -> Any:
         """Purge both stores on fission or physical move."""
         key: Any = self._cache_key(file_path)
         if self.redis:
             try:
-                await self.redis.delete(key)
+                self.redis.delete(key)
             # guardian: allow-silent-swallow
             except:
                 pass

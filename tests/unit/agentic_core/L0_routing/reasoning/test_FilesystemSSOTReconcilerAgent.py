@@ -28,7 +28,7 @@ def test_ReconciliationViolation_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class ReconciliationViolation not found in module")
+        pytest.fail("Class ReconciliationViolation not found in module")
 
 
 def test_FilesystemSSOTReconcilerAgent_exists():
@@ -44,7 +44,7 @@ def test_FilesystemSSOTReconcilerAgent_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class FilesystemSSOTReconcilerAgent not found in module")
+        pytest.fail("Class FilesystemSSOTReconcilerAgent not found in module")
 
 
 def test_MCPHardenedMixin_exists():
@@ -60,7 +60,7 @@ def test_MCPHardenedMixin_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class MCPHardenedMixin not found in module")
+        pytest.fail("Class MCPHardenedMixin not found in module")
 
 
 def test_SubatomicTestingMixin_exists():
@@ -76,7 +76,7 @@ def test_SubatomicTestingMixin_exists():
             pass
         assert cls is not None
     except AttributeError:
-        pytest.skip("Class SubatomicTestingMixin not found in module")
+        pytest.fail("Class SubatomicTestingMixin not found in module")
 
 
 def test_heal_repository_exists():
@@ -85,7 +85,7 @@ def test_heal_repository_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.heal_repository
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function heal_repository not found in module")
+        pytest.fail("Function heal_repository not found in module")
 
 
 def test_heal_exists():
@@ -94,7 +94,7 @@ def test_heal_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.heal
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function heal not found in module")
+        pytest.fail("Function heal not found in module")
 
 
 def test_run_ci_verification_sync_exists():
@@ -103,7 +103,7 @@ def test_run_ci_verification_sync_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.run_ci_verification_sync
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function run_ci_verification_sync not found in module")
+        pytest.fail("Function run_ci_verification_sync not found in module")
 
 
 def test_post_heal_validation_exists():
@@ -112,7 +112,7 @@ def test_post_heal_validation_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.post_heal_validation
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function post_heal_validation not found in module")
+        pytest.fail("Function post_heal_validation not found in module")
 
 
 def test_cleanup_violations_exists():
@@ -121,7 +121,7 @@ def test_cleanup_violations_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.cleanup_violations
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function cleanup_violations not found in module")
+        pytest.fail("Function cleanup_violations not found in module")
 
 
 def test_run_with_cleanup_exists():
@@ -130,7 +130,7 @@ def test_run_with_cleanup_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.run_with_cleanup
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function run_with_cleanup not found in module")
+        pytest.fail("Function run_with_cleanup not found in module")
 
 
 def test_detect_root_drift_exists():
@@ -139,7 +139,7 @@ def test_detect_root_drift_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.detect_root_drift
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function detect_root_drift not found in module")
+        pytest.fail("Function detect_root_drift not found in module")
 
 
 def test_scan_root_folders_exists():
@@ -148,7 +148,7 @@ def test_scan_root_folders_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.scan_root_folders
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function scan_root_folders not found in module")
+        pytest.fail("Function scan_root_folders not found in module")
 
 
 def test_heal_repository_exists():
@@ -157,7 +157,7 @@ def test_heal_repository_exists():
         func = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.heal_repository
         assert callable(func)
     except AttributeError:
-        pytest.skip("Function heal_repository not found in module")
+        pytest.fail("Function heal_repository not found in module")
 
 
 def test_BLUEPRINT_PATH_exists():
@@ -166,7 +166,7 @@ def test_BLUEPRINT_PATH_exists():
         value = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.BLUEPRINT_PATH
         assert value is not None
     except AttributeError:
-        pytest.skip("Constant BLUEPRINT_PATH not found in module")
+        pytest.fail("Constant BLUEPRINT_PATH not found in module")
 
 
 def test_ARCHIVE_ROOT_exists():
@@ -175,7 +175,7 @@ def test_ARCHIVE_ROOT_exists():
         value = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.ARCHIVE_ROOT
         assert value is not None
     except AttributeError:
-        pytest.skip("Constant ARCHIVE_ROOT not found in module")
+        pytest.fail("Constant ARCHIVE_ROOT not found in module")
 
 
 def test_FORBIDDEN_ROOT_FOLDERS_exists():
@@ -184,7 +184,7 @@ def test_FORBIDDEN_ROOT_FOLDERS_exists():
         value = agentic_core.L5_safety.reasoning.filesystem_ssot_reconciler.FORBIDDEN_ROOT_FOLDERS
         assert value is not None
     except AttributeError:
-        pytest.skip("Constant FORBIDDEN_ROOT_FOLDERS not found in module")
+        pytest.fail("Constant FORBIDDEN_ROOT_FOLDERS not found in module")
 
 
 def test_module_has_minimum_coverage():

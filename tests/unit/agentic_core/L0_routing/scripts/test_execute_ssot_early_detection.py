@@ -80,8 +80,8 @@ class TestPhase1EarlyDetection:
 
         # Current impl extracts from validator to_check_dict() evidence
         assert '"type": "CLASSIFICATION"' in content
-        assert 'classification_violations' in content
-        assert 'classification_scan_result' in content
+        assert "classification_violations" in content
+        assert "classification_scan_result" in content
 
 
 class TestPhase1EarlyDetectionIntegration:

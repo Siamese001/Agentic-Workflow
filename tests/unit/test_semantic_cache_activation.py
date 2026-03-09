@@ -676,11 +676,13 @@ class TestAgentBaseMixinInheritance:
 class TestStatelessMode:
     def setup_method(self):
         import os
+
         os.environ["REDIS_URL"] = "redis://127.0.0.2:1"
         _reset_hive()
 
     def teardown_method(self):
         import os
+
         os.environ.pop("REDIS_URL", None)
         _reset_hive()
 
@@ -911,11 +913,13 @@ class TestPIISanitizer:
 class TestSemanticCacheManagerDeep:
     def setup_method(self):
         import os
+
         os.environ["REDIS_URL"] = "redis://127.0.0.2:1"
         _reset_hive()
 
     def teardown_method(self):
         import os
+
         os.environ.pop("REDIS_URL", None)
         _reset_hive()
 
@@ -1069,6 +1073,7 @@ class TestSemanticCacheManagerDeep:
 class TestGlobalCacheDeep:
     def setup_method(self):
         import os
+
         os.environ["REDIS_URL"] = "redis://127.0.0.2:1"
         _reset_hive()
         import apps_shared.enforcement.GlobalcacheStrategy as _mod
@@ -1077,6 +1082,7 @@ class TestGlobalCacheDeep:
 
     def teardown_method(self):
         import os
+
         os.environ.pop("REDIS_URL", None)
         _reset_hive()
         import apps_shared.enforcement.GlobalcacheStrategy as _mod

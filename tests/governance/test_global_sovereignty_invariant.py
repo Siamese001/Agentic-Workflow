@@ -20,7 +20,7 @@ import hashlib
 import json
 from dataclasses import dataclass
 from pathlib import Path
-from typing import Any, Dict, FrozenSet, List, Optional, Set
+from typing import Any
 
 import pytest
 
@@ -32,13 +32,15 @@ REPO_ROOT = Path(__file__).parent.parent.parent
 # §1  No upward mutation — runtime interceptor
 # ---------------------------------------------------------------------------
 
+
 class _WriteInterceptViolation(RuntimeError):
     pass
+
 
 class _MockInterceptor:
     def __init__(self):
         self._active = False
-        self._blocked: List[str] = []
+        self._blocked: list[str] = []
 
     def enable(self):
         self._active = True
@@ -78,7 +80,7 @@ _NON_GATEWAY_ROOTS = [
 ]
 
 
-def _scan_sdk_imports(path: Path) -> List[str]:
+def _scan_sdk_imports(path: Path) -> list[str]:
     source = path.read_text(encoding="utf-8", errors="replace")
     try:
         tree = ast.parse(source)
@@ -101,22 +103,21 @@ def _scan_sdk_imports(path: Path) -> List[str]:
 @pytest.mark.governance
 def test_inv_gateway_sole_llm_seam():
     """Invariant: zero direct SDK imports outside L2 gateway (AST scan)."""
-    violations: List[str] = []
+    violations: list[str] = []
     for root in _NON_GATEWAY_ROOTS:
         rp = REPO_ROOT / root
         if rp.exists():
             for py in rp.rglob("*.py"):
                 violations.extend(_scan_sdk_imports(py))
-    assert violations == [], (
-        f"{len(violations)} SDK import violation(s):\n" + "\n".join(violations)
-    )
+    assert violations == [], f"{len(violations)} SDK import violation(s):\n" + "\n".join(violations)
 
 
 # ---------------------------------------------------------------------------
 # §3  Embedding cannot affect routing (deterministic replay)
 # ---------------------------------------------------------------------------
 
-def _deterministic_route(embedding: List[float], routes: List[str]) -> str:
+
+def _deterministic_route(embedding: list[float], routes: list[str]) -> str:
     """Route selection must be deterministic — no float non-determinism."""
     # Use canonical JSON of embedding for stable hash
     key = json.dumps(embedding, sort_keys=True)
@@ -142,6 +143,7 @@ def test_inv_embedding_cannot_affect_routing():
 # ---------------------------------------------------------------------------
 # §4  Kill-switch cannot be bypassed (freeze authority)
 # ---------------------------------------------------------------------------
+
 
 class _FreezeState:
     def __init__(self):
@@ -179,9 +181,10 @@ def test_inv_kill_switch_cannot_be_bypassed():
 # §5  Signature verification always precedes side-effect (5 paths)
 # ---------------------------------------------------------------------------
 
+
 class _SigVerifyOrder:
     def __init__(self):
-        self.log: List[str] = []
+        self.log: list[str] = []
 
     def verify_signature(self, artifact_id: str):
         self.log.append(f"verify:{artifact_id}")
@@ -213,9 +216,7 @@ def test_inv_signature_precedes_side_effect_five_paths():
     for artifact_id in paths:
         verify_pos = svo.log.index(f"verify:{artifact_id}")
         effect_pos = svo.log.index(f"effect:{artifact_id}")
-        assert verify_pos < effect_pos, (
-            f"verify must precede effect for {artifact_id}"
-        )
+        assert verify_pos < effect_pos, f"verify must precede effect for {artifact_id}"
 
 
 @pytest.mark.governance
@@ -229,6 +230,7 @@ def test_inv_side_effect_without_sig_raises():
 # ---------------------------------------------------------------------------
 # §6  Activation flags persisted and replay-bound
 # ---------------------------------------------------------------------------
+
 
 @dataclass(frozen=True)
 class _ActivationFlags:
@@ -281,8 +283,10 @@ def test_inv_activation_flags_replay_bound():
 # §7  Capability tokens are scoped and single-use
 # ---------------------------------------------------------------------------
 
+
 class _CapabilityTokenError(ValueError):
     pass
+
 
 @dataclass(frozen=True)
 class _CapToken:
@@ -314,8 +318,9 @@ def test_inv_capability_tokens_scoped_and_single_use():
         token.validate("emit_metric")
 
     # Simulate used token
-    used = _CapToken(token_id="tok_001", allowed_action="pointer_update",
-                     replay_digest_hash=digest, used=True)
+    used = _CapToken(
+        token_id="tok_001", allowed_action="pointer_update", replay_digest_hash=digest, used=True
+    )
     with pytest.raises(_CapabilityTokenError, match="already used"):
         used.validate("pointer_update")
 
@@ -329,10 +334,12 @@ def test_inv_capability_tokens_scoped_and_single_use():
 # §8  Metrics emission mechanically sealed
 # ---------------------------------------------------------------------------
 
+
 class _MetricsEmissionSeal:
     """Single authoritative emission point; rejects duplicates per trace_id."""
+
     def __init__(self):
-        self._emitted: Set[str] = set()
+        self._emitted: set[str] = set()
 
     def emit(self, trace_id: str, metric: Any):
         if trace_id in self._emitted:
@@ -360,9 +367,8 @@ def test_inv_metrics_emission_sealed():
 # §9  Blast radius deterministically bounded
 # ---------------------------------------------------------------------------
 
-def _compute_blast_radius(
-    proposal: Dict[str, Any], max_files: int = 10
-) -> int:
+
+def _compute_blast_radius(proposal: dict[str, Any], max_files: int = 10) -> int:
     """Deterministic blast radius: number of files changed, capped."""
     files = proposal.get("files_changed", [])
     return min(len(files), max_files)
@@ -385,6 +391,7 @@ def test_inv_blast_radius_deterministically_bounded():
 # ---------------------------------------------------------------------------
 # §10  Digest canonicalization stable
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_inv_digest_canonicalization_stable():
@@ -411,6 +418,7 @@ def test_inv_digest_canonicalization_stable():
 # ---------------------------------------------------------------------------
 # Consolidated gate: all invariants in sequence
 # ---------------------------------------------------------------------------
+
 
 @pytest.mark.governance
 def test_global_sovereignty_invariant_all_pass():

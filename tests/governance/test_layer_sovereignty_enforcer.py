@@ -74,9 +74,7 @@ class TestSuccessPaths:
 
     @pytest.mark.governance
     def test_extract_layer_from_module_returns_level_when_valid_L0(self):
-        result = LayerSovereigntyEnforcer.extract_layer_from_module(
-            "agentic_core.L0_routing.config"
-        )
+        result = LayerSovereigntyEnforcer.extract_layer_from_module("agentic_core.L0_routing.config")
         assert result == 0
 
     @pytest.mark.governance
@@ -126,9 +124,7 @@ class TestSuccessPaths:
 class TestBranchPaths:
     @pytest.mark.governance
     def test_extract_layer_returns_none_when_non_layer_module(self):
-        result = LayerSovereigntyEnforcer.extract_layer_from_module(
-            "agentic_core.base_agents.FooAgent"
-        )
+        result = LayerSovereigntyEnforcer.extract_layer_from_module("agentic_core.base_agents.FooAgent")
         assert result is None
 
     @pytest.mark.governance
@@ -166,9 +162,7 @@ class TestBranchPaths:
 
     @pytest.mark.governance
     def test_scan_skips_missing_scan_root_gracefully(self, tmp_repo):
-        e = LayerSovereigntyEnforcer(
-            tmp_repo, scan_roots=("nonexistent_root",)
-        )
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("nonexistent_root",))
         report = e.run()
         assert report.files_scanned == 0
         assert report.violations == []
@@ -291,9 +285,7 @@ class TestEdgeCases:
     @pytest.mark.governance
     def test_extract_layer_handles_partial_layer_name(self):
         # "L2_exec" is not "L2_execution"
-        result = LayerSovereigntyEnforcer.extract_layer_from_module(
-            "agentic_core.L2_exec.foo"
-        )
+        result = LayerSovereigntyEnforcer.extract_layer_from_module("agentic_core.L2_exec.foo")
         assert result is None
 
     @pytest.mark.governance
@@ -464,12 +456,8 @@ class TestCircularImports:
     def test_detect_circular_imports_detects_bidirectional(self, tmp_repo):
         a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
         b = tmp_repo / "agentic_core" / "L0_routing" / "mod_b.py"
-        a.write_text(
-            "from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8"
-        )
-        b.write_text(
-            "from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8"
-        )
+        a.write_text("from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8")
+        b.write_text("from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
         cycles = e.detect_circular_imports()
         assert len(cycles) == 1
@@ -482,9 +470,7 @@ class TestCircularImports:
         a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
         b = tmp_repo / "agentic_core" / "L2_execution" / "mod_b.py"
         a.write_text("x = 1\n", encoding="utf-8")
-        b.write_text(
-            "from agentic_core.L0_routing.mod_a import x\n", encoding="utf-8"
-        )
+        b.write_text("from agentic_core.L0_routing.mod_a import x\n", encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
         cycles = e.detect_circular_imports()
         assert cycles == []
@@ -494,12 +480,8 @@ class TestCircularImports:
         # Same bidirectional pair should appear only once
         a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
         b = tmp_repo / "agentic_core" / "L0_routing" / "mod_b.py"
-        a.write_text(
-            "from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8"
-        )
-        b.write_text(
-            "from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8"
-        )
+        a.write_text("from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8")
+        b.write_text("from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
         cycles = e.detect_circular_imports()
         assert len(cycles) == 1
