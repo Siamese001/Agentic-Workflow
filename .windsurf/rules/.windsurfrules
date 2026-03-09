@@ -175,6 +175,28 @@ Mutation-sensitive tests MUST fail if:
 
 ---
 
+### 1.12 Zero-tolerance for test skipping
+
+Under NO EXCEPTIONS can tests be skipped and silently passed.
+
+Test execution MUST:
+
+- run ALL collected tests without selective skipping
+- fail HARD if any test is deselected or bypassed
+- report exact count of collected vs executed tests
+- treat collection/execution mismatch as CRITICAL FAILURE
+
+Test frameworks MUST be configured to:
+
+- disable selective test skipping mechanisms
+- enforce full test suite execution
+- prevent silent test deselection
+- raise explicit errors for test collection mismatches
+
+Any deviation from full test execution = CONSTITUTIONAL VIOLATION.
+
+---
+
 ## Â§2. EVIDENCE CONTRACT
 
 ### 2.1 Deterministic execution record

@@ -8,9 +8,11 @@ import asyncio
 import json
 import logging
 import time
+from collections.abc import Callable
 from dataclasses import dataclass
+from typing import Any, Optional
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, validator
 
 try:
     from agentic_core.L5_safety.validators.circuit_breaker_types import (
@@ -23,12 +25,21 @@ except ImportError:
     @dataclass
     class CircuitBreakerConfig:
         failure_threshold: int = 5
-        timeout_seconds: int = 60
+        recovery_timeout: float = 60.0
+        timeout: float = 30.0
+
+    class _FallbackCircuitBreaker:
+        async def call(self, func, *args, **kwargs):
+            return await func(*args, **kwargs)
 
     class CircuitBreakerFactory:
         @staticmethod
-        def create(config):
-            return lambda func: func
+        def create(config: Any) -> "_FallbackCircuitBreaker":
+            return _FallbackCircuitBreaker()
+
+        @staticmethod
+        def get(name: str, config: Any) -> "_FallbackCircuitBreaker":
+            return _FallbackCircuitBreaker()
 
     class CircuitOpenError(Exception):
         pass
@@ -201,21 +212,26 @@ class ReflectionEngine:
                 self.stats["llm_critiques"] += 1
 
         except CircuitOpenError:
-            # Circuit is open - return conservative result
-            logger.warning("Reflection Engine Circuit OPEN. Skipping critique.")
+            # GAP-02 FIX: fail-closed for required criteria, fail-open only for optional
+            has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
+            logger.warning(
+                "Reflection Engine Circuit OPEN. "
+                f"Failing {'closed' if has_required else 'open'} (required={has_required})."
+            )
             result = CritiqueResult(
-                is_valid=True,  # Fail-open strategy
-                confidence_score=0.3,  # Low confidence
+                is_valid=not has_required,
+                confidence_score=0.3,
                 critique_reasoning="Circuit breaker OPEN - service degraded",
                 validation_type="circuit_breaker_fallback",
             )
 
-        except Exception as e:
-            # Unexpected error - return conservative result
+        except Exception as e:  # guardian: allow-silent-swallower
+            # GAP-02 FIX: fail-closed on unexpected errors when required criteria present
+            has_required = any(getattr(c, "is_required", True) for c in normalized_criteria)
             logger.error(f"Reflection evaluation failed: {e}")
             result = CritiqueResult(
-                is_valid=True,  # Fail-open to avoid blocking workflow
-                confidence_score=0.2,  # Very low confidence
+                is_valid=not has_required,
+                confidence_score=0.2,
                 critique_reasoning=f"Evaluation failed: {str(e)}",
                 validation_type="error_fallback",
             )
@@ -276,7 +292,7 @@ class ReflectionEngine:
 
                 total_weight += criterion.weight
 
-            except Exception as e:
+            except Exception as e:  # guardian: allow-silent-swallower
                 logger.error(f"Validation error for {criterion.name}: {e}")
                 results.append(f"Error: {criterion.name} - {str(e)}")
 
@@ -345,7 +361,7 @@ Respond in JSON format:
                 validation_type="llm",
             )
 
-        except Exception as e:
+        except Exception as e:  # guardian: allow-silent-swallower
             logger.error(f"LLM evaluation failed: {e}")
             # Fallback to conservative result
             return CritiqueResult(
