@@ -1,7 +1,7 @@
 {
   "status": "completed",
-  "start_time": "2026-03-09T03:15:08.563945",
-  "end_time": "2026-03-09T03:17:14.190878",
+  "start_time": "2026-03-09T03:33:47.330193",
+  "end_time": "2026-03-09T03:35:55.617232",
   "current_agent": null,
   "current_layer": "L5 - Certification",
   "agents_order": [
@@ -25,559 +25,559 @@
   "completed_agents": [
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-03-09T03:15:13.514492",
+      "time": "2026-03-09T03:33:52.391118",
       "success": true,
       "details": "Violations: 1 (high: 0) fixed: 1"
     },
     {
       "agent": "GravityValidatorAgent",
-      "time": "2026-03-09T03:15:19.960012",
+      "time": "2026-03-09T03:33:59.116700",
       "success": true,
       "details": "Scanned: 0 gravity violations found"
     },
     {
       "agent": "GravityLeakHealerAgent",
-      "time": "2026-03-09T03:15:19.960012",
+      "time": "2026-03-09T03:33:59.116700",
       "success": true,
       "details": "No gravity violations found"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:15:20.899781",
+      "time": "2026-03-09T03:34:00.052319",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:15:20.901869",
+      "time": "2026-03-09T03:34:00.055693",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:15:20.901869",
+      "time": "2026-03-09T03:34:00.055693",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:15:42.484015",
+      "time": "2026-03-09T03:34:23.746980",
       "success": true,
-      "details": "Healed: 10642"
+      "details": "Healed: 10674"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:15:42.534015",
+      "time": "2026-03-09T03:34:23.796979",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:15:46.512189",
+      "time": "2026-03-09T03:34:27.676918",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.935276",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.936276",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.937360",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:15:47.684503",
+      "time": "2026-03-09T03:34:28.969586",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:15:47.687048",
+      "time": "2026-03-09T03:34:28.971631",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:15:47.687048",
+      "time": "2026-03-09T03:34:28.971631",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:02.248964",
+      "time": "2026-03-09T03:34:43.499168",
       "success": true,
-      "details": "Healed: 10649"
+      "details": "Healed: 10681"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:02.295132",
+      "time": "2026-03-09T03:34:43.545971",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:05.837430",
+      "time": "2026-03-09T03:34:46.990655",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:06.090661",
+      "time": "2026-03-09T03:34:47.248907",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:06.093721",
+      "time": "2026-03-09T03:34:47.248907",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:06.094241",
+      "time": "2026-03-09T03:34:47.250980",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:07.002803",
+      "time": "2026-03-09T03:34:48.156096",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:07.004450",
+      "time": "2026-03-09T03:34:48.158108",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:07.004988",
+      "time": "2026-03-09T03:34:48.158108",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:07.872874",
+      "time": "2026-03-09T03:34:49.036331",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:07.920842",
+      "time": "2026-03-09T03:34:49.086290",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:11.558302",
+      "time": "2026-03-09T03:34:52.655623",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:11.815543",
+      "time": "2026-03-09T03:34:52.915867",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:11.817046",
+      "time": "2026-03-09T03:34:52.916875",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:11.817046",
+      "time": "2026-03-09T03:34:52.916875",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:12.729375",
+      "time": "2026-03-09T03:34:53.830431",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:12.730938",
+      "time": "2026-03-09T03:34:53.832505",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:12.730938",
+      "time": "2026-03-09T03:34:53.832505",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:13.606114",
+      "time": "2026-03-09T03:34:54.702310",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:13.652479",
+      "time": "2026-03-09T03:34:54.751996",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:17.803649",
+      "time": "2026-03-09T03:34:58.956341",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:18.061969",
+      "time": "2026-03-09T03:34:59.215949",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:18.064033",
+      "time": "2026-03-09T03:34:59.216987",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:18.064033",
+      "time": "2026-03-09T03:34:59.218511",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:18.981340",
+      "time": "2026-03-09T03:35:00.133787",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:18.997171",
+      "time": "2026-03-09T03:35:00.150602",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:18.997171",
+      "time": "2026-03-09T03:35:00.151622",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:19.725267",
+      "time": "2026-03-09T03:35:00.872670",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:19.772860",
+      "time": "2026-03-09T03:35:00.920855",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:26.286955",
+      "time": "2026-03-09T03:35:07.458273",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:26.545162",
+      "time": "2026-03-09T03:35:07.724975",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:26.546217",
+      "time": "2026-03-09T03:35:07.726802",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:26.546723",
+      "time": "2026-03-09T03:35:07.726802",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:27.468478",
+      "time": "2026-03-09T03:35:08.648710",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:27.487320",
+      "time": "2026-03-09T03:35:08.666819",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:27.487824",
+      "time": "2026-03-09T03:35:08.666819",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:28.225197",
+      "time": "2026-03-09T03:35:09.390709",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:28.273590",
+      "time": "2026-03-09T03:35:09.440061",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:34.775814",
+      "time": "2026-03-09T03:35:16.019596",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.283620",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.285365",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:35.036319",
+      "time": "2026-03-09T03:35:16.286368",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:35.950840",
+      "time": "2026-03-09T03:35:17.197163",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:35.975725",
+      "time": "2026-03-09T03:35:17.220829",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:35.976727",
+      "time": "2026-03-09T03:35:17.220829",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:36.727375",
+      "time": "2026-03-09T03:35:17.967294",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:36.774193",
+      "time": "2026-03-09T03:35:18.014278",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:43.294403",
+      "time": "2026-03-09T03:35:24.548891",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:43.553186",
+      "time": "2026-03-09T03:35:24.810802",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:43.555278",
+      "time": "2026-03-09T03:35:24.811859",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:43.555780",
+      "time": "2026-03-09T03:35:24.811859",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:44.469534",
+      "time": "2026-03-09T03:35:25.729326",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:44.472724",
+      "time": "2026-03-09T03:35:25.733636",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:44.475287",
+      "time": "2026-03-09T03:35:25.733636",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:45.197021",
+      "time": "2026-03-09T03:35:26.452985",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:45.244386",
+      "time": "2026-03-09T03:35:26.498838",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:51.700623",
+      "time": "2026-03-09T03:35:33.037706",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:16:51.957935",
+      "time": "2026-03-09T03:35:33.302937",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:16:51.961978",
+      "time": "2026-03-09T03:35:33.303467",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:16:51.961978",
+      "time": "2026-03-09T03:35:33.305018",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:16:52.878852",
+      "time": "2026-03-09T03:35:34.229416",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:16:52.895435",
+      "time": "2026-03-09T03:35:34.245969",
       "success": true,
       "details": "Violations: 0 | Conf: 1.00"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:52.895435",
+      "time": "2026-03-09T03:35:34.245969",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:16:53.629254",
+      "time": "2026-03-09T03:35:34.982371",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:16:53.676189",
+      "time": "2026-03-09T03:35:35.028758",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:17:00.161224",
+      "time": "2026-03-09T03:35:41.558122",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:17:00.425385",
+      "time": "2026-03-09T03:35:41.825079",
       "success": true,
       "details": "Certificate Issued"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T03:17:01.345287",
+      "time": "2026-03-09T03:35:42.744287",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
       "agent": "LocationHealerAgent",
-      "time": "2026-03-09T03:17:01.472150",
+      "time": "2026-03-09T03:35:42.866961",
       "success": true,
       "details": "Violations: 156 | Conf: 1.00 (no heal method)"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:17:01.472553",
+      "time": "2026-03-09T03:35:42.866961",
       "success": true,
       "details": "Early detection: 0 classification issues"
     },
     {
       "agent": "HierarchyHealerAgent",
-      "time": "2026-03-09T03:17:02.271922",
+      "time": "2026-03-09T03:35:43.658678",
       "success": true,
       "details": "No violations found"
     },
     {
       "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T03:17:02.318430",
+      "time": "2026-03-09T03:35:43.710696",
       "success": true,
       "details": "Healed: 0"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:17:08.814356",
+      "time": "2026-03-09T03:35:50.231104",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "ObservabilityProbeExecutorAgent",
-      "time": "2026-03-09T03:17:09.075042",
+      "time": "2026-03-09T03:35:50.498554",
       "success": true,
       "details": "Violations: 0"
     },
     {
       "agent": "CognitiveDispositionAgent",
-      "time": "2026-03-09T03:17:09.078613",
+      "time": "2026-03-09T03:35:50.499118",
       "success": true,
       "details": "Analytics keys: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution']"
     },
     {
       "agent": "ArchitectureGovernorAgent",
-      "time": "2026-03-09T03:17:09.081157",
+      "time": "2026-03-09T03:35:50.503239",
       "success": true,
       "details": "Certificate Issued"
     }
@@ -585,1097 +585,1097 @@
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-09T03:15:08.563945",
+      "time": "2026-03-09T03:33:47.330193",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-09T03:15:13.511917",
+      "time": "2026-03-09T03:33:52.388036",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-03-09T03:15:13.514492",
+      "time": "2026-03-09T03:33:52.391118",
       "type": "agent_end",
       "message": "✓ Completed RootHygieneAgent"
     },
     {
-      "time": "2026-03-09T03:15:13.514492",
+      "time": "2026-03-09T03:33:52.391118",
       "type": "agent_start",
       "message": "→ Executing GravityLeakHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:19.960012",
+      "time": "2026-03-09T03:33:59.116700",
       "type": "agent_end",
       "message": "✓ Completed GravityValidatorAgent"
     },
     {
-      "time": "2026-03-09T03:15:19.960012",
+      "time": "2026-03-09T03:33:59.116700",
       "type": "agent_end",
       "message": "✓ Completed GravityLeakHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:20.211837",
+      "time": "2026-03-09T03:33:59.372903",
       "type": "domain_start",
       "message": "Entering Domain: L0_routing"
     },
     {
-      "time": "2026-03-09T03:15:20.211837",
+      "time": "2026-03-09T03:33:59.372903",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:15:20.899781",
+      "time": "2026-03-09T03:34:00.052319",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:20.899781",
+      "time": "2026-03-09T03:34:00.052319",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:20.901869",
+      "time": "2026-03-09T03:34:00.055693",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:20.901869",
+      "time": "2026-03-09T03:34:00.055693",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:15:20.901869",
+      "time": "2026-03-09T03:34:00.055693",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:28.189054",
+      "time": "2026-03-09T03:34:09.501092",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:15:29.021076",
+      "time": "2026-03-09T03:34:10.337593",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:29.072800",
+      "time": "2026-03-09T03:34:10.384028",
       "type": "decision",
       "message": "Hierarchy Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=10, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:15:42.484015",
+      "time": "2026-03-09T03:34:23.746980",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:42.534015",
+      "time": "2026-03-09T03:34:23.796979",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:15:42.534015",
+      "time": "2026-03-09T03:34:23.796979",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:42.534015",
+      "time": "2026-03-09T03:34:23.796979",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:42.534015",
+      "time": "2026-03-09T03:34:23.796979",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:46.512189",
+      "time": "2026-03-09T03:34:27.676918",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:15:46.770774",
+      "time": "2026-03-09T03:34:27.934273",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.935276",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.935276",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.936276",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.936276",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:15:46.772849",
+      "time": "2026-03-09T03:34:27.937360",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:15:47.027135",
+      "time": "2026-03-09T03:34:28.189347",
       "type": "domain_start",
       "message": "Entering Domain: L2_execution"
     },
     {
-      "time": "2026-03-09T03:15:47.027135",
+      "time": "2026-03-09T03:34:28.189347",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:15:47.684503",
+      "time": "2026-03-09T03:34:28.969586",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:47.684503",
+      "time": "2026-03-09T03:34:28.969586",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:47.687048",
+      "time": "2026-03-09T03:34:28.971631",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:47.687048",
+      "time": "2026-03-09T03:34:28.971631",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:15:47.687048",
+      "time": "2026-03-09T03:34:28.971631",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:15:47.734883",
+      "time": "2026-03-09T03:34:29.021022",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:15:48.547507",
+      "time": "2026-03-09T03:34:29.838738",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:15:48.594687",
+      "time": "2026-03-09T03:34:29.883943",
       "type": "decision",
       "message": "Hierarchy Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=10, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:02.248964",
+      "time": "2026-03-09T03:34:43.499168",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:02.295132",
+      "time": "2026-03-09T03:34:43.545971",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:02.295132",
+      "time": "2026-03-09T03:34:43.545971",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:02.295132",
+      "time": "2026-03-09T03:34:43.546751",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:02.295132",
+      "time": "2026-03-09T03:34:43.546751",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:05.837430",
+      "time": "2026-03-09T03:34:46.990655",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:06.090661",
+      "time": "2026-03-09T03:34:47.246843",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:06.090661",
+      "time": "2026-03-09T03:34:47.248907",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:06.090661",
+      "time": "2026-03-09T03:34:47.248907",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:06.093721",
+      "time": "2026-03-09T03:34:47.248907",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:06.093721",
+      "time": "2026-03-09T03:34:47.250447",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:06.094241",
+      "time": "2026-03-09T03:34:47.250980",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:06.348768",
+      "time": "2026-03-09T03:34:47.507135",
       "type": "domain_start",
       "message": "Entering Domain: L3_orchestration"
     },
     {
-      "time": "2026-03-09T03:16:06.348768",
+      "time": "2026-03-09T03:34:47.507135",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:07.002803",
+      "time": "2026-03-09T03:34:48.156096",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:07.002803",
+      "time": "2026-03-09T03:34:48.156096",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:07.004450",
+      "time": "2026-03-09T03:34:48.158108",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:07.004450",
+      "time": "2026-03-09T03:34:48.158108",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:07.004988",
+      "time": "2026-03-09T03:34:48.158108",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:07.052572",
+      "time": "2026-03-09T03:34:48.208259",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:07.872874",
+      "time": "2026-03-09T03:34:49.036331",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:07.872874",
+      "time": "2026-03-09T03:34:49.036331",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:07.920842",
+      "time": "2026-03-09T03:34:49.083756",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:07.920842",
+      "time": "2026-03-09T03:34:49.083756",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:07.920842",
+      "time": "2026-03-09T03:34:49.086290",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:07.920842",
+      "time": "2026-03-09T03:34:49.086290",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:11.558302",
+      "time": "2026-03-09T03:34:52.655623",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:11.814493",
+      "time": "2026-03-09T03:34:52.913349",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:11.815543",
+      "time": "2026-03-09T03:34:52.915867",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:11.815543",
+      "time": "2026-03-09T03:34:52.915867",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:11.817046",
+      "time": "2026-03-09T03:34:52.916875",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:11.817046",
+      "time": "2026-03-09T03:34:52.916875",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:11.817046",
+      "time": "2026-03-09T03:34:52.916875",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:12.070989",
+      "time": "2026-03-09T03:34:53.172648",
       "type": "domain_start",
       "message": "Entering Domain: L5_safety"
     },
     {
-      "time": "2026-03-09T03:16:12.070989",
+      "time": "2026-03-09T03:34:53.172648",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:12.729375",
+      "time": "2026-03-09T03:34:53.830431",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:12.729375",
+      "time": "2026-03-09T03:34:53.830431",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:12.730938",
+      "time": "2026-03-09T03:34:53.832505",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:12.730938",
+      "time": "2026-03-09T03:34:53.832505",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:12.730938",
+      "time": "2026-03-09T03:34:53.832505",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:12.779230",
+      "time": "2026-03-09T03:34:53.882537",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:13.605588",
+      "time": "2026-03-09T03:34:54.701775",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:13.606114",
+      "time": "2026-03-09T03:34:54.702310",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:13.652479",
+      "time": "2026-03-09T03:34:54.750969",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:13.652479",
+      "time": "2026-03-09T03:34:54.750969",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:13.652479",
+      "time": "2026-03-09T03:34:54.751996",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:13.652985",
+      "time": "2026-03-09T03:34:54.751996",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:17.803649",
+      "time": "2026-03-09T03:34:58.956341",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.061373",
+      "time": "2026-03-09T03:34:59.214362",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:18.061969",
+      "time": "2026-03-09T03:34:59.215949",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.061969",
+      "time": "2026-03-09T03:34:59.215949",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:18.064033",
+      "time": "2026-03-09T03:34:59.216987",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.064033",
+      "time": "2026-03-09T03:34:59.216987",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:18.064033",
+      "time": "2026-03-09T03:34:59.218511",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.320940",
+      "time": "2026-03-09T03:34:59.480491",
       "type": "domain_start",
       "message": "Entering Domain: apps_lic"
     },
     {
-      "time": "2026-03-09T03:16:18.320940",
+      "time": "2026-03-09T03:34:59.480491",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:18.981340",
+      "time": "2026-03-09T03:35:00.133787",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.981340",
+      "time": "2026-03-09T03:35:00.133787",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:18.997171",
+      "time": "2026-03-09T03:35:00.150602",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:18.997171",
+      "time": "2026-03-09T03:35:00.150602",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:18.997171",
+      "time": "2026-03-09T03:35:00.151622",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:19.046221",
+      "time": "2026-03-09T03:35:00.200594",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:19.725267",
+      "time": "2026-03-09T03:35:00.872670",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:19.725267",
+      "time": "2026-03-09T03:35:00.872670",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:19.772860",
+      "time": "2026-03-09T03:35:00.920855",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:19.772860",
+      "time": "2026-03-09T03:35:00.920855",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:19.772860",
+      "time": "2026-03-09T03:35:00.920855",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:19.772860",
+      "time": "2026-03-09T03:35:00.920855",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:26.286955",
+      "time": "2026-03-09T03:35:07.458273",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:26.543561",
+      "time": "2026-03-09T03:35:07.722919",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:26.545162",
+      "time": "2026-03-09T03:35:07.724975",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:26.545162",
+      "time": "2026-03-09T03:35:07.724975",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:26.546217",
+      "time": "2026-03-09T03:35:07.726802",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:26.546217",
+      "time": "2026-03-09T03:35:07.726802",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:26.547229",
+      "time": "2026-03-09T03:35:07.726802",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:26.801881",
+      "time": "2026-03-09T03:35:07.983771",
       "type": "domain_start",
       "message": "Entering Domain: apps_rg"
     },
     {
-      "time": "2026-03-09T03:16:26.801881",
+      "time": "2026-03-09T03:35:07.983771",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:27.468478",
+      "time": "2026-03-09T03:35:08.648710",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:27.468478",
+      "time": "2026-03-09T03:35:08.648710",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:27.487320",
+      "time": "2026-03-09T03:35:08.666819",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:27.487320",
+      "time": "2026-03-09T03:35:08.666819",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:27.487824",
+      "time": "2026-03-09T03:35:08.666819",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:27.533746",
+      "time": "2026-03-09T03:35:08.715204",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:28.225197",
+      "time": "2026-03-09T03:35:09.390176",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:28.225197",
+      "time": "2026-03-09T03:35:09.390709",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:28.273590",
+      "time": "2026-03-09T03:35:09.439557",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:28.273590",
+      "time": "2026-03-09T03:35:09.439557",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:28.273590",
+      "time": "2026-03-09T03:35:09.440061",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:28.273590",
+      "time": "2026-03-09T03:35:09.440061",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:34.775814",
+      "time": "2026-03-09T03:35:16.019596",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.031182",
+      "time": "2026-03-09T03:35:16.281617",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.283620",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.283620",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.285365",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.033728",
+      "time": "2026-03-09T03:35:16.285365",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:35.036319",
+      "time": "2026-03-09T03:35:16.286368",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.294360",
+      "time": "2026-03-09T03:35:16.543623",
       "type": "domain_start",
       "message": "Entering Domain: apps_shared"
     },
     {
-      "time": "2026-03-09T03:16:35.294360",
+      "time": "2026-03-09T03:35:16.543623",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:35.950840",
+      "time": "2026-03-09T03:35:17.197163",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.950840",
+      "time": "2026-03-09T03:35:17.197163",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:35.975725",
+      "time": "2026-03-09T03:35:17.220829",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:35.975725",
+      "time": "2026-03-09T03:35:17.220829",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:35.976727",
+      "time": "2026-03-09T03:35:17.220829",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:36.025124",
+      "time": "2026-03-09T03:35:17.272658",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:36.727375",
+      "time": "2026-03-09T03:35:17.967294",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:36.727375",
+      "time": "2026-03-09T03:35:17.967294",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:36.774193",
+      "time": "2026-03-09T03:35:18.013764",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:36.774193",
+      "time": "2026-03-09T03:35:18.013764",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:36.774193",
+      "time": "2026-03-09T03:35:18.014278",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:36.774193",
+      "time": "2026-03-09T03:35:18.014278",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:43.294403",
+      "time": "2026-03-09T03:35:24.548891",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:43.551630",
+      "time": "2026-03-09T03:35:24.807941",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:43.553186",
+      "time": "2026-03-09T03:35:24.810802",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:43.553186",
+      "time": "2026-03-09T03:35:24.810802",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:43.555278",
+      "time": "2026-03-09T03:35:24.811859",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:43.555278",
+      "time": "2026-03-09T03:35:24.811859",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:43.555780",
+      "time": "2026-03-09T03:35:24.811859",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:43.813997",
+      "time": "2026-03-09T03:35:25.073621",
       "type": "domain_start",
       "message": "Entering Domain: ops_scripts"
     },
     {
-      "time": "2026-03-09T03:16:43.813997",
+      "time": "2026-03-09T03:35:25.073621",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:44.469534",
+      "time": "2026-03-09T03:35:25.729326",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:44.469534",
+      "time": "2026-03-09T03:35:25.729326",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:44.472724",
+      "time": "2026-03-09T03:35:25.733636",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:44.472724",
+      "time": "2026-03-09T03:35:25.733636",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:44.475287",
+      "time": "2026-03-09T03:35:25.733636",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:44.523002",
+      "time": "2026-03-09T03:35:25.782391",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:45.195987",
+      "time": "2026-03-09T03:35:26.452985",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:45.197021",
+      "time": "2026-03-09T03:35:26.452985",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:45.243860",
+      "time": "2026-03-09T03:35:26.498838",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:45.243860",
+      "time": "2026-03-09T03:35:26.498838",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:45.244386",
+      "time": "2026-03-09T03:35:26.498838",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:45.244386",
+      "time": "2026-03-09T03:35:26.498838",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:51.700623",
+      "time": "2026-03-09T03:35:33.037706",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:51.957935",
+      "time": "2026-03-09T03:35:33.300851",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:16:51.957935",
+      "time": "2026-03-09T03:35:33.302937",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:16:51.957935",
+      "time": "2026-03-09T03:35:33.302937",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:16:51.961978",
+      "time": "2026-03-09T03:35:33.303467",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:16:51.961978",
+      "time": "2026-03-09T03:35:33.304495",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:16:51.961978",
+      "time": "2026-03-09T03:35:33.305018",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:16:52.219755",
+      "time": "2026-03-09T03:35:33.571070",
       "type": "domain_start",
       "message": "Entering Domain: system_learning"
     },
     {
-      "time": "2026-03-09T03:16:52.219755",
+      "time": "2026-03-09T03:35:33.571070",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:52.878852",
+      "time": "2026-03-09T03:35:34.229416",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:52.878852",
+      "time": "2026-03-09T03:35:34.229416",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:52.895435",
+      "time": "2026-03-09T03:35:34.245969",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:52.895435",
+      "time": "2026-03-09T03:35:34.245969",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:16:52.895435",
+      "time": "2026-03-09T03:35:34.245969",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:52.944839",
+      "time": "2026-03-09T03:35:34.296115",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 1 violations)"
     },
     {
-      "time": "2026-03-09T03:16:53.629254",
+      "time": "2026-03-09T03:35:34.982051",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:53.629254",
+      "time": "2026-03-09T03:35:34.982371",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:53.676189",
+      "time": "2026-03-09T03:35:35.025230",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:16:53.676189",
+      "time": "2026-03-09T03:35:35.025230",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:16:53.676189",
+      "time": "2026-03-09T03:35:35.028758",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:16:53.676189",
+      "time": "2026-03-09T03:35:35.028758",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:17:00.161224",
+      "time": "2026-03-09T03:35:41.558122",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:17:00.420820",
+      "time": "2026-03-09T03:35:41.822555",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:17:00.422852",
+      "time": "2026-03-09T03:35:41.825079",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:17:00.425385",
+      "time": "2026-03-09T03:35:41.825079",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:17:00.684605",
+      "time": "2026-03-09T03:35:42.089943",
       "type": "domain_start",
       "message": "Entering Domain: tests"
     },
     {
-      "time": "2026-03-09T03:17:00.684605",
+      "time": "2026-03-09T03:35:42.089943",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:17:01.345287",
+      "time": "2026-03-09T03:35:42.744287",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T03:17:01.345287",
+      "time": "2026-03-09T03:35:42.744287",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:17:01.472150",
+      "time": "2026-03-09T03:35:42.866961",
       "type": "decision",
       "message": "Location Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:17:01.472150",
+      "time": "2026-03-09T03:35:42.866961",
       "type": "agent_end",
       "message": "✓ Completed LocationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:17:01.472150",
+      "time": "2026-03-09T03:35:42.866961",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T03:17:01.472553",
+      "time": "2026-03-09T03:35:42.866961",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:17:01.519626",
+      "time": "2026-03-09T03:35:42.915201",
       "type": "agent_start",
       "message": "→ Executing location ([AUTO-HEAL: SOVEREIGN-AUTO] Healing 157 violations)"
     },
     {
-      "time": "2026-03-09T03:17:02.271922",
+      "time": "2026-03-09T03:35:43.658678",
       "type": "agent_start",
       "message": "→ Executing HierarchyHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:17:02.271922",
+      "time": "2026-03-09T03:35:43.658678",
       "type": "agent_end",
       "message": "✓ Completed HierarchyHealerAgent"
     },
     {
-      "time": "2026-03-09T03:17:02.316902",
+      "time": "2026-03-09T03:35:43.708690",
       "type": "decision",
       "message": "Sovereignty Healing: AUTO-HEAL: SOVEREIGN-AUTO (1.00, S=12, gate=THRESHOLD_LOW_DET)"
     },
     {
-      "time": "2026-03-09T03:17:02.316902",
+      "time": "2026-03-09T03:35:43.708690",
       "type": "agent_start",
       "message": "→ Executing FileClassificationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:17:02.318430",
+      "time": "2026-03-09T03:35:43.710696",
       "type": "agent_end",
       "message": "✓ Completed FileClassificationHealerAgent"
     },
     {
-      "time": "2026-03-09T03:17:02.318430",
+      "time": "2026-03-09T03:35:43.710696",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T03:17:08.814356",
+      "time": "2026-03-09T03:35:50.231104",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     },
     {
-      "time": "2026-03-09T03:17:09.075042",
+      "time": "2026-03-09T03:35:50.496920",
       "type": "agent_start",
       "message": "→ Executing ObservabilityProbeExecutorAgent (L6 - Observability)"
     },
     {
-      "time": "2026-03-09T03:17:09.075042",
+      "time": "2026-03-09T03:35:50.498554",
       "type": "agent_end",
       "message": "✓ Completed ObservabilityProbeExecutorAgent"
     },
     {
-      "time": "2026-03-09T03:17:09.075042",
+      "time": "2026-03-09T03:35:50.498554",
       "type": "agent_start",
       "message": "→ Executing CognitiveDispositionAgent (L1 - Cognition)"
     },
     {
-      "time": "2026-03-09T03:17:09.078613",
+      "time": "2026-03-09T03:35:50.499118",
       "type": "agent_end",
       "message": "✓ Completed CognitiveDispositionAgent"
     },
     {
-      "time": "2026-03-09T03:17:09.078613",
+      "time": "2026-03-09T03:35:50.499118",
       "type": "agent_start",
       "message": "→ Executing ArchitectureGovernorAgent (L5 - Certification)"
     },
     {
-      "time": "2026-03-09T03:17:09.081157",
+      "time": "2026-03-09T03:35:50.503239",
       "type": "agent_end",
       "message": "✓ Completed ArchitectureGovernorAgent"
     }
@@ -206900,30 +206900,30 @@
     ],
     "success_rate_store": {
       "rates": {
-        "ArchitectureGovernorAgent:UNKNOWN": 0.992976,
+        "ArchitectureGovernorAgent:UNKNOWN": 0.999145,
         "CognitiveDispositionAgent:UNKNOWN": 1.0,
         "FileClassificationHealerAgent:UNKNOWN": 0.473685,
         "FilesystemSSOTHealerAgent:UNKNOWN": 1.0,
-        "GravityLeakHealerAgent:UNKNOWN": 0.651322,
-        "GravityValidatorAgent:UNKNOWN": 0.937238,
+        "GravityLeakHealerAgent:UNKNOWN": 0.717571,
+        "GravityValidatorAgent:UNKNOWN": 0.949163,
         "HierarchyHealerAgent:UNKNOWN": 1.0,
         "LocationHealerAgent:UNKNOWN": 0.846465,
         "ObservabilityProbeExecutorAgent:UNKNOWN": 1.0,
         "RootHygieneAgent:UNKNOWN": 1.0
       },
       "counts": {
-        "ArchitectureGovernorAgent:UNKNOWN": 276,
-        "CognitiveDispositionAgent:UNKNOWN": 160,
-        "FileClassificationHealerAgent:UNKNOWN": 320,
-        "FilesystemSSOTHealerAgent:UNKNOWN": 160,
-        "GravityLeakHealerAgent:UNKNOWN": 16,
-        "GravityValidatorAgent:UNKNOWN": 16,
-        "HierarchyHealerAgent:UNKNOWN": 160,
-        "LocationHealerAgent:UNKNOWN": 160,
-        "ObservabilityProbeExecutorAgent:UNKNOWN": 160,
-        "RootHygieneAgent:UNKNOWN": 12
+        "ArchitectureGovernorAgent:UNKNOWN": 296,
+        "CognitiveDispositionAgent:UNKNOWN": 180,
+        "FileClassificationHealerAgent:UNKNOWN": 360,
+        "FilesystemSSOTHealerAgent:UNKNOWN": 180,
+        "GravityLeakHealerAgent:UNKNOWN": 18,
+        "GravityValidatorAgent:UNKNOWN": 18,
+        "HierarchyHealerAgent:UNKNOWN": 180,
+        "LocationHealerAgent:UNKNOWN": 180,
+        "ObservabilityProbeExecutorAgent:UNKNOWN": 180,
+        "RootHygieneAgent:UNKNOWN": 13
       },
-      "owner_pid": 21280
+      "owner_pid": 28680
     }
   },
   "compliance_scores": {
@@ -206964,7 +206964,7 @@
   },
   "audit_chain": [],
   "apply_proposals": true,
-  "runtime_state_digest_sha256": "f60b8817effbf29601b5a8c933826180541c036b3fe7d4dfbedd0d8f502c06ad",
+  "runtime_state_digest_sha256": "57e5d35b476be4524fafb274c89177c54860ae2b2427bbf7b3adc42d0b9970f4",
   "runtime_state_digest_schema_version": 1,
   "compliance_report_audit": {
     "success": true,
@@ -206999,7 +206999,7 @@
       "confidence": 0.9,
       "fix_summary": "Cleaned 1 of 1 root hygiene violations",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:13.514492",
+      "timestamp": "2026-03-09T03:33:52.391118",
       "routing_digest": null,
       "check_id": null
     },
@@ -207013,7 +207013,7 @@
       "confidence": 0.9,
       "fix_summary": "Scanned for gravity violations: 0 found",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:19.960012",
+      "timestamp": "2026-03-09T03:33:59.116700",
       "routing_digest": null,
       "check_id": null
     },
@@ -207027,7 +207027,7 @@
       "confidence": 0.9,
       "fix_summary": "No gravity violations detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:19.960012",
+      "timestamp": "2026-03-09T03:33:59.116700",
       "routing_digest": null,
       "check_id": null
     },
@@ -207041,7 +207041,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:20.899781",
+      "timestamp": "2026-03-09T03:34:00.052319",
       "routing_digest": null,
       "check_id": null
     },
@@ -207055,7 +207055,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:20.901869",
+      "timestamp": "2026-03-09T03:34:00.055693",
       "routing_digest": null,
       "check_id": null
     },
@@ -207069,7 +207069,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L0_routing: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:20.903184",
+      "timestamp": "2026-03-09T03:34:00.055693",
       "routing_digest": null,
       "check_id": null
     },
@@ -207081,9 +207081,9 @@
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Healed 10642 of 1 hierarchy violation(s) in L0_routing",
+      "fix_summary": "Healed 10674 of 1 hierarchy violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:42.484015",
+      "timestamp": "2026-03-09T03:34:23.746980",
       "routing_digest": null,
       "check_id": null
     },
@@ -207097,7 +207097,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in L0_routing",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:15:42.534015",
+      "timestamp": "2026-03-09T03:34:23.796979",
       "routing_digest": null,
       "check_id": null
     },
@@ -207111,7 +207111,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:46.512189",
+      "timestamp": "2026-03-09T03:34:27.676918",
       "routing_digest": null,
       "check_id": null
     },
@@ -207125,7 +207125,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:46.772849",
+      "timestamp": "2026-03-09T03:34:27.935276",
       "routing_digest": null,
       "check_id": null
     },
@@ -207139,7 +207139,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:46.772849",
+      "timestamp": "2026-03-09T03:34:27.936276",
       "routing_digest": null,
       "check_id": null
     },
@@ -207153,7 +207153,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:47.684503",
+      "timestamp": "2026-03-09T03:34:28.969586",
       "routing_digest": null,
       "check_id": null
     },
@@ -207167,7 +207167,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:47.687048",
+      "timestamp": "2026-03-09T03:34:28.971631",
       "routing_digest": null,
       "check_id": null
     },
@@ -207181,7 +207181,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L2_execution: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:15:47.687048",
+      "timestamp": "2026-03-09T03:34:28.971631",
       "routing_digest": null,
       "check_id": null
     },
@@ -207193,9 +207193,9 @@
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Healed 10649 of 7 hierarchy violation(s) in L2_execution",
+      "fix_summary": "Healed 10681 of 7 hierarchy violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:02.248964",
+      "timestamp": "2026-03-09T03:34:43.499168",
       "routing_digest": null,
       "check_id": null
     },
@@ -207209,7 +207209,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in L2_execution",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:02.295132",
+      "timestamp": "2026-03-09T03:34:43.546751",
       "routing_digest": null,
       "check_id": null
     },
@@ -207223,7 +207223,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:05.837430",
+      "timestamp": "2026-03-09T03:34:46.990655",
       "routing_digest": null,
       "check_id": null
     },
@@ -207237,7 +207237,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:06.090661",
+      "timestamp": "2026-03-09T03:34:47.248907",
       "routing_digest": null,
       "check_id": null
     },
@@ -207251,7 +207251,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:06.093721",
+      "timestamp": "2026-03-09T03:34:47.248907",
       "routing_digest": null,
       "check_id": null
     },
@@ -207265,7 +207265,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:07.002803",
+      "timestamp": "2026-03-09T03:34:48.156096",
       "routing_digest": null,
       "check_id": null
     },
@@ -207279,7 +207279,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:07.004450",
+      "timestamp": "2026-03-09T03:34:48.158108",
       "routing_digest": null,
       "check_id": null
     },
@@ -207293,7 +207293,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L3_orchestration: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:07.004988",
+      "timestamp": "2026-03-09T03:34:48.158108",
       "routing_digest": null,
       "check_id": null
     },
@@ -207307,7 +207307,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:07.872874",
+      "timestamp": "2026-03-09T03:34:49.036331",
       "routing_digest": null,
       "check_id": null
     },
@@ -207321,7 +207321,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in L3_orchestration",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:07.920842",
+      "timestamp": "2026-03-09T03:34:49.086290",
       "routing_digest": null,
       "check_id": null
     },
@@ -207335,7 +207335,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:11.558302",
+      "timestamp": "2026-03-09T03:34:52.655623",
       "routing_digest": null,
       "check_id": null
     },
@@ -207349,7 +207349,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:11.815543",
+      "timestamp": "2026-03-09T03:34:52.915867",
       "routing_digest": null,
       "check_id": null
     },
@@ -207363,7 +207363,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:11.817046",
+      "timestamp": "2026-03-09T03:34:52.916875",
       "routing_digest": null,
       "check_id": null
     },
@@ -207377,7 +207377,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:12.729375",
+      "timestamp": "2026-03-09T03:34:53.830431",
       "routing_digest": null,
       "check_id": null
     },
@@ -207391,7 +207391,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:12.730938",
+      "timestamp": "2026-03-09T03:34:53.832505",
       "routing_digest": null,
       "check_id": null
     },
@@ -207405,7 +207405,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned L5_safety: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:12.730938",
+      "timestamp": "2026-03-09T03:34:53.832505",
       "routing_digest": null,
       "check_id": null
     },
@@ -207419,7 +207419,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:13.606114",
+      "timestamp": "2026-03-09T03:34:54.702310",
       "routing_digest": null,
       "check_id": null
     },
@@ -207433,7 +207433,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in L5_safety",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:13.652985",
+      "timestamp": "2026-03-09T03:34:54.751996",
       "routing_digest": null,
       "check_id": null
     },
@@ -207447,7 +207447,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:17.803649",
+      "timestamp": "2026-03-09T03:34:58.956341",
       "routing_digest": null,
       "check_id": null
     },
@@ -207461,7 +207461,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:18.061969",
+      "timestamp": "2026-03-09T03:34:59.215949",
       "routing_digest": null,
       "check_id": null
     },
@@ -207475,7 +207475,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in L5_safety",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:18.064033",
+      "timestamp": "2026-03-09T03:34:59.216987",
       "routing_digest": null,
       "check_id": null
     },
@@ -207489,7 +207489,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:18.981340",
+      "timestamp": "2026-03-09T03:35:00.133787",
       "routing_digest": null,
       "check_id": null
     },
@@ -207503,7 +207503,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:18.997171",
+      "timestamp": "2026-03-09T03:35:00.150602",
       "routing_digest": null,
       "check_id": null
     },
@@ -207517,7 +207517,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_lic: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:18.997171",
+      "timestamp": "2026-03-09T03:35:00.151622",
       "routing_digest": null,
       "check_id": null
     },
@@ -207531,7 +207531,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:19.725267",
+      "timestamp": "2026-03-09T03:35:00.872670",
       "routing_digest": null,
       "check_id": null
     },
@@ -207545,7 +207545,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in apps_lic",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:19.772860",
+      "timestamp": "2026-03-09T03:35:00.920855",
       "routing_digest": null,
       "check_id": null
     },
@@ -207559,7 +207559,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:26.286955",
+      "timestamp": "2026-03-09T03:35:07.458273",
       "routing_digest": null,
       "check_id": null
     },
@@ -207573,7 +207573,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:26.545162",
+      "timestamp": "2026-03-09T03:35:07.724975",
       "routing_digest": null,
       "check_id": null
     },
@@ -207587,7 +207587,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in apps_lic",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:26.546217",
+      "timestamp": "2026-03-09T03:35:07.726802",
       "routing_digest": null,
       "check_id": null
     },
@@ -207601,7 +207601,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:27.468478",
+      "timestamp": "2026-03-09T03:35:08.648710",
       "routing_digest": null,
       "check_id": null
     },
@@ -207615,7 +207615,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:27.487320",
+      "timestamp": "2026-03-09T03:35:08.666819",
       "routing_digest": null,
       "check_id": null
     },
@@ -207629,7 +207629,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_rg: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:27.487824",
+      "timestamp": "2026-03-09T03:35:08.666819",
       "routing_digest": null,
       "check_id": null
     },
@@ -207643,7 +207643,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:28.225197",
+      "timestamp": "2026-03-09T03:35:09.390709",
       "routing_digest": null,
       "check_id": null
     },
@@ -207657,7 +207657,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in apps_rg",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:28.273590",
+      "timestamp": "2026-03-09T03:35:09.440061",
       "routing_digest": null,
       "check_id": null
     },
@@ -207671,7 +207671,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:34.775814",
+      "timestamp": "2026-03-09T03:35:16.019596",
       "routing_digest": null,
       "check_id": null
     },
@@ -207685,7 +207685,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:35.033728",
+      "timestamp": "2026-03-09T03:35:16.283620",
       "routing_digest": null,
       "check_id": null
     },
@@ -207699,7 +207699,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in apps_rg",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:35.033728",
+      "timestamp": "2026-03-09T03:35:16.285365",
       "routing_digest": null,
       "check_id": null
     },
@@ -207713,7 +207713,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:35.950840",
+      "timestamp": "2026-03-09T03:35:17.197163",
       "routing_digest": null,
       "check_id": null
     },
@@ -207727,7 +207727,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:35.975725",
+      "timestamp": "2026-03-09T03:35:17.220829",
       "routing_digest": null,
       "check_id": null
     },
@@ -207741,7 +207741,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned apps_shared: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:35.976727",
+      "timestamp": "2026-03-09T03:35:17.220829",
       "routing_digest": null,
       "check_id": null
     },
@@ -207755,7 +207755,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:36.727375",
+      "timestamp": "2026-03-09T03:35:17.967294",
       "routing_digest": null,
       "check_id": null
     },
@@ -207769,7 +207769,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in apps_shared",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:36.774193",
+      "timestamp": "2026-03-09T03:35:18.014278",
       "routing_digest": null,
       "check_id": null
     },
@@ -207783,7 +207783,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:43.294403",
+      "timestamp": "2026-03-09T03:35:24.548891",
       "routing_digest": null,
       "check_id": null
     },
@@ -207797,7 +207797,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:43.553186",
+      "timestamp": "2026-03-09T03:35:24.810802",
       "routing_digest": null,
       "check_id": null
     },
@@ -207811,7 +207811,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in apps_shared",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:43.555278",
+      "timestamp": "2026-03-09T03:35:24.811859",
       "routing_digest": null,
       "check_id": null
     },
@@ -207825,7 +207825,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:44.469534",
+      "timestamp": "2026-03-09T03:35:25.729326",
       "routing_digest": null,
       "check_id": null
     },
@@ -207839,7 +207839,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:44.472724",
+      "timestamp": "2026-03-09T03:35:25.733636",
       "routing_digest": null,
       "check_id": null
     },
@@ -207853,7 +207853,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned ops_scripts: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:44.475287",
+      "timestamp": "2026-03-09T03:35:25.733636",
       "routing_digest": null,
       "check_id": null
     },
@@ -207867,7 +207867,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:45.197021",
+      "timestamp": "2026-03-09T03:35:26.452985",
       "routing_digest": null,
       "check_id": null
     },
@@ -207881,7 +207881,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in ops_scripts",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:45.244386",
+      "timestamp": "2026-03-09T03:35:26.498838",
       "routing_digest": null,
       "check_id": null
     },
@@ -207895,7 +207895,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:51.700623",
+      "timestamp": "2026-03-09T03:35:33.037706",
       "routing_digest": null,
       "check_id": null
     },
@@ -207909,7 +207909,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:51.957935",
+      "timestamp": "2026-03-09T03:35:33.302937",
       "routing_digest": null,
       "check_id": null
     },
@@ -207923,7 +207923,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in ops_scripts",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:51.961978",
+      "timestamp": "2026-03-09T03:35:33.304495",
       "routing_digest": null,
       "check_id": null
     },
@@ -207937,7 +207937,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:52.878852",
+      "timestamp": "2026-03-09T03:35:34.229416",
       "routing_digest": null,
       "check_id": null
     },
@@ -207951,7 +207951,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 0 violations in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:52.895435",
+      "timestamp": "2026-03-09T03:35:34.245969",
       "routing_digest": null,
       "check_id": null
     },
@@ -207965,7 +207965,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned system_learning: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:52.895435",
+      "timestamp": "2026-03-09T03:35:34.245969",
       "routing_digest": null,
       "check_id": null
     },
@@ -207979,7 +207979,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:16:53.629254",
+      "timestamp": "2026-03-09T03:35:34.982371",
       "routing_digest": null,
       "check_id": null
     },
@@ -207993,7 +207993,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in system_learning",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:16:53.676189",
+      "timestamp": "2026-03-09T03:35:35.028758",
       "routing_digest": null,
       "check_id": null
     },
@@ -208007,7 +208007,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:00.161224",
+      "timestamp": "2026-03-09T03:35:41.558122",
       "routing_digest": null,
       "check_id": null
     },
@@ -208021,7 +208021,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:00.422852",
+      "timestamp": "2026-03-09T03:35:41.825079",
       "routing_digest": null,
       "check_id": null
     },
@@ -208035,7 +208035,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in system_learning",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:00.422852",
+      "timestamp": "2026-03-09T03:35:41.825079",
       "routing_digest": null,
       "check_id": null
     },
@@ -208049,7 +208049,7 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in tests",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:01.345287",
+      "timestamp": "2026-03-09T03:35:42.744287",
       "routing_digest": null,
       "check_id": null
     },
@@ -208063,7 +208063,7 @@
       "confidence": 1.0,
       "fix_summary": "Location scan: 156 violation(s), no heal method in tests",
       "outcome": "SKIPPED",
-      "timestamp": "2026-03-09T03:17:01.472150",
+      "timestamp": "2026-03-09T03:35:42.866961",
       "routing_digest": null,
       "check_id": null
     },
@@ -208077,7 +208077,7 @@
       "confidence": 1.0,
       "fix_summary": "Scanned tests: 0 classification issue(s) detected",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:01.472553",
+      "timestamp": "2026-03-09T03:35:42.866961",
       "routing_digest": null,
       "check_id": null
     },
@@ -208091,7 +208091,7 @@
       "confidence": 1.0,
       "fix_summary": "No hierarchy violations in tests",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:02.271922",
+      "timestamp": "2026-03-09T03:35:43.658678",
       "routing_digest": null,
       "check_id": null
     },
@@ -208105,7 +208105,7 @@
       "confidence": 1.0,
       "fix_summary": "Fixed 0 file classification violation(s) in tests",
       "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T03:17:02.318430",
+      "timestamp": "2026-03-09T03:35:43.710696",
       "routing_digest": null,
       "check_id": null
     },
@@ -208119,7 +208119,7 @@
       "confidence": 1.0,
       "fix_summary": "Arch validation: 0 violation(s) in tests",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:08.814356",
+      "timestamp": "2026-03-09T03:35:50.231104",
       "routing_digest": null,
       "check_id": null
     },
@@ -208133,7 +208133,7 @@
       "confidence": 1.0,
       "fix_summary": "Observability probe scan: 0 violation(s) in tests",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:09.075042",
+      "timestamp": "2026-03-09T03:35:50.498554",
       "routing_digest": null,
       "check_id": null
     },
@@ -208147,7 +208147,7 @@
       "confidence": 1.0,
       "fix_summary": "Cognitive analytics: ['analyses_performed', 'cache_hits', 'average_confidence', 'action_distribution'] in tests",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T03:17:09.078613",
+      "timestamp": "2026-03-09T03:35:50.499118",
       "routing_digest": null,
       "check_id": null
     }
@@ -208158,7 +208158,7 @@
     {
       "territory": "L0_routing",
       "agent": "__territory_total__",
-      "duration_ms": 26563.0
+      "duration_ms": 28563.0
     },
     {
       "territory": "L2_execution",
@@ -208168,22 +208168,22 @@
     {
       "territory": "L3_orchestration",
       "agent": "__territory_total__",
-      "duration_ms": 5468.0
+      "duration_ms": 5406.0
     },
     {
       "territory": "L5_safety",
       "agent": "__territory_total__",
-      "duration_ms": 5985.0
+      "duration_ms": 6047.0
     },
     {
       "territory": "apps_lic",
       "agent": "__territory_total__",
-      "duration_ms": 8219.0
+      "duration_ms": 8250.0
     },
     {
       "territory": "apps_rg",
       "agent": "__territory_total__",
-      "duration_ms": 8234.0
+      "duration_ms": 8312.0
     },
     {
       "territory": "apps_shared",
@@ -208193,17 +208193,17 @@
     {
       "territory": "ops_scripts",
       "agent": "__territory_total__",
-      "duration_ms": 8156.0
+      "duration_ms": 8235.0
     },
     {
       "territory": "system_learning",
       "agent": "__territory_total__",
-      "duration_ms": 8219.0
+      "duration_ms": 8250.0
     },
     {
       "territory": "tests",
       "agent": "__territory_total__",
-      "duration_ms": 8406.0
+      "duration_ms": 8422.0
     }
   ],
   "current_territory": "tests",
@@ -209890,7 +209890,7 @@
   },
   "classification_file_registry": [],
   "phase2_violations_fixed": 10,
-  "hierarchy_fixed": 10649,
+  "hierarchy_fixed": 10681,
   "conversational_violations": [],
   "cognitive_dispositions": []
 }
