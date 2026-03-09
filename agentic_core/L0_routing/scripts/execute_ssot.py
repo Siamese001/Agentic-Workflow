@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
+# NOTE: l0_execute.py was planned but never implemented. This file is ACTIVE.
 """
 Unified Sovereign Compliance Protocol (v4.0)
 Merges SSOT Compliance Protocol (Autonomous Decision Engine) with Canon Validator (Observability & Discovery).

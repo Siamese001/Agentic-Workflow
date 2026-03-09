@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-# FROZEN — superseded by l0_execute.py (Guardian→Dispatcher→Healer pipeline).
+# NOTE: l0_execute.py was planned but never implemented. This file is ACTIVE.
 """
 V15-Native Entrypoint for execute_ssot.
 
@@ -14,6 +14,7 @@ from __future__ import annotations
 
 import argparse
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
