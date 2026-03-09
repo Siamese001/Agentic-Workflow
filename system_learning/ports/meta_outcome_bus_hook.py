@@ -86,8 +86,9 @@ class DefaultMetaOutcomeBusHook:
                 MetaLearningChangePackage,
             )
 
-            package = MetaLearningChangePackage(
-                change_type="healing_outcome",
+            package = MetaLearningChangePackage.create(
+                trace_id=healing_input.trace_id,
+                kind="healing_outcome",
                 payload={
                     "error_signature": healing_input.error_signature,
                     "tier": decision.tier.value,
@@ -95,9 +96,9 @@ class DefaultMetaOutcomeBusHook:
                     "success": success,
                     "trace_id": healing_input.trace_id,
                     "retry_count": healing_input.retry_count,
-                    "reason_codes": decision.reason_codes,
+                    "reason_codes": list(decision.reason_codes),
+                    "proposal_only": True,  # Enforced: always advisory
                 },
-                proposal_only=True,  # Enforced: always advisory
             )
 
             self._bus.enqueue(package)
