@@ -58,6 +58,9 @@ def scan_temp_artifacts(
     """
     hits: list[str] = []
     file_count = 0
+    # Allowed roots must not be blocked by IGNORE_PATTERNS (e.g. "tests" is in
+    # GLOBAL_EXCLUDED_DIRS for production-lens scans but is a valid scan root here).
+    effective_ignore = IGNORE_PATTERNS - allowed_roots
 
     for root_name in sorted(allowed_roots):
         root_path = repo_root / root_name
@@ -78,8 +81,8 @@ def scan_temp_artifacts(
             if depth > MAX_FOLDER_DEPTH:
                 continue  # Skip files beyond depth limit
 
-            # Skip ignored patterns
-            if any(pattern in item.parts for pattern in IGNORE_PATTERNS):
+            # Skip ignored patterns (excluding the allowed roots themselves)
+            if any(pattern in item.parts for pattern in effective_ignore):
                 continue
 
             if item.suffix in ARTIFACT_EXTENSIONS:

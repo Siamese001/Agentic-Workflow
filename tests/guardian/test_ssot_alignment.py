@@ -559,7 +559,12 @@ class TestSSOTAlignment:
         existing_layers: list[str] = []
 
         for layer in expected_layers:
-            layer_path = agentic_core_path / layer
+            # Layer constants may be full paths (e.g. "agentic_core/L0_routing")
+            # or bare names (e.g. "L5_safety"). Handle both.
+            if "/" in layer or layer.startswith("agentic_core"):
+                layer_path = self.project_root / layer
+            else:
+                layer_path = agentic_core_path / layer
             if layer_path.exists():
                 existing_layers.append(layer)
             else:
