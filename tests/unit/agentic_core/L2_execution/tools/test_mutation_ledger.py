@@ -134,9 +134,13 @@ def test_mutation_ledger_records_write_failure(tmp_path):
 
     try:
         write_text(target, "content")
-        # If write succeeded, restore permissions and skip test
+        # Write succeeded despite read-only chmod — write protection is not enforced
         target.parent.chmod(0o755)
-        pytest.skip("Could not create read-only directory on this platform")
+        pytest.fail(
+            "write_text succeeded on a chmod(0o444) directory — "
+            "write protection is not enforced on this platform. "
+            "The mutation ledger must record this as a failure, not silently succeed."
+        )
     except (PermissionError, OSError):
         # Expected failure
         pass

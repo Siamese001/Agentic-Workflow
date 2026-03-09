@@ -136,8 +136,8 @@ class TestPlaywrightVisual:
 
             assert True
         except ImportError:
-            pytest.skip("Playwright not installed")
+            pytest.fail("Playwright is not installed — install it: pip install playwright && playwright install")
 
     def test_tables_render_in_browser(self):
         """Test that tables render correctly in browser."""
-        pytest.skip("Playwright visual tests should be run separately")
+        pytest.fail("test_tables_render_in_browser is not implemented — write the test or delete it")
