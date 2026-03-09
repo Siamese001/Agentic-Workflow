@@ -8,6 +8,18 @@ SSOT Location: agentic_core/config/core/constants.py
 """
 
 import os
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[3]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # =============================================================================
 # Redis cache configuration
@@ -29,26 +41,8 @@ CACHE_METRICS_ENABLED: bool = os.getenv("CACHE_METRICS_ENABLED", "false").lower(
 
 # Default directories to exclude from file discovery
 # This is a frozenset for immutability and hashability
-DEFAULT_EXCLUDE_DIRS: frozenset[str] = frozenset(
-    {
-        ".sovereign_healing_backup",
-        "archives",
-        ".git",
-        "__pycache__",
-        ".pytest_cache",
-        ".mypy_cache",
-        "node_modules",
-        ".venv",
-        "venv",
-        "env",
-        ".tox",
-        "build",
-        "dist",
-        "*.egg-info",
-        ".coverage",
-        "htmlcov",
-        ".hypothesis",
-    },
+DEFAULT_EXCLUDE_DIRS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 

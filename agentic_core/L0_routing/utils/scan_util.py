@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 """
 Scan Guard - Audit Utility for rglob/glob Usage
 
@@ -37,13 +43,7 @@ Logger = logging.getLogger(__name__)
 
 
 # Dangerous directories that should never be scanned directly
-DANGEROUS_DIRECTORIES = {
-    ".sovereign_healing_backup",
-    "healing_backups",
-    ".git",
-    "__pycache__",
-    "node_modules",
-}
+DANGEROUS_DIRECTORIES = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def guarded_rglob(path: Path, pattern: str, caller: str | None = None) -> Iterator[Path]:

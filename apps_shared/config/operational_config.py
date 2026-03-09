@@ -6,52 +6,25 @@ This is separate from structure_blueprint.py which defines compliance rules.
 This config is for OPERATIONAL agents that need to know what to scan/exclude.
 """
 
+import sys
+from pathlib import Path
+
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # ============================================================================
 # DIRECTORY EXCLUSIONS - What operational agents should NEVER touch
 # ============================================================================
 
-OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
-    {
-        # Version control
-        ".git",
-        # Python environments and caches
-        "__pycache__",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".ruff_cache",
-        ".tox",
-        "venv",
-        ".venv",
-        "venv_stable",
-        "env",
-        # Build artifacts
-        "dist",
-        "build",
-        "_build",
-        "*.egg-info",
-        # IDE and editor
-        ".idea",
-        ".vscode",
-        ".DS_Store",
-        "Thumbs.db",
-        # Node/JavaScript
-        "node_modules",
-        # Archives and legacy (NEVER TOUCH)
-        "archives",
-        "legacy_code",
-        "legacy_engines",
-        "legacy_resume_gen",
-        # Data and logs
-        "data",
-        "logs",
-        "output",
-        "chroma_db",
-        # Temporary and backup
-        ".workflow_state",
-        ".sovereign_healing_backup",
-        "temp",
-        "tmp",
-    },
+OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 

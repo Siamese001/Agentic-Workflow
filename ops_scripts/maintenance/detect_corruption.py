@@ -8,6 +8,12 @@ import ast
 import re
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
     """
@@ -17,7 +23,9 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
         List of (file_path, line_number, error_message) tuples
     """
     corrupted = []
-    exclude_patterns = ["archives", ".git", "__pycache__", "venv", ".venv", "node_modules"]
+    exclude_patterns = list(
+        GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+    )
 
     for py_file in project_root.rglob("*.py"):
         # Skip excluded directories
@@ -49,19 +57,7 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
     - Invalid characters in identifiers
     """
     suspicious = []
-    exclude_patterns = ["archives", ".git", "__pycache__", "venv", ".venv"]
-
-    # Corruption patterns
-    patterns = {
-        "garbled_class": re.compile(r"clas[A-Z][a-zA-Z]*\s+[A-Z]"),  # clasAtomicExecutionMixin
-        "garbled_def": re.compile(r"de[fF]\s+[^a-z_]"),  # def with non-standard start
-        "mangled_identifier": re.compile(
-            r"\b[a-zA-Z]{3,}[A-Z]{2,}[a-z]+[A-Z]{2,}",
-        ),  # CAreOnchtstrat
-        "corrupted_import": re.compile(
-            r"from\s+[a-zA-Z0-9_.]+\s+impor[^t]",
-        ),  # impor instead of import
-    }
+    exclude_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for py_file in project_root.rglob("*.py"):
         if any(pattern in str(py_file) for pattern in exclude_patterns):

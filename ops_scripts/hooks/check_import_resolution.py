@@ -28,6 +28,12 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 
 INTERNAL_ROOTS: frozenset[str] = frozenset(
@@ -128,22 +134,7 @@ def main() -> int:
         import os
 
         files_to_check: list[Path] = []
-        walk_excludes = frozenset(
-            {
-                ".venv",
-                "venv",
-                "__pycache__",
-                ".git",
-                "dist",
-                "build",
-                ".pytest_cache",
-                "node_modules",
-                ".nox",
-                "archives",
-                ".sovereign_healing_backup",
-                ".backup",
-            },
-        )
+        walk_excludes = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
         for scan_root in INTERNAL_ROOTS:
             scan_dir = root / scan_root
             if not scan_dir.is_dir():

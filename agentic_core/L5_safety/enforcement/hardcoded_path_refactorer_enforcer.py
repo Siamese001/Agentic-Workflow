@@ -1,4 +1,9 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 #!/usr/bin/env python3
 """
@@ -11,20 +16,7 @@ from pathlib import Path
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Files to exclude
-EXCLUDED_DIRS = {
-    "__pycache__",
-    ".pytest_cache",
-    "build",
-    "dist",
-    ".git",
-    ".venv",
-    "venv",
-    "env",
-    "node_modules",
-    "archives",
-    "legacy",
-    "deprecated",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 EXCLUDED_FILES = {
     "structure_blueprint.py",  # SSOT definition

@@ -23,6 +23,9 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L0_routing.types.guardian_contract_types import (
     CheckStatus,
     GuardianResult,
@@ -31,15 +34,17 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 GUARDIAN_ID = "cross_layer_mutation_guard"
 
 LAYER_ORDER: dict[str, int] = {f"L{i}": i for i in range(7)}
 
-SKIP_DIRS: frozenset[str] = frozenset({"__pycache__", ".git", ".venv", ".pytest_cache", ".nox", "archives"})
+SKIP_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 CONTROL_PLANE_NAMES: frozenset[str] = frozenset(
     {

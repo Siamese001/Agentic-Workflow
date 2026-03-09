@@ -24,6 +24,16 @@ import json
 import sys
 from pathlib import Path
 
+ROOT = Path(__file__).resolve().parents[2]
+if str(ROOT) not in sys.path:
+    sys.path.insert(0, str(ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # ---------------------------------------------------------------------------
 # SSOT target strings and their canonical constant names
 # Source: agentic_core/L0_routing/config/path_constants.py
@@ -63,23 +73,8 @@ SCAN_ROOTS: list[str] = [
 ]
 
 # Folders to exclude during walk
-EXCLUDE_DIRS: frozenset[str] = frozenset(
-    {
-        "archives",
-        "artifacts",
-        "logs",
-        ".git",
-        ".github",
-        "__pycache__",
-        ".venv",
-        "venv",
-        ".backup",
-        ".gravity_state",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".ruff_cache",
-        "node_modules",
-    }
+EXCLUDE_DIRS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 # Parent node types that strongly indicate a path construction context

@@ -3,6 +3,12 @@
 # Suggested keywords to add in docstring/code: guardrail
 from __future__ import annotations
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # This boosts alignment detection — review and integrate appropriately
 
 
@@ -113,7 +119,7 @@ class PatternSyntaxHealerV2:
 
     def _should_skip_file(self, file_path: Path) -> bool:
         """Skip backup files and certain directories."""
-        skip_patterns = [".backup", "__pycache__", ".git", "venv", "node_modules"]
+        skip_patterns = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
         return any(pattern in str(file_path) for pattern in skip_patterns)
 
     def _fix_pattern1_malformed_imports(self, content: str) -> tuple[str, int]:

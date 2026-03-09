@@ -1,3 +1,9 @@
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 r"""
 File: PascalSovereigntyFixer.py
 Path: C:\Git\Agentic-Workflow\PascalSovereigntyFixer.py
@@ -28,8 +34,7 @@ def get_python_files_fast(root: Path, _fn=None) -> list[Path]:
 
         _fn = canonical_get_python_files
 
-    # Domain-specific exclude directories for L0 maintenance
-    exclude_dirs = [".git", "archives", "__pycache__", "node_modules", "venv", ".env"]
+    exclude_dirs = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES)
 
     return list(_fn(root, exclude_dirs=exclude_dirs))
 

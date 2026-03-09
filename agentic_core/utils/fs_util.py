@@ -10,6 +10,11 @@ import os
 from pathlib import Path
 from typing import Generator
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def get_python_files_fast(
     root_dir: Path, exclude_dirs: list[str] | None = None, exclude_patterns: list[str] | None = None
@@ -26,7 +31,7 @@ def get_python_files_fast(
         Path objects for Python files found
     """
     if exclude_dirs is None:
-        exclude_dirs = ["__pycache__", ".git", "venv", "env", ".pytest_cache", ".mypy_cache"]
+        exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     if exclude_patterns is None:
         exclude_patterns = ["*.pyc", "*.pyo", "*.pyd"]

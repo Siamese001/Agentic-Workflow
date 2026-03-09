@@ -16,21 +16,17 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def get_python_files_fast(root: Path) -> list[Path]:
     """Optimized repository scanner that prunes heavy directories"""
     python_files = []
-    exclude_dirs = {
-        ".git",
-        "archives",
-        "__pycache__",
-        "node_modules",
-        "venv",
-        ".env",
-        ".mypy_cache",
-        ".pytest_cache",
-        ".ruff_cache",
-    }
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for dirpath, dirnames, filenames in os.walk(root):
         dirnames[:] = [d for d in dirnames if d not in exclude_dirs]

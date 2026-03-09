@@ -14,8 +14,14 @@ import ast
 import re
 from dataclasses import dataclass, field
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 
@@ -55,15 +61,7 @@ MUTATION_PATTERNS = [
     r"\.remove\s*\(",
 ]
 
-EXCLUDED_DIRS = {
-    "__pycache__",
-    ".git",
-    "archives",
-    "void_violations",
-    "node_modules",
-    ".venv",
-    "venv",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 class AgentAnalyzer(ast.NodeVisitor):

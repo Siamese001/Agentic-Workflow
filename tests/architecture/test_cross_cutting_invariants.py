@@ -30,7 +30,11 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
     SYSTEM_LEARNING_DIR,
-    TESTS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 pytestmark = pytest.mark.architecture
@@ -89,16 +93,7 @@ class TestNoBareExceptPass:
         _ROOT / SYSTEM_LEARNING_DIR,
         _ROOT / APPS_SHARED_DIR,
     ]
-    _EXCLUDE_DIRS = {
-        ".venv",
-        "venv",
-        "__pycache__",
-        ".git",
-        "_quarantine",
-        "archives",
-        ".backup",
-        ".healing_backups",
-    }
+    _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     def _collect_bare_except_pass(self) -> list[tuple[str, int]]:
         """Return (filepath, lineno) for each bare except-pass without guardian."""
@@ -162,15 +157,7 @@ class TestNoGhostImportSwallowing:
         _ROOT / AGENTIC_CORE_DIR,
         _ROOT / SYSTEM_LEARNING_DIR,
     ]
-    _EXCLUDE_DIRS = {
-        ".venv",
-        "venv",
-        "__pycache__",
-        ".git",
-        "_quarantine",
-        "archives",
-        TESTS_DIR,
-    }
+    _EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     def _collect_ghost_swallowers(self) -> list[tuple[str, int]]:
         """Find except ImportError handlers that set names to None/empty without logging."""

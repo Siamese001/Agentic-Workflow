@@ -16,34 +16,24 @@ import re
 import sys
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Transient / non-source directories excluded from all scans.
-_EXCLUDE_DIRS = {
-    "__pycache__",
-    ".git",
-    ".venv",
-    "venv",
-    ".pytest_cache",
-    ".pytest_tmp",
-    ".mypy_cache",
-    ".ruff_cache",
-    ".coverage",
-    "dist",
-    "build",
-    ".tox",
-    ".nox",
-    "node_modules",
-    "archives",
-    ".backup",
-    "_quarantine",
-    "tests",
-}
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def _is_excluded(path: Path) -> bool:

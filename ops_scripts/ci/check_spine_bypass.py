@@ -28,6 +28,10 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 PROJECT_ROOT = get_validated_project_root()
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "spine_bypass_baseline.txt"
@@ -69,21 +73,7 @@ SCAN_ROOTS = [
 ]
 
 # Directory name segments to exclude from scanning.
-EXCLUDE_DIRS = {
-    "tests",
-    "tools",
-    "scripts",
-    "artifacts",
-    "backups",
-    "__pycache__",
-    ".git",
-    ".venv",
-    "venv",
-    ".pytest_cache",
-    ".mypy_cache",
-    ".ruff_cache",
-    "node_modules",
-}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def _is_excluded(path: Path) -> bool:

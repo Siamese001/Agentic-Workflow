@@ -12,6 +12,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def is_log_or_output_file(file_path: Path) -> bool:
     """Check if file is a log or output file based on extension."""
@@ -27,15 +32,7 @@ def is_log_or_output_directory(dir_path: Path) -> bool:
 
 def is_excluded_directory(dir_path: Path) -> bool:
     """Check if directory should be excluded from scanning."""
-    excluded_dirs = {
-        ".git",
-        ".nox",
-        ".venv",
-        ".pytest_cache",
-        ".ruff_cache",
-        "__pycache__",
-        ".mypy_cache",
-    }
+    excluded_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
     return dir_path.name in excluded_dirs
 
 

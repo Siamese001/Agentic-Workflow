@@ -8,6 +8,12 @@ import ast
 import os
 import sys
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # Configuration: strict definition of the drift
 TARGET_VIOLATION = "L2Agent"
 REQUIRED_BASE = "SovereignBaseAgent"
@@ -91,16 +97,7 @@ def scan_repository(root_path: str = ".") -> int:
     parse_errors = []
 
     # SSOT: Respect the ignore_dirs from blueprint if possible, but hardcode for standalone safety
-    ignored_dirs = {
-        ".git",
-        "venv",
-        ".venv",
-        "__pycache__",
-        "node_modules",
-        "legacy_code",
-        "legacy_engines",
-        "archives",
-    }
+    ignored_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     # guardian: allow-path-string
     print(f"Scanning root: {os.path.abspath(root_path)}")

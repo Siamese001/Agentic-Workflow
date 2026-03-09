@@ -18,25 +18,15 @@ import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
-    OPS_SCRIPTS_DIR,
-    TESTS_DIR,
-    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 pytestmark = pytest.mark.governance
 
 # Allowlisted paths where direct IO imports ARE permitted
-_ALLOWED_IO_PATHS = frozenset(
-    [
-        "agentic_core/L2_execution",  # UWG lives here
-        "agentic_core/L0_routing/seam",  # seam audit is IO-adjacent
-        OPS_SCRIPTS_DIR,  # CI/tooling
-        TOOLS_DIR,
-        TESTS_DIR,
-        "data",
-        "docs",
-    ]
-)
+_ALLOWED_IO_PATHS = SOVEREIGN_EXCLUDED_FOLDERS
 
 _FORBIDDEN_IO_SYMBOLS = frozenset(
     [

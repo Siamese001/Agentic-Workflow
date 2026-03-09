@@ -20,6 +20,12 @@ This script:
 
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Mapping of old names to new names
@@ -39,17 +45,7 @@ FILE_RENAMES = {
 CODE_EXTENSIONS = {".py", ".md", ".json", ".html", ".txt"}
 
 # Directories to skip
-SKIP_DIRS = {
-    ".git",
-    "__pycache__",
-    "node_modules",
-    ".pytest_cache",
-    "coverage_html",
-    "archive",
-    "archives",
-    ".venv",
-    "venv",
-}
+SKIP_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def find_files_to_update(root: Path) -> list[Path]:

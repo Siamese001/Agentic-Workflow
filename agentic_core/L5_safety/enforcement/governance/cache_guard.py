@@ -13,17 +13,15 @@ import subprocess
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def is_cache_directory(dir_path: Path) -> bool:
     """Check if directory is a cache directory."""
-    cache_names = {
-        "__pycache__",
-        ".pytest_cache",
-        ".ruff_cache",
-        ".mypy_cache",
-        ".nox",
-        ".venv",
-    }
+    cache_names = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
     return dir_path.name in cache_names
 
 

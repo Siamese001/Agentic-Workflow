@@ -20,6 +20,10 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     L0_ROUTING_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 pytestmark = pytest.mark.governance
 
@@ -43,15 +47,7 @@ FORBIDDEN_WRITE_PATTERNS = frozenset(
     }
 )
 
-SKIP_DIRS = frozenset(
-    {
-        "__pycache__",
-        ".mypy_cache",
-        ".pytest_cache",
-        "node_modules",
-        ".git",
-    }
-)
+SKIP_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def _agent_files() -> list[Path]:

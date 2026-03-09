@@ -25,6 +25,10 @@ from pathlib import Path, PurePosixPath
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ---------------------------------------------------------------------------
 # V15 Enforcement Infrastructure
@@ -336,17 +340,7 @@ MAX_SCAN_DEPTH: int = 10
 # Scan bounds (enforced by guardians, not just tests)
 MAX_FILES_PER_SCAN: int = 10_000  # Hard limit on file count per guardian scan
 MAX_FOLDER_DEPTH: int = 10  # Maximum folder depth to traverse
-IGNORE_PATTERNS: frozenset[str] = frozenset(
-    {
-        ".git",
-        "__pycache__",
-        ".pytest_cache",
-        ".nox",
-        "node_modules",
-        ".venv",
-        "venv",
-    },
-)
+IGNORE_PATTERNS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 class ScanBudgetExceeded:

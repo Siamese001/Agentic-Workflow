@@ -1,5 +1,11 @@
 from __future__ import annotations
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 #!/usr/bin/env python3
 """
 Pre-commit Hook Generator - SSOT Synchronization

@@ -16,6 +16,12 @@ Finds all Python classes in agentic_core that:
 
 import warnings
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 warnings.warn(
     "find_non_conforming_agents.py is DEPRECATED. Use full_agent_discovery.py instead.",
     DeprecationWarning,
@@ -36,7 +42,7 @@ except ImportError:
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
-EXCLUDED_DIRS = {"__pycache__", ".git", ARCHIVES_DIR, "data", ".sovereign_healing_backup"}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 # Canonical agent methods — presence strongly indicates "agent" role
 AGENT_LIKE_METHODS = {

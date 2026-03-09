@@ -49,6 +49,11 @@ from agentic_core.L0_routing.config.path_constants import (
     L4_STATE_DIR,
     L6_OBSERVABILITY_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -108,28 +113,7 @@ def _load_structure_blueprint() -> dict[str, Any]:
 def _get_all_python_files(excluded_dirs: set[str] | None = None) -> list[Path]:
     """Get all Python files in the repository."""
     if excluded_dirs is None:
-        excluded_dirs = {
-            "__pycache__",
-            ".git",
-            ".venv",
-            "venv",
-            "archives",
-            ".sovereign_healing_backup",
-            ".backup",
-            ".healing_backups",
-            "node_modules",
-            ".mypy_cache",
-            ".ruff_cache",
-            ".nox",
-            ".pytest_tmp",
-            "site-packages",
-            "Lib",
-            "temp_quiet_test",
-            "temp_verbose_test",
-            ".github",
-            ".windsurf",
-            ".gravity_state",
-        }
+        excluded_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     python_files = []
     for root, dirs, files in os.walk(PROJECT_ROOT):
@@ -166,25 +150,7 @@ class TestSSOTAlignment:
     """
 
     # Directories to exclude from scanning
-    EXCLUDED_DIRS = {
-        "__pycache__",
-        ".git",
-        ".venv",
-        "venv",
-        "archives",
-        ".sovereign_healing_backup",
-        ".backup",
-        ".healing_backups",
-        "node_modules",
-        ".mypy_cache",
-        ".ruff_cache",
-        ".nox",
-        ".pytest_tmp",
-        "site-packages",
-        "Lib",
-        "temp_quiet_test",
-        "temp_verbose_test",
-    }
+    EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     @pytest.fixture(autouse=True)
     def setup(self):

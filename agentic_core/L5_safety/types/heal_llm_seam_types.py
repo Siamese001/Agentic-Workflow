@@ -17,6 +17,11 @@ from pathlib import Path
 from typing import Any, Callable, Literal
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Capability token: only standard_heal may set this to True
 _HEAL_SEAM_CAPABILITY: contextvars.ContextVar[bool] = contextvars.ContextVar(
@@ -304,21 +309,7 @@ def emit_heal_telemetry(
 # =============================================================================
 
 # Scope controls for repo-heal operations
-REPO_HEAL_DENYLIST = frozenset(
-    {
-        ".venv",
-        ".nox",
-        "node_modules",
-        "dist",
-        "build",
-        ".git",
-        "__pycache__",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".tox",
-        "*.egg-info",
-    }
-)
+REPO_HEAL_DENYLIST = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 REPO_HEAL_ALLOWLIST_EXTENSIONS = frozenset(
     {

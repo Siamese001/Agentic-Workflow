@@ -8,6 +8,11 @@ import logging
 
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 # NAMING FIXED: AirlockProtocol → AirlockProtocol
 class AirlockProtocol:
@@ -38,7 +43,7 @@ class AirlockProtocol:
     def _validate_risk_parameters(self, tool: str, args: dict) -> bool:
         # Prevent agents from touching system files or the .env soul
         path = str(args.get("path", "")).lower()
-        protected_targets = [".env", ".git", "/etc/", "c:/windows/", "system32"]
+        protected_targets = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
         if any(bad in path for bad in protected_targets):
             logging.error(f"Airlock: Blocked access attempt to protected path: {path}")

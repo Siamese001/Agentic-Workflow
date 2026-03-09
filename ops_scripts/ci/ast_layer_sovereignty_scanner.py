@@ -30,6 +30,10 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ---------------------------------------------------------------------------
 # Layer inversion rules: {source_layer: (forbidden_target_layers, ...)}
@@ -59,7 +63,7 @@ _LAYER_RULES: dict[str, tuple[str, ...]] = {
 _APPS_PREFIXES = (APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR)
 _L_LAYER_PREFIX = AGENTIC_CORE_DIR + ".L"
 
-_EXCLUDE_DIRS = {"__pycache__", ".git", ".backup", TESTS_DIR}
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def _layer_prefix_of(file_path: Path) -> str | None:

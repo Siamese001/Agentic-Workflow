@@ -10,24 +10,22 @@ import argparse
 import sys
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def check_forbidden_imports(repo_root: Path) -> int:
     """Check for forbidden imports of apps_shared instructional_layer."""
     forbidden_pattern = "apps_shared.utils.instructional_layer"
 
     # Exclude patterns
-    exclude_dirs = {
-        "docs",
-        "artifacts",
-        ".git",
-        "__pycache__",
-        ".pytest_cache",
-        ".venv",
-        "venv",
-        "env",
-        "site-packages",
-        "node_modules",
-    }
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     exclude_extensions = {".md", ".json", ".txt", ".yml", ".yaml", ".toml"}
 

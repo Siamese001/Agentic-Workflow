@@ -9,6 +9,11 @@ import os
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 LOGGER = logging.getLogger(__name__)
 
 Logger: Any = logging.getLogger(__name__)
@@ -37,24 +42,7 @@ class TheCartographer:
         self.primary_root = Path.cwd()
         self.additional_roots = self._get_additional_roots()
         self.file_summaries: dict[str, str] = {}
-        self.exclude_patterns = {
-            ".git",
-            "__pycache__",
-            ".pytest_cache",
-            ".tox",
-            "venv",
-            ".venv",
-            "node_modules",
-            ".idea",
-            ".vscode",
-            "dist",
-            "build",
-            "coverage",
-            ".mypy_cache",
-            ".coverage",
-            "*.egg-info",
-            ".DS_Store",
-        }
+        self = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     def _get_additional_roots(self) -> list[Path]:
         """

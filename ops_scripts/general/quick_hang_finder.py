@@ -11,6 +11,12 @@ import threading
 import time
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -72,7 +78,7 @@ def get_python_files() -> list[Path]:
     """Get all Python files in priority directories."""
     files = []
     priority_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
-    exclude = {"__pycache__", ".git", "venv", ".venv", "tests", "archives"}
+    exclude = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for dir_name in priority_dirs:
         dir_path = PROJECT_ROOT / dir_name

@@ -30,7 +30,7 @@ def aggressive_cleanup():
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # Remove temporary and cache files
-    temp_patterns = ["*.tmp", "*.temp", "*.bak", "*~", ".DS_Store", "Thumbs.db"]
+    temp_patterns = SOVEREIGN_EXCLUDED_FOLDERS
     for pattern in temp_patterns:
         pass
         # Absolute Zero: Use ssot_discovery instead of glob
@@ -221,6 +221,9 @@ Logger = logging.getLogger(__name__)
 # Fix Windows console encoding
 if sys.platform == "win32":
     import io
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
     sys.stdout = io.TextIOWrapper(
         sys.stdout.buffer, encoding="utf-8", errors="replace")
     sys.stderr = io.TextIOWrapper(

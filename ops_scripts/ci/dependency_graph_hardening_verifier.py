@@ -29,20 +29,14 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Reuse existing DependencyGraph infrastructure
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
 
-EXCLUDED_DIRS = {
-    "__pycache__",
-    ".git",
-    ".venv",
-    "venv",
-    "node_modules",
-    "archives",
-    ".backup",
-    ".healing_backups",
-    "build",
-    "dist",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 @dataclass

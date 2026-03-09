@@ -1,4 +1,8 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 """
 File: agentic_core/L5_safety/reasoning/FileClassificationAgent.py
@@ -130,9 +134,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
     )
     from agentic_core.utils.fs_util import get_python_files_fast as canonical_get_python_files
 
-    # Domain-specific exclude directories for safety scanning
-    # Combine volatile territories with gitignored/build artifacts
-    exclude_dirs = [".git", "__pycache__", "node_modules", "venv", ".env", ".healing_backups"]
+    exclude_dirs = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
     exclude_dirs.extend(VOLATILE_TERRITORIES)
 
     all_files = []

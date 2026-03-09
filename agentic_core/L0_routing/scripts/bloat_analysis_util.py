@@ -5,24 +5,14 @@ import ast
 from collections import defaultdict
 from datetime import datetime
 from pathlib import Path
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-    APPS_LIC_DIR,
-    APPS_RG_DIR,
-    APPS_SHARED_DIR,
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 ROOT = Path(__file__).parent.parent
-APPROVED = [
-    AGENTIC_CORE_DIR,
-    APPS_RG_DIR,
-    APPS_LIC_DIR,
-    APPS_SHARED_DIR,
-    "scripts",
-    "tests",
-    "docs",
-    "schemas",
-]
+APPROVED = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def get_file_stats():

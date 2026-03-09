@@ -14,7 +14,16 @@ import re
 import sys
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
 from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 _ROOT = get_validated_project_root()
 
@@ -256,23 +265,7 @@ class ImportDependencyValidator:
         python_files = target_files if target_files else list(self.project_root.rglob("*.py"))
 
         # Exclude common non-source directories
-        exclude_dirs = {
-            ".git",
-            "__pycache__",
-            ".venv",
-            "venv",
-            ".pytest_cache",
-            ".pytest_tmp",
-            ".mypy_cache",
-            "node_modules",
-            "build",
-            "dist",
-            ".tox",
-            "_quarantine",
-            "archives",
-            ".healing_backups",
-            ".backup",
-        }
+        exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
         python_files = [
             f for f in python_files if not any(exclude_dir in f.parts for exclude_dir in exclude_dirs)
@@ -355,23 +348,7 @@ def main():
             sys.exit(1)
         all_errors = []
         python_files = list(args.project_root.rglob("*.py"))
-        exclude_dirs = {
-            ".git",
-            "__pycache__",
-            ".venv",
-            "venv",
-            ".pytest_cache",
-            ".pytest_tmp",
-            ".mypy_cache",
-            "node_modules",
-            "build",
-            "dist",
-            ".tox",
-            "_quarantine",
-            "archives",
-            ".healing_backups",
-            ".backup",
-        }
+        exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
         python_files = [f for f in python_files if not any(d in f.parts for d in exclude_dirs)]
         for py_file in python_files:
             file_errors = validator.validate_file(py_file)
@@ -391,23 +368,7 @@ def main():
         scan_files = target_files
     else:
         scan_files = list(args.project_root.rglob("*.py"))
-        exclude_dirs = {
-            ".git",
-            "__pycache__",
-            ".venv",
-            "venv",
-            ".pytest_cache",
-            ".pytest_tmp",
-            ".mypy_cache",
-            "node_modules",
-            "build",
-            "dist",
-            ".tox",
-            "_quarantine",
-            "archives",
-            ".healing_backups",
-            ".backup",
-        }
+        exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
         scan_files = [f for f in scan_files if not any(d in f.parts for d in exclude_dirs)]
 
     for py_file in scan_files:

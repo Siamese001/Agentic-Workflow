@@ -11,6 +11,11 @@ import sys
 import time
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -116,7 +121,7 @@ def has_top_level_execution(file_path: Path) -> list[str]:
 def find_all_python_files(root: Path) -> list[Path]:
     """Find all Python files in the project, excluding tests and cache."""
     files = []
-    exclude_dirs = {"__pycache__", ".git", "venv", ".venv", "node_modules", ".tox", "temp_"}
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     for path in root.rglob("*.py"):
         # Skip excluded directories

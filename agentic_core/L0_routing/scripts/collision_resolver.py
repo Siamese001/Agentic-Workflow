@@ -16,6 +16,11 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     safe_os_remove,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 try:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
@@ -29,7 +34,7 @@ class CollisionResolver:
     def __init__(self, root: Path):
         self.root = root
         self.collisions: dict[str, list[Path]] = defaultdict(list)
-        self.skip_dirs = {".git", "__pycache__", "archives", "node_modules", ".venv", "venv"}
+        self.skip_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     def _get_target_name(self, path: Path) -> str | None:
         """Determine what name this file SHOULD have based on AST analysis."""

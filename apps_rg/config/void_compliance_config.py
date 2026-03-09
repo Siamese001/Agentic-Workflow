@@ -26,6 +26,10 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -475,15 +479,7 @@ def check_span_of_two_violations(project_root: Path) -> list[tuple[Path, str]]:
     Replaces the buggy total_children == 1 check to allow single-file leaves.
     """
     violations = []
-    IGNORE_DIRS = {
-        ".git",
-        ".venv",
-        "venv",
-        "__pycache__",
-        "node_modules",
-        ".pytest_cache",
-        ".ruff_cache",
-    }
+    IGNORE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     for root_folder in ALLOWED_ROOT_FOLDERS:
         root_path = project_root / root_folder
@@ -621,15 +617,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
     Unified Integrity Pass: Enforces Gravity (Waterfall) + Style (Conventions).
     """
     violations = []
-    SYSTEM_FOLDERS = {
-        ".venv",
-        "venv",
-        ".git",
-        "__pycache__",
-        "node_modules",
-        ".pytest_cache",
-        ".ruff_cache",
-    }
+    SYSTEM_FOLDERS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     try:
         rel_path = file_path.relative_to(project_root)

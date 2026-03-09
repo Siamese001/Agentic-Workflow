@@ -18,6 +18,15 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+_ROOT = Path(__file__).resolve().parents[3]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # Allowed canonical+shim pairs (canonical_location -> shim_location)
 ALLOWED_SHIM_PAIRS = {
     "agentic_core/base_agents/decorators.py": "agentic_core/utils/decorators.py",
@@ -45,16 +54,7 @@ def compute_logical_import_path(file_path: Path, root: Path) -> str:
     return ".".join(parts)
 
 
-EXCLUDE_PATTERNS = {
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "build",
-    "dist",
-    ".mypy_cache",
-    ".pytest_cache",
-}
+EXCLUDE_PATTERNS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def should_exclude(path: Path) -> bool:

@@ -1,3 +1,11 @@
+.nox/integration/Scripts/activate_this.py:17:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+.nox/integration/Scripts/activate_this.py:22:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+.nox/integration/Scripts/activate_this.py:26:global_mutation:Global mutation: os.environ['PATH'] assignment modifies global state at runtime
+.nox/integration/Scripts/activate_this.py:27:global_mutation:Global mutation: os.environ['VIRTUAL_ENV'] assignment modifies global state at runtime
+.nox/integration/Scripts/activate_this.py:28:global_mutation:Global mutation: os.environ['VIRTUAL_ENV_PROMPT'] assignment modifies global state at runtime
+.nox/integration/Scripts/activate_this.py:28:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
+.nox/integration/Scripts/activate_this.py:33:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+.nox/integration/Scripts/activate_this.py:33:path_fragility:Path fragility: os.path.realpath() - use pathlib.Path instead
 agentic_core/L0_routing/engines/execution_orchestrator.py:179:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/demo_cli_functionality_util.py:49:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L0_routing/scripts/execute_ssot.py:1601:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -357,14 +365,14 @@ agentic_core/L5_safety/enforcement/SurgicalHealingAdapter.py:249:silent_swallowe
 agentic_core/L5_safety/enforcement/agent_info_enforcer.py:265:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/agent_info_enforcer.py:298:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/agent_info_enforcer.py:309:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:201:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:360:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:469:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:564:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:660:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:676:magic_configuration:Magic configuration: Hardcoded limit=100
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:702:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:777:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:205:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:364:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:473:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:568:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:664:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:680:magic_configuration:Magic configuration: Hardcoded limit=100
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:706:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/enforcement/archival_gatekeeper_gate.py:781:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/circuit_breaker_gate.py:255:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/circuit_breaker_gate.py:275:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/circuit_breaker_gate.py:282:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -386,6 +394,7 @@ agentic_core/L5_safety/enforcement/fast_dashboard_e2_e_pipeline_enforcer.py:407:
 agentic_core/L5_safety/enforcement/input_validation_guardrail.py:213:type_erasure:Type erasure: InputValidationGuardrail.heal returns dict instead of structured type
 agentic_core/L5_safety/enforcement/mission_utils_enforcer.py:100:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/enforcement/mock_context_enforcer.py:11:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+agentic_core/L5_safety/enforcement/module_collision_guardrail.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L5_safety/enforcement/namespace_medic_enforcer.py:107:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/process_guardrail.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/enforcement/process_guardrail.py:206:path_fragility:Path fragility: os.path.basename() - use pathlib.Path instead
@@ -402,7 +411,7 @@ agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:107:sile
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:142:type_erasure:Type erasure: ToxicDependencyAuditor.heal_repository returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:163:type_erasure:Type erasure: ToxicDependencyAuditor.heal returns dict instead of structured type
 agentic_core/L5_safety/enforcement/toxic_dependency_auditor_enforcer.py:33:magic_configuration:Magic configuration: Hardcoded toxic_threshold=10
-agentic_core/L5_safety/governance/lazy_seam_enforcer.py:259:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/governance/lazy_seam_enforcer.py:264:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/invariants/runtime_invariant_checker.py:110:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/AdversarialProbeAgent.py:221:type_erasure:Type erasure: AdversarialProbeAgent.heal returns dict instead of structured type
 agentic_core/L5_safety/reasoning/AdversarialRedTeamerAgent.py:306:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -472,11 +481,11 @@ agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:70:magic_configuratio
 agentic_core/L5_safety/reasoning/DependencyPruningAgent.py:83:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/DocumentationAgent.py:141:type_erasure:Type erasure: DocumentationAgent.heal_repository returns dict instead of structured type
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3395:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4486:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4495:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4504:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
-agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4515:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:3397:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4488:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4497:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4506:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
+agentic_core/L5_safety/reasoning/FileClassificationAgent.py:4517:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'check_fake_config'
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:143:type_erasure:Type erasure: GitHygieneAgent.execute returns dict instead of structured type
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:194:magic_configuration:Magic configuration: Hardcoded max_depth=3
 agentic_core/L5_safety/reasoning/GitHygieneAgent.py:276:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -614,7 +623,7 @@ agentic_core/L5_safety/reasoning/SystemArchitectAgent.py:68:type_erasure:Type er
 agentic_core/L5_safety/reasoning/file_classification_validator.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/reasoning/gravity_validator.py:70:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 agentic_core/L5_safety/reasoning/guardian_decision.py:70:magic_configuration:Magic configuration: Hardcoded token_budget=1000000
-agentic_core/L5_safety/reasoning/root_hygiene_healer.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/reasoning/root_hygiene_healer.py:292:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/security/secure_secrets.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/security/secure_secrets.py:55:global_mutation:Global mutation: os.environ.setdefault() modifies global state at runtime
 agentic_core/L5_safety/static_checks/determinism_serialization_check.py:131:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -672,7 +681,7 @@ agentic_core/L5_safety/utils/tiered_batch_util.py:44:magic_configuration:Magic c
 agentic_core/L5_safety/utils/tiered_batch_util.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/tiered_batch_util.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/unified_cst_healer_util.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:74:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L5_safety/utils/validate_dashboard_ssot_util.py:67:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/utils/verify_semantic_meta_learning_util.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/L5_safety/validators/base_detector_validator.py:182:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L5_safety/validators/base_detector_validator.py:278:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -761,6 +770,7 @@ agentic_core/config/core/colors_config.py:95:silent_swallower:Silent exception s
 agentic_core/config/core/config_loader.py:18:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
 agentic_core/config/core/config_loader.py:20:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
 agentic_core/config/core/config_loader.py:29:config_with_logic:Config-with-logic: 'if' branch inside config-factory function '_load_json_config'
+agentic_core/config/core/constants_config.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 agentic_core/config/core/reflection_config.py:228:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:295:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/config/core/reflection_config.py:364:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -951,12 +961,12 @@ apps_lic/tools/clean_duplicates_enhanced.py:148:silent_swallower:Silent exceptio
 apps_lic/tools/clean_duplicates_enhanced.py:161:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
 apps_lic/tools/clean_duplicates_enhanced.py:167:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/tools/clean_duplicates_enhanced.py:24:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
-apps_lic/tools/clean_duplicates_enhanced.py:278:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:281:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
 apps_lic/tools/clean_duplicates_enhanced.py:29:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/clean_duplicates_enhanced.py:313:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
-apps_lic/tools/clean_duplicates_enhanced.py:318:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_lic/tools/clean_duplicates_enhanced.py:324:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-apps_lic/tools/clean_duplicates_enhanced.py:330:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:316:path_fragility:Path fragility: os.path.isdir() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:321:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_lic/tools/clean_duplicates_enhanced.py:327:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+apps_lic/tools/clean_duplicates_enhanced.py:333:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/tools/clean_duplicates_enhanced.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_lic/tools/clean_duplicates_enhanced.py:53:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
 apps_lic/tools/clean_duplicates_enhanced.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1001,11 +1011,11 @@ apps_lic/types/stack_modernization_agent_types.py:281:silent_swallower:Silent ex
 apps_lic/validators/MessageDiversityValidator.py:31:magic_configuration:Magic configuration: Hardcoded min_diversity_threshold=0.85
 apps_lic/validators/MessageDiversityValidator.py:82:type_erasure:Type erasure: MessageDiversityValidator.heal_repository returns dict instead of structured type
 apps_lic/validators/PersonaPlannerValidator.py:288:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/config/void_compliance_config.py:141:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-apps_rg/config/void_compliance_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/config/void_compliance_config.py:673:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-apps_rg/config/void_compliance_config.py:679:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
-apps_rg/config/void_compliance_config.py:679:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/config/void_compliance_config.py:145:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/config/void_compliance_config.py:244:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:661:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+apps_rg/config/void_compliance_config.py:667:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+apps_rg/config/void_compliance_config.py:667:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:41:magic_configuration:Magic configuration: Hardcoded max_tokens=4096
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:42:magic_configuration:Magic configuration: Hardcoded timeout_s=60
 apps_rg/enforcement/HardenedanthropicexecutorStrategy.py:43:magic_configuration:Magic configuration: Hardcoded max_retries=3
@@ -1091,6 +1101,7 @@ apps_rg/utils/deep_brain_harvester_util.py:59:silent_swallower:Silent exception 
 apps_rg/utils/text_util.py:19:magic_configuration:Magic configuration: Hardcoded max_words=5
 apps_rg/validators/validation_result_validator.py:66:magic_configuration:Magic configuration: Hardcoded max_attempts=3
 apps_shared/config/integration_config.py:98:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'get_domain_config'
+apps_shared/config/operational_config.py:14:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
 apps_shared/config/titanium_search_tool_config.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:186:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 apps_shared/config/titanium_search_tool_config.py:240:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
@@ -1624,31 +1635,250 @@ artifacts/windsurf/run_qwen_e2e.py:85:magic_configuration:Magic configuration: H
 artifacts/windsurf/run_qwen_e2e.py:88:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
 artifacts/windsurf/run_qwen_e2e.py:89:magic_configuration:Magic configuration: Hardcoded timeout=10 in function call
 artifacts/windsurf/run_qwen_e2e.py:99:magic_configuration:Magic configuration: Hardcoded timeout=5 in function call
-artifacts/windsurf/shared/_make_typed.py:15:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-artifacts/windsurf/shared/_make_typed.py:16:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
-artifacts/windsurf/shared/_rebuild_evidence.py:30:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-artifacts/windsurf/shared/_rebuild_evidence.py:6:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-artifacts/windsurf/shared/_rebuild_with_headers.py:30:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-artifacts/windsurf/shared/_rebuild_with_headers.py:6:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:10:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
-docs/reports/evidence/run_healmode.py:12:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:32:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/evidence/run_healmode.py:41:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:45:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/evidence/run_healmode.py:8:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-docs/reports/evidence/run_healmode.py:8:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:8:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:9:path_fragility:Path fragility: os.chdir() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:9:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
-docs/reports/evidence/run_healmode.py:9:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
-docs/reports/evidence/run_legacy_main_domains_capture.py:21:path_fragility:Path fragility: os.chdir() - use pathlib.Path instead
-docs/reports/evidence/run_legacy_main_domains_capture.py:22:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
-docs/reports/evidence/run_legacy_main_domains_capture.py:24:global_mutation:Global mutation: os.environ['AGENTIC_ALLOW_MUTATION_FOR_TESTS'] assignment modifies global state at runtime
-docs/reports/evidence/run_legacy_main_domains_capture.py:56:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/evidence/run_legacy_main_domains_capture.py:73:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/sub/_redis_mcp_client_58c437fa0.py:97:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/sub/_test_mcp_seq_7ba2f82b0.py:118:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-docs/reports/sub/_test_mcp_seq_7ba2f82b0.py:66:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_audit_scan.py:207:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'scan_ci_config'
+ops_scripts/ci/_audit_scan.py:212:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'scan_ci_config'
+ops_scripts/ci/_audit_scan.py:217:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'scan_ci_config'
+ops_scripts/ci/_audit_scan.py:221:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'scan_ci_config'
+ops_scripts/ci/_audit_scan.py:26:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_batch_fix_test_violations.py:122:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_batch_fix_test_violations.py:124:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_batch_fix_test_violations.py:160:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_batch_fix_test_violations.py:41:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_batch_fix_test_violations.py:41:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_batch_fix_test_violations.py:48:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_batch_fix_test_violations.py:48:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_final_verify.py:10:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_final_verify.py:16:magic_configuration:Magic configuration: Hardcoded timeout=3 in function call
+ops_scripts/ci/_final_verify.py:19:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_final_verify.py:40:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_final_verify.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_final_verify.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_final_verify.py:80:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_find_hardcoded_dirs.py:22:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_find_hardcoded_dirs.py:37:magic_configuration:Magic configuration: Hardcoded min_overlap=2
+ops_scripts/ci/_find_hardcoded_dirs_full.py:11:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_find_hardcoded_dirs_full.py:22:magic_configuration:Magic configuration: Hardcoded min_overlap=2
+ops_scripts/ci/_fix_bad_import_injection.py:250:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_fix_double_path.py:83:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_fix_double_path.py:83:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_fix_hardcoded_dirs.py:212:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_fix_hardcoded_dirs.py:212:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_fix_hardcoded_dirs.py:24:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_fix_hardcoded_dirs.py:35:magic_configuration:Magic configuration: Hardcoded min_overlap=2
+ops_scripts/ci/_fix_hardcoded_dirs_inline.py:19:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_fix_hardcoded_dirs_inline.py:303:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_fix_hardcoded_dirs_inline.py:30:magic_configuration:Magic configuration: Hardcoded min_overlap=2
+ops_scripts/ci/_fix_hardcoded_dirs_v2.py:23:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_fix_hardcoded_dirs_v2.py:294:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_fix_hardcoded_dirs_v2.py:34:magic_configuration:Magic configuration: Hardcoded min_overlap=2
+ops_scripts/ci/_fix_imports_final.py:136:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_fix_imports_final.py:95:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_fix_imports_final.py:95:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_rca_mutation_layer.py:11:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_repair_and_fix_all.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/_repair_and_fix_all.py:211:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:211:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:221:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:271:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:271:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_and_fix_all.py:357:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_repair_and_fix_all.py:373:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/_repair_test_imports.py:102:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_repair_test_imports.py:102:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/_run_baseline_and_commit.py:8:path_fragility:Path fragility: os.path.abspath() - use pathlib.Path instead
+ops_scripts/ci/_run_baseline_and_commit.py:8:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+ops_scripts/ci/_run_baseline_and_commit.py:8:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+ops_scripts/ci/_run_baseline_and_commit.py:8:path_fragility:Path fragility: os.path.dirname() - use pathlib.Path instead
+ops_scripts/ci/_run_heal_with_mutation.py:35:magic_configuration:Magic configuration: Hardcoded timeout=600 in function call
+ops_scripts/ci/_ssot_path_fixer.py:308:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/agent_count_cap.py:26:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/agent_count_cap.py:32:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/agent_validation.py:18:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/agent_validation.py:57:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/agent_validation.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/assess_phase_wave_tests.py:137:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/assess_phase_wave_tests.py:838:magic_configuration:Magic configuration: Hardcoded max_per_func=2
+ops_scripts/ci/ast_gap_deep.py:139:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_deep.py:139:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_deep.py:218:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_deep.py:218:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_deep.py:218:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_deep.py:218:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:97:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:97:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:97:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:97:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:99:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_report.py:99:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:143:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:143:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:230:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:241:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:241:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:241:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:241:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:252:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:252:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:252:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_gap_strict.py:252:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/ast_hardcoded_path_scanner.py:191:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/ast_hardcoded_path_scanner.py:29:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/ast_layer_sovereignty_scanner.py:142:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/ci/audit_agent_registry_enforcement.py:136:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/audit_dynamic_imports.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/audit_dynamic_imports.py:206:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/audit_embedding_surface.py:197:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/audit_embedding_surface.py:20:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/audit_generation_routing_enforcement.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/audit_generation_routing_enforcement.py:208:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/build_faiss_index.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/check_agent_registry_completeness.py:30:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/check_agent_registry_completeness.py:35:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/check_anti_patterns.py:38:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/check_anti_patterns.py:43:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/check_determinism_replay.py:14:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/check_evidence_contract_v2.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/check_evidence_contract_v2.py:98:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/check_kernel_extension_boundary.py:206:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/check_spine_adapter_contract.py:157:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/check_tooling_apps_boundary.py:50:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/dependency_graph_hardening_verifier.py:29:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/discovery_registry_consistency_check.py:48:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/gate_consistency_check.py:67:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/gate_consistency_check.py:89:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/init_contract_check.py:35:magic_configuration:Magic configuration: Hardcoded max_eager_imports=10
+ops_scripts/ci/sovereign_lockdown_check.py:35:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/sovereign_lockdown_check.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/ssot_violation_scanner.py:41:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/ssot_violation_scanner.py:471:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_import_dependencies.py:109:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_import_dependencies.py:19:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/validate_import_dependencies.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_timeout_progress.py:21:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_timeout_progress.py:89:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_timeout_recovery.py:127:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_timeout_recovery.py:21:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/validate_timeout_recovery.py:69:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/verify_stack_runtime.py:123:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/verify_stack_runtime.py:156:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/verify_stack_runtime.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/ci/verify_stack_runtime.py:64:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/ci/verify_stack_runtime.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/dev_tools/l0_scripts/sync_mcp_util.py:214:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'backup_config'
+ops_scripts/dev_tools/l0_scripts/sync_mcp_util.py:59:config_with_logic:Config-with-logic: 'if' branch inside config-factory function 'load_windsurf_config'
+ops_scripts/general/_probe_deep_hardening.py:10:global_mutation:Global mutation: os.environ['HIVE_MIND_STRICT_MODE'] assignment modifies global state at runtime
+ops_scripts/general/_probe_deep_hardening.py:145:global_mutation:Global mutation: os.environ['HIVE_MIND_STRICT_MODE'] assignment modifies global state at runtime
+ops_scripts/general/_probe_deep_hardening.py:151:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/_probe_deep_hardening.py:154:global_mutation:Global mutation: os.environ['HIVE_MIND_STRICT_MODE'] assignment modifies global state at runtime
+ops_scripts/general/_probe_deep_hardening.py:57:magic_configuration:Magic configuration: Hardcoded max_results=3 in function call
+ops_scripts/general/_probe_deep_hardening.py:9:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/agent_disposition_analyzer.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/aggressive_dedup.py:132:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/aggressive_dedup.py:207:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/aggressive_dedup.py:36:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/aggressive_dedup.py:72:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/analyze_agent_count_waterfall.py:26:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/analyze_archive.py:60:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/analyze_legacy_value.py:56:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/architectural_guard.py:22:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+ops_scripts/general/architectural_guard.py:42:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+ops_scripts/general/architectural_guard.py:69:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/benchmark_batch_optimization.py:13:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/class_info.py:351:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/class_info.py:81:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/dep_graph_scan.py:168:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/file_disposition.py:69:path_fragility:Path fragility: os.path.exists() - use pathlib.Path instead
+ops_scripts/general/file_disposition.py:78:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+ops_scripts/general/file_disposition.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/find_hangs.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/find_hangs.py:194:magic_configuration:Magic configuration: Hardcoded timeout=2.0 in function call
+ops_scripts/general/find_hangs.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/find_hangs.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/find_hangs.py:47:magic_configuration:Magic configuration: Hardcoded timeout=2.0
+ops_scripts/general/find_hangs.py:72:silent_swallower:Silent exception swallower: catches (bare except) without raise or proper return
+ops_scripts/general/find_orphaned_agents.py:85:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/fix_naming_issues.py:154:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/generate_certificate.py:12:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/generate_certificate.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/generate_certificate.py:78:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/generate_qwen_healing_report.py:281:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/integration_gap_analyzer.py:112:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/mission_telemetry_dashboard.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/quick_hang_finder.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/quick_hang_finder.py:150:magic_configuration:Magic configuration: Hardcoded timeout=3.0 in function call
+ops_scripts/general/quick_hang_finder.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/quick_hang_finder.py:71:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/remediate_naming_audit.py:109:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/run_all_batch_tests.py:11:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/run_file_classification_heal_agentic_core.py:16:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/run_file_classification_heal_agentic_core.py:96:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/run_sovereignty_agents.py:12:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/general/sovereign_healing_mission.py:86:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/suffix_cleanup_executor.py:116:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/suffix_cleanup_executor.py:155:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/suffix_cleanup_executor.py:99:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/general/verify_global_imports.py:41:path_fragility:Path fragility: os.path.join() - use pathlib.Path instead
+ops_scripts/governance/fix_test_structure.py:104:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/governance/fix_test_structure.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/governance/intelligence_sentry.py:19:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/hooks/guard_apps_shared_instructional_layer.py:15:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/hooks/validate_folder_purity.py:21:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/analyze_deleted_tests.py:119:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/archive_duplicates.py:48:global_mutation:Global mutation: os.environ['ARCHIVE_BATCH_ACCEPT'] assignment modifies global state at runtime
+ops_scripts/maintenance/batch_restore_tests.py:162:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/batch_restore_tests.py:95:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/check_heal_schema_compliance.py:54:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/check_protected_files.py:58:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/detect_corruption.py:42:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/detect_corruption.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/execute_cognitive_purge.py:168:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/execute_cognitive_purge.py:83:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/execute_convergence.py:29:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/execute_convergence.py:90:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/execute_tiered_purge.py:174:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/execute_tiered_purge.py:40:magic_configuration:Magic configuration: Hardcoded threshold=0.75
+ops_scripts/maintenance/execute_tiered_purge.py:86:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/fix_heal_schema_violations.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/heal_schema_visitor.py:148:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/hunt_ghosts.py:66:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/migrate_reports_to_ssot.py:31:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/migrate_reports_to_ssot.py:359:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/purge_cache.py:123:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/purge_cache.py:145:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/purge_cache.py:158:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/purge_cache.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/purge_cache.py:79:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/remove_duplicate_suffixes.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/remove_duplicate_suffixes.py:22:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/ssot_archive_refactor.py:48:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:111:magic_configuration:Magic configuration: Hardcoded execution_timeout_seconds=0.5 in function call
+ops_scripts/maintenance/verification.py:17:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/maintenance/verification.py:39:magic_configuration:Magic configuration: Hardcoded failure_threshold=3 in function call
+ops_scripts/maintenance/verification.py:39:magic_configuration:Magic configuration: Hardcoded reset_timeout_seconds=0.1 in function call
+ops_scripts/maintenance/verification.py:425:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:434:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:440:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:446:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:452:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/maintenance/verification.py:51:magic_configuration:Magic configuration: Hardcoded reset_timeout_seconds=0.1 in function call
+ops_scripts/maintenance/verification.py:69:magic_configuration:Magic configuration: Hardcoded reset_timeout_seconds=0.1 in function call
+ops_scripts/maintenance/verification.py:82:magic_configuration:Magic configuration: Hardcoded failure_threshold=2 in function call
+ops_scripts/maintenance/verify_clean_commit.py:76:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/_fca_baseline.py:12:global_mutation:Global mutation: sys.path.insert() modifies global state at runtime
+ops_scripts/root_scripts/_fca_baseline.py:55:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/create_discovery_snapshot.py:105:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/create_discovery_snapshot.py:65:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/root_scripts/fix_mislocated.py:47:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/fix_non_canonical_tests.py:53:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/generate_missing_tests.py:87:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/move_mislocated_tests.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/move_mislocated_tests_fixed.py:115:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+ops_scripts/root_scripts/phase0_discovery.py:64:path_fragility:Path fragility: String concatenation for path building - use pathlib.Path instead
+ops_scripts/root_scripts/phase2_generate_mirrored_tests.py:149:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/adapters/l4_meta_prior_provider.py:50:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 system_learning/confidence/engine.py:24:magic_configuration:Magic configuration: Hardcoded _escalate_threshold=0.33
 system_learning/confidence/engine.py:25:magic_configuration:Magic configuration: Hardcoded _review_threshold=0.66

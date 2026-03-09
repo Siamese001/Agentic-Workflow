@@ -37,6 +37,11 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
     TESTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ============================================================================
 # CONFIGURATION
@@ -119,18 +124,8 @@ ENDSWITH_AGENT_ALLOWLIST: frozenset[str] = frozenset(
 )
 
 # Directories to exclude from scanning
-EXCLUDE_DIRS: frozenset[str] = frozenset(
-    {
-        "__pycache__",
-        ".git",
-        "node_modules",
-        ".backup",
-        "archives",
-        ".healing_backups",
-        ".venv",
-        "venv",
-        ".tox",
-    },
+EXCLUDE_DIRS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 

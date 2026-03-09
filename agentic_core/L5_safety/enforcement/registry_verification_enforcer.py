@@ -25,25 +25,21 @@ from pathlib import Path
 from typing import Any, Final
 
 # SSOT imports
-from agentic_core.L5_safety.config.structure_blueprint import (
-    AGENT_DISCOVERY_JSON,
+from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Excluded directories for agent scanning
-EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
-    {
-        "archives",
-        ".sovereign_healing_backup",
-        "__pycache__",
-        ".git",
-        "node_modules",
-        ".venv",
-        "venv",
-    },
+EXCLUDED_DIRS: Final[frozenset[str]] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 

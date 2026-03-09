@@ -41,6 +41,12 @@ if str(PROJECT_ROOT) not in sys.path:
     # guardian: allow-global-mutation
     sys.path.insert(0, str(PROJECT_ROOT))
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 SCAN_ROOTS: tuple[str, ...] = (
     "agentic_core",
     "apps_lic",
@@ -50,21 +56,8 @@ SCAN_ROOTS: tuple[str, ...] = (
 
 INTERNAL_ROOTS: frozenset[str] = frozenset(SCAN_ROOTS)
 
-WALK_EXCLUDES: frozenset[str] = frozenset(
-    {
-        ".venv",
-        "venv",
-        "__pycache__",
-        ".git",
-        "dist",
-        "build",
-        ".pytest_cache",
-        "node_modules",
-        ".nox",
-        "archives",
-        ".sovereign_healing_backup",
-        ".backup",
-    },
+WALK_EXCLUDES: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 BASELINE_PATH = PROJECT_ROOT / "artifacts" / "import_health" / "import_health_baseline.json"

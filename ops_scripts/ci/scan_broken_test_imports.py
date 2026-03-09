@@ -24,6 +24,10 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_DIR = ROOT / "tests"
@@ -36,7 +40,7 @@ PROJECT_PREFIXES = (
     "tools",
     OPS_SCRIPTS_DIR,
 )
-EXCLUDE_DIRS = {"_quarantine", "__pycache__", ".venv", "venv", ".nox", ".tox"}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 FULLY_ORPHANED_THRESHOLD = 0
 STALE_MIRROR_THRESHOLD = 0
 

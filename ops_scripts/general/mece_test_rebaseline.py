@@ -28,6 +28,11 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     TESTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # FileType imported from classification kernel (SSOT)
 from agentic_core.L5_safety.core_kernel.classification_kernel import (
@@ -114,7 +119,7 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
     classifications = []
 
     app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
-    exclude_dirs = {"__pycache__", ".git", "archives", "venv"}
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for app_dir in app_dirs:
         app_path = project_root / app_dir

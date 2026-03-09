@@ -15,6 +15,11 @@ import shutil
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ============================================================================
 # CONFIGURATION
@@ -36,10 +41,7 @@ EXCLUDE_FOLDERS = {
 }
 
 # Patterns in path to exclude
-EXCLUDE_PATTERNS = ["backup", "duplicate", "__pycache__", ".git"]
-
-# Files to skip
-SKIP_FILES = {"__init__.py", "conftest.py", "setup.py"}
+EXCLUDE_PATTERNS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 # Priority folders (scan these first)
 PRIORITY_FOLDERS = [

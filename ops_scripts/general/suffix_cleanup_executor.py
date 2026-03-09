@@ -24,6 +24,11 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 _ROOT = get_validated_project_root()
 
@@ -114,7 +119,7 @@ def rename_file_and_refactor(source_path: Path, new_filename: str, project_root:
     # Step 3: Deep refactoring - update all imports and references
     print("  → Scanning codebase for references...")
 
-    exclude_dirs = {".git", "__pycache__", "venv", ".env", "node_modules"}
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     files_updated = 0
 
     for dirpath, dirnames, filenames in os.walk(project_root):

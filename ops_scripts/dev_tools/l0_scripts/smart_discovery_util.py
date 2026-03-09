@@ -25,6 +25,11 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     AGENT_DISCOVERY_MANIFEST_JSON,
     SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.utils.security_util import safe_execute
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent
@@ -36,14 +41,7 @@ STALENESS_THRESHOLD = timedelta(hours=1)
 
 # Shared exclude logic with discovery
 ARCHIVES_DIR = "archives"
-EXCLUDED_DIRS = {
-    "__pycache__",
-    ".git",
-    ARCHIVES_DIR,
-    ".sovereign_healing_backup",
-    "node_modules",
-    ".venv",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def should_exclude_path(path: Path) -> bool:

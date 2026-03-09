@@ -1,4 +1,8 @@
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 """
 File: agentic_core/L5_safety/validators/RootHygieneAgent.py
@@ -343,20 +347,7 @@ class RootHygieneAgent(SovereignBaseAgent):
             "runtime_state.json",
         }
         # Transient dirs/files that should be deleted, not relocated
-        delete_patterns = {
-            "__pycache__",
-            ".pytest_cache",
-            "node_modules",
-            ".venv",
-            "venv",
-            "coverage_html",
-            ".mypy_cache",
-            ".ruff_cache",
-            "htmlcov",
-            "dist",
-            "build",
-            ".eggs",
-        }
+        delete_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
         try:
             for entry in self.project_root.iterdir():

@@ -16,6 +16,11 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 _ROOT = get_validated_project_root()
 
@@ -31,21 +36,7 @@ class ModuleInfo:
 def discover_python_modules(root: pathlib.Path) -> list[pathlib.Path]:
     """Discover all Python modules in scope."""
     modules = []
-    exclude_dirs = {
-        ".venv",
-        "build",
-        "dist",
-        "__pycache__",
-        "*.egg-info",
-        "docs",
-        ".git",
-        ".nox",
-        "artifacts",
-        "archives",
-        "data",
-        "ops_scripts",
-        ".backup",
-    }
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for py_file in root.rglob("*.py"):
         # Skip excluded directories

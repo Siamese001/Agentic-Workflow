@@ -28,11 +28,16 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 GUARDIAN_ID = "change_package_activation_guard"
 
 SCAN_ROOTS: tuple[str, ...] = ("agentic_core", "system_learning")
-SKIP_DIRS: frozenset[str] = frozenset({"__pycache__", ".git", ".venv", ".pytest_cache", ".nox", "archives"})
+SKIP_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 # Direct VersionStore commit method names
 VERSION_STORE_COMMIT_METHODS: frozenset[str] = frozenset({"commit", "write", "persist", "save"})

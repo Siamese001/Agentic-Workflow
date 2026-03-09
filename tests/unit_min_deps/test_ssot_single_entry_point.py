@@ -23,6 +23,12 @@ import pathlib
 
 import pytest
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # Directories to scan for violations (production + test code)
@@ -64,16 +70,7 @@ FORBIDDEN_SUBMODULE_PREFIXES = [
 FORBIDDEN_PACKAGE_IMPORT = "agentic_core.L5_safety.config.structure_blueprint"
 ALLOWED_PACKAGE_IMPORT = "agentic_core.L5_safety.config.structure_blueprint_config"
 
-SKIP_PARTS = {
-    "__pycache__",
-    ".venv",
-    "venv",
-    "archives",
-    ".git",
-    ".healing_backups",
-    ".backup",
-    "healing_backups",
-}
+SKIP_PARTS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def _is_allowed(rel: str) -> bool:

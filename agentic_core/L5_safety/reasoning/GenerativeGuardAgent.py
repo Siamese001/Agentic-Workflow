@@ -9,6 +9,10 @@ from dataclasses import dataclass
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 """
 GenerativeGuardAgent - Detects and removes runaway generated files.
@@ -83,29 +87,7 @@ except ImportError:
 
 
 # Excluded directories for file scanning
-EXCLUDED_DIRS = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "env",
-    "node_modules",
-    "dist",
-    "build",
-    ".vscode",
-    ".idea",
-    ".DS_Store",
-    ".mypy_cache",
-    ".pytest_cache",
-    "htmlcov",
-    "site-packages",
-    "docs",
-    TESTS_DIR,
-    "temp",
-    "tmp",
-    "log",
-    "logs",
-]
+EXCLUDED_DIRS = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
 
 
 @dataclass

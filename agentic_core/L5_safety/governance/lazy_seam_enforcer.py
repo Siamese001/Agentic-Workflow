@@ -12,8 +12,13 @@ import re
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 
@@ -265,28 +270,7 @@ class LazySeamEnforcer:
         python_files = list(self.root_path.rglob("*.py"))
 
         # Skip patterns (same as scanner)
-        skip_patterns = {
-            ".git",
-            "__pycache__",
-            ".pytest_cache",
-            ".mypy_cache",
-            ".venv",
-            "venv",
-            "env",
-            ".tox",
-            "build",
-            "dist",
-            ".nox",
-            "site-packages",
-            "tests",
-            "test",
-            "support",
-            "artifacts",
-            "ops_scripts",
-            "docs",
-            "data",
-            ".pytest_tmp",
-        }
+        skip_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
         skip_file_patterns = {"test_", "_test.py", "conftest.py"}
 

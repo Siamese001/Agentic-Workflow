@@ -52,43 +52,19 @@ from collections import defaultdict
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # ── Constants ────────────────────────────────────────────────────────────────
 
 PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
 
-EXCLUDED_DIRS = frozenset(
-    {
-        ".venv",
-        ".nox",
-        ".git",
-        "__pycache__",
-        "build",
-        "dist",
-        "archives",
-        "stubs",
-        ".backup",
-        ".sovereign_healing_backup",
-        ".eggs",
-        ".mypy_cache",
-        ".tox",
-        "node_modules",
-    },
-)
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
-FIRST_PARTY_PACKAGES = frozenset(
-    {
-        "agentic_core",
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
-        "ops_scripts",
-        "tests",
-        "data",
-        "artifacts",
-        "archives",
-        "Agentic_Workflow",
-    },
-)
+FIRST_PARTY_PACKAGES = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 PHANTOM_INTERNAL_MODULES = frozenset(
     {

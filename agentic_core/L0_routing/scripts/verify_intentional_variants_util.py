@@ -13,11 +13,16 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.utils.ast_fuzzy_util import compute_file_hash
 
 project_root = Path(__file__).parent.parent
 # guardian: allow-global-mutation
-sys.path.insert(0, str(project_root))
+sys.path.insert(0, str(project_root))  # guardian: allow-global-mutation
 
 
 def read_file_content(file_path: Path) -> str:
@@ -160,7 +165,7 @@ def scan_for_duplicates():
     """Scan project for duplicate files."""
     file_hashes = defaultdict(list)
     extensions = {".py", ".html", ".json", ".yaml", ".md", ".txt"}
-    exclude_dirs = {"__pycache__", ".git", "node_modules", "venv", ".venv", "archive"}
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     # Absolute Zero: Use ssot_discovery instead of rglob
     from agentic_core.utils.ssot_discovery_validator import get_data_files, get_python_files

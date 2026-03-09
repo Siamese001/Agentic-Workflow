@@ -15,6 +15,10 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 _ROOT = get_validated_project_root()
 
@@ -34,13 +38,7 @@ def enumerate_modules() -> list[pathlib.Path]:
             modules.extend(apps_dir.rglob("*.py"))
 
     # Filter out excluded paths
-    excluded_patterns = [
-        ".venv",
-        "build",
-        "dist",
-        "__pycache__",
-        "*.egg-info",
-    ]
+    excluded_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
     filtered_modules = []
     for module in modules:

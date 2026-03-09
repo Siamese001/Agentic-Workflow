@@ -7,24 +7,16 @@ Run this as pre-commit hook or CI check.
 import re
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 PROJECT_ROOT = Path(__file__).parent.parent
 
 # Directories to exclude
-EXCLUDED_DIRS = {
-    "__pycache__",
-    ".pytest_cache",
-    "build",
-    "dist",
-    ".git",
-    ".venv",
-    "venv",
-    "env",
-    "node_modules",
-    "archives",
-    "legacy",
-    "deprecated",
-    "test_data",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 # Files that are allowed to have hardcoded paths
 EXCLUDED_FILES = {

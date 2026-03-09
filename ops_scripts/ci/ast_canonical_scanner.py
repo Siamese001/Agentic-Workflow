@@ -27,6 +27,10 @@ from agentic_core.L0_routing.config.path_constants import (
     L5_SAFETY_DIR,
     L6_OBSERVABILITY_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # ---------------------------------------------------------------------------
 # Exemptions — modules allowed to call json.dumps directly
@@ -39,7 +43,7 @@ _EXEMPT_SUFFIXES = (
 )
 
 # Directories whose test files are excluded from the scan
-_EXCLUDE_DIRS = {"tests", ".backup", "__pycache__", ".git"}
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 # Directories that are in scope for the enforcement scan
 _SCAN_ROOTS = [

@@ -8,14 +8,14 @@ Detects hardcoded dashboard paths and reports violations.
 import re
 from pathlib import Path
 
-from agentic_core.L0_routing.config import (
-    ARCHIVES_DIR,
-)
-
 # Import SSOT
 from agentic_core.L5_safety.config.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 # Patterns that indicate hardcoded dashboard paths
@@ -27,15 +27,8 @@ HARDCODED_PATTERNS = [
 ]
 
 # Files/directories to exclude from validation
-EXCLUDE_PATTERNS = [
-    ".git",
-    "__pycache__",
-    ".venv",
-    "venv",
-    "node_modules",
-    ARCHIVES_DIR,
+EXCLUDE_PATTERNS = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS) + [
     "legacy_",
-    ".pytest_cache",
     "structure_blueprint.py",  # SSOT definition file itself
     "validate_dashboard_ssot_util.py",  # This file
 ]

@@ -18,54 +18,17 @@ EXIT CODES:
 import sys
 from pathlib import Path
 
-# Valid top-level directories from structure_blueprint.py SOVEREIGN_TERRITORIES
-VALID_TERRITORIES = frozenset(
-    {
-        "agentic_core",
-        "apps_rg",
-        "apps_lic",
-        "apps_shared",
-        "tests",
-        "ops_scripts",
-        "archives",
-        "data",
-        "docs",
-        "logs",
-        "reports",
-        "scripts",
-        ".sovereign_healing_backup",
-        ".github",
-        ".windsurf",
-        ".gravity_state",
-        ".backup",
-    },
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
+# Valid top-level directories from structure_blueprint.py SOVEREIGN_TERRITORIES
+VALID_TERRITORIES = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
+
 # Valid subfolders for apps_* directories (depth 2)
-APPS_VALID_SUBFOLDERS = frozenset(
-    {
-        # apps_rg
-        "asset_library",
-        "core",
-        "domain",
-        "engines",
-        "logic_nodes",
-        "shared",
-        "system_flow",
-        "validation",
-        # apps_lic
-        "reports",
-        "scripts",
-        "tools",
-        # apps_shared
-        "agents",
-        "common_utils",
-        "config",
-        "core_components",
-        "data",
-        "utils",
-    },
-)
+APPS_VALID_SUBFOLDERS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 # Forbidden patterns that indicate "Path Rot"
 FORBIDDEN_PATTERNS = [

@@ -11,8 +11,10 @@ Performance: <1 second for full scan (vs 15-18s for registry rebuild)
 import ast
 from dataclasses import dataclass
 from pathlib import Path
-from agentic_core.L0_routing.config import (
-    ARCHIVES_DIR,
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 
@@ -220,16 +222,7 @@ class SSOTScanner:
 
     def _should_exclude(self, file_path: Path) -> bool:
         """Check if file should be excluded from scanning."""
-        exclude_patterns = [
-            ".venv",
-            "venv",
-            "node_modules",
-            "__pycache__",
-            ".git",
-            ".pytest_cache",
-            "vendor",
-            ARCHIVES_DIR,
-        ]
+        exclude_patterns = list(GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS)
 
         path_str = str(file_path)
         return any(pattern in path_str for pattern in exclude_patterns)

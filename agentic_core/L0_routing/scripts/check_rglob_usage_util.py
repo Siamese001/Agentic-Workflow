@@ -19,8 +19,14 @@ Phase: 4.1 - Scaled Refactoring & CI Enforcement
 import re
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 # configuration
@@ -35,13 +41,7 @@ EXCLUDED_FILES = {
 }
 
 # Directories to exclude
-EXCLUDED_DIRS = {
-    "archives",
-    ".sovereign_healing_backup",
-    "__pycache__",
-    ".git",
-    ".pytest_cache",
-}
+EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def count_rglob_in_file(file_path: Path) -> int:

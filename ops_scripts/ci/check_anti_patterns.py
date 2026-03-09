@@ -48,33 +48,17 @@ from agentic_core.L5_safety.validators.anti_pattern_scanner_validator import (
 from agentic_core.L5_safety.validators.base_detector_validator import (
     EnforcementLevel,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Baseline file path
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "landmine_baseline.txt"
 
 # Transient / non-source directories excluded from all scans.
-_EXCLUDE_DIRS = {
-    "__pycache__",
-    ".git",
-    ".venv",
-    "venv",
-    ".pytest_cache",
-    ".pytest_tmp",
-    ".mypy_cache",
-    ".ruff_cache",
-    ".coverage",
-    "dist",
-    "build",
-    ".tox",
-    ".nox",
-    "node_modules",
-    "archives",
-    ".backup",
-    "_quarantine",
-    "tests",
-    "ops_scripts",
-    ".healing_backups",
-}
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 
 def load_baseline() -> set[str]:

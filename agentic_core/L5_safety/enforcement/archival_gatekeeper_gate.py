@@ -40,6 +40,10 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import ARCHIVES_DIR
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Configure module logger
 logging.basicConfig(level=logging.INFO)
@@ -234,7 +238,7 @@ class ArchivalGatekeeper:
                 pass  # Path is not in archive, which is good
 
         # Prevent operations on critical system files
-        critical_patterns = [".git", "__pycache__", ".venv", "venv", "node_modules"]
+        critical_patterns = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
         for pattern in critical_patterns:
             if pattern in path.parts:
                 return f"Cannot {operation} files in protected directory ({pattern}): {path}"

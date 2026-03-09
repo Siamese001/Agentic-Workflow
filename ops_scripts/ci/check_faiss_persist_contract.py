@@ -37,6 +37,10 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 PROJECT_ROOT = get_validated_project_root()
 
@@ -45,19 +49,7 @@ _SCAN_ROOTS = [
     PROJECT_ROOT / AGENTIC_CORE_DIR,
 ]
 
-_EXCLUDE_DIRS = {
-    "__pycache__",
-    ".git",
-    ".venv",
-    "venv",
-    ".pytest_cache",
-    ".pytest_tmp",
-    ".mypy_cache",
-    "dist",
-    "build",
-    ARCHIVES_DIR,
-    "_quarantine",
-}
+_EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 _FINALIZE_NAMES = {"finalize_build", "rebuild"}
 _PERSIST_NAME = "persist_to_disk"

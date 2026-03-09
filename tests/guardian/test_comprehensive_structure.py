@@ -23,6 +23,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Import validation functions
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from ops_scripts.general.validate_structure import (
     BASE_AGENT_CANONICAL_DIR,
     FORBIDDEN_PATTERNS,
@@ -56,17 +61,7 @@ class TestComprehensiveSSOTStructure:
         python_files = list(PROJECT_ROOT.rglob("*.py"))
 
         # Skip excluded directories
-        excluded_dirs = {
-            ".git",
-            "__pycache__",
-            ".pytest_cache",
-            "node_modules",
-            ".venv",
-            "venv",
-            "env",
-            "archives",
-            ".sovereign_healing_backup",
-        }
+        excluded_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
         for file_path in python_files:
             # Skip excluded directories

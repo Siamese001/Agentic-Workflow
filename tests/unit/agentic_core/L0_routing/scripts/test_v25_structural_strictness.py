@@ -26,6 +26,10 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SEMANTIC_L2_REGISTRY,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 
 def test_unified_eviction():
@@ -142,17 +146,7 @@ def test_apps_lic_filesystem_structure():
     project_root = Path(__file__).parent.parent.parent.parent.parent.parent.parent
 
     # Verify top-level structure matches SSOT
-    expected_roots = {
-        "asset_library",
-        "domain",
-        "engines",
-        "logic_nodes",
-        "reports",
-        "scripts",
-        "shared",
-        "system_flow",
-        TOOLS_DIR,
-    }
+    expected_roots = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
     apps_lic_path = project_root / APPS_LIC_DIR
     if apps_lic_path.exists():
         current_roots = {p.name for p in apps_lic_path.iterdir() if p.is_dir() and not p.name.startswith("_")}

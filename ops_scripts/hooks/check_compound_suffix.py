@@ -19,6 +19,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # Canonical architectural suffixes (mirrors KNOWN_ARCHITECTURAL_SUFFIXES in structure_blueprint_config.py)
 KNOWN_ARCHITECTURAL_SUFFIXES: list[str] = [
     "_types",
@@ -72,7 +78,7 @@ def get_staged_files() -> list[str]:
 
 def get_all_python_files(root: Path) -> list[Path]:
     """Scan for all .py files, excluding archives and venv."""
-    exclude = {".git", "archives", "__pycache__", "node_modules", "venv", ".env"}
+    exclude = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     files = []
     for dirpath, dirnames, filenames in __import__("os").walk(root):
         dirnames[:] = [d for d in dirnames if d not in exclude]

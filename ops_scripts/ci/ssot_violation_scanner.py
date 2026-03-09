@@ -36,6 +36,16 @@ from pathlib import Path
 if hasattr(sys.stdout, "reconfigure"):
     sys.stdout.reconfigure(encoding="utf-8", errors="replace")
 
+_ROOT = Path(__file__).resolve().parents[2]
+if str(_ROOT) not in sys.path:
+    sys.path.insert(0, str(_ROOT))  # guardian: allow-global-mutation
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # ---------------------------------------------------------------------------
 # COMPREHENSIVE SSOT TARGETS
 # Sources:
@@ -264,23 +274,8 @@ SSot_DEFINITION_FILES: frozenset[str] = frozenset(
     }
 )
 
-EXCLUDE_DIRS: frozenset[str] = frozenset(
-    {
-        "archives",
-        "artifacts",
-        "logs",
-        ".git",
-        ".github",
-        "__pycache__",
-        ".venv",
-        "venv",
-        ".backup",
-        ".gravity_state",
-        ".pytest_cache",
-        ".mypy_cache",
-        ".ruff_cache",
-        "node_modules",
-    }
+EXCLUDE_DIRS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 # Parent AST node types that indicate a path-construction context

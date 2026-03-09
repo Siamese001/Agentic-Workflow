@@ -24,6 +24,9 @@ import os
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L0_routing.types.guardian_contract_types import (
     ArtifactType,
     CheckStatus,
@@ -34,8 +37,10 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
     write_guardian_result,
 )
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
 )
 
 GUARDIAN_ID = "architecture_governance"
@@ -52,19 +57,8 @@ LAYER_HIERARCHY: dict[str, int] = {
 }
 
 # Directories to skip during scanning
-SKIP_PARTS: frozenset[str] = frozenset(
-    {
-        "__pycache__",
-        ".git",
-        ".venv",
-        "node_modules",
-        ".pytest_cache",
-        ".nox",
-        "archives",
-        ".sovereign_healing_backup",
-        ".healing_backups",
-        "artifacts",
-    },
+SKIP_PARTS: frozenset[str] = (
+    GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
 
 

@@ -22,6 +22,10 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 ROOT = get_validated_project_root()
 
@@ -55,7 +59,7 @@ PROD_SCAN_ROOTS = [
     ROOT / SYSTEM_LEARNING_DIR,
 ]
 
-EXCLUDE_DIRS = {"__pycache__", ".git", ".venv", ".pytest_cache", ".mypy_cache", ".nox"}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 # Files that define the SSOT or are architectural boundary leaf nodes — never touch them
 SSOT_FILES = {

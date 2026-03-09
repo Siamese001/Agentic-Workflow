@@ -9,6 +9,12 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 @dataclass
 class AgentAuditResult:
@@ -80,7 +86,7 @@ def audit_agent_file(py_file: Path, agentic_core: Path) -> list[AgentAuditResult
 def main():
     """Run the global healing capability audit."""
     agentic_core = Path("C:/Git/Agentic-Workflow/agentic_core")
-    exclude_dirs = {"archives", "legacy_code", "__pycache__", ".sovereign_healing_backup"}
+    exclude_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     all_results = []
     for py_file in agentic_core.rglob("*.py"):
         if any(ex in str(py_file) for ex in exclude_dirs):

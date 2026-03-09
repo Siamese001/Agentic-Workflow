@@ -670,6 +670,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         "v",
         "stubs",
         ".sovereign_healing_backup",
+        ".healing_backups",
         ".idea",
         ".vscode",
         ".DS_Store",
@@ -878,6 +879,7 @@ GLOBAL_EXCLUDED_DIRS: frozenset[str] = frozenset(
         # Archives and backups
         "archives",
         ".sovereign_healing_backup",
+        ".healing_backups",
         # Test directories (Production Lens)
         "tests",
     },

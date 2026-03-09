@@ -14,9 +14,14 @@ Usage:
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_DIR = ROOT / "tests"
-EXCLUDE_DIRS = {"_quarantine", "__pycache__", ".venv", "venv", ".nox", ".tox"}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 DUP_SUFFIXES = ("_1.py", "_copy.py", "_backup.py", "_old.py", "_orig.py")
 THRESHOLD = 0

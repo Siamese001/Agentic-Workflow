@@ -17,9 +17,12 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
-    L3_ORCHESTRATION_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 # Project root
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -30,7 +33,7 @@ AGENTIC_CORE_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR
 TARGET_ARCHIVES = ["runtime", "schemas", "shared"]
 
 # Exclude patterns
-EXCLUDE_DIRS = {"__pycache__", ".git", ".DS_Store", "venv", "node_modules"}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 EXCLUDE_EXTENSIONS = {".pyc", ".pyo", ".so", ".dll", ".exe"}
 
 

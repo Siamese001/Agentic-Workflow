@@ -14,6 +14,11 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 # Deterministic credential patterns covering all providers used in this repo
 PATTERNS = [
     {"name": "OPENAI_KEY_PROJ", "regex": re.compile(r"sk-proj-[A-Za-z0-9_-]{20,}")},
@@ -30,17 +35,7 @@ PATTERNS = [
 ]
 
 # Directories to exclude from scanning
-EXCLUDE_DIRS = {
-    ".git",
-    ".pytest_cache",
-    ".ruff_cache",
-    "__pycache__",
-    ".mypy_cache",
-    ".nox",
-    ".venv",
-    "venv",
-    "node_modules",
-}
+EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
 
 # File size limit (2MB)
 MAX_FILE_SIZE = 2 * 1024 * 1024

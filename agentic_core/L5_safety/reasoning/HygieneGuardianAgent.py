@@ -22,6 +22,11 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 from agentic_core.utils.decorators_compat_util import standard_heal
 
@@ -279,17 +284,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
     def _scan_directory(self, directory: Path) -> None:
         """Recursively scan directory for hygiene violations."""
         # Skip common ignore directories
-        ignore_dirs = {
-            ".git",
-            ".venv",
-            "venv",
-            "__pycache__",
-            "node_modules",
-            ".pytest_cache",
-            ".mypy_cache",
-            "archives",
-            ".sovereign_healing_backup",
-        }
+        ignore_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
         for item in directory.rglob("*"):
             # Skip ignored directories
@@ -509,15 +504,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         """
         print(f"[*] Hygiene Guardian: Scanning {self.project_root} for naming violations...")
         self.naming_violations = []
-        ignored_dirs = {
-            ".git",
-            "__pycache__",
-            "venv",
-            "node_modules",
-            ".idea",
-            ".vscode",
-            "archives",
-        }
+        ignored_dirs = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
         for root, dirs, files in os.walk(self.project_root):
             # Prune ignored directories in-place to prevent traversal

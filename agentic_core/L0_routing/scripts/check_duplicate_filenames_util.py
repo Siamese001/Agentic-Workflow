@@ -2,12 +2,18 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    DISCOVERY_EXCLUDED_TERRITORIES,
+    GLOBAL_EXCLUDED_DIRS,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
+
 
 def check_for_duplicates():
     """Scans for identical filenames across different directories."""
     project_root = Path(__file__).parent.parent.parent
     file_map = defaultdict(list)
-    exclude = {".git", "archives", "__pycache__", "venv", "node_modules", ".venv", "env"}
+    exclude = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
     for path in project_root.rglob("*.py"):
         if any(ex in path.parts for ex in exclude):
             continue
