@@ -21,6 +21,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -77,7 +81,7 @@ WRITE_MODES = ("w", "a", "+")
 # =============================================================================
 def discover_agentic_core_layers():
     """Dynamically discover all L* layers in agentic_core/ directory."""
-    agentic_core_dir = PROJECT_ROOT / "agentic_core"
+    agentic_core_dir = PROJECT_ROOT / AGENTIC_CORE_DIR
     if not agentic_core_dir.exists():
         pytest.fail("BLOCKING: agentic_core/ directory not found")
 

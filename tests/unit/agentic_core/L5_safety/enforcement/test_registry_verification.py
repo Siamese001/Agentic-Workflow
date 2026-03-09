@@ -15,6 +15,11 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[5]
 if str(PROJECT_ROOT) not in sys.path:
@@ -171,8 +176,8 @@ class TestRegistryVerifier:
         verifier = RegistryVerifier(project_root=PROJECT_ROOT)
         agents = verifier.scan_filesystem()
         for agent in agents:
-            assert "tests" not in agent.relative_path.split("\\")
-            assert "tests" not in agent.relative_path.split("/")
+            assert TESTS_DIR not in agent.relative_path.split("\\")
+            assert TESTS_DIR not in agent.relative_path.split("/")
 
     def test_load_registry(self):
         """Test loading registry from JSON."""
@@ -221,7 +226,7 @@ class TestParseAgentFile:
         verifier = RegistryVerifier(project_root=PROJECT_ROOT)
 
         # Find a known agent file
-        agent_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "LocationAgent.py"
+        agent_path = PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "LocationAgent.py"
         if agent_path.exists():
             result = verifier._parse_agent_file(agent_path)
             assert result is not None

@@ -24,8 +24,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L6_OBSERVABILITY_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[3]
-L6_ROOT = ROOT / "agentic_core" / "L6_observability"
+L6_ROOT = ROOT / L6_OBSERVABILITY_DIR
 
 # ---------------------------------------------------------------------------
 # Budget constant — update this (with justification comment) if adding agents
@@ -93,7 +97,7 @@ def _find_l6_imports_in_file(filepath: Path) -> set[str]:
         return set()
     symbols: set[str] = set()
     for node in ast.walk(tree):
-        if isinstance(node, ast.ImportFrom) and node.module and "L6_observability" in node.module:
+        if isinstance(node, ast.ImportFrom) and node.module and L6_OBSERVABILITY_DIR in node.module:
             for alias in node.names:
                 symbols.add(alias.name)
                 if alias.asname:

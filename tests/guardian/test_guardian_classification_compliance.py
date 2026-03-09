@@ -21,6 +21,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -60,7 +66,7 @@ def real_result() -> GuardianResult:
 @pytest.fixture()
 def synthetic_repo(tmp_path: Path) -> Path:
     """Create a minimal synthetic repo for controlled testing."""
-    ac = tmp_path / "agentic_core"
+    ac = tmp_path / AGENTIC_CORE_DIR
     layer = ac / "L5_safety"
 
     # Correct placement: agent in reasoning/ (Agent class → AGENT → reasoning)
@@ -93,8 +99,8 @@ def synthetic_repo(tmp_path: Path) -> Path:
 @pytest.fixture()
 def synthetic_repo_with_violations(tmp_path: Path) -> Path:
     """Create a synthetic repo with known classification violations."""
-    ac = tmp_path / "agentic_core"
-    layer = ac / "L2_execution"
+    ac = tmp_path / AGENTIC_CORE_DIR
+    layer = ac / L2_EXECUTION_DIR
 
     # Territory violation: config file in reasoning/ instead of config/
     reasoning = layer / "reasoning"
@@ -199,7 +205,7 @@ class TestScanNamingCompliance:
 
     def test_compound_suffix_detected(self, tmp_path: Path) -> None:
         """A file with compound suffix should be detected."""
-        ac = tmp_path / "agentic_core" / "L0_routing" / "scripts"
+        ac = tmp_path / L0_ROUTING_DIR / "scripts"
         ac.mkdir(parents=True)
         # _agent_types is a known compound suffix conflict
         (ac / "code_detector_agent_types.py").write_text(
@@ -213,7 +219,7 @@ class TestScanNamingCompliance:
 
     def test_no_false_positive_on_single_suffix(self, tmp_path: Path) -> None:
         """A file with a single suffix should not be flagged."""
-        ac = tmp_path / "agentic_core" / "L0_routing" / "types"
+        ac = tmp_path / L0_ROUTING_DIR / "types"
         ac.mkdir(parents=True)
         (ac / "guardian_types.py").write_text(
             "X = 1\n",
@@ -241,7 +247,7 @@ class TestFileCollector:
 
     def test_collects_python_files_only(self, synthetic_repo: Path) -> None:
         # Add a non-Python file
-        (synthetic_repo / "agentic_core" / "L5_safety" / "reasoning" / "readme.md").write_text(
+        (synthetic_repo / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "readme.md").write_text(
             "# readme\n",
             encoding="utf-8",
         )
@@ -249,7 +255,7 @@ class TestFileCollector:
         assert all(f.name.endswith(".py") for f in files)
 
     def test_skips_init_files(self, synthetic_repo: Path) -> None:
-        init = synthetic_repo / "agentic_core" / "L5_safety" / "__init__.py"
+        init = synthetic_repo / AGENTIC_CORE_DIR / "L5_safety" / "__init__.py"
         init.write_text("", encoding="utf-8")
         files = _collect_python_files(synthetic_repo)
         assert all(f.name != "__init__.py" for f in files)
@@ -260,7 +266,7 @@ class TestFileCollector:
         assert paths == sorted(paths)
 
     def test_skips_pycache(self, synthetic_repo: Path) -> None:
-        pc = synthetic_repo / "agentic_core" / "__pycache__"
+        pc = synthetic_repo / AGENTIC_CORE_DIR / "__pycache__"
         pc.mkdir(parents=True)
         (pc / "cached.py").write_text("X=1\n", encoding="utf-8")
         files = _collect_python_files(synthetic_repo)

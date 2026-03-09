@@ -12,8 +12,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CI_SCRIPT = REPO_ROOT / "ops_scripts" / "ci" / "check_determinism_violations.py"
+CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.py"
 
 
 @pytest.mark.governance
@@ -53,7 +58,7 @@ def test_req111_no_uuid4_determinism_critical_paths():
 def test_req111_uuid4_negative_control():
     """REQ-111: Negative control - should detect uuid4 when present."""
     # Create a temporary file with uuid4 usage
-    temp_file = REPO_ROOT / "agentic_core" / "temp_test_uuid4.py"
+    temp_file = REPO_ROOT / AGENTIC_CORE_DIR / "temp_test_uuid4.py"
     try:
         temp_file.write_text("""
 import uuid

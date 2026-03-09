@@ -16,14 +16,14 @@ import logging
 from dataclasses import dataclass, field
 from typing import Any
 
-from agentic_core.L1_cognition.types.domain_types import (
-    DomainContext,
-    SharingPolicy,
-)
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
+)
+from agentic_core.L1_cognition.types.domain_types import (
+    DomainContext,
+    SharingPolicy,
 )
 
 Logger = logging.getLogger(__name__)
@@ -68,26 +68,26 @@ class DomainContextManager:
     def _initialize_default_contexts(self) -> None:
         """Initialize default domain contexts."""
         # agentic_core is the root domain
-        self._contexts["agentic_core"] = DomainContext(
-            domain="agentic_core",
+        self._contexts[AGENTIC_CORE_DIR] = DomainContext(
+            domain=AGENTIC_CORE_DIR,
             parent_domain=None,
             sharing_policy=SharingPolicy.BIDIRECTIONAL,
             allowed_sources=[APPS_LIC_DIR, APPS_RG_DIR],
         )
 
         # apps_lic inherits from agentic_core, can read from core
-        self._contexts["apps_lic"] = DomainContext(
-            domain="apps_lic",
-            parent_domain="agentic_core",
+        self._contexts[APPS_LIC_DIR] = DomainContext(
+            domain=APPS_LIC_DIR,
+            parent_domain=AGENTIC_CORE_DIR,
             sharing_policy=SharingPolicy.SELECTIVE,
             allowed_sources=[AGENTIC_CORE_DIR],
             pattern_types_shared=["healing_pattern", "compliance_rule"],
         )
 
         # apps_rg inherits from agentic_core, can read from core
-        self._contexts["apps_rg"] = DomainContext(
-            domain="apps_rg",
-            parent_domain="agentic_core",
+        self._contexts[APPS_RG_DIR] = DomainContext(
+            domain=APPS_RG_DIR,
+            parent_domain=AGENTIC_CORE_DIR,
             sharing_policy=SharingPolicy.SELECTIVE,
             allowed_sources=[AGENTIC_CORE_DIR],
             pattern_types_shared=["healing_pattern", "quality_pattern"],

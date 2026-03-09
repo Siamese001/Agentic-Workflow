@@ -12,13 +12,20 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 AGENT_DIRS = [
-    REPO_ROOT / "apps_lic" / "reasoning",
-    REPO_ROOT / "apps_rg" / "engines",
-    REPO_ROOT / "apps_shared" / "reasoning",
-    REPO_ROOT / "agentic_core",
+    REPO_ROOT / APPS_LIC_DIR / "reasoning",
+    REPO_ROOT / APPS_RG_DIR / "engines",
+    REPO_ROOT / APPS_SHARED_DIR / "reasoning",
+    REPO_ROOT / AGENTIC_CORE_DIR,
 ]
 
 COMMENT_CEILING = 0.80  # 80% comment lines = dead weight

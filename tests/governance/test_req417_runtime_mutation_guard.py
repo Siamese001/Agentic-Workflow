@@ -6,6 +6,9 @@ import importlib
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    OPS_SCRIPTS_DIR,
+)
 from agentic_core.L5_safety.enforcement.runtime_mutation_guardrail import (
     _CORE_PREFIXES,
     _guarded_setattr,
@@ -116,7 +119,7 @@ def test_object_dunder_setattr_scanner_exists() -> None:
     """SOV-DELTA: ops_scripts/ci/check_object_dunder_setattr.py MUST exist and be importable."""
     from pathlib import Path
 
-    scanner = Path(__file__).resolve().parents[2] / "ops_scripts" / "ci" / "check_object_dunder_setattr.py"
+    scanner = Path(__file__).resolve().parents[2] / OPS_SCRIPTS_DIR / "ci" / "check_object_dunder_setattr.py"
     assert scanner.exists(), "check_object_dunder_setattr.py not found"
 
 
@@ -131,7 +134,7 @@ def test_object_dunder_setattr_scanner_detects_core_pattern() -> None:
     from pathlib import Path
 
     scanner_path = (
-        Path(__file__).resolve().parents[2] / "ops_scripts" / "ci" / "check_object_dunder_setattr.py"
+        Path(__file__).resolve().parents[2] / OPS_SCRIPTS_DIR / "ci" / "check_object_dunder_setattr.py"
     )
     snippet = "object.__setattr__(uwg, 'x', 1)"
     tree = ast.parse(snippet)

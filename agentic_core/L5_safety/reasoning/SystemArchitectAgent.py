@@ -119,7 +119,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         Reuses centralized hierarchy validation to prevent drift.
         """
         violations: Any = []
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -153,7 +153,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     if not (l1_path / "__init__.py").exists():
                         violations.append(f"{root_folder}/{l1_name}: Missing __init__.py")
                     if config["depth"] == 4:
-                        from agentic_core.L5_safety.config.structure_blueprint_config import (
+                        from agentic_core.L5_safety.config.structure_blueprint import (
                             CORE_SUBFOLDER_MAP,
                         )
 
@@ -180,7 +180,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             return {"valid": False, "error": f"Target not found: {target_path}"}
 
         # [EXPANDED SCOPE] Scan all code territories for comprehensive circular dependency detection
-        from agentic_core.L5_safety.config.structure_blueprint_config import CODE_TERRITORIES
+        from agentic_core.L5_safety.config.structure_blueprint import CODE_TERRITORIES
 
         # Build dependency graph across all code territories (not just agentic_core)
         scan_roots = [
@@ -286,7 +286,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
         """
         from pathlib import Path
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 

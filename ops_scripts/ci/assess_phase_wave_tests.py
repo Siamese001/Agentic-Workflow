@@ -47,11 +47,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Literal
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
 # ---------------------------------------------------------------------------
 # Repo layout
 # ---------------------------------------------------------------------------
-REPO_ROOT = Path(__file__).resolve().parents[2]
-TESTS_ROOT = REPO_ROOT / "tests"
+REPO_ROOT = get_validated_project_root()
+TESTS_ROOT = REPO_ROOT / TESTS_DIR
 
 # ---------------------------------------------------------------------------
 # Phase/wave token detection

@@ -1,15 +1,74 @@
 ---
 trigger: always_on
 ---
-# Agentic Workflow â€” Sovereign Architecture Rules
+# Agentic Workflow — Sovereign Architecture Rules
 
-## Â§1. TESTING & EVIDENCE
+## §0. DEFAULT ANALYSIS MODE
+
+**DEFAULT = DETAILED AST DEPENDENCY GRAPH**
+
+For ANY code investigation, analysis, or modification task, Windsurf MUST:
+
+1. **Build AST dependency graph FIRST** (before any other analysis)
+2. **Use graph as PRIMARY evidence** (text search only as secondary confirmation)
+3. **Block work if graph cannot be built** (fail-closed, no silent fallback)
+4. **Document graph in all evidence** (DEPENDENCY_GRAPH section mandatory)
+
+This is the DEFAULT mode. No exceptions without explicit user override.
+
+**AUTOMATIC TRIGGERS:**
+- User mentions: files, functions, classes, modules, imports, dependencies
+- User asks: "what uses this", "what depends on", "impact of", "blast radius"
+- User requests: refactor, modify, analyze, investigate, debug, trace
+- User inquires: test coverage, dead code, duplicates, boundaries
+
+**IMMEDIATE ACTIONS (before responding):**
+1. Invoke `dependency-graph-analysis` skill
+2. Build graph per `graph_construction_protocol.md`
+3. Extract all required relationships
+4. Document in DEPENDENCY_GRAPH section
+5. THEN proceed with user request using graph-backed evidence
+
+**FORBIDDEN DEFAULT BEHAVIOR:**
+- ❌ Starting with grep/ripgrep
+- ❌ Starting with filename searches
+- ❌ Starting with text pattern matching
+- ❌ Assuming relationships without graph proof
+- ❌ Claiming "no dependencies" without graph analysis
+
+**REQUIRED DEFAULT BEHAVIOR:**
+- ✅ Build AST dependency graph first
+- ✅ Extract all edge types (imports, calls, inheritance, registry, tests)
+- ✅ Identify upstream and downstream relationships
+- ✅ Detect cycles, boundaries, and violations
+- ✅ Map test coverage via graph edges
+- ✅ Document graph metadata and completeness
+
+---
+
+## §1. TESTING & EVIDENCE
+
+**ENFORCEMENT:** Use skill `test-rigor-enforcement` for ALL code generation.
+
+**WORKFLOW:**
+1. BEFORE code changes: `pre_code_generation_gate.md` (declare scope & test requirements)
+2. DURING code changes: `test_first_protocol.md` (write tests BEFORE logic)
+3. AFTER code changes: `post_code_validation.md` (verify coverage & no skipping)
+
+**VALIDATOR:** `agentic_core.L5_safety.enforcement.test_rigor_enforcer.TestRigorEnforcer`
 
 ### 1.1 Zero-tolerance: any changed logic MUST have tests
+
+**PREREQUISITE:** Build AST dependency graph to identify test coverage edges (§0, §5.2).
 
 Every line of changed logic MUST be covered by deterministic tests.
 
 If you change logic, you MUST write tests that prove it works.
+
+Test identification MUST be graph-backed:
+- Use dependency graph to find existing test coverage edges
+- Use dependency graph to identify coverage gaps
+- Create new tests for any function/class without test coverage edge
 
 No exceptions.
 
@@ -258,13 +317,24 @@ Evidence MUST include:
 
 ### 3.1 Scope declaration
 
-Before modification record:
+**PREREQUISITE:** Build AST dependency graph to determine true scope (§0, §3.4).
+
+Before declaring scope:
+1. Build dependency graph from proposed changes
+2. Identify all upstream dependencies
+3. Identify all downstream dependents
+4. Identify all required test files via graph edges
+5. Declare scope with graph justification for each file
+
+Record baseline:
 
 `git diff --name-only`
 
 If changed files exceed declared scope:
 
 STOP and produce a plan artifact.
+
+**Each file in scope MUST have graph justification (§3.7).**
 
 ---
 
@@ -273,9 +343,12 @@ STOP and produce a plan artifact.
 If unrelated files appear:
 
 1. record them
-2. reset to baseline
-3. restore declared files only
-4. verify diff
+2. **check if files have graph justification** (§3.7)
+3. if NO graph justification → scope contamination
+4. reset to baseline
+5. restore declared files only
+6. verify diff
+7. verify each file has graph justification
 
 ---
 
@@ -287,6 +360,120 @@ If unrelated files appear:
 - Scan roots MUST be explicitly defined.
 - No heuristic scanning.
 - No randomness in deterministic surfaces.
+
+### 3.4 AST dependency graph is mandatory
+
+AST dependency graphs are the PRIMARY and REQUIRED analysis primitive for this repository.
+
+For any non-trivial code investigation, Windsurf MUST build and use an AST-derived dependency graph before making conclusions, proposing edits, selecting files, or claiming blast radius.
+
+This is mandatory for:
+
+- root cause analysis
+- impact analysis
+- file selection
+- duplicate detection
+- dead code detection
+- boundary validation
+- layer inversion detection
+- test selection
+- healing scope
+- refactor planning
+- execution path analysis
+- registry and wiring validation
+
+"Dependency graph" here means a structured graph derived from AST and module inspection, not a text search result.
+
+At minimum the graph MUST model, where applicable:
+
+- module import edges
+- symbol import edges
+- class inheritance edges
+- protocol / mixin realization edges
+- function and method call edges
+- decorator attachment edges
+- registry lookup / registration edges
+- factory/provider resolution edges
+- config consumption edges
+- CLI entrypoint → function edges
+- test → production coverage edges
+
+If a task involves architecture, orchestration, healing, validation, routing, registry wiring, or blast radius, Windsurf MUST assume the dependency graph is required even if the user does not restate it.
+
+### 3.5 No low-signal search as primary evidence
+
+Low-signal search is FORBIDDEN as a primary analysis method.
+
+Forbidden primary methods include:
+
+- grep
+- rg / ripgrep
+- regex-only repo sweeps
+- filename-only guesses
+- substring hunts
+- IDE search result counts
+- "search until something looks right"
+
+These MAY be used only after the AST dependency graph has already identified a bounded candidate set, and only as a secondary confirmation tool for literal strings or exact constants.
+
+Text search MUST NEVER be used to:
+
+- define blast radius
+- infer architecture
+- infer ownership
+- infer call flow
+- infer dependency direction
+- infer dead code
+- infer test coverage
+- infer whether a component is unused
+- infer whether a file is authoritative
+
+If the graph and text search disagree, the graph wins unless Windsurf proves the graph extractor is incomplete and records the limitation explicitly.
+
+### 3.6 Fail-closed graph discipline
+
+If AST parsing or graph construction fails, Windsurf MUST fail closed.
+
+Required behavior:
+
+1. record exact parse/graph errors
+2. identify the blocked files
+3. mark conclusions as partial
+4. stop short of claiming confidence
+5. do NOT fall back to grep, regex, or heuristic search as a silent substitute
+
+Silent fallback from AST graph analysis to text search = HARD FAIL.
+
+### 3.7 Dependency graph evidence contract
+
+For every meaningful code change, repair, or audit, evidence MUST include:
+
+- graph roots analyzed
+- node types included
+- edge types included
+- impacted nodes
+- upstream dependencies
+- downstream dependents
+- cross-layer edges
+- cycle / SCC findings where relevant
+- boundary violations where relevant
+- test surfaces implied by the graph
+
+Add a required evidence section:
+
+`## DEPENDENCY_GRAPH`
+
+This section MUST contain:
+
+1. graph roots
+2. impacted nodes
+3. upstream set
+4. downstream set
+5. edge classes used
+6. boundary/cycle findings
+7. exact reason each changed file is in scope
+
+Any changed file not justified by the dependency graph = scope contamination.
 
 ---
 
@@ -323,9 +510,34 @@ If conflicting SSOT sources exist execution is BLOCKED.
 - duplicate mixins forbidden
 - cross-layer mutation violating sovereignty = HARD FAIL
 
+Boundary enforcement MUST use the AST dependency graph, not grep or path-name heuristics.
+
+Layer conclusions MUST be supported by explicit graph edges showing:
+
+- who imports whom
+- who calls whom
+- who inherits from whom
+- who registers or resolves whom
+- who mutates whom
+
+Path shape alone is insufficient evidence.
+
+### 4.4 Dependency graph before edit
+
+Before proposing or applying any code edit, Windsurf MUST determine:
+
+- the directly affected nodes
+- first-order upstream dependencies
+- first-order downstream dependents
+- required test nodes
+- whether the change crosses a layer boundary
+- whether the change alters any registry, factory, or provider edge
+
+No edit plan without dependency-graph-backed impact analysis.
+
 ---
 
-### 4.4 Tooling/runtime boundary
+### 4.5 Tooling/runtime boundary
 
 Directories:
 
@@ -336,7 +548,7 @@ MUST NOT import `apps_*`.
 
 ---
 
-### 4.5 Agent invocation discipline
+### 4.6 Agent invocation discipline
 
 Agents MUST be invoked via canonical Python functions.
 
@@ -350,7 +562,7 @@ No business logic in CLI wrappers.
 
 ---
 
-### 4.6 Duplicate authority prevention
+### 4.7 Duplicate authority prevention
 
 One canonical agent class per file.
 
@@ -375,6 +587,22 @@ CI MUST:
 - match local execution
 - fail on violations
 - not mutate baselines
+
+### 5.2 Graph-backed test selection
+
+Test selection and validation MUST be dependency-graph-backed.
+
+For every changed production file, Windsurf MUST identify tests via graph relationships first, including:
+
+- direct test imports
+- fixture dependency edges
+- integration entrypoint coverage
+- registry/factory reachability
+- CLI-to-function reachability
+
+Filename similarity is not sufficient.
+
+If no tests are found through the graph, Windsurf MUST treat that as a coverage gap to be fixed, not as evidence that no tests are needed.
 
 ---
 
@@ -428,6 +656,320 @@ All Python file I/O MUST use:
 
 Evidence files are raw execution captures.
 
+All plan and evidence artifacts involving code analysis MUST include:
+
+`## DEPENDENCY_GRAPH`
+
+---
+
+## §9. QUERY TIMEOUT & PROGRESS REPORTING
+
+### 9.1 Mandatory timeout for all queries
+
+ALL queries, searches, analysis operations, and long-running computations MUST have:
+
+- **Explicit timeout parameter** (no infinite waits)
+- **Timeout value appropriate to operation type**
+- **Fail-closed behavior on timeout** (raise exception, do not silently continue)
+
+Forbidden behaviors:
+- ❌ Queries without timeout parameters
+- ❌ Infinite loops without termination conditions
+- ❌ Blocking operations without timeout guards
+- ❌ Silent timeout handling (must raise or log)
+
+Required timeout ranges by operation type:
+- **Fast queries** (grep, file reads, simple AST): 5-30 seconds
+- **Medium queries** (dependency graph construction, test collection): 30-120 seconds
+- **Heavy queries** (full repo analysis, multi-file refactor): 120-600 seconds
+- **External API calls**: 10-60 seconds with retry budget
+
+### 9.2 Mandatory progress reporting
+
+ALL operations expected to take >5 seconds MUST provide:
+
+- **Progress bar with percentage completion** (0-100%)
+- **Current operation description** (what is being processed)
+- **Estimated time remaining** (when calculable)
+- **Incremental progress updates** (not just start/end)
+
+Required progress reporting format:
+```
+[████████░░░░░░░░░░░░] 40% | Processing: <current_item> | ETA: <time>
+```
+
+Progress updates MUST occur:
+- At least every 5 seconds for operations >30 seconds
+- At least every 10 seconds for operations >120 seconds
+- On each major phase transition
+- On completion (100%)
+
+### 9.3 Enforcement points
+
+Timeout and progress requirements MUST be enforced at:
+
+1. **AST dependency graph construction** (§0, §3.4)
+   - Timeout per file parse
+   - Overall graph build timeout
+   - Progress: files parsed / total files
+
+2. **Test collection and execution** (§1, §5.2)
+   - Timeout per test collection
+   - Timeout per test execution
+   - Progress: tests collected/executed / total
+
+3. **Evidence generation** (§2)
+   - Timeout per command execution
+   - Progress: commands executed / total commands
+
+4. **File operations** (grep, search, read)
+   - Timeout per search operation
+   - Progress: files searched / total files
+
+5. **External tool invocations**
+   - Timeout for all subprocess calls
+   - Progress when tool supports it
+
+### 9.4 Implementation requirements
+
+Code implementing queries MUST:
+
+```python
+# Example timeout pattern
+import signal
+from contextlib import contextmanager
+
+@contextmanager
+def timeout_guard(seconds: int, operation: str):
+    def timeout_handler(signum, frame):
+        raise TimeoutError(f"{operation} exceeded {seconds}s timeout")
+
+    signal.signal(signal.SIGALRM, timeout_handler)
+    signal.alarm(seconds)
+    try:
+        yield
+    finally:
+        signal.alarm(0)
+
+# Example progress pattern
+from tqdm import tqdm
+
+def process_with_progress(items: list, operation: str):
+    with tqdm(total=len(items), desc=operation, unit="item") as pbar:
+        for item in items:
+            # process item
+            pbar.update(1)
+```
+
+### 9.5 Validation
+
+Evidence files MUST document:
+- Timeout values used for each operation
+- Whether progress reporting was active
+- Any timeout violations encountered
+
+CI gates MUST verify:
+- No queries without timeout parameters
+- No long operations without progress reporting
+- Timeout values within acceptable ranges
+
+### 9.6 Automatic timeout recovery with AST dependency graph
+
+When a query exceeds timeout, the system MUST automatically:
+
+1. **Use AST dependency graph to isolate the bottleneck**
+2. **Identify the root cause** (module-level execution, heavy imports, blocking calls)
+3. **Rerun with targeted scope** based on ADG findings
+4. **Document recovery in evidence**
+
+This is MANDATORY for:
+- Test collection timeouts
+- Test execution timeouts
+- Dependency graph construction timeouts
+- File search/grep timeouts
+- Any query timeout where scope can be narrowed
+
+#### 9.6.1 Timeout recovery protocol
+
+When timeout occurs:
+
+```python
+try:
+    result = run_full_query(items, timeout=TIMEOUT)
+except TimeoutError as e:
+    # Step 1: Build AST dependency graph to isolate issue
+    adg = build_dependency_graph_for_timeout_analysis(items)
+
+    # Step 2: Identify bottleneck using ADG
+    bottleneck = identify_bottleneck_from_adg(adg, items)
+
+    # Step 3: Isolate problematic scope
+    isolated_scope = isolate_scope_from_bottleneck(bottleneck)
+
+    # Step 4: Rerun with isolated scope
+    result = run_isolated_query(isolated_scope, timeout=TIMEOUT)
+
+    # Step 5: Document recovery
+    document_timeout_recovery(e, bottleneck, isolated_scope, result)
+```
+
+#### 9.6.2 ADG-based bottleneck identification
+
+For **test collection timeouts**, ADG MUST identify:
+
+- **Module-level execution risks**: Code executing at import time (not inside functions)
+- **Heavy transitive dependencies**: Imports that pull in large dependency chains
+- **Blocking operations at module scope**: `read_text()`, `subprocess.run()`, network calls
+- **Import chain depth**: Modules with deep import hierarchies
+
+Detection pattern:
+```python
+# Find module-level calls that execute at collection time
+for node in ast.iter_child_nodes(tree):
+    if isinstance(node, (ast.FunctionDef, ast.ClassDef)):
+        continue  # Skip function/class definitions
+
+    # Module-level assignments with function calls
+    if isinstance(node, ast.Assign):
+        for child in ast.walk(node):
+            if isinstance(child, ast.Call):
+                # Check for risky operations
+                if is_blocking_operation(child):
+                    record_bottleneck(file, node.lineno, child)
+```
+
+Risky operations at module scope:
+- `read_text()`, `read()`, `open()` - File I/O
+- `subprocess.run()`, `Popen()`, `check_output()` - Process execution
+- `requests.get()`, `urllib.request()` - Network calls
+- `time.sleep()` - Blocking delays
+- Heavy computations (AST parsing, embedding models, filesystem scans)
+
+#### 9.6.3 Scope isolation strategies
+
+Based on ADG findings, isolate scope using:
+
+**Strategy 1: Exclude problematic modules**
+```python
+# If ADG identifies specific files with module-level blocking
+excluded_files = adg.find_module_level_blocking_operations()
+isolated_scope = [f for f in all_files if f not in excluded_files]
+```
+
+**Strategy 2: Partition by dependency depth**
+```python
+# Run shallow dependencies first, deep dependencies separately
+shallow = adg.filter_by_import_depth(max_depth=2)
+deep = adg.filter_by_import_depth(min_depth=3)
+```
+
+**Strategy 3: Isolate by import chain**
+```python
+# Group files by their import dependencies
+independent_groups = adg.partition_by_import_independence()
+for group in independent_groups:
+    run_isolated_query(group, timeout=TIMEOUT)
+```
+
+**Strategy 4: Target modified files only**
+```python
+# For test timeouts, run only tests covering modified files
+modified_files = get_modified_files()
+relevant_tests = adg.find_tests_covering_files(modified_files)
+```
+
+#### 9.6.4 Example: Test collection timeout recovery
+
+```python
+def collect_tests_with_timeout_recovery(test_dirs: list[str], timeout: int) -> list:
+    """Collect tests with automatic timeout recovery."""
+
+    try:
+        # Attempt full collection
+        with timeout_guard(timeout, "test collection"):
+            return pytest.main(["--collect-only"] + test_dirs)
+
+    except TimeoutError as e:
+        logger.warning(f"Test collection timed out after {timeout}s")
+
+        # Build ADG to identify bottleneck
+        adg = build_test_dependency_graph(test_dirs)
+
+        # Find module-level blocking operations
+        blocking_modules = adg.find_module_level_blocking_ops([
+            'read_text', 'read', 'subprocess', 'run', 'Popen',
+            'requests', 'urllib', 'time.sleep'
+        ])
+
+        logger.info(f"ADG identified {len(blocking_modules)} blocking modules:")
+        for mod, line, op in blocking_modules:
+            logger.info(f"  {mod}:{line} - {op}")
+
+        # Strategy: Exclude blocking modules and retry
+        safe_test_dirs = [
+            d for d in test_dirs
+            if not any(str(d) in str(m) for m, _, _ in blocking_modules)
+        ]
+
+        logger.info(f"Retrying with {len(safe_test_dirs)} safe test directories")
+
+        with timeout_guard(timeout, "test collection (isolated)"):
+            return pytest.main(["--collect-only"] + safe_test_dirs)
+```
+
+#### 9.6.5 Evidence documentation for timeout recovery
+
+Evidence MUST include:
+
+```markdown
+## TIMEOUT_RECOVERY
+
+### Initial Timeout
+- Operation: <operation_name>
+- Timeout: <seconds>s
+- Scope: <original_scope>
+- Items attempted: <count>
+
+### ADG Analysis
+- Bottleneck identification method: <method>
+- Blocking operations found: <count>
+- Problematic files:
+  - <file1>:<line> - <operation>
+  - <file2>:<line> - <operation>
+
+### Isolation Strategy
+- Strategy used: <strategy_name>
+- Isolated scope: <new_scope>
+- Items in isolated scope: <count>
+- Items excluded: <count>
+
+### Recovery Result
+- Retry timeout: <seconds>s
+- Retry succeeded: <yes/no>
+- Items processed: <count>
+- Duration: <seconds>s
+```
+
+#### 9.6.6 Fail-closed recovery behavior
+
+Timeout recovery MUST be fail-closed:
+
+- If ADG cannot be built → raise original TimeoutError
+- If bottleneck cannot be identified → raise original TimeoutError
+- If isolated scope is empty → raise original TimeoutError
+- If retry also times out → raise TimeoutError with both attempts documented
+- Never silently skip work or return partial results without explicit documentation
+
+#### 9.6.7 Integration with existing rules
+
+Timeout recovery integrates with:
+
+- **§0 (AST Dependency Graph)**: ADG is PRIMARY tool for timeout analysis
+- **§1 (Testing)**: Test collection/execution timeouts use ADG to isolate slow tests
+- **§2 (Evidence)**: All recovery attempts documented in evidence
+- **§3 (Scope)**: Isolated scope must have graph justification
+- **§5 (CI Gates)**: CI validates timeout recovery patterns
+
 ---
 
 # MAXIM
@@ -435,3 +977,7 @@ Evidence files are raw execution captures.
 Every defect fixed becomes a deterministic invariant enforced by automated tests.
 
 If the evidence does not prove it, it did not happen.
+
+If the dependency graph does not prove the relationship, assume the relationship is unproven.
+
+Every query has a timeout. Every long operation reports progress.

@@ -6,6 +6,11 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 from agentic_core.L2_execution.types.ml_pattern_record_types import (
     MLPatternRecord,
     PatternCompatibilityError,
@@ -25,7 +30,7 @@ def _active_hashes() -> tuple[str, str]:
 
 
 def _record(
-    domain_id: str = "agentic_core",
+    domain_id: str = AGENTIC_CORE_DIR,
     policy_hash: str | None = None,
     model_hash: str | None = None,
     pattern_id: str = "p-001",
@@ -45,20 +50,20 @@ class TestMLPatternRecord:
     def test_build_produces_valid_record(self):
         rec = _record()
         assert rec.schema_version == 1
-        assert rec.domain_id == "agentic_core"
+        assert rec.domain_id == AGENTIC_CORE_DIR
         assert len(rec.domain_hash) == 64
         assert len(rec.policy_hash) == 64
         assert len(rec.model_hash) == 64
         assert len(rec.record_hash) == 64
 
     def test_domain_hash_is_deterministic(self):
-        h1 = MLPatternRecord.compute_domain_hash("agentic_core")
-        h2 = MLPatternRecord.compute_domain_hash("agentic_core")
+        h1 = MLPatternRecord.compute_domain_hash(AGENTIC_CORE_DIR)
+        h2 = MLPatternRecord.compute_domain_hash(AGENTIC_CORE_DIR)
         assert h1 == h2
 
     def test_different_domains_produce_different_hashes(self):
-        h1 = MLPatternRecord.compute_domain_hash("agentic_core")
-        h2 = MLPatternRecord.compute_domain_hash("apps_rg")
+        h1 = MLPatternRecord.compute_domain_hash(AGENTIC_CORE_DIR)
+        h2 = MLPatternRecord.compute_domain_hash(APPS_RG_DIR)
         assert h1 != h2
 
     def test_record_hash_stable(self):
@@ -95,7 +100,7 @@ class TestMLPatternRecord:
         with pytest.raises(ValueError, match="schema_version"):
             MLPatternRecord(
                 schema_version=0,
-                domain_id="agentic_core",
+                domain_id=AGENTIC_CORE_DIR,
                 domain_hash="a" * 64,
                 policy_hash=ph,
                 model_hash=mh,
@@ -107,9 +112,9 @@ class TestMLPatternRecord:
 
 class TestPatternCompatibilityEnforcement:
     def test_compatible_pattern_passes(self):
-        rec = _record(domain_id="agentic_core")
+        rec = _record(domain_id=AGENTIC_CORE_DIR)
         ph, mh = _active_hashes()
-        enforce_pattern_compatibility(rec, "agentic_core", ph, mh)
+        enforce_pattern_compatibility(rec, AGENTIC_CORE_DIR, ph, mh)
 
     def test_pattern_retrieval_filters_by_domain_hash(self):
         """
@@ -117,9 +122,9 @@ class TestPatternCompatibilityEnforcement:
         queried from domain 'agentic_core'.
         """
         ph, mh = _active_hashes()
-        rec = _record(domain_id="apps_rg")
+        rec = _record(domain_id=APPS_RG_DIR)
         with pytest.raises(PatternCompatibilityError) as exc_info:
-            enforce_pattern_compatibility(rec, "agentic_core", ph, mh)
+            enforce_pattern_compatibility(rec, AGENTIC_CORE_DIR, ph, mh)
         assert exc_info.value.violation_code == PatternCompatibilityError.DOMAIN_MISMATCH
         assert "DOMAIN_HASH_MISMATCH" in str(exc_info.value)
 
@@ -132,7 +137,7 @@ class TestPatternCompatibilityEnforcement:
         rec = _record(policy_hash=stale_policy_hash)
         active_ph, _ = _active_hashes()
         with pytest.raises(PatternCompatibilityError) as exc_info:
-            enforce_pattern_compatibility(rec, "agentic_core", active_ph, mh)
+            enforce_pattern_compatibility(rec, AGENTIC_CORE_DIR, active_ph, mh)
         assert exc_info.value.violation_code == PatternCompatibilityError.POLICY_MISMATCH
         assert "POLICY_HASH_MISMATCH" in str(exc_info.value)
 
@@ -145,7 +150,7 @@ class TestPatternCompatibilityEnforcement:
         rec = _record(model_hash=stale_model_hash)
         _, active_mh = _active_hashes()
         with pytest.raises(PatternCompatibilityError) as exc_info:
-            enforce_pattern_compatibility(rec, "agentic_core", ph, active_mh)
+            enforce_pattern_compatibility(rec, AGENTIC_CORE_DIR, ph, active_mh)
         assert exc_info.value.violation_code == PatternCompatibilityError.MODEL_MISMATCH
         assert "MODEL_HASH_MISMATCH" in str(exc_info.value)
 
@@ -153,16 +158,16 @@ class TestPatternCompatibilityEnforcement:
         """Domain check runs first; wrong domain raises DOMAIN_HASH_MISMATCH."""
         stale_ph = "c" * 64
         _, mh = _active_hashes()
-        rec = _record(domain_id="apps_lic", policy_hash=stale_ph)
+        rec = _record(domain_id=APPS_LIC_DIR, policy_hash=stale_ph)
         active_ph, _ = _active_hashes()
         with pytest.raises(PatternCompatibilityError) as exc_info:
-            enforce_pattern_compatibility(rec, "agentic_core", active_ph, mh)
+            enforce_pattern_compatibility(rec, AGENTIC_CORE_DIR, active_ph, mh)
         assert exc_info.value.violation_code == PatternCompatibilityError.DOMAIN_MISMATCH
 
     def test_apps_rg_domain_compatible_with_apps_rg_query(self):
         ph, mh = _active_hashes()
-        rec = _record(domain_id="apps_rg")
-        enforce_pattern_compatibility(rec, "apps_rg", ph, mh)
+        rec = _record(domain_id=APPS_RG_DIR)
+        enforce_pattern_compatibility(rec, APPS_RG_DIR, ph, mh)
 
     def test_violation_code_constants(self):
         assert PatternCompatibilityError.DOMAIN_MISMATCH == "DOMAIN_HASH_MISMATCH"

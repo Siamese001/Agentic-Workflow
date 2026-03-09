@@ -25,6 +25,7 @@ import argparse
 import shutil
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     ARCHIVES_DIR,
@@ -96,7 +97,7 @@ def restore_agent(filename: str, target_dir: str, dry_run: bool = False) -> tupl
 
     try:
         target_path.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(str(source), str(target_path))
+        shutil.move(str(source), str(target_path))
         return True, f"Restored to {target_path.relative_to(PROJECT_ROOT)}"
     # guardian: allow-silent-swallow
     except Exception as e:

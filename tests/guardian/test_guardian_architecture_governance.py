@@ -21,6 +21,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -59,10 +65,10 @@ def real_result() -> GuardianResult:
 @pytest.fixture()
 def clean_synthetic_repo(tmp_path: Path) -> Path:
     """Create a synthetic repo with no import violations."""
-    ac = tmp_path / "agentic_core"
+    ac = tmp_path / AGENTIC_CORE_DIR
 
     # L0 file importing from L0 only (no upward)
-    l0 = ac / "L0_routing" / "scripts"
+    l0 = ac / L0_ROUTING_DIR / "scripts"
     l0.mkdir(parents=True)
     (l0 / "helper.py").write_text(
         "from agentic_core.L0_routing.types import foo\n",
@@ -83,10 +89,10 @@ def clean_synthetic_repo(tmp_path: Path) -> Path:
 @pytest.fixture()
 def violating_synthetic_repo(tmp_path: Path) -> Path:
     """Create a synthetic repo with a known upward import violation."""
-    ac = tmp_path / "agentic_core"
+    ac = tmp_path / AGENTIC_CORE_DIR
 
     # L0 file importing from L5 (upward — violation!)
-    l0 = ac / "L0_routing" / "scripts"
+    l0 = ac / L0_ROUTING_DIR / "scripts"
     l0.mkdir(parents=True)
     (l0 / "bad_import.py").write_text(
         "from agentic_core.L5_safety.reasoning import SomeAgent\n",
@@ -189,7 +195,7 @@ class TestScanImportCompliance:
 
     def test_downward_import_allowed(self, tmp_path: Path) -> None:
         """L5 importing from L0 is allowed (downward)."""
-        ac = tmp_path / "agentic_core" / "L5_safety" / "reasoning"
+        ac = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "reasoning"
         ac.mkdir(parents=True)
         (ac / "agent.py").write_text(
             "from agentic_core.L0_routing.types import x\n",
@@ -200,7 +206,7 @@ class TestScanImportCompliance:
 
     def test_same_layer_import_allowed(self, tmp_path: Path) -> None:
         """Same-layer imports are allowed."""
-        ac = tmp_path / "agentic_core" / "L2_execution" / "scripts"
+        ac = tmp_path / L2_EXECUTION_DIR / "scripts"
         ac.mkdir(parents=True)
         (ac / "tool.py").write_text(
             "from agentic_core.L2_execution.types import y\n",
@@ -220,7 +226,7 @@ class TestFileCollector:
 
     def test_collects_agentic_core_only(self, clean_synthetic_repo: Path) -> None:
         files = _collect_python_files(clean_synthetic_repo)
-        assert all("agentic_core" in str(f) for f in files)
+        assert all(AGENTIC_CORE_DIR in str(f) for f in files)
 
     def test_sorted_output(self, clean_synthetic_repo: Path) -> None:
         files = _collect_python_files(clean_synthetic_repo)

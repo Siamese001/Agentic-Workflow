@@ -3,6 +3,11 @@
 import ast
 import pathlib
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    TESTS_DIR,
+)
+
 
 def _find_guardian_result_with_value_usage(root_dir: pathlib.Path) -> list[tuple[pathlib.Path, int, str]]:
     """
@@ -113,8 +118,8 @@ def test_no_artifact_class_value_usage_in_construction():
 
     # Scan specific directories
     scan_dirs = [
-        repo_root / "agentic_core" / "L0_routing" / "scripts",
-        repo_root / "tests" / "guardian",
+        repo_root / L0_ROUTING_DIR / "scripts",
+        repo_root / TESTS_DIR / "guardian",
     ]
 
     all_violations = []

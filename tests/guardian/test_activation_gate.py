@@ -16,6 +16,9 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L5_safety.enforcement.activation_gate import (
     ACTIVATION_GATE_VERSION,
     assert_activation_allowed,
@@ -179,7 +182,7 @@ class TestStructuralWiring:
 
     def test_single_activation_gate_module(self):
         """Exactly one activation_gate.py must exist under agentic_core/."""
-        matches = list(Path("agentic_core").rglob("activation_gate.py"))
+        matches = list(Path(AGENTIC_CORE_DIR).rglob("activation_gate.py"))
         assert len(matches) == 1, f"Expected 1 activation_gate.py, found {len(matches)}: {matches}"
 
     def test_dashboard_e2e_pipeline_calls_activation_gate(self):

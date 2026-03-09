@@ -22,12 +22,17 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L4_STATE_DIR,
+    TOOLS_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-L4_STATE_DIR = REPO_ROOT / "agentic_core" / "L4_state"
+L4_STATE_DIR = REPO_ROOT / L4_STATE_DIR
 
 # ---------------------------------------------------------------------------
 # §1  SEAM WIRING CONTRACT
@@ -137,7 +142,7 @@ def test_cap_registry_get_or_fetch_miss():
 
     fake = _make_fake_cache()
     cache = CapabilityRegistryCache(cache=fake)
-    sentinel = {"tools": ["tool_a"]}
+    sentinel = {TOOLS_DIR: ["tool_a"]}
     result = cache.get_or_fetch("a" * 64, lambda: sentinel)
     assert result is sentinel
     fake.set_json.assert_called_once()
@@ -380,7 +385,7 @@ def test_cap_registry_cache_get_or_fetch_fetch_called_exactly_once_on_miss():
 
     def fetch_increments():
         call_count[0] += 1
-        return {"tools": []}
+        return {TOOLS_DIR: []}
 
     cache.get_or_fetch("a" * 64, fetch_increments)
     assert call_count[0] == 1, "fetch must be called exactly once"
@@ -533,7 +538,7 @@ def test_tombstoned_classes_reject_mixed_args():
 
 def test_l4_caching_redis_mcp_client_has_no_live_symbols():
     """redis_mcp_client.py must be a tombstone with no callable symbols."""
-    redis_mcp = REPO_ROOT / "agentic_core" / "L4_state" / "caching" / "redis_mcp_client.py"
+    redis_mcp = REPO_ROOT / L4_STATE_DIR / "caching" / "redis_mcp_client.py"
     source = redis_mcp.read_text(encoding="utf-8", errors="replace")
     assert "TOMBSTONED" in source, "redis_mcp_client.py must be tombstoned"
     tree = ast.parse(source, filename=str(redis_mcp))

@@ -1,11 +1,13 @@
 ---
 name: evidence-bundle
-description: Captures raw command outputs into a single phase evidence file using PowerShell Tee-Object. Use when starting a phase, executing commands, or performing post-commit verification. Provides the canonical evidence template, command capture snippets, and post-commit verification block.
+description: Captures raw command outputs into a single phase evidence file using PowerShell Tee-Object. Use when starting a phase, executing commands, or performing post-commit verification. Provides the canonical evidence template, command capture snippets, and post-commit verification block. REQUIRES DEPENDENCY_GRAPH section per §0.
 ---
 
 # Evidence Bundle Skill
 
-Provides three artifacts for evidence-first phase execution:
+**PREREQUISITE:** `ast-first-gate` skill MUST be invoked first (§0 DEFAULT ANALYSIS MODE).
+
+Provides three artifacts for evidence-first phase execution with mandatory AST dependency graph documentation:
 
 ## Files
 

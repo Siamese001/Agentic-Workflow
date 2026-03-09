@@ -12,6 +12,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 
 def test_policy_hash_computed_from_actual_file():
     """
@@ -22,13 +26,7 @@ def test_policy_hash_computed_from_actual_file():
     Per .windsurfrules §1.7: Deterministic decision surfaces - identical input → identical output.
     """
     # Compute expected hash from actual policy file
-    policy_file = (
-        Path(__file__).resolve().parents[5]
-        / "agentic_core"
-        / "L0_routing"
-        / "policy"
-        / "v15_policy_pack.json"
-    )
+    policy_file = Path(__file__).resolve().parents[5] / L0_ROUTING_DIR / "policy" / "v15_policy_pack.json"
     assert policy_file.exists(), f"Policy file not found: {policy_file}"
 
     expected_hash = hashlib.sha256(policy_file.read_bytes()).hexdigest()
@@ -49,13 +47,7 @@ def test_policy_hash_deterministic_replay():
 
     Per .windsurfrules §1.7: Deterministic decision surfaces - replay must be stable.
     """
-    policy_file = (
-        Path(__file__).resolve().parents[5]
-        / "agentic_core"
-        / "L0_routing"
-        / "policy"
-        / "v15_policy_pack.json"
-    )
+    policy_file = Path(__file__).resolve().parents[5] / L0_ROUTING_DIR / "policy" / "v15_policy_pack.json"
     if not policy_file.exists():
         pytest.fail("Policy file not found")
 
@@ -109,13 +101,7 @@ def test_policy_hash_not_hardcoded_sentinel():
     """
     HARDCODED_SENTINEL = hashlib.sha256(b"sovereign-policy-v1.0").hexdigest()
 
-    policy_file = (
-        Path(__file__).resolve().parents[5]
-        / "agentic_core"
-        / "L0_routing"
-        / "policy"
-        / "v15_policy_pack.json"
-    )
+    policy_file = Path(__file__).resolve().parents[5] / L0_ROUTING_DIR / "policy" / "v15_policy_pack.json"
     if not policy_file.exists():
         pytest.fail("Policy file not found - cannot validate sentinel rejection")
 

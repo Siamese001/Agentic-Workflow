@@ -11,6 +11,13 @@ from typing import Any
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 
@@ -72,12 +79,12 @@ class MockDiscoveryScanner:
 
         # Mock file discovery based on patterns
         mock_files = [
-            ("agentic_core/L1_cognition/reasoning/TestAgent.py", "TestAgent", "L1_cognition"),
-            ("agentic_core/L2_execution/engines/ExecutorAgent.py", "ExecutorAgent", "L2_execution"),
+            ("agentic_core/L1_cognition/reasoning/TestAgent.py", "TestAgent", L1_COGNITION_DIR),
+            ("agentic_core/L2_execution/engines/ExecutorAgent.py", "ExecutorAgent", L2_EXECUTION_DIR),
             (
                 "agentic_core/L3_orchestration/agents/OrchestratorAgent.py",
                 "OrchestratorAgent",
-                "L3_orchestration",
+                L3_ORCHESTRATION_DIR,
             ),
         ]
 
@@ -168,7 +175,7 @@ def test_req298_discovery_scan_determinism():
     """REQ-298: Test that discovery scan is deterministic."""
     # Given
     scanner = MockDiscoveryScanner()
-    root_path = "agentic_core"
+    root_path = AGENTIC_CORE_DIR
     patterns = ["**/reasoning/*.py", "**/engines/*.py"]
 
     # When - Run scan twice with identical inputs
@@ -202,7 +209,7 @@ def test_req337_promotion_decision_determinism():
     candidate = AgentCandidate(
         file_path="test/agent.py",
         class_name="TestAgent",
-        layer="L1_cognition",
+        layer=L1_COGNITION_DIR,
         confidence_score=0.9,
         discovery_hash=hashlib.sha256(b"test_agent").hexdigest(),
     )
@@ -234,16 +241,16 @@ def test_discovery_scan_different_inputs():
     patterns1 = ["**/reasoning/*.py"]
     patterns2 = ["**/engines/*.py"]
 
-    result1 = scanner.scan_agents("agentic_core", patterns1)
+    result1 = scanner.scan_agents(AGENTIC_CORE_DIR, patterns1)
     scanner.scan_count = 0  # Reset
-    result2 = scanner.scan_agents("agentic_core", patterns2)
+    result2 = scanner.scan_agents(AGENTIC_CORE_DIR, patterns2)
 
     # Then - Results should be different
     assert result1.scan_id != result2.scan_id, "Different patterns should produce different scan IDs"
 
     # But replay should be identical
     scanner.scan_count = 0
-    result1_replay = scanner.scan_agents("agentic_core", patterns1)
+    result1_replay = scanner.scan_agents(AGENTIC_CORE_DIR, patterns1)
     assert result1.scan_id == result1_replay.scan_id, "Replay must be identical"
 
 
@@ -323,7 +330,7 @@ def test_discovery_promotion_integration():
     blueprint_hash = hashlib.sha256(b"integration_test").hexdigest()
 
     # When - Scan and then make promotion decisions
-    scan_result = scanner.scan_agents("agentic_core", ["**/*.py"])
+    scan_result = scanner.scan_agents(AGENTIC_CORE_DIR, ["**/*.py"])
 
     promotion_decisions = []
     for candidate in scan_result.candidates:
@@ -338,7 +345,7 @@ def test_discovery_promotion_integration():
     decider.decision_count = 0
     decider.semantic_clock = 0
 
-    scan_result_replay = scanner.scan_agents("agentic_core", ["**/*.py"])
+    scan_result_replay = scanner.scan_agents(AGENTIC_CORE_DIR, ["**/*.py"])
     promotion_decisions_replay = []
 
     for candidate in scan_result_replay.candidates:

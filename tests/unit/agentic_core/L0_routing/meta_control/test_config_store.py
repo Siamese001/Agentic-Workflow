@@ -7,6 +7,9 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_RG_DIR,
+)
 from agentic_core.L0_routing.meta_control.config_store import (
     _version_path,
     apply_change_package_readonly,
@@ -47,35 +50,35 @@ class TestVersionIncrement:
     def test_sequential_versions(self, tmp_path: Path) -> None:
         s1 = write_next_version(
             tmp_path,
-            "apps_rg",
+            APPS_RG_DIR,
             "routing_thresholds",
             {"threshold": 0.5},
             _CLOCK,
         )
         assert s1.config_version == 1
-        assert _version_path(tmp_path, "apps_rg", "routing_thresholds", 1).exists()
+        assert _version_path(tmp_path, APPS_RG_DIR, "routing_thresholds", 1).exists()
         s2 = write_next_version(
             tmp_path,
-            "apps_rg",
+            APPS_RG_DIR,
             "routing_thresholds",
             {"threshold": 0.7},
             _CLOCK,
         )
         assert s2.config_version == 2
-        assert _version_path(tmp_path, "apps_rg", "routing_thresholds", 2).exists()
+        assert _version_path(tmp_path, APPS_RG_DIR, "routing_thresholds", 2).exists()
         assert s1.trace_id != s2.trace_id
 
 
 class TestAtomicWriteConsistency:
     def test_current_matches_last_version(self, tmp_path: Path) -> None:
         payload = {"key": "value", "nested": {"a": 1}}
-        write_next_version(tmp_path, "apps_rg", "routing_thresholds", payload, _CLOCK)
-        current = load_current(tmp_path, "apps_rg", "routing_thresholds")
-        vf = _version_path(tmp_path, "apps_rg", "routing_thresholds", 1)
+        write_next_version(tmp_path, APPS_RG_DIR, "routing_thresholds", payload, _CLOCK)
+        current = load_current(tmp_path, APPS_RG_DIR, "routing_thresholds")
+        vf = _version_path(tmp_path, APPS_RG_DIR, "routing_thresholds", 1)
         assert current == json.loads(vf.read_text(encoding="utf-8"))
-        write_next_version(tmp_path, "apps_rg", "routing_thresholds", {"key": "updated"}, _CLOCK)
-        current2 = load_current(tmp_path, "apps_rg", "routing_thresholds")
-        vf2 = _version_path(tmp_path, "apps_rg", "routing_thresholds", 2)
+        write_next_version(tmp_path, APPS_RG_DIR, "routing_thresholds", {"key": "updated"}, _CLOCK)
+        current2 = load_current(tmp_path, APPS_RG_DIR, "routing_thresholds")
+        vf2 = _version_path(tmp_path, APPS_RG_DIR, "routing_thresholds", 2)
         assert current2 == json.loads(vf2.read_text(encoding="utf-8"))
 
 
@@ -150,27 +153,27 @@ class TestFailClosed:
 
     def test_load_current_invalid_component(self, tmp_path: Path) -> None:
         with pytest.raises(ValueError, match="COMPONENT_NOT_MUTABLE"):
-            load_current(tmp_path, "apps_rg", "guardian_contract")
+            load_current(tmp_path, APPS_RG_DIR, "guardian_contract")
 
     def test_write_next_version_empty_app_id(self, tmp_path: Path) -> None:
         with pytest.raises(ValueError, match="APP_ID_EMPTY"):
             write_next_version(tmp_path, "", "routing_thresholds", {}, _CLOCK)
 
     def test_load_current_returns_empty_on_missing(self, tmp_path: Path) -> None:
-        assert load_current(tmp_path, "apps_rg", "routing_thresholds") == {}
+        assert load_current(tmp_path, APPS_RG_DIR, "routing_thresholds") == {}
 
 
 class TestSnapshotDeterminism:
     def test_identical_inputs_produce_identical_trace(self) -> None:
         s1 = build_config_snapshot(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             target_component="routing_thresholds",
             config_version=1,
             payload={"threshold": 0.5},
             semantic_clock=_CLOCK,
         )
         s2 = build_config_snapshot(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             target_component="routing_thresholds",
             config_version=1,
             payload={"threshold": 0.5},
@@ -184,7 +187,7 @@ class TestDeltaVersionGap:
     def test_version_gap_rejected(self) -> None:
         with pytest.raises(ValueError, match="VERSION_GAP"):
             build_config_delta(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 target_component="routing_thresholds",
                 from_version=1,
                 to_version=3,

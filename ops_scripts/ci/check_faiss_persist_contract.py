@@ -31,11 +31,18 @@ import ast
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 
 _SCAN_ROOTS = [
-    PROJECT_ROOT / "system_learning",
-    PROJECT_ROOT / "agentic_core",
+    PROJECT_ROOT / SYSTEM_LEARNING_DIR,
+    PROJECT_ROOT / AGENTIC_CORE_DIR,
 ]
 
 _EXCLUDE_DIRS = {
@@ -48,7 +55,7 @@ _EXCLUDE_DIRS = {
     ".mypy_cache",
     "dist",
     "build",
-    "archives",
+    ARCHIVES_DIR,
     "_quarantine",
 }
 

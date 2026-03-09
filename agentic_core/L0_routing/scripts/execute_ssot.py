@@ -3896,7 +3896,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
     arch_gov = agents["arch_governor"](project_root=REPO_ROOT)
 
     # [EXPANDED SCOPE] Audit all ENFORCED_TERRITORIES for comprehensive validation
-    from agentic_core.L5_safety.config.structure_blueprint_config import ENFORCED_TERRITORIES
+    from agentic_core.L5_safety.config.structure_blueprint import ENFORCED_TERRITORIES
 
     # If territory is in ENFORCED_TERRITORIES, audit all of them (not just current)
     # This ensures comprehensive architectural validation across all territories
@@ -7632,7 +7632,7 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
     need the full agent pipeline.
     """
     try:
-        from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+        from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
 
         all_keys = list(SOVEREIGN_TERRITORIES.keys())
     except ImportError:

@@ -6,6 +6,12 @@ Phase 3: Fix behavioral bar violations.
 import ast
 import pathlib
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
 
 def fix_test_imports(test_path: pathlib.Path) -> bool:
     """Fix imports in a test file to meet behavioral bar."""
@@ -17,7 +23,7 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
         ast.parse(content)
 
         # Determine the correct module import from test path
-        relative_path = test_path.relative_to("tests")
+        relative_path = test_path.relative_to(TESTS_DIR)
         module_parts = list(relative_path.parts[:-1])  # Remove test_*.py
         module_name = test_path.stem.replace("test_", "")
         module_import_path = ".".join(module_parts + [module_name])
@@ -65,13 +71,13 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
 
 def fix_critical_tests():
     """Fix critical test files to meet behavioral bar."""
-    test_root = pathlib.Path("tests")
+    test_root = get_validated_project_root() / TESTS_DIR
     fixed_count = 0
 
     # Focus on base agents and core modules first
     critical_dirs = [
-        test_root / "agentic_core" / "base_agents",
-        test_root / "agentic_core" / "core",
+        test_root / AGENTIC_CORE_DIR / "base_agents",
+        test_root / AGENTIC_CORE_DIR / "core",
     ]
 
     for critical_dir in critical_dirs:

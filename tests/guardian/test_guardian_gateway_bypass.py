@@ -16,6 +16,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -36,22 +41,22 @@ pytestmark = pytest.mark.guardian
 
 @pytest.fixture()
 def clean_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core").mkdir()
-    (tmp_path / "agentic_core" / "clean.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / AGENTIC_CORE_DIR).mkdir()
+    (tmp_path / AGENTIC_CORE_DIR / "clean.py").write_text("x = 1\n", encoding="utf-8")
     return tmp_path
 
 
 @pytest.fixture()
 def sdk_import_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core").mkdir()
-    (tmp_path / "agentic_core" / "bad.py").write_text("import openai\n", encoding="utf-8")
+    (tmp_path / AGENTIC_CORE_DIR).mkdir()
+    (tmp_path / AGENTIC_CORE_DIR / "bad.py").write_text("import openai\n", encoding="utf-8")
     return tmp_path
 
 
 @pytest.fixture()
 def direct_call_repo(tmp_path: Path) -> Path:
-    (tmp_path / "apps_lic").mkdir()
-    (tmp_path / "apps_lic" / "caller.py").write_text(
+    (tmp_path / APPS_LIC_DIR).mkdir()
+    (tmp_path / APPS_LIC_DIR / "caller.py").write_text(
         "from openai import OpenAI\nclient = OpenAI()\n", encoding="utf-8"
     )
     return tmp_path

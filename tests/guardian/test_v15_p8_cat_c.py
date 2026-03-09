@@ -20,13 +20,16 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+)
 from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MISSION_RUNNER_PATH = PROJECT_ROOT / "agentic_core" / "L3_orchestration" / "enforcement" / "mission_runner.py"
+MISSION_RUNNER_PATH = PROJECT_ROOT / L3_ORCHESTRATION_DIR / "enforcement" / "mission_runner.py"
 MISSION_RUNNER_SRC = MISSION_RUNNER_PATH.read_text(encoding="utf-8")
 MISSION_RUNNER_AST = ast.parse(MISSION_RUNNER_SRC)
 

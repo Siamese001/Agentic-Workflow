@@ -15,6 +15,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+)
+
 
 def to_smart_snake_case(name: str) -> str:
     """
@@ -106,10 +113,10 @@ class TestAcronymProtection:
     def test_no_acronym_files_use_smart_snake_case(self, project_root):
         """Verify test files use _to_smart_snake_case for naming."""
         violations = []
-        app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+        app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for app_dir in app_dirs:
-            test_dir = project_root / "tests" / "unit" / app_dir
+            test_dir = project_root / TESTS_DIR / "unit" / app_dir
             if not test_dir.exists():
                 continue
 
@@ -162,7 +169,7 @@ class TestSuffixHygiene:
     def test_all_stuttering_patterns(self, project_root):
         """Comprehensive test for all stuttering patterns."""
         all_violations = []
-        app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+        app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for app_dir in app_dirs:
             app_path = project_root / app_dir
@@ -210,7 +217,7 @@ class TestSuffixHygiene:
     def _find_stuttering_violations(self, project_root: Path, pattern: str) -> list:
         """Helper to find files matching a stuttering pattern."""
         violations = []
-        app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+        app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for app_dir in app_dirs:
             app_path = project_root / app_dir
@@ -233,9 +240,9 @@ class TestTestNamingConventions:
         """Verify all test files use snake_case naming."""
         violations = []
         test_dirs = [
-            project_root / "tests" / "unit" / "apps_lic",
-            project_root / "tests" / "unit" / "apps_rg",
-            project_root / "tests" / "unit" / "apps_shared",
+            project_root / TESTS_DIR / "unit" / APPS_LIC_DIR,
+            project_root / TESTS_DIR / "unit" / APPS_RG_DIR,
+            project_root / TESTS_DIR / "unit" / APPS_SHARED_DIR,
         ]
 
         for test_dir in test_dirs:
@@ -273,7 +280,7 @@ class TestTestNamingConventions:
     def test_test_files_not_in_source_directories(self, project_root):
         """Verify no test files exist in source directories."""
         violations = []
-        app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+        app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for app_dir in app_dirs:
             app_path = project_root / app_dir
@@ -327,7 +334,7 @@ class TestMECEComplianceArtifact:
                 "test_naming": "validated",
             },
             "metadata": {
-                "apps_scanned": ["apps_lic", "apps_rg", "apps_shared"],
+                "apps_scanned": [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR],
                 "protected_acronyms": PROTECTED_ACRONYMS,
                 "stuttering_patterns_checked": len(STUTTERING_PATTERNS),
             },

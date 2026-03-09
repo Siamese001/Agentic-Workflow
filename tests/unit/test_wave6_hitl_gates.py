@@ -14,12 +14,18 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 ROOT = Path(__file__).parent.parent.parent.parent
 
-LOGGER_PATH = ROOT / "system_learning" / "engines" / "hitl_decision_logger.py"
-LOCATION_HEALER_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "LocationHealerAgent.py"
-FILE_CLASS_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "FileClassificationAgent.py"
-EXECUTE_SSOT_PATH = ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+LOGGER_PATH = ROOT / SYSTEM_LEARNING_DIR / "engines" / "hitl_decision_logger.py"
+LOCATION_HEALER_PATH = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "LocationHealerAgent.py"
+FILE_CLASS_PATH = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "FileClassificationAgent.py"
+EXECUTE_SSOT_PATH = ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
 
 # ---------------------------------------------------------------------------

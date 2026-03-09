@@ -13,9 +13,17 @@ import shutil
 from datetime import datetime
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 ARCHIVE_ROOT = (
-    PROJECT_ROOT / "agentic_core" / "archived" / f"phase11_hunter_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
+    PROJECT_ROOT
+    / AGENTIC_CORE_DIR
+    / "archived"
+    / f"phase11_hunter_{datetime.now().strftime('%Y%m%d_%H%M%S')}"
 )
 
 # Files that should not exist ANYWHERE in agentic_core (except archived)
@@ -30,7 +38,7 @@ def hunt_and_archive():
     print("--- STARTING GHOST HUNT ---")
     print(f"Targeting: {WANTED_LIST}")
 
-    scan_dir = PROJECT_ROOT / "agentic_core"
+    scan_dir = PROJECT_ROOT / AGENTIC_CORE_DIR
     found_count = 0
 
     if not ARCHIVE_ROOT.exists():

@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L1_COGNITION_DIR,
+)
+
 
 class TestThoughtEngineAgent:
     """Tests for ThoughtEngineAgent core functionality."""
@@ -38,7 +42,7 @@ class TestIntentAnalysisAgent:
 
     def test_intent_analysis_module_structure(self):
         """Intent analysis should follow LCD structure."""
-        base = Path("agentic_core/L1_cognition")
+        base = Path(L1_COGNITION_DIR)
         required = ["reasoning", "types", "config"]
         for subfolder in required:
             path = base / subfolder
@@ -63,7 +67,7 @@ class TestCognitionLayerIntegrity:
 
     def test_no_subprocess_in_cognition(self):
         """L1 cognition should not import subprocess."""
-        base = Path("agentic_core/L1_cognition")
+        base = Path(L1_COGNITION_DIR)
         if not base.exists():
             pytest.fail("L1_cognition/ not found")
 
@@ -79,7 +83,7 @@ class TestCognitionLayerIntegrity:
 
     def test_cognition_agents_in_reasoning(self):
         """Agent classes in L1 should be in reasoning/."""
-        base = Path("agentic_core/L1_cognition")
+        base = Path(L1_COGNITION_DIR)
         if not base.exists():
             pytest.fail("L1_cognition/ not found")
 

@@ -15,7 +15,7 @@ import sys
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.security_util import safe_git_execute

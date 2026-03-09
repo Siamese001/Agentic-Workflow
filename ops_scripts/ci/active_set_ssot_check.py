@@ -30,6 +30,8 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
+
 # Scripts excluded from governance (self + helper)
 _GOVERNANCE_EXCLUDES = frozenset(
     {
@@ -240,7 +242,7 @@ def run_ssot_check(project_root: Path) -> tuple[int, list[str], list[str]]:
     Returns:
         Tuple of (exit_code, governed_scripts, violations).
     """
-    ci_dir = project_root / "ops_scripts" / "ci"
+    ci_dir = project_root / OPS_SCRIPTS_DIR / "ci"
     governed = discover_governed_scripts(ci_dir)
     all_violations: list[str] = []
 

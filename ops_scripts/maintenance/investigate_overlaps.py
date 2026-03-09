@@ -2,7 +2,9 @@ import hashlib
 import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+PROJECT_ROOT = get_validated_project_root()
 
 # Groups to investigate based on naming patterns
 GROUPS = {
@@ -26,7 +28,7 @@ def investigate():
     for group_name, filenames in GROUPS.items():
         print(f"\n--- Group: {group_name} ---")
         found_files = []
-        for root, _, files in os.walk(PROJECT_ROOT / "agentic_core"):
+        for root, _, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
             for f in files:
                 if f in filenames:
                     found_files.append(Path(root) / f)

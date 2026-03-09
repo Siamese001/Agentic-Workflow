@@ -14,8 +14,10 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent.parent
+project_root = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
@@ -49,7 +51,7 @@ def sync_pre_commit(dry_run: bool = False):
     print(f"   [PATTERN] Files: {files_pattern}")
 
     # Locate the pre-commit config
-    config_path = project_root / "agentic_core" / "L0_routing" / "scripts" / ".pre-commit-config.yaml"
+    config_path = project_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / ".pre-commit-config.yaml"
 
     if not config_path.exists():
         print(f"   [!] Config not found at: {config_path}")

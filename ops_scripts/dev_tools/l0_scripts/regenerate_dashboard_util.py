@@ -19,6 +19,12 @@ import os
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    get_validated_project_root,
+)
+
 # Windows UTF-8 support
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
@@ -26,7 +32,7 @@ if sys.platform.startswith("win"):
     sys.stderr.reconfigure(encoding="utf-8", errors="replace")
 
 # Setup project root
-PROJECT_ROOT = Path(__file__).parent.parent
+PROJECT_ROOT = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -38,7 +44,7 @@ def regenerate_full():
     print("=" * 70)
 
     # Import and run the full regeneration script
-    script_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts" / "regenerate_dashboard_full.py"
+    script_path = PROJECT_ROOT / L0_ROUTING_DIR / "scripts" / "regenerate_dashboard_full.py"
 
     if not script_path.exists():
         print(f"❌ Script not found: {script_path}")
@@ -223,7 +229,7 @@ def regenerate_data_only():
 
     # Write to dashboard_data.js
     dashboard_data_file = (
-        PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
+        PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "data" / "dashboard_data.js"
     )
     with open(dashboard_data_file, "w", encoding="utf-8") as f:
         f.write("// Auto-generated dashboard data\n")

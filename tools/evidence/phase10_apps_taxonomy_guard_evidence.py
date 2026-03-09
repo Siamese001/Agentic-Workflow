@@ -7,15 +7,11 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
 
 def get_repo_root() -> Path:
-    """Find repository root by walking up to find .git directory."""
-    current = Path(__file__).resolve()
-    while current.parent != current:
-        if (current / ".git").exists():
-            return current
-        current = current.parent
-    raise RuntimeError("Could not find repository root")
+    return get_validated_project_root()
 
 
 def run_command(cmd: list[str], cwd: Path) -> str:
@@ -103,7 +99,7 @@ def main():
 
     # 5) Token scan for wall-clock and filesystem write tokens
     print("Scanning for forbidden tokens...")
-    guard_file = repo_root / "agentic_core" / "L0_routing" / "enforcement" / "apps_taxonomy_guard.py"
+    guard_file = repo_root / AGENTIC_CORE_DIR / "L0_routing" / "enforcement" / "apps_taxonomy_guard.py"
 
     wall_clock_tokens = [
         "datetime.now",

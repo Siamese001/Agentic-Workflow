@@ -36,8 +36,13 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 # Directories to scan (relative to repo root)
-SCAN_ROOTS = ("agentic_core", "ops_scripts")
+SCAN_ROOTS = (AGENTIC_CORE_DIR, OPS_SCRIPTS_DIR)
 
 # Existing P2 inventory location
 P2_INVENTORY_REL = "docs/reports/plans/v15_phase2_wave2_1_runtime_entrypoints.json"
@@ -132,7 +137,7 @@ def resolve_repo_root(start: Path | None = None) -> Path:
     """Walk upward from *start* until repo markers are found."""
     cur = (start or Path(__file__)).resolve()
     for p in (cur, *cur.parents):
-        if (p / "agentic_core").is_dir() and (p / "ops_scripts").is_dir():
+        if (p / AGENTIC_CORE_DIR).is_dir() and (p / OPS_SCRIPTS_DIR).is_dir():
             return p
     raise RuntimeError(f"Unable to resolve repo root from: {cur}")
 

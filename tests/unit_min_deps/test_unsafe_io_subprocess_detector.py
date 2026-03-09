@@ -10,8 +10,16 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TOOLS_DIR,
+)
+
 # Add repo root to path for imports
-repo_root = Path(__file__).resolve().parents[2]
+repo_root = Path(__file__).resolve().parents[3]
 if str(repo_root) not in sys.path:
     sys.path.insert(0, str(repo_root))
 
@@ -95,17 +103,17 @@ def read_something():
         """Test that detector can scan actual agent code paths."""
         # Scan scoped areas for actual findings
         scoped_dirs = [
-            repo_root / "agentic_core" / "L0_routing" / "reasoning",
-            repo_root / "agentic_core" / "L1_cognition" / "reasoning",
-            repo_root / "agentic_core" / "L2_execution" / "reasoning",
-            repo_root / "agentic_core" / "L3_orchestration" / "reasoning",
-            repo_root / "agentic_core" / "apps_lic" / "reasoning",
-            repo_root / "agentic_core" / "apps_rg" / "reasoning",
-            repo_root / "agentic_core" / "apps_shared" / "reasoning",
-            repo_root / "agentic_core" / "tools",
-            repo_root / "agentic_core" / "L0_routing" / "scripts",
-            repo_root / "agentic_core" / "L1_cognition" / "scripts",
-            repo_root / "agentic_core" / "L2_execution" / "scripts",
+            repo_root / AGENTIC_CORE_DIR / "L0_routing" / "reasoning",
+            repo_root / AGENTIC_CORE_DIR / "L1_cognition" / "reasoning",
+            repo_root / AGENTIC_CORE_DIR / "L2_execution" / "reasoning",
+            repo_root / AGENTIC_CORE_DIR / "L3_orchestration" / "reasoning",
+            repo_root / APPS_LIC_DIR / "reasoning",
+            repo_root / APPS_RG_DIR / "reasoning",
+            repo_root / APPS_SHARED_DIR / "reasoning",
+            repo_root / TOOLS_DIR,
+            repo_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts",
+            repo_root / AGENTIC_CORE_DIR / "L1_cognition" / "scripts",
+            repo_root / AGENTIC_CORE_DIR / "L2_execution" / "scripts",
         ]
 
         all_findings = []

@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L4_STATE_DIR,
+)
+
 
 class TestStateLedgerAgent:
     """Tests for state ledger functionality."""
@@ -52,7 +56,7 @@ class TestStateLayerIntegrity:
 
     def test_no_subprocess_in_state(self):
         """L4 state should not import subprocess."""
-        base = Path("agentic_core/L4_state")
+        base = Path(L4_STATE_DIR)
         if not base.exists():
             pytest.fail("L4_state/ not found")
 
@@ -68,7 +72,7 @@ class TestStateLayerIntegrity:
 
     def test_state_agents_in_reasoning(self):
         """Agent classes in L4 should be in reasoning/."""
-        base = Path("agentic_core/L4_state")
+        base = Path(L4_STATE_DIR)
         if not base.exists():
             pytest.fail("L4_state/ not found")
 

@@ -19,6 +19,10 @@ import sys
 import tempfile
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -263,9 +267,9 @@ class TestE2EDocumentation:
 
         if guide_path.exists():
             # Check referenced modules exist
-            assert (PROJECT_ROOT / "agentic_core" / "utils" / "report_location_validator_types.py").exists()
+            assert (PROJECT_ROOT / AGENTIC_CORE_DIR / "utils" / "report_location_validator_types.py").exists()
             assert (
-                PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "ReportLocationAgent.py"
+                PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "ReportLocationAgent.py"
             ).exists()
             assert (PROJECT_ROOT / "scripts" / "hooks" / "validate_report_location.py").exists()
 

@@ -11,11 +11,20 @@ from pathlib import Path
 
 import pytest
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
-SCANNER = REPO_ROOT / "ops_scripts" / "ci" / "scan_llm_validator_calls.py"
-ALLOWLIST = REPO_ROOT / "ops_scripts" / "ci" / "llm_validator_allowlist.json"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+)
 
-sys.path.insert(0, str(REPO_ROOT / "ops_scripts" / "ci"))
+REPO_ROOT = Path(__file__).resolve().parents[2]
+SCANNER = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "scan_llm_validator_calls.py"
+ALLOWLIST = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "llm_validator_allowlist.json"
+
+sys.path.insert(0, str(REPO_ROOT / OPS_SCRIPTS_DIR / "ci"))
 
 
 def _import_scanner():
@@ -51,7 +60,7 @@ def test_no_new_llm_validator_calls() -> None:
     allowlist = scanner._load_allowlist(ALLOWLIST)
 
     all_hits = []
-    scan_roots = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+    scan_roots = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
     for root_name in scan_roots:
         root = REPO_ROOT / root_name
         if not root.exists():
@@ -80,7 +89,7 @@ def test_ml_import_count_does_not_grow() -> None:
     scanner = _import_scanner()
 
     ml_hits = []
-    scan_roots = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+    scan_roots = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
     for root_name in scan_roots:
         root = REPO_ROOT / root_name
         if not root.exists():

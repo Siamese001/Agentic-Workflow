@@ -18,6 +18,11 @@ import time
 from dataclasses import dataclass, field
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 from agentic_core.L1_cognition.types.cache_types import (
     MAX_SIMILARITY_THRESHOLD,
     MAX_TTL_SECONDS,
@@ -89,24 +94,24 @@ class CacheStrategyManager:
     def _initialize_default_configs(self) -> None:
         """Initialize default domain configurations."""
         self.domain_configs = {
-            "agentic_core": DomainConfig(
-                domain="agentic_core",
+            AGENTIC_CORE_DIR: DomainConfig(
+                domain=AGENTIC_CORE_DIR,
                 ttl_seconds=3600,  # 1 hour
                 similarity_threshold=0.85,
                 max_cache_size=10000,
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
-            "apps_lic": DomainConfig(
-                domain="apps_lic",
+            APPS_LIC_DIR: DomainConfig(
+                domain=APPS_LIC_DIR,
                 ttl_seconds=7200,  # 2 hours (LIC has longer campaign cycles)
                 similarity_threshold=0.92,  # Higher threshold from LICAgentBase
                 max_cache_size=5000,
                 eviction_policy=EvictionPolicy.LRU,
                 max_healing_depth=5,
             ),
-            "apps_rg": DomainConfig(
-                domain="apps_rg",
+            APPS_RG_DIR: DomainConfig(
+                domain=APPS_RG_DIR,
                 ttl_seconds=3600,  # 1 hour
                 similarity_threshold=0.85,  # From RGAgentBase
                 max_cache_size=5000,
@@ -244,11 +249,11 @@ class CacheStrategyManager:
         current_depth = self._healing_depths.get(key, 0)
 
         # Get domain from agent name (heuristic)
-        domain = "agentic_core"
+        domain = AGENTIC_CORE_DIR
         if "Lic" in agent_name or "LIC" in agent_name:
-            domain = "apps_lic"
+            domain = APPS_LIC_DIR
         elif "Rg" in agent_name or "RG" in agent_name:
-            domain = "apps_rg"
+            domain = APPS_RG_DIR
 
         max_depth = self.get_domain_config(domain).max_healing_depth
 

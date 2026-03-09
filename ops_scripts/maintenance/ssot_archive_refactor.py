@@ -14,6 +14,12 @@ import argparse
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+    get_validated_project_root,
+)
+
 
 def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
     """Find lines with hardcoded 'archives' strings."""
@@ -133,12 +139,12 @@ def main():
     print(f"{'=' * 70}\n")
 
     # Scan agentic_core for hardcoded archives
-    agentic_core = Path("agentic_core")
+    agentic_core = get_validated_project_root() / AGENTIC_CORE_DIR
     files_to_fix = []
 
     for py_file in agentic_core.rglob("*.py"):
         # Skip archives directory itself
-        if "archives" in py_file.parts:
+        if ARCHIVES_DIR in py_file.parts:
             continue
         if "__pycache__" in py_file.parts:
             continue

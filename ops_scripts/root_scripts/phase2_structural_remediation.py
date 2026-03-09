@@ -7,6 +7,13 @@ import json
 import pathlib
 import shutil
 
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+_ROOT = get_validated_project_root()
+
 
 def load_mislocated_tests() -> list[dict]:
     """Identify all mislocated tests that need to be moved."""
@@ -18,7 +25,7 @@ def load_mislocated_tests() -> list[dict]:
     for module in report["modules"]:
         if module["status"] == "MISLOCATED":
             # Find the actual test file
-            test_root = pathlib.Path("tests")
+            test_root = _ROOT / TESTS_DIR
             expected_name = pathlib.Path(module["expected_test"]).name
 
             # Search for the test file
@@ -120,7 +127,7 @@ def move_all_mislocated_tests():
 
     # Clean up empty directories
     print("Cleaning empty directories...")
-    clean_empty_directories(pathlib.Path("tests"))
+    clean_empty_directories(_ROOT / TESTS_DIR)
 
     print("\nSummary:")
     print(f"  Moved: {moved_count}")

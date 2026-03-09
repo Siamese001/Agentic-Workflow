@@ -28,8 +28,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = ROOT / "agentic_core"
+AGENTIC_CORE = ROOT / AGENTIC_CORE_DIR
 BASE_AGENTS = AGENTIC_CORE / "base_agents"
 
 pytestmark = pytest.mark.unit_min_deps
@@ -55,7 +60,7 @@ CANONICAL_FILES = {
 SHIM_TO_CANONICAL = {
     AGENTIC_CORE / "L5_safety" / "utils" / "decorators_util.py": "agentic_core.utils.decorators_util",
     AGENTIC_CORE
-    / "L0_routing"
+    / L0_ROUTING_DIR
     / "utils"
     / "timeout_decorator_util.py": "agentic_core.utils.timeout_decorator_util",
 }

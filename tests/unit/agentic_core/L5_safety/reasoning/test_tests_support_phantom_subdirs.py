@@ -4,7 +4,7 @@ Regression tests for phantom L-layer subdirectory creation under tests/support/.
 Bug 1 root cause: Healing agents created l1_cognition/, l2_execution/, etc. inside
 tests/support/ and duplicated agent files there. These tests enforce multi-layer protection:
 
-  Layer 1 — Blueprint invariant: SOVEREIGN_TERRITORIES['tests']['subfolders']['support']
+  Layer 1 — Blueprint invariant: SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']['support']
              has no declared subfolders → healing agents can never create canonical subdirs.
   Layer 2 — Enforcement gap (documented): _enforce_tests_structure checks only
              rel.parts[0] against the approved set. Files inside tests/support/l1_cognition/
@@ -22,9 +22,9 @@ These tests verify:
 ## BRANCH_INVENTORY
 | file | function | branch | expected | test |
 |------|----------|--------|----------|------|
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"]["support"] | no subfolders key | support stays flat | test_support_has_no_declared_subfolders_in_blueprint |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"] | "support" key exists | support is approved | test_support_is_approved_tests_subfolder |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"] | no l*_* top-level keys | no l-layer approved | test_no_l_layer_names_approved_at_tests_top_level |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"]["support"] | no subfolders key | support stays flat | test_support_has_no_declared_subfolders_in_blueprint |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | "support" key exists | support is approved | test_support_is_approved_tests_subfolder |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | no l*_* top-level keys | no l-layer approved | test_no_l_layer_names_approved_at_tests_top_level |
 | _constants.py | SOVEREIGN_TERRITORIES | all required_subfolders | no l*_* names | test_no_l_layer_in_any_required_subfolders |
 | HierarchyAgent.py | _enforce_tests_structure | tests/support/l1_cognition/Agent.py | SKIPPED (gap: parts[0]='support') | test_phantom_l1_cognition_under_support_not_detected |
 | HierarchyAgent.py | _enforce_tests_structure | tests/support/l2_execution/Agent.py | SKIPPED (gap) | test_phantom_l2_execution_under_support_not_detected |
@@ -49,6 +49,10 @@ from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+)
 
 _Mapping = (dict, MappingProxyType)
 
@@ -127,17 +131,17 @@ class TestBlueprintInvariants:
 
     def test_support_has_no_declared_subfolders_in_blueprint(self):
         """
-        HARD INVARIANT: SOVEREIGN_TERRITORIES['tests']['subfolders']['support']
+        HARD INVARIANT: SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']['support']
         must have no 'subfolders' key (or an empty one).
 
         Any declared subfolders would give healing agents permission to create
         L-layer subdirectories inside tests/support/.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         support_cfg = tests_subs.get("support", {}) if isinstance(tests_subs, _Mapping) else {}
         declared = support_cfg.get("subfolders", None) if isinstance(support_cfg, _Mapping) else None
         assert declared is None or len(declared) == 0, (
@@ -146,26 +150,26 @@ class TestBlueprintInvariants:
         )
 
     def test_support_is_approved_tests_subfolder(self):
-        """support must exist in SOVEREIGN_TERRITORIES['tests']['subfolders'] as a canonical dir."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        """support must exist in SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders'] as a canonical dir."""
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         assert isinstance(tests_subs, _Mapping), "tests.subfolders must be a dict or MappingProxyType"
         assert "support" in tests_subs, (
-            "'support' not found in SOVEREIGN_TERRITORIES['tests']['subfolders']. "
+            "'support' not found in SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']. "
             "This would cause healing agents to report all tests/support/ files as violations."
         )
 
     def test_no_l_layer_names_approved_at_tests_top_level(self):
-        """No l[0-9]_* names in SOVEREIGN_TERRITORIES['tests']['subfolders'] at top level."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        """No l[0-9]_* names in SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders'] at top level."""
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         if not isinstance(tests_subs, _Mapping):
             return
         violations = [k for k in tests_subs if l_pattern.match(k)]
@@ -176,7 +180,7 @@ class TestBlueprintInvariants:
 
     def test_no_l_layer_in_any_required_subfolders(self):
         """No l[0-9]_* names in required_subfolders of ANY territory."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -195,25 +199,25 @@ class TestBlueprintInvariants:
         )
 
     def test_no_depth_aligned_in_tests_subfolders(self):
-        """'depth_aligned' must not appear anywhere in SOVEREIGN_TERRITORIES['tests']['subfolders']."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        """'depth_aligned' must not appear anywhere in SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']."""
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         assert isinstance(tests_subs, _Mapping), "tests.subfolders must be a Mapping"
         assert "depth_aligned" not in tests_subs, (
-            "'depth_aligned' found in SOVEREIGN_TERRITORIES['tests']['subfolders']. "
+            "'depth_aligned' found in SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']. "
             "This would make files inside depth_aligned/ compliant with enforcement rules."
         )
 
     def test_support_cfg_has_purpose_key(self):
         """Sanity check: support entry is a non-empty Mapping with a purpose."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         support_cfg = tests_subs.get("support", None)
         assert support_cfg is not None, "support entry missing from tests subfolders"
         assert isinstance(support_cfg, _Mapping), "support entry must be a dict or MappingProxyType"
@@ -445,7 +449,7 @@ class TestCreateMissingStructureSupportFlat:
 
         agent._create_dir_with_init = _fake_create
 
-        territory_path = tmp_path / "tests" / "support"
+        territory_path = tmp_path / TESTS_DIR / "support"
         territory_path.mkdir(parents=True, exist_ok=True)
         support_config = {"purpose": "Shared test infrastructure"}
         results = {"violations_found": 0, "created": [], "errors": []}
@@ -470,7 +474,7 @@ class TestCreateMissingStructureSupportFlat:
 
         agent._create_dir_with_init = _fake_create
 
-        territory_path = tmp_path / "tests" / "support"
+        territory_path = tmp_path / TESTS_DIR / "support"
         territory_path.mkdir(parents=True)
         results = {"violations_found": 0, "created": [], "errors": []}
 
@@ -494,7 +498,7 @@ class TestCreateMissingStructureSupportFlat:
 
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")
         clean_st = {
-            "tests": {
+            TESTS_DIR: {
                 "required_subfolders": [],
                 "subfolders": {
                     "unit": {"purpose": "unit tests"},
@@ -510,7 +514,7 @@ class TestCreateMissingStructureSupportFlat:
             ),
             patch(
                 "agentic_core.L5_safety.reasoning.hierarchy_healer.ENFORCED_TERRITORIES",
-                frozenset({"tests"}),
+                frozenset({TESTS_DIR}),
             ),
         ):
             mock_wg.ensure_dir.side_effect = _track

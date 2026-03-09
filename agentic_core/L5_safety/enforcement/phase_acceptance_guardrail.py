@@ -11,6 +11,8 @@ Enforcement guard to prevent transgressions learned from Phase 2 closeout:
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+
 
 class PhaseAcceptanceGuard:
     """Enforces Phase 2 closeout lessons learned."""
@@ -23,7 +25,7 @@ class PhaseAcceptanceGuard:
     def check_testpaths_contract_sync(self) -> None:
         """Rule 46: Testpaths contract must be synchronized with pytest.ini."""
         pytest_ini = self.repo_root / "pytest.ini"
-        contract_test = self.repo_root / "tests" / "unit_min_deps" / "test_testpaths_contract.py"
+        contract_test = self.repo_root / TESTS_DIR / "unit_min_deps" / "test_testpaths_contract.py"
 
         if not pytest_ini.exists():
             self.errors.append("pytest.ini not found")

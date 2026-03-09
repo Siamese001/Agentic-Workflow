@@ -27,7 +27,7 @@ from pathlib import Path
 from typing import Any, Final
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
 

@@ -27,7 +27,7 @@ from typing import Any
 
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal

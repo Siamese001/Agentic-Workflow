@@ -36,6 +36,7 @@ from pathlib import Path
 from typing import Any
 
 # SSOT discovery - replaces rglob
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 try:
@@ -766,7 +767,7 @@ def detect_has_tests(class_node: ast.ClassDef, source: str, class_name: str = No
 def _check_external_test_file(agent_name: str) -> bool:
     """Check if an external test file exists for the given agent."""
     project_root = Path(__file__).parent.parent
-    tests_dir = project_root / "tests"
+    tests_dir = project_root / TESTS_DIR
 
     test_patterns = [
         tests_dir / f"test_{agent_name}.py",

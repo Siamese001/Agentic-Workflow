@@ -7,6 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 def get_repo_root() -> Path:
     """Find repository root by walking up to find .git directory."""
@@ -85,8 +89,8 @@ def main():
 
     # 4) Token scan for wall-clock tokens
     print("Scanning for wall-clock tokens...")
-    cid_registry_file = repo_root / "agentic_core" / "L2_execution" / "cid_registry.py"
-    reentry_loop_file = repo_root / "agentic_core" / "L2_execution" / "reentry_loop.py"
+    cid_registry_file = repo_root / AGENTIC_CORE_DIR / "L2_execution" / "cid_registry.py"
+    reentry_loop_file = repo_root / AGENTIC_CORE_DIR / "L2_execution" / "reentry_loop.py"
 
     wall_clock_tokens = [
         "datetime.now",

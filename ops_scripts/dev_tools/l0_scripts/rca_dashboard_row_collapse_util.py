@@ -9,7 +9,7 @@ and analyzes the health score calculation logic.
 import json
 
 # Import SSOT for dashboard directory - NO HARDCODING
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )

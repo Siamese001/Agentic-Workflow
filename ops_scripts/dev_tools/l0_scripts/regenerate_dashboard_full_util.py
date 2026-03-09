@@ -31,11 +31,13 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(
-    __file__,
-).parent.parent.parent.parent  # agentic_core/L0_routing/scripts -> project root
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+PROJECT_ROOT = get_validated_project_root()
 DISCOVERY_PATH = PROJECT_ROOT / "agent_discovery_full.json"
-DASHBOARD_PATH = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+DASHBOARD_PATH = (
+    PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards" / "autonomy_dashboard.html"
+)
 
 # Add project root to path for imports
 # guardian: allow-global-mutation

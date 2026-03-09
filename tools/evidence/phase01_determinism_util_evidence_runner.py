@@ -11,12 +11,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+REPO_ROOT = get_validated_project_root()
 EVIDENCE_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "phase_01_shared_determinism_util.md"
-DETERMINISM_UTIL = REPO_ROOT / "apps_shared" / "utils" / "determinism_util.py"
-TEST_FILE = REPO_ROOT / "tests" / "unit_min_deps" / "test_determinism_util.py"
+DETERMINISM_UTIL = REPO_ROOT / APPS_SHARED_DIR / "utils" / "determinism_util.py"
+TEST_FILE = REPO_ROOT / TESTS_DIR / "unit_min_deps" / "test_determinism_util.py"
 
 
 def run(argv: list[str]) -> tuple[int, str]:

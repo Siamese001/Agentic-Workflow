@@ -21,6 +21,8 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
+
 # Scripts that ARE the governance infrastructure — exempt from self-check.
 # Justification required for each entry.
 _EXEMPT_SCRIPTS = frozenset(
@@ -103,8 +105,8 @@ def _find_governed_references(tree: ast.AST, source: str) -> list[str]:
 
 
 def main() -> int:
-    project_root = Path(__file__).resolve().parents[2]
-    ci_dir = project_root / "ops_scripts" / "ci"
+    project_root = get_validated_project_root()
+    ci_dir = project_root / OPS_SCRIPTS_DIR / "ci"
 
     if not ci_dir.is_dir():
         print("FAIL: ops_scripts/ci/ not found", file=sys.stderr)

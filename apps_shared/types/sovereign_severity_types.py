@@ -11,6 +11,8 @@ from typing import Any
 
 from pydantic import BaseModel, Field
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 
@@ -3080,7 +3082,7 @@ class healing_report(sovereign_base_model_types):
         def __init__(self):
             self._report_id: str | None = None
             self._auditor_version: str = "v3.0"
-            self._target_scope: str = "agentic_core"
+            self._target_scope: str = AGENTIC_CORE_DIR
             self._violations_found: int = 0
             self._violations_fixed: int = 0
             self._healing_actions: list[dict[str, Any]] = []

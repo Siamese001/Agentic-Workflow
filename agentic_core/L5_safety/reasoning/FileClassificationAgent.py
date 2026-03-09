@@ -62,6 +62,14 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+)
+
 # SSOT: Import FileType and ExecutionMode helpers from the zero-dependency classification kernel
 from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,  # noqa: E402
@@ -116,7 +124,7 @@ def get_python_files_fast(root: Path) -> list[Path]:
     Scans only sovereign territories with SSOT-defined structure requirements.
     Excludes volatile/output directories (logs, archives) and gitignored paths.
     """
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
+    from agentic_core.L5_safety.config.structure_blueprint import (
         ENFORCED_TERRITORIES,
         VOLATILE_TERRITORIES,
     )
@@ -421,7 +429,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             Correct subfolder name (e.g., "config", "types", "reasoning"), or None.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             FILETYPE_TO_FOLDER,
         )
 
@@ -1596,7 +1604,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns empty set if clean, or the set of conflicting tags if found.
         Does NOT flag domain words (e.g., "agents" in "find_misnamed_agents_util.py").
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             COMPOUND_SUFFIX_CONFLICTS,
         )
 
@@ -1835,7 +1843,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             List of violation dicts with 'pattern' and 'reason' for each match.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             FORBIDDEN_FILENAME_PATTERNS,
         )
 
@@ -1907,7 +1915,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Also detects stuttering prefixes like r_g_ (should be rg_).
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             APP_SPECIFIC_PREFIXES,
             STUTTERING_PREFIX_MAP,
         )
@@ -1963,7 +1971,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns None if compliant, or a violation dict.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             APP_LIC_STRING_TERMS,
             APP_RG_STRING_TERMS,
         )
@@ -1988,9 +1996,9 @@ class FileClassificationAgent(*BASE_CLASSES):
             if stripped.startswith(("#", '"""', "'''")):
                 continue
             if "from apps_rg" in stripped or "import apps_rg" in stripped:
-                import_targets.setdefault("apps_rg", []).append(stripped)
+                import_targets.setdefault(APPS_RG_DIR, []).append(stripped)
             if "from apps_lic" in stripped or "import apps_lic" in stripped:
-                import_targets.setdefault("apps_lic", []).append(stripped)
+                import_targets.setdefault(APPS_LIC_DIR, []).append(stripped)
 
         # If file imports from EXACTLY ONE app → it belongs there
         if len(import_targets) == 1:
@@ -2565,7 +2573,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 - primary_suffix: recommended suffix (rightmost match)
                 - suggested_name: auto-corrected filename with single suffix
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             KNOWN_ARCHITECTURAL_SUFFIXES,
         )
 
@@ -2699,7 +2707,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         Returns:
             None if file is in a valid folder, or violation dict with eviction target.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             APPROVED_SUBFOLDERS,
             FOLDER_ALIASES,
             FOLDER_PURITY_RULES,
@@ -2812,7 +2820,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # as a substring but aren't actual Agent classes (no PascalCase *Agent.py suffix).
         if correct_folder is None and folder_name == "reasoning" and filename.endswith(".py"):
             file_type = self.classify_file(path)
-            from agentic_core.L5_safety.config.structure_blueprint_config import FILETYPE_TO_FOLDER
+            from agentic_core.L5_safety.config.structure_blueprint import FILETYPE_TO_FOLDER
 
             correct_folder = FILETYPE_TO_FOLDER.get(file_type)
             # SERVICE/singleton files route to enforcement/ even if they mention "agent"
@@ -3887,7 +3895,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         Returns True only if the class matches 2+ signals to avoid false positives.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SERVICE_CLASS_INDICATORS,
         )
 
@@ -4148,7 +4156,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         stem = src_path.stem
 
         # 1. Calculate Expected Test Name
-        test_dir = self.project_root / "tests"
+        test_dir = self.project_root / TESTS_DIR
         if not test_dir.exists():
             return
 
@@ -4766,7 +4774,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # Determine the Sovereign Root (App vs Core)
         # We search path parts to find the anchor directory
-        sovereign_roots = {"agentic_core", "apps_rg", "apps_lic", "apps_shared"}
+        sovereign_roots = {AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR}
         root_anchor = None
         root_index = -1
 

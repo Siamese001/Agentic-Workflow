@@ -10,8 +10,12 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-BASE_AGENTS = ROOT / "agentic_core" / "base_agents"
+BASE_AGENTS = ROOT / AGENTIC_CORE_DIR / "base_agents"
 
 # Shims are allowed — they re-export from canonical locations
 KNOWN_SHIMS = frozenset({"decorators.py", "timeout_decorator.py"})
@@ -92,7 +96,7 @@ class TestBaseAgentsPurity:
             "agentic_core/L5_safety/utils/decorators_util.py",
         }
         violations: list[str] = []
-        for py_file in (ROOT / "agentic_core").rglob("*.py"):
+        for py_file in (ROOT / AGENTIC_CORE_DIR).rglob("*.py"):
             if "__pycache__" in py_file.parts:
                 continue
             rel = str(py_file.relative_to(ROOT)).replace("\\", "/")

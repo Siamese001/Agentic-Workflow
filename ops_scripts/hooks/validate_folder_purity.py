@@ -16,6 +16,13 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+
 # Transient / non-source directories excluded from all scans.
 _EXCLUDE_DIRS = {
     "__pycache__",
@@ -49,7 +56,7 @@ def check_agent_placement():
     violations = []
 
     # Only scan project directories
-    project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    project_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     for py_file in sorted(Path(".").rglob("*.py")):
         if _is_excluded(py_file):
@@ -91,7 +98,7 @@ def check_types_purity():
     violations = []
 
     # Only scan project directories
-    project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    project_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     for py_file in sorted(Path(".").rglob("*_types.py")):
         if _is_excluded(py_file):
@@ -151,7 +158,7 @@ def check_engine_placement():
     violations = []
 
     # Only scan project directories
-    project_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    project_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     for py_file in sorted(Path(".").rglob("*Executor.py")):
         if _is_excluded(py_file):

@@ -21,8 +21,16 @@ import os
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BASELINE_FILE = PROJECT_ROOT / "ops_scripts" / "hooks" / "spine_bypass_baseline.txt"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    OPS_SCRIPTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
+BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "spine_bypass_baseline.txt"
 
 # ---------------------------------------------------------------------------
 # A) Banned direct instantiation
@@ -36,8 +44,8 @@ BANNED_INSTANTIATION = {
 
 # Files where banned instantiation IS allowed.
 INSTANTIATION_ALLOWLIST = {
-    PROJECT_ROOT / "apps_lic" / "engines" / "lic_spine_adapter.py",
-    PROJECT_ROOT / "apps_rg" / "engines" / "rg_spine_adapter.py",
+    PROJECT_ROOT / APPS_LIC_DIR / "engines" / "lic_spine_adapter.py",
+    PROJECT_ROOT / APPS_RG_DIR / "engines" / "rg_spine_adapter.py",
 }
 
 # ---------------------------------------------------------------------------
@@ -46,18 +54,18 @@ INSTANTIATION_ALLOWLIST = {
 
 # Directories where randomness is banned.
 RANDOMNESS_BANNED_DIRS = [
-    PROJECT_ROOT / "apps_lic" / "reasoning",
-    PROJECT_ROOT / "apps_lic" / "engines",
-    PROJECT_ROOT / "apps_rg" / "reasoning",
-    PROJECT_ROOT / "apps_rg" / "engines",
-    PROJECT_ROOT / "agentic_core",
+    PROJECT_ROOT / APPS_LIC_DIR / "reasoning",
+    PROJECT_ROOT / APPS_LIC_DIR / "engines",
+    PROJECT_ROOT / APPS_RG_DIR / "reasoning",
+    PROJECT_ROOT / APPS_RG_DIR / "engines",
+    PROJECT_ROOT / AGENTIC_CORE_DIR,
 ]
 
 # Scan roots for the full guard.
 SCAN_ROOTS = [
-    PROJECT_ROOT / "apps_lic",
-    PROJECT_ROOT / "apps_rg",
-    PROJECT_ROOT / "agentic_core",
+    PROJECT_ROOT / APPS_LIC_DIR,
+    PROJECT_ROOT / APPS_RG_DIR,
+    PROJECT_ROOT / AGENTIC_CORE_DIR,
 ]
 
 # Directory name segments to exclude from scanning.

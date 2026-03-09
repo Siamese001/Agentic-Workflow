@@ -1,3 +1,4 @@
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
@@ -266,7 +267,7 @@ class TestPytestConfigGuardBrittleMarkerDetection:
             )
 
             # Create conftest with brittle pattern
-            conftest = tmpdir / "tests" / "conftest.py"
+            conftest = tmpdir / TESTS_DIR / "conftest.py"
             _wg.ensure_dir(conftest.parent)
             _wg.write_text(
                 conftest,
@@ -296,7 +297,7 @@ class TestPytestConfigGuardBrittleMarkerDetection:
             )
 
             # Create conftest with robust pattern
-            conftest = tmpdir / "tests" / "conftest.py"
+            conftest = tmpdir / TESTS_DIR / "conftest.py"
             _wg.ensure_dir(conftest.parent)
             _wg.write_text(
                 conftest,

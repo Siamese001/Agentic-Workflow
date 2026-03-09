@@ -19,6 +19,9 @@ from unittest.mock import Mock
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
+)
 from agentic_core.L2_execution.healers.healing_provider_adapters import (
     GeminiInvokerAdapter,
     LocalAgentAdapter,
@@ -821,7 +824,7 @@ class TestThresholdUnification:
         import ast
         from pathlib import Path
 
-        healers_dir = Path(__file__).parents[5] / "agentic_core" / "L2_execution" / "healers"
+        healers_dir = Path(__file__).parents[5] / L2_EXECUTION_DIR / "healers"
         bad_files = []
         for py_file in healers_dir.glob("*.py"):
             if py_file.name == "healing_tier_config.py":

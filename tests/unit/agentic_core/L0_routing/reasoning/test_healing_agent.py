@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 
 class TestHealingAgent:
     """Tests for healing agent functionality."""
@@ -73,7 +77,7 @@ class TestMaintenanceLayerIntegrity:
 
     def test_maintenance_agents_in_reasoning(self):
         """Agent classes in L0 should be in reasoning/."""
-        base = Path("agentic_core/L0_routing")
+        base = Path(L0_ROUTING_DIR)
         if not base.exists():
             pytest.fail("L0_routing/ not found")
 

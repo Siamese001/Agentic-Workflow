@@ -15,6 +15,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -34,22 +39,22 @@ pytestmark = pytest.mark.guardian
 
 @pytest.fixture()
 def clean_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core").mkdir()
-    (tmp_path / "agentic_core" / "clean.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / AGENTIC_CORE_DIR).mkdir()
+    (tmp_path / AGENTIC_CORE_DIR / "clean.py").write_text("x = 1\n", encoding="utf-8")
     return tmp_path
 
 
 @pytest.fixture()
 def direct_commit_repo(tmp_path: Path) -> Path:
-    (tmp_path / "system_learning").mkdir()
-    (tmp_path / "system_learning" / "bad.py").write_text("version_store.commit(data)\n", encoding="utf-8")
+    (tmp_path / SYSTEM_LEARNING_DIR).mkdir()
+    (tmp_path / SYSTEM_LEARNING_DIR / "bad.py").write_text("version_store.commit(data)\n", encoding="utf-8")
     return tmp_path
 
 
 @pytest.fixture()
 def missing_gate_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core").mkdir()
-    (tmp_path / "agentic_core" / "bad.py").write_text("change_package.activate()\n", encoding="utf-8")
+    (tmp_path / AGENTIC_CORE_DIR).mkdir()
+    (tmp_path / AGENTIC_CORE_DIR / "bad.py").write_text("change_package.activate()\n", encoding="utf-8")
     return tmp_path
 
 

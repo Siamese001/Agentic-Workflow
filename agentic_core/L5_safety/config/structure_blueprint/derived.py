@@ -12,6 +12,11 @@ from __future__ import annotations
 from collections.abc import Mapping, Sequence
 from typing import Any, Final
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
     SOVEREIGN_TERRITORIES,
 )
@@ -98,9 +103,9 @@ def _derive_apps_subfolder_map(territory_name: str) -> dict[str, list[str]]:
 
 CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_core_subfolder_map()
 SUBFOLDER_METADATA: Final[Mapping[str, Mapping[str, Any]]] = _derive_subfolder_metadata()
-APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_rg")
-APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_lic")
-APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map("apps_shared")
+APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_RG_DIR)
+APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_LIC_DIR)
+APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = _derive_apps_subfolder_map(APPS_SHARED_DIR)
 
 # Type-safe alias
 agentic_core_registry: Final[Mapping[str, Sequence[str]]] = CORE_SUBFOLDER_MAP

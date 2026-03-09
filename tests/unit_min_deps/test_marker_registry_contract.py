@@ -16,6 +16,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -23,8 +28,8 @@ PYTEST_INI = ROOT / "pytest.ini"
 
 # Testpaths from pytest.ini — must match the explicit allowlist
 COLLECTED_DIRS = [
-    ROOT / "tests" / "unit_min_deps",
-    ROOT / "tests" / "integration" / "agentic_core",
+    ROOT / TESTS_DIR / "unit_min_deps",
+    ROOT / TESTS_DIR / "integration" / AGENTIC_CORE_DIR,
 ]
 
 # Markers that are built-in to pytest (never need registration)

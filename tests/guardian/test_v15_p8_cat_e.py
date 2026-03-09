@@ -16,13 +16,16 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
 from agentic_core.L0_routing.types.determinism_types import (
     FixConstraint,
     SurgicalManifest,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-SSOT_PATH = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+SSOT_PATH = PROJECT_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 SSOT_SRC = SSOT_PATH.read_text(encoding="utf-8")
 SSOT_AST = ast.parse(SSOT_SRC)
 

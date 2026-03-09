@@ -12,6 +12,8 @@ import json
 from dataclasses import dataclass, field
 from typing import Any, Final
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 # Constants
 EMBEDDING_DIMENSION: Final[int] = 1024  # BAAI/bge-m3 dimension
 MAX_TEXT_LENGTH: Final[int] = 8000  # Token limit approximation
@@ -34,7 +36,7 @@ class ViolationSignature:
     path: str = ""
     message: str = ""
     context: dict[str, Any] = field(default_factory=dict)
-    domain: str = "agentic_core"
+    domain: str = AGENTIC_CORE_DIR
 
     def to_text(self) -> str:
         """Convert signature to text for embedding."""
@@ -62,5 +64,5 @@ class ViolationSignature:
             path=violation.get("path", ""),
             message=violation.get("message", ""),
             context=violation.get("context", {}),
-            domain=violation.get("domain", "agentic_core"),
+            domain=violation.get("domain", AGENTIC_CORE_DIR),
         )

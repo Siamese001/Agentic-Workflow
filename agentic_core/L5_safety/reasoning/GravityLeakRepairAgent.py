@@ -765,7 +765,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             import re as _re
 
             _LAYER_DIR_PATTERN = _re.compile(r"^L[0-6]_")
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 SOVEREIGN_TERRITORIES as _ST,
             )
 

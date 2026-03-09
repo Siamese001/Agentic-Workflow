@@ -15,6 +15,8 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 # ============================================================================
 # CLASSIFICATION SUFFIX PATTERNS (Strings - Compiled Lazily)
 # ============================================================================
@@ -619,7 +621,7 @@ def get_folder_key_for_path(path: Path) -> str:
     - prompt_governance -> prompt_governance
     - L*/subfolder -> subfolder
     """
-    parts = path.relative_to("agentic_core").parts
+    parts = path.relative_to(AGENTIC_CORE_DIR).parts
 
     # Special case: config/agent_configs
     if len(parts) >= 3 and parts[0] == "config" and parts[1] == "agent_configs":

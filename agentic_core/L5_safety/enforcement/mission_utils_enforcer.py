@@ -7,8 +7,15 @@ from __future__ import annotations
 import importlib
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    L1_COGNITION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+)
+
 # Import SSOT registries
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
     APPS_SHARED_SUBFOLDER_MAP,
@@ -88,15 +95,15 @@ def get_placement_guidance(content_preview: str) -> str:
     content_lower = content_preview.lower()
 
     if any(x in content_lower for x in ["planner", "strategy", "reasoning", "mission"]):
-        return "agentic_core/L1_cognition"
+        return L1_COGNITION_DIR
     if "node" in content_lower or "execute" in content_lower:
-        return "agentic_core/L1_cognition/thought_engine"
+        return L1_COGNITION_DIR + "/thought_engine"
     if any(x in content_lower for x in ["router", "orchestrator", "fission", "hop"]):
-        return "agentic_core/L3_orchestration"
+        return L3_ORCHESTRATION_DIR
     if any(x in content_lower for x in ["pinecone", "redis", "storage", "cache"]):
-        return "agentic_core/L4_state"
+        return L4_STATE_DIR
     if any(x in content_lower for x in ["safety", "guardrail", "guard", "validator"]):
-        return "agentic_core/L5_safety"
+        return L5_SAFETY_DIR
     if any(x in content_lower for x in ["Metric", "telemetry", "trace", "observ"]):
         return "agentic_core/observability"
     if any(x in content_lower for x in ["prompt", "persona", "instruct"]):
@@ -105,7 +112,7 @@ def get_placement_guidance(content_preview: str) -> str:
         return "agentic_core/runtime/types"
 
     # Default fallback
-    return "agentic_core/L1_cognition"
+    return L1_COGNITION_DIR
 
 
 def get_best_target_l1(folder_name: str, approved_l1: set) -> str:

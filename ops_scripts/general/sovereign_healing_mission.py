@@ -11,9 +11,14 @@ import logging
 import sys
 from pathlib import Path
 
-# Add project root to path
-project_root = Path(__file__).resolve().parent.parent
-sys.path.insert(0, str(project_root))
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    get_validated_project_root,
+)
+
+project_root = get_validated_project_root()
 
 from agentic_core.L4_state.memory.runtime_state_guard import RuntimeStateGuard
 from agentic_core.L5_safety.reasoning.LocationHealerAgent import LocationHealerAgent
@@ -47,7 +52,7 @@ def run_mission():
 
     # 3. Target Territories for Scan
     # We focus on the high-probability drift zones
-    target_zones = [project_root / "apps_rg", project_root / "apps_lic"]
+    target_zones = [project_root / APPS_RG_DIR, project_root / APPS_LIC_DIR]
 
     logger.info(f"Scanning Target Zones: {[str(z.name) for z in target_zones]}")
 
@@ -63,7 +68,7 @@ def run_mission():
             continue
 
         for path in zone.rglob("*.py"):
-            if "apps_shared" in str(path):
+            if APPS_SHARED_DIR in str(path):
                 continue
 
             try:

@@ -10,6 +10,17 @@ from __future__ import annotations
 from collections.abc import Sequence
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+    TOOLS_DIR,
+)
+
 
 class RepoBuilder:
     """Builder for creating synthetic repository structures in tmp_path."""
@@ -20,7 +31,7 @@ class RepoBuilder:
 
     def create_layer(self, layer_name: str, subfolders: Sequence[str] | None = None) -> Path:
         """Create a layer directory with optional subfolders."""
-        layer_path = self.root / "agentic_core" / layer_name
+        layer_path = self.root / AGENTIC_CORE_DIR / layer_name
         layer_path.mkdir(parents=True, exist_ok=True)
 
         if subfolders:
@@ -113,7 +124,7 @@ def run_command(cmd: str) -> str:
 
     def create_nested_lcd(self, parent_domain: str, lcd_subfolder: str) -> Path:
         """Create a nested LCD subtree (violation)."""
-        path = self.root / "agentic_core" / parent_domain / lcd_subfolder
+        path = self.root / AGENTIC_CORE_DIR / parent_domain / lcd_subfolder
         path.mkdir(parents=True, exist_ok=True)
         self._touch_init(path)
         return path
@@ -135,13 +146,13 @@ def build_minimal_repo(tmp_path: Path) -> RepoBuilder:
     builder = RepoBuilder(tmp_path)
 
     # Create all L0-L6 layers with LCD subfolders
-    builder.create_lcd_layer("L0_routing", extras=["scripts"])
-    builder.create_lcd_layer("L1_cognition")
-    builder.create_lcd_layer("L2_execution", extras=["tools"])
-    builder.create_lcd_layer("L3_orchestration")
-    builder.create_lcd_layer("L4_state", extras=["memory"])
+    builder.create_lcd_layer(L0_ROUTING_DIR, extras=["scripts"])
+    builder.create_lcd_layer(L1_COGNITION_DIR)
+    builder.create_lcd_layer(L2_EXECUTION_DIR, extras=[TOOLS_DIR])
+    builder.create_lcd_layer(L3_ORCHESTRATION_DIR)
+    builder.create_lcd_layer(L4_STATE_DIR, extras=["memory"])
     builder.create_lcd_layer("L5_safety")
-    builder.create_lcd_layer("L6_observability", extras=["dashboards", "config"])
+    builder.create_lcd_layer(L6_OBSERVABILITY_DIR, extras=["dashboards", "config"])
 
     # Create global territories
     for territory in [
@@ -154,8 +165,8 @@ def build_minimal_repo(tmp_path: Path) -> RepoBuilder:
         "config",
         "utils",
     ]:
-        (tmp_path / "agentic_core" / territory).mkdir(parents=True, exist_ok=True)
-        builder._touch_init(tmp_path / "agentic_core" / territory)
+        (tmp_path / AGENTIC_CORE_DIR / territory).mkdir(parents=True, exist_ok=True)
+        builder._touch_init(tmp_path / AGENTIC_CORE_DIR / territory)
 
     return builder
 
@@ -169,8 +180,8 @@ def build_anomaly_repo(tmp_path: Path) -> RepoBuilder:
     builder.create_subprocess_file("L5_safety", "validators", "analysis_ops_validator.py")
 
     # C: L4 agents in wrong subfolder
-    builder.create_agent_file("L4_state", "enforcement", "CachedStateLedgerAgent")
-    builder.create_agent_file("L4_state", "memory", "CheckpointManagerAgent")
+    builder.create_agent_file(L4_STATE_DIR, "enforcement", "CachedStateLedgerAgent")
+    builder.create_agent_file(L4_STATE_DIR, "memory", "CheckpointManagerAgent")
 
     # D: Embedded agents in non-reasoning
     builder.create_types_file("L5_safety", "code_detection_types.py", with_agent=True)
@@ -188,7 +199,7 @@ def build_anomaly_repo(tmp_path: Path) -> RepoBuilder:
     )
 
     # I: Missing L6/config (remove it)
-    config_path = tmp_path / "agentic_core" / "L6_observability" / "config"
+    config_path = tmp_path / L6_OBSERVABILITY_DIR / "config"
     if config_path.exists():
         import shutil
 

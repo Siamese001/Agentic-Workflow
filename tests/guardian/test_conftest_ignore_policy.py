@@ -21,6 +21,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -46,7 +50,7 @@ _TICKET_REF_PATTERN = re.compile(r"TODO\([#\w-]+")
 _OWNER_PATTERN = re.compile(r"owner=@[\w-]+")
 _REVIEW_BY_PATTERN = re.compile(r"review_by=(\d{4}-\d{2}-\d{2})")
 
-CONFTEST_PATH = PROJECT_ROOT / "tests" / "guardian" / "conftest.py"
+CONFTEST_PATH = PROJECT_ROOT / TESTS_DIR / "guardian" / "conftest.py"
 
 # Inject "today" for deterministic test execution; override in fixtures if needed
 _TODAY: datetime.date = datetime.date.today()

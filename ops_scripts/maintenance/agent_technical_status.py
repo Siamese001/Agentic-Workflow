@@ -21,8 +21,13 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    get_validated_project_root,
+)
+
 # Add project root to path
-PROJECT_ROOT = Path(__file__).parent
+PROJECT_ROOT = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -55,7 +60,7 @@ class NuclearAuditor:
 
     def __init__(self, project_root: Path):
         self.project_root = project_root
-        self.agentic_core_dir = project_root / "agentic_core"
+        self.agentic_core_dir = project_root / AGENTIC_CORE_DIR
         self.structure_blueprint = self._load_structure_blueprint()
         self.agent_statuses: list[AgentTechnicalStatus] = []
 
@@ -209,11 +214,11 @@ class NuclearAuditor:
         relative_path = file_path.relative_to(self.project_root)
         path_parts = relative_path.parts
 
-        if len(path_parts) < 2 or path_parts[0] != "agentic_core":
+        if len(path_parts) < 2 or path_parts[0] != AGENTIC_CORE_DIR:
             return "[INVALID] - Outside agentic_core"
 
         if len(path_parts) >= 3:
-            territory = "agentic_core"
+            territory = AGENTIC_CORE_DIR
             subfolder = path_parts[2]
 
             # Check if subfolder is valid in structure blueprint
@@ -282,7 +287,7 @@ class NuclearAuditor:
 
             # Check for critical imports
             has_sovereign_import = any("SovereignBaseAgent" in imp for imp in imports)
-            has_proper_layer_import = any("agentic_core" in imp for imp in imports)
+            has_proper_layer_import = any(AGENTIC_CORE_DIR in imp for imp in imports)
 
             if has_sovereign_import and has_proper_layer_import:
                 return "[VALID]"

@@ -34,22 +34,30 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Repo root and constants
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = REPO_ROOT / "agentic_core"
+AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
 
 PARSE_FAILURE_FILES = [
-    AGENTIC_CORE / "L0_routing" / "reasoning" / "SSOTFolderCleanupAgent.py",
-    AGENTIC_CORE / "L0_routing" / "scripts" / "forensic_discovery_prep.py",
-    AGENTIC_CORE / "L0_routing" / "scripts" / "run_guardian_hierarchy_compliance.py",
+    AGENTIC_CORE / L0_ROUTING_DIR / "reasoning" / "SSOTFolderCleanupAgent.py",
+    AGENTIC_CORE / L0_ROUTING_DIR / "scripts" / "forensic_discovery_prep.py",
+    AGENTIC_CORE / L0_ROUTING_DIR / "scripts" / "run_guardian_hierarchy_compliance.py",
 ]
 
-WRITE_GATEWAY_CORRECT = AGENTIC_CORE / "L2_execution" / "tools" / "write_gateway.py"
-WRITE_GATEWAY_WRONG = AGENTIC_CORE / "L2_execution" / "write_gateway.py"
+WRITE_GATEWAY_CORRECT = AGENTIC_CORE / L2_EXECUTION_DIR / TOOLS_DIR / "write_gateway.py"
+WRITE_GATEWAY_WRONG = AGENTIC_CORE / L2_EXECUTION_DIR / "write_gateway.py"
 META_LEARNING_CORRECT = AGENTIC_CORE / "utils" / "meta_learning_engine_util.py"
-META_LEARNING_WRONG = AGENTIC_CORE / "system_learning" / "pipelines" / "meta_learning_pipeline.py"
+META_LEARNING_WRONG = AGENTIC_CORE / SYSTEM_LEARNING_DIR / "pipelines" / "meta_learning_pipeline.py"
 
 
 # ---------------------------------------------------------------------------

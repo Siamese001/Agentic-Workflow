@@ -8,7 +8,7 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     TESTS_DIR,
 )
 from agentic_core.utils.ast_fuzzy_util import compute_file_hash

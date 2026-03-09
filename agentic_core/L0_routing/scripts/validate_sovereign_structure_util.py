@@ -7,12 +7,14 @@ Enforces the 3-level depth law for agentic architecture.
 import os
 import sys
 from typing import Any
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 # Subfolder maps derived from SOVEREIGN_TERRITORIES - inline to avoid L5 import
 CORE_SUBFOLDER_MAP = {
@@ -78,7 +80,7 @@ def check_sovereign_law(root_path: Any) -> Any:
     for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         for l2 in l2_list:
             # guardian: allow-path-string
-            path: Any = os.path.join(root_path, "tests", l1, l2)
+            path: Any = os.path.join(root_path, TESTS_DIR, l1, l2)
             # guardian: allow-path-string
             if not os.path.exists(path):
                 violations.append(f"MISSING TEST DEPTH: tests/{l1}/{l2}")

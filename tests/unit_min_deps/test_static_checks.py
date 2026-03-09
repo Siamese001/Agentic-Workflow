@@ -5,6 +5,9 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    TOOLS_DIR,
+)
 from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
     scan_file_for_determinism,
 )
@@ -47,7 +50,7 @@ subprocess.run(["echo", "test"], shell=True)
 """
 
     with tempfile.TemporaryDirectory() as temp_dir:
-        tools_dir = Path(temp_dir) / "tools"
+        tools_dir = Path(temp_dir) / TOOLS_DIR
         tools_dir.mkdir()
 
         test_file = tools_dir / "test.py"
@@ -229,6 +232,10 @@ def test_scanner_deterministic_ordering():
     """Test that scanner findings are returned in deterministic order."""
     code = """
 import subprocess
+
+from agentic_core.L0_routing.config.path_constants import (
+    TOOLS_DIR,
+)
 subprocess.run(["pwsh", "-c", "echo test"])
 subprocess.call(["powershell", "-Command", "Get-Process"])
 open("file.txt", "w")

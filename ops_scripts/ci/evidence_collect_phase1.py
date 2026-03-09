@@ -12,6 +12,11 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+)
+
 # Critical D-set for Phase 1
 CRITICAL_D_SET: dict[str, dict[str, Any]] = {
     "1.1": {
@@ -156,7 +161,7 @@ class DEvidenceCollector:
 
     def check_v15_gateway_in_heal(self) -> dict[str, Any]:
         """Check that V15ExecutionGateway is imported and used in heal()."""
-        heal_file = self.project_root / "agentic_core" / "base_agents" / "SovereignBaseAgent.py"
+        heal_file = self.project_root / AGENTIC_CORE_DIR / "base_agents" / "SovereignBaseAgent.py"
 
         if not heal_file.exists():
             return {"passed": False, "details": "SovereignBaseAgent.py not found"}
@@ -190,7 +195,7 @@ class DEvidenceCollector:
 
     def check_healing_transaction_boundary(self) -> dict[str, Any]:
         """Check that HealingTransactionBoundary is available."""
-        contracts_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "routing_contracts.py"
+        contracts_file = self.project_root / L0_ROUTING_DIR / "types" / "routing_contracts.py"
 
         if not contracts_file.exists():
             return {"passed": False, "details": "routing_contracts.py not found"}
@@ -212,7 +217,7 @@ class DEvidenceCollector:
 
     def check_policy_config_guard(self) -> dict[str, Any]:
         """Check that PolicyConfigGuard is available."""
-        contracts_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "routing_contracts.py"
+        contracts_file = self.project_root / L0_ROUTING_DIR / "types" / "routing_contracts.py"
 
         if not contracts_file.exists():
             return {"passed": False, "details": "routing_contracts.py not found"}
@@ -236,7 +241,7 @@ class DEvidenceCollector:
     def check_semantic_clock_usage(self) -> dict[str, Any]:
         """Check that SemanticClock is used in state commits."""
         gateway_file = (
-            self.project_root / "agentic_core" / "L0_routing" / "enforcement" / "execution_gateway.py"
+            self.project_root / AGENTIC_CORE_DIR / L0_ROUTING_DIR / "enforcement" / "execution_gateway.py"
         )
 
         if not gateway_file.exists():
@@ -259,7 +264,7 @@ class DEvidenceCollector:
     def check_trace_id_generation(self) -> dict[str, Any]:
         """Check that trace IDs are generated and propagated."""
         # Check for uuid usage in SovereignBaseAgent
-        heal_file = self.project_root / "agentic_core" / "base_agents" / "SovereignBaseAgent.py"
+        heal_file = self.project_root / AGENTIC_CORE_DIR / "base_agents" / "SovereignBaseAgent.py"
 
         if not heal_file.exists():
             return {"passed": False, "details": "SovereignBaseAgent.py not found"}
@@ -273,7 +278,9 @@ class DEvidenceCollector:
         has_trace_id = "trace_id" in content
 
         # Check that artifacts accept trace_id
-        p2_types_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "determinism_types.py"
+        p2_types_file = (
+            self.project_root / AGENTIC_CORE_DIR / L0_ROUTING_DIR / "types" / "determinism_types.py"
+        )
         has_trace_in_artifacts = False
         if p2_types_file.exists():
             with open(p2_types_file, encoding="utf-8") as f:
@@ -297,7 +304,9 @@ class DEvidenceCollector:
 
     def check_guardian_signing(self) -> dict[str, Any]:
         """Check that guardian signing enforcement exists."""
-        guardian_file = self.project_root / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
+        guardian_file = (
+            self.project_root / AGENTIC_CORE_DIR / L0_ROUTING_DIR / "types" / "guardian_contract.py"
+        )
 
         if not guardian_file.exists():
             return {"passed": False, "details": "guardian_contract.py not found"}
@@ -328,7 +337,7 @@ def find_repo_root(start_path: Path) -> Path:
         if (current / "pyproject.toml").exists():
             return current
         # Check for agentic_core directory
-        if (current / "agentic_core").exists() and (current / "agentic_core").is_dir():
+        if (current / AGENTIC_CORE_DIR).exists() and (current / AGENTIC_CORE_DIR).is_dir():
             return current
         current = current.parent
 

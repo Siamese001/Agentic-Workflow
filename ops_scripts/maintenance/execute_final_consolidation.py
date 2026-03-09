@@ -11,7 +11,9 @@ import re
 import subprocess
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+PROJECT_ROOT = get_validated_project_root()
 
 IMPORT_REDIRECTS = {
     r"agentic_core\.L5_safety\.guardrails\.cached_safety_shield": "agentic_core.L5_safety.validators.cached_safety_shield",
@@ -26,7 +28,7 @@ def fix_imports():
     print("--- STARTING FINAL IMPORT REWIRING ---")
     fixed_count = 0
 
-    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
         if "archived" in root:
             continue
 

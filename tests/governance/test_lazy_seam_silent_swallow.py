@@ -17,6 +17,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
@@ -24,7 +28,7 @@ _REPO_ROOT = Path(__file__).resolve().parents[2]
 
 def _get_enforcer_class():
     """Load LazySeamEnforcer by file path (no __init__.py needed)."""
-    src = _REPO_ROOT / "agentic_core" / "L5_safety" / "governance" / "lazy_seam_enforcer.py"
+    src = _REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "governance" / "lazy_seam_enforcer.py"
     spec = importlib.util.spec_from_file_location("lazy_seam_enforcer", src)
     mod = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(mod)

@@ -14,11 +14,13 @@ import os
 import shutil
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+
 # ============================================================================
 # CONFIGURATION
 # ============================================================================
 
-ARCHIVES_ROOT = Path("archives")
+ARCHIVES_ROOT = Path(ARCHIVES_DIR)
 CURRENT_DIRS = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
 
 # Folders to EXCLUDE (duplicates/backups)
@@ -316,7 +318,7 @@ def main():
             skipped += 1
             continue
 
-        shutil.copy2(str(src), str(dst))
+        shutil.move(str(src), str(dst))
         print(f"  ✓ {dst}")
         restored += 1
 

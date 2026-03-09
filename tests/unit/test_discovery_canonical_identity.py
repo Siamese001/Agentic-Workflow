@@ -18,7 +18,7 @@ from agentic_core.L0_routing.scripts.full_agent_discovery import (
 from agentic_core.L0_routing.utils.ssot_discovery_util import (
     load_agent_discovery,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
 

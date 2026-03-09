@@ -13,8 +13,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = ROOT / "agentic_core"
+AGENTIC_CORE = ROOT / AGENTIC_CORE_DIR
 
 
 def _scan_boundary_violations() -> list[str]:
@@ -33,10 +38,10 @@ def _scan_boundary_violations() -> list[str]:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    if alias.name and alias.name.startswith("ops_scripts"):
+                    if alias.name and alias.name.startswith(OPS_SCRIPTS_DIR):
                         violations.append(f"{rel}:{node.lineno}: import {alias.name}")
             elif isinstance(node, ast.ImportFrom):
-                if node.module and node.module.startswith("ops_scripts"):
+                if node.module and node.module.startswith(OPS_SCRIPTS_DIR):
                     violations.append(f"{rel}:{node.lineno}: from {node.module} import ...")
     return violations
 
@@ -68,6 +73,6 @@ class TestAgenticCoreOpsScriptsBoundary:
         found = False
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom):
-                if node.module and node.module.startswith("ops_scripts"):
+                if node.module and node.module.startswith(OPS_SCRIPTS_DIR):
                     found = True
         assert found, "Scanner failed to detect synthetic ops_scripts import"

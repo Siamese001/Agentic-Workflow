@@ -17,9 +17,11 @@ description: |
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
 # SSOT: Definition of allowed structures
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-TESTS_ROOT = PROJECT_ROOT / "tests"
+PROJECT_ROOT = get_validated_project_root()
+TESTS_ROOT = PROJECT_ROOT / TESTS_DIR
 ALLOWED_ROOTS = {
     "unit",
     "integration",

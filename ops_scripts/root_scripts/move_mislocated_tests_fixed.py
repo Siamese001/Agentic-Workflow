@@ -8,12 +8,25 @@ import os
 import pathlib
 import shutil
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+_ROOT = get_validated_project_root()
+
+_APP_DIRS: frozenset[str] = frozenset({AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
+
 
 def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathlib.Path]]:
     """Discover all mislocated tests and their target locations."""
     mislocated = []
 
-    test_root = pathlib.Path("tests")
+    test_root = _ROOT / TESTS_DIR
     if not test_root.exists():
         return mislocated
 
@@ -26,11 +39,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
         parts = list(relative.parts)
 
         # Check if this is in unit structure for our packages
-        if (
-            len(parts) >= 3
-            and parts[0] == "unit"
-            and parts[1] in ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
-        ):
+        if len(parts) >= 3 and parts[0] == "unit" and parts[1] in _APP_DIRS:
             # This should be moved to mirror structure
             # tests/unit/agentic_core/base_agents/test_foo.py -> tests/agentic_core/base_agents/test_foo.py
 
@@ -38,7 +47,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
             module_parts = parts[2:]  # base_agents, test_foo.py
 
             # Target location in mirror structure
-            target_path = pathlib.Path("tests") / package / pathlib.Path(*module_parts)
+            target_path = pathlib.Path(TESTS_DIR) / package / pathlib.Path(*module_parts)
 
             # Reconstruct module path for reporting
             test_filename = parts[-1]
@@ -135,7 +144,7 @@ def main():
         for source, target, module_path in sorted(tests):
             print(f"  {module_path}")
             print(
-                f"    {source.relative_to(pathlib.Path('tests'))} -> {target.relative_to(pathlib.Path('tests'))}",
+                f"    {source.relative_to(_ROOT / TESTS_DIR)} -> {target.relative_to(_ROOT / TESTS_DIR)}",
             )
 
             # Move the file

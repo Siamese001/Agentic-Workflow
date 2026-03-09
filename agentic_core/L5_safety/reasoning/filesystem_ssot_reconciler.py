@@ -414,7 +414,7 @@ class FilesystemSSOTReconcilerAgent(
 
         # [STRICT SCOPE] Filter roots based on target territory
         if target_territory:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 SOVEREIGN_TERRITORIES,
             )
 
@@ -426,7 +426,7 @@ class FilesystemSSOTReconcilerAgent(
             Logger.info(f"Filesystem scan restricted to roots: {roots_to_scan}")
         else:
             # Scan all territories with enforced structure (exclude volatile: logs, archives)
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 ENFORCED_TERRITORIES,
             )
 

@@ -3,7 +3,9 @@
 import json
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+ROOT = get_validated_project_root()
 data = json.loads((ROOT / "ops_scripts/ci/ast_gap_results.json").read_text())
 
 print("=== SOURCE SUMMARY ===")
@@ -89,7 +91,7 @@ for tgt, counts in sorted(target_gaps.items()):
 print()
 print("=== GUARDIAN / ARCHITECTURE TEST INVENTORY ===")
 for subdir in ["guardian", "architecture", "agentic_core", "apps_lic", "apps_rg", "apps_shared"]:
-    p = ROOT / "tests" / subdir
+    p = ROOT / TESTS_DIR / subdir
     if p.exists():
         files = list(p.rglob("test_*.py"))
         print("  tests/" + subdir + ": " + str(len(files)) + " test files")

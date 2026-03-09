@@ -21,6 +21,7 @@ import os
 import sys
 from types import MappingProxyType
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 # ── Canonical allowlist for _constants.py imports ──
@@ -309,7 +310,7 @@ def main() -> int:
     print("\n2. API SURFACE")
     print("-" * 40)
     import agentic_core.L5_safety.config.structure_blueprint as pkg
-    import agentic_core.L5_safety.config.structure_blueprint_config as shim
+    import agentic_core.L5_safety.config.structure_blueprint as shim
 
     pkg_all = set(pkg.__all__)
     shim_all = set(shim.__all__)
@@ -644,7 +645,7 @@ def main() -> int:
     print("-" * 40)
     shim_path = os.path.join(
         root,
-        "agentic_core",
+        AGENTIC_CORE_DIR,
         "L5_safety",
         "config",
         "structure_blueprint_config.py",
@@ -969,9 +970,9 @@ def main() -> int:
     print(f"  volatile_rules: {len(vr_result['violations'])} violation(s)")
 
     # Layer 4: Mixin AST — flat + naming + class structure enforcement
-    ac_config = c_st.get("agentic_core", {})
+    ac_config = c_st.get(AGENTIC_CORE_DIR, {})
     ac_subfolders = ac_config.get("subfolders", {}) if isinstance(ac_config, _Mapping) else {}
-    ma_result = mixin_ast.check(enforcement_root / "agentic_core", ac_subfolders)
+    ma_result = mixin_ast.check(enforcement_root / AGENTIC_CORE_DIR, ac_subfolders)
     enforcement_results.append(ma_result)
     print(f"  mixin_ast: {len(ma_result['violations'])} violation(s)")
 

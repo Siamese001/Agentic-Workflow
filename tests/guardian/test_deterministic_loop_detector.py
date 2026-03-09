@@ -18,10 +18,12 @@ from pathlib import Path
 
 import pytest
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = (
-    PROJECT_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "deterministic_loop_detector.py"
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
 )
+
+PROJECT_ROOT = Path(__file__).resolve().parents[2]
+MODULE_PATH = PROJECT_ROOT / L2_EXECUTION_DIR / "enforcement" / "deterministic_loop_detector.py"
 
 pytestmark = pytest.mark.guardian
 

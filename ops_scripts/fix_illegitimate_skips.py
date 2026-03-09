@@ -16,8 +16,10 @@ import ast
 import re
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
-TESTS = ROOT / "tests"
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+ROOT = get_validated_project_root()
+TESTS = ROOT / TESTS_DIR
 
 # ── Legitimately optional — DO NOT change these lines ──────────────────────────
 LEGITIMATE_REASONS_SUBSTRINGS = [

@@ -19,8 +19,17 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L3_ORCHESTRATION_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[3]
-L3_ROOT = ROOT / "agentic_core" / "L3_orchestration"
+L3_ROOT = ROOT / L3_ORCHESTRATION_DIR
 
 # Post-cleanup baseline: 2 agent files (SubAtomicAgent.py, UnifiedAgent.py)
 PINNED_AGENT_BUDGET = 2
@@ -100,11 +109,11 @@ def _find_l3_agent_imports_in_production() -> dict[str, list[str]]:
     """
     imports: dict[str, list[str]] = {}
     prod_dirs = [
-        ROOT / "agentic_core",
-        ROOT / "apps_shared",
-        ROOT / "apps_rg",
-        ROOT / "apps_lic",
-        ROOT / "ops_scripts",
+        ROOT / AGENTIC_CORE_DIR,
+        ROOT / APPS_SHARED_DIR,
+        ROOT / APPS_RG_DIR,
+        ROOT / APPS_LIC_DIR,
+        ROOT / OPS_SCRIPTS_DIR,
     ]
     for prod_dir in prod_dirs:
         if not prod_dir.exists():
@@ -121,7 +130,11 @@ def _find_l3_agent_imports_in_production() -> dict[str, list[str]]:
                 except (SyntaxError, UnicodeDecodeError):
                     continue
                 for node in ast.walk(tree):
-                    if isinstance(node, ast.ImportFrom) and node.module and "L3_orchestration" in node.module:
+                    if (
+                        isinstance(node, ast.ImportFrom)
+                        and node.module
+                        and L3_ORCHESTRATION_DIR in node.module
+                    ):
                         for alias in node.names:
                             name = alias.name
                             if name not in imports:

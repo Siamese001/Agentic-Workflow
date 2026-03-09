@@ -7,9 +7,11 @@ from unittest.mock import patch
 
 import pytest
 
-EXECUTE_SSOT_PATH = (
-    Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
 )
+
+EXECUTE_SSOT_PATH = Path(__file__).parent.parent.parent / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
 
 @pytest.mark.unit_min_deps

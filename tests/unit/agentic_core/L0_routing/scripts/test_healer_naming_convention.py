@@ -26,8 +26,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[5]
-EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+EXECUTE_SSOT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
 # Direct class imports now used in _get_l5_agent_roster() (shims deleted, Phase 1)
 CANONICAL_ROSTER_IMPORTS = [
@@ -109,7 +114,7 @@ LEGACY_STATE_MGR_NAMES = [
 
 
 def _shim_file_for(name: str) -> Path:
-    return REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning" / f"{name}.py"
+    return REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / f"{name}.py"
 
 
 def _execute_ssot_source() -> str:
@@ -155,7 +160,7 @@ class TestRosterUsesDirectImports:
 
     def test_deleted_shim_files_do_not_exist(self):
         """Phase 1-5 negative invariant: deleted/renamed shim files must not exist."""
-        shim_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
+        shim_dir = REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning"
         for name in DELETED_SHIM_NAMES + RENAMED_MODULE_FILES:
             shim_path = shim_dir / f"{name}.py"
             assert not shim_path.exists(), (
@@ -237,7 +242,7 @@ class TestDeletedShimsAreGone:
             f"agentic_core.L5_safety.reasoning.{n}" for n in DELETED_SHIM_NAMES + RENAMED_MODULE_FILES
         }
 
-        reasoning_dir = REPO_ROOT / "agentic_core" / "L5_safety" / "reasoning"
+        reasoning_dir = REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning"
         violations = []
         for py_file in reasoning_dir.glob("*.py"):
             source = py_file.read_text(encoding="utf-8", errors="replace")

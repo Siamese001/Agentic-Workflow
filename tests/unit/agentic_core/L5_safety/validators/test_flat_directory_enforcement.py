@@ -10,7 +10,7 @@ validator enforced the "flat" flag in SOVEREIGN_TERRITORIES.
 
 from __future__ import annotations
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     FLAT_DIRECTORIES,
     validate_flat_directory,
 )

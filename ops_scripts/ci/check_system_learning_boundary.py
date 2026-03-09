@@ -22,6 +22,8 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
+
 # Forbidden import prefixes (L6 observability layer)
 _FORBIDDEN_PREFIXES: tuple[str, ...] = (
     "agentic_core.L6_observability",
@@ -56,7 +58,7 @@ def check_boundary(repo_root: Path) -> list[tuple[str, str]]:
     Returns:
         List of (relative_filepath, imported_module) tuples for each violation.
     """
-    scan_root = repo_root / "system_learning"
+    scan_root = repo_root / SYSTEM_LEARNING_DIR
     if not scan_root.exists():
         return []
 

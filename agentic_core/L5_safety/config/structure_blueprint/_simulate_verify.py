@@ -16,6 +16,7 @@ import subprocess
 import sys
 import tempfile
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 
@@ -138,7 +139,7 @@ def main() -> int:
 
         # ── SIM 4: SyntaxError in scanned file → FAIL with location ──
         # guardian: allow-path-string
-        syntax_err_path = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
+        syntax_err_path = os.path.join(root, TESTS_DIR, "_tmp_syntax_err_sim.py")
         try:
             _wg.open_write(
                 syntax_err_path,
@@ -278,7 +279,7 @@ def main() -> int:
 
     # Verify temp files deleted
     # guardian: allow-path-string
-    syntax_leftover = os.path.join(root, "tests", "_tmp_syntax_err_sim.py")
+    syntax_leftover = os.path.join(root, TESTS_DIR, "_tmp_syntax_err_sim.py")
     # guardian: allow-path-string
     if os.path.isfile(syntax_leftover):
         print("    Temp syntax file: WARNING — not cleaned up")

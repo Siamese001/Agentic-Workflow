@@ -21,6 +21,11 @@ from agentic_core.interfaces.structure_config import (
     ROOT_WHITELIST,
     SOVEREIGN_REGISTRY,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    L1_COGNITION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -129,21 +134,21 @@ def get_placement_guidance(content_preview: str) -> str:
     """
     # L1: Cognition & Strategy
     if any(x in content_preview for x in ["planner", "strategy", "reasoning", "mission"]):
-        return "agentic_core/L1_cognition"
+        return L1_COGNITION_DIR
 
     # L1: Thought Nodes (Execution/Atomic logic) - now under L1_cognition/thought_engine
     if "node" in content_preview.lower() or "execute" in content_preview:
-        return "agentic_core/L1_cognition/thought_engine"
+        return L1_COGNITION_DIR + "/thought_engine"
 
     # L3: Orchestration (Routing/Fission)
     if any(x in content_preview for x in ["router", "orchestrator", "fission", "hop"]):
-        return "agentic_core/L3_orchestration"
+        return L3_ORCHESTRATION_DIR
 
     # L4: State (Memory/Databases)
     if any(x in content_preview for x in ["pinecone", "redis", "storage", "cache"]):
-        return "agentic_core/L4_state"
+        return L4_STATE_DIR
 
-    return "agentic_core/L1_cognition"  # Default safe-haven for generic logic
+    return L1_COGNITION_DIR  # Default safe-haven for generic logic
 
 
 def check_span_of_two_violation(folder_path: Path) -> tuple[bool, str]:

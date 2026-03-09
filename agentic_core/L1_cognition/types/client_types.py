@@ -11,6 +11,8 @@ import time
 from dataclasses import dataclass, field
 from typing import Any, Final
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 # Constants
 DEFAULT_SIMILARITY_THRESHOLD: Final[float] = 0.85
 DEFAULT_TTL_SECONDS: Final[int] = 3600  # 1 hour
@@ -40,7 +42,7 @@ class HealingPattern:
     error_signature: str
     healing_strategy: dict[str, Any]
     success_count: int = 1
-    domain: str = "agentic_core"
+    domain: str = AGENTIC_CORE_DIR
     metadata: dict[str, Any] = field(default_factory=dict)
     embedding: list[float] | None = None
 
@@ -65,7 +67,7 @@ class HealingPattern:
             error_signature=data.get("error_signature", ""),
             healing_strategy=data.get("healing_strategy", {}),
             success_count=data.get("success_count", 1),
-            domain=data.get("domain", "agentic_core"),
+            domain=data.get("domain", AGENTIC_CORE_DIR),
             metadata=data.get("metadata", {}),
             embedding=data.get("embedding"),
         )
@@ -89,7 +91,7 @@ class CacheEntry:
     value: Any
     ttl: int = DEFAULT_TTL_SECONDS
     created_at: float = field(default_factory=time.time)
-    domain: str = "agentic_core"
+    domain: str = AGENTIC_CORE_DIR
     hit_count: int = 0
 
     def is_expired(self) -> bool:

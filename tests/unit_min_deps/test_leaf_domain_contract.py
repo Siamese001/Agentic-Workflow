@@ -11,8 +11,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = ROOT / "agentic_core"
+AGENTIC_CORE = ROOT / AGENTIC_CORE_DIR
 
 LEAF_DOMAINS_NO_LCD: frozenset[str] = frozenset(
     {
@@ -50,12 +54,12 @@ def _get_declared_subfolders(domain: str) -> set[str]:
     """Get subfolders declared in the blueprint for a LEAF_DOMAIN."""
     # Import here to avoid circular deps at module level
     try:
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             build_sovereign_territories,
         )
 
         territories = build_sovereign_territories()
-        ac = territories.get("agentic_core", {})
+        ac = territories.get(AGENTIC_CORE_DIR, {})
         subfolders_def = ac.get("subfolders", {})
         domain_def = subfolders_def.get(domain, {})
         declared = set()

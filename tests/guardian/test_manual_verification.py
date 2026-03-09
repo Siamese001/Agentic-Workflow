@@ -9,6 +9,12 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+)
+
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -41,7 +47,7 @@ class TestManualVerification:
                 f.write(f'x{i} = "line {i}"\n')
 
         # Copy to agentic_core where the test will find it
-        target_dir = PROJECT_ROOT / "agentic_core"
+        target_dir = PROJECT_ROOT / AGENTIC_CORE_DIR
         target_dir.mkdir(exist_ok=True)  # Ensure directory exists
         target_file = target_dir / "temp_monolith.py"
 
@@ -103,7 +109,7 @@ class TestManualVerification:
             f.write('    return "This should trigger gravity leak detection"\n')
 
         # Copy to L0_routing where the test will find it
-        target_file = PROJECT_ROOT / "agentic_core" / "L0_routing" / "bad_gravity.py"
+        target_file = PROJECT_ROOT / L0_ROUTING_DIR / "bad_gravity.py"
         try:
             import shutil
 
@@ -167,7 +173,7 @@ class TestManualVerification:
             f.write('    return "This should trigger waterfall violation detection"\n')
 
         # Copy to L1_cognition where the test will find it
-        target_file = PROJECT_ROOT / "agentic_core" / "L1_cognition" / "bad_waterfall.py"
+        target_file = PROJECT_ROOT / L1_COGNITION_DIR / "bad_waterfall.py"
         try:
             import shutil
 
@@ -225,7 +231,7 @@ class TestManualVerification:
                 f.write(f'x{i} = "line {i}"\n')
 
         # Copy to agentic_core where the test will find it
-        target_file = PROJECT_ROOT / "agentic_core" / "temp_monolith_dust.py"
+        target_file = PROJECT_ROOT / AGENTIC_CORE_DIR / "temp_monolith_dust.py"
         try:
             import shutil
 

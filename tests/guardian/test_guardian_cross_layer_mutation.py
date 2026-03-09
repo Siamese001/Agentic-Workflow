@@ -16,6 +16,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -35,15 +42,15 @@ pytestmark = pytest.mark.guardian
 
 @pytest.fixture()
 def clean_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core" / "L0_routing").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L0_routing" / "clean.py").write_text("x = 1\n", encoding="utf-8")
+    (tmp_path / L0_ROUTING_DIR).mkdir(parents=True)
+    (tmp_path / L0_ROUTING_DIR / "clean.py").write_text("x = 1\n", encoding="utf-8")
     return tmp_path
 
 
 @pytest.fixture()
 def l6_l4_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core" / "L6_observability").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L6_observability" / "bad.py").write_text(
+    (tmp_path / L6_OBSERVABILITY_DIR).mkdir(parents=True)
+    (tmp_path / L6_OBSERVABILITY_DIR / "bad.py").write_text(
         "from agentic_core.L4_state import Something\n", encoding="utf-8"
     )
     return tmp_path
@@ -51,8 +58,8 @@ def l6_l4_repo(tmp_path: Path) -> Path:
 
 @pytest.fixture()
 def l4_l2_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core" / "L4_state").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L4_state" / "bad.py").write_text(
+    (tmp_path / L4_STATE_DIR).mkdir(parents=True)
+    (tmp_path / L4_STATE_DIR / "bad.py").write_text(
         "from agentic_core.L2_execution import Something\n", encoding="utf-8"
     )
     return tmp_path
@@ -60,10 +67,8 @@ def l4_l2_repo(tmp_path: Path) -> Path:
 
 @pytest.fixture()
 def c0_control_plane_repo(tmp_path: Path) -> Path:
-    (tmp_path / "agentic_core" / "L1_cognition").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L1_cognition" / "bad.py").write_text(
-        "control_plane = embedding_score\n", encoding="utf-8"
-    )
+    (tmp_path / L1_COGNITION_DIR).mkdir(parents=True)
+    (tmp_path / L1_COGNITION_DIR / "bad.py").write_text("control_plane = embedding_score\n", encoding="utf-8")
     return tmp_path
 
 

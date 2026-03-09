@@ -3,6 +3,8 @@
 
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+
 # configuration
 RESUME_KEYWORDS = {"resume", "cv", "ats", "job", "skill", "experience", "bullet", "section"}
 OUTREACH_KEYWORDS = {
@@ -61,16 +63,38 @@ def analyze_archive(archive_path: Path):
     return results
 
 
-def main():
-    # Archives to analyze for app-relevant files
-    archives_to_check = [
-        ("deprecated_2026_01_20", "Today's deprecated files"),
-        ("misplaced_tests_2026_01_20", "Today's misplaced tests"),
-        ("apps_lic", "Previously archived LIC files"),
-        ("apps_rg", "Previously archived RG files"),
-        ("apps_shared", "Previously archived shared files"),
-        ("Reachout Engine Archive", "Legacy outreach engine"),
+def _discover_subfolders(archives_root: Path) -> list[tuple[str, str]]:
+    """Dynamically discover all subfolders in the archives root."""
+    if not archives_root.exists():
+        return []
+    return [
+        (entry.name, f"Discovered subfolder: {entry.name}")
+        for entry in sorted(archives_root.iterdir())
+        if entry.is_dir() and not entry.name.startswith(".")
     ]
+
+
+def main():
+    archives_root = Path(ARCHIVES_DIR)
+
+    # Known archives with descriptions; any on-disk subfolder not listed here
+    # will be discovered dynamically and added with a generic description.
+    known_archives: dict[str, str] = {
+        "deprecated_2026_01_20": "Today's deprecated files",
+        "misplaced_tests_2026_01_20": "Today's misplaced tests",
+        "apps_lic": "Previously archived LIC files",
+        "apps_rg": "Previously archived RG files",
+        "apps_shared": "Previously archived shared files",
+        "Reachout Engine Archive": "Legacy outreach engine",
+    }
+
+    # Merge known + dynamically discovered subfolders (known descriptions take priority)
+    discovered = _discover_subfolders(archives_root)
+    archives_to_check: list[tuple[str, str]] = list(known_archives.items())
+    known_names = set(known_archives.keys())
+    for name, desc in discovered:
+        if name not in known_names:
+            archives_to_check.append((name, desc))
 
     print("=" * 80)
     print("ARCHIVE ANALYSIS - FILES POTENTIALLY RELEVANT TO apps_* FOLDERS")
@@ -79,7 +103,7 @@ def main():
     all_restore_candidates = []
 
     for archive_name, description in archives_to_check:
-        archive_path = Path("archives") / archive_name
+        archive_path = archives_root / archive_name
         if not archive_path.exists():
             continue
 

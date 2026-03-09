@@ -1,15 +1,14 @@
-import shutil
-import sys
-from datetime import datetime
+import argparse
+import os
 from pathlib import Path
+
+from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
 
 # -------------------------------------------------------------------------
 # CONFIGURATION
 # -------------------------------------------------------------------------
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
-TIMESTAMP = datetime.now().strftime("%Y%m%d_%H%M%S")
-ARCHIVE_BASE = PROJECT_ROOT / "archives" / "consolidated_duplicates" / f"batch_{TIMESTAMP}"
 
 # The exact list of 13 files identified in the Agent Overlap Analysis Report
 TARGETS = [
@@ -33,51 +32,56 @@ TARGETS = [
 
 
 def main():
-    print(f"[*] Starting Archive Operation: {TIMESTAMP}")
-    print(f"[*] Archive Destination: {ARCHIVE_BASE}")
+    parser = argparse.ArgumentParser(description="Archive identified duplicate files via ArchivalGatekeeper.")
+    parser.add_argument(
+        "--dry-run", action="store_true", help="Show what would be archived without moving files"
+    )
+    args = parser.parse_args()
+    dry_run = args.dry_run
 
-    # Ensure archive directory exists
-    if not ARCHIVE_BASE.exists():
-        try:
-            ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
-            print("[+] Created archive directory.")
-        except Exception as e:
-            print(f"[!] Critical Error: Could not create archive directory: {e}")
-            sys.exit(1)
+    print("[*] Starting Archive Operation via ArchivalGatekeeper")
+    if dry_run:
+        print("[*] DRY RUN — no files will be moved")
 
+    # Enable batch mode so ArchivalGatekeeper does not prompt interactively
+    if not dry_run:
+        os.environ["ARCHIVE_BATCH_ACCEPT"] = "1"
+
+    gk = ArchivalGatekeeper.get_instance()
     moved_count = 0
     missing_count = 0
 
     for rel_path in TARGETS:
         source_path = PROJECT_ROOT / rel_path
-        filename = source_path.name
 
-        # Handle path conflicts if multiple files have same name
-        dest_path = ARCHIVE_BASE / filename
-        if dest_path.exists():
-            # Append parent dir name to filename to avoid overwrite
-            parent_name = source_path.parent.name
-            dest_path = ARCHIVE_BASE / f"{parent_name}_{filename}"
-
-        if source_path.exists():
-            try:
-                shutil.move(str(source_path), str(dest_path))
-                print(f"[+] Archived: {rel_path}")
-                moved_count += 1
-            except Exception as e:
-                print(f"[!] Failed to move {rel_path}: {e}")
-        else:
+        if not source_path.exists():
             print(f"[-] Skipped (Not Found): {rel_path}")
             missing_count += 1
+            continue
+
+        if dry_run:
+            print(f"[DRY RUN] Would archive: {rel_path}")
+            moved_count += 1
+        else:
+            result = gk.safe_archive(
+                source_path,
+                requester_agent="archive_duplicates",
+                reason="Identified duplicate — Agent Overlap Analysis Report",
+            )
+            if result.success:
+                print(f"[+] Archived: {rel_path}")
+                moved_count += 1
+            else:
+                print(f"[!] Failed to archive {rel_path}: {result.error}")
 
     print("-" * 50)
     print("SUMMARY:")
-    print(f"  Moved:   {moved_count}")
+    print(f"  {'Would move' if dry_run else 'Moved'}:   {moved_count}")
     print(f"  Missing: {missing_count}")
     print("-" * 50)
 
     if moved_count > 0:
-        print("✅ Archive operation completed successfully.")
+        print("✅ Archive operation completed successfully." if not dry_run else "✅ Dry run complete.")
     else:
         print("⚠️  No files were moved.")
 

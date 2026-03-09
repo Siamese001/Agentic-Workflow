@@ -20,6 +20,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Minimal agent factory
 # ---------------------------------------------------------------------------
@@ -104,7 +108,7 @@ class TestHierarchyDeepViolation:
         file_path.parent.mkdir(parents=True)
         file_path.write_text("")
         # Pre-create the target to trigger collision
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / L0_ROUTING_DIR / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 

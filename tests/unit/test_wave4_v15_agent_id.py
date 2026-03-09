@@ -8,14 +8,22 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 ROOT = Path(__file__).parent.parent.parent.parent
 
 SCAN_DIRS = [
-    ROOT / "agentic_core",
-    ROOT / "apps_rg",
-    ROOT / "apps_lic",
-    ROOT / "apps_shared",
-    ROOT / "system_learning",
+    ROOT / AGENTIC_CORE_DIR,
+    ROOT / APPS_RG_DIR,
+    ROOT / APPS_LIC_DIR,
+    ROOT / APPS_SHARED_DIR,
+    ROOT / SYSTEM_LEARNING_DIR,
 ]
 
 GATEWAY_RECEIVERS = frozenset({"gateway", "gw", "_gw", "v15", "v15_gw"})
@@ -67,7 +75,7 @@ def test_no_execute_calls_missing_agent_id():
 @pytest.mark.unit_min_deps
 def test_wave4_registry_entries_exist():
     """Wave 4: All audit-only agent IDs added in Wave 4 must be in AGENT_REGISTRY source."""
-    registry_path = ROOT / "agentic_core" / "agents" / "agent_registry.py"
+    registry_path = ROOT / AGENTIC_CORE_DIR / "agents" / "agent_registry.py"
     src = registry_path.read_text(encoding="utf-8", errors="replace")
     wave4_ids = [
         "sovereign_base",

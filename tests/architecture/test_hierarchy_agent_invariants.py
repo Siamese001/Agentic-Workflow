@@ -13,9 +13,9 @@ Branch inventory (§1.3):
     - clean tests/ (only test_*.py files)             → zero violations from this guard
 
   Fix 3 — get_best_target_l2 / _calculate_subfolder_confidence_for_agent:
-    - *Agent.py, l1_name="tests"   → "__ARCHIVE__" sentinel returned
+    - *Agent.py, l1_name=TESTS_DIR   → "__ARCHIVE__" sentinel returned
     - *Agent.py, l1_name="L5_safety" (source layer) → valid subfolder (not __ARCHIVE__)
-    - non-agent file, l1_name="tests" → normal routing (not __ARCHIVE__)
+    - non-agent file, l1_name=TESTS_DIR → normal routing (not __ARCHIVE__)
 
   Fix 4 — SSOT tests/support/ forbidden_patterns:
     - "forbidden_patterns" key present in tests/support/ config
@@ -30,6 +30,11 @@ from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 
 pytestmark = pytest.mark.architecture
 
@@ -122,8 +127,8 @@ class TestFix2BlockAgentFilesInTests:
 
     def test_block_agent_files_in_tests_root(self, tmp_path: Path) -> None:
         """*Agent.py directly in tests/ triggers a violation."""
-        (tmp_path / "tests").mkdir()
-        (tmp_path / "tests" / "SomeAgent.py").write_text("class SomeAgent: pass")
+        (tmp_path / TESTS_DIR).mkdir()
+        (tmp_path / TESTS_DIR / "SomeAgent.py").write_text("class SomeAgent: pass")
         agent = _make_agent(tmp_path)
         r = _results()
         agent._block_agent_files_in_tests(r)
@@ -131,8 +136,8 @@ class TestFix2BlockAgentFilesInTests:
 
     def test_block_agent_files_in_tests_support(self, tmp_path: Path) -> None:
         """*Agent.py inside tests/support/ triggers a violation."""
-        (tmp_path / "tests" / "support").mkdir(parents=True)
-        (tmp_path / "tests" / "support" / "FooAgent.py").write_text("class FooAgent: pass")
+        (tmp_path / TESTS_DIR / "support").mkdir(parents=True)
+        (tmp_path / TESTS_DIR / "support" / "FooAgent.py").write_text("class FooAgent: pass")
         agent = _make_agent(tmp_path)
         r = _results()
         agent._block_agent_files_in_tests(r)
@@ -140,8 +145,8 @@ class TestFix2BlockAgentFilesInTests:
 
     def test_no_violation_when_tests_is_clean(self, tmp_path: Path) -> None:
         """Clean tests/ (only test_*.py) produces zero violations from _block_agent_files_in_tests."""
-        (tmp_path / "tests" / "unit").mkdir(parents=True)
-        (tmp_path / "tests" / "unit" / "test_something.py").write_text("def test_x(): pass")
+        (tmp_path / TESTS_DIR / "unit").mkdir(parents=True)
+        (tmp_path / TESTS_DIR / "unit" / "test_something.py").write_text("def test_x(): pass")
         agent = _make_agent(tmp_path)
         r = _results()
         agent._block_agent_files_in_tests(r)
@@ -149,8 +154,8 @@ class TestFix2BlockAgentFilesInTests:
 
     def test_block_does_not_move_agent_file(self, tmp_path: Path) -> None:
         """_block_agent_files_in_tests must NOT move any file (report only)."""
-        (tmp_path / "tests").mkdir()
-        src = tmp_path / "tests" / "BrokenAgent.py"
+        (tmp_path / TESTS_DIR).mkdir()
+        src = tmp_path / TESTS_DIR / "BrokenAgent.py"
         src.write_text("class BrokenAgent: pass")
         agent = _make_agent(tmp_path, healing_enabled=True)
         r = _results()
@@ -160,9 +165,9 @@ class TestFix2BlockAgentFilesInTests:
 
     def test_multiple_agent_files_each_counted(self, tmp_path: Path) -> None:
         """Every *Agent.py file found produces a distinct violation count increment."""
-        (tmp_path / "tests" / "support").mkdir(parents=True)
-        (tmp_path / "tests" / "support" / "SomeAgent.py").write_text("class SomeAgent: pass")
-        (tmp_path / "tests" / "support" / "OtherAgent.py").write_text("class OtherAgent: pass")
+        (tmp_path / TESTS_DIR / "support").mkdir(parents=True)
+        (tmp_path / TESTS_DIR / "support" / "SomeAgent.py").write_text("class SomeAgent: pass")
+        (tmp_path / TESTS_DIR / "support" / "OtherAgent.py").write_text("class OtherAgent: pass")
         agent = _make_agent(tmp_path)
         r = _results()
         agent._block_agent_files_in_tests(r)
@@ -187,7 +192,7 @@ class TestFix3SubfolderConfidence:
     def test_get_best_target_l2_agent_file_tests_root_returns_archive_sentinel(self) -> None:
         from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
-        result = get_best_target_l2("tests", "SomeAgent.py")
+        result = get_best_target_l2(TESTS_DIR, "SomeAgent.py")
         assert result == "__ARCHIVE__", (
             f"Expected '__ARCHIVE__' for agent file in 'tests' root, got {result!r}"
         )
@@ -203,7 +208,7 @@ class TestFix3SubfolderConfidence:
     def test_get_best_target_l2_non_agent_file_tests_root_proceeds(self) -> None:
         from agentic_core.L5_safety.enforcement.mission_utils_enforcer import get_best_target_l2
 
-        result = get_best_target_l2("tests", "test_something.py")
+        result = get_best_target_l2(TESTS_DIR, "test_something.py")
         assert result != "__ARCHIVE__", "Non-agent files must go through normal routing, not ARCHIVE sentinel"
 
     def test_confidence_zero_for_all_low_confidence_roots(self) -> None:
@@ -221,7 +226,7 @@ class TestFix3SubfolderConfidence:
             _calculate_subfolder_confidence_for_agent,
         )
 
-        conf = _calculate_subfolder_confidence_for_agent("agentic_core", "FooAgent.py")
+        conf = _calculate_subfolder_confidence_for_agent(AGENTIC_CORE_DIR, "FooAgent.py")
         assert conf >= 0.5, f"Expected confidence >= 0.5 for source layer, got {conf}"
 
     def test_docs_root_also_returns_archive_sentinel(self) -> None:
@@ -244,11 +249,11 @@ class TestFix4SSOTForbiddenPatterns:
     """tests/support/ SSOT entry must contain forbidden_patterns blocking *Agent.py."""
 
     def _get_support_config(self) -> dict:
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        return SOVEREIGN_TERRITORIES["tests"]["subfolders"]["support"]
+        return SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"]["support"]
 
     def test_ssot_support_has_forbidden_patterns(self) -> None:
         cfg = self._get_support_config()

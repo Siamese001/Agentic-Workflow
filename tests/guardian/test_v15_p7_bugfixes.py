@@ -16,6 +16,10 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Wave 1.1 — Enforcement-mode semantics
 # ---------------------------------------------------------------------------
@@ -316,7 +320,7 @@ class TestStateHashReal:
         h_before = self._get_state_hashes(agent)
 
         # Create a temporary .py file inside agentic_core/ to trigger fs_hash change
-        target_dir = agent.project_root / "agentic_core"
+        target_dir = agent.project_root / AGENTIC_CORE_DIR
         tmp_file = target_dir / "_v15_test_mutation_probe.py"
         try:
             tmp_file.write_text("# probe\n", encoding="utf-8")

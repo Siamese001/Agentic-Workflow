@@ -17,6 +17,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L1_COGNITION_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -209,7 +214,7 @@ class TestTerritoryComplianceHealer:
 
     def test_apply_moves_file(self, territory_check: dict, tmp_path: Path) -> None:
         # Create source file
-        src = tmp_path / "agentic_core" / "L1_cognition" / "config" / "SomeAgent.py"
+        src = tmp_path / L1_COGNITION_DIR / "config" / "SomeAgent.py"
         src.parent.mkdir(parents=True)
         src.write_text("class SomeAgent: pass\n", encoding="utf-8")
 
@@ -218,7 +223,7 @@ class TestTerritoryComplianceHealer:
         assert len(result.changes_made) == 1
 
         # Verify file moved
-        target = tmp_path / "agentic_core" / "L1_cognition" / "reasoning" / "SomeAgent.py"
+        target = tmp_path / L1_COGNITION_DIR / "reasoning" / "SomeAgent.py"
         assert target.is_file()
         assert not src.exists()
 
@@ -245,8 +250,8 @@ class TestMissingStructureHealer:
         assert result.status == HealStatus.HEALED
         assert len(result.changes_made) == 2
 
-        assert (tmp_path / "agentic_core" / "L7_future").is_dir()
-        assert (tmp_path / "agentic_core" / "L5_safety" / "new_subfolder").is_dir()
+        assert (tmp_path / AGENTIC_CORE_DIR / "L7_future").is_dir()
+        assert (tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "new_subfolder").is_dir()
 
     def test_apply_without_repo_root_fails(self, missing_structure_check: dict) -> None:
         result = heal_missing_structure(missing_structure_check, apply=True)

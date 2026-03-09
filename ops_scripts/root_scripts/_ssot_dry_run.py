@@ -11,6 +11,8 @@ import sys
 import traceback
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import LAYER_ROOTS
+
 PROJECT_ROOT = Path(__file__).resolve().parent
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -55,16 +57,7 @@ ssot_logger.addHandler(collector)
 ssot_logger.setLevel(logging.DEBUG)
 
 # All territories to scan
-TERRITORIES = [
-    "prompt_governance",
-    "L0_routing",
-    "L1_cognition",
-    "L2_execution",
-    "L3_orchestration",
-    "L4_state",
-    "L5_safety",
-    "L6_observability",
-]
+TERRITORIES = ["prompt_governance", *sorted(LAYER_ROOTS)]
 
 results_all = {}
 

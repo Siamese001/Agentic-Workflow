@@ -12,6 +12,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 def find_agents_outside_reasoning(root: Path) -> list[str]:
     """
@@ -65,7 +69,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_types(self):
         """No Agent classes should exist in types/ folders."""
-        base = Path(__file__).resolve().parents[3] / "agentic_core"
+        base = Path(__file__).resolve().parents[3] / AGENTIC_CORE_DIR
         if not base.exists():
             pytest.fail("agentic_core not found")
 
@@ -93,7 +97,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_config(self):
         """No Agent classes should exist in config/ folders."""
-        base = Path(__file__).resolve().parents[3] / "agentic_core"
+        base = Path(__file__).resolve().parents[3] / AGENTIC_CORE_DIR
         if not base.exists():
             pytest.fail("agentic_core not found")
 
@@ -120,7 +124,7 @@ class TestNoAgentsOutsideReasoning:
 
     def test_agentic_core_no_agents_in_validators(self):
         """No Agent classes should exist in validators/ folders."""
-        base = Path(__file__).resolve().parents[3] / "agentic_core"
+        base = Path(__file__).resolve().parents[3] / AGENTIC_CORE_DIR
         if not base.exists():
             pytest.fail("agentic_core not found")
 
@@ -152,7 +156,7 @@ class TestFixtureRepoAgentPlacement:
     def test_synthetic_repo_before_remediation(self, tmp_path):
         """Synthetic repo with violations should have violations detected."""
         # Create a violation: Agent in types/
-        types_dir = tmp_path / "agentic_core" / "L5_safety" / "types"
+        types_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "types"
         types_dir.mkdir(parents=True)
         (types_dir / "bad_agent.py").write_text("""
 class BadAgent:
@@ -166,7 +170,7 @@ class BadAgent:
     def test_synthetic_repo_after_remediation(self, tmp_path):
         """Synthetic repo with proper placement should have no violations."""
         # Create proper placement: Agent in reasoning/
-        reasoning_dir = tmp_path / "agentic_core" / "L5_safety" / "reasoning"
+        reasoning_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "reasoning"
         reasoning_dir.mkdir(parents=True)
         (reasoning_dir / "good_agent.py").write_text("""
 class GoodAgent:

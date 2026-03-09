@@ -28,6 +28,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # ---------------------------------------------------------------------------
@@ -39,11 +43,11 @@ ACTIVE_HEADER = "# NOTE: l0_execute.py was planned but never implemented. This f
 STALE_FROZEN_HEADER = "# FROZEN — superseded by l0_execute.py"
 
 ACTIVE_FILES = [
-    REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py",
-    REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py",
+    REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py",
+    REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot_entrypoint.py",
 ]
 
-L0_EXECUTE_PATH = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "l0_execute.py"
+L0_EXECUTE_PATH = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "l0_execute.py"
 
 # §8.1e V15 bootstrap symbols that must be called inside _legacy_main
 V15_REQUIRED_CALLS = (
@@ -223,7 +227,7 @@ def test_v15_bootstrap_symbol_called_in_legacy_main(symbol: str) -> None:
     body, excluding any nested function definitions, to prevent false positives
     from inner helpers that might happen to call the same symbols.
     """
-    fpath = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+    fpath = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
     source = fpath.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(fpath))
 
@@ -251,7 +255,7 @@ def test_v15_bootstrap_call_count_is_exactly_one_each() -> None:
     call is accidentally guarded behind a branch that could skip it.
     Counts only direct body calls (§1.10 scoped walk).
     """
-    fpath = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+    fpath = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
     source = fpath.read_text(encoding="utf-8")
     tree = ast.parse(source, filename=str(fpath))
 

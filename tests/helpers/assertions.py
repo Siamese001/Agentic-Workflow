@@ -11,6 +11,10 @@ from collections.abc import Mapping, Sequence
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 class ViolationAssertion:
     """Assertion helper for violation checking."""
@@ -187,7 +191,7 @@ def assert_no_nested_lcd(root: Path, leaf_domains: set[str]) -> list[str]:
     violations = []
 
     for domain in leaf_domains:
-        domain_path = root / "agentic_core" / domain
+        domain_path = root / AGENTIC_CORE_DIR / domain
         if not domain_path.exists():
             continue
 

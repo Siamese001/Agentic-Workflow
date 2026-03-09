@@ -41,7 +41,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     LocationHealingStrategy,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     APP_SPECIFIC_TARGET_SUBFOLDER,
     AST_DOMAIN_HIT_THRESHOLD,
     PROJECT_ROOT_METADATA,
@@ -545,7 +545,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
     def safe_create_directory(self, relative_path: str) -> Path:
         """Safely create a directory within the project root."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import safe_path_join
+        from agentic_core.L5_safety.config.structure_blueprint import safe_path_join
 
         target = safe_path_join(self.project_root, relative_path)
         if not target.exists():
@@ -2472,7 +2472,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                             validator = LocationValidatorAgent(project_root=self.project_root)
                             app_rg, app_lic, terr_scores = validator._calculate_semantic_scores(tree)
 
-                            from agentic_core.L5_safety.config.structure_blueprint_config import (
+                            from agentic_core.L5_safety.config.structure_blueprint import (
                                 HEALING_CONFIG,
                             )
 

@@ -16,7 +16,10 @@ import ast
 import sys
 from pathlib import Path
 
-SCAN_ROOTS = [Path("agentic_core")]
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+SCAN_ROOTS = [_ROOT / AGENTIC_CORE_DIR]
 EXCLUDED_PREFIXES = (
     "archives",
     "archives/deprecated",

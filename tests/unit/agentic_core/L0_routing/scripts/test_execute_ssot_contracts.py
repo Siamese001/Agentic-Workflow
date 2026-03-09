@@ -19,13 +19,17 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
 
 REPO_ROOT = Path(__file__).resolve().parents[5]
-EXECUTE_SSOT_PATH = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
-ENTRYPOINT_PATH = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
+EXECUTE_SSOT_PATH = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
+ENTRYPOINT_PATH = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot_entrypoint.py"
 
 
 def _load_module():

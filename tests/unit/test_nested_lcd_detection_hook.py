@@ -8,7 +8,16 @@ Validates:
 
 import pytest
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint import (
     LEAF_DOMAINS_NO_LCD,
     REQUIRED_LCD_SUBFOLDERS,
     validate_no_nested_lcd,
@@ -22,38 +31,38 @@ class TestNestedLCDDetectionHook:
     def test_lcd_under_leaf_domain_detected(self, leaf_domain: str):
         """LCD subfolder under leaf domain should be detected."""
         for lcd_subfolder in ["reasoning", "enforcement", "types"]:
-            path_parts = ["agentic_core", leaf_domain, lcd_subfolder]
+            path_parts = [AGENTIC_CORE_DIR, leaf_domain, lcd_subfolder]
             result = validate_no_nested_lcd(path_parts)
             assert result is not None, f"Should detect {leaf_domain}/{lcd_subfolder}"
 
     @pytest.mark.parametrize(
         "layer",
         [
-            "L0_routing",
-            "L1_cognition",
-            "L2_execution",
-            "L3_orchestration",
-            "L4_state",
+            L0_ROUTING_DIR,
+            L1_COGNITION_DIR,
+            L2_EXECUTION_DIR,
+            L3_ORCHESTRATION_DIR,
+            L4_STATE_DIR,
             "L5_safety",
-            "L6_observability",
+            L6_OBSERVABILITY_DIR,
         ],
     )
     def test_lcd_under_layer_root_allowed(self, layer: str):
         """LCD subfolder under layer root should be allowed."""
         for lcd_subfolder in REQUIRED_LCD_SUBFOLDERS:
-            path_parts = ["agentic_core", layer, lcd_subfolder]
+            path_parts = [AGENTIC_CORE_DIR, layer, lcd_subfolder]
             result = validate_no_nested_lcd(path_parts)
             assert result is None, f"Should allow {layer}/{lcd_subfolder}"
 
     def test_non_lcd_subfolder_allowed(self):
         """Non-LCD subfolder under leaf domain should be allowed."""
-        path_parts = ["agentic_core", "prompt_governance", "templates"]
+        path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "templates"]
         result = validate_no_nested_lcd(path_parts)
         assert result is None
 
     def test_violation_contains_domain_info(self):
         """Violation should contain domain information."""
-        path_parts = ["agentic_core", "knowledge", "reasoning"]
+        path_parts = [AGENTIC_CORE_DIR, "knowledge", "reasoning"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
         assert result["domain"] == "knowledge"
@@ -61,7 +70,7 @@ class TestNestedLCDDetectionHook:
 
     def test_violation_contains_message(self):
         """Violation should contain descriptive message."""
-        path_parts = ["agentic_core", "runtime", "validators"]
+        path_parts = [AGENTIC_CORE_DIR, "runtime", "validators"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
         assert "message" in result
@@ -78,25 +87,25 @@ class TestNestedLCDEdgeCases:
 
     def test_single_element_path(self):
         """Single element path should not cause errors."""
-        result = validate_no_nested_lcd(["agentic_core"])
+        result = validate_no_nested_lcd([AGENTIC_CORE_DIR])
         assert result is None
 
     def test_two_element_path(self):
         """Two element path should not cause errors."""
-        result = validate_no_nested_lcd(["agentic_core", "L5_safety"])
+        result = validate_no_nested_lcd([AGENTIC_CORE_DIR, "L5_safety"])
         assert result is None
 
     def test_deeply_nested_path(self):
         """Deeply nested path should still detect violations."""
         # Even if deeply nested, leaf domain + LCD should be detected
-        path_parts = ["agentic_core", "prompt_governance", "reasoning", "subfolder"]
+        path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "reasoning", "subfolder"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
 
     def test_case_sensitivity(self):
         """Detection should be case-sensitive."""
         # "Reasoning" (capitalized) is not the same as "reasoning"
-        path_parts = ["agentic_core", "prompt_governance", "Reasoning"]
+        path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "Reasoning"]
         validate_no_nested_lcd(path_parts)
         # Depends on implementation - may or may not detect
         # The key is it doesn't crash
@@ -121,7 +130,7 @@ class TestFCANestedLCDIntegration:
     def test_synthetic_nested_lcd_file(self, fca, tmp_path):
         """FCA should handle file in nested LCD location."""
         # Create nested LCD structure
-        nested_dir = tmp_path / "agentic_core" / "prompt_governance" / "reasoning"
+        nested_dir = tmp_path / AGENTIC_CORE_DIR / "prompt_governance" / "reasoning"
         nested_dir.mkdir(parents=True)
 
         nested_file = nested_dir / "bad_file.py"

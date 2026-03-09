@@ -7,6 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 def get_repo_root() -> Path:
     """Find repository root by walking up to find .git directory."""
@@ -123,8 +127,8 @@ def main():
 
     # 6) Token scan for wall-clock and forbidden imports
     print("Scanning for forbidden tokens...")
-    d0_engine_file = repo_root / "agentic_core" / "L5_safety" / "enforcement" / "d0_injection_engine.py"
-    conf_calib_file = repo_root / "agentic_core" / "L5_safety" / "enforcement" / "conf_calib_gate.py"
+    d0_engine_file = repo_root / AGENTIC_CORE_DIR / "L5_safety" / "enforcement" / "d0_injection_engine.py"
+    conf_calib_file = repo_root / AGENTIC_CORE_DIR / "L5_safety" / "enforcement" / "conf_calib_gate.py"
 
     wall_clock_tokens = [
         "datetime.now",

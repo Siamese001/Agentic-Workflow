@@ -20,6 +20,7 @@ import json
 import shutil
 import sys
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
@@ -105,7 +106,7 @@ def restore_agent(source: Path, target: Path, dry_run: bool = False) -> tuple[bo
 
     try:
         target.parent.mkdir(parents=True, exist_ok=True)
-        shutil.copy2(str(source), str(target))
+        shutil.move(str(source), str(target))
         return True, f"Restored to {target.relative_to(PROJECT_ROOT)}"
     # guardian: allow-silent-swallow
     except Exception as e:

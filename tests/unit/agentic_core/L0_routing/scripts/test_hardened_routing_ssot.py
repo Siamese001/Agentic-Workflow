@@ -26,6 +26,10 @@ import os
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 os.environ.setdefault("AGENTIC_BYPASS_LONGPATHS_CHECK", "1")
 
 pytestmark = pytest.mark.unit_min_deps
@@ -382,7 +386,7 @@ class TestRouteDecisionIntegration:
         rd = engine._route_decision(
             confidence=cs,
             agent_name=agent_name,
-            territory="agentic_core",
+            territory=AGENTIC_CORE_DIR,
         )
         assert rd.tier in list(RoutingTier)
         assert rd.gate_applied
@@ -395,7 +399,7 @@ class TestRouteDecisionIntegration:
         rd = engine._route_decision(
             confidence=cs,
             agent_name=agent_name,
-            territory="agentic_core",
+            territory=AGENTIC_CORE_DIR,
         )
         # C=0 (high conf), F=1, B=2 → S=4+2=6? Let's just check tier is DETERMINISTIC or QWEN
         assert rd.tier in {RoutingTier.DETERMINISTIC, RoutingTier.QWEN, RoutingTier.GEMINI}
@@ -405,7 +409,7 @@ class TestRouteDecisionIntegration:
         rd = engine._route_decision(
             confidence=cs,
             agent_name="arch_governor",
-            territory="agentic_core",
+            territory=AGENTIC_CORE_DIR,
             failure_type=FailureType.LAYER_VIOLATION,
             deterministic_coverage=False,
         )
@@ -416,7 +420,7 @@ class TestRouteDecisionIntegration:
         rd = engine._route_decision(
             confidence=cs,
             agent_name="naming",
-            territory="agentic_core",
+            territory=AGENTIC_CORE_DIR,
             replay_mode=True,
         )
         assert rd.tier == RoutingTier.DETERMINISTIC
@@ -447,7 +451,7 @@ class TestRouteDecisionIntegration:
         rd = engine._route_decision(
             confidence=cs,
             agent_name="import_boundary",
-            territory="agentic_core",
+            territory=AGENTIC_CORE_DIR,
             failure_type=FailureType.IMPORT_BOUNDARY_VIOLATION,
             deterministic_coverage=False,
             provider_prohibited_gemini=True,
@@ -457,7 +461,7 @@ class TestRouteDecisionIntegration:
 
     def test_as_log_line_contains_required_fields(self, engine):
         cs = ConfidenceScore(value=0.62, reasoning="Base: 0.62")
-        rd = engine._route_decision(cs, "arch_governor", "agentic_core")
+        rd = engine._route_decision(cs, "arch_governor", AGENTIC_CORE_DIR)
         log = rd.as_log_line()
         for field in ["tier=", "S=", "gate=", "model=", "digest="]:
             assert field in log, f"Missing {field!r} in log line: {log}"

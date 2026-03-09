@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
+)
+
 
 class TestToolRegistryAgent:
     """Tests for tool registry functionality."""
@@ -57,7 +61,7 @@ class TestExecutionLayerIntegrity:
 
     def test_execution_agents_in_reasoning(self):
         """Agent classes in L2 should be in reasoning/."""
-        base = Path("agentic_core/L2_execution")
+        base = Path(L2_EXECUTION_DIR)
         if not base.exists():
             pytest.fail("L2_execution/ not found")
 

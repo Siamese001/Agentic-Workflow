@@ -9,9 +9,10 @@ import sys
 import time
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.utils.security_util import safe_popen
 
-project_root = Path(__file__).parent.parent
+project_root = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(project_root))
 
@@ -34,7 +35,7 @@ def main():
 
     # Start dashboard server
     print("\n1. Starting fresh dashboard server on port 8765...")
-    dashboard_dir = project_root / "agentic_core" / "L6_observability" / "dashboards"
+    dashboard_dir = project_root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 
     server_process = safe_popen(
         [sys.executable, "-m", "http.server", "8765"],

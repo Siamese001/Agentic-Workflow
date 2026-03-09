@@ -9,14 +9,16 @@ import shutil
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
+from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 from agentic_core.L0_routing.config import get_validated_project_root
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.path_util import safe_path_join
-from agentic_core.utils.ssot_discovery_validator import get_python_files
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
 PROJECT_ROOT = get_validated_project_root()
-CORE = safe_path_join(PROJECT_ROOT, "agentic_core")
+CORE = safe_path_join(PROJECT_ROOT, AGENTIC_CORE_DIR)
 STAGE_MAPPINGS: Any = {
     "L1_cognition": "P1_core",
     "L2_execution": "P1_core",

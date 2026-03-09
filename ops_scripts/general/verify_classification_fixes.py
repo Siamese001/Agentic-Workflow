@@ -6,9 +6,13 @@ Tests the three target files to ensure correct classification.
 import sys
 from pathlib import Path
 
-# Add project root to path
-project_root = Path(__file__).resolve().parent.parent.parent
-sys.path.insert(0, str(project_root))
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+    L5_SAFETY_DIR,
+    get_validated_project_root,
+)
+
+project_root = get_validated_project_root()
 
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
 
@@ -21,21 +25,17 @@ def verify_classifications():
     test_files = [
         (
             "DecompositionOrchestratorAgent.py",
-            project_root
-            / "agentic_core"
-            / "L3_orchestration"
-            / "workflow_engines"
-            / "DecompositionOrchestratorAgent.py",
+            project_root / L3_ORCHESTRATION_DIR / "workflow_engines" / "DecompositionOrchestratorAgent.py",
             ["ORCHESTRATOR", "AGENT"],
         ),
         (
             "DagEngineAgent.py",
-            project_root / "agentic_core" / "L3_orchestration" / "workflow_engines" / "DagEngineAgent.py",
+            project_root / L3_ORCHESTRATION_DIR / "workflow_engines" / "DagEngineAgent.py",
             ["AGENT", "CLASS"],
         ),
         (
             "CodeHealerAgent.py",
-            project_root / "agentic_core" / "L5_safety" / "policy_engine" / "CodeHealerAgent.py",
+            project_root / L5_SAFETY_DIR / "policy_engine" / "CodeHealerAgent.py",
             ["AGENT"],
         ),
     ]

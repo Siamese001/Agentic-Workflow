@@ -10,8 +10,10 @@ import sys
 from datetime import datetime
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 dry_run: Any = False
-target_root: Any = "agentic_core"
+target_root: Any = AGENTIC_CORE_DIR
 primary_partition_only: Any = True
 current_file: Any = Path(__file__).resolve()
 project_root: Any = next((p for p in current_file.parents if (p / ".env").exists()), None)

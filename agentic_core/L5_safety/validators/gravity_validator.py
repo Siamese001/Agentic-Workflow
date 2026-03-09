@@ -23,15 +23,15 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_EXCLUDED_FOLDERS,
     SOVEREIGN_TERRITORIES,  # [RECONCILED 2026-01-27] Use unified schema
 )
 from agentic_core.L5_safety.enforcement.ssot_scanner_enforcer import SSOTScanner
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 
 @dataclass
@@ -447,7 +447,7 @@ class UnifiedSSOTValidator:
                 violations.append(
                     DriftViolation(
                         folder_path=str(folder.relative_to(self.project_root)),
-                        parent_folder="agentic_core",
+                        parent_folder=AGENTIC_CORE_DIR,
                         violation_type="orphaned",
                     ),
                 )

@@ -22,6 +22,13 @@ from dataclasses import dataclass
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+)
+
 # FileType imported from classification kernel (SSOT)
 from agentic_core.L5_safety.core_kernel.classification_kernel import (
     FileType,
@@ -106,7 +113,7 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
     """Classify all source files in apps_lic, apps_rg, apps_shared."""
     classifications = []
 
-    app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+    app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     exclude_dirs = {"__pycache__", ".git", "archives", "venv"}
 
     for app_dir in app_dirs:
@@ -157,7 +164,7 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
 def find_misplaced_tests(project_root: Path) -> list[Path]:
     """Find test files incorrectly placed in source directories."""
     misplaced = []
-    app_dirs = ["apps_lic", "apps_rg", "apps_shared"]
+    app_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     for app_dir in app_dirs:
         app_path = project_root / app_dir
@@ -178,9 +185,9 @@ def find_obsolete_tests(project_root: Path, classifications: list[FileClassifica
     {c.path.stem for c in classifications}
 
     test_dirs = [
-        project_root / "tests" / "unit" / "apps_lic",
-        project_root / "tests" / "unit" / "apps_rg",
-        project_root / "tests" / "unit" / "apps_shared",
+        project_root / TESTS_DIR / "unit" / APPS_LIC_DIR,
+        project_root / TESTS_DIR / "unit" / APPS_RG_DIR,
+        project_root / TESTS_DIR / "unit" / APPS_SHARED_DIR,
     ]
 
     obsolete_patterns = [

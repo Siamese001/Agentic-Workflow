@@ -23,6 +23,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 
 pytestmark = pytest.mark.unit_min_deps
@@ -137,7 +141,7 @@ class TestNoShimImportsEnforcement:
 
     def _find_forbidden_imports(self) -> list[str]:
         violations = []
-        agentic_core = ROOT / "agentic_core"
+        agentic_core = ROOT / AGENTIC_CORE_DIR
 
         for py_file in agentic_core.rglob("*.py"):
             if py_file.name in self.SHIM_FILES:
@@ -175,7 +179,7 @@ class TestBaseAgentsDecoratorImports:
     def test_base_agents_decorators_no_shim_imports(self) -> None:
         """base_agents decorator modules must not import from their shim locations (no circular deps)."""
         violations = []
-        base_agents = ROOT / "agentic_core" / "base_agents"
+        base_agents = ROOT / AGENTIC_CORE_DIR / "base_agents"
 
         for py_file in base_agents.glob("*.py"):
             if py_file.name not in self.DECORATOR_FILES:

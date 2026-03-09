@@ -19,16 +19,16 @@ import json
 import sys
 from pathlib import Path
 
+# ---------------------------------------------------------------------------
+# Constants
+# ---------------------------------------------------------------------------
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.L0_routing.types.integration_contract_types import (
     Finding,
     ResultEnvelope,
 )
 
-# ---------------------------------------------------------------------------
-# Constants
-# ---------------------------------------------------------------------------
-
-REPO_ROOT = Path(__file__).resolve().parent.parent.parent
+REPO_ROOT = get_validated_project_root()
 
 EVIDENCE_FILES = {
     "P3": REPO_ROOT / "docs" / "reports" / "plans" / "v15_p3_evidence.json",
@@ -39,7 +39,7 @@ EVIDENCE_FILES = {
 
 GUARDIAN_REPORT_PATHS = [
     REPO_ROOT / "docs" / "reports" / "plans" / "guardian_report.json",
-    REPO_ROOT / "agentic_core" / "L0_routing" / "logs" / "guardian_report.json",
+    REPO_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "logs" / "guardian_report.json",
 ]
 
 

@@ -18,6 +18,16 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Exemptions — modules allowed to call json.dumps directly
 # ---------------------------------------------------------------------------
@@ -33,13 +43,13 @@ _EXCLUDE_DIRS = {"tests", ".backup", "__pycache__", ".git"}
 
 # Directories that are in scope for the enforcement scan
 _SCAN_ROOTS = [
-    Path("agentic_core/L2_execution"),
-    Path("agentic_core/L0_routing"),
-    Path("agentic_core/L1_cognition"),
-    Path("agentic_core/L3_orchestration"),
-    Path("agentic_core/L4_state"),
-    Path("agentic_core/L5_safety"),
-    Path("agentic_core/L6_observability"),
+    Path(L2_EXECUTION_DIR),
+    Path(L0_ROUTING_DIR),
+    Path(L1_COGNITION_DIR),
+    Path(L3_ORCHESTRATION_DIR),
+    Path(L4_STATE_DIR),
+    Path(L5_SAFETY_DIR),
+    Path(L6_OBSERVABILITY_DIR),
 ]
 
 

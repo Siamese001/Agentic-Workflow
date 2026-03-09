@@ -9,8 +9,10 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
 # Add project root to path
-project_root = Path(__file__).resolve().parent.parent.parent
+project_root = get_validated_project_root()
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
@@ -48,7 +50,7 @@ def run_healing_with_detailed_report():
     result = agent.heal_repository(
         dry_run=False,
         execute=True,
-        target_territory="agentic_core",
+        target_territory=AGENTIC_CORE_DIR,
         auto_approve=True,
     )
 

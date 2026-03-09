@@ -13,6 +13,19 @@ import pathlib
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L3_ORCHESTRATION_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 REPO_ROOT = pathlib.Path(__file__).parent.parent.parent
@@ -30,9 +43,9 @@ _FORBIDDEN_SDK_ROOTS = frozenset(
 _ALLOWED_ROOTS = (
     "agentic_core/L2_execution",
     "data/sdks_mcps",
-    "tests",
-    "ops_scripts",
-    "tools",
+    TESTS_DIR,
+    OPS_SCRIPTS_DIR,
+    TOOLS_DIR,
 )
 
 _KNOWN_BYPASS_DEBT: frozenset[str] = frozenset(
@@ -47,13 +60,13 @@ _KNOWN_BYPASS_DEBT: frozenset[str] = frozenset(
 )
 
 _NON_GATEWAY_SCAN_ROOTS = [
-    REPO_ROOT / "agentic_core" / "L0_routing",
-    REPO_ROOT / "agentic_core" / "L1_cognition",
-    REPO_ROOT / "agentic_core" / "L3_orchestration",
-    REPO_ROOT / "agentic_core" / "L5_safety",
-    REPO_ROOT / "apps_lic",
-    REPO_ROOT / "apps_rg",
-    REPO_ROOT / "apps_shared",
+    REPO_ROOT / L0_ROUTING_DIR,
+    REPO_ROOT / L1_COGNITION_DIR,
+    REPO_ROOT / L3_ORCHESTRATION_DIR,
+    REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety",
+    REPO_ROOT / APPS_LIC_DIR,
+    REPO_ROOT / APPS_RG_DIR,
+    REPO_ROOT / APPS_SHARED_DIR,
 ]
 
 

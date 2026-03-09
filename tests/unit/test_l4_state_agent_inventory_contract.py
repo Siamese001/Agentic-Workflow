@@ -26,6 +26,14 @@ import ast
 import os
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+)
+
 # ---------------------------------------------------------------------------
 
 # Constants
@@ -33,19 +41,19 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 
 
-L4_ROOT = os.path.join("agentic_core", "L4_state")
+L4_ROOT = os.path.join(AGENTIC_CORE_DIR, L4_STATE_DIR)
 
 
 ENTRYPOINTS = [
-    os.path.join("agentic_core", "L3_orchestration", "engines", "AgentFactory.py"),
-    os.path.join("agentic_core", "L3_orchestration", "enforcement", "mission_runner.py"),
-    os.path.join("agentic_core", "L3_orchestration", "enforcement", "safety_strategy.py"),
-    os.path.join("agentic_core", "L5_safety", "enforcement", "HealingStrategy.py"),
-    os.path.join("agentic_core", "L0_routing", "scripts", "execute_ssot.py"),
-    os.path.join("agentic_core", "L2_execution", "reasoning", "SubAtomicRegistryAgent.py"),
-    os.path.join("agentic_core", "interfaces", "IStateProtocol.py"),
-    os.path.join("agentic_core", "interfaces", "IValidatorProtocol.py"),
-    os.path.join("agentic_core", "interfaces", "IHealingStrategyProtocol.py"),
+    os.path.join(AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, "engines", "AgentFactory.py"),
+    os.path.join(AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, "enforcement", "mission_runner.py"),
+    os.path.join(AGENTIC_CORE_DIR, L3_ORCHESTRATION_DIR, "enforcement", "safety_strategy.py"),
+    os.path.join(AGENTIC_CORE_DIR, "L5_safety", "enforcement", "HealingStrategy.py"),
+    os.path.join(AGENTIC_CORE_DIR, L0_ROUTING_DIR, "scripts", "execute_ssot.py"),
+    os.path.join(AGENTIC_CORE_DIR, L2_EXECUTION_DIR, "reasoning", "SubAtomicRegistryAgent.py"),
+    os.path.join(AGENTIC_CORE_DIR, "interfaces", "IStateProtocol.py"),
+    os.path.join(AGENTIC_CORE_DIR, "interfaces", "IValidatorProtocol.py"),
+    os.path.join(AGENTIC_CORE_DIR, "interfaces", "IHealingStrategyProtocol.py"),
 ]
 
 
@@ -168,7 +176,7 @@ def _get_entrypoint_imported_names():
 
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
-                if "L4_state" in node.module:
+                if L4_STATE_DIR in node.module:
                     for alias in node.names:
                         imported.add(alias.name)
 

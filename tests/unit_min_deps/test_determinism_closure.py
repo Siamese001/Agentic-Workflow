@@ -18,6 +18,11 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 
@@ -296,13 +301,7 @@ class TestSemanticClockHashValidator:
             scan_module_for_wallclock,
         )
 
-        clock_module = (
-            Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L0_routing"
-            / "types"
-            / "determinism_types.py"
-        )
+        clock_module = Path(__file__).resolve().parents[2] / L0_ROUTING_DIR / "types" / "determinism_types.py"
         violations = scan_module_for_wallclock(clock_module)
         assert violations == [], "Wall-clock calls found in determinism_types.py:\n" + "\n".join(violations)
 
@@ -316,8 +315,7 @@ class TestSemanticClockHashValidator:
 
         validator_module = (
             Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L6_observability"
+            / L6_OBSERVABILITY_DIR
             / "engines"
             / "semantic_clock_validator.py"
         )

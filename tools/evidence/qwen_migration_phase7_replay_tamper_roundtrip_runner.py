@@ -11,6 +11,10 @@ import re
 import subprocess
 import sys
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 
 def validate_64hex(value: str, name: str) -> None:
     """Validate that a string is a 64-character hex string."""
@@ -188,7 +192,7 @@ def main():
     )
 
     # Find existing tests that reference replay validation
-    for root, dirs, files in os.walk("tests"):
+    for root, dirs, files in os.walk(_ROOT / TESTS_DIR):
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)

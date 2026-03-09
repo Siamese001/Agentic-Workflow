@@ -20,6 +20,13 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+_ROOT = get_validated_project_root()
+
 
 def to_smart_snake_case(name: str) -> str:
     """Convert PascalCase to snake_case while preserving acronyms."""
@@ -128,8 +135,8 @@ def rename_file_and_refactor(source_path: Path, new_filename: str, project_root:
 
     # Find test file
     rel_path = source_path.relative_to(project_root)
-    test_path_old = project_root / "tests" / "unit" / rel_path.parent / test_name_old
-    test_path_new = project_root / "tests" / "unit" / rel_path.parent / test_name_new
+    test_path_old = _ROOT / TESTS_DIR / "unit" / rel_path.parent / test_name_old
+    test_path_new = _ROOT / TESTS_DIR / "unit" / rel_path.parent / test_name_new
 
     if test_path_old.exists() and not test_path_new.exists():
         try:

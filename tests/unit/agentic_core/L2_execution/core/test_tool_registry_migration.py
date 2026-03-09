@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
+)
+
 
 class TestToolRegistryMigration:
     @pytest.fixture
@@ -11,7 +15,7 @@ class TestToolRegistryMigration:
         """Creates a mock environment with the 'ToolRegistry' casing issue."""
         with tempfile.TemporaryDirectory() as tmpdir:
             root = Path(tmpdir)
-            l2 = root / "agentic_core" / "L2_execution"
+            l2 = root / L2_EXECUTION_DIR
             l2.mkdir(parents=True)
 
             # Create the PascalCase directory
@@ -26,7 +30,7 @@ class TestToolRegistryMigration:
 
     def test_migration_logic(self, mock_env):
         """Simulate the atomic rename and content replacement."""
-        l2 = mock_env / "agentic_core" / "L2_execution"
+        l2 = mock_env / L2_EXECUTION_DIR
         old_dir = l2 / "ToolRegistry"
         new_dir = l2 / "tool_registry"
         consumer = mock_env / "consumer.py"

@@ -13,13 +13,20 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+
 # Under --import-mode=importlib pytest collects this as package tests/agentic_core,
 # so bare 'from agentic_core...' resolves into tests/ not the project root.
 _PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 
-SOVEREIGN_ROOTS = ["apps_lic", "apps_rg", "agentic_core", "apps_shared"]
+SOVEREIGN_ROOTS = [APPS_LIC_DIR, APPS_RG_DIR, AGENTIC_CORE_DIR, APPS_SHARED_DIR]
 
 DEPTH_VIOLATION_MESSAGES = [
     "DEEP VIOLATION: file is too deep",
@@ -92,7 +99,7 @@ def test_identity_path_guard_returns_skipped(healer):
     """
     agent, tmp_path = healer
 
-    apps_dir = tmp_path / "apps_lic" / "engines"
+    apps_dir = tmp_path / APPS_LIC_DIR / "engines"
     apps_dir.mkdir(parents=True, exist_ok=True)
     fake_file = apps_dir / "FooAgent.py"
     fake_file.write_text("class FooAgent: pass\n")
@@ -101,7 +108,7 @@ def test_identity_path_guard_returns_skipped(healer):
     import_touched_paths: list[Path] = []
 
     # Patch SOVEREIGN_REGISTRY to return depth=2 (matching the file's actual depth=2)
-    mock_registry = {"apps_lic": {"depth": 2, "subfolders": ["engines", "reasoning"]}}
+    mock_registry = {APPS_LIC_DIR: {"depth": 2, "subfolders": ["engines", "reasoning"]}}
     with patch(
         "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
         mock_registry,
@@ -142,11 +149,11 @@ def test_pascal_in_non_agent_folder_in_strategy_map():
 
 def test_apps_rg_apps_lic_depth_is_two():
     """Bug 1 guard: apps_rg and apps_lic must have depth=2 in SOVEREIGN_TERRITORIES."""
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
+    from agentic_core.L5_safety.config.structure_blueprint import (
         SOVEREIGN_TERRITORIES,
     )
 
-    for territory in ("apps_rg", "apps_lic"):
+    for territory in (APPS_RG_DIR, APPS_LIC_DIR):
         depth = SOVEREIGN_TERRITORIES.get(territory, {}).get("depth")
         assert depth == 2, (
             f"SSOT depth split: {territory} has depth={depth} in SOVEREIGN_TERRITORIES, "

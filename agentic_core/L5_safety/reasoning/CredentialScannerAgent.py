@@ -238,7 +238,7 @@ class CredentialScannerAgent(SovereignBaseAgent):
             Dict with scan results including matches, summary, and recommendations
         """
         if target_path is None:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 get_validated_project_root,
             )
 

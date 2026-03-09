@@ -12,6 +12,8 @@ import os
 import re
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
 # Legacy to SovereignBaseAgent mapping
 LEGACY_IMPORTS = {
     "L1CognitionBase": "agentic_core.base_agents.L1CognitionBase",
@@ -126,7 +128,7 @@ def main():
     print("=" * 80)
 
     # Target directory
-    agentic_core = Path("agentic_core")
+    agentic_core = get_validated_project_root() / AGENTIC_CORE_DIR
 
     if not agentic_core.exists():
         print(f"❌ Directory not found: {agentic_core}")

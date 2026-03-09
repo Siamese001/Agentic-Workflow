@@ -9,6 +9,11 @@ Validates:
 import ast
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L3_ORCHESTRATION_DIR,
+)
+
 
 def detect_agent_in_wrong_subfolder(file_path: Path) -> dict | None:
     """
@@ -61,7 +66,7 @@ class TestAgentInTypesViolation:
 
     def test_agent_in_types_detected(self, tmp_path):
         """Agent class in types/ should be detected as violation."""
-        types_dir = tmp_path / "agentic_core" / "L5_safety" / "types"
+        types_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "types"
         types_dir.mkdir(parents=True)
 
         agent_file = types_dir / "embedded_agent_types.py"
@@ -78,7 +83,7 @@ class EmbeddedAgent:
 
     def test_agent_in_types_recommends_split(self, tmp_path):
         """Agent in types/ should recommend SPLIT action."""
-        types_dir = tmp_path / "agentic_core" / "L5_safety" / "types"
+        types_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "types"
         types_dir.mkdir(parents=True)
 
         agent_file = types_dir / "mixed_types.py"
@@ -104,7 +109,7 @@ class TestAgentInConfigViolation:
 
     def test_agent_in_config_detected(self, tmp_path):
         """Agent class in config/ should be detected as violation."""
-        config_dir = tmp_path / "agentic_core" / "L3_orchestration" / "config"
+        config_dir = tmp_path / L3_ORCHESTRATION_DIR / "config"
         config_dir.mkdir(parents=True)
 
         agent_file = config_dir / "dag_mutator_config.py"
@@ -124,7 +129,7 @@ class TestAgentInValidatorsViolation:
 
     def test_agent_in_validators_detected(self, tmp_path):
         """Agent class in validators/ should be detected as violation."""
-        validators_dir = tmp_path / "agentic_core" / "L5_safety" / "validators"
+        validators_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "validators"
         validators_dir.mkdir(parents=True)
 
         agent_file = validators_dir / "naming_validator.py"
@@ -144,7 +149,7 @@ class TestAgentInUtilsViolation:
 
     def test_agent_in_utils_detected(self, tmp_path):
         """Agent class in utils/ should be detected as violation."""
-        utils_dir = tmp_path / "agentic_core" / "L5_safety" / "utils"
+        utils_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "utils"
         utils_dir.mkdir(parents=True)
 
         agent_file = utils_dir / "cache_invalidation_util.py"
@@ -164,7 +169,7 @@ class TestAgentInEnforcementViolation:
 
     def test_agent_in_enforcement_detected(self, tmp_path):
         """Agent class in enforcement/ should be detected as violation."""
-        enforcement_dir = tmp_path / "agentic_core" / "L5_safety" / "enforcement"
+        enforcement_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "enforcement"
         enforcement_dir.mkdir(parents=True)
 
         agent_file = enforcement_dir / "hygiene_guardian.py"
@@ -184,7 +189,7 @@ class TestAgentInReasoningAllowed:
 
     def test_agent_in_reasoning_no_violation(self, tmp_path):
         """Agent class in reasoning/ should NOT be a violation."""
-        reasoning_dir = tmp_path / "agentic_core" / "L5_safety" / "reasoning"
+        reasoning_dir = tmp_path / AGENTIC_CORE_DIR / "L5_safety" / "reasoning"
         reasoning_dir.mkdir(parents=True)
 
         agent_file = reasoning_dir / "GoodAgent.py"
@@ -203,7 +208,7 @@ class TestProtocolInterfaceAllowed:
 
     def test_protocol_in_types_no_violation(self, tmp_path):
         """Protocol interface in types/ should NOT be a violation."""
-        types_dir = tmp_path / "agentic_core" / "L3_orchestration" / "types"
+        types_dir = tmp_path / L3_ORCHESTRATION_DIR / "types"
         types_dir.mkdir(parents=True)
 
         protocol_file = types_dir / "orchestrator_types.py"

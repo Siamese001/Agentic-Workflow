@@ -52,6 +52,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 pytestmark = pytest.mark.guardian
 
 # ---------------------------------------------------------------------------
@@ -164,8 +169,8 @@ def find_duplicate_singleton_classes(root: Path) -> list[str]:
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 _SSOT_SCAN_ROOTS = [
-    REPO_ROOT / "agentic_core",
-    REPO_ROOT / "system_learning",
+    REPO_ROOT / AGENTIC_CORE_DIR,
+    REPO_ROOT / SYSTEM_LEARNING_DIR,
 ]
 
 

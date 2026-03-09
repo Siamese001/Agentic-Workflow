@@ -10,9 +10,10 @@ import os
 import subprocess
 import sys
 from datetime import datetime, timezone
-from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR, get_validated_project_root
+
+REPO = get_validated_project_root()
 OUT = REPO / "artifacts" / "windsurf" / "W-AST-FIX-evidence.md"
 PY = sys.executable
 
@@ -81,7 +82,7 @@ def main():
     w("")
 
     # ── 3. Determinism run #1 ────────────────────────────────────────────
-    det_script = REPO / "tools" / "evidence" / "_det_probe.py"
+    det_script = REPO / TOOLS_DIR / "evidence" / "_det_probe.py"
     det_code = """
 import hashlib, os, sys
 repo = sys.argv[1]

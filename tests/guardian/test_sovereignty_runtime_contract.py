@@ -24,9 +24,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-BOOTSTRAP_PATH = PROJECT_ROOT / "agentic_core" / "runtime" / "sovereignty_bootstrap.py"
-EXCEPTIONS_PATH = PROJECT_ROOT / "agentic_core" / "runtime" / "sovereignty_exceptions.py"
+BOOTSTRAP_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "runtime" / "sovereignty_bootstrap.py"
+EXCEPTIONS_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "runtime" / "sovereignty_exceptions.py"
 
 pytestmark = pytest.mark.guardian
 

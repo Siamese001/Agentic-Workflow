@@ -49,6 +49,14 @@ from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Shared helpers
 # ---------------------------------------------------------------------------
@@ -102,7 +110,7 @@ class TestDeepCollisionDelegation:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
         # Pre-create collision target
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 
@@ -117,7 +125,7 @@ class TestDeepCollisionDelegation:
         agent._legacy_archive_depth_violation.return_value = 0
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 
@@ -130,7 +138,7 @@ class TestDeepCollisionDelegation:
         agent = _make_agent(tmp_path)
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 
@@ -143,7 +151,7 @@ class TestDeepCollisionDelegation:
         agent = _make_agent(tmp_path)
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, rel)
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 
@@ -168,7 +176,7 @@ class TestDeepGkArgs:
 
         _, mock_wg = _call(agent, file_path, rel, depth=4, expected=3)
 
-        expected_parent = tmp_path / "agentic_core" / "L0_routing" / "scripts"
+        expected_parent = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
         mock_wg.ensure_dir.assert_called_once_with(expected_parent)
 
     def test_deep_gk_called_with_correct_args(self, tmp_path):
@@ -475,7 +483,7 @@ class TestEnforceDepthForRoot:
             patch(
                 "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
                 MappingProxyType(
-                    {"apps_rg": {"depth": 2}, "tests": {"depth": 2}, "agentic_core": {"depth": 3}}
+                    {APPS_RG_DIR: {"depth": 2}, TESTS_DIR: {"depth": 2}, AGENTIC_CORE_DIR: {"depth": 3}}
                 ),
             ),
             patch("agentic_core.L5_safety.reasoning.hierarchy_healer._wg"),
@@ -492,8 +500,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fp],
             vds=frozenset({"engines"}),
         )
@@ -513,8 +521,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fp],
             vds=frozenset({"engines"}),
         )
@@ -530,8 +538,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fp],
             vds=frozenset(),
         )
@@ -549,8 +557,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fp],
             vds=frozenset(),
         )
@@ -562,13 +570,13 @@ class TestEnforceDepthForRoot:
         """Directories (is_dir()==True) are skipped, not counted as violations."""
         agent = _make_enforce_agent(tmp_path)
         # Create a directory, not a file
-        fake_dir = tmp_path / "apps_rg" / "sub"
+        fake_dir = tmp_path / APPS_RG_DIR / "sub"
         fake_dir.mkdir(parents=True)
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fake_dir],
             vds=frozenset(),
         )
@@ -582,8 +590,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",  # tests != apps_rg
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,  # tests != apps_rg
             py_files=[fp],
             vds=frozenset(),
         )
@@ -597,8 +605,8 @@ class TestEnforceDepthForRoot:
 
         count = self._run(
             agent,
-            root_key="apps_rg",
-            root_check=lambda r: r == "apps_rg",
+            root_key=APPS_RG_DIR,
+            root_check=lambda r: r == APPS_RG_DIR,
             py_files=[fp],
             vds=frozenset(),  # no VDS bypass
         )
@@ -632,7 +640,7 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_apps_territory_skips_tests_universal(self, tmp_path):
         """target_territory='apps_rg' → apps runs; tests and universal skipped."""
         agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory="apps_rg")
+        agent.enforce_depth_rules(target_territory=APPS_RG_DIR)
         agent._enforce_apps_depth.assert_called_once()
         agent._enforce_tests_depth.assert_not_called()
         agent._enforce_universal_depth.assert_not_called()
@@ -640,7 +648,7 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_tests_territory_skips_apps_universal(self, tmp_path):
         """target_territory='tests' → tests runs; apps and universal skipped."""
         agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory="tests")
+        agent.enforce_depth_rules(target_territory=TESTS_DIR)
         agent._enforce_apps_depth.assert_not_called()
         agent._enforce_tests_depth.assert_called_once()
         agent._enforce_universal_depth.assert_not_called()
@@ -648,7 +656,7 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_core_territory_skips_apps_tests(self, tmp_path):
         """target_territory='agentic_core' → universal runs; apps and tests skipped."""
         agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory="agentic_core")
+        agent.enforce_depth_rules(target_territory=AGENTIC_CORE_DIR)
         agent._enforce_apps_depth.assert_not_called()
         agent._enforce_tests_depth.assert_not_called()
         agent._enforce_universal_depth.assert_called_once()
@@ -714,7 +722,7 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_apps_lic_prefix_runs_apps(self, tmp_path):
         """target_territory='apps_lic' starts with 'apps_' → apps enforced."""
         agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory="apps_lic")
+        agent.enforce_depth_rules(target_territory=APPS_LIC_DIR)
         agent._enforce_apps_depth.assert_called_once()
         agent._enforce_tests_depth.assert_not_called()
         agent._enforce_universal_depth.assert_not_called()
@@ -722,6 +730,6 @@ class TestEnforceDepthRulesDispatch:
     def test_enforce_rules_apps_shared_prefix_runs_apps(self, tmp_path):
         """target_territory='apps_shared' starts with 'apps_' → apps enforced."""
         agent = self._make_dispatch_agent(tmp_path)
-        agent.enforce_depth_rules(target_territory="apps_shared")
+        agent.enforce_depth_rules(target_territory=APPS_SHARED_DIR)
         agent._enforce_apps_depth.assert_called_once()
         agent._enforce_universal_depth.assert_not_called()

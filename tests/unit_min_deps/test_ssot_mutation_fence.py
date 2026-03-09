@@ -6,6 +6,10 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     ProtectedRootPolicy,
     SourceMutationBlocked,
@@ -138,7 +142,7 @@ class TestBlockEventEmission:
         assert "ts_utc" in event
         assert "target" in event
         assert "matched_root" in event
-        assert event["matched_root"] == "agentic_core"
+        assert event["matched_root"] == AGENTIC_CORE_DIR
         assert "caller" in event
         assert event["caller"] == "mutation_prohibition:enforce_protected_root"
 
@@ -171,7 +175,7 @@ class TestPolicyContract:
     def test_default_policy_immutable_roots(self):
         """Test that default policy has exactly the canonical immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == ("agentic_core", "tests", ".github")
+        assert policy.immutable_roots == (AGENTIC_CORE_DIR, TESTS_DIR, ".github")
 
     def test_default_policy_log_path(self):
         """Test that default policy has the canonical log path."""
@@ -185,7 +189,7 @@ class TestPolicyContract:
 
         # Create custom policy with tmp_path log
         custom_policy = ProtectedRootPolicy(
-            immutable_roots=("agentic_core", "tests", ".github"), log_path=str(log_file)
+            immutable_roots=(AGENTIC_CORE_DIR, TESTS_DIR, ".github"), log_path=str(log_file)
         )
 
         # Ensure tmp log doesn't exist before test
@@ -202,7 +206,7 @@ class TestPolicyContract:
         lines = log_file.read_text().strip().split("\n")
         assert len(lines) == 1  # Exactly one event written
         event = json.loads(lines[0])
-        assert event["matched_root"] == "agentic_core"
+        assert event["matched_root"] == AGENTIC_CORE_DIR
         assert "target" in event
         assert "ts_utc" in event
         assert "caller" in event
@@ -319,7 +323,7 @@ class TestFenceSelfCheck:
         # Monkeypatch get_default_protected_root_policy to return bad log_path
         def bad_policy():
             return ProtectedRootPolicy(
-                immutable_roots=("agentic_core", "tests", ".github"),
+                immutable_roots=(AGENTIC_CORE_DIR, TESTS_DIR, ".github"),
                 log_path="agentic_core/bad_log.jsonl",  # Under protected root!
             )
 
@@ -363,7 +367,7 @@ class TestDeterministicReplay:
         )
 
         target_path = Path("agentic_core/test_file.py").resolve()
-        matched_root = "agentic_core"
+        matched_root = AGENTIC_CORE_DIR
         fixed_ts = "2026-02-21T23:00:00+00:00"
 
         # Run 1: Emit event with fixed timestamp
@@ -428,7 +432,7 @@ class TestDeterministicReplay:
         )
 
         target_path = Path("agentic_core/test_file.py").resolve()
-        matched_root = "agentic_core"
+        matched_root = AGENTIC_CORE_DIR
 
         # Run 1
         log_file_1 = tmp_path / "run1.jsonl"

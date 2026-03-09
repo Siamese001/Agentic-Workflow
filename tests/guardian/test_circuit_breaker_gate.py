@@ -17,8 +17,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MODULE_PATH = PROJECT_ROOT / "agentic_core" / "L5_safety" / "enforcement" / "circuit_breaker_gate.py"
+MODULE_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "enforcement" / "circuit_breaker_gate.py"
 
 pytestmark = pytest.mark.guardian
 

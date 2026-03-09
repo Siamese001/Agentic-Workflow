@@ -25,7 +25,7 @@ All failure points identified:
 | HierarchyAgent.py | _enforce_apps_depth | key missing from SOVEREIGN_TERRITORIES | skipped silently | test_enforce_apps_missing_key_skipped |
 | HierarchyAgent.py | _enforce_apps_depth | sums counts from all 3 roots | sum correct | test_enforce_apps_sums_all_root_counts |
 | HierarchyAgent.py | _enforce_apps_depth | root_check lambda correct per key | only matching root counted | test_enforce_apps_root_check_lambda |
-| HierarchyAgent.py | _enforce_tests_depth | delegates to _enforce_depth_for_root with 'tests' | called once | test_enforce_tests_delegates_correctly |
+| HierarchyAgent.py | _enforce_tests_depth | delegates to _enforce_depth_for_root with TESTS_DIR | called once | test_enforce_tests_delegates_correctly |
 | HierarchyAgent.py | _enforce_universal_depth | non-agentic_core file skipped | not counted | test_universal_non_agentic_core_skipped |
 | HierarchyAgent.py | _enforce_universal_depth | wrong extension skipped | not counted | test_universal_wrong_extension_skipped |
 | HierarchyAgent.py | _enforce_universal_depth | is_dir skipped | not counted | test_universal_dir_skipped |
@@ -52,6 +52,15 @@ from __future__ import annotations
 from pathlib import Path
 from types import MappingProxyType
 from unittest.mock import MagicMock, patch
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    TESTS_DIR,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -208,11 +217,11 @@ class TestLegacyArchiveDepthViolation:
 
 _FAKE_TERRITORIES = MappingProxyType(
     {
-        "apps_rg": {"depth": 2},
-        "apps_lic": {"depth": 2},
-        "apps_shared": {"depth": 2},
-        "tests": {"depth": 2},
-        "agentic_core": {"depth": 3},
+        APPS_RG_DIR: {"depth": 2},
+        APPS_LIC_DIR: {"depth": 2},
+        APPS_SHARED_DIR: {"depth": 2},
+        TESTS_DIR: {"depth": 2},
+        AGENTIC_CORE_DIR: {"depth": 3},
     }
 )
 
@@ -231,14 +240,14 @@ class TestEnforceAppsDepth:
 
         assert agent._enforce_depth_for_root.call_count == 3
         root_keys = [c[0][0] for c in agent._enforce_depth_for_root.call_args_list]
-        assert set(root_keys) == {"apps_rg", "apps_lic", "apps_shared"}
+        assert set(root_keys) == {APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR}
 
     def test_enforce_apps_missing_key_skipped(self, tmp_path):
         """Key missing from SOVEREIGN_TERRITORIES → _enforce_depth_for_root not called for it."""
         agent = _make_agent(tmp_path)
         agent._enforce_depth_for_root = MagicMock(return_value=0)
 
-        partial = MappingProxyType({"apps_rg": {"depth": 2}, "apps_lic": {"depth": 2}})
+        partial = MappingProxyType({APPS_RG_DIR: {"depth": 2}, APPS_LIC_DIR: {"depth": 2}})
         with patch(
             "agentic_core.L5_safety.reasoning.hierarchy_healer.SOVEREIGN_TERRITORIES",
             partial,
@@ -247,7 +256,7 @@ class TestEnforceAppsDepth:
 
         assert agent._enforce_depth_for_root.call_count == 2
         root_keys = [c[0][0] for c in agent._enforce_depth_for_root.call_args_list]
-        assert "apps_shared" not in root_keys
+        assert APPS_SHARED_DIR not in root_keys
 
     def test_enforce_apps_sums_all_root_counts(self, tmp_path):
         """Total = sum of violations across all three apps roots."""
@@ -299,11 +308,11 @@ class TestEnforceTestsDepth:
         result = agent._enforce_tests_depth()
 
         agent._enforce_depth_for_root.assert_called_once()
-        assert agent._enforce_depth_for_root.call_args[0][0] == "tests"
+        assert agent._enforce_depth_for_root.call_args[0][0] == TESTS_DIR
         assert result == 7
 
     def test_enforce_tests_root_check_accepts_tests_only(self, tmp_path):
-        """root_check lambda accepts 'tests' and rejects everything else."""
+        """root_check lambda accepts TESTS_DIR and rejects everything else."""
         agent = _make_agent(tmp_path)
         captured_check = []
         agent._enforce_depth_for_root = MagicMock(
@@ -313,9 +322,9 @@ class TestEnforceTestsDepth:
         agent._enforce_tests_depth()
 
         check = captured_check[0]
-        assert check("tests") is True
-        assert check("agentic_core") is False
-        assert check("apps_rg") is False
+        assert check(TESTS_DIR) is True
+        assert check(AGENTIC_CORE_DIR) is False
+        assert check(APPS_RG_DIR) is False
 
 
 # ---------------------------------------------------------------------------
@@ -326,7 +335,7 @@ class TestEnforceTestsDepth:
 def _run_universal(agent, data_files, vds=None, territories=None):
     """Run _enforce_universal_depth with mocked discovery."""
     vds_patch = vds if vds is not None else frozenset()
-    territories_patch = territories or MappingProxyType({"agentic_core": {"depth": 3}})
+    territories_patch = territories or MappingProxyType({AGENTIC_CORE_DIR: {"depth": 3}})
 
     def _fake_get_data(root, extensions=None):
         return iter(data_files)
@@ -366,7 +375,7 @@ class TestEnforceUniversalDepth:
     def test_universal_dir_skipped(self, tmp_path):
         """Directories are skipped."""
         agent = _make_agent(tmp_path)
-        d = tmp_path / "agentic_core" / "L0_routing" / "scripts"
+        d = tmp_path / L0_ROUTING_DIR / "scripts"
         d.mkdir(parents=True)
         result = _run_universal(agent, [d])
         assert result == 0
@@ -454,7 +463,7 @@ class TestFullChain:
         rel = Path("agentic_core/L0_routing/scripts/extra/agent.py")
         file_path = _write(tmp_path, str(rel))
         # Pre-create collision target
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / L0_ROUTING_DIR / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
 

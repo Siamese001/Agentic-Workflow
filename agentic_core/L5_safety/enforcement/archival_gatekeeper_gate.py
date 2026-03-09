@@ -39,7 +39,7 @@ from enum import Enum
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import ARCHIVES_DIR
+from agentic_core.L5_safety.config.structure_blueprint import ARCHIVES_DIR
 
 # Configure module logger
 logging.basicConfig(level=logging.INFO)
@@ -273,10 +273,18 @@ class ArchivalGatekeeper:
         Returns:
             True if approved, False if denied
         """
-        # Check batch mode first
-        if self._is_batch_mode():
-            result.approval_status = "BATCH_APPROVED"
-            Logger.info(f"[ArchivalGatekeeper] BATCH_APPROVED: {result.operation.value} {result.source_path}")
+        # Check batch mode first — record which env var triggered it
+        if os.environ.get(ARCHIVE_BATCH_ACCEPT_ENV, "").strip() == "1":
+            result.approval_status = f"BATCH_APPROVED:{ARCHIVE_BATCH_ACCEPT_ENV}"
+            Logger.info(
+                f"[ArchivalGatekeeper] BATCH_APPROVED via {ARCHIVE_BATCH_ACCEPT_ENV}: {result.operation.value} {result.source_path}"
+            )
+            return True
+        if os.environ.get("SOVEREIGN_AUTO_APPROVE") == "1":
+            result.approval_status = "BATCH_APPROVED:SOVEREIGN_AUTO_APPROVE"
+            Logger.info(
+                f"[ArchivalGatekeeper] BATCH_APPROVED via SOVEREIGN_AUTO_APPROVE: {result.operation.value} {result.source_path}"
+            )
             return True
 
         # Skip approval if disabled (for testing without mocking input)

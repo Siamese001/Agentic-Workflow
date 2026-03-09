@@ -27,6 +27,8 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 CANONICAL_KEYS = {
     "violations_found",
     "violations_fixed",
@@ -134,7 +136,7 @@ def main():
 
     parser = argparse.ArgumentParser(description="Check @standard_heal schema compliance")
     parser.add_argument("--strict", action="store_true", help="Exit with error code on violations")
-    parser.add_argument("--path", default="agentic_core", help="Path to scan (default: agentic_core)")
+    parser.add_argument("--path", default=AGENTIC_CORE_DIR, help="Path to scan (default: agentic_core)")
     args = parser.parse_args()
     root = Path(__file__).parent.parent.parent / args.path
     if not root.exists():

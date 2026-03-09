@@ -41,6 +41,7 @@ from agentic_core.interfaces.meta_learning import (
 from agentic_core.L0_routing.config import (
     APPS_LIC_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -89,12 +90,12 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
     _lic_version: Final[str] = "2.5.0-hardened"
 
     # [PHASE 25] Infrastructure Config (STRICTER)
-    _namespace: str = field(default="apps_lic", init=False)
+    _namespace: str = field(default=APPS_LIC_DIR, init=False)
     _similarity_threshold: float = field(default=0.92, init=False)
     _resource_prefix: str = field(default="lic", init=False)
 
     # [PHASE 3] Meta-Learning Domain Override
-    _ml_domain: str = field(default="apps_lic", init=False)
+    _ml_domain: str = field(default=APPS_LIC_DIR, init=False)
 
     # [PHASE 1.1] Guardrails Integration
     _guardrails: MetaLearningGuardrails = field(default=None, init=False)
@@ -160,10 +161,10 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
             self._initialize_meta_client()
 
         # Validate with guardrails
-        if not self.validate_domain_pattern({"domain": "apps_lic", **violation}):
+        if not self.validate_domain_pattern({"domain": APPS_LIC_DIR, **violation}):
             return None
 
-        return self._meta_client.store_healing_pattern(violation, healing_result, domain="apps_lic")
+        return self._meta_client.store_healing_pattern(violation, healing_result, domain=APPS_LIC_DIR)
 
     def retrieve_healing_patterns(
         self,
@@ -185,7 +186,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
 
         return self._meta_client.retrieve_healing_patterns(
             violation,
-            domain="apps_lic",
+            domain=APPS_LIC_DIR,
             top_k=top_k,
             min_similarity=self._similarity_threshold,
         )
@@ -487,7 +488,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
 
             # Add domain metadata
             if isinstance(value, dict):
-                value["_domain"] = "apps_lic"
+                value["_domain"] = APPS_LIC_DIR
                 value["_namespace"] = self._namespace
 
         return (True, namespaced_key)
@@ -507,7 +508,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        allowed = self._guardrails.check_rate_limit("apps_lic", operation)
+        allowed = self._guardrails.check_rate_limit(APPS_LIC_DIR, operation)
         if not allowed:
             Logger.warning(f"[{self.__class__.__name__}] Rate limit exceeded for {operation}")
         return allowed
@@ -522,7 +523,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        return self._guardrails.check_cache_size_limit("apps_lic")
+        return self._guardrails.check_cache_size_limit(APPS_LIC_DIR)
 
     def update_cache_metrics(self, delta: int = 1) -> None:
         """
@@ -534,7 +535,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        self._guardrails.update_cache_size("apps_lic", delta)
+        self._guardrails.update_cache_size(APPS_LIC_DIR, delta)
 
     def safe_cache_set(
         self,
@@ -701,7 +702,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.validate_domain_isolation("apps_lic", pattern)
+        return self._guardrails.validate_domain_isolation(APPS_LIC_DIR, pattern)
 
     def guardrails_sanitize_violation(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -729,7 +730,7 @@ class LICAgentBase(SemanticCacheMixin, MetaLearningMixin, AppBase, HealerMixin):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.check_rate_limit("apps_lic", operation)
+        return self._guardrails.check_rate_limit(APPS_LIC_DIR, operation)
 
     def guardrails_get_stats(self) -> dict[str, Any]:
         """Get guardrails statistics for monitoring."""

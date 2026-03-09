@@ -4,6 +4,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    TOOLS_DIR,
+)
 from agentic_core.L5_safety.static_checks.determinism_serialization_check import (
     scan_repository_for_determinism,
 )
@@ -69,7 +75,7 @@ def test_scanner_coverage():
     _ps_violations = scan_repository_for_powershell(repo_root)
 
     # Should scan tools and docs/evidence directories
-    tools_dir = repo_root / "tools"
+    tools_dir = repo_root / TOOLS_DIR
     evidence_dir = repo_root / "docs" / "evidence"
 
     if tools_dir.exists():
@@ -85,7 +91,7 @@ def test_scanner_coverage():
     _write_violations = scan_repository_for_writes(repo_root)
 
     # Should scan agentic_core (excluding L2_execution)
-    agentic_core_dir = repo_root / "agentic_core"
+    agentic_core_dir = repo_root / AGENTIC_CORE_DIR
     if agentic_core_dir.exists():
         pass
 
@@ -93,8 +99,8 @@ def test_scanner_coverage():
     _det_violations = scan_repository_for_determinism(repo_root)
 
     # Should scan replay and storage modules
-    replay_dir = repo_root / "agentic_core" / "L3_orchestration" / "replay"
-    storage_dir = repo_root / "agentic_core" / "L4_state" / "storage"
+    replay_dir = repo_root / L3_ORCHESTRATION_DIR / "replay"
+    storage_dir = repo_root / L4_STATE_DIR / "storage"
 
     if replay_dir.exists():
         pass

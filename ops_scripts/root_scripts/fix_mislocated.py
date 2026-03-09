@@ -7,6 +7,10 @@ import json
 import pathlib
 import shutil
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 
 def main():
     """Fix the single remaining mislocated test."""
@@ -22,7 +26,7 @@ def main():
 
         # Find the actual test file
         module_name = module_path.stem
-        test_root = pathlib.Path("tests")
+        test_root = _ROOT / TESTS_DIR
 
         actual_test = None
         for test_file in test_root.rglob("test_*.py"):

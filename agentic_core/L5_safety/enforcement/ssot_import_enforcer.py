@@ -10,12 +10,14 @@ but don't already import from SSOT.
 """
 import re
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
@@ -88,7 +90,7 @@ def main():
     # Process all sovereign territories
     territories = [
         AGENTIC_CORE,
-        PROJECT_ROOT / "tests",
+        PROJECT_ROOT / TESTS_DIR,
         PROJECT_ROOT / APPS_SHARED_DIR,
         PROJECT_ROOT / APPS_RG_DIR,
         PROJECT_ROOT / APPS_LIC_DIR,

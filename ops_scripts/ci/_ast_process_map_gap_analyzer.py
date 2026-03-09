@@ -12,6 +12,8 @@ from collections import defaultdict
 from pathlib import Path
 from typing import Dict, List, Set, Tuple
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 
 class FunctionalAreaExtractor(ast.NodeVisitor):
     """Extract functional areas from AST nodes."""
@@ -259,7 +261,7 @@ def scan_repository(repo_root: Path) -> dict[str, dict]:
             rel_path = filepath.relative_to(repo_root)
             layer = None
 
-            if "agentic_core" in str(rel_path):
+            if AGENTIC_CORE_DIR in str(rel_path):
                 parts = rel_path.parts
                 if len(parts) > 1 and parts[1].startswith("L"):
                     layer = parts[1]

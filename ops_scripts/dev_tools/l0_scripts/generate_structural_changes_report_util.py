@@ -12,13 +12,19 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    L0_ROUTING_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 
 
 def scan_archives_for_moved_files() -> list[dict[str, Any]]:
     """Scan archives/gatekeeper/2026-01-22 for all archived files."""
     archived_files = []
-    archive_root = PROJECT_ROOT / "archives" / "gatekeeper" / "2026-01-22"
+    archive_root = PROJECT_ROOT / ARCHIVES_DIR / "gatekeeper" / "2026-01-22"
 
     if not archive_root.exists():
         return archived_files
@@ -47,7 +53,7 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
 def scan_l0_maintenance_scripts() -> list[dict[str, Any]]:
     """Scan agentic_core/L0_routing/scripts for relocated files."""
     relocated_files = []
-    scripts_dir = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
+    scripts_dir = PROJECT_ROOT / L0_ROUTING_DIR / "scripts"
 
     if not scripts_dir.exists():
         return relocated_files
@@ -81,7 +87,7 @@ def scan_l0_maintenance_scripts() -> list[dict[str, Any]]:
 def scan_created_directories() -> list[dict[str, Any]]:
     """Scan for newly created directories in agentic_core."""
     created_dirs = []
-    agentic_core = PROJECT_ROOT / "agentic_core"
+    agentic_core = PROJECT_ROOT / AGENTIC_CORE_DIR
 
     if not agentic_core.exists():
         return created_dirs

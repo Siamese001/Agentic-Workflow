@@ -6,16 +6,21 @@ from gravity scan, and apply_fix() must accept privileged_mutation_context kwarg
 import ast
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 GRAVITY_PATH = (
     Path(__file__).parent.parent.parent
-    / "agentic_core"
+    / AGENTIC_CORE_DIR
     / "L5_safety"
     / "reasoning"
     / "GravityLeakRepairAgent.py"
 )
 STRUCTURE_PATH = (
     Path(__file__).parent.parent.parent
-    / "agentic_core"
+    / AGENTIC_CORE_DIR
     / "L5_safety"
     / "reasoning"
     / "StructuralValidatorAgent.py"
@@ -58,7 +63,7 @@ def test_apply_fix_has_privileged_mutation_context_param():
 def test_heal_repository_excludes_ops_scripts():
     """Wave 2: heal_repository must reference ops_scripts exclusion."""
     src = GRAVITY_PATH.read_text(encoding="utf-8", errors="replace")
-    assert "ops_scripts" in src, (
+    assert OPS_SCRIPTS_DIR in src, (
         "ops_scripts not excluded in GravityLeakRepairAgent.heal_repository() — "
         "violations in that directory will always block as plan_only"
     )

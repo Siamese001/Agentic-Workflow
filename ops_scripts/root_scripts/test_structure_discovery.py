@@ -8,6 +8,17 @@ import pathlib
 from collections import defaultdict
 from dataclasses import dataclass
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+_ROOT = get_validated_project_root()
+
 
 @dataclass
 class ModuleInfo:
@@ -41,7 +52,7 @@ def discover_python_modules(root: pathlib.Path) -> list[pathlib.Path]:
         if any(exclude in str(py_file) for exclude in exclude_dirs):
             continue
         # Skip test files themselves
-        if "tests" in py_file.parts:
+        if TESTS_DIR in py_file.parts:
             continue
         modules.append(py_file)
 
@@ -50,7 +61,7 @@ def discover_python_modules(root: pathlib.Path) -> list[pathlib.Path]:
 
 def discover_existing_tests() -> list[pathlib.Path]:
     """Discover all existing test files."""
-    test_root = pathlib.Path("tests")
+    test_root = _ROOT / TESTS_DIR
     if not test_root.exists():
         return []
 
@@ -60,16 +71,18 @@ def discover_existing_tests() -> list[pathlib.Path]:
 def compute_expected_test_path(module_path: pathlib.Path) -> pathlib.Path:
     """Compute expected test path based on mirror rules."""
     # Convert module path to test path
-    if module_path.parts[0] == "agentic_core":
+    if module_path.parts[0] == AGENTIC_CORE_DIR:
         # agentic_core/L1_cognition/reasoning/foo.py -> tests/agentic_core/L1_cognition/reasoning/test_foo.py
         relative_parts = module_path.parts[1:]  # Skip 'agentic_core'
         test_name = f"test_{module_path.stem}.py"
-        return pathlib.Path("tests") / "agentic_core" / pathlib.Path(*relative_parts).parent / test_name
+        return pathlib.Path(TESTS_DIR) / AGENTIC_CORE_DIR / pathlib.Path(*relative_parts).parent / test_name
     elif module_path.parts[0].startswith("apps_"):
         # apps_lic/engines/foo.py -> tests/apps_lic/engines/test_foo.py
         relative_parts = module_path.parts[1:]  # Skip 'apps_*'
         test_name = f"test_{module_path.stem}.py"
-        return pathlib.Path("tests") / module_path.parts[0] / pathlib.Path(*relative_parts).parent / test_name
+        return (
+            pathlib.Path(TESTS_DIR) / module_path.parts[0] / pathlib.Path(*relative_parts).parent / test_name
+        )
     else:
         raise ValueError(f"Unexpected module root: {module_path.parts[0]}")
 
@@ -99,10 +112,10 @@ def generate_mapping_report() -> dict:
     root = pathlib.Path(".")
 
     # Discover modules
-    agentic_modules = discover_python_modules(root / "agentic_core")
-    apps_lic_modules = discover_python_modules(root / "apps_lic")
-    apps_rg_modules = discover_python_modules(root / "apps_rg")
-    apps_shared_modules = discover_python_modules(root / "apps_shared")
+    agentic_modules = discover_python_modules(_ROOT / AGENTIC_CORE_DIR)
+    apps_lic_modules = discover_python_modules(_ROOT / APPS_LIC_DIR)
+    apps_rg_modules = discover_python_modules(_ROOT / APPS_RG_DIR)
+    apps_shared_modules = discover_python_modules(_ROOT / APPS_SHARED_DIR)
 
     all_modules = agentic_modules + apps_lic_modules + apps_rg_modules + apps_shared_modules
 

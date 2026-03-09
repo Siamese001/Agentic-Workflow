@@ -7,6 +7,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 def get_repo_root() -> Path:
     """Find repository root by walking up to find .git directory."""
@@ -95,8 +99,8 @@ def main():
 
     # 5) Token scan for wall-clock and forbidden imports
     print("Scanning for forbidden tokens...")
-    path_router_file = repo_root / "agentic_core" / "L0_routing" / "engines" / "path_router.py"
-    seam_file = repo_root / "agentic_core" / "L0_routing" / "seams" / "elevator_shaft_seam.py"
+    path_router_file = repo_root / AGENTIC_CORE_DIR / "L0_routing" / "engines" / "path_router.py"
+    seam_file = repo_root / AGENTIC_CORE_DIR / "L0_routing" / "seams" / "elevator_shaft_seam.py"
 
     wall_clock_tokens = ["datetime.now", "datetime.utcnow", "time.time", "perf_counter", "monotonic"]
     forbidden_imports = ["L2_", "L5_"]

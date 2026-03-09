@@ -15,6 +15,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 
@@ -96,7 +100,7 @@ class TestSeamBoundary:
 
 class TestOrchestratorBoundary:
     def test_orchestrator_not_enforcer(self, tmp_path):
-        o_dir = tmp_path / "agentic_core" / "L3_orchestration" / "reasoning"
+        o_dir = tmp_path / L3_ORCHESTRATION_DIR / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
         code = """\
         from agentic_core.L3_orchestration.reasoning import AgentA

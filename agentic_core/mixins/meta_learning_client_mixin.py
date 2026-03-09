@@ -23,6 +23,11 @@ from __future__ import annotations
 import logging
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 from agentic_core.L2_execution.types.ml_write_intent_types import (
     MLWriteEnvelopeViolation,
     is_commit_sandbox_active,
@@ -125,18 +130,18 @@ class MetaLearningClientMixin:
         # Infer from class name
         class_name = self.__class__.__name__
         if "Lic" in class_name or "LIC" in class_name:
-            return "apps_lic"
+            return APPS_LIC_DIR
         if "Rg" in class_name or "RG" in class_name:
-            return "apps_rg"
+            return APPS_RG_DIR
 
         # Infer from module path
         module = self.__class__.__module__
-        if "apps_lic" in module:
-            return "apps_lic"
-        if "apps_rg" in module:
-            return "apps_rg"
+        if APPS_LIC_DIR in module:
+            return APPS_LIC_DIR
+        if APPS_RG_DIR in module:
+            return APPS_RG_DIR
 
-        return "agentic_core"
+        return AGENTIC_CORE_DIR
 
     # ==================== HEALING PATTERN RECALL ====================
 

@@ -152,8 +152,13 @@ STANDARD_LIBRARY_MODULES = {
 }
 
 # Add project root to Python path for imports
-project_root = Path(__file__).parent.parent.parent
-sys.path.insert(0, str(project_root))
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+project_root = get_validated_project_root()
 
 from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     is_kernel_component,
@@ -184,7 +189,7 @@ class ImportVisitor(ast.NodeVisitor):
 def get_imports_from_file(file_path: Path) -> tuple[list[str], list[tuple[str, str]]]:
     """Extract imports from a Python file using AST."""
     try:
-        with open(file_path, "r", encoding="utf-8") as f:
+        with open(file_path, encoding="utf-8") as f:
             content = f.read()
         tree = ast.parse(content, filename=str(file_path))
         visitor = ImportVisitor()
@@ -315,8 +320,8 @@ def main() -> int:
 
     # Scan agentic_core and system_learning directories
     scan_dirs = [
-        project_root / "agentic_core",
-        project_root / "system_learning",
+        project_root / AGENTIC_CORE_DIR,
+        project_root / SYSTEM_LEARNING_DIR,
     ]
 
     total_violations = 0

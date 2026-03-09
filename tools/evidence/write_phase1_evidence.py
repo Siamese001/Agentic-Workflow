@@ -6,13 +6,18 @@ output, and writes docs/reports/plans/phase1_gap_remediation_evidence.md.
 
 from __future__ import annotations
 
-import os
 import re
 import subprocess
 import sys
-from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L5_SAFETY_DIR,
+    get_validated_project_root,
+)
+
+REPO = get_validated_project_root()
 EVIDENCE_PATH = REPO / "docs" / "reports" / "plans" / "phase1_gap_remediation_evidence.md"
 
 # Correction commit (W2.3 scope fix) is the final Phase 1 code state.
@@ -87,14 +92,10 @@ def main() -> int:
     emit()
     emit("## FILES_CHANGED_CODE")
     emit()
-    files_out, _ = run(
-        ["git", "show", "--name-only", "--pretty=format:", CODE_COMMIT]
-    )
+    files_out, _ = run(["git", "show", "--name-only", "--pretty=format:", CODE_COMMIT])
     emit(files_out)
     emit()
-    prior_files_out, _ = run(
-        ["git", "show", "--name-only", "--pretty=format:", PRIOR_CODE_COMMIT]
-    )
+    prior_files_out, _ = run(["git", "show", "--name-only", "--pretty=format:", PRIOR_CODE_COMMIT])
     emit("(PRIOR_CODE_COMMIT files:)")
     emit(prior_files_out)
     emit()
@@ -124,12 +125,20 @@ def main() -> int:
     # --- Pytest governance tests (Phase 1 acceptance gate) ---
     emit("## PytestGovernanceTests")
     emit()
-    emit("$ python -m pytest -q --color=no tests/governance/test_req414_egress_guard.py tests/governance/test_req415_provider_substitution.py")
-    gov_out, gov_rc = run([
-        "python", "-m", "pytest", "-q", "--color=no",
-        "tests/governance/test_req414_egress_guard.py",
-        "tests/governance/test_req415_provider_substitution.py",
-    ])
+    emit(
+        "$ python -m pytest -q --color=no tests/governance/test_req414_egress_guard.py tests/governance/test_req415_provider_substitution.py"
+    )
+    gov_out, gov_rc = run(
+        [
+            "python",
+            "-m",
+            "pytest",
+            "-q",
+            "--color=no",
+            "tests/governance/test_req414_egress_guard.py",
+            "tests/governance/test_req415_provider_substitution.py",
+        ]
+    )
     emit(gov_out)
     if gov_rc != 0:
         emit(f"EXIT CODE: {gov_rc}")
@@ -178,19 +187,21 @@ def main() -> int:
 
     emit("## Uuid4EliminationTracingMixin")
     emit()
-    emit("$ python -c \"import ast; scan uuid4 refs in tracing_mixin.py\"")
-    src = (REPO / "agentic_core" / "mixins" / "tracing_mixin.py").read_text(encoding="utf-8")
-    hits = [n.lineno for n in _ast.walk(_ast.parse(src))
-            if isinstance(n, _ast.Attribute) and n.attr == "uuid4"]
+    emit('$ python -c "import ast; scan uuid4 refs in tracing_mixin.py"')
+    src = (REPO / AGENTIC_CORE_DIR / "mixins" / "tracing_mixin.py").read_text(encoding="utf-8")
+    hits = [
+        n.lineno for n in _ast.walk(_ast.parse(src)) if isinstance(n, _ast.Attribute) and n.attr == "uuid4"
+    ]
     emit(f"uuid4 refs in tracing_mixin.py: {hits}")
     emit()
 
     emit("## Uuid4EliminationGovernanceContracts")
     emit()
-    emit("$ python -c \"import ast; scan uuid4 refs in governance_contracts.py\"")
-    src2 = (REPO / "agentic_core" / "L0_routing" / "enforcement" / "governance_contracts.py").read_text(encoding="utf-8")
-    hits2 = [n.lineno for n in _ast.walk(_ast.parse(src2))
-             if isinstance(n, _ast.Attribute) and n.attr == "uuid4"]
+    emit('$ python -c "import ast; scan uuid4 refs in governance_contracts.py"')
+    src2 = (REPO / L0_ROUTING_DIR / "enforcement" / "governance_contracts.py").read_text(encoding="utf-8")
+    hits2 = [
+        n.lineno for n in _ast.walk(_ast.parse(src2)) if isinstance(n, _ast.Attribute) and n.attr == "uuid4"
+    ]
     emit(f"uuid4 refs in governance_contracts.py: {hits2}")
     emit()
 
@@ -208,7 +219,7 @@ def main() -> int:
     # --- Precondition status ---
     emit("## PreconditionStatus")
     emit()
-    guard_exists = (REPO / "agentic_core" / "L5_safety" / "enforcement" / "runtime_mutation_guard.py").exists()
+    guard_exists = (REPO / L5_SAFETY_DIR / "enforcement" / "runtime_mutation_guard.py").exists()
     emit(f"REQ-417 runtime_mutation_guard.py exists: {guard_exists} (Phase 2 / Wave 4 deliverable)")
     emit("CI AST guard check_llm_sdk_imports.py: ACTIVE")
     emit("CI wall-clock guard check_wall_clock_in_determinism.py: ACTIVE (scope: L2/determinism)")

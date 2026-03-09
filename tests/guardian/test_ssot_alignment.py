@@ -37,6 +37,19 @@ from typing import Any
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -61,7 +74,9 @@ def _load_structure_blueprint() -> dict[str, Any]:
     This uses importlib to load the module at runtime, ensuring we always
     get the latest version of the blueprint.
     """
-    blueprint_path = PROJECT_ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
+    blueprint_path = (
+        PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint_config.py"
+    )
 
     if not blueprint_path.exists():
         raise FileNotFoundError(f"structure_blueprint_config.py not found at {blueprint_path}")
@@ -78,10 +93,10 @@ def _load_structure_blueprint() -> dict[str, Any]:
         "CORE_SUBFOLDER_MAP": getattr(module, "CORE_SUBFOLDER_MAP", {}),
         "VARIABLE_DEPTH_SUBFOLDERS": getattr(module, "VARIABLE_DEPTH_SUBFOLDERS", frozenset()),
         "L4_APPROVED_FOLDERS": getattr(module, "L4_APPROVED_FOLDERS", frozenset()),
-        "AGENTIC_CORE_DIR": getattr(module, "AGENTIC_CORE_DIR", "agentic_core"),
-        "APPS_RG_DIR": getattr(module, "APPS_RG_DIR", "apps_rg"),
-        "APPS_LIC_DIR": getattr(module, "APPS_LIC_DIR", "apps_lic"),
-        "APPS_SHARED_DIR": getattr(module, "APPS_SHARED_DIR", "apps_shared"),
+        "AGENTIC_CORE_DIR": getattr(module, "AGENTIC_CORE_DIR", AGENTIC_CORE_DIR),
+        "APPS_RG_DIR": getattr(module, "APPS_RG_DIR", APPS_RG_DIR),
+        "APPS_LIC_DIR": getattr(module, "APPS_LIC_DIR", APPS_LIC_DIR),
+        "APPS_SHARED_DIR": getattr(module, "APPS_SHARED_DIR", APPS_SHARED_DIR),
     }
 
 
@@ -229,7 +244,7 @@ class TestSSOTAlignment:
                                 )
 
         # Check agentic_core subfolders specifically
-        agentic_core_path = self.project_root / "agentic_core"
+        agentic_core_path = self.project_root / AGENTIC_CORE_DIR
         if agentic_core_path.exists():
             for subfolder_name in core_subfolder_map.keys():
                 subfolder_path = agentic_core_path / subfolder_name
@@ -271,7 +286,7 @@ class TestSSOTAlignment:
         checked_files = 0
 
         # Directories to check
-        target_dirs = ["apps_rg", "apps_lic", "apps_shared", "agentic_core"]
+        target_dirs = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR]
 
         for directory in target_dirs:
             dir_path = self.project_root / directory
@@ -556,16 +571,16 @@ class TestSSOTAlignment:
         print("\n=== PHASE 3 ADDITIONAL: Layer Directory Structure ===")
 
         expected_layers = [
-            "L0_routing",
-            "L1_cognition",
-            "L2_execution",
-            "L3_orchestration",
-            "L4_state",
+            L0_ROUTING_DIR,
+            L1_COGNITION_DIR,
+            L2_EXECUTION_DIR,
+            L3_ORCHESTRATION_DIR,
+            L4_STATE_DIR,
             "L5_safety",
-            "L6_observability",
+            L6_OBSERVABILITY_DIR,
         ]
 
-        agentic_core_path = self.project_root / "agentic_core"
+        agentic_core_path = self.project_root / AGENTIC_CORE_DIR
 
         if not agentic_core_path.exists():
             pytest.fail("agentic_core directory not found")
@@ -606,7 +621,7 @@ class TestSSOTAlignment:
         """
         print("\n=== PHASE 3 ADDITIONAL: Constitutional Base Agent Location ===")
 
-        canonical_dir = self.project_root / "agentic_core" / "base_agents"
+        canonical_dir = self.project_root / AGENTIC_CORE_DIR / "base_agents"
 
         violations: list[str] = []
 

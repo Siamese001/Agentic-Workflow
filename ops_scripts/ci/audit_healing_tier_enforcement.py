@@ -15,18 +15,27 @@ import ast
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L2_EXECUTION_DIR,
+    get_validated_project_root,
+)
+
+REPO_ROOT = get_validated_project_root()
 ROUTER_MODULE = "agentic_core.L2_execution.healers.healing_tier_router"
-ROUTER_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "healing_tier_router.py"
-ALLOWLIST_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "tiering_allowlist.py"
-CONFIG_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "healing_tier_config.py"
+ROUTER_FILE = REPO_ROOT / L2_EXECUTION_DIR / "healers" / "healing_tier_router.py"
+ALLOWLIST_FILE = REPO_ROOT / L2_EXECUTION_DIR / "healers" / "tiering_allowlist.py"
+CONFIG_FILE = REPO_ROOT / L2_EXECUTION_DIR / "healers" / "healing_tier_config.py"
 
 # Scan roots for agent files
 SCAN_ROOTS = [
-    REPO_ROOT / "agentic_core",
-    REPO_ROOT / "apps_lic",
-    REPO_ROOT / "apps_rg",
-    REPO_ROOT / "apps_shared",
+    REPO_ROOT / AGENTIC_CORE_DIR,
+    REPO_ROOT / APPS_LIC_DIR,
+    REPO_ROOT / APPS_RG_DIR,
+    REPO_ROOT / APPS_SHARED_DIR,
 ]
 
 # Files that are part of the healing tier system itself (exempt from bypass check)

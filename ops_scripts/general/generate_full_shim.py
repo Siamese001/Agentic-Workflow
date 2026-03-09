@@ -5,9 +5,11 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-MOD_DIR = ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint"
-TARGET = ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+ROOT = get_validated_project_root()
+MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
+TARGET = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint_config.py"
 
 
 def collect_public_names() -> dict[str, list[str]]:

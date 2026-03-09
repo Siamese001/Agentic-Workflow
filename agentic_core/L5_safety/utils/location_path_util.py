@@ -48,7 +48,7 @@ def is_path_compliant(file_path: str | Path, project_root: Path | None = None) -
         >>> is_path_compliant('agentic_core/L1/L2/L3/L4/L5/deep.py')  # Too deep
         False
     """
-    from agentic_core.L5_safety.config.structure_blueprint_config import (
+    from agentic_core.L5_safety.config.structure_blueprint import (
         SOVEREIGN_TERRITORIES,
         get_validated_project_root,
     )

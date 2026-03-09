@@ -7,6 +7,10 @@ Goal: 100% test coverage for all agents.
 import json
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 # Load agent discovery data
 with open("agent_discovery_full.json") as f:
     agents = json.load(f)
@@ -132,7 +136,7 @@ for agent in agents_without_tests:
 
     # Create __init__.py files
     init_path = test_dir
-    while init_path != Path("tests"):
+    while init_path != _ROOT / TESTS_DIR:
         init_file = init_path / "__init__.py"
         if not init_file.exists():
             init_file.write_text('"""Test package."""\n')

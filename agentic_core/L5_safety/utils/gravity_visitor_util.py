@@ -16,6 +16,8 @@ import ast
 import logging
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+
 Logger = logging.getLogger(__name__)
 
 
@@ -94,8 +96,8 @@ def extract_layer_from_path(file_path: Path) -> str | None:
         return "Apps"
 
     # Check for tests
-    if "/tests/" in path_str or "\\tests\\" in path_str:
-        return "tests"
+    if f"/{TESTS_DIR}/" in path_str or f"\\{TESTS_DIR}\\" in path_str:
+        return TESTS_DIR
 
     return None
 

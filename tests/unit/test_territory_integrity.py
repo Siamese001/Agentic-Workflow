@@ -4,6 +4,10 @@ import tempfile
 import unittest
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 # Add project root to path for imports
 current_file = Path(__file__).resolve()
 project_root = current_file.parent.parent.parent  # Go up 3 levels from tests/unit/ to project root
@@ -26,7 +30,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
         """Set up test environment with temporary directory structure."""
         self.tmp = Path(tempfile.mkdtemp())
         self.project_root = self.tmp
-        self.target = self.tmp / "agentic_core" / "prompt_governance"
+        self.target = self.tmp / AGENTIC_CORE_DIR / "prompt_governance"
         self.target.mkdir(parents=True)
 
         # Create some root squatter files
@@ -192,7 +196,7 @@ class TestTerritoryIntegrity(unittest.TestCase):
     def test_multiple_territories_isolation(self):
         """Test 8: Verify territory scanning is properly isolated."""
         # Create another territory with squatters
-        other_target = self.tmp / "agentic_core" / "other_territory"
+        other_target = self.tmp / AGENTIC_CORE_DIR / "other_territory"
         other_target.mkdir(parents=True)
         (other_target / "other_squatter.py").write_text("class Other: pass")
 

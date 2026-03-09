@@ -7,7 +7,17 @@ then updates all imports across the codebase.
 
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    L5_SAFETY_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 RENAMES = {
     "CodeDetectorAgent.py": "CodeDetectorAgent.py",
     "CodeEnforcerAgent.py": "CodeEnforcerAgent.py",
@@ -32,7 +42,7 @@ CLASS_RENAMES = {
     "StructureEnforcerAgent": "StructureEnforcerAgent",
     "StructureHealerAgent": "StructureHealerAgent",
 }
-UNIFIED_DIR = PROJECT_ROOT / "agentic_core" / "L5_safety" / "unified"
+UNIFIED_DIR = PROJECT_ROOT / L5_SAFETY_DIR / "unified"
 
 
 def rename_files():
@@ -64,18 +74,18 @@ def update_class_names_in_unified():
 def update_imports_codebase():
     """Update imports across the entire codebase (excluding archives)."""
     scan_dirs = [
-        PROJECT_ROOT / "agentic_core",
-        PROJECT_ROOT / "tests",
+        PROJECT_ROOT / AGENTIC_CORE_DIR,
+        PROJECT_ROOT / TESTS_DIR,
         PROJECT_ROOT / "scripts",
-        PROJECT_ROOT / "apps_rg",
-        PROJECT_ROOT / "apps_shared",
+        PROJECT_ROOT / APPS_RG_DIR,
+        PROJECT_ROOT / APPS_SHARED_DIR,
     ]
     files_updated = 0
     for scan_dir in scan_dirs:
         if not scan_dir.exists():
             continue
         for py_file in scan_dir.rglob("*.py"):
-            if "archives" in str(py_file) or "__pycache__" in str(py_file):
+            if ARCHIVES_DIR in str(py_file) or "__pycache__" in str(py_file):
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8")

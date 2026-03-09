@@ -10,12 +10,12 @@ from pathlib import Path
 project_root = Path(__file__).resolve().parents[1]
 sys.path.insert(0, str(project_root))
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    CORE_SUBFOLDER_MAP,
-    SOVEREIGN_TERRITORIES,
-)
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint import (
+    CORE_SUBFOLDER_MAP,
+    SOVEREIGN_TERRITORIES,
 )
 
 

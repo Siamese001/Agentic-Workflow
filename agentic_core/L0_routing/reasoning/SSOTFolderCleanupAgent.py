@@ -25,6 +25,7 @@ import re
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 Logger = logging.getLogger(__name__)
@@ -91,7 +92,6 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
     def _load_ssot_config(self) -> None:
         """Load SSOT configuration from L0 config."""
         from agentic_core.L0_routing.config import (
-            AGENTIC_CORE_DIR,
             L4_APPROVED_FOLDERS,
             VARIABLE_DEPTH_SUBFOLDERS,
         )
@@ -148,7 +148,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         self.approved_paths.update(self.l4_approved_folders)
 
         # Add special folders
-        self.approved_paths.add("archives")
+        self.approved_paths.add(ARCHIVES_DIR)
         self.approved_paths.add("data")
         self.approved_paths.add("docs")
         self.approved_paths.add("reports")

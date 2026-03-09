@@ -18,6 +18,9 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import AgentInfo
 from agentic_core.L5_safety.enforcement.ssot_structure_validation_enforcer import (
     BASE_AGENT_REQUIRED_PATH,
@@ -161,7 +164,7 @@ class TestBranchPaths:
     def test_validate_layer_assignment_returns_none_when_path_too_short(self, validator):
         agent = _make_agent(
             class_name="FooAgent",
-            relative_path="agentic_core",
+            relative_path=AGENTIC_CORE_DIR,
             layer="L2",
         )
         assert validator._validate_layer_assignment(agent) is None

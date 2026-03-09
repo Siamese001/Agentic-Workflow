@@ -16,10 +16,15 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = REPO_ROOT / "agentic_core"
+AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
 
 PERSISTENCE_MODULES = frozenset(
     {
@@ -138,11 +143,11 @@ class TestLearningSeamExists:
     """The L0 learning seam must exist for agents to use."""
 
     def test_learning_seam_file_exists(self):
-        seam = AGENTIC_CORE / "L0_routing" / "seams" / "learning_seam.py"
+        seam = AGENTIC_CORE / L0_ROUTING_DIR / "seams" / "learning_seam.py"
         assert seam.exists(), f"L0 learning seam must exist at {seam.relative_to(REPO_ROOT)}"
 
     def test_learning_seam_exports_intent(self):
-        seam = AGENTIC_CORE / "L0_routing" / "seams" / "learning_seam.py"
+        seam = AGENTIC_CORE / L0_ROUTING_DIR / "seams" / "learning_seam.py"
         tree = ast.parse(seam.read_text("utf-8"))
         class_names = [node.name for node in ast.walk(tree) if isinstance(node, ast.ClassDef)]
         assert "LearningArtifactIntent" in class_names

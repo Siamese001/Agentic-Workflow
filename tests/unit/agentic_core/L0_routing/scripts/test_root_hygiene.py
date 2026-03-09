@@ -6,6 +6,11 @@ Rationale:
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    OPS_SCRIPTS_DIR,
+)
 from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
 
 
@@ -13,7 +18,7 @@ from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygie
 def dirty_repo(tmp_path):
     """Creates a dirty mock repo with illegal root folders."""
     # Setup Markers
-    (tmp_path / "agentic_core").mkdir()
+    (tmp_path / AGENTIC_CORE_DIR).mkdir()
     (tmp_path / "pyproject.toml").touch()
 
     # Create Illegal Root Scripts
@@ -44,10 +49,10 @@ def test_hygiene_enforcement(dirty_repo, monkeypatch):
     assert not (dirty_repo / "coverage_html").exists()
 
     # 2. Standalone script -> ops_scripts
-    assert (dirty_repo / "ops_scripts" / "standalone_tool.py").exists()
+    assert (dirty_repo / OPS_SCRIPTS_DIR / "standalone_tool.py").exists()
 
     # 3. Core script -> agentic_core/L0_routing/scripts
-    assert (dirty_repo / "agentic_core" / "L0_routing" / "scripts" / "core_tool.py").exists()
+    assert (dirty_repo / L0_ROUTING_DIR / "scripts" / "core_tool.py").exists()
 
     # 4. Coverage -> reports
     assert (dirty_repo / "reports" / "coverage_html" / "index.html").exists()
@@ -64,4 +69,4 @@ def test_purge_cache_refiling(dirty_repo, monkeypatch):
     enforce_root_hygiene()
 
     # Should end up nested in maintenance
-    assert (dirty_repo / "ops_scripts" / "maintenance" / "purge_cache.py").exists()
+    assert (dirty_repo / OPS_SCRIPTS_DIR / "maintenance" / "purge_cache.py").exists()

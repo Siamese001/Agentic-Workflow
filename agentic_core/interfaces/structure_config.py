@@ -26,7 +26,7 @@ USAGE (apps_*):
 
 from __future__ import annotations
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
+from agentic_core.L5_safety.config.structure_blueprint import (  # noqa: F401
     CORE_SUBFOLDER_MAP,
     FORBIDDEN_PATTERNS,
     FORBIDDEN_ROOT_FOLDERS,
@@ -36,7 +36,7 @@ from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: 
 )
 
 try:
-    from agentic_core.L5_safety.config.structure_blueprint_config import (  # noqa: F401
+    from agentic_core.L5_safety.config.structure_blueprint import (  # noqa: F401
         AGENT_DISCOVERY_JSON,
         AGENT_DISCOVERY_MANIFEST_JSON,
         AGENTIC_CORE_DIR,

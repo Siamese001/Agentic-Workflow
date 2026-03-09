@@ -1,7 +1,10 @@
 """Quick check of scanner violation counts for test code."""
+
 import ast
 import tempfile
 from pathlib import Path
+
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L5_safety.static_checks.system_invariant_scanner import (
     SystemInvariantScanner,
     scan_repository_for_bypasses,
@@ -28,7 +31,7 @@ p.unlink()
 
 # Test 2: scan L2_execution bucket
 root = Path(__file__).resolve().parents[2]
-bucket = root / "agentic_core" / "L2_execution"
+bucket = root / AGENTIC_CORE_DIR / "L2_execution"
 print(f"\nL2_execution bucket exists: {bucket.exists()}")
 py_files = [f for f in bucket.rglob("*.py") if "__pycache__" not in f.parts]
 print(f"L2_execution .py files: {len(py_files)}")

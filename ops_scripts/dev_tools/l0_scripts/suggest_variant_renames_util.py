@@ -7,7 +7,7 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     SCRIPTS_DIR,
     TESTS_DIR,
 )

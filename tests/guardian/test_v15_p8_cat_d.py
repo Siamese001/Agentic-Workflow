@@ -17,12 +17,15 @@ import re
 from pathlib import Path
 from unittest.mock import patch
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L0_routing.types.determinism_types import (
     SurgicalManifest,
 )
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-MIXIN_PATH = PROJECT_ROOT / "agentic_core" / "mixins" / "tool_reliability_mixin.py"
+MIXIN_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "mixins" / "tool_reliability_mixin.py"
 MIXIN_SRC = MIXIN_PATH.read_text(encoding="utf-8")
 MIXIN_AST = ast.parse(MIXIN_SRC)
 

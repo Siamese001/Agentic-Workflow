@@ -15,8 +15,17 @@ import ast
 import shutil
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
-TESTS_ROOT = PROJECT_ROOT / "tests"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
+TESTS_ROOT = PROJECT_ROOT / TESTS_DIR
 
 
 def analyze_test_imports(file_path: Path) -> str | None:
@@ -28,24 +37,24 @@ def analyze_test_imports(file_path: Path) -> str | None:
         for node in ast.walk(tree):
             if isinstance(node, ast.Import):
                 for alias in node.names:
-                    if alias.name.startswith("agentic_core"):
-                        return "agentic_core"
-                    elif alias.name.startswith("apps_rg"):
-                        return "apps_rg"
-                    elif alias.name.startswith("apps_lic"):
-                        return "apps_lic"
-                    elif alias.name.startswith("apps_shared"):
-                        return "apps_shared"
+                    if alias.name.startswith(AGENTIC_CORE_DIR):
+                        return AGENTIC_CORE_DIR
+                    elif alias.name.startswith(APPS_RG_DIR):
+                        return APPS_RG_DIR
+                    elif alias.name.startswith(APPS_LIC_DIR):
+                        return APPS_LIC_DIR
+                    elif alias.name.startswith(APPS_SHARED_DIR):
+                        return APPS_SHARED_DIR
             elif isinstance(node, ast.ImportFrom):
                 if node.module:
-                    if node.module.startswith("agentic_core"):
-                        return "agentic_core"
-                    elif node.module.startswith("apps_rg"):
-                        return "apps_rg"
-                    elif node.module.startswith("apps_lic"):
-                        return "apps_lic"
-                    elif node.module.startswith("apps_shared"):
-                        return "apps_shared"
+                    if node.module.startswith(AGENTIC_CORE_DIR):
+                        return AGENTIC_CORE_DIR
+                    elif node.module.startswith(APPS_RG_DIR):
+                        return APPS_RG_DIR
+                    elif node.module.startswith(APPS_LIC_DIR):
+                        return APPS_LIC_DIR
+                    elif node.module.startswith(APPS_SHARED_DIR):
+                        return APPS_SHARED_DIR
     except Exception:
         pass
 
@@ -77,7 +86,7 @@ def fix_test_structure():
                 domain = analyze_test_imports(item)
                 if not domain:
                     # Default to agentic_core if we can't determine
-                    domain = "agentic_core"
+                    domain = AGENTIC_CORE_DIR
                     print(
                         f"  [WARNING] Could not determine domain for {item.name}, defaulting to {domain}",
                     )

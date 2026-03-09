@@ -31,10 +31,10 @@ Complements test_hierarchy_agent_depth_violation.py (happy-path branches) with:
 | HierarchyAgent.py | _heal_depth_violation | repeated DEEP same file, target exists | 2nd call → _legacy_archive | test_idempotent_deep_heal_collision |
 | _constants.py | SOVEREIGN_TERRITORIES | required_subfolders all territories | no depth_aligned | test_no_depth_aligned_in_required_subfolders |
 | _constants.py | SOVEREIGN_TERRITORIES | tests required_subfolders | no l*_* names | test_no_l_layer_in_tests_required_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"]["support"] | no subfolders key | flat | test_support_has_no_declared_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"] | support exists | approved | test_support_in_approved_tests_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"] | depth_aligned absent | not approved | test_depth_aligned_not_in_approved_tests_subfolders |
-| _constants.py | SOVEREIGN_TERRITORIES["tests"]["subfolders"] | no l*_* at top level | no l-layer | test_no_l_layer_in_approved_tests_subfolders |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"]["support"] | no subfolders key | flat | test_support_has_no_declared_subfolders |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | support exists | approved | test_support_in_approved_tests_subfolders |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | depth_aligned absent | not approved | test_depth_aligned_not_in_approved_tests_subfolders |
+| _constants.py | SOVEREIGN_TERRITORIES[TESTS_DIR]["subfolders"] | no l*_* at top level | no l-layer | test_no_l_layer_in_approved_tests_subfolders |
 | HierarchyAgent.py | _create_territory_structure | required_subfolders has depth_aligned | creates it (vulnerability) | test_create_territory_contaminated_blueprint_creates_phantom |
 | HierarchyAgent.py | create_missing_structure | controlled SOVEREIGN_TERRITORIES | no depth_aligned in ensure_dir calls | test_create_missing_structure_no_depth_aligned_dir_calls |
 | HierarchyAgent.py | _heal_depth_violation | apps_rg/depth_aligned/__init__.py depth==expected | returns 0, no gk (bypass) | test_apps_rg_depth_aligned_correct_depth_bypass |
@@ -49,6 +49,14 @@ from types import MappingProxyType
 from unittest.mock import MagicMock, patch
 
 import pytest
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    L0_ROUTING_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+)
 
 _Mapping = (dict, MappingProxyType)
 
@@ -182,7 +190,7 @@ class TestExtremeBoundaries:
     def test_extreme_depth_100_expected_2_gk_called(self, tmp_path):
         """depth=20, expected=2 → DEEP, gk.safe_move called once."""
         agent = _make_agent(tmp_path)
-        parts = ("agentic_core",) + ("sub",) * 19 + ("agent.py",)
+        parts = (AGENTIC_CORE_DIR,) + ("sub",) * 19 + ("agent.py",)
         rel = Path(*parts)
         file_path = tmp_path.joinpath(*parts)
         file_path.parent.mkdir(parents=True)
@@ -195,7 +203,7 @@ class TestExtremeBoundaries:
     def test_extreme_depth_100_flattened_to_expected_depth(self, tmp_path):
         """depth=20, expected=2 → flattened target has exactly 3 parts (root/sub/file)."""
         agent = _make_agent(tmp_path)
-        parts = ("agentic_core",) + ("sub",) * 19 + ("agent.py",)
+        parts = (AGENTIC_CORE_DIR,) + ("sub",) * 19 + ("agent.py",)
         rel = Path(*parts)
         file_path = tmp_path.joinpath(*parts)
         file_path.parent.mkdir(parents=True)
@@ -210,7 +218,7 @@ class TestExtremeBoundaries:
     def test_extreme_depth_100_no_phantom_dirs_in_target(self, tmp_path):
         """depth=20, expected=2 → target path must not contain 'depth_aligned'."""
         agent = _make_agent(tmp_path)
-        parts = ("agentic_core",) + ("sub",) * 19 + ("agent.py",)
+        parts = (AGENTIC_CORE_DIR,) + ("sub",) * 19 + ("agent.py",)
         rel = Path(*parts)
         file_path = tmp_path.joinpath(*parts)
         file_path.parent.mkdir(parents=True)
@@ -280,7 +288,7 @@ class TestExtremeBoundaries:
         target = agent.gatekeeper.safe_move.call_args[0][1]
         target_rel = target.relative_to(tmp_path)
         assert len(target_rel.parts) == 3
-        assert target_rel.parts[0] == "apps_rg"
+        assert target_rel.parts[0] == APPS_RG_DIR
         assert target_rel.parts[1] == "engines"
         assert target_rel.name == "agent.py"
 
@@ -385,7 +393,7 @@ class TestStressHealDepthViolation:
         _call(agent, fp, rel, depth=4, expected=3)
         assert agent.gatekeeper.safe_move.call_count == 1
 
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / L0_ROUTING_DIR / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
         fp.write_text("still here")
@@ -408,7 +416,7 @@ class TestStressHealDepthViolation:
 
         _call(agent, fp, rel, depth=4, expected=3)
 
-        target = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        target = tmp_path / L0_ROUTING_DIR / "scripts" / "agent.py"
         target.parent.mkdir(parents=True, exist_ok=True)
         target.write_text("existing")
         fp.write_text("")
@@ -430,7 +438,7 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_depth_aligned_in_any_required_subfolders(self):
         """HARD INVARIANT: depth_aligned absent from required_subfolders of every territory."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -445,26 +453,26 @@ class TestSovereignTerritoriesDepthAlignedInvariants:
 
     def test_no_l_layer_pattern_in_tests_required_subfolders(self):
         """HARD INVARIANT: no l[0-9]_* names in tests.required_subfolders."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
         l_pattern = re.compile(r"^l[0-9]_[a-z]+$")
-        required = SOVEREIGN_TERRITORIES.get("tests", {}).get("required_subfolders", [])
+        required = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("required_subfolders", [])
         violations = [s for s in required if l_pattern.match(s)]
         assert not violations, f"L-layer names in tests.required_subfolders: {violations}"
 
     def test_support_subfolder_has_no_declared_subfolders(self):
         """
-        HARD INVARIANT: SOVEREIGN_TERRITORIES['tests']['subfolders']['support'] has no 'subfolders' key.
+        HARD INVARIANT: SOVEREIGN_TERRITORIES[TESTS_DIR]['subfolders']['support'] has no 'subfolders' key.
 
         tests/support/ must remain flat — no nested subdirectory structure declared in blueprint.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_subs = SOVEREIGN_TERRITORIES.get("tests", {}).get("subfolders", {})
+        tests_subs = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {}).get("subfolders", {})
         if not isinstance(tests_subs, _Mapping):
             return
         support_cfg = tests_subs.get("support", {}) if isinstance(tests_subs, _Mapping) else {}
@@ -531,12 +539,12 @@ class TestCreateMissingStructurePhantomPrevention:
 
         agent._create_dir_with_init = _fake_create
 
-        territory_path = tmp_path / "ops_scripts"
+        territory_path = tmp_path / OPS_SCRIPTS_DIR
         territory_path.mkdir(parents=True, exist_ok=True)
         contaminated_config = {"required_subfolders": ["depth_aligned"]}
         results = {"violations_found": 0, "created": [], "errors": []}
 
-        agent._create_territory_structure("ops_scripts", territory_path, contaminated_config, results)
+        agent._create_territory_structure(OPS_SCRIPTS_DIR, territory_path, contaminated_config, results)
 
         assert "ops_scripts/depth_aligned" in created_labels, (
             "VULNERABILITY CONFIRMED: _create_territory_structure creates whatever is in "
@@ -559,7 +567,7 @@ class TestCreateMissingStructurePhantomPrevention:
             ensure_dir_calls.append(str(path))
 
         clean_st = {
-            "ops_scripts": {
+            OPS_SCRIPTS_DIR: {
                 "required_subfolders": ["ci", "general"],
                 "subfolders": {"ci": {}, "general": {}},
             },
@@ -572,7 +580,7 @@ class TestCreateMissingStructurePhantomPrevention:
             ),
             patch(
                 "agentic_core.L5_safety.reasoning.hierarchy_healer.ENFORCED_TERRITORIES",
-                frozenset({"ops_scripts"}),
+                frozenset({OPS_SCRIPTS_DIR}),
             ),
         ):
             mock_wg.ensure_dir.side_effect = _track_ensure_dir
@@ -596,12 +604,12 @@ class TestCreateMissingStructurePhantomPrevention:
 
         agent._create_dir_with_init = _fake_create
 
-        territory_path = tmp_path / "tests"
+        territory_path = tmp_path / TESTS_DIR
         territory_path.mkdir(parents=True, exist_ok=True)
         contaminated_config = {"required_subfolders": ["l1_cognition"]}
         results = {"violations_found": 0, "created": [], "errors": []}
 
-        agent._create_territory_structure("tests", territory_path, contaminated_config, results)
+        agent._create_territory_structure(TESTS_DIR, territory_path, contaminated_config, results)
 
         assert "tests/l1_cognition" in created_labels, (
             "VULNERABILITY CONFIRMED: L-layer name in required_subfolders would create "
@@ -677,5 +685,5 @@ class TestAppsDepthAlignedBypassScenario:
         target = agent.gatekeeper.safe_move.call_args[0][1]
         target_rel = target.relative_to(tmp_path)
         assert len(target_rel.parts) == 3
-        assert target_rel.parts[0] == "apps_rg"
+        assert target_rel.parts[0] == APPS_RG_DIR
         assert "sub" not in str(target_rel)

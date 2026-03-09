@@ -52,7 +52,9 @@ APPS_SHARED_DIR: Final[str] = "apps_shared"
 ARCHIVES_DIR: Final[str] = "archives"
 OPS_SCRIPTS_DIR: Final[str] = "ops_scripts"
 SCRIPTS_DIR: Final[str] = "scripts"
+SYSTEM_LEARNING_DIR: Final[str] = "system_learning"
 TESTS_DIR: Final[str] = "tests"
+TOOLS_DIR: Final[str] = "tools"
 DASHBOARD_DIR: Final[str] = "agentic_core/L6_observability/dashboards"
 
 # Layer-specific directories
@@ -213,6 +215,8 @@ __all__ = [
     "APPS_SHARED_DIR",
     "ARCHIVES_DIR",
     "DASHBOARD_DIR",
+    "SYSTEM_LEARNING_DIR",
+    "TOOLS_DIR",
     "GLOBAL_EXCLUDED_DIRS",
     "L0_MAINTENANCE_DIR",
     "L0_ROUTING_DIR",

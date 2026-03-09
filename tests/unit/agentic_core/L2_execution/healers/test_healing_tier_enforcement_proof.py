@@ -19,6 +19,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L2_execution.healers.healing_tier_config import (
@@ -332,10 +339,10 @@ class TestNegativeControl:
 class TestBlastRadiusCheck:
     def _collect_python_files(self) -> list[Path]:
         scan_roots = [
-            REPO_ROOT / "agentic_core",
-            REPO_ROOT / "apps_lic",
-            REPO_ROOT / "apps_rg",
-            REPO_ROOT / "apps_shared",
+            REPO_ROOT / AGENTIC_CORE_DIR,
+            REPO_ROOT / APPS_LIC_DIR,
+            REPO_ROOT / APPS_RG_DIR,
+            REPO_ROOT / APPS_SHARED_DIR,
         ]
         files: list[Path] = []
         for root in scan_roots:

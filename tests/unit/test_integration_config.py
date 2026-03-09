@@ -2,6 +2,10 @@
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 from apps_shared.config.integration_config import (
     LIC_CONFIG,
     RG_CONFIG,
@@ -63,7 +67,7 @@ class TestPredefinedConfigs:
     def test_rg_config_values(self):
         """Test RG configuration values."""
         assert RG_CONFIG.domain == "rg"
-        assert RG_CONFIG.domain_prefix == "apps_rg"
+        assert RG_CONFIG.domain_prefix == APPS_RG_DIR
         assert RG_CONFIG.similarity_threshold == 0.85
         assert RG_CONFIG.ttl_seconds == 3600
 
@@ -76,7 +80,7 @@ class TestPredefinedConfigs:
     def test_lic_config_values(self):
         """Test LIC configuration values."""
         assert LIC_CONFIG.domain == "lic"
-        assert LIC_CONFIG.domain_prefix == "apps_lic"
+        assert LIC_CONFIG.domain_prefix == APPS_LIC_DIR
         assert LIC_CONFIG.similarity_threshold == 0.92
         assert LIC_CONFIG.ttl_seconds == 7200
 
@@ -113,10 +117,10 @@ class TestGetDomainConfig:
 
     def test_get_config_with_apps_prefix(self):
         """Test getting config with apps_ prefix."""
-        rg_config = get_domain_config("apps_rg")
+        rg_config = get_domain_config(APPS_RG_DIR)
         assert rg_config is RG_CONFIG
 
-        lic_config = get_domain_config("apps_lic")
+        lic_config = get_domain_config(APPS_LIC_DIR)
         assert lic_config is LIC_CONFIG
 
     def test_get_unknown_domain_raises(self):

@@ -85,7 +85,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def validate_sovereign_roots(self) -> list[tuple[Path, str]]:
         """Ensure all required sovereign roots exist and are directories."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import ROOT_WHITELIST
+        from agentic_core.L5_safety.config.structure_blueprint import ROOT_WHITELIST
 
         violations: list[tuple[Path, str]] = []
         for root_name in ROOT_WHITELIST:
@@ -151,7 +151,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_forbidden_patterns(self, parts: tuple, root_folder: str) -> tuple[bool, str]:
         """Validate forbidden folder patterns and numbered roots."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             FORBIDDEN_FOLDER_PATTERN,
             FORBIDDEN_ROOT_FOLDERS,
         )
@@ -174,7 +174,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_root_whitelist(self, root_folder: str, rel_path: Path = None) -> tuple[bool, str]:
         """Validate path is within an allowed sovereign territory using SSOT helper."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             ROOT_WHITELIST,
             is_path_allowed,
         )
@@ -210,7 +210,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         If a script imports `agentic_core`, it is part of the system
         and belongs in `agentic_core/L0_routing/scripts/`.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SCRIPTS_PLACEMENT_RULES,
         )
 
@@ -267,7 +267,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         must not contain any subdirectories. This check runs BEFORE depth checks
         to catch violations like mixins/contracts/ that bypass depth validation.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
             VARIABLE_DEPTH_SUBFOLDERS,
             validate_flat_directory,
@@ -310,7 +310,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_app_specific_files(self, root_folder: str, file_path: Path) -> tuple[bool, str]:
         """Validate app-specific files are not in core."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             get_correct_app_path,
             is_app_specific_file,
         )
@@ -325,7 +325,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_filename_patterns(self, file_path: Path) -> tuple[bool, str]:
         """Validate filename patterns for forbidden prefixes and backup files."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
             check_forbidden_signals,
             has_forbidden_layer_prefix,
@@ -380,7 +380,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_final_checks(self, root_folder: str, file_path: Path, parts: tuple) -> tuple[bool, str]:
         """Final validation checks for root-level files and gravity leaks."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             ROOT_PROTECTED_FILES,
         )
 
@@ -480,7 +480,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _is_forbidden_app_import(self, module: str) -> bool:
         """Check if module is a forbidden app import."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             FORBIDDEN_APP_MODULES,
         )
 
@@ -493,7 +493,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         1. Core layer gravity (L1-L5 import direction)
         2. App-layer horizontal isolation (apps_shared independence)
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             LAYER_FORBIDDEN_IMPORTS,
         )
 
@@ -582,7 +582,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         """Calculate semantic scores for app and territory alignment."""
         import ast
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             APP_LIC_AST_TERMS,
             APP_RG_AST_TERMS,
             CORE_TERRITORY_KEYWORDS,
@@ -654,7 +654,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         rel_path: Path,
     ) -> tuple[bool, str]:
         """Check territory alignment between file location and content."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             MIN_ALIGNMENT_SCORE,
             TERRITORY_MISMATCH_THRESHOLD,
         )
@@ -776,7 +776,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         violations = []
 
         # Check for forbidden prefixes
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             has_forbidden_layer_prefix,
         )
 
@@ -800,7 +800,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         Phase 4.1 Upgrade: Universal root scanning using SOVEREIGN_TERRITORIES.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 

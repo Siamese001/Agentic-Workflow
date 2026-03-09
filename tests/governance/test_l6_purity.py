@@ -15,6 +15,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L6_OBSERVABILITY_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 # ---------------------------------------------------------------------------
@@ -22,7 +26,7 @@ pytestmark = pytest.mark.governance
 # ---------------------------------------------------------------------------
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_L6_ROOT = _REPO_ROOT / "agentic_core" / "L6_observability"
+_L6_ROOT = _REPO_ROOT / L6_OBSERVABILITY_DIR
 
 # Baselined ceiling (post write-gateway refactoring 2026-02).
 # Ceiling 1 (was 0): drift_registry.py:132 calls .mkdir(parents=True, exist_ok=True)

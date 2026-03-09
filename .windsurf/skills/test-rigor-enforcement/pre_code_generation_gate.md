@@ -24,7 +24,38 @@ SCOPE_DECLARATION:
 - file3.py (refactored logic)
 ```
 
-### Step 2: Identify Changed Surfaces
+### Step 2: Build Dependency Graph (§3.4 MANDATORY)
+
+**BEFORE identifying changed surfaces, build AST dependency graph per §3.4.**
+
+Required graph analysis:
+- Module import edges
+- Symbol import edges
+- Class inheritance edges
+- Function/method call edges
+- Registry/factory resolution edges
+- Test → production coverage edges
+
+**Output:**
+```
+DEPENDENCY_GRAPH:
+Graph roots: [file1.py, file2.py]
+Impacted nodes: 5
+Upstream dependencies:
+  - file1.py imports: common/utils.py, config/settings.py
+  - file2.py imports: file1.py, common/base.py
+Downstream dependents:
+  - file1.py used by: file2.py, tests/test_file1.py
+  - file2.py used by: apps_lic/engines/control_plane.py, tests/test_file2.py
+Cross-layer edges: None
+Test coverage edges:
+  - tests/test_file1.py → file1.py (direct import)
+  - tests/test_file2.py → file2.py (direct import)
+```
+
+**FORBIDDEN:** Using grep, filename guessing, or text search to determine impact.
+
+### Step 3: Identify Changed Surfaces
 
 For each file in scope, identify:
 
@@ -42,18 +73,41 @@ file1.py:
   - function: calculate_score(input: dict) -> float
     type: deterministic_decision_surface
     risk: scoring logic must be deterministic
+    graph_justification: called by file2.py::process_data
 
   - function: save_result(data: dict) -> None
     type: side_effect_surface
     risk: file write must fail-closed on invalid input
+    graph_justification: entrypoint for side-effect path
 
 file2.py:
   - class: StateMachine
     type: state_transition
     risk: transitions must validate predecessor states
+    graph_justification: inherits from common/base.py::BaseStateMachine
 ```
 
-### Step 3: Specify Required Test Coverage
+### Step 4: Identify Required Tests via Dependency Graph (§5.2)
+
+**Use dependency graph to identify test files:**
+- Direct test imports of changed files
+- Fixture dependency edges
+- Integration entrypoint coverage
+- Registry/factory reachability
+
+**Output:**
+```
+GRAPH_IDENTIFIED_TESTS:
+- tests/test_file1.py (direct import edge)
+- tests/test_file2.py (direct import edge)
+- tests/integration/test_control_plane.py (downstream dependent edge)
+
+COVERAGE_GAPS:
+- file1.py::calculate_score has no direct test coverage edge
+  → MUST create test_calculate_score.py
+```
+
+### Step 5: Specify Required Test Coverage
 
 For each changed surface, declare required tests per §1.5:
 
@@ -106,27 +160,36 @@ file2.py::StateMachine:
 TOTAL_REQUIRED_TESTS: 18
 ```
 
-### Step 4: Gate Decision
+### Step 6: Gate Decision
 
 **BLOCK code generation if:**
 - Scope not declared
+- **Dependency graph not built (§3.4 violation)**
+- **Changed surfaces not justified by graph edges**
 - Changed surfaces not identified
 - Test requirements not specified
 - Test count < minimum required
+- **Test identification not graph-backed (§5.2 violation)**
 
 **ALLOW code generation only if:**
-- All surfaces identified
+- Dependency graph complete with all required edge types
+- All surfaces identified and graph-justified
 - All test requirements specified
+- Tests identified via graph relationships
 - Test-first protocol will be followed (next step)
 
 ## Enforcement
 
 ```
-IF test_requirements_complete:
+IF dependency_graph_built AND test_requirements_complete AND graph_backed_test_selection:
     PROCEED to test_first_protocol.md
 ELSE:
     BLOCK code generation
-    REQUIRE user to complete test requirements
+    IF NOT dependency_graph_built:
+        FAIL: §3.4 violation - AST dependency graph is mandatory
+    IF NOT graph_backed_test_selection:
+        FAIL: §5.2 violation - test selection must be graph-backed
+    REQUIRE user to complete all requirements
 ```
 
 ## Example Gate Execution
@@ -138,10 +201,25 @@ SCOPE: 2 files
   - agentic_core/L5_safety/validators/new_validator.py (new)
   - agentic_core/L5_safety/enforcement/existing_enforcer.py (modified)
 
+DEPENDENCY_GRAPH: ✅ BUILT
+  Graph roots: [new_validator.py, existing_enforcer.py]
+  Upstream: config/structure_blueprint.py, L2_execution/tools/write_gateway.py
+  Downstream: L0_routing/scripts/execute_ssot.py
+  Test edges: tests/unit/L5_safety/test_new_validator.py → new_validator.py
+  Cross-layer: existing_enforcer.py → L2_execution/tools/write_gateway.py (VALID)
+
 CHANGED_SURFACES: 3
   - new_validator.py::validate_input (decision surface)
+    graph_justification: called by execute_ssot.py::run_validation
   - new_validator.py::sanitize_path (side-effect surface)
+    graph_justification: entrypoint for file mutation path
   - existing_enforcer.py::enforce_rule (modified logic)
+    graph_justification: registry edge to write_gateway.py
+
+GRAPH_IDENTIFIED_TESTS: ✅ COMPLETE
+  - tests/unit/L5_safety/test_new_validator.py (direct import)
+  - tests/unit/L5_safety/test_existing_enforcer.py (direct import)
+  - tests/integration/test_execute_ssot.py (downstream dependent)
 
 TEST_REQUIREMENTS: 21 tests minimum
   - Edge cases: 12 tests
@@ -161,3 +239,9 @@ NEXT STEP: test_first_protocol.md
 - **§1.6:** Every changed state transition MUST test valid/invalid predecessors
 - **§1.7:** Deterministic decision surfaces MUST prove identical input → identical output
 - **§1.8:** Tests MUST prove invalid preconditions block operation
+- **§3.4:** AST dependency graphs are PRIMARY and REQUIRED analysis primitive
+- **§3.5:** Low-signal search (grep/regex) FORBIDDEN as primary analysis method
+- **§3.6:** If AST parsing fails, MUST fail closed (no silent fallback to text search)
+- **§3.7:** Evidence MUST include DEPENDENCY_GRAPH section
+- **§4.4:** Before any code edit, MUST determine graph-backed impact analysis
+- **§5.2:** Test selection MUST be dependency-graph-backed

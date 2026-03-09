@@ -10,6 +10,13 @@ import argparse
 import logging
 import pathlib
 import shutil
+import sys
+
+_REPO_ROOT = pathlib.Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 
 # Configure logging for Windows environments
 logging.basicConfig(level=logging.WARNING, format="%(levelname)s: %(message)s")
@@ -27,7 +34,7 @@ def get_project_root():
     root_dir = current_file.parents[2]
 
     # Verify we're at the correct root by checking for agentic_core
-    if not (root_dir / "agentic_core").exists():
+    if not (root_dir / AGENTIC_CORE_DIR).exists():
         raise RuntimeError(f"Project root validation failed. Expected agentic_core at {root_dir}")
 
     return root_dir

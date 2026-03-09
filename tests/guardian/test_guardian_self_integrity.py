@@ -16,6 +16,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -146,7 +150,7 @@ class TestSyntheticViolation:
     def test_non_compliant_detected(self, tmp_path: Path):
         """A synthetic non-compliant script should be caught."""
         # Create a fake repo with a non-compliant guardian script
-        scripts_dir = tmp_path / "agentic_core" / "L0_routing" / "scripts"
+        scripts_dir = tmp_path / L0_ROUTING_DIR / "scripts"
         scripts_dir.mkdir(parents=True)
         bad_script = scripts_dir / "run_guardian_fake.py"
         bad_script.write_text(NON_COMPLIANT_SCRIPT, encoding="utf-8")

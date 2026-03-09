@@ -17,7 +17,14 @@ from pathlib import Path
 
 import pytest
 
-AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / "agentic_core"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+)
+
+AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / AGENTIC_CORE_DIR
 LAYER_PATTERN = re.compile(r"^L(\d+)_")
 IMPORT_LAYER_PATTERN = re.compile(r"agentic_core\.L(\d+)_")
 
@@ -331,8 +338,8 @@ class TestDynamicImportMutation:
 
     def test_mutation_static_seam_upward(self, tmp_path):
         """Mutation: Static upward import in seam file."""
-        agentic_root = tmp_path / "agentic_core"
-        seam_dir = agentic_root / "L0_routing" / "seams"
+        agentic_root = tmp_path / AGENTIC_CORE_DIR
+        seam_dir = agentic_root / L0_ROUTING_DIR / "seams"
         seam_dir.mkdir(parents=True)
 
         test_file = seam_dir / "loader_seam.py"
@@ -356,8 +363,8 @@ class TestDynamicImportMutation:
 
     def test_mutation_dynamic_importlib(self, tmp_path):
         """Mutation: Dynamic importlib.import_module targeting layer."""
-        agentic_root = tmp_path / "agentic_core"
-        l0_dir = agentic_root / "L0_routing"
+        agentic_root = tmp_path / AGENTIC_CORE_DIR
+        l0_dir = agentic_root / L0_ROUTING_DIR
         l0_dir.mkdir(parents=True)
 
         test_file = l0_dir / "bad_dynamic.py"
@@ -372,8 +379,8 @@ class TestDynamicImportMutation:
 
     def test_mutation_dynamic_dunder_import(self, tmp_path):
         """Mutation: Dynamic __import__ targeting layer."""
-        agentic_root = tmp_path / "agentic_core"
-        l1_dir = agentic_root / "L1_cognition"
+        agentic_root = tmp_path / AGENTIC_CORE_DIR
+        l1_dir = agentic_root / L1_COGNITION_DIR
         l1_dir.mkdir(parents=True)
 
         test_file = l1_dir / "bad_import.py"
@@ -386,8 +393,8 @@ class TestDynamicImportMutation:
 
     def test_mutation_dynamic_in_seam(self, tmp_path):
         """Mutation: Dynamic import in seam file."""
-        agentic_root = tmp_path / "agentic_core"
-        seam_dir = agentic_root / "L2_execution" / "seams"
+        agentic_root = tmp_path / AGENTIC_CORE_DIR
+        seam_dir = agentic_root / L2_EXECUTION_DIR / "seams"
         seam_dir.mkdir(parents=True)
 
         test_file = seam_dir / "exec_seam.py"
@@ -402,7 +409,7 @@ class TestDynamicImportMutation:
 
     def test_mutation_approved_loader_allowed(self, tmp_path):
         """Mutation: Dynamic import in approved loader is allowed."""
-        agentic_root = tmp_path / "agentic_core"
+        agentic_root = tmp_path / AGENTIC_CORE_DIR
         utils_dir = agentic_root / "runtime" / "utils"
         utils_dir.mkdir(parents=True)
 

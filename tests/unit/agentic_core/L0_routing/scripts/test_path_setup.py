@@ -3,12 +3,16 @@
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 
 def _setup_paths():
     """Dynamically finds the project root and adds it to sys.path."""
     current = Path(__file__).resolve()
     for parent in current.parents:
-        if parent.name != "agentic_core" and (parent / "agentic_core").exists():
+        if parent.name != AGENTIC_CORE_DIR and (parent / AGENTIC_CORE_DIR).exists():
             if str(parent) not in sys.path:
                 sys.path.insert(0, str(parent))
             return parent

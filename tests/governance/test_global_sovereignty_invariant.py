@@ -24,6 +24,10 @@ from typing import Any
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -70,7 +74,7 @@ def test_inv_no_upward_mutation_runtime_interceptor():
 # ---------------------------------------------------------------------------
 
 _SDK_FORBIDDEN = frozenset(["google.generativeai", "anthropic", "openai"])
-_L2_GATEWAY_PREFIX = "agentic_core/L2_execution"
+_L2_GATEWAY_PREFIX = L2_EXECUTION_DIR
 _NON_GATEWAY_ROOTS = [
     "agentic_core/L0_routing",
     "agentic_core/L1_cognition",

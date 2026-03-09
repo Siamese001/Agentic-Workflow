@@ -33,7 +33,12 @@ if sys.platform == "win32":
     sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
 
 # Ensure project root is in path - guardian: allow-global-mutation
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
+
+PROJECT_ROOT = get_validated_project_root()
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
@@ -45,7 +50,7 @@ from agentic_core.L5_safety.validators.base_detector_validator import (
 )
 
 # Baseline file path
-BASELINE_FILE = PROJECT_ROOT / "ops_scripts" / "hooks" / "landmine_baseline.txt"
+BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "landmine_baseline.txt"
 
 # Transient / non-source directories excluded from all scans.
 _EXCLUDE_DIRS = {

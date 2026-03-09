@@ -9,6 +9,13 @@ import uuid
 from dataclasses import dataclass
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    LAYER_ROOTS,
+)
+
 try:
     import numpy as np
 except ImportError as _err:
@@ -85,20 +92,15 @@ class CoverageAgent(SovereignBaseAgent):
         """
         self.name: str = "CoverageAgent"
         self.layers: list[str] = layers or [
-            "L0_routing",
-            "L1_cognition",
-            "L2_execution",
-            "L3_orchestration",
-            "L4_state",
-            "L5_safety",
+            *sorted(LAYER_ROOTS),
             "config",
             "schemas",
             "prompt_governance",
             "observability",
             "utils",
-            "apps_rg",
-            "apps_lic",
-            "apps_shared",
+            APPS_RG_DIR,
+            APPS_LIC_DIR,
+            APPS_SHARED_DIR,
         ]  # SSOT-derived major territories from blueprint
         self.threshold_entropy: float = threshold_entropy
         self.dashboard_api_url: str = dashboard_api_url

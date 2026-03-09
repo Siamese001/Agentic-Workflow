@@ -5,8 +5,12 @@ Provides domain-specific configuration for apps_rg and apps_lic integration
 with the feature-flagged agent system.
 """
 
+from __future__ import annotations
+
 from dataclasses import dataclass, field
 from typing import Any
+
+from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR
 
 
 @dataclass
@@ -39,7 +43,7 @@ class IntegrationConfig:
 # Predefined configurations
 RG_CONFIG = IntegrationConfig(
     domain="rg",
-    domain_prefix="apps_rg",
+    domain_prefix=APPS_RG_DIR,
     similarity_threshold=0.85,
     ttl_seconds=3600,
     rate_limit_requests=100,
@@ -56,7 +60,7 @@ RG_CONFIG = IntegrationConfig(
 
 LIC_CONFIG = IntegrationConfig(
     domain="lic",
-    domain_prefix="apps_lic",
+    domain_prefix=APPS_LIC_DIR,
     similarity_threshold=0.92,  # Stricter for LIC
     ttl_seconds=7200,  # 2 hours
     rate_limit_requests=50,  # More conservative
@@ -87,8 +91,8 @@ def get_domain_config(domain: str) -> IntegrationConfig:
     configs = {
         "rg": RG_CONFIG,
         "lic": LIC_CONFIG,
-        "apps_rg": RG_CONFIG,
-        "apps_lic": LIC_CONFIG,
+        APPS_RG_DIR: RG_CONFIG,
+        APPS_LIC_DIR: LIC_CONFIG,
     }
 
     if domain not in configs:

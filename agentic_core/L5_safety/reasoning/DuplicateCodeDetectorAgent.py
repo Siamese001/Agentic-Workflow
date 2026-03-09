@@ -20,7 +20,7 @@ import ast
 import hashlib
 import logging
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     GLOBAL_EXCLUDED_DIRS,
     L0_MAINTENANCE_DIR,
     L1_COGNITION_DIR,

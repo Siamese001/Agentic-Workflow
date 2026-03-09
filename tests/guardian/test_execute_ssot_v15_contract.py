@@ -17,9 +17,14 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EXECUTE_SSOT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
-EXECUTE_SSOT_ENTRYPOINT = REPO_ROOT / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot_entrypoint.py"
+EXECUTE_SSOT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
+EXECUTE_SSOT_ENTRYPOINT = REPO_ROOT / L0_ROUTING_DIR / "scripts" / "execute_ssot_entrypoint.py"
 GITIGNORE = REPO_ROOT / ".gitignore"
 
 
@@ -249,7 +254,7 @@ class TestNoTrackedArtifacts:
                 "0",
                 "--dry-run",
                 "--territory",
-                "agentic_core",
+                AGENTIC_CORE_DIR,
             ],
             cwd=str(REPO_ROOT),
             capture_output=True,

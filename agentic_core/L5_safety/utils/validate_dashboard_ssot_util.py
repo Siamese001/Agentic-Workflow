@@ -8,13 +8,14 @@ Detects hardcoded dashboard paths and reports violations.
 import re
 from pathlib import Path
 
-# Import SSOT
-from agentic_core.L5_safety.config.structure_blueprint_config import (
-    DASHBOARD_DIR,
-    get_validated_project_root,
-)
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
+)
+
+# Import SSOT
+from agentic_core.L5_safety.config.structure_blueprint import (
+    DASHBOARD_DIR,
+    get_validated_project_root,
 )
 
 # Patterns that indicate hardcoded dashboard paths
@@ -59,7 +60,7 @@ def check_file_for_hardcoded_paths(file_path: Path) -> list[tuple[int, str]]:
 
         for line_num, line in enumerate(lines, 1):
             # Skip lines that import DASHBOARD_DIR (legitimate usage)
-            if "from agentic_core.L5_safety.config.structure_blueprint_config import" in line:
+            if "from agentic_core.L5_safety.config.structure_blueprint import" in line:
                 continue
             if "DASHBOARD_DIR" in line and "import" in line:
                 continue
@@ -122,7 +123,7 @@ def validate_dashboard_ssot() -> tuple[bool, list[str]]:
         print("REMEDIATION REQUIRED:")
         print("=" * 80)
         print("Replace hardcoded paths with:")
-        print("  from agentic_core.L5_safety.config.structure_blueprint_config import DASHBOARD_DIR")
+        print("  from agentic_core.L5_safety.config.structure_blueprint import DASHBOARD_DIR")
         print("  dashboard_path = project_root / DASHBOARD_DIR")
         print("=" * 80)
         return False, violations_report

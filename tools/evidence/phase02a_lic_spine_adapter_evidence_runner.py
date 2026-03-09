@@ -8,12 +8,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 EVIDENCE_PATH = PROJECT_ROOT / "docs" / "reports" / "plans" / "phase_02a_lic_spine_adapter.md"
-ADAPTER_FILE = PROJECT_ROOT / "apps_lic" / "engines" / "lic_spine_adapter.py"
-TEST_FILE = PROJECT_ROOT / "tests" / "unit_min_deps" / "test_apps_lic_spine_adapter.py"
+ADAPTER_FILE = PROJECT_ROOT / APPS_LIC_DIR / "engines" / "lic_spine_adapter.py"
+TEST_FILE = PROJECT_ROOT / TESTS_DIR / "unit_min_deps" / "test_apps_lic_spine_adapter.py"
 
 
 def run(argv: list[str]) -> tuple[int, str]:

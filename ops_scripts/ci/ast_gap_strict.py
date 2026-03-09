@@ -9,12 +9,22 @@ import json
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+ROOT = get_validated_project_root()
 SOURCE_TARGETS = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     "system_learning",
     "L6_observability",
 ]
@@ -75,7 +85,7 @@ def _layer(rel_path, target):
 def build_exact_import_index():
     """Only exact import strings — no parent propagation."""
     index = defaultdict(set)
-    test_root = ROOT / "tests"
+    test_root = ROOT / TESTS_DIR
     for f in sorted(test_root.rglob("test_*.py")):
         if "__pycache__" in str(f):
             continue
@@ -247,7 +257,7 @@ def main():
     print("GUARDIAN TESTS — LAYER FOCUS (tests/guardian/)")
     print("=" * 80)
     guardian_layers = defaultdict(int)
-    guardian_dir = ROOT / "tests" / "guardian"
+    guardian_dir = ROOT / TESTS_DIR / "guardian"
     for f in sorted(guardian_dir.rglob("test_*.py")):
         if "__pycache__" in str(f):
             continue
@@ -302,11 +312,11 @@ def main():
     print("  CRITICAL gaps         : " + str(len(by_sev.get("CRITICAL", []))))
     print("  HIGH gaps             : " + str(len(by_sev.get("HIGH", []))))
     print("  LOW gaps              : " + str(len(by_sev.get("LOW", []))))
-    print("  Test files (total)    : " + str(sum(1 for _ in (ROOT / "tests").rglob("test_*.py"))))
+    print("  Test files (total)    : " + str(sum(1 for _ in (ROOT / TESTS_DIR).rglob("test_*.py"))))
     print("  Guardian test files   : " + str(sum(1 for _ in guardian_dir.rglob("test_*.py"))))
 
     # Save JSON
-    out_path = ROOT / "ops_scripts" / "ci" / "ast_gap_strict_results.json"
+    out_path = ROOT / OPS_SCRIPTS_DIR / "ci" / "ast_gap_strict_results.json"
     out_path.write_text(
         json.dumps(
             {

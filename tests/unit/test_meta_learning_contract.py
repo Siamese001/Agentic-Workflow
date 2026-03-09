@@ -11,6 +11,11 @@ import json
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L0_routing.scripts.run_all_guardians import (
@@ -721,7 +726,7 @@ class TestAppSignalEvent:
         """AppSignalEventArtifact rejects None semantic_clock."""
         with pytest.raises(ValueError, match="semantic_clock"):
             build_app_signal_event(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 run_id="run_001",
                 message_id="msg_001",
                 metric_name="resume_message_response_rate",
@@ -732,7 +737,7 @@ class TestAppSignalEvent:
     def test_event_trace_id_determinism(self) -> None:
         """Same inputs produce identical trace_id."""
         kwargs = {
-            "app_id": "apps_rg",
+            "app_id": APPS_RG_DIR,
             "run_id": "run_001",
             "message_id": "msg_001",
             "metric_name": "resume_message_response_rate",
@@ -747,7 +752,7 @@ class TestAppSignalEvent:
     def test_event_rejects_nan_inf(self) -> None:
         """NaN and inf metric_value are rejected."""
         base = {
-            "app_id": "apps_rg",
+            "app_id": APPS_RG_DIR,
             "run_id": "run_001",
             "message_id": "msg_001",
             "metric_name": "resume_message_response_rate",
@@ -765,7 +770,7 @@ class TestAppSignalAggregate:
     def test_aggregate_delta_correctness_and_determinism(self) -> None:
         """delta == candidate_value - baseline_value, trace_id deterministic."""
         kwargs = {
-            "app_id": "apps_rg",
+            "app_id": APPS_RG_DIR,
             "window_id": "w_2026_02",
             "metric_name": "resume_message_response_rate",
             "baseline_value": 0.80,
@@ -783,7 +788,7 @@ class TestAppSignalAggregate:
     def test_canonicalization_stable(self) -> None:
         """JSON text exactly identical across two builds."""
         kwargs = {
-            "app_id": "apps_lic",
+            "app_id": APPS_LIC_DIR,
             "window_id": "w_2026_02",
             "metric_name": "conversion_to_interview_rate",
             "baseline_value": 0.70,
@@ -810,7 +815,7 @@ class TestAppSignalCatalog:
         """Builder rejects metric_name not in APP_SIGNAL_CATALOG."""
         with pytest.raises(ValueError, match="METRIC_NAME_NOT_IN_CATALOG"):
             build_app_signal_event(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 run_id="run_001",
                 message_id="msg_001",
                 metric_name="unknown_metric_xyz",
@@ -822,7 +827,7 @@ class TestAppSignalCatalog:
         """Builder rejects rate metric_value > 1.0."""
         with pytest.raises(ValueError, match="metric_value_ABOVE_MAX"):
             build_app_signal_event(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 run_id="run_001",
                 message_id="msg_001",
                 metric_name="resume_message_response_rate",
@@ -831,7 +836,7 @@ class TestAppSignalCatalog:
             )
         with pytest.raises(ValueError, match="metric_value_BELOW_MIN"):
             build_app_signal_event(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 run_id="run_001",
                 message_id="msg_001",
                 metric_name="resume_message_response_rate",
@@ -843,7 +848,7 @@ class TestAppSignalCatalog:
         """Builder accepts rate metric at 0.0 and 1.0 boundaries."""
         for val in (0.0, 1.0):
             evt = build_app_signal_event(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 run_id="run_001",
                 message_id="msg_001",
                 metric_name="resume_message_response_rate",

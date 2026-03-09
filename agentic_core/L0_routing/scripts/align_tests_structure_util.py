@@ -7,13 +7,16 @@ Ensures all test directories have __init__.py for Python package recognition.
 import os
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+
 
 def align_tests_structure(root_path: Any) -> Any:
     """Brief description of functionality and purpose."""
-    from agentic_core.L5_safety.config.structure_blueprint_config import TESTS_L2_SUBFOLDER_MAP  # noqa: PLC0415
+    from agentic_core.L5_safety.config.structure_blueprint import TESTS_L2_SUBFOLDER_MAP  # noqa: PLC0415
+
     print("--- ALIGNING TESTS WITH SOVEREIGN LAW ---")
     # guardian: allow-path-string
-    tests_root: Any = os.path.join(root_path, "tests")
+    tests_root: Any = os.path.join(root_path, TESTS_DIR)
     for l1, l2_list in TESTS_L2_SUBFOLDER_MAP.items():
         # guardian: allow-path-string
         l1_path: Any = os.path.join(tests_root, l1)

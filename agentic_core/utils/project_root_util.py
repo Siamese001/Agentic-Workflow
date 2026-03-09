@@ -4,6 +4,8 @@
 import os
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 
 def get_project_root(start_path: Path | None = None) -> Path:
     """
@@ -48,7 +50,7 @@ def get_project_root_safe(start_path: Path | None = None) -> Path:
         # Fallback for test environments
         current = start_path or Path(__file__).resolve()
         while current != current.parent:
-            if (current / "agentic_core").is_dir():
+            if (current / AGENTIC_CORE_DIR).is_dir():
                 return current
             current = current.parent
 
@@ -59,7 +61,7 @@ def get_project_root_safe(start_path: Path | None = None) -> Path:
         ]
 
         for root in known_roots:
-            if root.exists() and (root / "agentic_core").is_dir():
+            if root.exists() and (root / AGENTIC_CORE_DIR).is_dir():
                 return root
 
         raise RuntimeError("Could not determine project root")

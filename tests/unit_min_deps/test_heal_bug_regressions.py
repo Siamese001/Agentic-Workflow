@@ -15,6 +15,10 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Helpers
 # ---------------------------------------------------------------------------
@@ -362,13 +366,7 @@ class TestBug1ProductionAgentsWiring:
         """The production agents dict must map 'location' → LocationHealerAgent (not Validator)."""
         import ast
 
-        ssot_path = (
-            Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L0_routing"
-            / "scripts"
-            / "execute_ssot.py"
-        )
+        ssot_path = Path(__file__).resolve().parents[2] / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
         source = ssot_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(ssot_path))
 
@@ -409,13 +407,7 @@ class TestBug2ProductionStateMutation:
         """
         import ast
 
-        ssot_path = (
-            Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L0_routing"
-            / "scripts"
-            / "execute_ssot.py"
-        )
+        ssot_path = Path(__file__).resolve().parents[2] / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
         source = ssot_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(ssot_path))
 
@@ -449,13 +441,7 @@ class TestBug2ProductionStateMutation:
         must contain a Call to state.get with 'phase2_violations_fixed'.
         """
 
-        ssot_path = (
-            Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L0_routing"
-            / "scripts"
-            / "execute_ssot.py"
-        )
+        ssot_path = Path(__file__).resolve().parents[2] / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
         source = ssot_path.read_text(encoding="utf-8")
 
         # String-level check: simpler and sufficient — the fix is a single identifiable string
@@ -486,13 +472,7 @@ class TestBug3ProductionCodePath:
         """
         import ast
 
-        ssot_path = (
-            Path(__file__).resolve().parents[2]
-            / "agentic_core"
-            / "L0_routing"
-            / "scripts"
-            / "execute_ssot.py"
-        )
+        ssot_path = Path(__file__).resolve().parents[2] / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
         source = ssot_path.read_text(encoding="utf-8")
         tree = ast.parse(source, filename=str(ssot_path))
 

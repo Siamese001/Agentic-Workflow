@@ -13,6 +13,10 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 # ---------------------------------------------------------------------------
@@ -29,7 +33,7 @@ def _repo_root() -> Path:
     raise RuntimeError("Could not locate repo root (pytest.ini not found)")
 
 
-CONTRACTS_PATH = _repo_root() / "agentic_core" / "prompt_governance" / "contracts" / "context_contracts.py"
+CONTRACTS_PATH = _repo_root() / AGENTIC_CORE_DIR / "prompt_governance" / "contracts" / "context_contracts.py"
 
 _VALID_RETRIEVAL = {"namespace": "ns1", "max_k": 5, "version": "v1"}
 _VALID_CITATION = {

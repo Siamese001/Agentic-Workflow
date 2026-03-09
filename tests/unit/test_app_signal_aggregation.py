@@ -10,6 +10,10 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_RG_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
@@ -25,7 +29,7 @@ _CLOCK = SemanticClockSnapshot(tick=1, vector_clock=(("L0", 1),))
 def _make_events(
     values: list[float],
     *,
-    app_id: str = "apps_rg",
+    app_id: str = APPS_RG_DIR,
     metric_name: str = "resume_message_response_rate",
     prefix: str = "msg",
 ) -> list[AppSignalEventArtifact]:
@@ -54,7 +58,7 @@ class TestAggregateAppSignals:
         shuffled = list(reversed(all_events))
 
         agg1 = aggregate_app_signals(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_test",
             metric_name="resume_message_response_rate",
             events=all_events,
@@ -64,7 +68,7 @@ class TestAggregateAppSignals:
             semantic_clock=_CLOCK,
         )
         agg2 = aggregate_app_signals(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_test",
             metric_name="resume_message_response_rate",
             events=shuffled,
@@ -85,7 +89,7 @@ class TestAggregateAppSignals:
             even_vals, metric_name="time_to_first_reply_hours", prefix="cd"
         )
         agg = aggregate_app_signals(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_med",
             metric_name="time_to_first_reply_hours",
             events=events,
@@ -99,7 +103,7 @@ class TestAggregateAppSignals:
         assert agg.n == 7
 
         agg2 = aggregate_app_signals(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_med",
             metric_name="time_to_first_reply_hours",
             events=list(reversed(events)),
@@ -115,7 +119,7 @@ class TestAggregateAppSignals:
         events = _make_events([0.5, 0.6])
         with pytest.raises(ValueError, match="EMPTY_CANDIDATE"):
             aggregate_app_signals(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 window_id="w_fail",
                 metric_name="resume_message_response_rate",
                 events=events,
@@ -126,7 +130,7 @@ class TestAggregateAppSignals:
             )
         with pytest.raises(ValueError, match="EMPTY_BASELINE"):
             aggregate_app_signals(
-                app_id="apps_rg",
+                app_id=APPS_RG_DIR,
                 window_id="w_fail",
                 metric_name="resume_message_response_rate",
                 events=events,

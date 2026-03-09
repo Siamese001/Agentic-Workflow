@@ -6,7 +6,7 @@ import ast
 
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import SEMANTIC_L2_REGISTRY
+from agentic_core.L5_safety.config.structure_blueprint import SEMANTIC_L2_REGISTRY
 
 # [GRAVITY] Resolve project root for relative path calculation
 try:

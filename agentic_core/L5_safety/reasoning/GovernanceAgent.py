@@ -68,10 +68,10 @@ except ImportError:
         pass
 
 
-from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.utils.timeout_decorator_util import timeout
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility
@@ -364,7 +364,7 @@ class GovernanceAgent(SovereignBaseAgent):
         self.Logger = logging.getLogger(__name__)
         self.DependencyGraph = DependencyGraph()
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 ROOT_PROTECTED_FILES,
                 SOVEREIGN_REGISTRY,
             )

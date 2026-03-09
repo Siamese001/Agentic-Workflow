@@ -14,6 +14,10 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 
 class ImportDependencyValidator:
     """Validates import dependencies in Python files."""
@@ -294,7 +298,7 @@ class ImportDependencyValidator:
             return True
 
 
-BASELINE_FILE = Path(__file__).resolve().parents[2] / "ops_scripts" / "hooks" / "import_dep_baseline.txt"
+BASELINE_FILE = _ROOT / OPS_SCRIPTS_DIR / "hooks" / "import_dep_baseline.txt"
 
 _LINE_NUM_RE = re.compile(r": Line \d+:")
 _PROJECT_ROOT_STR = str(Path(__file__).resolve().parents[2])

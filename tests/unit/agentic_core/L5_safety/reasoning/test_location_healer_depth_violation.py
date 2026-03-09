@@ -21,6 +21,11 @@ from __future__ import annotations
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Minimal agent factory
 # ---------------------------------------------------------------------------
@@ -38,8 +43,8 @@ def _make_agent(project_root: Path):
 
 
 FAKE_REGISTRY = {
-    "agentic_core": {"depth": 3},
-    "tests": {"depth": 2},
+    AGENTIC_CORE_DIR: {"depth": 3},
+    TESTS_DIR: {"depth": 2},
 }
 
 
@@ -71,7 +76,7 @@ class TestDepthAlreadyCorrect:
         """Success path: depth == expected → SKIPPED, no I/O."""
         agent = _make_agent(tmp_path)
         # agentic_core/L0_routing/scripts/file.py → depth 3, expected 3
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -91,7 +96,7 @@ class TestDeepViolation:
         """DEEP: safe_move is called with flattened target path."""
         agent = _make_agent(tmp_path)
         # agentic_core/L0_routing/scripts/extra/agent.py → depth 4, expected 3
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -107,7 +112,7 @@ class TestDeepViolation:
     def test_deep_move_applied_sets_action_taken(self, tmp_path):
         """DEEP + applied=True → action_taken contains FLATTENED."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -120,7 +125,7 @@ class TestDeepViolation:
     def test_deep_move_applied_extends_affected_paths(self, tmp_path):
         """DEEP + applied + not dry_run → affected_paths extended with src and dst."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -134,7 +139,7 @@ class TestDeepViolation:
     def test_deep_dry_run_does_not_extend_affected_paths(self, tmp_path):
         """DEEP + applied + dry_run=True → affected_paths NOT extended."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -149,14 +154,14 @@ class TestDeepViolation:
         agent = _make_agent(tmp_path)
         # agentic_core/L0_routing/scripts/agent.py → depth 3 == expected 3 normally
         # Force depth > expected by patching registry with depth=2 for agentic_core
-        f = tmp_path / "agentic_core" / "L0_routing" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
         # depth = 2 (agentic_core/L0_routing/agent.py → parts[:-1] has 2 levels)
         # expected from registry = 3 → this would be SHALLOW, not deep
         # Use a registry where expected=1 and the flatten produces the same path
-        registry = {"agentic_core": {"depth": 1}}
+        registry = {AGENTIC_CORE_DIR: {"depth": 1}}
         with patch(
             "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
             registry,
@@ -180,7 +185,7 @@ class TestDeepViolation:
         agent = _make_agent(tmp_path)
         # Single-level: tests/test_x.py — expected depth 2, actual depth 1
         # Make depth > expected by using expected=0 (edge boundary)
-        f = tmp_path / "agentic_core" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -188,7 +193,7 @@ class TestDeepViolation:
         # Patch to expected=0 to get into DEEP path, but parts[:0] + (name,)
         # = just (name,) → target = tmp_path/agent.py  ≠ tmp_path/agentic_core/agent.py
         # So this tests that safe_move IS called (not identity)
-        registry = {"agentic_core": {"depth": 0}}
+        registry = {AGENTIC_CORE_DIR: {"depth": 0}}
         with patch(
             "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
             registry,
@@ -216,7 +221,7 @@ class TestShallowViolation:
         """SHALLOW: applied is always False — no filesystem mutation."""
         agent = _make_agent(tmp_path)
         # tests/test_x.py → depth 1, expected 2
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -227,7 +232,7 @@ class TestShallowViolation:
     def test_shallow_violation_key_in_result(self, tmp_path):
         """SHALLOW: result contains violation=SHALLOW_DEPTH."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -238,7 +243,7 @@ class TestShallowViolation:
     def test_shallow_result_has_all_required_keys(self, tmp_path):
         """SHALLOW: result contains action_taken, applied, violation, file, current_depth, expected_depth."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -250,7 +255,7 @@ class TestShallowViolation:
     def test_shallow_safe_move_never_called(self, tmp_path):
         """Fail-closed: SHALLOW path NEVER calls safe_move — depth_aligned bug eliminated."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -261,7 +266,7 @@ class TestShallowViolation:
     def test_shallow_logs_error(self, tmp_path):
         """SHALLOW: Logger.error is called with violation details."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -277,7 +282,7 @@ class TestShallowViolation:
         """SHALLOW: current_depth and expected_depth values are correct in result."""
         agent = _make_agent(tmp_path)
         # tests/test_x.py → depth 1, expected 2
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -289,24 +294,24 @@ class TestShallowViolation:
     def test_shallow_no_depth_aligned_folder_created(self, tmp_path):
         """Mutation test: depth_aligned folder must NEVER be created."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
         _call(agent, f)
 
-        depth_aligned = tmp_path / "tests" / "depth_aligned"
+        depth_aligned = tmp_path / TESTS_DIR / "depth_aligned"
         assert not depth_aligned.exists(), "depth_aligned folder must never be created"
 
     def test_shallow_no_depth_aligned_at_any_depth(self, tmp_path):
         """Boundary: deeply shallow file still never gets depth_aligned spacers."""
         agent = _make_agent(tmp_path)
         # root-level file with high expected depth
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
-        registry = {"tests": {"depth": 5}}
+        registry = {TESTS_DIR: {"depth": 5}}
         with patch(
             "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
             registry,
@@ -336,7 +341,7 @@ class TestExceptionPath:
     def test_exception_returns_error_dict(self, tmp_path):
         """Exception in safe_move → caught, returns {error: str}, no re-raise."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -350,7 +355,7 @@ class TestExceptionPath:
     def test_exception_path_logs_error(self, tmp_path):
         """Exception → Logger.error called with details."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -364,7 +369,7 @@ class TestExceptionPath:
     def test_exception_does_not_extend_affected_paths(self, tmp_path):
         """Exception → affected_paths never mutated."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "agentic_core" / "L0_routing" / "scripts" / "extra" / "agent.py"
+        f = tmp_path / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "extra" / "agent.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
@@ -384,12 +389,12 @@ class TestBoundaries:
     def test_boundary_depth_zero(self, tmp_path):
         """Boundary: expected_depth=0 and file at depth 0 → equality branch fires."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 
         # depth=1, expected=0 → DEEP (1 > 0)
-        registry = {"tests": {"depth": 0}}
+        registry = {TESTS_DIR: {"depth": 0}}
         with patch(
             "agentic_core.L5_safety.reasoning.LocationHealerAgent.SOVEREIGN_REGISTRY",
             registry,
@@ -433,7 +438,7 @@ class TestBoundaries:
     def test_deterministic_shallow_identical_input(self, tmp_path):
         """Determinism: same shallow file produces identical result on repeated calls."""
         agent = _make_agent(tmp_path)
-        f = tmp_path / "tests" / "test_x.py"
+        f = tmp_path / TESTS_DIR / "test_x.py"
         f.parent.mkdir(parents=True)
         f.write_text("")
 

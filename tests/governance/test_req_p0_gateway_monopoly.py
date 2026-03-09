@@ -16,6 +16,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 # Allowlisted paths where direct IO imports ARE permitted
@@ -23,9 +30,9 @@ _ALLOWED_IO_PATHS = frozenset(
     [
         "agentic_core/L2_execution",  # UWG lives here
         "agentic_core/L0_routing/seam",  # seam audit is IO-adjacent
-        "ops_scripts",  # CI/tooling
-        "tools",
-        "tests",
+        OPS_SCRIPTS_DIR,  # CI/tooling
+        TOOLS_DIR,
+        TESTS_DIR,
         "data",
         "docs",
     ]
@@ -106,7 +113,7 @@ def _is_write_call_scope(path: Path, repo_root: Path) -> bool:
     except ValueError:
         return False
     # Must be under agentic_core/L{0-4}_*
-    if len(rel) < 3 or rel[0] != "agentic_core":
+    if len(rel) < 3 or rel[0] != AGENTIC_CORE_DIR:
         return False
     layer = rel[1]
     if not any(layer.startswith(f"L{n}_") for n in range(5)):
@@ -247,7 +254,7 @@ def test_req_p0_no_new_direct_write_calls_outside_gateway():
     """
     scanned: list[Path] = []
     for layer_n in range(5):
-        for layer_dir in (REPO_ROOT / "agentic_core").glob(f"L{layer_n}_*"):
+        for layer_dir in (REPO_ROOT / AGENTIC_CORE_DIR).glob(f"L{layer_n}_*"):
             for subdir in _WRITE_CALL_ENGINE_SUBDIRS:
                 subdir_path = layer_dir / subdir
                 if not subdir_path.exists():

@@ -15,6 +15,11 @@ from unittest.mock import patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 # Add repo root to path for imports
 repo_root = Path(__file__).resolve().parents[2]
 if str(repo_root) not in sys.path:
@@ -34,7 +39,7 @@ class TestProtectedRootEnforcement:
     def test_protected_root_blocks_write_under_agentic_core(self, tmp_path):
         """Test 1: Protected roots block writes under agentic_core."""
         # Create a mock agentic_core path
-        agentic_core_path = tmp_path / "agentic_core" / "test_file.py"
+        agentic_core_path = tmp_path / AGENTIC_CORE_DIR / "test_file.py"
 
         # Mock the repo root to use tmp_path
         with patch(
@@ -47,7 +52,7 @@ class TestProtectedRootEnforcement:
     def test_protected_root_blocks_rename_under_agentic_core(self, tmp_path):
         """Test 2: Protected roots block rename/move under agentic_core."""
         # Create destination path under agentic_core (rename/move target)
-        dst_path = tmp_path / "agentic_core" / "new_file.py"
+        dst_path = tmp_path / AGENTIC_CORE_DIR / "new_file.py"
 
         # Mock the repo root to use tmp_path
         with patch(
@@ -77,7 +82,7 @@ class TestProtectedRootEnforcement:
     def test_protected_root_respects_override_flag(self, tmp_path):
         """Test that allow_override=True bypasses the protection."""
         # Create a path under agentic_core
-        agentic_core_path = tmp_path / "agentic_core" / "test_file.py"
+        agentic_core_path = tmp_path / AGENTIC_CORE_DIR / "test_file.py"
 
         # Mock the repo root to use tmp_path
         with patch(
@@ -137,10 +142,10 @@ class TestStartupFenceSelfTest:
 
         # Use a policy rooted at tmp_path so the probe path is under the immutable root
         policy = ProtectedRootPolicy(
-            immutable_roots=("agentic_core",),
+            immutable_roots=(AGENTIC_CORE_DIR,),
             log_path=str(tmp_path / "logs" / "fence.jsonl"),
         )
-        probe_path = tmp_path / "agentic_core" / ".tmp_fence_probe"
+        probe_path = tmp_path / AGENTIC_CORE_DIR / ".tmp_fence_probe"
         fence_active = False
 
         with patch(
@@ -196,7 +201,7 @@ class TestProtectedRootPolicy:
     def test_default_policy_has_correct_immutable_roots(self):
         """Test that default policy has the expected immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == ("agentic_core", "tests", ".github", ".windsurfrules")
+        assert policy.immutable_roots == (AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".windsurfrules")
 
     def test_default_policy_log_path_outside_immutable_roots(self):
         """Test that default policy log path is outside immutable roots."""

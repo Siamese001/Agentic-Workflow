@@ -16,6 +16,9 @@ from unittest.mock import MagicMock
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L2_execution.types.ml_write_intent_types import (
     MLWriteEnvelopeViolation,
     MLWriteIntentExecutor,
@@ -34,7 +37,7 @@ pytestmark = pytest.mark.unit_min_deps
 class _TestAgent(MetaLearningClientMixin):
     """Minimal concrete agent for testing mixin enforcement."""
 
-    _ml_domain = "agentic_core"
+    _ml_domain = AGENTIC_CORE_DIR
 
     def __init__(self) -> None:
         MetaLearningClientMixin.reset_ml_singletons()
@@ -166,7 +169,7 @@ class TestMixinAllowedInsideSandbox:
         assert passed_violation.get("type") == _VIOLATION["type"]
         assert passed_violation.get("path") == _VIOLATION["path"]
         assert call_args[0][1] == _HEALING_RESULT
-        assert call_args[0][2] == "agentic_core"
+        assert call_args[0][2] == AGENTIC_CORE_DIR
 
     def test_cache_set_passes_correct_key_value_to_client(self):
         """Client receives key, value, domain, and ttl."""
@@ -212,7 +215,7 @@ class TestDirectClientBypassBlocked:
         """
         _, mock_client = _make_agent_with_mock_client()
         # Direct call to mock does not raise — enforcement is in the mixin only
-        mock_client.store_healing_pattern(_VIOLATION, _HEALING_RESULT, "agentic_core")
+        mock_client.store_healing_pattern(_VIOLATION, _HEALING_RESULT, AGENTIC_CORE_DIR)
         mock_client.store_healing_pattern.assert_called_once()
 
     def test_mixin_is_sole_enforcement_seam_for_store(self):

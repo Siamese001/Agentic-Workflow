@@ -10,19 +10,26 @@ import pathlib
 
 import yaml
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+_ROOT = get_validated_project_root()
+
 
 def enumerate_modules() -> list[pathlib.Path]:
     """Enumerate all Python modules in scope."""
     modules = []
-    root = pathlib.Path(".")
 
     # Search agentic_core
-    agentic_core_path = root / "agentic_core"
+    agentic_core_path = _ROOT / AGENTIC_CORE_DIR
     if agentic_core_path.exists():
         modules.extend(agentic_core_path.rglob("*.py"))
 
     # Search apps_* directories
-    for apps_dir in root.glob("apps_*"):
+    for apps_dir in _ROOT.glob("apps_*"):
         if apps_dir.is_dir():
             modules.extend(apps_dir.rglob("*.py"))
 
@@ -46,7 +53,7 @@ def enumerate_modules() -> list[pathlib.Path]:
 
 def enumerate_tests() -> list[pathlib.Path]:
     """Enumerate all existing test files."""
-    test_root = pathlib.Path("tests")
+    test_root = _ROOT / TESTS_DIR
     if not test_root.exists():
         return []
 
@@ -57,13 +64,13 @@ def compute_expected_test_path(module_path: pathlib.Path) -> pathlib.Path:
     """Compute canonical expected test path for a module."""
     module_str = str(module_path)
 
-    if module_str.startswith("agentic_core") or module_str.startswith("agentic_core\\"):
+    if module_str.startswith(AGENTIC_CORE_DIR) or module_str.startswith(AGENTIC_CORE_DIR + "\\"):
         relative_parts = module_path.parts
-        test_parts = ["tests"] + list(relative_parts[:-1]) + [f"test_{module_path.name}"]
+        test_parts = [TESTS_DIR] + list(relative_parts[:-1]) + [f"test_{module_path.name}"]
         return pathlib.Path(*test_parts)
     elif any(module_str.startswith(apps) for apps in ["apps_", "apps_lic\\", "apps_rg\\", "apps_shared\\"]):
         relative_parts = module_path.parts
-        test_parts = ["tests"] + list(relative_parts[:-1]) + [f"test_{module_path.name}"]
+        test_parts = [TESTS_DIR] + list(relative_parts[:-1]) + [f"test_{module_path.name}"]
         return pathlib.Path(*test_parts)
     else:
         raise ValueError(f"Unexpected module path: {module_path}")

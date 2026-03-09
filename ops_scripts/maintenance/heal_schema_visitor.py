@@ -28,6 +28,10 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 # Canonical keys that @standard_heal recognizes directly
 CANONICAL_KEYS = {
     "violations_found",
@@ -153,12 +157,12 @@ def main():
     parser.add_argument("--strict", action="store_true", help="Exit with error code on violations")
     parser.add_argument(
         "--path",
-        default="agentic_core",
+        default=AGENTIC_CORE_DIR,
         help="Path to scan (default: agentic_core)",
     )
     args = parser.parse_args()
 
-    root = Path(__file__).parent.parent.parent / args.path
+    root = _ROOT / args.path
     if not root.exists():
         print(f"Error: Path not found: {root}", file=sys.stderr)
         sys.exit(1)

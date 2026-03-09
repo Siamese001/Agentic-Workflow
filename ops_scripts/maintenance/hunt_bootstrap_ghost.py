@@ -8,9 +8,11 @@ ArchGuard false positives.
 import os
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+PROJECT_ROOT = get_validated_project_root()
 TARGET_FILE = "BootstrapAgent.py"
-VALID_PATH = PROJECT_ROOT / "agentic_core/L0_routing/scripts/BootstrapAgent.py"
+VALID_PATH = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing/scripts/BootstrapAgent.py"
 
 
 def hunt_bootstrap():
@@ -18,7 +20,7 @@ def hunt_bootstrap():
 
     found_any = False
 
-    for root, _dirs, files in os.walk(PROJECT_ROOT / "agentic_core"):
+    for root, _dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
         if "archived" in root:
             continue
 

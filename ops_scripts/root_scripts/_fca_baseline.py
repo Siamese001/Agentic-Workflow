@@ -6,7 +6,9 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parent
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+ROOT = get_validated_project_root()
 sys.path.insert(0, str(ROOT))
 
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
@@ -37,7 +39,7 @@ logging.getLogger("agentic_core.L5_safety.reasoning.FileClassificationAgent").se
 # Redirect stdout during audit
 real = sys.stdout
 sys.stdout = sys.stderr
-scan_root = ROOT / "agentic_core"
+scan_root = ROOT / AGENTIC_CORE_DIR
 exit_code = fca._orchestrate_audit(scan_root)
 sys.stdout = real
 

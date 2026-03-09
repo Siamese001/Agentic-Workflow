@@ -31,6 +31,18 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+)
 from tests.helpers.robust_fs import robust_rmtree
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -156,7 +168,7 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
         report.status = GuardianStatus.BLOCK.value
 
     # Write JSON report to agentic_core/L0_routing/utils/guardian_report.json
-    json_report_path = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs" / "guardian_report.json"
+    json_report_path = PROJECT_ROOT / L0_ROUTING_DIR / "logs" / "guardian_report.json"
     json_report_path.parent.mkdir(parents=True, exist_ok=True)
 
     try:
@@ -248,13 +260,13 @@ def agent_registry():
 def layer_hierarchy():
     """Shared layer hierarchy data."""
     return {
-        "L0_routing": 0,
-        "L1_cognition": 1,
-        "L2_execution": 2,
-        "L3_orchestration": 3,
-        "L4_state": 4,
+        L0_ROUTING_DIR: 0,
+        L1_COGNITION_DIR: 1,
+        L2_EXECUTION_DIR: 2,
+        L3_ORCHESTRATION_DIR: 3,
+        L4_STATE_DIR: 4,
         "L5_safety": 5,
-        "L6_observability": 6,
+        L6_OBSERVABILITY_DIR: 6,
     }
 
 
@@ -284,4 +296,4 @@ def critical_files():
 @pytest.fixture(scope="session")
 def territories():
     """List of code territories to scan."""
-    return ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    return [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]

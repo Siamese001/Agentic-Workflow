@@ -42,6 +42,7 @@ from agentic_core.interfaces.meta_learning import (
 from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -73,7 +74,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
     _rg_version: Final[str] = "2.5.0"
 
     # [PHASE 25] Infrastructure Config
-    _namespace: str = field(default="apps_rg", init=False)
+    _namespace: str = field(default=APPS_RG_DIR, init=False)
     _similarity_threshold: float = field(default=0.85, init=False)
     _resource_prefix: str = field(default="rg", init=False)
 
@@ -142,10 +143,10 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
             self._initialize_meta_client()
 
         # Validate with guardrails
-        if not self.validate_domain_pattern({"domain": "apps_rg", **violation}):
+        if not self.validate_domain_pattern({"domain": APPS_RG_DIR, **violation}):
             return None
 
-        return self._meta_client.store_healing_pattern(violation, healing_result, domain="apps_rg")
+        return self._meta_client.store_healing_pattern(violation, healing_result, domain=APPS_RG_DIR)
 
     def retrieve_healing_patterns(
         self,
@@ -167,7 +168,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
 
         return self._meta_client.retrieve_healing_patterns(
             violation,
-            domain="apps_rg",
+            domain=APPS_RG_DIR,
             top_k=top_k,
             min_similarity=self._similarity_threshold,
         )
@@ -501,7 +502,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
 
             # Add domain metadata
             if isinstance(value, dict):
-                value["_domain"] = "apps_rg"
+                value["_domain"] = APPS_RG_DIR
                 value["_namespace"] = self._namespace
 
         return (True, namespaced_key)
@@ -521,7 +522,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        allowed = self._guardrails.check_rate_limit("apps_rg", operation)
+        allowed = self._guardrails.check_rate_limit(APPS_RG_DIR, operation)
         if not allowed:
             Logger.warning(f"[{self.__class__.__name__}] Rate limit exceeded for {operation}")
         return allowed
@@ -536,7 +537,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        return self._guardrails.check_cache_size_limit("apps_rg")
+        return self._guardrails.check_cache_size_limit(APPS_RG_DIR)
 
     def update_cache_metrics(self, delta: int = 1) -> None:
         """
@@ -548,7 +549,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         if self._guardrails is None:
             self._initialize_guardrails()
 
-        self._guardrails.update_cache_size("apps_rg", delta)
+        self._guardrails.update_cache_size(APPS_RG_DIR, delta)
 
     def safe_cache_set(
         self,
@@ -715,7 +716,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.validate_domain_isolation("apps_rg", pattern)
+        return self._guardrails.validate_domain_isolation(APPS_RG_DIR, pattern)
 
     def guardrails_sanitize_violation(self, violation: dict[str, Any]) -> dict[str, Any]:
         """
@@ -743,7 +744,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         """
         if self._guardrails is None:
             self._initialize_guardrails()
-        return self._guardrails.check_rate_limit("apps_rg", operation)
+        return self._guardrails.check_rate_limit(APPS_RG_DIR, operation)
 
     def guardrails_get_stats(self) -> dict[str, Any]:
         """Get guardrails statistics for monitoring."""

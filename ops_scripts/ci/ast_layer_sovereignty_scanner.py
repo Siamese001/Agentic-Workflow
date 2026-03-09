@@ -22,6 +22,15 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
 # ---------------------------------------------------------------------------
 # Layer inversion rules: {source_layer: (forbidden_target_layers, ...)}
 # ---------------------------------------------------------------------------
@@ -47,10 +56,10 @@ _LAYER_RULES: dict[str, tuple[str, ...]] = {
 }
 
 # apps_* must not directly import any agentic_core.L* layer
-_APPS_PREFIXES = ("apps_lic", "apps_rg", "apps_shared")
-_L_LAYER_PREFIX = "agentic_core.L"
+_APPS_PREFIXES = (APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR)
+_L_LAYER_PREFIX = AGENTIC_CORE_DIR + ".L"
 
-_EXCLUDE_DIRS = {"__pycache__", ".git", ".backup", "tests"}
+_EXCLUDE_DIRS = {"__pycache__", ".git", ".backup", TESTS_DIR}
 
 
 def _layer_prefix_of(file_path: Path) -> str | None:
@@ -121,15 +130,15 @@ def scan_file(file_path: Path) -> list[str]:
 
 
 def main(argv: list[str] | None = None) -> int:
-    repo_root = Path(".")
+    repo_root = get_validated_project_root()
     all_violations: list[str] = []
     files_scanned = 0
 
     scan_roots = (
-        list(repo_root.glob("agentic_core/L*"))
-        + list(repo_root.glob("apps_lic"))
-        + list(repo_root.glob("apps_rg"))
-        + list(repo_root.glob("apps_shared"))
+        list(repo_root.glob(AGENTIC_CORE_DIR + "/L*"))
+        + list(repo_root.glob(APPS_LIC_DIR))
+        + list(repo_root.glob(APPS_RG_DIR))
+        + list(repo_root.glob(APPS_SHARED_DIR))
     )
 
     for root in scan_roots:

@@ -14,11 +14,18 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_ORCHESTRATOR = _REPO_ROOT / "agentic_core" / "L2_execution" / "engines" / "validation_orchestrator.py"
-_SEAM_FILE = _REPO_ROOT / "agentic_core" / "L0_routing" / "seams" / "safety_enforcement_seam.py"
+_ORCHESTRATOR = _REPO_ROOT / L2_EXECUTION_DIR / "engines" / "validation_orchestrator.py"
+_SEAM_FILE = _REPO_ROOT / L0_ROUTING_DIR / "seams" / "safety_enforcement_seam.py"
 
 
 # ---------------------------------------------------------------------------
@@ -47,7 +54,7 @@ class TestNoDirectL5Import:
         tree = ast.parse(_ORCHESTRATOR.read_text("utf-8"), filename=str(_ORCHESTRATOR))
         for node in ast.walk(tree):
             if isinstance(node, ast.ImportFrom) and node.module:
-                assert "L3_orchestration" not in node.module, (
+                assert L3_ORCHESTRATION_DIR not in node.module, (
                     f"Static L2ΓåÆL3 import at line {node.lineno}: from {node.module}"
                 )
 
@@ -158,7 +165,7 @@ class TestDirectL2WritesStaticProof:
 # Wave P1.3.4 — Lock Option A: activation_gate module-level API contract
 # ---------------------------------------------------------------------------
 
-_ACTIVATION_GATE = _REPO_ROOT / "agentic_core" / "L5_safety" / "enforcement" / "activation_gate.py"
+_ACTIVATION_GATE = _REPO_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "enforcement" / "activation_gate.py"
 
 
 class TestActivationGateModuleLevelContract:

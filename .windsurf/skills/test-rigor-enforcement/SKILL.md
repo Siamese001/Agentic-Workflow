@@ -5,7 +5,9 @@ description: Enforces §1 TESTING & EVIDENCE requirements from .windsurfrules du
 
 # Test Rigor Enforcement Skill
 
-Enforces constitutional testing requirements (§1.1-§1.12) during code generation.
+**PREREQUISITE:** `ast-first-gate` skill MUST be invoked first (§0 DEFAULT ANALYSIS MODE).
+
+Enforces constitutional testing requirements (§1.1-§1.12) during code generation with mandatory AST dependency graph backing.
 
 ## Files
 

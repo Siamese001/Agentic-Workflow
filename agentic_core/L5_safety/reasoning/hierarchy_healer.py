@@ -8,6 +8,7 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 """
@@ -35,7 +36,7 @@ from agentic_core.L0_routing.config import (
 )
 
 # [SSOT IMPORT] Master Constitution is the absolute source of truth
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     ALLOWED_DUPLICATE_FILENAMES,
     CORE_SUBFOLDER_MAP,
     ENFORCED_TERRITORIES,
@@ -439,7 +440,7 @@ class HierarchyAgent(SovereignBaseAgent):
         Agent files must never be relocated into tests/. Human action is required
         to move them back to their correct agentic_core/ territory.
         """
-        tests_path = self.project_root / "tests"
+        tests_path = self.project_root / TESTS_DIR
         if not tests_path.exists():
             return
         for py_file in tests_path.rglob("*Agent.py"):
@@ -497,7 +498,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         Never hardcoded — always reflects the live SSOT in _constants.py.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
@@ -545,7 +546,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
             # Skip whitelisted root files (conftest.py, __init__.py, etc.)
             if len(rel.parts) == 1:
-                from agentic_core.L5_safety.config.structure_blueprint_config import (
+                from agentic_core.L5_safety.config.structure_blueprint import (
                     TESTS_ROOT_FILE_WHITELIST,
                 )
 
@@ -623,7 +624,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         [DEDUP 2026-02-07] Uses FCA classify_file() to determine correct L3 subfolder.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             check_forbidden_signals,
         )
 
@@ -763,7 +764,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
         [DEDUP 2026-02-07] Uses FCA classify_file() for L3 routing.
         """
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             check_forbidden_signals,
         )
 
@@ -1058,7 +1059,7 @@ class HierarchyAgent(SovereignBaseAgent):
 
     def _enforce_tests_depth(self) -> int:
         """Enforce tests depth rule using generic handler."""
-        return self._enforce_depth_for_root("tests", lambda r: r == "tests", "tests_depth", "TESTS")
+        return self._enforce_depth_for_root(TESTS_DIR, lambda r: r == TESTS_DIR, "tests_depth", "TESTS")
 
     def _enforce_universal_depth(self) -> int:
         """Enforce universal depth for non-Python files in agentic_core (depth 3). Detection-First."""

@@ -7,8 +7,12 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    SYSTEM_LEARNING_DIR,
+)
+
 META_PIPELINE_PATH = (
-    Path(__file__).parent.parent.parent / "system_learning" / "pipelines" / "meta_learning_pipeline.py"
+    Path(__file__).parent.parent.parent / SYSTEM_LEARNING_DIR / "pipelines" / "meta_learning_pipeline.py"
 )
 
 

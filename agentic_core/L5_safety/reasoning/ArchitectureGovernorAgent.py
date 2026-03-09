@@ -59,7 +59,7 @@ from agentic_core.L0_routing.config import (
 
 # [PHASE 24] Integrate L0 Maintenance Capability
 from agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent import SSOTFolderCleanupAgent
-from agentic_core.L5_safety.config.structure_blueprint_config import SOVEREIGN_TERRITORIES
+from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
     FileClassificationAgent,
     get_python_files_fast,
@@ -308,14 +308,14 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             all_violations = []
 
             # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 get_sovereign_territories as _get_sovereign_territories,
             )
 
             sovereign_territories = _get_sovereign_territories()
 
             if target_territory:
-                if target_territory in sovereign_territories and target_territory != "agentic_core":
+                if target_territory in sovereign_territories and target_territory != AGENTIC_CORE_DIR:
                     target_roots = [target_territory]
                 elif (self.project_root / AGENTIC_CORE_DIR / target_territory).exists():
                     # Sub-layer of agentic_core (e.g. "L2_execution", "L5_safety")
@@ -348,7 +348,16 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             continue
                         # Ignore well-known non-agent patterns co-located in agent files
                         _cls = violation.message.split("'")[1] if "'" in violation.message else ""
-                        _non_agent = ("Factory", "Role", "Base", "Mixin", "Enum", "Config", "Registry", "Simple")
+                        _non_agent = (
+                            "Factory",
+                            "Role",
+                            "Base",
+                            "Mixin",
+                            "Enum",
+                            "Config",
+                            "Registry",
+                            "Simple",
+                        )
                         if any(_cls.endswith(s) for s in _non_agent):
                             continue
 
@@ -610,7 +619,16 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             continue
                         # Ignore well-known non-agent patterns co-located in agent files
                         _cls2 = violation.message.split("'")[1] if "'" in violation.message else ""
-                        _non_agent2 = ("Factory", "Role", "Base", "Mixin", "Enum", "Config", "Registry", "Simple")
+                        _non_agent2 = (
+                            "Factory",
+                            "Role",
+                            "Base",
+                            "Mixin",
+                            "Enum",
+                            "Config",
+                            "Registry",
+                            "Simple",
+                        )
                         if any(_cls2.endswith(s) for s in _non_agent2):
                             continue
 

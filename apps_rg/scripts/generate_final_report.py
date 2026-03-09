@@ -9,6 +9,8 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from agentic_core.L0_routing.config.path_constants import APPS_RG_DIR
+
 
 def count_files_by_domain():
     """Count files in each domain."""
@@ -111,7 +113,7 @@ def generate_report():
 
         ctx_mock = type("obj", (object,), {"signals": set()})()
         engine = VoidComplianceEngine(ctx_mock)
-        result = asyncio.run(engine.execute("apps_rg"))
+        result = asyncio.run(engine.execute(APPS_RG_DIR))
         print(f"✅ Architecture Clean: {result['status']}")
     except RuntimeError as e:
         print(f"❌ Void Compliance Failed: {e}")

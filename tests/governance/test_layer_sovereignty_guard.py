@@ -6,26 +6,40 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L6_OBSERVABILITY_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 # --- Configuration ---
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 SCAN_ROOTS = [
-    REPO_ROOT / "agentic_core",
-    REPO_ROOT / "system_learning",
-    REPO_ROOT / "apps_lic",
-    REPO_ROOT / "apps_rg",
-    REPO_ROOT / "apps_shared",
+    REPO_ROOT / AGENTIC_CORE_DIR,
+    REPO_ROOT / SYSTEM_LEARNING_DIR,
+    REPO_ROOT / APPS_LIC_DIR,
+    REPO_ROOT / APPS_RG_DIR,
+    REPO_ROOT / APPS_SHARED_DIR,
 ]
 
 # Define the layer hierarchy. Lower numbers are lower layers.
 LAYER_HIERARCHY: dict[str, int] = {
-    "L0_routing": 0,
-    "L1_cognition": 1,
-    "L2_execution": 2,
-    "L3_orchestration": 3,
-    "L4_state": 4,
+    L0_ROUTING_DIR: 0,
+    L1_COGNITION_DIR: 1,
+    L2_EXECUTION_DIR: 2,
+    L3_ORCHESTRATION_DIR: 3,
+    L4_STATE_DIR: 4,
     "L5_safety": 5,
-    "L6_observability": 6,
+    L6_OBSERVABILITY_DIR: 6,
 }
 
 # --- AST Visitor for Import Analysis ---

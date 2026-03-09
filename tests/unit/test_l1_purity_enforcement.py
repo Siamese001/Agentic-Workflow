@@ -11,6 +11,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L1_COGNITION_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 FORBIDDEN_IMPORTS = {
@@ -30,7 +34,7 @@ FORBIDDEN_OPEN_MODES = {"w", "a", "x"}
 
 def get_l1_files() -> list[Path]:
     """Get all Python files in L1 cognition directory."""
-    l1_path = Path(__file__).resolve().parent.parent.parent.parent / "agentic_core" / "L1_cognition"
+    l1_path = Path(__file__).resolve().parent.parent.parent.parent / L1_COGNITION_DIR
     return list(l1_path.rglob("*.py"))
 
 

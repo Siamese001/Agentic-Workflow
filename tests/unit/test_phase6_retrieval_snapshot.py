@@ -6,6 +6,9 @@ from __future__ import annotations
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L4_state.types.retrieval_boundary_snapshot_types import (
     AnchorEntry,
     RetrievalBoundarySnapshot,
@@ -32,7 +35,7 @@ def _make_snapshot(**overrides) -> RetrievalBoundarySnapshot:
     defaults: dict = {
         "schema_version": 1,
         "mission_id": "mission-test",
-        "request_hash": build_request_hash("query text", 5, "agentic_core"),
+        "request_hash": build_request_hash("query text", 5, AGENTIC_CORE_DIR),
         "active_config_hashes": dict(_CONFIG_HASHES),
         "anchors": _make_anchors("chunk-A", "chunk-B"),
         "created_at_utc": _TS,
@@ -195,7 +198,7 @@ class TestCreateSnapshotFactory:
             mission_id="m1",
             query="test query",
             top_k=3,
-            domain="agentic_core",
+            domain=AGENTIC_CORE_DIR,
             active_config_hashes=_CONFIG_HASHES,
             anchors=_make_anchors("chunk-X"),
             created_at_utc=_TS,
@@ -208,12 +211,12 @@ class TestCreateSnapshotFactory:
             mission_id="m1",
             query="test query",
             top_k=3,
-            domain="agentic_core",
+            domain=AGENTIC_CORE_DIR,
             active_config_hashes=_CONFIG_HASHES,
             anchors=[],
             created_at_utc=_TS,
         )
-        expected = build_request_hash("test query", 3, "agentic_core")
+        expected = build_request_hash("test query", 3, AGENTIC_CORE_DIR)
         assert s.request_hash == expected
 
     def test_to_dict_contains_all_fields(self):

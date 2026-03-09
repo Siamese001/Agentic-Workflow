@@ -21,6 +21,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -41,8 +45,8 @@ from agentic_core.L0_routing.types.guardian_contract_types import (
 pytestmark = pytest.mark.guardian
 
 # Use a root name that exists in ROOT_WHITELIST so the scanner actually enters it.
-# "tests" is in ROOT_WHITELIST and is the simplest safe choice for tmp_path fixtures.
-_SCAN_ROOT = "tests"
+# TESTS_DIR is in ROOT_WHITELIST and is the simplest safe choice for tmp_path fixtures.
+_SCAN_ROOT = TESTS_DIR
 
 
 # ---------------------------------------------------------------------------
@@ -274,25 +278,25 @@ class TestDeterminism:
 
 class TestScanFunctions:
     def test_scan_temp_artifacts_finds_pyc(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         (src / "bad.pyc").write_bytes(b"\x00")
-        hits = scan_temp_artifacts(tmp_path, frozenset({"tests"}))
+        hits = scan_temp_artifacts(tmp_path, frozenset({TESTS_DIR}))
         assert not isinstance(hits, type(None))
         assert any("bad.pyc" in h for h in hits)
 
     def test_scan_temp_artifacts_finds_bak(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         (src / "old.bak").write_text("x", encoding="utf-8")
-        hits = scan_temp_artifacts(tmp_path, frozenset({"tests"}))
+        hits = scan_temp_artifacts(tmp_path, frozenset({TESTS_DIR}))
         assert any("old.bak" in h for h in hits)
 
     def test_scan_temp_artifacts_clean_returns_empty(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         (src / "good.py").write_text("x = 1\n", encoding="utf-8")
-        hits = scan_temp_artifacts(tmp_path, frozenset({"tests"}))
+        hits = scan_temp_artifacts(tmp_path, frozenset({TESTS_DIR}))
         assert hits == []
 
     def test_scan_temp_artifacts_nonexistent_root_skipped(self, tmp_path: Path):
@@ -300,18 +304,18 @@ class TestScanFunctions:
         assert hits == []
 
     def test_scan_empty_folders_finds_empty(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         (src / "hollow").mkdir()
-        hits = scan_empty_folders(tmp_path, frozenset({"tests"}))
+        hits = scan_empty_folders(tmp_path, frozenset({TESTS_DIR}))
         assert any("hollow" in h for h in hits)
 
     def test_scan_empty_folders_clean_returns_empty(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         (src / "pkg").mkdir()
         (src / "pkg" / "__init__.py").write_text("", encoding="utf-8")
-        hits = scan_empty_folders(tmp_path, frozenset({"tests"}))
+        hits = scan_empty_folders(tmp_path, frozenset({TESTS_DIR}))
         assert hits == []
 
     def test_scan_empty_folders_nonexistent_root_skipped(self, tmp_path: Path):
@@ -319,22 +323,22 @@ class TestScanFunctions:
         assert hits == []
 
     def test_scan_init_only_folders_finds_violation(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         pkg = src / "lonely_pkg"
         pkg.mkdir()
         (pkg / "__init__.py").write_text("", encoding="utf-8")
-        hits = scan_init_only_folders(tmp_path, frozenset({"tests"}))
+        hits = scan_init_only_folders(tmp_path, frozenset({TESTS_DIR}))
         assert any("lonely_pkg" in h for h in hits)
 
     def test_scan_init_only_folders_normal_pkg_not_flagged(self, tmp_path: Path):
-        src = tmp_path / "tests"
+        src = tmp_path / TESTS_DIR
         src.mkdir()
         pkg = src / "normal_pkg"
         pkg.mkdir()
         (pkg / "__init__.py").write_text("", encoding="utf-8")
         (pkg / "logic.py").write_text("x = 1\n", encoding="utf-8")
-        hits = scan_init_only_folders(tmp_path, frozenset({"tests"}))
+        hits = scan_init_only_folders(tmp_path, frozenset({TESTS_DIR}))
         assert not any("normal_pkg" in h for h in hits)
 
     def test_scan_init_only_folders_nonexistent_root_skipped(self, tmp_path: Path):
@@ -353,7 +357,7 @@ class TestEdgeCases:
         assert result.status == GuardianStatus.PASS.value
 
     def test_multiple_violations_all_reported(self, tmp_path: Path):
-        src = tmp_path / _SCAN_ROOT  # "tests" — in ROOT_WHITELIST
+        src = tmp_path / _SCAN_ROOT  # TESTS_DIR — in ROOT_WHITELIST
         src.mkdir()
         (src / "stale.pyc").write_bytes(b"\x00")
         (src / "hollow").mkdir()
@@ -368,7 +372,7 @@ class TestEdgeCases:
         assert "init_only_folders" in fail_ids
 
     def test_gitkeep_file_is_not_flagged_as_artifact(self, tmp_path: Path):
-        src = tmp_path / _SCAN_ROOT  # "tests" — in ROOT_WHITELIST
+        src = tmp_path / _SCAN_ROOT  # TESTS_DIR — in ROOT_WHITELIST
         src.mkdir()
         (src / ".gitkeep").write_text("", encoding="utf-8")
         hits = scan_temp_artifacts(tmp_path, frozenset({_SCAN_ROOT}))
@@ -381,14 +385,14 @@ class TestEdgeCases:
         assert result.status in {"PASS", "FAIL", "ERROR"}
 
     def test_tmp_extension_detected(self, tmp_path: Path):
-        src = tmp_path / _SCAN_ROOT  # "tests" — in ROOT_WHITELIST
+        src = tmp_path / _SCAN_ROOT  # TESTS_DIR — in ROOT_WHITELIST
         src.mkdir()
         (src / "scratch.tmp").write_text("x", encoding="utf-8")
         hits = scan_temp_artifacts(tmp_path, frozenset({_SCAN_ROOT}))
         assert any("scratch.tmp" in h for h in hits)
 
     def test_swp_extension_detected(self, tmp_path: Path):
-        src = tmp_path / _SCAN_ROOT  # "tests" — in ROOT_WHITELIST
+        src = tmp_path / _SCAN_ROOT  # TESTS_DIR — in ROOT_WHITELIST
         src.mkdir()
         (src / ".file.swp").write_bytes(b"\x00")
         hits = scan_temp_artifacts(tmp_path, frozenset({_SCAN_ROOT}))

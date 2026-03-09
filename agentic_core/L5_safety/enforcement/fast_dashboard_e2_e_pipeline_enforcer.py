@@ -21,14 +21,14 @@ import re
 import sys
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint import (
     DASHBOARD_DIR,
     get_validated_project_root,
 )
 from agentic_core.utils.security_util import safe_execute
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 
 class FastDashboardE2EPipeline:

@@ -13,6 +13,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 
@@ -60,7 +64,7 @@ class TestClassificationDeterminism:
         assert results[0] == "ENGINE"
 
     def test_orchestrator_determinism(self, tmp_path):
-        o_dir = tmp_path / "agentic_core" / "L3_orchestration" / "reasoning"
+        o_dir = tmp_path / L3_ORCHESTRATION_DIR / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
         code = """\
         from agentic_core.L3_orchestration.reasoning import AgentA
@@ -162,7 +166,7 @@ class TestClassificationOrderIndependence:
 
         r = _make_file(tmp_path, "my_router.py", router_code)
         e = _make_file(tmp_path, "access_enforcer.py", enforcer_code)
-        o_dir = tmp_path / "agentic_core" / "L3_orchestration" / "reasoning"
+        o_dir = tmp_path / L3_ORCHESTRATION_DIR / "reasoning"
         o_dir.mkdir(parents=True, exist_ok=True)
         o = o_dir / "workflow_orchestrator.py"
         o.write_text(textwrap.dedent(orchestrator_code), encoding="utf-8")

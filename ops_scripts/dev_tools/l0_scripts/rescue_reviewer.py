@@ -72,7 +72,7 @@ class RescueReviewer:
         # Phase 6.6: Use ssot_discovery instead of rglob
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             CANON_SIGNALS,
             DEFAULT_CORE_HEALING_TERRITORY,
         )

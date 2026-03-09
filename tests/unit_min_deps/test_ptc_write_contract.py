@@ -20,6 +20,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 
 @pytest.mark.unit_min_deps
 class TestPTCWriteContract:
@@ -40,7 +45,7 @@ class TestPTCWriteContract:
         ]
 
         found_indicators = []
-        for py_file in Path("agentic_core").rglob("*.py"):
+        for py_file in Path(AGENTIC_CORE_DIR).rglob("*.py"):
             try:
                 content = py_file.read_text(encoding="utf-8")
                 for indicator in tool_registry_indicators:
@@ -112,7 +117,7 @@ class TestPTCWriteContract:
             "write_layer": "write_gateway",
             "enforcement": "enforce_protected_root",
             "default_policy": "allow_override=False",
-            "protected_roots": ("agentic_core", "tests", ".github"),
+            "protected_roots": (AGENTIC_CORE_DIR, TESTS_DIR, ".github"),
         }
 
         # Verify write_gateway exists and imports enforcement

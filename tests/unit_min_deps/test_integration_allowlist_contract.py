@@ -15,11 +15,15 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 ROOT = Path(__file__).resolve().parents[2]
 PYTEST_INI = ROOT / "pytest.ini"
-INTEGRATION_BASE = ROOT / "tests" / "integration"
+INTEGRATION_BASE = ROOT / TESTS_DIR / "integration"
 
 
 def _get_allowed_integration_roots() -> list[Path]:

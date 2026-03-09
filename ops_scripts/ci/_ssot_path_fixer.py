@@ -14,7 +14,16 @@ import ast
 import sys
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+ROOT = get_validated_project_root()
 
 SSOT_MAP: dict[str, str] = {
     "agentic_core": "AGENTIC_CORE_DIR",
@@ -39,11 +48,11 @@ SSOT_MAP: dict[str, str] = {
 }
 
 PROD_SCAN_ROOTS = [
-    ROOT / "agentic_core",
-    ROOT / "apps_lic",
-    ROOT / "apps_rg",
-    ROOT / "apps_shared",
-    ROOT / "system_learning",
+    ROOT / AGENTIC_CORE_DIR,
+    ROOT / APPS_LIC_DIR,
+    ROOT / APPS_RG_DIR,
+    ROOT / APPS_SHARED_DIR,
+    ROOT / SYSTEM_LEARNING_DIR,
 ]
 
 EXCLUDE_DIRS = {"__pycache__", ".git", ".venv", ".pytest_cache", ".mypy_cache", ".nox"}

@@ -6,9 +6,13 @@ and async analyze_violations() so execute_ssot.py callers don't use asyncio.run 
 import ast
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 CDA_PATH = (
     Path(__file__).parent.parent.parent
-    / "agentic_core"
+    / AGENTIC_CORE_DIR
     / "L5_safety"
     / "reasoning"
     / "CognitiveDispositionAgent.py"

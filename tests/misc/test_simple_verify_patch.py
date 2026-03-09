@@ -8,6 +8,10 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 
 def verify_patch():
     """Verify that the Universal Healing patch is correctly applied."""
@@ -15,7 +19,7 @@ def verify_patch():
     print("=" * 50)
 
     project_root = Path.cwd()
-    execute_ssot_path = project_root / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+    execute_ssot_path = project_root / L0_ROUTING_DIR / "scripts" / "execute_ssot.py"
 
     if not execute_ssot_path.exists():
         print("❌ FAIL: execute_ssot.py not found")

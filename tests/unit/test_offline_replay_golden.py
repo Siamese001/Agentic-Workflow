@@ -12,6 +12,10 @@ import json
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_RG_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
@@ -37,7 +41,7 @@ def _make_events(
     """Helper: build AppSignalEventArtifact list for replay tests."""
     return [
         build_app_signal_event(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             run_id="run_golden",
             message_id=f"{prefix}_{i:03d}",
             metric_name="resume_message_response_rate",
@@ -62,7 +66,7 @@ def _build_full_bundle(
     aggregate = replay_app_signals_to_aggregate(
         events=all_events,
         metric_name="resume_message_response_rate",
-        app_id="apps_rg",
+        app_id=APPS_RG_DIR,
         window_id="w_golden",
         baseline_selector=lambda e: e.message_id.startswith("bl"),
         candidate_selector=lambda e: e.message_id.startswith("cd"),
@@ -72,7 +76,7 @@ def _build_full_bundle(
 
     return replay_aggregate_to_rollout(
         aggregate=aggregate,
-        proposer="apps_rg",
+        proposer=APPS_RG_DIR,
         target_component="routing_thresholds",
         before={"threshold": 0.5},
         after={"threshold": 0.7},

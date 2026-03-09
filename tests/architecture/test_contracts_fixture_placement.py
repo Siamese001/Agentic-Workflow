@@ -23,8 +23,13 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-CONTRACTS_DIR = PROJECT_ROOT / "tests" / "contracts"
+CONTRACTS_DIR = PROJECT_ROOT / TESTS_DIR / "contracts"
 FIXTURES_DIR = CONTRACTS_DIR / "fixtures"
 
 _AGENT_PAT = re.compile(r".*Agent\.py$")
@@ -43,7 +48,7 @@ def _iter_contracts_root_files() -> list[Path]:
 
 
 def _iter_tests_py(exclude_dirs: frozenset[str] = frozenset({"_quarantine", "__pycache__"})) -> list[Path]:
-    tests_dir = PROJECT_ROOT / "tests"
+    tests_dir = PROJECT_ROOT / TESTS_DIR
     result = []
     for f in tests_dir.rglob("*.py"):
         rel = f.relative_to(tests_dir)
@@ -249,7 +254,7 @@ class TestFindBestMatchingSubfolderPreservedDirs:
 
     def test_agent_file_blocked_from_support(self, healer):
         """Negative control: *Agent.py file (production) never matched to 'support'."""
-        prod_agent = PROJECT_ROOT / "agentic_core" / "L5_safety" / "reasoning" / "LocationHealerAgent.py"
+        prod_agent = PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "LocationHealerAgent.py"
         result = healer._find_best_matching_subfolder(
             "support", ["support", "reasoning"], file_path=prod_agent
         )
@@ -295,7 +300,9 @@ class TestCalculateSubfolderConfidencePreserved:
 
     def test_agent_file_returns_zero(self, healer):
         """Branch: AGENT file (production) → 0.0 regardless of subfolder name."""
-        prod_agent = PROJECT_ROOT / "agentic_core" / "L5_safety" / "reasoning" / "FileClassificationAgent.py"
+        prod_agent = (
+            PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "FileClassificationAgent.py"
+        )
         score = healer._calculate_subfolder_confidence("utils", ["utils", "reasoning"], file_path=prod_agent)
         assert score == 0.0, f"Production agent file must score 0.0, got {score}"
 
@@ -328,13 +335,13 @@ class TestCalculateSubfolderConfidencePreserved:
         assert score == 0.3
 
     def test_test_subfolder_not_high_confidence(self, healer):
-        """Regression: 'tests' and 'test' must NOT return 0.9 (removed from patterns)."""
-        score_tests = healer._calculate_subfolder_confidence("tests", [])
+        """Regression: TESTS_DIR and 'test' must NOT return 0.9 (removed from patterns)."""
+        score_tests = healer._calculate_subfolder_confidence(TESTS_DIR, [])
         score_test = healer._calculate_subfolder_confidence("test", [])
-        # Neither 'tests' nor 'test' should get 0.9 from the pattern list
+        # Neither TESTS_DIR nor 'test' should get 0.9 from the pattern list
         # (they were removed to prevent healer from auto-creating test/ subdirs)
         assert score_tests != 0.9 or score_test != 0.9, (
-            "Both 'tests' and 'test' return 0.9 — at least one must not match high-confidence patterns"
+            "Both TESTS_DIR and 'test' return 0.9 — at least one must not match high-confidence patterns"
         )
 
 
@@ -346,22 +353,22 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_has_forbidden_patterns(self):
         """Success path: contracts entry has forbidden_patterns key."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get("tests", {})
+        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         assert "forbidden_patterns" in contracts, "tests/contracts/ SSOT entry missing forbidden_patterns"
 
     def test_contracts_forbidden_patterns_block_agent(self):
         """Branch: forbidden_patterns blocks *Agent.py."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get("tests", {})
+        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         patterns = contracts.get("forbidden_patterns", [])
@@ -370,11 +377,11 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_forbidden_patterns_block_fake(self):
         """Branch: forbidden_patterns blocks fake_*.py."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get("tests", {})
+        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         patterns = contracts.get("forbidden_patterns", [])
@@ -383,11 +390,11 @@ class TestSSOTBlueprintContractsEntry:
 
     def test_contracts_fixtures_subfolder_declared(self):
         """Branch: contracts/ SSOT entry declares fixtures/ as approved subfolder."""
-        from agentic_core.L5_safety.config.structure_blueprint_config import (
+        from agentic_core.L5_safety.config.structure_blueprint import (
             SOVEREIGN_TERRITORIES,
         )
 
-        tests_territory = SOVEREIGN_TERRITORIES.get("tests", {})
+        tests_territory = SOVEREIGN_TERRITORIES.get(TESTS_DIR, {})
         subfolders = tests_territory.get("subfolders", {})
         contracts = subfolders.get("contracts", {})
         contract_subs = contracts.get("subfolders", {})

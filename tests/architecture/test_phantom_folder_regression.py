@@ -31,17 +31,28 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 AGENT_TERRITORIES = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "system_learning",
-    "tools",
-    "tests",
-    "ops_scripts",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
+    TESTS_DIR,
+    OPS_SCRIPTS_DIR,
     "docs",
 ]
 
@@ -85,7 +96,7 @@ class TestDepthAlignedRegression:
 
     def test_no_depth_aligned_in_agentic_core(self):
         """Specific guard: agentic_core/ must never contain depth_aligned/."""
-        ac = REPO_ROOT / "agentic_core"
+        ac = REPO_ROOT / AGENTIC_CORE_DIR
         if not ac.exists():
             pytest.fail("agentic_core not present")
         violations = [d for d in ac.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
@@ -95,7 +106,7 @@ class TestDepthAlignedRegression:
 
     def test_no_depth_aligned_in_tests(self):
         """Specific guard: tests/ must never contain depth_aligned/."""
-        t = REPO_ROOT / "tests"
+        t = REPO_ROOT / TESTS_DIR
         if not t.exists():
             pytest.fail("tests/ not present")
         violations = [d for d in t.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
@@ -105,7 +116,7 @@ class TestDepthAlignedRegression:
 
     def test_no_depth_aligned_in_system_learning(self):
         """Specific guard: system_learning/ must never contain depth_aligned/."""
-        sl = REPO_ROOT / "system_learning"
+        sl = REPO_ROOT / SYSTEM_LEARNING_DIR
         if not sl.exists():
             pytest.fail("system_learning not present")
         violations = [d for d in sl.rglob("*") if d.is_dir() and d.name == "depth_aligned"]
@@ -120,7 +131,7 @@ class TestDepthAlignedRegression:
         legitimise the phantom folder structure.
         """
         try:
-            from agentic_core.L5_safety.config.structure_blueprint_config import (
+            from agentic_core.L5_safety.config.structure_blueprint import (
                 SOVEREIGN_TERRITORIES,
             )
         except ImportError:
@@ -174,7 +185,7 @@ class TestDepthAlignedRegression:
 @pytest.mark.architecture
 class TestTestsSupportFlatStructure:
     def _support_subdirs(self) -> list[Path]:
-        support = REPO_ROOT / "tests" / "support"
+        support = REPO_ROOT / TESTS_DIR / "support"
         if not support.exists():
             return []
         return [d for d in support.iterdir() if d.is_dir() and d.name != "__pycache__"]
@@ -200,7 +211,7 @@ class TestTestsSupportFlatStructure:
         Pattern: l[0-9]_<name> (e.g. l1_cognition, l6_observability).
         These are phantom folders created by a misbehaving healing run.
         """
-        support = REPO_ROOT / "tests" / "support"
+        support = REPO_ROOT / TESTS_DIR / "support"
         if not support.exists():
             pytest.fail("tests/support not present")
         violations = [d for d in support.iterdir() if d.is_dir() and L_LAYER_PATTERN.match(d.name)]
@@ -214,7 +225,7 @@ class TestTestsSupportFlatStructure:
         When the bug fires, every agent at tests/support/FooAgent.py is also
         duplicated into tests/support/l1_cognition/FooAgent.py (or similar).
         """
-        support = REPO_ROOT / "tests" / "support"
+        support = REPO_ROOT / TESTS_DIR / "support"
         if not support.exists():
             pytest.fail("tests/support not present")
 
@@ -245,7 +256,7 @@ class TestTestsSupportFlatStructure:
     )
     def test_tests_support_specific_forbidden_subdirs_absent(self, forbidden_name):
         """Each known-bad subdirectory name must not exist under tests/support/."""
-        support = REPO_ROOT / "tests" / "support"
+        support = REPO_ROOT / TESTS_DIR / "support"
         if not support.exists():
             pytest.fail("tests/support not present")
         bad = support / forbidden_name

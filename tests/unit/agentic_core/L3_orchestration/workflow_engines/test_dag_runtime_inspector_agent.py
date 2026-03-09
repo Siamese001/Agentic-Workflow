@@ -20,12 +20,16 @@ from typing import Any
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L3_ORCHESTRATION_DIR,
+)
 from agentic_core.mixins.inspection_capability_mixin import InspectionCapability, InspectionResult
 
 ROOT = Path(__file__).resolve().parents[5]
 # Post-consolidation: DagRuntimeInspectorAgent shimmed to InspectorExecutor
-AGENT_PATH = ROOT / "agentic_core" / "L3_orchestration" / "reasoning" / "DagRuntimeInspectorAgent.py"
-CANONICAL_PATH = ROOT / "agentic_core" / "L5_safety" / "reasoning" / "InspectorExecutor.py"
+AGENT_PATH = ROOT / L3_ORCHESTRATION_DIR / "reasoning" / "DagRuntimeInspectorAgent.py"
+CANONICAL_PATH = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "InspectorExecutor.py"
 
 # ---------------------------------------------------------------------------
 # Parse the canonical executor source once for all AST tests

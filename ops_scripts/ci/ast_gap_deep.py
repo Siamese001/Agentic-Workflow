@@ -4,12 +4,22 @@ import ast
 import json
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+ROOT = get_validated_project_root()
 SOURCE_TARGETS = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     "system_learning",
     "L6_observability",
 ]
@@ -71,7 +81,7 @@ def _extract_layer(rel_path, target):
 def build_test_import_index():
     """Map module name prefix -> set of test files."""
     index = {}
-    test_root = ROOT / "tests"
+    test_root = ROOT / TESTS_DIR
     for f in sorted(test_root.rglob("test_*.py")):
         if "__pycache__" in str(f):
             continue
@@ -213,7 +223,7 @@ def main():
     print("=" * 70)
     print("GUARDIAN COVERAGE (tests/guardian -> what layers)")
     print("=" * 70)
-    guardian_dir = ROOT / "tests" / "guardian"
+    guardian_dir = ROOT / TESTS_DIR / "guardian"
     guardian_module_hits = {}
     for f in sorted(guardian_dir.rglob("test_*.py")):
         if "__pycache__" in str(f):
@@ -277,7 +287,7 @@ def main():
             "uncovered": total_uncov,
         },
     }
-    out_path = ROOT / "ops_scripts" / "ci" / "ast_gap_deep_results.json"
+    out_path = ROOT / OPS_SCRIPTS_DIR / "ci" / "ast_gap_deep_results.json"
     out_path.write_text(json.dumps(out, indent=2), encoding="utf-8")
     print()
     print("Full JSON: " + str(out_path))

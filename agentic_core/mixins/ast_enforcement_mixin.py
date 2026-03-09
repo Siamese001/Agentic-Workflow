@@ -12,7 +12,7 @@ Add to validators/enforcers for precise AST analysis (no regex).
 import ast
 from pathlib import Path
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 

@@ -17,8 +17,21 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Iterable
 
-REPO_ROOT = Path(__file__).parent.parent
-AGENTIC_CORE = REPO_ROOT / "agentic_core"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+REPO_ROOT = get_validated_project_root()
+AGENTIC_CORE = REPO_ROOT / AGENTIC_CORE_DIR
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 logger = logging.getLogger(__name__)
@@ -104,13 +117,13 @@ PROMPT_ASSEMBLER_HINTS = (
 
 ARCH_LAYER_ORDER = ("L0", "L1", "L2", "L3", "L4", "L5", "L6")
 ARCH_LAYER_PATHS = {
-    "L0": AGENTIC_CORE / "L0_routing",
-    "L1": AGENTIC_CORE / "L1_cognition",
-    "L2": AGENTIC_CORE / "L2_execution",
-    "L3": AGENTIC_CORE / "L3_orchestration",
-    "L4": AGENTIC_CORE / "L4_state",
-    "L5": AGENTIC_CORE / "L5_safety",
-    "L6": AGENTIC_CORE / "L6_observability",
+    "L0": REPO_ROOT / L0_ROUTING_DIR,
+    "L1": REPO_ROOT / L1_COGNITION_DIR,
+    "L2": REPO_ROOT / L2_EXECUTION_DIR,
+    "L3": REPO_ROOT / L3_ORCHESTRATION_DIR,
+    "L4": REPO_ROOT / L4_STATE_DIR,
+    "L5": REPO_ROOT / L5_SAFETY_DIR,
+    "L6": REPO_ROOT / L6_OBSERVABILITY_DIR,
 }
 
 ARCHITECTURE_COMPONENT_RULES = (
@@ -1165,7 +1178,7 @@ class SemanticGapAnalyzer:
         logger.info("Analyzing Meta-Learning Pipeline Contracts...")
         gaps = []
 
-        pipeline_file = AGENTIC_CORE / "system_learning" / "pipelines" / "meta_learning_pipeline.py"
+        pipeline_file = AGENTIC_CORE / SYSTEM_LEARNING_DIR / "pipelines" / "meta_learning_pipeline.py"
         if not pipeline_file.exists():
             return gaps
 

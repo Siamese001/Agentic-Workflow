@@ -31,12 +31,10 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Final
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L5_safety.enforcement.registry_verification_enforcer import (
     AgentInfo,
     RegistryVerifier,
-)
-from agentic_core.L0_routing.config import (
-    ARCHIVES_DIR,
 )
 
 # Guardian test patterns that provide architectural coverage
@@ -152,14 +150,14 @@ class ThreeTierComplianceChecker:
 
     def _scan_guardian_tests(self) -> list[Path]:
         """Scan for Guardian tests."""
-        guardian_dir = self.project_root / "tests" / "guardian"
+        guardian_dir = self.project_root / TESTS_DIR / "guardian"
         if not guardian_dir.exists():
             return []
         return list(guardian_dir.glob("test_*.py"))
 
     def _scan_unit_tests(self) -> list[Path]:
         """Scan for unit tests."""
-        unit_dir = self.project_root / "tests" / "unit"
+        unit_dir = self.project_root / TESTS_DIR / "unit"
         if not unit_dir.exists():
             return []
         return list(unit_dir.rglob("test_*.py"))

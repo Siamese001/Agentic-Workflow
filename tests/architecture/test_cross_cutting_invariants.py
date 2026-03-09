@@ -26,6 +26,13 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+)
+
 pytestmark = pytest.mark.architecture
 
 _ROOT = Path(__file__).parents[2]
@@ -78,9 +85,9 @@ class TestSingleThresholdSource:
 
 class TestNoBareExceptPass:
     _SCAN_DIRS = [
-        _ROOT / "agentic_core",
-        _ROOT / "system_learning",
-        _ROOT / "apps_shared",
+        _ROOT / AGENTIC_CORE_DIR,
+        _ROOT / SYSTEM_LEARNING_DIR,
+        _ROOT / APPS_SHARED_DIR,
     ]
     _EXCLUDE_DIRS = {
         ".venv",
@@ -152,8 +159,8 @@ class TestNoBareExceptPass:
 
 class TestNoGhostImportSwallowing:
     _SCAN_DIRS = [
-        _ROOT / "agentic_core",
-        _ROOT / "system_learning",
+        _ROOT / AGENTIC_CORE_DIR,
+        _ROOT / SYSTEM_LEARNING_DIR,
     ]
     _EXCLUDE_DIRS = {
         ".venv",
@@ -162,7 +169,7 @@ class TestNoGhostImportSwallowing:
         ".git",
         "_quarantine",
         "archives",
-        "tests",
+        TESTS_DIR,
     }
 
     def _collect_ghost_swallowers(self) -> list[tuple[str, int]]:

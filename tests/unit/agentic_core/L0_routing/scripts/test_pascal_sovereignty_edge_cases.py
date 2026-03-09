@@ -10,6 +10,13 @@ import unittest
 from pathlib import Path
 from unittest.mock import Mock
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
 from tests.helpers.dev_tools_loader import load_dev_script
 
 _psf = load_dev_script("pascal_sovereignty_fixer.py")
@@ -91,8 +98,8 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         self.assertIn("other_module", result, "Should not affect other imports")
 
     def test_import_regex_no_partial_match(self):
-        """Edge Case: Ensure 'tools' doesn't match 'tools_v2'."""
-        old_mod = "tools"
+        """Edge Case: Ensure TOOLS_DIR doesn't match 'tools_v2'."""
+        old_mod = TOOLS_DIR
         new_mod = "Tools"
         content = "from tools_v2 import func\nimport tools"
 
@@ -105,13 +112,13 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         final = regex_import.sub(rf"\g<prefix>{new_mod}\g<suffix>", step1)
 
         self.assertIn("from tools_v2 import func", final, "Should NOT match tools_v2")
-        self.assertIn("import Tools", final, "Should match exact 'tools'")
+        self.assertIn("import Tools", final, "Should match exact TOOLS_DIR")
 
     def test_ssot_exclusion_execute_ssot(self):
         """Verify execute_ssot.py remains ignored per user preference."""
         mock_path = Mock(spec=Path)
         mock_path.name = "execute_ssot.py"
-        mock_path.parts = ("agentic_core", "L0_routing", "scripts")
+        mock_path.parts = (AGENTIC_CORE_DIR, L0_ROUTING_DIR, "scripts")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -122,7 +129,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         """Verify structure_blueprint.py remains ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "structure_blueprint.py"
-        mock_path.parts = ("agentic_core", "L5_safety", "validators")
+        mock_path.parts = (AGENTIC_CORE_DIR, "L5_safety", "validators")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -133,7 +140,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         """Verify tool_registry.py remains ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "tool_registry.py"
-        mock_path.parts = ("apps_shared", "utils")
+        mock_path.parts = (APPS_SHARED_DIR, "utils")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -153,7 +160,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         """Verify test files are always ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "test_sovereignty.py"
-        mock_path.parts = ("tests", "unit", "agentic_core")
+        mock_path.parts = (TESTS_DIR, "unit", AGENTIC_CORE_DIR)
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -164,7 +171,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         """Verify conftest.py is always ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "conftest.py"
-        mock_path.parts = ("tests", "fixtures")
+        mock_path.parts = (TESTS_DIR, "fixtures")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -175,7 +182,7 @@ class TestSovereigntyEdgeCases(unittest.TestCase):
         """Verify __init__.py is always ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "__init__.py"
-        mock_path.parts = ("agentic_core", "L0_routing")
+        mock_path.parts = (AGENTIC_CORE_DIR, L0_ROUTING_DIR)
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=100)
 

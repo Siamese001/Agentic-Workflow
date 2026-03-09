@@ -20,6 +20,7 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
     ALLOWED_UPWARD_EXCEPTIONS,
     LAYER_HIERARCHY,
@@ -30,7 +31,7 @@ from agentic_core.L5_safety.enforcement.layer_sovereignty_enforcer import (
     main,
 )
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+REPO_ROOT = get_validated_project_root()
 
 
 # ---------------------------------------------------------------------------
@@ -46,9 +47,9 @@ def enforcer() -> LayerSovereigntyEnforcer:
 @pytest.fixture()
 def tmp_repo(tmp_path: Path) -> Path:
     """Minimal fake repo layout for isolated tests."""
-    (tmp_path / "agentic_core" / "L2_execution").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L5_safety").mkdir(parents=True)
-    (tmp_path / "agentic_core" / "L0_routing").mkdir(parents=True)
+    (tmp_path / AGENTIC_CORE_DIR / "L2_execution").mkdir(parents=True)
+    (tmp_path / AGENTIC_CORE_DIR / "L5_safety").mkdir(parents=True)
+    (tmp_path / AGENTIC_CORE_DIR / "L0_routing").mkdir(parents=True)
     return tmp_path
 
 
@@ -99,7 +100,7 @@ class TestSuccessPaths:
     @pytest.mark.governance
     def test_analyze_file_imports_returns_empty_when_compliant_file(self, tmp_repo):
         src = "from agentic_core.L0_routing.config import X\n"
-        f = tmp_repo / "agentic_core" / "L5_safety" / "my_module.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L5_safety" / "my_module.py"
         f.write_text(src, encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo)
         violations = e.analyze_file_imports(f)
@@ -107,11 +108,11 @@ class TestSuccessPaths:
 
     @pytest.mark.governance
     def test_detect_circular_imports_returns_empty_when_no_cycles(self, tmp_repo):
-        a = tmp_repo / "agentic_core" / "L0_routing" / "a.py"
-        b = tmp_repo / "agentic_core" / "L2_execution" / "b.py"
+        a = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "a.py"
+        b = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "b.py"
         a.write_text("import os\n", encoding="utf-8")
         b.write_text("import sys\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         cycles = e.detect_circular_imports()
         assert cycles == []
 
@@ -140,22 +141,22 @@ class TestBranchPaths:
     @pytest.mark.governance
     def test_allowed_exception_skips_whitelisted_pair(self, tmp_repo):
         # L0 scripts importing L5 config is an allowed exception
-        (tmp_repo / "agentic_core" / "L0_routing" / "scripts").mkdir(parents=True)
-        (tmp_repo / "agentic_core" / "L5_safety" / "config").mkdir(parents=True)
+        (tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "scripts").mkdir(parents=True)
+        (tmp_repo / AGENTIC_CORE_DIR / "L5_safety" / "config").mkdir(parents=True)
         src = "from agentic_core.L5_safety.config.ssot import X\n"
-        f = tmp_repo / "agentic_core" / "L0_routing" / "scripts" / "my_script.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "my_script.py"
         f.write_text(src, encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         violations = e.analyze_file_imports(f)
         assert violations == [], "Whitelisted exception should not be a violation"
 
     @pytest.mark.governance
     def test_scan_skips_pycache_directories(self, tmp_repo):
-        cache_dir = tmp_repo / "agentic_core" / "L2_execution" / "__pycache__"
+        cache_dir = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "__pycache__"
         cache_dir.mkdir(parents=True)
         bad = cache_dir / "bad_module.cpython-312.pyc"
         bad.write_bytes(b"")  # not valid Python but should be skipped
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         # No parse error or violation from pycache
         assert all("__pycache__" not in p for p in report.parse_errors)
@@ -197,6 +198,10 @@ class TestBranchPaths:
             import os
             from pathlib import Path
             from agentic_core.L5_safety.enforcement import foo
+
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
         """)
         tree = ast.parse(src)
         imports = enforcer._collect_imports(tree)
@@ -222,7 +227,7 @@ class TestNegativeControls:
     @pytest.mark.governance
     def test_analyze_file_detects_violation_when_upward_mutation(self, tmp_repo):
         src = "from agentic_core.L5_safety.enforcement import foo\n"
-        f = tmp_repo / "agentic_core" / "L2_execution" / "bad_module.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "bad_module.py"
         f.write_text(src, encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo)
         violations = e.analyze_file_imports(f)
@@ -233,9 +238,9 @@ class TestNegativeControls:
     @pytest.mark.governance
     def test_run_produces_violations_when_upward_import_exists(self, tmp_repo):
         src = "from agentic_core.L6_observability.dashboards import X\n"
-        f = tmp_repo / "agentic_core" / "L0_routing" / "violator.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "violator.py"
         f.write_text(src, encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert not report.passed
         assert any(v.importer_layer == 0 and v.imported_layer == 6 for v in report.violations)
@@ -258,7 +263,7 @@ class TestNegativeControls:
     def test_non_allowed_upward_pair_is_not_skipped(self, tmp_repo):
         # L2 importing L5 safety enforcement is NOT in the allowed list
         src = "from agentic_core.L5_safety.enforcement.safety_guardrail import X\n"
-        f = tmp_repo / "agentic_core" / "L2_execution" / "bad.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "bad.py"
         f.write_text(src, encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo)
         violations = e.analyze_file_imports(f)
@@ -303,7 +308,7 @@ class TestEdgeCases:
 
     @pytest.mark.governance
     def test_analyze_file_returns_empty_when_file_has_no_imports(self, tmp_repo):
-        f = tmp_repo / "agentic_core" / "L2_execution" / "no_imports.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "no_imports.py"
         f.write_text("x = 1\n", encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo)
         violations = e.analyze_file_imports(f)
@@ -311,7 +316,7 @@ class TestEdgeCases:
 
     @pytest.mark.governance
     def test_scan_empty_directory_produces_zero_violations(self, tmp_repo):
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert report.violations == []
         assert report.files_scanned == 0
@@ -347,7 +352,7 @@ class TestEdgeCases:
 class TestExceptionPaths:
     @pytest.mark.governance
     def test_analyze_file_returns_empty_when_syntax_error(self, tmp_repo):
-        f = tmp_repo / "agentic_core" / "L2_execution" / "broken.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "broken.py"
         f.write_text("def foo(\n", encoding="utf-8")  # unclosed parens
         e = LayerSovereigntyEnforcer(tmp_repo)
         # Must not raise; must return empty list
@@ -356,16 +361,16 @@ class TestExceptionPaths:
 
     @pytest.mark.governance
     def test_scan_file_records_parse_error_when_syntax_error(self, tmp_repo):
-        f = tmp_repo / "agentic_core" / "L2_execution" / "broken.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "broken.py"
         f.write_text("def foo(\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert report.files_skipped == 1
         assert len(report.parse_errors) == 1
 
     @pytest.mark.governance
     def test_scan_file_records_parse_error_when_os_error(self, tmp_repo, monkeypatch):
-        f = tmp_repo / "agentic_core" / "L2_execution" / "unreadable.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "unreadable.py"
         f.write_text("x = 1\n", encoding="utf-8")
         original_read_text = Path.read_text
 
@@ -375,7 +380,7 @@ class TestExceptionPaths:
             return original_read_text(self, *args, **kwargs)
 
         monkeypatch.setattr(Path, "read_text", _raise_oserror)
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert report.files_skipped >= 1
         assert any("Permission denied" in err or "OSError" in err for err in report.parse_errors)
@@ -383,11 +388,11 @@ class TestExceptionPaths:
     @pytest.mark.governance
     def test_scan_continues_after_parse_error(self, tmp_repo):
         # broken.py raises SyntaxError; good.py should still be scanned
-        broken = tmp_repo / "agentic_core" / "L2_execution" / "broken.py"
-        good = tmp_repo / "agentic_core" / "L2_execution" / "good.py"
+        broken = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "broken.py"
+        good = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "good.py"
         broken.write_text("def foo(\n", encoding="utf-8")
         good.write_text("x = 1\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         report = e.run()
         assert report.files_scanned == 1  # good.py counted
         assert report.files_skipped == 1  # broken.py skipped
@@ -414,9 +419,9 @@ class TestDeterminism:
     @pytest.mark.governance
     def test_run_produces_identical_violation_count_twice(self, tmp_repo):
         src = "from agentic_core.L6_observability.dashboards import X\n"
-        f = tmp_repo / "agentic_core" / "L0_routing" / "v.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "v.py"
         f.write_text(src, encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         r1 = e.run()
         r2 = e.run()
         assert len(r1.violations) == len(r2.violations)
@@ -424,10 +429,10 @@ class TestDeterminism:
     @pytest.mark.governance
     def test_run_produces_identical_violation_modules_twice(self, tmp_repo):
         src = "from agentic_core.L4_state.persistence import X\n"
-        (tmp_repo / "agentic_core" / "L1_cognition").mkdir(parents=True, exist_ok=True)
-        f = tmp_repo / "agentic_core" / "L1_cognition" / "v.py"
+        (tmp_repo / AGENTIC_CORE_DIR / "L1_cognition").mkdir(parents=True, exist_ok=True)
+        f = tmp_repo / AGENTIC_CORE_DIR / "L1_cognition" / "v.py"
         f.write_text(src, encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         r1 = e.run()
         r2 = e.run()
         mods1 = sorted(v.importer_module for v in r1.violations)
@@ -454,11 +459,11 @@ class TestDeterminism:
 class TestCircularImports:
     @pytest.mark.governance
     def test_detect_circular_imports_detects_bidirectional(self, tmp_repo):
-        a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
-        b = tmp_repo / "agentic_core" / "L0_routing" / "mod_b.py"
+        a = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "mod_a.py"
+        b = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "mod_b.py"
         a.write_text("from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8")
         b.write_text("from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         cycles = e.detect_circular_imports()
         assert len(cycles) == 1
         pair = frozenset(cycles[0])
@@ -467,22 +472,22 @@ class TestCircularImports:
 
     @pytest.mark.governance
     def test_detect_circular_imports_returns_empty_when_one_directional(self, tmp_repo):
-        a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
-        b = tmp_repo / "agentic_core" / "L2_execution" / "mod_b.py"
+        a = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "mod_a.py"
+        b = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "mod_b.py"
         a.write_text("x = 1\n", encoding="utf-8")
         b.write_text("from agentic_core.L0_routing.mod_a import x\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         cycles = e.detect_circular_imports()
         assert cycles == []
 
     @pytest.mark.governance
     def test_detect_circular_imports_deduplicates_pairs(self, tmp_repo):
         # Same bidirectional pair should appear only once
-        a = tmp_repo / "agentic_core" / "L0_routing" / "mod_a.py"
-        b = tmp_repo / "agentic_core" / "L0_routing" / "mod_b.py"
+        a = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "mod_a.py"
+        b = tmp_repo / AGENTIC_CORE_DIR / "L0_routing" / "mod_b.py"
         a.write_text("from agentic_core.L0_routing.mod_b import X\n", encoding="utf-8")
         b.write_text("from agentic_core.L0_routing.mod_a import Y\n", encoding="utf-8")
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         cycles = e.detect_circular_imports()
         assert len(cycles) == 1
 
@@ -497,7 +502,7 @@ class TestSideEffectSafety:
     def test_analyze_file_imports_does_not_mutate_report_state(self, tmp_repo):
         # analyze_file_imports should never modify external state
         src = "from agentic_core.L5_safety.enforcement import foo\n"
-        f = tmp_repo / "agentic_core" / "L2_execution" / "bad.py"
+        f = tmp_repo / AGENTIC_CORE_DIR / "L2_execution" / "bad.py"
         f.write_text(src, encoding="utf-8")
         e = LayerSovereigntyEnforcer(tmp_repo)
         # Call twice — verify no accumulated state
@@ -515,7 +520,7 @@ class TestSideEffectSafety:
             return original_write(self, *args, **kwargs)
 
         monkeypatch.setattr(Path, "write_text", _track_write)
-        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=("agentic_core",))
+        e = LayerSovereigntyEnforcer(tmp_repo, scan_roots=(AGENTIC_CORE_DIR,))
         e.run()
         assert write_calls == [], "run() must not write any files"
 

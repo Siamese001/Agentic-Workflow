@@ -15,9 +15,13 @@ import subprocess
 import sys
 import time
 from collections import Counter, defaultdict
-from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    TOOLS_DIR,
+    get_validated_project_root,
+)
+
+REPO = get_validated_project_root()
 EVIDENCE = REPO / "docs" / "reports" / "plans" / "requirements-gap-analysis-evidence.md"
 REQ_MD = REPO / "docs" / "reports" / "plans" / "Agentic Master Requirements.md"
 PY = sys.executable
@@ -221,7 +225,7 @@ print(f'DETERMINISM_DIGEST: {digest}')
 
 
 def run_determinism_proof():
-    script_path = REPO / "tools" / "evidence" / "_det_probe.py"
+    script_path = REPO / TOOLS_DIR / "evidence" / "_det_probe.py"
     script_path.write_text(DETERMINISM_SCRIPT, encoding="utf-8")
     try:
         cmd1 = [PY, str(script_path), str(REPO)]

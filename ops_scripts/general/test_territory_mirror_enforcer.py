@@ -15,6 +15,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+
 
 @dataclass
 class SourceFile:
@@ -229,8 +231,8 @@ def scan_test_files(project_root: Path, source_files: list[SourceFile]) -> list[
     """
     test_files = []
     test_dirs = [
-        project_root / "tests" / "unit",
-        project_root / "tests" / "integration",
+        project_root / TESTS_DIR / "unit",
+        project_root / TESTS_DIR / "integration",
     ]
 
     # Anarchy zones - folders that should NOT contain tests

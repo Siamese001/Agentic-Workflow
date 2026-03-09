@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L6_OBSERVABILITY_DIR,
+)
+
 
 class TestDashboardAgent:
     """Tests for dashboard functionality."""
@@ -57,7 +61,7 @@ class TestObservabilityLayerIntegrity:
 
     def test_observability_agents_in_reasoning(self):
         """Agent classes in L6 should be in reasoning/."""
-        base = Path("agentic_core/L6_observability")
+        base = Path(L6_OBSERVABILITY_DIR)
         if not base.exists():
             pytest.fail("L6_observability/ not found")
 
@@ -76,7 +80,7 @@ class TestObservabilityLayerIntegrity:
     def test_no_business_logic_in_observability(self):
         """L6 observability should not contain business logic."""
         # This is a documentation test - L6 is for observability only
-        base = Path("agentic_core/L6_observability")
+        base = Path(L6_OBSERVABILITY_DIR)
         if not base.exists():
             pytest.fail("L6_observability/ not found")
 

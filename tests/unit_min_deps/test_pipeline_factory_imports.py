@@ -4,8 +4,12 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    SYSTEM_LEARNING_DIR,
+)
+
 PIPELINE_FACTORY_PATH = (
-    Path(__file__).parent.parent.parent / "system_learning" / "pipelines" / "pipeline_factory.py"
+    Path(__file__).parent.parent.parent / SYSTEM_LEARNING_DIR / "pipelines" / "pipeline_factory.py"
 )
 
 

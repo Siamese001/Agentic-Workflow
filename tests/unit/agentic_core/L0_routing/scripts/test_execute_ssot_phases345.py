@@ -36,6 +36,15 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    TESTS_DIR,
+)
+
 
 def _load():
     try:
@@ -214,7 +223,7 @@ class TestPhase4Validation:
         sm = _make_state_mgr()
         agents, _ = self._make_agents(gov_report=None)
 
-        with patch(self._ET_PATCH, frozenset(["agentic_core"])):
+        with patch(self._ET_PATCH, frozenset([AGENTIC_CORE_DIR])):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
                 result = mod.execute_phase4_validation_impl(agents, "neutral", sm)
 
@@ -226,11 +235,11 @@ class TestPhase4Validation:
         gov_report = {"layer_violations": [], "naming_violations": []}
         agents, arch_inst = self._make_agents(gov_report=gov_report)
 
-        enforced = frozenset(["agentic_core", "tests", "apps_lic"])
+        enforced = frozenset([AGENTIC_CORE_DIR, TESTS_DIR, APPS_LIC_DIR])
 
         with patch(self._ET_PATCH, enforced):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase4_validation_impl(agents, "agentic_core", sm)
+                mod.execute_phase4_validation_impl(agents, AGENTIC_CORE_DIR, sm)
 
         call_kwargs = arch_inst.comprehensive_territory_audit.call_args[1]
         target_territories = call_kwargs["target_territories"]
@@ -241,14 +250,14 @@ class TestPhase4Validation:
         gov_report = {"layer_violations": [], "naming_violations": []}
         agents, arch_inst = self._make_agents(gov_report=gov_report)
 
-        enforced = frozenset(["agentic_core", "tests"])
+        enforced = frozenset([AGENTIC_CORE_DIR, TESTS_DIR])
 
         with patch(self._ET_PATCH, enforced):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase4_validation_impl(agents, "apps_rg", sm)
+                mod.execute_phase4_validation_impl(agents, APPS_RG_DIR, sm)
 
         call_kwargs = arch_inst.comprehensive_territory_audit.call_args[1]
-        assert call_kwargs["target_territories"] == ["apps_rg"]
+        assert call_kwargs["target_territories"] == [APPS_RG_DIR]
 
     def test_non_l_layer_territory_no_file_size_check(self, mod):
         sm = _make_state_mgr()
@@ -257,7 +266,7 @@ class TestPhase4Validation:
 
         with patch(self._ET_PATCH, frozenset()):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                result = mod.execute_phase4_validation_impl(agents, "apps_rg", sm)
+                result = mod.execute_phase4_validation_impl(agents, APPS_RG_DIR, sm)
 
         arch_inst.check_file_sizes.assert_not_called()
         assert result == (gov_report, None)
@@ -269,9 +278,9 @@ class TestPhase4Validation:
 
         with patch(self._ET_PATCH, frozenset()):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase4_validation_impl(agents, "L0_routing", sm)
+                mod.execute_phase4_validation_impl(agents, L0_ROUTING_DIR, sm)
 
-        arch_inst.check_file_sizes.assert_called_once_with("L0_routing")
+        arch_inst.check_file_sizes.assert_called_once_with(L0_ROUTING_DIR)
 
     def test_l_layer_size_violations_logged_as_warnings(self, mod):
         sm = _make_state_mgr()
@@ -281,7 +290,7 @@ class TestPhase4Validation:
 
         with patch(self._ET_PATCH, frozenset()):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                mod.execute_phase4_validation_impl(agents, "L1_cognition", sm)
+                mod.execute_phase4_validation_impl(agents, L1_COGNITION_DIR, sm)
 
         sm.add_event.assert_called()
         event_calls = sm.add_event.call_args_list
@@ -294,7 +303,7 @@ class TestPhase4Validation:
 
         with patch(self._ET_PATCH, frozenset()):
             with patch("agentic_core.L0_routing.scripts.execute_ssot.REPO_ROOT", MagicMock()):
-                result = mod.execute_phase4_validation_impl(agents, "apps_rg", sm)
+                result = mod.execute_phase4_validation_impl(agents, APPS_RG_DIR, sm)
 
         assert result[0] is gov_report
 

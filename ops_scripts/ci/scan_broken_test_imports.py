@@ -17,16 +17,24 @@ import ast
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
 TESTS_DIR = ROOT / "tests"
 PROJECT_PREFIXES = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     "system_learning",
     "tools",
-    "ops_scripts",
+    OPS_SCRIPTS_DIR,
 )
 EXCLUDE_DIRS = {"_quarantine", "__pycache__", ".venv", "venv", ".nox", ".tox"}
 FULLY_ORPHANED_THRESHOLD = 0

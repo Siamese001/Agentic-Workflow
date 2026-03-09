@@ -13,22 +13,20 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    LAYER_ROOTS,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 # guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
-AGENTIC_CORE = PROJECT_ROOT / "agentic_core"
+AGENTIC_CORE = PROJECT_ROOT / AGENTIC_CORE_DIR
 
 # All layer territories
-TERRITORIES = [
-    "L0_routing",
-    "L1_cognition",
-    "L2_execution",
-    "L3_orchestration",
-    "L4_state",
-    "L5_safety",
-    "L6_observability",
-]
+TERRITORIES = sorted(LAYER_ROOTS)
 
 # Agent registry: name -> (import_path, class_name, methods_to_try)
 AGENT_REGISTRY = {

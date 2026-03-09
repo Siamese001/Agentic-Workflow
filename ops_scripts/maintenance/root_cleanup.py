@@ -5,14 +5,16 @@ import shutil
 import sys
 from pathlib import Path
 
-# Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
-from agentic_core.utils.project_root_util import get_project_root
+from agentic_core.L0_routing.config.path_constants import (
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
 
 
 def main():
     """Clean up root files."""
-    root = get_project_root()
+    root = get_validated_project_root()
 
     # Files to move to docs/reports/audit
     audit_files = [
@@ -100,7 +102,7 @@ def main():
     # Move script files
     print()
     print("[3/4] Moving scripts to ops_scripts/maintenance...")
-    scripts_dir = root / "ops_scripts" / "maintenance"
+    scripts_dir = root / OPS_SCRIPTS_DIR / "maintenance"
     for filename in script_files:
         source = root / filename
         if source.exists():
@@ -111,7 +113,7 @@ def main():
     # Move test files
     print()
     print("[4/4] Moving test files to tests/...")
-    tests_dir = root / "tests"
+    tests_dir = root / TESTS_DIR
     for filename in test_files:
         source = root / filename
         if source.exists():

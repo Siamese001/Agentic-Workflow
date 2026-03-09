@@ -15,14 +15,19 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.unit_min_deps
 
 ROOT = Path(__file__).resolve().parents[2]
 
 INSPECTOR_FILES = [
-    ROOT / "agentic_core" / "L3_orchestration" / "reasoning" / "DagRuntimeInspectorAgent.py",
-    ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SafetyInspectorAgent.py",
-    ROOT / "agentic_core" / "L5_safety" / "reasoning" / "SprawlInspectorAgent.py",
+    ROOT / L3_ORCHESTRATION_DIR / "reasoning" / "DagRuntimeInspectorAgent.py",
+    ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "SafetyInspectorAgent.py",
+    ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "SprawlInspectorAgent.py",
 ]
 
 
@@ -118,7 +123,7 @@ class TestNoConfigOverwriteRepoWide:
     _MAX_ALLOWED_VIOLATIONS = 5
 
     def test_config_overwrite_ceiling(self) -> None:
-        agentic_core = ROOT / "agentic_core"
+        agentic_core = ROOT / AGENTIC_CORE_DIR
         violations: list[str] = []
 
         for py_file in agentic_core.rglob("*.py"):

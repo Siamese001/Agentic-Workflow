@@ -19,6 +19,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L2_EXECUTION_DIR,
+)
+
 REPO_ROOT = Path(__file__).parent.parent.parent
 
 
@@ -161,7 +165,7 @@ class TestStaticScannerExceptionPaths:
         """SyntaxError in source file must not crash the scanner."""
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
-        bad_file = tmp_path / "agentic_core" / "L2_execution" / "bad.py"
+        bad_file = tmp_path / L2_EXECUTION_DIR / "bad.py"
         bad_file.parent.mkdir(parents=True)
         bad_file.write_text("def foo(\n    # unterminated\n", encoding="utf-8")
 
@@ -193,7 +197,7 @@ class TestStaticScannerExceptionPaths:
         """Binary content that fails UTF-8 strict must not crash (errors=replace)."""
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
-        binary_dir = tmp_path / "agentic_core" / "L2_execution"
+        binary_dir = tmp_path / L2_EXECUTION_DIR
         binary_dir.mkdir(parents=True)
         bad_file = binary_dir / "binary.py"
         bad_file.write_bytes(b"import os\n\x80\x81\x82\xff\nfoo = 1\n")
@@ -256,7 +260,7 @@ class TestStaticScannerMalformedInputs:
         """Duplicate file entries produce identical result to single entry."""
         from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
 
-        src_dir = tmp_path / "agentic_core" / "L2_execution"
+        src_dir = tmp_path / L2_EXECUTION_DIR
         src_dir.mkdir(parents=True)
         src = src_dir / "foo.py"
         src.write_text("import os\n", encoding="utf-8")

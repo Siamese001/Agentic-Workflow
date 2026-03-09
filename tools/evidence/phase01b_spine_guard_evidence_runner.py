@@ -9,13 +9,17 @@ from __future__ import annotations
 
 import subprocess
 import sys
-from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parent.parent.parent
+from agentic_core.L0_routing.config.path_constants import (
+    OPS_SCRIPTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 EVIDENCE_PATH = PROJECT_ROOT / "docs" / "reports" / "plans" / "phase_01b_ci_spine_guard.md"
-GUARD_SCRIPT = PROJECT_ROOT / "ops_scripts" / "ci" / "check_spine_bypass.py"
+GUARD_SCRIPT = PROJECT_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_spine_bypass.py"
 WORKFLOW_FILE = PROJECT_ROOT / ".github" / "workflows" / "spine-determinism-guard.yml"
-BASELINE_FILE = PROJECT_ROOT / "ops_scripts" / "hooks" / "spine_bypass_baseline.txt"
+BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "spine_bypass_baseline.txt"
 
 
 def run(argv: list[str]) -> tuple[int, str]:

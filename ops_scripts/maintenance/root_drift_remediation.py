@@ -23,13 +23,19 @@ import shutil
 from pathlib import Path
 from re import Pattern
 
-# --- CONFIGURATION ---
-PROJECT_ROOT = Path(".").resolve()
-OLD_SCRIPTS_DIR = PROJECT_ROOT / "scripts"
-NEW_OPS_DIR = PROJECT_ROOT / "ops_scripts"
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    OPS_SCRIPTS_DIR,
+    get_validated_project_root,
+)
 
-CORE_SCRIPTS_DEST = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
-CORE_LOGS_DEST = PROJECT_ROOT / "agentic_core" / "L0_routing" / "logs"
+# --- CONFIGURATION ---
+PROJECT_ROOT = get_validated_project_root()
+OLD_SCRIPTS_DIR = PROJECT_ROOT / "scripts"
+NEW_OPS_DIR = PROJECT_ROOT / OPS_SCRIPTS_DIR
+
+CORE_SCRIPTS_DEST = PROJECT_ROOT / L0_ROUTING_DIR / "scripts"
+CORE_LOGS_DEST = PROJECT_ROOT / L0_ROUTING_DIR / "logs"
 
 # Allowed patterns for Root Logs (Must match SSOT)
 ALLOWED_ROOT_LOG_PATTERNS: list[Pattern] = [

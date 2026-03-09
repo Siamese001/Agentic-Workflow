@@ -55,6 +55,14 @@ def main():
             [sys.executable, "ops_scripts/ci/check_tooling_apps_boundary.py"],
             "Tooling/Apps Boundary Guard",
         ),
+        (
+            [sys.executable, "ops_scripts/ci/validate_timeout_progress.py"],
+            "Timeout & Progress Compliance (§9)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/validate_timeout_recovery.py"],
+            "Timeout Recovery with ADG (§9.6)",
+        ),
     ]
 
     print("Running contract gates in deterministic order...\n")

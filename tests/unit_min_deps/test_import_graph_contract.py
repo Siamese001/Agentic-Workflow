@@ -17,12 +17,17 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 ROOT = Path(__file__).resolve().parents[2]
-AGENTIC_CORE = ROOT / "agentic_core"
+AGENTIC_CORE = ROOT / AGENTIC_CORE_DIR
 SNAPSHOT_PATH = ROOT / "artifacts" / "structure" / "import_boundary_snapshot.json"
 
 # Forbidden cross-territory edges
-FORBIDDEN_TARGETS = frozenset({"ops_scripts", "dev_tools"})
+FORBIDDEN_TARGETS = frozenset({OPS_SCRIPTS_DIR, "dev_tools"})
 
 
 def _extract_import_edges() -> list[tuple[str, str]]:
@@ -114,7 +119,7 @@ class TestImportGraphContract:
     def test_synthetic_forbidden_edge_detected(self, tmp_path: Path) -> None:
         """Negative test: prove scanner catches a synthetic forbidden edge."""
         fake_edges: list[tuple[str, str]] = [
-            ("agentic_core/fake.py", "ops_scripts"),
+            ("agentic_core/fake.py", OPS_SCRIPTS_DIR),
         ]
         forbidden = _compute_forbidden_edges(fake_edges)
         assert len(forbidden) == 1, "Scanner failed to detect synthetic forbidden edge"

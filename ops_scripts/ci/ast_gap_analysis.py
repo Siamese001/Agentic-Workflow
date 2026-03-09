@@ -5,16 +5,26 @@ import json
 import sys
 from pathlib import Path
 
-ROOT = Path("c:/Git/Agentic-Workflow")
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+ROOT = get_validated_project_root()
 SOURCE_TARGETS = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     "system_learning",
     "L6_observability",
 ]
-TEST_ROOT = ROOT / "tests"
+TEST_ROOT = ROOT / TESTS_DIR
 
 
 def scan_source():
@@ -222,7 +232,7 @@ def main():
         "coverage_gaps": [g for g in gaps if g["severity"] != "COVERED"],
         "covered": [g for g in gaps if g["severity"] == "COVERED"],
     }
-    out_path = ROOT / "ops_scripts" / "ci" / "ast_gap_results.json"
+    out_path = ROOT / OPS_SCRIPTS_DIR / "ci" / "ast_gap_results.json"
     out_path.write_text(json.dumps(output, indent=2), encoding="utf-8")
     print(f"\nFull results written to: {out_path}")
     return output

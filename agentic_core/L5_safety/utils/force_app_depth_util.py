@@ -9,15 +9,18 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
     get_validated_project_root,
-    safe_path_join,
 )
+from agentic_core.L5_safety.config.structure_blueprint import safe_path_join
 
 # FILESYSTEM COMPLIANCE: Use safe_path_join for all file operations
 PROJECT_ROOT = get_validated_project_root()
-CORE = safe_path_join(PROJECT_ROOT, "agentic_core")
-APPS = [safe_path_join(PROJECT_ROOT, "apps_lic"), safe_path_join(PROJECT_ROOT, "apps_rg")]
+CORE = safe_path_join(PROJECT_ROOT, AGENTIC_CORE_DIR)
+APPS = [safe_path_join(PROJECT_ROOT, APPS_LIC_DIR), safe_path_join(PROJECT_ROOT, APPS_RG_DIR)]
 
 
 def force_app_depth() -> Any:

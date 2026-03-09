@@ -26,22 +26,36 @@ import shutil
 import sys
 from pathlib import Path
 
-PROJECT_ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L5_SAFETY_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
+
+PROJECT_ROOT = get_validated_project_root()
 DEFAULT_BACKUP_ROOT = PROJECT_ROOT / ".healing_backups"
 
 # Destination roots for each category
-DEST_QUARANTINE_TESTS = PROJECT_ROOT / "tests" / "_quarantine" / "restored_tests"
-DEST_QUARANTINE_SNAKE = PROJECT_ROOT / "tests" / "_quarantine" / "restored_snake_case"
+DEST_QUARANTINE_TESTS = PROJECT_ROOT / TESTS_DIR / "_quarantine" / "restored_tests"
+DEST_QUARANTINE_SNAKE = PROJECT_ROOT / TESTS_DIR / "_quarantine" / "restored_snake_case"
 
 LAYER_ROOTS = [
-    PROJECT_ROOT / "apps_rg",
-    PROJECT_ROOT / "apps_lic",
-    PROJECT_ROOT / "apps_shared",
-    PROJECT_ROOT / "agentic_core" / "L5_safety",
-    PROJECT_ROOT / "agentic_core" / "L1_cognition",
-    PROJECT_ROOT / "agentic_core" / "L2_execution",
-    PROJECT_ROOT / "agentic_core" / "L3_orchestration",
-    PROJECT_ROOT / "agentic_core" / "L0_routing",
+    PROJECT_ROOT / APPS_RG_DIR,
+    PROJECT_ROOT / APPS_LIC_DIR,
+    PROJECT_ROOT / APPS_SHARED_DIR,
+    PROJECT_ROOT / L5_SAFETY_DIR,
+    PROJECT_ROOT / L1_COGNITION_DIR,
+    PROJECT_ROOT / L2_EXECUTION_DIR,
+    PROJECT_ROOT / L3_ORCHESTRATION_DIR,
+    PROJECT_ROOT / L0_ROUTING_DIR,
 ]
 
 PASCAL_RE = re.compile(r"^[A-Z][a-zA-Z0-9]*Agent\.py$")
@@ -66,12 +80,12 @@ def _infer_agent_layer(py_path: Path) -> Path | None:
                 base_name = base.attr
             elif isinstance(base, ast.Name):
                 base_name = base.id
-            if "apps_rg" in src and "apps_lic" not in src:
-                return PROJECT_ROOT / "apps_rg" / "reasoning"
-            if "apps_lic" in src and "apps_rg" not in src:
-                return PROJECT_ROOT / "apps_lic" / "reasoning"
+            if APPS_RG_DIR in src and APPS_LIC_DIR not in src:
+                return PROJECT_ROOT / APPS_RG_DIR / "reasoning"
+            if APPS_LIC_DIR in src and APPS_RG_DIR not in src:
+                return PROJECT_ROOT / APPS_LIC_DIR / "reasoning"
     # Default: agentic_core L5_safety (most archived agents were there)
-    return PROJECT_ROOT / "agentic_core" / "L5_safety" / "reasoning"
+    return PROJECT_ROOT / L5_SAFETY_DIR / "reasoning"
 
 
 def _strip_timestamp_suffix(name: str) -> str:
@@ -107,7 +121,7 @@ def _categorize(path: Path, rel: Path) -> tuple[str, Path | None]:
 
     if PASCAL_RE.match(name):
         layer = _infer_agent_layer(path)
-        dest = (layer or PROJECT_ROOT / "agentic_core" / "L5_safety" / "reasoning") / name
+        dest = (layer or PROJECT_ROOT / L5_SAFETY_DIR / "reasoning") / name
         return "AGENT", dest
 
     if SNAKE_RE.match(name) and name.endswith(".py"):

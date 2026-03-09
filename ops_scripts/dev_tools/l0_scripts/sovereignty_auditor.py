@@ -22,7 +22,7 @@ sys.path.insert(0, str(REPO_ROOT))
 
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,

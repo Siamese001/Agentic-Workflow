@@ -10,7 +10,16 @@ import ast
 import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+REPO_ROOT = get_validated_project_root()
 
 ALLOWED_SDK_FILES = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
@@ -116,11 +125,11 @@ def _check_file(path: Path) -> list[str]:
 
 def main() -> int:
     scan_roots = [
-        REPO_ROOT / "apps_lic",
-        REPO_ROOT / "apps_rg",
-        REPO_ROOT / "apps_shared",
-        REPO_ROOT / "agentic_core",
-        REPO_ROOT / "system_learning",
+        REPO_ROOT / APPS_LIC_DIR,
+        REPO_ROOT / APPS_RG_DIR,
+        REPO_ROOT / APPS_SHARED_DIR,
+        REPO_ROOT / AGENTIC_CORE_DIR,
+        REPO_ROOT / SYSTEM_LEARNING_DIR,
     ]
     violations: list[str] = []
     for root in scan_roots:

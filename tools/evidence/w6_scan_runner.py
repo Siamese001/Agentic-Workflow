@@ -15,27 +15,36 @@ Sections:
   S12 BYPASS: alternate tier-selection outside route_healing_tier()
   S13 BYPASS: FS/DB/vector writes bypassing UWG
 """
+
 from __future__ import annotations
 
 import ast
-import os
 import re
-import sys
 from pathlib import Path
 
-REPO_ROOT = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L2_EXECUTION_DIR,
+    SYSTEM_LEARNING_DIR,
+    get_validated_project_root,
+)
+
+REPO_ROOT = get_validated_project_root()
 SCAN_ROOTS = [
-    REPO_ROOT / "agentic_core",
-    REPO_ROOT / "apps_lic",
-    REPO_ROOT / "apps_rg",
-    REPO_ROOT / "apps_shared",
-    REPO_ROOT / "system_learning",
+    REPO_ROOT / AGENTIC_CORE_DIR,
+    REPO_ROOT / APPS_LIC_DIR,
+    REPO_ROOT / APPS_RG_DIR,
+    REPO_ROOT / APPS_SHARED_DIR,
+    REPO_ROOT / SYSTEM_LEARNING_DIR,
     REPO_ROOT / "L6_observability",
 ]
-GATEWAY_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"
-UWG_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "UniversalWriteGateway.py"
-FACTORY_FILE = REPO_ROOT / "agentic_core" / "embeddings" / "embedding_factory.py"
-TIER_ROUTER_FILE = REPO_ROOT / "agentic_core" / "L2_execution" / "healers" / "healing_tier_router.py"
+GATEWAY_FILE = REPO_ROOT / L2_EXECUTION_DIR / "enforcement" / "SovereignLLMGateway.py"
+UWG_FILE = REPO_ROOT / L2_EXECUTION_DIR / "UniversalWriteGateway.py"
+FACTORY_FILE = REPO_ROOT / AGENTIC_CORE_DIR / "embeddings" / "embedding_factory.py"
+TIER_ROUTER_FILE = REPO_ROOT / L2_EXECUTION_DIR / "healers" / "healing_tier_router.py"
 
 PROVIDER_SDK_PATTERNS = [
     r"\bimport\s+openai\b",
@@ -56,18 +65,28 @@ MODEL_LITERAL_PATTERNS = [
 ]
 
 WRITE_METHOD_NAMES = {
-    "write_text", "write_bytes", "open", "write", "put", "upsert",
-    "add_documents", "index_documents", "update", "save", "store", "persist",
+    "write_text",
+    "write_bytes",
+    "open",
+    "write",
+    "put",
+    "upsert",
+    "add_documents",
+    "index_documents",
+    "update",
+    "save",
+    "store",
+    "persist",
 }
 
 ALLOWED_GATEWAY_MODULES = {
     str(GATEWAY_FILE),
-    str(REPO_ROOT / "agentic_core" / "L2_execution" / "enforcement" / "SovereignLLMGateway.py"),
+    str(REPO_ROOT / L2_EXECUTION_DIR / "enforcement" / "SovereignLLMGateway.py"),
 }
 ALLOWED_FACTORY_MODULES = {
     str(FACTORY_FILE),
-    str(REPO_ROOT / "system_learning" / "engines" / "embedding_service_factory.py"),
-    str(REPO_ROOT / "agentic_core" / "embeddings" / "embedding_factory.py"),
+    str(REPO_ROOT / SYSTEM_LEARNING_DIR / "engines" / "embedding_service_factory.py"),
+    str(REPO_ROOT / AGENTIC_CORE_DIR / "embeddings" / "embedding_factory.py"),
 }
 
 
@@ -108,7 +127,9 @@ def grep_file(path: Path, pattern: str) -> list[tuple[int, str]]:
     return hits
 
 
-def find_call_sites_ast(files: list[Path], func_names: set[str], attr_names: set[str] | None = None) -> list[dict]:
+def find_call_sites_ast(
+    files: list[Path], func_names: set[str], attr_names: set[str] | None = None
+) -> list[dict]:
     """Find call sites of functions/methods by AST traversal."""
     results = []
     for path in files:
@@ -128,11 +149,13 @@ def find_call_sites_ast(files: list[Path], func_names: set[str], attr_names: set
                 elif attr_names and fn.attr in attr_names:
                     name = fn.attr
             if name:
-                results.append({
-                    "file": rel(path),
-                    "line": node.lineno,
-                    "call": name,
-                })
+                results.append(
+                    {
+                        "file": rel(path),
+                        "line": node.lineno,
+                        "call": name,
+                    }
+                )
     return results
 
 
@@ -147,7 +170,14 @@ def find_name_usages_ast(files: list[Path], names: set[str]) -> list[dict]:
             if isinstance(node, (ast.Name, ast.Attribute)):
                 n = node.id if isinstance(node, ast.Name) else node.attr
                 if n in names:
-                    results.append({"file": rel(path), "line": node.col_offset, "lineno": getattr(node, "lineno", 0), "name": n})
+                    results.append(
+                        {
+                            "file": rel(path),
+                            "line": node.col_offset,
+                            "lineno": getattr(node, "lineno", 0),
+                            "name": n,
+                        }
+                    )
     return results
 
 
@@ -192,7 +222,7 @@ def main() -> None:
     slg_calls = find_call_sites_ast(files, {"route_generation", "SovereignLLMGateway"})
     # Also check for 'get_instance' on SovereignLLMGateway
     slg_instance = find_call_sites_ast(files, {"get_instance"})
-    slg_all = slg_calls + [h for h in slg_instance if "sovereign" in h.get("file","").lower()]
+    slg_all = slg_calls + [h for h in slg_instance if "sovereign" in h.get("file", "").lower()]
     print(f"CALL_COUNT: {len(slg_all)}")
     print(format_hits(slg_all, ["file", "line", "call"]))
     # Check for usages of the class name
@@ -204,12 +234,14 @@ def main() -> None:
     print(f"\nSovereignLLMGateway REFERENCE COUNT (grep): {len(slg_usages)}")
     print(format_hits(slg_usages[:20], ["file", "line", "text"]))
     if len(slg_usages) > 20:
-        print(f"  ... ({len(slg_usages)-20} more)")
+        print(f"  ... ({len(slg_usages) - 20} more)")
     print()
 
     # ─── S2: EmbeddingFactory call sites ──────────────────────────────────────
     print("=== S2: EmbeddingFactory / create_embedding_client CALL SITES (AST) ===")
-    emb_calls = find_call_sites_ast(files, {"create_embedding_client", "get_embedding_client", "register_embedding_client"})
+    emb_calls = find_call_sites_ast(
+        files, {"create_embedding_client", "get_embedding_client", "register_embedding_client"}
+    )
     print(f"CALL_COUNT: {len(emb_calls)}")
     print(format_hits(emb_calls, ["file", "line", "call"]))
     # Also count usages of EmbeddingServiceFactory
@@ -224,8 +256,9 @@ def main() -> None:
 
     # ─── S3: UniversalWriteGateway call sites ─────────────────────────────────
     print("=== S3: UniversalWriteGateway CALL SITES (AST) ===")
-    uwg_calls = find_call_sites_ast(files, {"write", "execute_write", "get_instance"},
-                                    attr_names={"write", "execute_write"})
+    uwg_calls = find_call_sites_ast(
+        files, {"write", "execute_write", "get_instance"}, attr_names={"write", "execute_write"}
+    )
     uwg_refs = []
     for f in files:
         hits = grep_file(f, r"UniversalWriteGateway|execute_write|uwg\.")
@@ -291,7 +324,9 @@ def main() -> None:
         for pat in PROVIDER_SDK_PATTERNS:
             hits = grep_file(f, pat)
             for ln, text in hits:
-                sdk_violations.append({"file": rel(f), "line": ln, "pattern": pat[:40], "text": text.strip()[:80]})
+                sdk_violations.append(
+                    {"file": rel(f), "line": ln, "pattern": pat[:40], "text": text.strip()[:80]}
+                )
     print(f"SDK_IMPORT_VIOLATIONS (outside gateway): {len(sdk_violations)}")
     print(format_hits(sdk_violations[:20], ["file", "line", "text"]))
     print()
@@ -316,7 +351,10 @@ def main() -> None:
     for f in files:
         if str(f) in ALLOWED_FACTORY_MODULES:
             continue
-        hits = grep_file(f, r"OpenAIEmbedder|LocalFAISSStore|faiss\.IndexFlatIP|faiss\.IndexFlatL2|SentenceTransformer\s*\(")
+        hits = grep_file(
+            f,
+            r"OpenAIEmbedder|LocalFAISSStore|faiss\.IndexFlatIP|faiss\.IndexFlatL2|SentenceTransformer\s*\(",
+        )
         for ln, text in hits:
             emb_bypass.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})
     print(f"EMBEDDING_BYPASS_VIOLATIONS: {len(emb_bypass)}")
@@ -329,7 +367,10 @@ def main() -> None:
     for f in files:
         if str(f) in ALLOWED_GATEWAY_MODULES:
             continue
-        hits = grep_file(f, r"\.chat\.completions\.create|\.messages\.create|\.generate_content\s*\(|openai\.ChatCompletion")
+        hits = grep_file(
+            f,
+            r"\.chat\.completions\.create|\.messages\.create|\.generate_content\s*\(|openai\.ChatCompletion",
+        )
         for ln, text in hits:
             alt_llm.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})
     print(f"ALTERNATE_LLM_SEAM_VIOLATIONS: {len(alt_llm)}")
@@ -358,7 +399,10 @@ def main() -> None:
             continue
         if "test" in str(f).lower():
             continue
-        hits = grep_file(f, r"\.write_text\s*\(|\.write_bytes\s*\(|open\s*\([^)]+['\"]w['\"]|\.to_csv\s*\(|faiss\.write_index\s*\(|index\.add\s*\(")
+        hits = grep_file(
+            f,
+            r"\.write_text\s*\(|\.write_bytes\s*\(|open\s*\([^)]+['\"]w['\"]|\.to_csv\s*\(|faiss\.write_index\s*\(|index\.add\s*\(",
+        )
         for ln, text in hits:
             write_bypass.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})
     print(f"WRITE_BYPASS_CANDIDATES: {len(write_bypass)}")
@@ -384,14 +428,16 @@ def main() -> None:
 
     # ─── S15: apps_* writes to L4/L0/L5 ─────────────────────────────────────
     print("=== S15: apps_* WRITES TO L4/L0/L5 (sovereignty check) ===")
-    apps_roots = [REPO_ROOT / "apps_lic", REPO_ROOT / "apps_rg", REPO_ROOT / "apps_shared"]
+    apps_roots = [REPO_ROOT / APPS_LIC_DIR, REPO_ROOT / APPS_RG_DIR, REPO_ROOT / APPS_SHARED_DIR]
     apps_files = []
     for r in apps_roots:
         if r.exists():
             apps_files.extend(r.rglob("*.py"))
     apps_writes = []
     for f in apps_files:
-        hits = grep_file(f, r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write")
+        hits = grep_file(
+            f, r"L4|L5|L0|SovereignLLMGateway|UniversalWriteGateway|route_generation|execute_write"
+        )
         for ln, text in hits:
             apps_writes.append({"file": rel(f), "line": ln, "text": text.strip()[:80]})
     print(f"apps_* L4/L0/L5 REFERENCES: {len(apps_writes)}")

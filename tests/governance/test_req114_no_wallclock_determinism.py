@@ -12,8 +12,14 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 REPO_ROOT = Path(__file__).resolve().parents[2]
-CI_SCRIPT = REPO_ROOT / "ops_scripts" / "ci" / "check_determinism_violations.py"
+CI_SCRIPT = REPO_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_determinism_violations.py"
 
 
 @pytest.mark.governance
@@ -58,7 +64,7 @@ def test_req114_no_wallclock_determinism_critical_paths():
 def test_req114_wallclock_negative_control():
     """REQ-114: Negative control - should detect wall-clock when present."""
     # Create a temporary file with wall-clock usage
-    temp_file = REPO_ROOT / "agentic_core" / "temp_test_wallclock.py"
+    temp_file = REPO_ROOT / AGENTIC_CORE_DIR / "temp_test_wallclock.py"
     try:
         temp_file.write_text("""
 import time
@@ -160,7 +166,7 @@ def test_req114_critical_computation_paths_no_wallclock():
 def test_req114_semantic_clock_alternative():
     """REQ-114: Verify semantic clock is available as alternative."""
     # Check if semantic clock implementation exists
-    semantic_clock_file = REPO_ROOT / "agentic_core" / "L0_routing" / "types" / "determinism_types.py"
+    semantic_clock_file = REPO_ROOT / L0_ROUTING_DIR / "types" / "determinism_types.py"
 
     if semantic_clock_file.exists():
         content = semantic_clock_file.read_text(encoding="utf-8", errors="replace")

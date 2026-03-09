@@ -9,6 +9,11 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
+)
+
 # Add the project root to the path to import the agent
 sys.path.insert(0, str(Path(__file__).parent.parent.parent))
 
@@ -52,7 +57,7 @@ class TestPascalHardening:
 
     def test_ops_script_protection(self, agent, tmp_path):
         """Verify scripts in ops_scripts with classes are classified by AST content."""
-        script_path = tmp_path / "ops_scripts" / "DatabaseFixer.py"
+        script_path = tmp_path / OPS_SCRIPTS_DIR / "DatabaseFixer.py"
         script_path.parent.mkdir()
         script_path.write_text("class InternalTool: pass\nif __name__ == '__main__': pass")
 
@@ -62,7 +67,7 @@ class TestPascalHardening:
 
     def test_types_collection_immunity(self, agent, tmp_path):
         """Verify types.py classified as TYPES and not renamed to class name."""
-        types_path = tmp_path / "agentic_core" / "types.py"
+        types_path = tmp_path / AGENTIC_CORE_DIR / "types.py"
         types_path.parent.mkdir()
         types_path.write_text("class UserStatus(Enum): ACTIVE=1")
 

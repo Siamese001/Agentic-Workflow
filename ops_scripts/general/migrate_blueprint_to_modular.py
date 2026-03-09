@@ -10,9 +10,11 @@ from __future__ import annotations
 import ast
 from pathlib import Path
 
-ROOT = Path(__file__).resolve().parents[2]
-MONOLITH = ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint_config.py"
-MOD_DIR = ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint"
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+ROOT = get_validated_project_root()
+MONOLITH = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint_config.py"
+MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
 
 # === TARGET MODULE ASSIGNMENTS ===
 # Maps each missing name to the modular file it should live in.

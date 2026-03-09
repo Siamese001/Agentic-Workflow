@@ -8,6 +8,10 @@ import fnmatch
 import json
 import pathlib
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 
 def load_missing_modules() -> list[dict]:
     """Load list of modules that need tests created."""
@@ -242,7 +246,7 @@ def validate_minimum_behavioral_bar():
     print("\n=== VALIDATING MINIMUM BEHAVIORAL BAR ===\n")
 
     # Find recently created test files (this is a simplified check)
-    test_root = pathlib.Path("tests")
+    test_root = _ROOT / TESTS_DIR
 
     violations = []
     checked_count = 0

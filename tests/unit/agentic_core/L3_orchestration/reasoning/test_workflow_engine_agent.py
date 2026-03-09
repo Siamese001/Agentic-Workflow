@@ -4,6 +4,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+)
+
 
 class TestWorkflowEngineAgent:
     """Tests for workflow engine functionality."""
@@ -52,7 +56,7 @@ class TestOrchestrationLayerIntegrity:
 
     def test_no_direct_llm_calls(self):
         """L3 orchestration should not make direct LLM calls (delegate to L1)."""
-        base = Path("agentic_core/L3_orchestration")
+        base = Path(L3_ORCHESTRATION_DIR)
         if not base.exists():
             pytest.fail("L3_orchestration/ not found")
 
@@ -74,7 +78,7 @@ class TestOrchestrationLayerIntegrity:
 
     def test_orchestration_agents_in_reasoning(self):
         """Agent classes in L3 should be in reasoning/."""
-        base = Path("agentic_core/L3_orchestration")
+        base = Path(L3_ORCHESTRATION_DIR)
         if not base.exists():
             pytest.fail("L3_orchestration/ not found")
 

@@ -10,7 +10,11 @@ from pathlib import Path
 
 import pytest
 
-AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / "agentic_core"
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
+AGENTIC_CORE_ROOT = Path(__file__).parent.parent.parent / AGENTIC_CORE_DIR
 LAYER_PATTERN = re.compile(r"^L(\d+)_")
 
 

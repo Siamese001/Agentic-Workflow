@@ -16,6 +16,10 @@ import subprocess
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+
 
 def run(argv):
     """Run command and return (stdout, exit_code). Hard-fail on non-zero for required commands."""
@@ -80,7 +84,7 @@ def main():
     seen_targets.add("tests/unit_min_deps/test_vllm_replay_with_violations.py")
 
     # Find existing tests that reference vllm_replay_validator or canonical_response_hash
-    for root, dirs, files in os.walk("tests"):
+    for root, dirs, files in os.walk(_ROOT / TESTS_DIR):
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)
@@ -171,13 +175,18 @@ def execute_proofs():
     from dataclasses import dataclass
     from unittest.mock import patch
 
-    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import VLLMGatewayAdapter, reset_singletons
+    from agentic_core.L2_execution.types.vllm_gateway_adapter_types import (
+        VLLMGatewayAdapter,
+        reset_singletons,
+    )
     from agentic_core.L2_execution.types.vllm_gateway_integration_types import (
         VLLMCircuitBreakerRegistry,
         VLLMGatewayCallResult,
         VLLMQueueController,
     )
-    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import VLLMInfrastructureFingerprint
+    from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import (
+        VLLMInfrastructureFingerprint,
+    )
     from agentic_core.L2_execution.types.vllm_invariant_contract_types import (
         InvariantId,
         InvariantSeverity,

@@ -8,6 +8,10 @@ Directly invokes HierarchyAgent to test movement and archival boundaries.
 import sys
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+)
+
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -24,7 +28,7 @@ def test_structural_move():
     agent = HierarchyAgent(project_root=PROJECT_ROOT, healing_enabled=True, auto_approve=True)
 
     # Check if rogue_script.py exists
-    rogue_script = PROJECT_ROOT / "agentic_core" / "L0_routing" / "rogue_script.py"
+    rogue_script = PROJECT_ROOT / L0_ROUTING_DIR / "rogue_script.py"
     print(f"\n📁 Checking: {rogue_script}")
     print(f"   Exists: {rogue_script.exists()}")
 
@@ -50,8 +54,8 @@ def test_structural_move():
 
         # Check potential target locations
         potential_targets = [
-            PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts" / "rogue_script.py",
-            PROJECT_ROOT / "agentic_core" / "L0_routing" / "depth_aligned" / "rogue_script.py",
+            PROJECT_ROOT / L0_ROUTING_DIR / "scripts" / "rogue_script.py",
+            PROJECT_ROOT / L0_ROUTING_DIR / "depth_aligned" / "rogue_script.py",
         ]
 
         for target in potential_targets:

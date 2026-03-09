@@ -10,7 +10,10 @@ Applies three changes:
 import sys
 from pathlib import Path
 
-TARGET = Path(__file__).parent.parent.parent / "agentic_core" / "L0_routing" / "scripts" / "execute_ssot.py"
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+
+_ROOT = get_validated_project_root()
+TARGET = _ROOT / AGENTIC_CORE_DIR / "L0_routing" / "scripts" / "execute_ssot.py"
 
 ROUTING_BLOCK = '''
 

@@ -14,6 +14,10 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+)
+
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -533,7 +537,7 @@ class TestAntiPatternIntegration:
         )
 
         # Scan the anti_patterns directory itself (should be clean)
-        target_dir = PROJECT_ROOT / "agentic_core" / "L5_safety" / "validators" / "anti_patterns"
+        target_dir = PROJECT_ROOT / AGENTIC_CORE_DIR / "L5_safety" / "validators" / "anti_patterns"
 
         if target_dir.exists():
             results = composite.scan_directory(target_dir)

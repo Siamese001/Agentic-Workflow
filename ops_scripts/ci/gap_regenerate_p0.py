@@ -36,9 +36,10 @@ from pathlib import Path
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 
 SCRIPT_DIR = Path(__file__).resolve().parent
-PROJECT_ROOT = SCRIPT_DIR.parents[1]
+PROJECT_ROOT = get_validated_project_root()
 BASELINE_GAP_JSON = PROJECT_ROOT / "docs" / "reports" / "plans" / "v15_gap_analysis.json"
 
 # Canonical layer keys — must match the schema contract
@@ -64,7 +65,7 @@ ADAPTER_SCANNER_TIMEOUT_SECONDS = 30
 # AST helpers — boundary-level verification (not mere symbol existence)
 # ---------------------------------------------------------------------------
 
-_GUARDIAN_CONTRACT = PROJECT_ROOT / "agentic_core" / "L0_routing" / "types" / "guardian_contract.py"
+_GUARDIAN_CONTRACT = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "types" / "guardian_contract.py"
 
 
 def _parse_file(filepath: Path) -> ast.Module | None:

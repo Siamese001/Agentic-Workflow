@@ -18,10 +18,14 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L3_ORCHESTRATION_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
-_L3_ROOT = _REPO_ROOT / "agentic_core" / "L3_orchestration"
+_L3_ROOT = _REPO_ROOT / L3_ORCHESTRATION_DIR
 _GHO_PATH = _L3_ROOT / "scripts" / "guardian_heal_orchestrator.py"
 
 

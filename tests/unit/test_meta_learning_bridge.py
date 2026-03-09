@@ -15,6 +15,9 @@ import inspect
 import json
 from pathlib import Path
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_RG_DIR,
+)
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot
 from apps_shared.scripts.meta_learning_bridge import (
     emit_app_signal_aggregate,
@@ -38,7 +41,7 @@ class TestBridgeEmitSignal:
     def test_bridge_emits_app_signal_event_deterministically(self) -> None:
         """Two calls with same inputs produce identical trace_id and JSON."""
         kwargs = {
-            "app_id": "apps_rg",
+            "app_id": APPS_RG_DIR,
             "run_id": "run_001",
             "message_id": "msg_001",
             "metric_name": "resume_message_response_rate",
@@ -50,7 +53,7 @@ class TestBridgeEmitSignal:
         assert e1.trace_id == e2.trace_id
         assert e1.to_json() == e2.to_json()
         assert e1.artifact_type == "APP_SIGNAL_EVENT"
-        assert e1.app_id == "apps_rg"
+        assert e1.app_id == APPS_RG_DIR
 
 
 class TestBridgeCannotApply:
@@ -69,7 +72,7 @@ class TestBridgeEndToEndChain:
         """Full pipeline: proposal->eval->approval->decision->change_package is deterministic."""
         # Step 1: Proposal via bridge
         proposal = propose_from_signal_aggregate(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             target_component="routing_thresholds",
             before={"threshold": 0.5},
             after={"threshold": 0.7},
@@ -79,7 +82,7 @@ class TestBridgeEndToEndChain:
             evidence_hash="e2e_hash_001",
             semantic_clock=_CLOCK,
         )
-        assert proposal.proposer == "apps_rg"
+        assert proposal.proposer == APPS_RG_DIR
         assert proposal.artifact_type == "META_LEARNING_PROPOSAL"
 
         # Step 2: Evaluation
@@ -124,7 +127,7 @@ class TestBridgeEndToEndChain:
 
         # Determinism: rebuild entire chain
         proposal2 = propose_from_signal_aggregate(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             target_component="routing_thresholds",
             before={"threshold": 0.5},
             after={"threshold": 0.7},
@@ -187,7 +190,7 @@ def _make_bridge_events(
     """Helper: build AppSignalEventArtifact list for bridge tests."""
     return [
         build_app_signal_event(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             run_id="run_bridge",
             message_id=f"{prefix}_{i:03d}",
             metric_name="resume_message_response_rate",
@@ -208,7 +211,7 @@ class TestBridgeAggregate:
         shuffled = list(reversed(all_events))
 
         agg1 = emit_app_signal_aggregate(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_bridge",
             metric_name="resume_message_response_rate",
             events=all_events,
@@ -218,7 +221,7 @@ class TestBridgeAggregate:
             semantic_clock=_CLOCK,
         )
         agg2 = emit_app_signal_aggregate(
-            app_id="apps_rg",
+            app_id=APPS_RG_DIR,
             window_id="w_bridge",
             metric_name="resume_message_response_rate",
             events=shuffled,

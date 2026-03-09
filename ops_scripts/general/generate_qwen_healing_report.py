@@ -17,6 +17,19 @@ import textwrap
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+    L6_OBSERVABILITY_DIR,
+)
+
 # ---------------------------------------------------------------------------
 # Paths
 # ---------------------------------------------------------------------------
@@ -549,16 +562,16 @@ def build_report() -> str:
 
     # Group by layer for readability
     layer_order = [
-        "L0_routing",
-        "L1_cognition",
-        "L2_execution",
-        "L3_orchestration",
-        "L4_state",
-        "L5_safety",
-        "L6_observability",
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
+        L0_ROUTING_DIR,
+        L1_COGNITION_DIR,
+        L2_EXECUTION_DIR,
+        L3_ORCHESTRATION_DIR,
+        L4_STATE_DIR,
+        L5_SAFETY_DIR,
+        L6_OBSERVABILITY_DIR,
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
         "knowledge",
     ]
     by_layer: dict[str, list] = {}

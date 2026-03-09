@@ -8,6 +8,52 @@
 $E = "docs/reports/plans/<phase_evidence_file>.md"
 
 # ============================================================
+# MANDATORY: AST DEPENDENCY GRAPH (§0 DEFAULT ANALYSIS MODE)
+# Build BEFORE any code investigation or modification
+# ============================================================
+
+# Option 1: Use repository-specific dependency graph tools
+python tools/dep_graph_db.py build --roots <file1.py> <file2.py> 2>&1 | Tee-Object -FilePath $E -Append
+python tools/dep_graph_db.py query --downstream <file.py> 2>&1 | Tee-Object -FilePath $E -Append
+python tools/dep_graph_db.py query --upstream <file.py> 2>&1 | Tee-Object -FilePath $E -Append
+
+# Option 2: Use AST analysis scripts
+python ops_scripts/ci/_ast_process_map_gap_analyzer.py 2>&1 | Tee-Object -FilePath $E -Append
+
+# Option 3: Build custom AST graph for specific files
+python -c "
+import ast
+import sys
+from pathlib import Path
+
+def analyze_file(filepath):
+    with open(filepath, 'r', encoding='utf-8') as f:
+        tree = ast.parse(f.read(), filename=filepath)
+
+    imports = []
+    for node in ast.walk(tree):
+        if isinstance(node, ast.Import):
+            for alias in node.names:
+                imports.append(alias.name)
+        elif isinstance(node, ast.ImportFrom):
+            imports.append(node.module)
+
+    print(f'File: {filepath}')
+    print(f'Imports: {imports}')
+    return imports
+
+analyze_file(sys.argv[1])
+" <file.py> 2>&1 | Tee-Object -FilePath $E -Append
+
+# REQUIRED: Document DEPENDENCY_GRAPH section with:
+# - Graph roots
+# - Upstream dependencies
+# - Downstream dependents
+# - Test coverage edges
+# - Cross-layer edges
+# - Cycle/boundary findings
+
+# ============================================================
 # PREFLIGHT
 # ============================================================
 git branch --show-current 2>&1 | Tee-Object -FilePath $E -Append
@@ -33,13 +79,24 @@ python -m existing.module.path [args] 2>&1 | Tee-Object -FilePath $E -Append
 
 # ============================================================
 # PYTEST — COLLECTION + EXECUTION (always capture both)
+# PREREQUISITE: Identify tests via dependency graph (§5.2)
 # ============================================================
+
+# STEP 1: Use dependency graph to identify required tests
+# (Graph should show test → production coverage edges)
+
+# STEP 2: Run pytest with collection verification
 pytest --collect-only -q 2>&1 | Tee-Object -FilePath $E -Append
 pytest -xvv 2>&1 | Tee-Object -FilePath $E -Append
 # Record: collected count vs executed count. STOP if mismatch unexplained.
 
 # Scoped test run (only when phase acceptance criteria explicitly narrows scope):
+# MUST be justified by dependency graph showing these are the only affected tests
 pytest -xvv tests/governance/ 2>&1 | Tee-Object -FilePath $E -Append
+
+# STEP 3: Verify test coverage matches dependency graph
+# Compare: tests identified by graph vs tests actually run
+# Any mismatch = coverage gap or graph incompleteness
 
 # ============================================================
 # PRE-COMMIT

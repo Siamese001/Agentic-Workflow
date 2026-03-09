@@ -12,7 +12,12 @@ import time
 from collections import Counter, defaultdict
 from pathlib import Path
 
-REPO = Path(__file__).resolve().parents[2]
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    get_validated_project_root,
+)
+
+REPO = get_validated_project_root()
 REQ_MD = REPO / "docs" / "reports" / "plans" / "Agentic Master Requirements.md"
 OUT = REPO / "docs" / "reports" / "plans" / "requirements-gap-analysis-evidence.md"
 PY = sys.executable
@@ -1439,7 +1444,7 @@ def main():
         ("time.time() in agentic_core/", r"time\.time\(\)"),
         ("uuid4 in agentic_core/", r"uuid4"),
     ]:
-        cmd_desc, raw_lines, mc, fset = py_grep(pat, root=REPO / "agentic_core")
+        cmd_desc, raw_lines, mc, fset = py_grep(pat, root=REPO / AGENTIC_CORE_DIR)
         w(f"### {pat_label}")
         w(f"**Command:** `{cmd_desc}`")
         w(f"**Matches:** {mc} in {len(fset)} files")
