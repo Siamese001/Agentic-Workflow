@@ -317,6 +317,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             if target_territory:
                 if target_territory in sovereign_territories and target_territory != "agentic_core":
                     target_roots = [target_territory]
+                elif (self.project_root / AGENTIC_CORE_DIR / target_territory).exists():
+                    # Sub-layer of agentic_core (e.g. "L2_execution", "L5_safety")
+                    target_roots = [f"{AGENTIC_CORE_DIR}/{target_territory}"]
                 else:
                     target_roots = [AGENTIC_CORE_DIR]
                 Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
@@ -342,6 +345,18 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
                         if "Error'" in violation.message or "Exception'" in violation.message:
+                            continue
+                        # Ignore well-known non-agent patterns co-located in agent files
+                        _cls = violation.message.split("'")[1] if "'" in violation.message else ""
+                        _non_agent = ("Factory", "Role", "Base", "Mixin", "Enum", "Config", "Registry", "Simple")
+                        if any(_cls.endswith(s) for s in _non_agent):
+                            continue
+
+                    # Ignore GRAVITY violations inside test files (tests intentionally cross layers)
+                    _vt_raw = getattr(violation, "violation_type", "")
+                    _vt = _vt_raw.name if hasattr(_vt_raw, "name") else str(_vt_raw)
+                    if _vt == "GRAVITY" and violation.file_path:
+                        if any(p in ("tests", "test") for p in Path(str(violation.file_path)).parts):
                             continue
 
                     violations_found += 1
@@ -592,6 +607,18 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                         if "'Error'" in violation.message or "'Exception'" in violation.message:
                             continue
                         if "Error'" in violation.message or "Exception'" in violation.message:
+                            continue
+                        # Ignore well-known non-agent patterns co-located in agent files
+                        _cls2 = violation.message.split("'")[1] if "'" in violation.message else ""
+                        _non_agent2 = ("Factory", "Role", "Base", "Mixin", "Enum", "Config", "Registry", "Simple")
+                        if any(_cls2.endswith(s) for s in _non_agent2):
+                            continue
+
+                    # Ignore GRAVITY violations inside test files (tests intentionally cross layers)
+                    _vt2_raw = getattr(violation, "violation_type", "")
+                    _vt2 = _vt2_raw.name if hasattr(_vt2_raw, "name") else str(_vt2_raw)
+                    if _vt2 == "GRAVITY" and violation.file_path:
+                        if any(p in ("tests", "test") for p in Path(str(violation.file_path)).parts):
                             continue
 
                     total_violations += 1

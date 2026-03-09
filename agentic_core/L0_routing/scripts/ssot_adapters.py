@@ -16,9 +16,10 @@ Rules enforced here:
 from __future__ import annotations
 
 from pathlib import Path
-from typing import Any
+from typing import TYPE_CHECKING, Any
 
-from agentic_core.L2_execution.protocol import SubphaseResult
+if TYPE_CHECKING:
+    from agentic_core.L2_execution.protocol import SubphaseResult
 
 # ---------------------------------------------------------------------------
 # Helper: convert arbitrary agent return value to SubphaseResult
@@ -31,6 +32,7 @@ def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
     Agents return a variety of dict shapes. We extract violations where
     possible; anything else maps to an empty-violations clean result.
     """
+    from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
     if isinstance(raw, SubphaseResult):
         return raw
 
@@ -59,6 +61,7 @@ def _to_result(raw: Any, *, fixed: list[dict] | None = None) -> SubphaseResult:
 
 def _noop() -> SubphaseResult:
     """Return a clean no-op result (for agents that don't support a subphase)."""
+    from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
     return SubphaseResult()
 
 
@@ -113,6 +116,7 @@ class LocationAdapter:
         return result
 
     def validate(self, territory: str, ctx: Any) -> SubphaseResult:
+        from agentic_core.L2_execution.protocol import SubphaseResult  # noqa: PLC0415
         return SubphaseResult(violations=list(self._scan_violations))
 
     def execute(self, territory: str, ctx: Any) -> SubphaseResult:

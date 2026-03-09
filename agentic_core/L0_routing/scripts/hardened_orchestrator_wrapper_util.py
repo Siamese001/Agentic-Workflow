@@ -17,8 +17,6 @@ import asyncio
 import logging
 from typing import Any
 
-from agentic_core.L3_orchestration.config.orchestrator_config import OrchestratorConfig, create_orchestrator
-
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 
 Logger: Any = logging.getLogger(__name__)
@@ -51,6 +49,7 @@ async def run_hardened_orchestrator(
     Returns:
         Workflow execution results
     """
+    from agentic_core.L3_orchestration.config.orchestrator_config import OrchestratorConfig, create_orchestrator  # noqa: PLC0415
     Logger.info("🚀 Hardened Orchestrator (Wrapper)")
     Logger.info(f"   Workflow: {workflow_id}")
     Logger.info(f"   Type: {WorkflowType}")
