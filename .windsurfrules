@@ -1,0 +1,412 @@
+# Agentic Workflow â€” Sovereign Architecture Rules
+
+## Â§1. TESTING & EVIDENCE
+
+### 1.1 Zero-tolerance: any changed logic MUST have tests
+
+Every line of changed logic MUST be covered by deterministic tests.
+
+If you change logic, you MUST write tests that prove it works.
+
+No exceptions.
+
+---
+
+### 1.2 Test-first discipline
+
+Tests MUST exist before logic changes are committed.
+
+If tests do not exist, write them first.
+
+If tests are inadequate, expand them until they are exhaustive.
+
+---
+
+### 1.3 Deterministic tests only
+
+Tests MUST be deterministic.
+
+No random inputs, no time-dependent behavior, no external state.
+
+If the system under test uses randomness, the test MUST fix the seed.
+
+If the system uses time, the test MUST inject deterministic timestamps.
+
+---
+
+### 1.4 No mocks for integration seams
+
+If the risk surface is an integration seam, tests MUST use real integration.
+
+Mocks are ONLY allowed for:
+
+- external services that cannot be run locally
+- hardware interfaces
+- filesystem permissions in CI environments
+
+Mocks MUST NOT be used to bypass:
+
+- validation
+- signature checks
+- routing gates
+- replay enforcement
+- side-effect guards
+
+---
+
+### 1.5 Edge cases are mandatory
+
+Every changed surface MUST include tests covering:
+
+- null / None / missing field
+- empty input
+- malformed structure
+- boundary values
+- unauthorized input
+- stale state
+- replay input
+- dependency failure
+- negative control path
+- recovery path
+
+Malformed-but-plausible inputs MUST be tested for contract boundaries.
+
+---
+
+### 1.6 State transition testing
+
+Every changed state transition MUST test:
+
+- valid predecessor â†’ valid successor
+- invalid predecessor â†’ attempted successor
+- repeated transition
+- interrupted transition
+- replayed transition
+
+---
+
+### 1.7 Deterministic decision surfaces
+
+For deterministic scoring, routing, hashing, ranking, or threshold logic tests MUST prove:
+
+- identical input â†’ identical output
+- normalized equivalent input â†’ identical output
+- distinct input does not collapse unintentionally
+- stable tie-break ordering
+- exact threshold edge behavior
+
+Replay-sensitive surfaces MUST prove independence from:
+
+- wall clock
+- randomness
+- execution order
+- external mutable state
+
+Unproven determinism = HARD FAIL.
+
+---
+
+### 1.8 Fail-closed and side-effect safety
+
+Tests MUST prove:
+
+- invalid preconditions block operation
+- no side-effects occur before block
+
+Mutation paths MUST assert:
+
+- return values
+- exception behavior
+- file writes
+- state mutations
+- external calls
+- audit emission where required
+
+---
+
+### 1.9 Matrix testing
+
+Matrix testing REQUIRED when logic depends on multiple interacting gates.
+
+Typical axes include:
+
+- feature flag Ã— input validity
+- retry count Ã— confidence tier
+- policy allow/deny Ã— mutation attempt
+- replay mode Ã— dependency behavior
+- cache state Ã— freshness
+- signature state Ã— side-effect attempt
+
+Unexplained matrix pruning = HARD FAIL.
+
+---
+
+### 1.10 Ingress-path rule
+
+Tests MUST target the real entrypoint or enforcement choke point.
+
+Test doubles MUST NOT bypass:
+
+- validation
+- signature checks
+- routing gates
+- replay enforcement
+- side-effect guards
+
+---
+
+### 1.11 Regression and mutation tests
+
+Every bug fix MUST include:
+
+- minimal reproducer
+- adjacent near-miss case
+
+Mutation-sensitive tests MUST fail if:
+
+- comparison operator flips
+- guard clause removed
+- boundary shifts
+- retry skipped
+- fail-closed becomes permissive
+
+---
+
+## Â§2. EVIDENCE CONTRACT
+
+### 2.1 Deterministic execution record
+
+Each phase produces exactly one evidence file under:
+
+`docs/reports/plans/`
+
+Evidence order:
+
+1. `# <Phase Title>`
+2. `## Scope`
+3. `## INSPECTED_FILES`
+4. command sections
+5. `## BRANCH_INVENTORY`
+6. `## ROBUSTNESS_MATRIX`
+7. `## DEFECT_MODEL`
+
+Commands executed via:
+
+`subprocess.run(argv, shell=False, encoding="utf-8", errors="replace")`
+
+PowerShell invocation is forbidden.
+
+ANSI escape sequences MUST be stripped.
+
+Evidence file MUST be ASCII-only.
+
+Evidence rebuilt each run:
+
+`evidence_lines = []`
+
+Contradictory success/failure markers in same block = HARD FAIL.
+
+---
+
+### 2.2 Evidence sections
+
+Evidence MUST include:
+
+`## BRANCH_INVENTORY`
+`## ROBUSTNESS_MATRIX`
+`## DEFECT_MODEL`
+
+`ROBUSTNESS_MATRIX` MUST map each changed surface to:
+
+- success tests
+- edge tests
+- failure tests
+- recovery tests
+- determinism tests
+- side-effect tests
+
+`DEFECT_MODEL` MUST list defect classes targeted by tests.
+
+---
+
+## Â§3. SCOPE & DETERMINISM
+
+### 3.1 Scope declaration
+
+Before modification record:
+
+`git diff --name-only`
+
+If changed files exceed declared scope:
+
+STOP and produce a plan artifact.
+
+---
+
+### 3.2 Scope contamination
+
+If unrelated files appear:
+
+1. record them
+2. reset to baseline
+3. restore declared files only
+4. verify diff
+
+---
+
+### 3.3 Deterministic analysis
+
+- Code analysis MUST use AST parsing.
+- Regex or grep for structural logic is FORBIDDEN.
+- Repository paths MUST be canonicalized.
+- Scan roots MUST be explicitly defined.
+- No heuristic scanning.
+- No randomness in deterministic surfaces.
+
+---
+
+## Â§4. ARCHITECTURE LOCKS
+
+### 4.1 Canonical L0â€“L6 semantics
+
+Canonical L0â€“L6 semantics MUST match repository SSOT.
+
+No reinterpretation of layers allowed.
+
+Architecture enforcement MUST reference repository artifacts.
+
+---
+
+### 4.2 Structural SSOT
+
+Structural SSOT:
+
+`structure_blueprint.py`
+
+Agent registry SSOT:
+
+`agent_discovery_full.json`
+
+If conflicting SSOT sources exist execution is BLOCKED.
+
+---
+
+### 4.3 Boundary enforcement
+
+- layer inversion detection MUST be AST-based
+- cycles are HARD FAIL
+- duplicate mixins forbidden
+- cross-layer mutation violating sovereignty = HARD FAIL
+
+---
+
+### 4.4 Tooling/runtime boundary
+
+Directories:
+
+`tools/evidence/`
+`ops_scripts/ci/`
+
+MUST NOT import `apps_*`.
+
+---
+
+### 4.5 Agent invocation discipline
+
+Agents MUST be invoked via canonical Python functions.
+
+CLI entrypoints MUST:
+
+- import module
+- parse args
+- call one function
+
+No business logic in CLI wrappers.
+
+---
+
+### 4.6 Duplicate authority prevention
+
+One canonical agent class per file.
+
+Semantic duplicate agents are forbidden.
+
+---
+
+## Â§5. CI & CONTRACT GATES
+
+### 5.1 Single entrypoint
+
+`python ops_scripts/ci/run_contract_gates.py`
+
+Execution order:
+
+1. pytest
+2. evidence contract checker
+3. tooling boundary checker
+
+CI MUST:
+
+- match local execution
+- fail on violations
+- not mutate baselines
+
+---
+
+## Â§6. EXECUTION MODALITY
+
+Execution occurs strictly by defined phase.
+
+Each phase produces:
+
+one evidence file.
+
+If scope expands:
+
+STOP and produce a plan artifact.
+
+---
+
+## Â§7. ACCEPTANCE DISCIPLINE
+
+Acceptance criteria MUST be:
+
+- deterministic
+- command-exact
+- exit-code-exact
+- count-exact where applicable
+
+Open-ended language forbidden:
+
+- should
+- expected to
+- approximately
+- equivalent
+
+Acceptance criteria immutable once phase begins.
+
+Unmet criteria â†’ phase BLOCKED.
+
+---
+
+## Â§8. ARTIFACT LOCATION
+
+All plans, evidence, and reports MUST reside in:
+
+`docs/reports/plans/`
+
+Artifacts outside canonical paths are invalid.
+
+All Python file I/O MUST use:
+
+`encoding="utf-8"`
+
+Evidence files are raw execution captures.
+
+---
+
+# MAXIM
+
+Every defect fixed becomes a deterministic invariant enforced by automated tests.
+
+If the evidence does not prove it, it did not happen.
