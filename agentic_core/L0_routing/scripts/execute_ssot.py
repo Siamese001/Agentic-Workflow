@@ -156,6 +156,13 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         # A4: accumulators for LocalFAISSStore wiring (populated per-action below)
         _faiss_vectors: list[list[float]] = []
         _faiss_metas: list[dict] = []
+        # BGE call tracking: per-agent and per-architecture-location
+        _bge_per_agent: dict[str, int] = {}
+        _bge_arch_counts: dict[str, int] = {
+            "meta_learning_embed": 0,
+            "routing_novelty": 0,
+            "semantic_cache": 0,
+        }
 
         for action in healing_actions:
             failure_type_str: str = action.get("type") or action.get("routing_tier") or "UNKNOWN"
@@ -186,6 +193,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     failure_vector = tuple(outcome_vec)
                     _vec_source = "bge-m3"
                     new_vectors.append(routing_vec)  # L4 state uses routing signal
+                    # 2 BGE calls per action: routing_vec + outcome_vec
+                    _bge_per_agent[healer_id] = _bge_per_agent.get(healer_id, 0) + 2
+                    _bge_arch_counts["meta_learning_embed"] += 2
 
                     # Novelty: compare routing_vec against recent routing vectors
                     recent = state_mgr.state.get("meta_learning", {}).get("recent_failure_vectors", [])
@@ -244,6 +254,34 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     files_touched=tuple(action.get("files_touched") or []),
                 )
             )
+
+        # BGE routing_novelty calls: one embed per routing decision when BGE enabled
+        if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true":
+            for _dec in getattr(decision_engine, "decisions_made", []):
+                _dagent = _dec.get("agent", "unknown")
+                _bge_per_agent[_dagent] = _bge_per_agent.get(_dagent, 0) + 1
+                _bge_arch_counts["routing_novelty"] += 1
+
+        # BGE semantic_cache calls: from hot cache stats
+        try:
+            from agentic_core.cache.redis_cache_client import get_hot_cache as _ghc_bge
+
+            _hc_bge = _ghc_bge()
+            _cs = _hc_bge.get_stats()
+            _bge_arch_counts["semantic_cache"] = _cs.get(
+                "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0)
+            )
+        except Exception:  # guardian: allow-silent-swallower
+            pass
+
+        # Persist BGE usage to state for downstream consumers (_write_mandatory_json_output)
+        state_mgr.state.setdefault("meta_learning", {})["bge_per_agent"] = _bge_per_agent
+        state_mgr.state["meta_learning"]["bge_arch_counts"] = _bge_arch_counts
+        state_mgr.state["meta_learning"]["bge_model"] = (
+            "BAAI/bge-m3-v1"
+            if os.environ.get("BMG_EMBEDDINGS_ENABLED", "false").lower() == "true"
+            else "hash-fallback-v1"
+        )
 
         # Wave 1: Record outcomes into HealingSuccessRateStore (EMA per error_sig)
         try:
@@ -5520,25 +5558,40 @@ def _write_mandatory_json_output(
         print("MANDATORY JSON OUTPUT")
         print(f"  {_uri}")
         print("=" * 60)
+        _bge_per_agent = _ml_pipeline_state.get("bge_per_agent", {})
+        _bge_arch_counts = _ml_pipeline_state.get("bge_arch_counts", {})
+        _bge_model = _ml_pipeline_state.get("bge_model", "hash-fallback-v1")
         print("")
-        print("| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total |")
-        print("|----------------|:---:|:---:|:---:|:---:|")
+        print(f"Embedding model: {_bge_model}")
+        print("")
+        print("| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total | BGE Calls |")
+        print("|----------------|:---:|:---:|:---:|:---:|:---:|")
         _hm_totals = {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0}
+        _bge_total = 0
         for _ag, _tiers in sorted(heatmap.items()):
             _d = _tiers.get("DETERMINISTIC", 0)
             _q = _tiers.get("QWEN_VLLM", 0)
             _g = _tiers.get("GEMINI_2_5_PRO", 0)
             _t = _d + _q + _g
+            _bge_ag = _bge_per_agent.get(_ag, 0)
+            _bge_total += _bge_ag
             _hm_totals["DETERMINISTIC"] += _d
             _hm_totals["QWEN_VLLM"] += _q
             _hm_totals["GEMINI_2_5_PRO"] += _g
-            print(f"| {_ag} | {_d} | {_q} | {_g} | {_t} |")
+            print(f"| {_ag} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |")
         _tot_all = sum(_hm_totals.values())
         print(
             f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** |"
             f" **{_hm_totals['QWEN_VLLM']}** |"
-            f" **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** |"
+            f" **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |"
         )
+        print("")
+        print("| BGE Architecture Location | Calls |")
+        print("|---------------------------|-------|")
+        print(f"| meta_learning/embed (2×/action) | {_bge_arch_counts.get('meta_learning_embed', 0)} |")
+        print(f"| routing/novelty_score (1×/decision) | {_bge_arch_counts.get('routing_novelty', 0)} |")
+        print(f"| semantic_cache/lookup | {_bge_arch_counts.get('semantic_cache', 0)} |")
+        print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** |")
         print("")
         print(
             f"Run totals: {len(healing_actions)} actions  "
@@ -5547,6 +5600,7 @@ def _write_mandatory_json_output(
             f"meta_learning_records={ml.get('total_experiences', 0)}  "
             f"cache_hits={_semantic_cache_stats.get('hits', 0)}"
         )
+        print("")
         print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
