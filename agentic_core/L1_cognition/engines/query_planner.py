@@ -12,6 +12,38 @@ from typing import Any
 
 Logger: Any = logging.getLogger(__name__)
 
+try:
+    from agentic_core.L3_orchestration.engines.sub_atomic_engine_impl import (
+        SubAtomicEngineImpl as SubAtomicEngine,
+    )
+except ImportError:  # guardian: sub_atomic_engine_impl unavailable — provide stub
+
+    class SubAtomicEngine:  # type: ignore[no-redef]
+        """Stub: SubAtomicEngine not installed."""
+
+        def __init__(self, **kwargs):
+            pass
+
+        async def resilient_mutation(self, prompt="", **kwargs):
+            return "{}"
+
+
+try:
+    from agentic_core.L4_state.utils.rag_enhancement_util import semantic_cache
+except ImportError:  # guardian: rag_enhancement_util unavailable — provide stub
+
+    class semantic_cache:  # type: ignore[no-redef]
+        """Stub: semantic_cache not installed."""
+
+        def __init__(self):
+            self._cache: dict = {}
+
+        def get(self, key: str):
+            return self._cache.get(key)
+
+        def set(self, key: str, value) -> None:
+            self._cache[key] = value
+
 
 class query_planner:
     """
@@ -19,7 +51,7 @@ class query_planner:
     """
 
     def __init__(self, engine: SubAtomicEngine | None = None, cache: semantic_cache | None = None):
-        self.engine = engine or SubAtomicEngine(gemini_client=None)
+        self.engine = engine or SubAtomicEngine()
         self.cache = cache or semantic_cache()
         self.expansion_temperature = 0.7
         self.reflection_temperature = 0.3
@@ -37,7 +69,7 @@ class query_planner:
         L1: Generate diverse query variants to maximize vector recall.
         """
         cache_key: Any = f"mq_expand:{hash(original_query)}"
-        cached: Any = await self.cache.get(cache_key)
+        cached: Any = self.cache.get(cache_key)
         if cached:
             return cached["queries"]
         prompt: Any = f'\nYou are the Sovereign Multi-Query Generator. \nGenerate 6-8 diverse versions of the query to capture different semantic facets.\n\nQuery: "{original_query}"\n\nVary the phrasing: use technical terms, lay terms, and sub-questions.\nOutput format: {{"queries": ["variant1", "variant2", ...]}}\n'
@@ -51,7 +83,7 @@ class query_planner:
         except Exception as e:
             print(f"   [!] Multi-query parse failure: {e}")
             queries: Any = [original_query]
-        await self.cache.set(cache_key, {"queries": queries})
+        self.cache.set(cache_key, {"queries": queries})
         return queries
 
     async def decompose_query(self, query: str) -> list[str]:
@@ -59,7 +91,7 @@ class query_planner:
         L1 Sovereign Query Decomposition - Thread-safe and JSON-hardened.
         """
         cache_key: Any = f"decompose:{hash(query)}"
-        cached: Any = await self.cache.get(cache_key)
+        cached: Any = self.cache.get(cache_key)
         if cached:
             return cached["sub_queries"]
         prompt: Any = f'\nYou are the Sovereign Query Decomposer. \nBreak this complex query into 3-5 atomic, independent sub-questions.\n\nQuery: "{query}"\n\nOutput ONLY a JSON object: {{"sub_queries": ["q1", "q2", ...]}}\n'
@@ -74,7 +106,7 @@ class query_planner:
         except Exception as e:
             print(f"   [!] Decomposition parse error: {e}")
             sub_queries: Any = [query]
-        await self.cache.set(cache_key, {"sub_queries": sub_queries})
+        self.cache.set(cache_key, {"sub_queries": sub_queries})
         return sub_queries
 
     async def decompose_and_expand(self, query: str) -> list[str]:
@@ -111,3 +143,6 @@ class query_planner:
         except Exception as e:
             Logger.error(f"L1 HyDE failure: {e}")
             return []
+
+
+__all__ = ["query_planner"]

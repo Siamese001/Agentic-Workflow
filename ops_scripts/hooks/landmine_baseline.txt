@@ -690,10 +690,10 @@ agentic_core/L1_cognition/engines/meta_observability.py:237:silent_swallower:Sil
 agentic_core/L1_cognition/engines/meta_observability.py:361:magic_configuration:Magic configuration: Hardcoded limit=20 in function call
 agentic_core/L1_cognition/engines/pitch_engine.py:134:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/pitch_engine.py:74:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/engines/query_planner.py:111:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/engines/query_planner.py:51:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/engines/query_planner.py:74:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/L1_cognition/engines/query_planner.py:93:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/engines/query_planner.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/engines/query_planner.py:125:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/engines/query_planner.py:143:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/L1_cognition/engines/query_planner.py:83:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/semantic_manager.py:106:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/semantic_manager.py:26:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
 agentic_core/L1_cognition/engines/semantic_manager.py:56:silent_swallower:Silent exception swallower: catches Exception without raise or proper return

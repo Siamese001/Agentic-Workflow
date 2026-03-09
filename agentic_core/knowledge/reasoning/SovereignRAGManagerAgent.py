@@ -49,6 +49,7 @@ class SovereignRAGManager(SovereignBaseAgent):
 
                 def query(self, query_emb, top_k=5):
                     import numpy as np
+
                     if not self._store or query_emb is None:
                         return []
                     q = np.array(query_emb, dtype=np.float32)
@@ -59,10 +60,7 @@ class SovereignRAGManager(SovereignBaseAgent):
                         v_norm = v / (np.linalg.norm(v) + 1e-8)
                         scored.append((float(np.dot(q_norm, v_norm)), entry))
                     scored.sort(key=lambda x: x[0], reverse=True)
-                    return [
-                        {"id": e["id"], "score": s, "metadata": e["metadata"]}
-                        for s, e in scored[:top_k]
-                    ]
+                    return [{"id": e["id"], "score": s, "metadata": e["metadata"]} for s, e in scored[:top_k]]
 
             self.embedder = _BGEEmbedder()
             self.vector_store = _InMemVectorStore()
@@ -172,8 +170,39 @@ class SovereignRAGManager(SovereignBaseAgent):
         combined = self._fuse_results(vector_results, bm25_results)
         return combined[:top_k]
 
-    def _fuse_results(self, vector: list[dict[str, Any]], bm25: list[dict[str, Any]]) -> list[dict[str, Any]]:
-        return vector + bm25
+    def _fuse_results(
+        self,
+        vector: list[dict[str, Any]],
+        bm25: list[dict[str, Any]],
+        k: int = 60,
+    ) -> list[dict[str, Any]]:
+        """Reciprocal Rank Fusion of vector and BM25 result lists.
+
+        RRF score = Σ 1/(k + rank_i) across all ranked lists.
+        Deduplicates by ``id``; ties broken by insertion order.
+        """
+        rrf_scores: dict[str, float] = {}
+        merged_docs: dict[str, dict[str, Any]] = {}
+
+        for rank, doc in enumerate(vector, start=1):
+            doc_id = doc.get("id") or f"vec_{rank}"
+            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + 1.0 / (k + rank)
+            if doc_id not in merged_docs:
+                merged_docs[doc_id] = doc
+
+        for rank, doc in enumerate(bm25, start=1):
+            doc_id = doc.get("id") or f"bm25_{rank}"
+            rrf_scores[doc_id] = rrf_scores.get(doc_id, 0.0) + 1.0 / (k + rank)
+            if doc_id not in merged_docs:
+                merged_docs[doc_id] = doc
+
+        sorted_ids = sorted(rrf_scores, key=lambda x: rrf_scores[x], reverse=True)
+        fused = []
+        for doc_id in sorted_ids:
+            doc = dict(merged_docs[doc_id])
+            doc["score"] = round(rrf_scores[doc_id], 8)
+            fused.append(doc)
+        return fused
 
     def format_context(self, results: list[dict[str, Any]]) -> str:
         return "\n\n".join([r.get("text", "") for r in results if r.get("text")])
