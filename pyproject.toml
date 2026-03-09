@@ -46,6 +46,7 @@ dev = [
 ]
 infra = [
     "numpy>=1.24.0",
+    "sentence-transformers>=2.2.0",  # MANDATORY: BGE-m3 embeddings for meta-learning and routing
     "chromadb>=0.4.0",
     "duckdb>=0.9.0",
     "rank-bm25>=0.2.0",

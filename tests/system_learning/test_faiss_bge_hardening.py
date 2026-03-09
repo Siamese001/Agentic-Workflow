@@ -13,7 +13,6 @@ All tests use only stdlib + system_learning engines — no heavy deps required.
 
 from __future__ import annotations
 
-import os
 from pathlib import Path
 from unittest.mock import MagicMock, patch
 
@@ -375,18 +374,16 @@ class TestBuildRetrieverLoadsDisk:
     """Regression for G7: build_retriever must load the persisted index from disk."""
 
     @pytest.mark.unit_min_deps
-    def test_build_retriever_null_when_embeddings_disabled(self, tmp_path):
-        """When BMG_EMBEDDINGS_ENABLED is false/absent, returns NullHealingMemoryRetriever."""
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "false"}):
-            retriever = build_retriever(base_path=tmp_path)
-        assert isinstance(retriever, NullHealingMemoryRetriever)
-        assert not retriever.is_active
+    def test_build_retriever_active_when_base_path_provided(self, tmp_path):
+        """When base_path is provided, returns live HealingMemoryRetriever (BGE always active)."""
+        retriever = build_retriever(base_path=tmp_path)
+        assert isinstance(retriever, HealingMemoryRetriever)
+        assert retriever.is_active
 
     @pytest.mark.unit_min_deps
     def test_build_retriever_null_when_base_path_none(self):
         """When base_path is None, returns NullHealingMemoryRetriever."""
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "true"}):
-            retriever = build_retriever(base_path=None)
+        retriever = build_retriever(base_path=None)
         assert isinstance(retriever, NullHealingMemoryRetriever)
 
     @pytest.mark.unit_min_deps
@@ -395,8 +392,7 @@ class TestBuildRetrieverLoadsDisk:
         index_id = "healing_context_v1"
         disk_dir = _build_and_persist_index(tmp_path, index_id, n_vectors=4)
 
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "true"}):
-            retriever = build_retriever(base_path=tmp_path, index_id=index_id)
+        retriever = build_retriever(base_path=tmp_path, index_id=index_id)
 
         assert isinstance(retriever, HealingMemoryRetriever)
         assert retriever.is_active
@@ -408,8 +404,7 @@ class TestBuildRetrieverLoadsDisk:
     @pytest.mark.unit_min_deps
     def test_build_retriever_graceful_on_absent_index(self, tmp_path):
         """When no disk artifact exists, build_retriever returns live retriever with empty store."""
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "true"}):
-            retriever = build_retriever(base_path=tmp_path, index_id="healing_context_v1")
+        retriever = build_retriever(base_path=tmp_path, index_id="healing_context_v1")
         assert isinstance(retriever, HealingMemoryRetriever)
         # No index loaded — search returns IndexNotBuiltError which retrieve_similar_incidents swallows
         assert retriever.is_active
@@ -422,8 +417,7 @@ class TestBuildRetrieverLoadsDisk:
         disk_dir.mkdir(parents=True)
         # Write a corrupt manifest (bad JSON)
         (disk_dir / "manifest.json").write_bytes(b"NOT_JSON")
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "true"}):
-            retriever = build_retriever(base_path=tmp_path, index_id=index_id)
+        retriever = build_retriever(base_path=tmp_path, index_id=index_id)
         # Must not raise — returns a live retriever even though disk load failed
         assert isinstance(retriever, HealingMemoryRetriever)
 

@@ -58,9 +58,8 @@ class HealingOutcomeEvent:
         Optional deterministic hash/signature of the error (if already available).
     failure_vector : tuple[float, ...] | None
         L2-normalised bge-m3 embedding of the full outcome signal text
-        (``normalize_failure_signal`` output).  None when
-        ``BMG_EMBEDDINGS_ENABLED=false`` (default).  Used for MEMORY /
-        FAISS lookup in the meta-learning pipeline.
+        (``normalize_failure_signal`` output).  None only in BOOTSTRAP_MODE.
+        Used for MEMORY / FAISS lookup in the meta-learning pipeline.
     routing_digest : str | None
         Determinism digest of the routing decision that selected this healer
         (``RoutingDecision.determinism_digest``).  Enables replay-key

@@ -174,9 +174,9 @@ class TestCalculateHealingConfidence:
         expected = (base_score * 0.4) + (0.5 * 0.4) + (hist * 0.2)
         assert cs.value == pytest.approx(min(1.0, expected), abs=0.01)
 
-    def test_bmg_disabled_uses_jaccard(self, sde):
-        with patch.dict(os.environ, {"BMG_EMBEDDINGS_ENABLED": "false"}):
-            cs = sde.calculate_healing_confidence(1, ["LAYER_VIOLATION"], "neutral")
+    def test_no_agent_name_uses_jaccard(self, sde):
+        """Without agent_name, pattern_score falls back to Jaccard (BGE path requires agent_name)."""
+        cs = sde.calculate_healing_confidence(1, ["LAYER_VIOLATION"], "neutral")
         assert 0.0 <= cs.value <= 1.0
 
     def test_pattern_score_matched_types(self, sde):

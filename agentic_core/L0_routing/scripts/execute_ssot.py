@@ -571,6 +571,7 @@ def _preflight_import_check() -> None:
 
     This function checks that the execute_ssot_entrypoint can be imported
     and that _legacy_main symbol exists without invoking any runtime behavior.
+    Also validates BGE embedding availability — BGE is a mandatory dependency.
     Raises RuntimeError with detailed message if any check fails.
 
     NOTE: Called at startup in _legacy_main to fail-fast on missing symbols.
@@ -587,6 +588,25 @@ def _preflight_import_check() -> None:
         raise RuntimeError(
             f"CRITICAL: Failed to resolve _legacy_main from execute_ssot module: {exc}"
         ) from exc
+
+    # Phase 2: BGE availability check — hard requirement, fail fast
+    # BOOTSTRAP_MODE=true bypasses this check for initial environment setup only
+    import os as _os
+
+    if _os.environ.get("BOOTSTRAP_MODE", "false").lower() != "true":
+        try:
+            from agentic_core.L2_execution.healers.bmg_embedding_similarity import (
+                bmg_embed_text,  # noqa: F401
+            )
+        except ImportError as _bge_exc:
+            raise RuntimeError(
+                "CRITICAL: BGE embeddings are a mandatory system dependency. "
+                "sentence-transformers is not installed or the BGE model is unavailable.\n"
+                "Install with: pip install sentence-transformers\n"
+                "To bypass during initial environment setup only: "
+                "set BOOTSTRAP_MODE=true (must not be used in production).\n"
+                f"Original error: {_bge_exc}"
+            ) from _bge_exc
 
 
 def _optional_runtime_guard():
@@ -1952,6 +1972,14 @@ class SovereignDecisionEngine:
                 return 1
 
             mat = _np.array(recent, dtype=_np.float32)
+            if mat.ndim == 2 and mat.shape[1] != q.shape[0]:
+                from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                    VectorSourceMismatchError,
+                )
+
+                raise VectorSourceMismatchError(
+                    f"Vector source mismatch: stored dim={mat.shape[1]}, query dim={q.shape[0]}"
+                )
             max_sim = float((_np.dot(mat, q)).max())
 
             if max_sim >= 0.85:
@@ -1961,7 +1989,13 @@ class SovereignDecisionEngine:
             if max_sim >= 0.50:
                 return 2
             return 3
-        except Exception:  # guardian: allow-silent-swallower
+        except Exception as _exc:  # guardian: allow-silent-swallower
+            from agentic_core.L1_cognition.memory.healing_memory_retriever import (
+                VectorSourceMismatchError as _VSME,
+            )
+
+            if isinstance(_exc, _VSME):
+                raise
             return 1  # conservative default when computation unavailable
 
     def _route_decision(
