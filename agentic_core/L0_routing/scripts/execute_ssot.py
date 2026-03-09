@@ -5466,7 +5466,10 @@ def _write_mandatory_json_output(
     # Collect meta-learning pipeline summary from state (populated by _fire_meta_learning_intake)
     _ml_pipeline_state = state_mgr.state.get("meta_learning", {})
     _ml_pipeline_output: dict = {
-        "pipeline_ran": bool(_ml_pipeline_state),
+        # enabled resets to False at every run-init (line ~2743) and is only set True
+        # inside update_meta_learning() — the reliable per-run signal.
+        # bool(_ml_pipeline_state) is always True after run 1 (state is seeded from prior run).
+        "pipeline_ran": _ml_pipeline_state.get("enabled", False),
         "total_experiences": _ml_pipeline_state.get("total_experiences", 0),
         "recent_experiences": _ml_pipeline_state.get("recent_experiences", [])[:5],
         "strategy_weights": _ml_pipeline_state.get("strategy_weights", {}),
@@ -5738,29 +5741,44 @@ def _write_heal_run_complete(
     # ── Healing effectiveness: parse fix_summary strings ─────────────────────
     import re as _re
 
-    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc.
+    # Matches: "Fixed N of M", "Healed N of M", "Resolved N of M", etc. (verb-first format)
     _fix_pat = _re.compile(r"(?:Fixed|Healed|Resolved|Repaired)\s+(\d+)\s+of\s+(\d+)", _re.IGNORECASE)
-    _scan_pat = _re.compile(r"(\d+)\s+(?:violation|found)", _re.IGNORECASE)
 
     _total_found = 0
     _total_fixed = 0
     _zero_fix_agents: list[str] = []  # agents with found>0, fixed==0
+    _summaries_with_text: int = 0  # actions that have a non-empty fix_summary
+    _summaries_parsed: int = 0  # actions whose fix_summary matched the regex
+    _parse_errors: list[str] = []  # summaries with _fixed > _found (reversed/malformed format)
 
     for _a in healing_actions:
-        _summary = str(_a.get("fix_summary", "") or "")
+        _summary = str(_a.get("fix_summary", "") or "").strip()
         _outcome = str(_a.get("outcome", "")).upper()
         # Skip PARTIAL/SKIPPED — these are not failure outcomes
         if _outcome in ("PARTIAL", "SKIPPED"):
             continue
+        if _summary:
+            _summaries_with_text += 1
         _m = _fix_pat.search(_summary)
         if _m:
             _fixed = int(_m.group(1))
             _found = int(_m.group(2))
+            # Validate: fixed cannot exceed found; reversed format would give absurd effectiveness
+            if _fixed > _found:
+                _parse_errors.append(
+                    f"{_a.get('agent', '?')}: fix_summary='{_summary}' — "
+                    f"fixed({_fixed}) > found({_found}) is impossible; likely reversed number format. SKIPPED."
+                )
+                continue  # skip this entry — cannot trust the numbers
+            _summaries_parsed += 1
             _total_found += _found
             _total_fixed += _fixed
             if _found > 0 and _fixed == 0:
                 _agent_label = f"{_a.get('agent', '?')} [{_a.get('territory', '__global__')}]"
                 _zero_fix_agents.append(_agent_label)
+
+    # Regex matched nothing but agents have fix_summary text — format mismatch, not genuine N/A
+    _regex_parse_failure = _summaries_with_text > 0 and _summaries_parsed == 0
 
     _healing_effectiveness = round(_total_fixed / _total_found, 4) if _total_found > 0 else None
 
@@ -5806,8 +5824,6 @@ def _write_heal_run_complete(
     for d in decisions:
         if d.get("decision"):
             tier_counts[d.get("routing_tier", "DETERMINISTIC")] += 1
-
-    pattern_success = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 1.0
 
     # Gate 6: Subphase Integrity — only real if at least one action has explicit subphase data
     _actions_with_subphase = [
@@ -5868,8 +5884,11 @@ def _write_heal_run_complete(
     )
 
     # Gate 10: Meta-Learning Records Written — verifies pipeline actually ran and wrote data
-    _ml_records = ml.get("total_experiences", 0)
-    _ml_pipeline_ran = bool(ml) and _ml_records > 0
+    # CRITICAL: total_experiences is seeded from prior run (line ~2744) — always > 0 after run 1.
+    # Use ml.get("enabled", False) which resets to False at every run-init and is only set True
+    # when update_meta_learning() is called inside _fire_meta_learning_intake.
+    _ml_records = ml.get("total_experiences", 0)  # cumulative; shown as actual for transparency
+    _ml_pipeline_ran = ml.get("enabled", False)  # per-run: True only if intake fired this run
 
     learning_improving = success_delta is None or success_delta >= 0.0
 
@@ -6074,20 +6093,31 @@ def _write_heal_run_complete(
             "threshold": 0.50,
             "actual": _healing_effectiveness,
             "status": (
-                "N/A (NO VIOLATIONS FOUND)"
-                if _healing_effectiveness is None
-                else ("PASS" if _healing_effectiveness >= 0.50 else "FAIL")
+                "N/A (REGEX PARSE FAILURE)"
+                if _regex_parse_failure
+                else (
+                    "N/A (NO VIOLATIONS FOUND)"
+                    if _healing_effectiveness is None
+                    else ("PASS" if _healing_effectiveness >= 0.50 else "FAIL")
+                )
             ),
             "blocker": (
-                "AUDIT: No fix_summary matched 'Fixed/Healed N of M' pattern. "
-                "Either no violations were found this run, or agents use non-standard summary format."
-                if _healing_effectiveness is None
+                f"AUDIT: {_summaries_with_text} fix_summary strings found but NONE matched "
+                f"'(Fixed|Healed|Resolved|Repaired) N of M'. Agents use non-standard format. "
+                + (f" Parse errors: {_parse_errors[:2]}" if _parse_errors else "")
+                + " Gate cannot evaluate — add standard fix_summary format to all agents."
+                if _regex_parse_failure
                 else (
-                    None
-                    if _healing_effectiveness >= 0.50
+                    "AUDIT: No fix_summary matched. Either no violations were found this run "
+                    "or all agents lack fix_summary fields entirely."
+                    if _healing_effectiveness is None
                     else (
-                        f"Only {_healing_effectiveness:.0%} of found violations were fixed "
-                        f"({_total_fixed}/{_total_found})"
+                        None
+                        if _healing_effectiveness >= 0.50
+                        else (
+                            f"Only {_healing_effectiveness:.0%} of found violations were fixed "
+                            f"({_total_fixed}/{_total_found})"
+                        )
                     )
                 )
             ),
@@ -6097,9 +6127,18 @@ def _write_heal_run_complete(
             "criterion": "Zero-Fix Healer Penalty",
             "target": "==0 agents with found>0 and fixed==0",
             "threshold": 0,
-            "actual": len(_zero_fix_agents),
-            "status": "PASS" if not _zero_fix_agents else "FAIL",
-            "blocker": _zero_fix_blocker,
+            "actual": len(_zero_fix_agents) if not _regex_parse_failure else None,
+            "status": (
+                "N/A (REGEX PARSE FAILURE)"
+                if _regex_parse_failure
+                else ("PASS" if not _zero_fix_agents else "FAIL")
+            ),
+            "blocker": (
+                f"AUDIT: Cannot evaluate zero-fix penalty — no fix_summary strings parsed. "
+                f"{_summaries_with_text} summaries exist but regex matched 0."
+                if _regex_parse_failure
+                else _zero_fix_blocker
+            ),
             "severity": "critical",
         },
     ]
@@ -6167,8 +6206,9 @@ def _write_heal_run_complete(
                 "weight_shift": weight_shift,
             },
             "meta_learning_pipeline": {
-                "pipeline_ran": bool(ml),
-                "total_experiences": ml.get("total_experiences", 0),
+                # enabled resets to False at run-init; True only if update_meta_learning() was called
+                "pipeline_ran": ml.get("enabled", False),
+                "total_experiences": ml.get("total_experiences", 0),  # cumulative across all runs
                 "recent_experiences": ml.get("recent_experiences", [])[:5],
                 "failure_vector_count": len(ml.get("recent_failure_vectors", [])),
                 "bge_model": ml.get("bge_model", "hash-fallback-v1"),
@@ -6187,6 +6227,14 @@ def _write_heal_run_complete(
             "criteria_total": len(gate_criteria),
             "low_signal_warning": _low_signal_warning,
             "gate_criteria": gate_criteria,
+            "healing_audit": {
+                "summaries_with_text": _summaries_with_text,
+                "summaries_parsed": _summaries_parsed,
+                "regex_parse_failure": _regex_parse_failure,
+                "parse_errors": _parse_errors,
+                "ml_pipeline_ran_this_run": _ml_pipeline_ran,
+                "ml_total_experiences_cumulative": _ml_records,
+            },
         },
     }
 
