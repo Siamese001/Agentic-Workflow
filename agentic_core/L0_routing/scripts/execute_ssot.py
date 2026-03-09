@@ -5208,7 +5208,8 @@ def _collect_llm_call_trace(
             "actual_calls": len(call_trace),
             "blocked_by_flags": blocked_by_flags,
             "blocked_by_errors": blocked_by_errors,
-            "execution_rate": (round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else 1.0),
+            # null when no LLM agents routed — 0/0=1.0 is a false positive in raw JSON
+            "execution_rate": (round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else None),
         },
     }
 
@@ -5789,9 +5790,15 @@ def _write_heal_run_complete(
     )
 
     # ── Executive gate criteria (12 gates) ────────────────────────────────────
-    llm_rate = llm_trace["stats"]["execution_rate"]
+    llm_rate = llm_trace["stats"]["execution_rate"]  # may be None
+    _has_llm_workload = llm_trace["stats"]["expected_calls"] > 0
+    # Calibration is only meaningful when LLM calls exist;
+    # DETERMINISTIC err=0.0 is not miscalibration evidence — it's a tautology (rule-based = 100% predicted)
+    _llm_calibration = {tier: cd for tier, cd in (calibration or {}).items() if tier != "DETERMINISTIC"}
     calib_max_err = (
-        max((v["calibration_error"] for v in calibration.values()), default=0.0) if calibration else 0.0
+        max((v["calibration_error"] for v in _llm_calibration.values()), default=None)
+        if _llm_calibration
+        else None  # None = no LLM tiers in calibration data
     )
     conf_vals = [d.get("confidence", 0.0) for d in decisions if isinstance(d.get("confidence"), (int, float))]
     avg_conf = round(sum(conf_vals) / len(conf_vals), 4) if conf_vals else None
@@ -5918,9 +5925,22 @@ def _write_heal_run_complete(
             "target": "<=0.15",
             "threshold": 0.15,
             "actual": calib_max_err,
-            "status": "PASS" if calib_max_err <= 0.15 else "FAIL",
+            # N/A when no LLM calls: DETERMINISTIC tier err=0.0 is a tautology, not calibration evidence.
+            # LLM confidence calibration requires actual LLM predictions vs outcomes.
+            "status": (
+                "N/A (NO LLM CALLS)"
+                if calib_max_err is None
+                else ("PASS" if calib_max_err <= 0.15 else "FAIL")
+            ),
             "blocker": (
-                f"Max calibration error {calib_max_err} exceeds 0.15" if calib_max_err > 0.15 else None
+                "AUDIT: No LLM tiers in calibration data. DETERMINISTIC routing has no confidence "
+                "variance — err=0.0 is a tautology not a calibration result. Requires LLM invocations."
+                if calib_max_err is None
+                else (
+                    None
+                    if calib_max_err <= 0.15
+                    else f"Max LLM calibration error {calib_max_err} exceeds 0.15"
+                )
             ),
             "severity": "high",
         },
@@ -6087,10 +6107,13 @@ def _write_heal_run_complete(
     n_pass = sum(1 for g in gate_criteria if g["status"] == "PASS")
     n_fail = sum(1 for g in gate_criteria if g["status"] == "FAIL")
     n_na = sum(1 for g in gate_criteria if str(g["status"]).startswith("N/A"))
-    # OVERALL: PASS requires zero FAILs; N/A gates are excluded from pass/fail signal
-    overall_status = "PASS" if n_fail == 0 else "FAIL"
-    # Warn if most gates are N/A (output is low signal)
-    _low_signal_warning = n_na > len(gate_criteria) // 2
+    # LOW_SIGNAL: more gates N/A than PASS means output cannot be trusted as a clean bill of health
+    _low_signal_warning = n_na > n_pass
+    # OVERALL STATUS:
+    #   FAIL        → one or more gates failed (hard)
+    #   LOW_SIGNAL  → no failures, but N/A gates outnumber real PASS gates (cannot trust output)
+    #   PASS        → no failures AND real PASS gates >= N/A gates (sufficient signal)
+    overall_status = "FAIL" if n_fail > 0 else "LOW_SIGNAL" if _low_signal_warning else "PASS"
 
     output = {
         "meta": {
