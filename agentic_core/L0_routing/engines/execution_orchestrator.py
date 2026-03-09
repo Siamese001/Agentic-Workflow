@@ -6,7 +6,10 @@ CIDRegistry, ReEntryLoop, MetaLearningBus, and VigilanceDispatcher.
 Remains deterministic, side-effect minimal, uses injected seams only.
 """
 
+import logging
 from typing import Any
+
+Logger = logging.getLogger(__name__)
 
 
 class ExecutionOrchestrator:
@@ -59,9 +62,7 @@ class ExecutionOrchestrator:
         self.meta_bus = meta_bus
         self.l3_orchestrator = l3_orchestrator
 
-    def _delegate_to_l3(
-        self, path, payload, cycle, risk
-    ) -> dict[str, Any]:
+    def _delegate_to_l3(self, path, payload, cycle, risk) -> dict[str, Any]:
         """
         Delegate execution to L3 orchestrator for Paths B/C/D.
 
@@ -87,8 +88,16 @@ class ExecutionOrchestrator:
                     "signals": list(getattr(result, "signals", [])),
                     "metadata": getattr(result, "metadata", {}),
                 }
-            except Exception as exc:
-                orchestration = {"error": str(exc), "completed": False}
+            except (ValueError, KeyError, AttributeError, TypeError, RuntimeError) as e:
+                # Expected L3 orchestration errors - log and continue with error state
+                Logger.error(f"[L0-ORCH] L3 orchestration failed: {e}")
+                orchestration = {"error": f"L3 orchestration failed: {e}", "completed": False}
+            except Exception as e:
+                # Critical L3 orchestration errors - log and continue with error state
+                Logger.critical(f"[L0-ORCH] Critical L3 orchestration error: {e}")
+                orchestration = {"error": f"Critical L3 orchestration error: {e}", "completed": False}
+                # Re-raise to surface critical issues to caller
+                raise
         return {
             "path": path,
             "risk": risk,

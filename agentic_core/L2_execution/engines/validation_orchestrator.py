@@ -325,10 +325,19 @@ class ValidationOrchestrator(SovereignBaseAgent):
             self.ctx.record_healing_attempt(file_path, success=False)
             return False
 
-        except Exception as e:
+        except (OSError, ValueError, SyntaxError) as e:
+            # Expected healing errors - log and return failure
             Logger.error(f"Healing error for {file_path}, key {violation_key}: {e}", exc_info=True)
             # guardian: allow-path-string
             print(f"      [ALERT] Healing error for {os.path.basename(file_path)}: {e}", flush=True)
+            return False
+        except Exception as e:
+            # Critical healing errors - log and return failure
+            Logger.critical(
+                f"Critical healing error for {file_path}, key {violation_key}: {e}", exc_info=True
+            )
+            # guardian: allow-path-string
+            print(f"      [CRITICAL] Healing error for {os.path.basename(file_path)}: {e}", flush=True)
             return False
 
     def execute(self) -> None:
@@ -433,9 +442,13 @@ class ValidationOrchestrator(SovereignBaseAgent):
                             else:
                                 self.logger.warning(f"    Could not fix: {canon_key}")
 
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except (ValueError, KeyError, AttributeError) as e:
+                    # Expected validation errors - log and continue
                     self.logger.error(f"    Error checking {canon_key}: {e}")
+                    errors += 1
+                except (RuntimeError, TypeError, MemoryError) as e:
+                    # Critical validation errors - log and continue
+                    self.logger.critical(f"    Critical error checking {canon_key}: {e}")
                     errors += 1
 
             self.logger.info(
@@ -482,10 +495,20 @@ class ValidationOrchestrator(SovereignBaseAgent):
                 "artifacts": [],
                 "errors": [],
             }
-        except Exception as e:
+        except (ValueError, KeyError, AttributeError) as e:
+            # Expected healing errors - return failed status
             return {
                 "status": "failed",
-                "details": f"CanonBaseAgent heal() failed: {str(e)}",
+                "details": f"CanonBaseAgent heal() failed with known error: {str(e)}",
+                "artifacts": [],
+                "errors": [str(e)],
+            }
+        except Exception as e:
+            # Critical healing errors - return failed status
+            Logger.critical(f"Critical healing error in CanonBaseAgent.heal(): {e}", exc_info=True)
+            return {
+                "status": "failed",
+                "details": f"CanonBaseAgent heal() failed with critical error: {str(e)}",
                 "artifacts": [],
                 "errors": [str(e)],
             }

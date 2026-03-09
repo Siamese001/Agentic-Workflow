@@ -78,7 +78,8 @@ class ResumeOrchestratorEngine(BaseRGEngine):
         try:
             self.ctx.buffer.write("mission_input", mission_input, source_agent=self.name)
         except PermissionError:
-            pass  # Idempotent
+            # Intentionally silent - buffer write is idempotent and may fail gracefully
+            pass
 
         try:
             step_count = 0

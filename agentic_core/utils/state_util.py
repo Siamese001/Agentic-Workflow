@@ -18,6 +18,11 @@ def check_past_failures(task: str) -> str:
         # Use canonical state analysis with empty history (placeholder implementation)
         result = StateAnalysisMixin._check_past_failures([])
         return result["recommendation"]
-    # guardian: allow-silent-swallower
-    except Exception:
+    except (AttributeError, KeyError, ValueError, TypeError) as e:
+        # Expected state analysis errors
+        logging.getLogger(__name__).warning(f"State analysis error: {e}")
+        return "Unable to check past failures"
+    except (OSError, RuntimeError, MemoryError) as e:
+        # Critical state analysis errors
+        logging.getLogger(__name__).error(f"Critical state analysis error: {e}")
         return "Unable to check past failures"

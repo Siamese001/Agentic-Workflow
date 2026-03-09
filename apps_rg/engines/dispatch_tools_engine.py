@@ -42,9 +42,15 @@ class DispatchToolsEngine(BaseRGEngine):
             result = await tool_map[tool_name](params)
             self.record_pass(f"Tool {tool_name} executed successfully")
             return {"success": True, "result": result}
+        except (ValueError, KeyError, TypeError) as e:
+            # Expected tool execution errors
+            self.record_fail(f"Tool {tool_name} failed with known error: {e}")
+            return {"success": False, "error": f"Tool execution error: {str(e)}"}
         except Exception as e:
-            self.record_fail(f"Tool {tool_name} failed: {e}")
-            return {"success": False, "error": str(e)}
+            # Critical tool execution errors
+            self.logger.error(f"Critical error in tool {tool_name}: {e}")
+            self.record_fail(f"Tool {tool_name} failed with critical error: {e}")
+            return {"success": False, "error": f"Critical tool error: {str(e)}"}
 
     async def _count_words(self, params: dict[str, Any]) -> int:
         """Word counting tool."""

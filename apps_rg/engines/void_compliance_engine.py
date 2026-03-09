@@ -13,10 +13,10 @@ import logging
 from pathlib import Path
 from typing import Any
 
-from apps_rg.engines.base_rg_engine import BaseRGEngine
 from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
 )
+from apps_rg.engines.base_rg_engine import BaseRGEngine
 
 Logger = logging.getLogger(__name__)
 
@@ -73,5 +73,11 @@ class VoidComplianceEngine(BaseRGEngine):
                 if "import archives" in line or "from archives" in line:
                     return True
             return False
-        except Exception:
+        except (OSError, UnicodeDecodeError) as e:
+            # Expected file reading errors
+            self.logger.warning(f"Could not read file {file_path}: {e}")
+            return False
+        except Exception as e:
+            # Critical errors during file processing
+            self.logger.error(f"Unexpected error processing file {file_path}: {e}")
             return False
