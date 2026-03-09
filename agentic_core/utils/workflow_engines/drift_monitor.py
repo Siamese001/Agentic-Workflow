@@ -8,11 +8,15 @@ and persists snapshots to L4 telemetry registry.
 
 from __future__ import annotations
 
+import logging
 import math
 import statistics
 import uuid
+from collections.abc import Callable
 from datetime import datetime
 from typing import Any
+
+_logger = logging.getLogger(__name__)
 
 from .snapshots import (
     AnswerQualitySnapshot,
@@ -119,15 +123,17 @@ class RetrievalDriftMonitor:
         self,
         snapshot: RetrievalDriftSnapshot,
         now_iso: str | None = None,
+        id_factory: Callable[[], str] | None = None,
     ) -> list[DriftAlert]:
         """Return DriftAlerts for any metrics below threshold."""
         _ts = now_iso if now_iso is not None else _utcnow()
+        _new_id = id_factory if id_factory is not None else lambda: str(uuid.uuid4())
         alerts: list[DriftAlert] = []
 
         if snapshot.retrieval_hit_rate < self.hit_rate_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
+                    alert_id=_new_id(),
                     timestamp=_ts,
                     alert_type="retrieval_drift",
                     metric_name="retrieval_hit_rate",
@@ -145,7 +151,7 @@ class RetrievalDriftMonitor:
         if snapshot.score_distribution_std > self.score_std_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
+                    alert_id=_new_id(),
                     timestamp=_ts,
                     alert_type="retrieval_drift",
                     metric_name="score_distribution_std",
@@ -163,7 +169,7 @@ class RetrievalDriftMonitor:
         if snapshot.top_k_stability < self.stability_threshold:
             alerts.append(
                 DriftAlert(
-                    alert_id=str(uuid.uuid4()),
+                    alert_id=_new_id(),
                     timestamp=_ts,
                     alert_type="retrieval_drift",
                     metric_name="top_k_stability",
@@ -190,8 +196,8 @@ class RetrievalDriftMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except Exception:
-            pass
+        except Exception:  # guardian: allow-silent-swallow
+            _logger.debug("RetrievalDriftMonitor._persist failed", exc_info=True)
 
 
 class EmbeddingDriftMonitor:
@@ -324,8 +330,8 @@ class EmbeddingDriftMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except Exception:
-            pass
+        except Exception:  # guardian: allow-silent-swallow
+            _logger.debug("EmbeddingDriftMonitor._persist failed", exc_info=True)
 
 
 class AnswerQualityMonitor:
@@ -459,8 +465,8 @@ class AnswerQualityMonitor:
                 payload=snapshot.to_dict(),
             )
             self.l4_store.put(artifact)
-        except Exception:
-            pass
+        except Exception:  # guardian: allow-silent-swallow
+            _logger.debug("AnswerQualityMonitor._persist failed", exc_info=True)
 
 
 __all__ = [

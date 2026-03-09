@@ -1409,17 +1409,17 @@ agentic_core/utils/project_root_util.py:32:global_mutation:Global mutation: os.e
 agentic_core/utils/workflow_engines/answer_support.py:49:magic_configuration:Magic configuration: Hardcoded min_overlap_words=3
 agentic_core/utils/workflow_engines/answer_support.py:50:magic_configuration:Magic configuration: Hardcoded fully_supported_threshold=0.8
 agentic_core/utils/workflow_engines/dpo_batch_builder.py:35:magic_configuration:Magic configuration: Hardcoded min_score_delta=0.1
-agentic_core/utils/workflow_engines/drift_monitor.py:193:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/utils/workflow_engines/drift_monitor.py:202:magic_configuration:Magic configuration: Hardcoded norm_std_threshold=0.15
-agentic_core/utils/workflow_engines/drift_monitor.py:203:magic_configuration:Magic configuration: Hardcoded similarity_mean_threshold=0.5
-agentic_core/utils/workflow_engines/drift_monitor.py:327:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/utils/workflow_engines/drift_monitor.py:336:magic_configuration:Magic configuration: Hardcoded groundedness_threshold=0.7
-agentic_core/utils/workflow_engines/drift_monitor.py:337:magic_configuration:Magic configuration: Hardcoded hallucination_threshold=0.15
-agentic_core/utils/workflow_engines/drift_monitor.py:338:magic_configuration:Magic configuration: Hardcoded override_threshold=0.2
-agentic_core/utils/workflow_engines/drift_monitor.py:462:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
-agentic_core/utils/workflow_engines/drift_monitor.py:57:magic_configuration:Magic configuration: Hardcoded hit_rate_threshold=0.7
-agentic_core/utils/workflow_engines/drift_monitor.py:58:magic_configuration:Magic configuration: Hardcoded score_std_threshold=0.2
-agentic_core/utils/workflow_engines/drift_monitor.py:59:magic_configuration:Magic configuration: Hardcoded stability_threshold=0.6
+agentic_core/utils/workflow_engines/drift_monitor.py:199:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:208:magic_configuration:Magic configuration: Hardcoded norm_std_threshold=0.15
+agentic_core/utils/workflow_engines/drift_monitor.py:209:magic_configuration:Magic configuration: Hardcoded similarity_mean_threshold=0.5
+agentic_core/utils/workflow_engines/drift_monitor.py:333:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:342:magic_configuration:Magic configuration: Hardcoded groundedness_threshold=0.7
+agentic_core/utils/workflow_engines/drift_monitor.py:343:magic_configuration:Magic configuration: Hardcoded hallucination_threshold=0.15
+agentic_core/utils/workflow_engines/drift_monitor.py:344:magic_configuration:Magic configuration: Hardcoded override_threshold=0.2
+agentic_core/utils/workflow_engines/drift_monitor.py:468:silent_swallower:Silent exception swallower: catches Exception without raise or proper return
+agentic_core/utils/workflow_engines/drift_monitor.py:61:magic_configuration:Magic configuration: Hardcoded hit_rate_threshold=0.7
+agentic_core/utils/workflow_engines/drift_monitor.py:62:magic_configuration:Magic configuration: Hardcoded score_std_threshold=0.2
+agentic_core/utils/workflow_engines/drift_monitor.py:63:magic_configuration:Magic configuration: Hardcoded stability_threshold=0.6
 agentic_core/utils/workflow_engines/meta_learning_bridge.py:159:magic_configuration:Magic configuration: Hardcoded _min_observations=5
 agentic_core/utils/workflow_engines/meta_learning_bridge.py:160:magic_configuration:Magic configuration: Hardcoded _low_completeness_threshold=0.6
 agentic_core/utils/workflow_engines/meta_learning_bridge.py:161:magic_configuration:Magic configuration: Hardcoded _high_fragmentation_threshold=0.3
