@@ -5561,13 +5561,23 @@ def _write_mandatory_json_output(
         _bge_per_agent = _ml_pipeline_state.get("bge_per_agent", {})
         _bge_arch_counts = _ml_pipeline_state.get("bge_arch_counts", {})
         _bge_model = _ml_pipeline_state.get("bge_model", "hash-fallback-v1")
+        _llm_active = heatmap and any(
+            _tiers.get("QWEN_VLLM", 0) + _tiers.get("GEMINI_2_5_PRO", 0) > 0 for _tiers in heatmap.values()
+        )
         print("")
-        print(f"Embedding model: {_bge_model}")
+        print("Table 1: Agent Routing Heatmap")
+        print(f"  Embedding model: {_bge_model}")
+        if not _llm_active:
+            print(
+                "  AUDIT NOTE: Zero LLM invocations this run. All violations resolved within "
+                "DETERMINISTIC threshold. QWEN_VLLM/GEMINI_2_5_PRO paths NOT exercised."
+            )
         print("")
         print("| Agent / Script | DETERMINISTIC | QWEN_VLLM | GEMINI_2_5_PRO | Total | BGE Calls |")
         print("|----------------|:---:|:---:|:---:|:---:|:---:|")
         _hm_totals = {"DETERMINISTIC": 0, "QWEN_VLLM": 0, "GEMINI_2_5_PRO": 0}
         _bge_total = 0
+        _partial_agents: list[str] = []
         for _ag, _tiers in sorted(heatmap.items()):
             _d = _tiers.get("DETERMINISTIC", 0)
             _q = _tiers.get("QWEN_VLLM", 0)
@@ -5578,29 +5588,63 @@ def _write_mandatory_json_output(
             _hm_totals["DETERMINISTIC"] += _d
             _hm_totals["QWEN_VLLM"] += _q
             _hm_totals["GEMINI_2_5_PRO"] += _g
-            print(f"| {_ag} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |")
+            # Flag agents with systematic PARTIAL outcomes
+            _ag_partials = sum(
+                1 for _a in healing_actions if _a.get("agent") == _ag and _a.get("outcome") == "PARTIAL"
+            )
+            _partial_note = f" *(PARTIAL×{_ag_partials})*" if _ag_partials else ""
+            print(f"| {_ag}{_partial_note} | {_d} | {_q} | {_g} | {_t} | {_bge_ag} |")
+            if _ag_partials:
+                _partial_agents.append(_ag)
         _tot_all = sum(_hm_totals.values())
         print(
             f"| **TOTAL** | **{_hm_totals['DETERMINISTIC']}** |"
             f" **{_hm_totals['QWEN_VLLM']}** |"
             f" **{_hm_totals['GEMINI_2_5_PRO']}** | **{_tot_all}** | **{_bge_total}** |"
         )
+        if _partial_agents:
+            print("")
+            print(
+                f"  *PARTIAL outcome = scan succeeded, auto-heal re-scan found no additional work. "
+                f"Expected behavior for: {', '.join(_partial_agents)}.*"
+            )
         print("")
-        print("| BGE Architecture Location | Calls |")
-        print("|---------------------------|-------|")
-        print(f"| meta_learning/embed (2×/action) | {_bge_arch_counts.get('meta_learning_embed', 0)} |")
-        print(f"| routing/novelty_score (1×/decision) | {_bge_arch_counts.get('routing_novelty', 0)} |")
-        print(f"| semantic_cache/lookup | {_bge_arch_counts.get('semantic_cache', 0)} |")
-        print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** |")
+        print("Table 2: BGE Embedding Architecture Usage")
         print("")
-        print(
-            f"Run totals: {len(healing_actions)} actions  "
-            f"{len(successful)} OK  {len(failed_acts)} FAIL  "
-            f"success_rate={round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 'N/A'}  "
-            f"meta_learning_records={ml.get('total_experiences', 0)}  "
-            f"cache_hits={_semantic_cache_stats.get('hits', 0)}"
-        )
+        print("| BGE Architecture Location | Calls | Status |")
+        print("|---------------------------|-------|--------|")
+        _bge_me = _bge_arch_counts.get("meta_learning_embed", 0)
+        _bge_rn = _bge_arch_counts.get("routing_novelty", 0)
+        _bge_sc = _bge_arch_counts.get("semantic_cache", 0)
+        _bge_status = "ACTIVE" if _bge_model != "hash-fallback-v1" else "DISABLED (hash-fallback)"
+        print(f"| meta_learning/embed (2×/action) | {_bge_me} | {_bge_status} |")
+        print(f"| routing/novelty_score (1×/decision) | {_bge_rn} | {_bge_status} |")
+        print(f"| semantic_cache/lookup | {_bge_sc} | {_bge_status} |")
+        print(f"| **TOTAL** | **{sum(_bge_arch_counts.values())}** | **{_bge_status}** |")
+        if _bge_model == "hash-fallback-v1":
+            print("")
+            print(
+                "  AUDIT NOTE: BMG_EMBEDDINGS_ENABLED not set. "
+                "Set BMG_EMBEDDINGS_ENABLED=true to activate BAAI/bge-m3 semantic embeddings, "
+                "FAISS corpus search, and novelty-based routing."
+            )
         print("")
+        _sr = round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else "N/A"
+        _partial_count = sum(1 for _a in healing_actions if _a.get("outcome") == "PARTIAL")
+        _skip_count = sum(1 for _a in healing_actions if _a.get("outcome") == "SKIPPED")
+        print("Table 3: Run Summary")
+        print("")
+        print("| Metric | Value | Notes |")
+        print("|--------|-------|-------|")
+        print(f"| Total Actions | {len(healing_actions)} | across all agents and territories |")
+        print(f"| SUCCESS | {len(successful)} | clean resolutions |")
+        print(f"| PARTIAL | {_partial_count} | scan OK, no further work found (expected) |")
+        print(f"| SKIPPED | {_skip_count} | no heal method available |")
+        print(f"| FAIL | {len(failed_acts)} | |")
+        print(f"| Success Rate | {_sr} | PARTIAL excluded from numerator |")
+        print(f"| Meta-Learning Records | {ml.get('total_experiences', 0)} | |")
+        print(f"| Semantic Cache Hits | {_semantic_cache_stats.get('hits', 0)} | |")
+        print(f"| Failure Vectors (FAISS) | {len(ml.get('recent_failure_vectors', []))} | |")
         print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
@@ -5663,9 +5707,12 @@ def _write_heal_run_complete(
     # ── Pattern reuse ─────────────────────────────────────────────────────────
     faiss_stats = state_mgr.state.get("faiss_retrieval_stats", {})
     patterns_available = faiss_stats.get("index_size", 0)
-    patterns_matched = faiss_stats.get("matched", len(successful))
-    patterns_applied = faiss_stats.get("applied", len(successful))
-    reuse_success_rate = round(patterns_applied / patterns_matched, 4) if patterns_matched else 1.0
+    # Only report matched/applied when FAISS index is actually populated.
+    # Fallback to len(successful) was fabricating a 1.0 rate on empty corpus.
+    _faiss_has_data = bool(faiss_stats.get("matched") is not None or patterns_available > 0)
+    patterns_matched = faiss_stats.get("matched", 0) if _faiss_has_data else 0
+    patterns_applied = faiss_stats.get("applied", 0) if _faiss_has_data else 0
+    reuse_success_rate = round(patterns_applied / patterns_matched, 4) if patterns_matched else None
 
     # ── Git commit ────────────────────────────────────────────────────────────
     git_commit = ""
@@ -5767,20 +5814,31 @@ def _write_heal_run_complete(
             "target": ">=0.80",
             "threshold": 0.80,
             "actual": llm_rate,
-            "status": "PASS" if llm_rate >= 0.80 else "FAIL",
+            # Vacuous pass: expected_calls==0 means 0/0=1.0 which provides zero signal
+            "status": (
+                "N/A (VACUOUS)"
+                if llm_trace["stats"]["expected_calls"] == 0
+                else ("PASS" if llm_rate >= 0.80 else "FAIL")
+            ),
             "blocker": (
-                (
-                    lambda _stats=llm_trace["stats"], _llm_on=getattr(decision_engine, "enable_llm", True): (
-                        f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
-                        + (
-                            " — LLM disabled (enable_llm=False)"
-                            if not _llm_on
-                            else " — not_executed (routing decided LLM but no llm_call_evidence written)"
+                "AUDIT: expected_calls=0 — LLM routing untested this run. All violations resolved "
+                "DETERMINISTICALLY. Gate passes vacuously (0/0=1.0). Trigger LLM workload to validate path."
+                if llm_trace["stats"]["expected_calls"] == 0
+                else (
+                    (
+                        lambda _stats=llm_trace["stats"],
+                        _llm_on=getattr(decision_engine, "enable_llm", True): (
+                            f"{_stats['expected_calls']} call(s) routed to LLM, {_stats['actual_calls']} executed"
+                            + (
+                                " — LLM disabled (enable_llm=False)"
+                                if not _llm_on
+                                else " — not_executed (routing decided LLM but no llm_call_evidence written)"
+                            )
                         )
-                    )
-                )()
-                if llm_rate < 0.80
-                else None
+                    )()
+                    if llm_rate < 0.80
+                    else None
+                )
             ),
             "severity": "critical",
         },
@@ -5809,8 +5867,17 @@ def _write_heal_run_complete(
             "target": ">=0.75",
             "threshold": 0.75,
             "actual": reuse_success_rate,
-            "status": "PASS" if reuse_success_rate >= 0.75 else "FAIL",
-            "blocker": None if reuse_success_rate >= 0.75 else "Pattern application below threshold",
+            "status": (
+                "N/A (NO FAISS INDEX)"
+                if reuse_success_rate is None and patterns_available == 0
+                else ("PASS" if (reuse_success_rate or 0.0) >= 0.75 else "FAIL")
+            ),
+            "blocker": (
+                "AUDIT: FAISS index not populated — pattern matching unavailable. "
+                "Enable BMG_EMBEDDINGS_ENABLED=true to build corpus."
+                if reuse_success_rate is None
+                else (None if reuse_success_rate >= 0.75 else "Pattern application below threshold")
+            ),
             "severity": "medium",
         },
         {
@@ -5945,6 +6012,7 @@ def _write_heal_run_complete(
                 "total_experiences": ml.get("total_experiences", 0),
                 "recent_experiences": ml.get("recent_experiences", [])[:5],
                 "failure_vector_count": len(ml.get("recent_failure_vectors", [])),
+                "bge_model": ml.get("bge_model", "hash-fallback-v1"),
             },
         },
         "healing_actions": healing_actions,
@@ -5977,9 +6045,11 @@ def _write_heal_run_complete(
         print(f"  {_uri}")
         print("=" * 60)
         print("")
-        print("| Gate Criterion | Target | Actual | Status |")
-        print("|----------------|--------|--------|--------|")
-        for g in gate_criteria[:6]:  # Show first 6 critical gates
+        print("Table 4: Gate Criteria Summary (heal_run_complete.json)")
+        print("")
+        print("| # | Gate Criterion | Target | Actual | Status | Audit Note |")
+        print("|---|----------------|--------|--------|--------|------------|")
+        for _gi, g in enumerate(gate_criteria, 1):
             _act = g.get("actual")
             if _act is None:
                 _act_str = "N/A"
@@ -5987,20 +6057,45 @@ def _write_heal_run_complete(
                 _act_str = f"{_act:.4f}"
             else:
                 _act_str = str(_act)
+            _status = g.get("status", "?")
+            _blocker = g.get("blocker") or ""
+            # Truncate blocker for table display
+            _note = (_blocker[:60] + "...") if len(_blocker) > 60 else _blocker
             print(
-                f"| {g.get('criterion', '')[:30]} | {g.get('target', '')[:10]} | {_act_str} | {g.get('status', '?')} |"
+                f"| {_gi} | {g.get('criterion', '')[:35]} "
+                f"| {g.get('target', '')[:10]} | {_act_str} | {_status} | {_note} |"
             )
-        print(f"| **OVERALL** | **12 gates** | **{n_pass}/{len(gate_criteria)}** | **{overall}** |")
-        print("")
-        print("| Coverage Metric | Value |")
-        print("|-----------------|-------|")
         print(
-            f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} |"
+            f"| | **OVERALL** | **{len(gate_criteria)} gates** | **{n_pass}/{len(gate_criteria)} PASS** | **{overall}** | |"
         )
-        print(f"| Coverage Ratio | {coverage['coverage_ratio']:.4f} |")
-        print(f"| LLM Execution Rate | {llm_trace['stats']['execution_rate']:.4f} |")
-        print(f"| Pattern Reuse Rate | {reuse_success_rate:.4f} |")
-        print(f"| Healing Effectiveness | {_healing_effectiveness if _healing_effectiveness else 'N/A'} |")
+        print("")
+        print("Table 5: Coverage and Capability Summary")
+        print("")
+        print("| Metric | Value | Status |")
+        print("|--------|-------|--------|")
+        print(
+            f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} "
+            f"| {'OK' if coverage['coverage_ratio'] >= 0.90 else 'GAP'} |"
+        )
+        print(
+            f"| Coverage Ratio | {coverage['coverage_ratio']:.4f} | {'OK' if coverage['coverage_ratio'] >= 0.90 else 'GAP'} |"
+        )
+        _llm_exp = llm_trace["stats"]["expected_calls"]
+        _llm_rate_str = (
+            "N/A (VACUOUS 0/0)" if _llm_exp == 0 else f"{llm_trace['stats']['execution_rate']:.4f}"
+        )
+        print(f"| LLM Execution Rate | {_llm_rate_str} | {'N/A' if _llm_exp == 0 else 'OK'} |")
+        _rr_str = f"{reuse_success_rate:.4f}" if reuse_success_rate is not None else "N/A (no FAISS index)"
+        print(f"| Pattern Reuse Rate | {_rr_str} | {'N/A' if reuse_success_rate is None else 'OK'} |")
+        print(
+            f"| Healing Effectiveness | {_healing_effectiveness if _healing_effectiveness is not None else 'N/A'} | {'OK' if _healing_effectiveness is None or _healing_effectiveness >= 0.50 else 'LOW'} |"
+        )
+        print(
+            f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'hash-fallback-v1')} | {'ACTIVE' if 'bge-m3' in _ml_pipeline_state.get('bge_model', '') else 'DISABLED'} |"
+        )
+        print(
+            f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} misses={_semantic_cache_stats.get('misses', 0)} | {'ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT'} |"
+        )
         print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s", _e)
@@ -6211,6 +6306,8 @@ def _print_executive_summary(
     print(f"Run ID: {run_id} | Git: {git} | {ts}")
     print("=" * _W)
     print("")
+    print("Table 6: Executive Gate Criteria (Full Detail)")
+    print("")
     print("| Gate Criterion | Target | Actual | Status | Blocker |")
     print("|----------------|--------|--------|--------|---------|")
     # ── Precompute detail values for inline annotation ────────────────────────
@@ -6256,6 +6353,12 @@ def _print_executive_summary(
             rate = llm_stats.get("execution_rate", 1.0)
             blocked = llm_stats.get("blocked_by_flags", 0)
             lines.append(f"    expected: {exp}  actual: {act}  rate: {rate:.4f}  blocked: {blocked}")
+            if exp == 0:
+                lines.append(
+                    "    AUDIT: Gate passes vacuously (0/0=1.0). "
+                    "No LLM workload — all violations within DETERMINISTIC threshold. "
+                    "To test LLM path, introduce violations above routing score threshold."
+                )
         elif criterion == "Confidence Calibration Error":
             for tier, cd in (calib or {}).items():
                 err = cd.get("calibration_error", 0.0)
@@ -6274,8 +6377,13 @@ def _print_executive_summary(
             avail = pattern_reuse.get("patterns_available", 0)
             matched = pattern_reuse.get("patterns_matched", 0)
             applied = pattern_reuse.get("patterns_applied", 0)
-            rate = pattern_reuse.get("reuse_success_rate", 1.0)
-            lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate:.4f}")
+            rate = pattern_reuse.get("reuse_success_rate")
+            rate_str = f"{rate:.4f}" if rate is not None else "N/A"
+            lines.append(f"    available: {avail}  matched: {matched}  applied: {applied}  rate: {rate_str}")
+            if avail == 0:
+                lines.append(
+                    "    NOTE: FAISS index empty — enable BMG_EMBEDDINGS_ENABLED=true to build corpus"
+                )
         elif criterion == "Healing Effectiveness Rate":
             if _heal_rows:
                 for _ag, _terr, _fx, _fd, _tag in _heal_rows:
@@ -6350,6 +6458,93 @@ def _print_executive_summary(
     )
     print(f"  {'Agent coverage proof':<40} OK ({exec_count}/{exp_count} agents, ratio={cov_ratio:.4f})")
 
+    # Known Gaps
+    print("")
+    print("KNOWN CAPABILITY GAPS (auditor-identified — require remediation)")
+    print(sep)
+    _known_gaps: list[tuple[str, str, str]] = []
+    # Gap 1: LLM routing never exercised
+    if llm_stats.get("expected_calls", 0) == 0:
+        _known_gaps.append(
+            (
+                "LLM Routing Untested",
+                "All routing decisions DETERMINISTIC — QWEN/GEMINI paths never invoked in this run.",
+                "Introduce violations above routing score threshold to exercise LLM tiers.",
+            )
+        )
+    # Gap 2: BGE embeddings disabled
+    _bge_md = (
+        complete_output.get("learning", {})
+        .get("meta_learning_pipeline", {})
+        .get("bge_model", "hash-fallback-v1")
+    )
+    if "bge-m3" not in str(_bge_md):
+        _known_gaps.append(
+            (
+                "BGE Embeddings Disabled",
+                "BMG_EMBEDDINGS_ENABLED not set. Semantic embeddings, FAISS corpus, "
+                "novelty scoring, and semantic cache ALL dormant.",
+                "Set BMG_EMBEDDINGS_ENABLED=true and re-run to activate full intelligence layer.",
+            )
+        )
+    # Gap 3: FAISS index not built
+    _pr = complete_output.get("learning", {}).get("pattern_reuse", {})
+    if _pr.get("patterns_available", 0) == 0:
+        _known_gaps.append(
+            (
+                "FAISS Pattern Corpus Empty",
+                "patterns_available=0. Pattern Reuse gate passes vacuously (no index to match against).",
+                "Enable BGE embeddings to build FAISS corpus over multiple runs.",
+            )
+        )
+    # Gap 4: Scan LocationHealerAgent[tests] has no heal method
+    _loc_skip = [
+        _a
+        for _a in complete_output.get("healing_actions", [])
+        if _a.get("agent") == "LocationHealerAgent" and _a.get("outcome") == "SKIPPED"
+    ]
+    if _loc_skip:
+        _viol_count = sum(
+            int(_m3.group(1))
+            for _a in _loc_skip
+            for _m3 in [__import__("re").search(r"(\d+) violation", str(_a.get("fix_summary", "")))]
+            if _m3
+        )
+        _gap_terrs = ", ".join(_a.get("territory", "?") for _a in _loc_skip)
+        _known_gaps.append(
+            (
+                f"LocationHealerAgent no heal method ({_gap_terrs})",
+                f"{_viol_count} location violations found but no heal capability implemented for this territory.",
+                "Implement heal_location() method for tests territory in LocationHealerAgent.",
+            )
+        )
+    # Gap 5: FileClassificationHealerAgent PARTIAL
+    _fc_partial = sum(
+        1
+        for _a in complete_output.get("healing_actions", [])
+        if _a.get("agent") == "FileClassificationHealerAgent" and _a.get("outcome") == "PARTIAL"
+    )
+    if _fc_partial:
+        _known_gaps.append(
+            (
+                "FileClassificationHealerAgent systematic PARTIAL",
+                f"{_fc_partial} PARTIAL outcomes across territories (scan OK, auto-heal re-scan finds no work). "
+                "This is expected behavior but depresses success rate metric.",
+                "Consider marking these as SUCCESS if scan+fix cycle completes cleanly.",
+            )
+        )
+    if _known_gaps:
+        print(f"  {'#':<3} {'Gap':<42} {'Description':<55} {'Remediation'}")
+        print(f"  {'-' * 3} {'-' * 42} {'-' * 55} {'-' * 40}")
+        for _gi, (_gap_name, _gap_desc, _gap_rem) in enumerate(_known_gaps, 1):
+            print(f"  {_gi:<3} {_gap_name:<42} {_gap_desc[:55]:<55} {_gap_rem[:40]}")
+            if len(_gap_desc) > 55:
+                print(f"  {'':3} {'':42} {_gap_desc[55:110]:<55}")
+            if len(_gap_rem) > 40:
+                print(f"  {'':3} {'':42} {'':55} {_gap_rem[40:80]}")
+    else:
+        print("  No known gaps identified.")
+
     # Next-run prediction (if blockers present)
     skipped_count = coverage.get("skipped_agents", {}).get("count", 0)
     blocked_llm = llm_stats.get("blocked_by_flags", 0)
@@ -6406,15 +6601,26 @@ def _print_executive_summary(
     print("")
     print("STRATEGY ROUTING WEIGHTS  (governs LLM tier selection)")
     print(sep)
+    _weights_initialized = not _prev_weights and bool(_cur_weights)
     if _cur_weights:
-        print("  | Strategy | Weight | Shift |")
-        print("  |----------|--------|-------|")
+        _status_note = "INITIALIZED (no prior run — not a real shift)" if _weights_initialized else "EVOLVED"
+        print(f"  Status: {_status_note}")
+        print("  | Strategy | Previous | Current | Shift | Signal |")
+        print("  |----------|----------|---------|-------|--------|")
         for _s, _w in sorted(_cur_weights.items()):
             _prev_w = _prev_weights.get(_s, 0.0)
             _shift = _weight_shift.get(_s, 0.0)
             _arrow = "▲" if _shift > 0 else ("▼" if _shift < 0 else "—")
-            print(f"  | {_s} | {_w:.3f} | {_arrow} {abs(_shift):.3f} |")
+            _sig = (
+                "init"
+                if _weights_initialized
+                else ("up" if _shift > 0 else ("down" if _shift < 0 else "stable"))
+            )
+            print(f"  | {_s} | {_prev_w:.3f} | {_w:.3f} | {_arrow} {abs(_shift):.3f} | {_sig} |")
         print("  Interpretation: Higher weight = strategy preferred for ambiguous routing decisions.")
+        if _weights_initialized:
+            print("  NOTE: Shifts shown are initialization deltas (0.0 → 1.0), not real learning.")
+            print("  Real weight evolution requires 2+ runs with LLM invocations.")
     else:
         print("  No strategy weights recorded (all decisions DETERMINISTIC this run).")
 
@@ -6444,7 +6650,7 @@ def _print_executive_summary(
     if _pr_matched > 0:
         print(
             f"  {_pr_matched} patterns matched from corpus  →  {_pr_applied} applied  "
-            f"(reuse_rate={pattern_reuse.get('reuse_success_rate', 0):.4f})"
+            f"(reuse_rate={pattern_reuse.get('reuse_success_rate') or 'N/A'})"
         )
         print("  Future runs: matched patterns are preferred before attempting novel fixes.")
     else:
