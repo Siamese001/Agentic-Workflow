@@ -5520,6 +5520,23 @@ def _write_mandatory_json_output(
         print("MANDATORY JSON OUTPUT")
         print(f"  {_uri}")
         print("=" * 60)
+        print("")
+        print("| Metric | Value |")
+        print("|--------|-------|")
+        print(f"| Healing Actions | {len(healing_actions)} |")
+        print(f"| Successful | {len(successful)} |")
+        print(f"| Failed | {len(failed_acts)} |")
+        print(
+            f"| Success Rate | {round(len(successful) / max(len(healing_actions), 1), 4) if healing_actions else 'N/A'} |"
+        )
+        print(f"| Routing Decisions | {len(decisions)} |")
+        print(f"| DETERMINISTIC | {tier_counts.get('DETERMINISTIC', 0)} |")
+        print(f"| QWEN_VLLM | {tier_counts.get('QWEN_VLLM', 0)} |")
+        print(f"| GEMINI_2_5_PRO | {tier_counts.get('GEMINI_2_5_PRO', 0)} |")
+        print(f"| Meta-Learning Records | {ml.get('total_experiences', 0)} |")
+        print(f"| Semantic Cache Hits | {_semantic_cache_stats.get('hits', 0)} |")
+        print(f"| Semantic Cache Misses | {_semantic_cache_stats.get('misses', 0)} |")
+        print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
 
@@ -5894,6 +5911,32 @@ def _write_heal_run_complete(
         print("MANDATORY JSON OUTPUT (heal_run_complete.json)")
         print(f"  {_uri}")
         print("=" * 60)
+        print("")
+        print("| Gate Criterion | Target | Actual | Status |")
+        print("|----------------|--------|--------|--------|")
+        for g in gate_criteria[:6]:  # Show first 6 critical gates
+            _act = g.get("actual")
+            if _act is None:
+                _act_str = "N/A"
+            elif isinstance(_act, float):
+                _act_str = f"{_act:.4f}"
+            else:
+                _act_str = str(_act)
+            print(
+                f"| {g.get('criterion', '')[:30]} | {g.get('target', '')[:10]} | {_act_str} | {g.get('status', '?')} |"
+            )
+        print(f"| **OVERALL** | **12 gates** | **{n_pass}/{len(gate_criteria)}** | **{overall}** |")
+        print("")
+        print("| Coverage Metric | Value |")
+        print("|-----------------|-------|")
+        print(
+            f"| Agents Executed | {coverage['executed_agents']['count']}/{coverage['expected_agents']['count']} |"
+        )
+        print(f"| Coverage Ratio | {coverage['coverage_ratio']:.4f} |")
+        print(f"| LLM Execution Rate | {llm_trace['stats']['execution_rate']:.4f} |")
+        print(f"| Pattern Reuse Rate | {reuse_success_rate:.4f} |")
+        print(f"| Healing Effectiveness | {_healing_effectiveness if _healing_effectiveness else 'N/A'} |")
+        print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s", _e)
 
@@ -6046,6 +6089,22 @@ def _write_failure_forensics(
         status_tag = "CLEAN" if clean else "FAILURES_PRESENT"
         _uri = out_path.as_uri()
         print(f"[FORENSICS] failure_forensics.json ({status_tag}) -> {_uri}")
+        print("")
+        print("| Forensics Metric | Count |")
+        print("|------------------|-------|")
+        print(f"| Failed Agents | {len(failed_agents)} |")
+        print(f"| Blocked Agents | {len(blockers)} |")
+        print(f"| Misrouted Agents | {len(misrouted_agents)} |")
+        print(f"| Status | {status_tag} |")
+        if failed_agents:
+            print("")
+            print("| Failed Agent | Territory | Outcome |")
+            print("|--------------|-----------|---------|")
+            for fa in failed_agents[:5]:
+                print(
+                    f"| {fa.get('agent', '?')[:20]} | {fa.get('territory', '')[:15]} | {fa.get('actual_behavior', '')[:15]} |"
+                )
+        print("")
     except Exception as _e:  # guardian: allow-silent-swallower
         logger.error("[FORENSICS] Failed to write failure_forensics.json: %s", _e)
 
@@ -6086,17 +6145,9 @@ def _print_executive_summary(
     ts = meta.get("timestamp", "")
     print(f"Run ID: {run_id} | Git: {git} | {ts}")
     print("=" * _W)
-
-    # Gate criteria table
-    col_crit = 42
-    col_tgt = 8
-    col_act = 10
-    col_st = 6
-    hdr = (
-        f"{'GATE CRITERIA':<{col_crit}} | {'TARGET':>{col_tgt}} | {'ACTUAL':>{col_act}} | "
-        f"{'STATUS':<{col_st}} | BLOCKER"
-    )
-    print(hdr)
+    print("")
+    print("| Gate Criterion | Target | Actual | Status | Blocker |")
+    print("|----------------|--------|--------|--------|---------|")
     # ── Precompute detail values for inline annotation ────────────────────────
     cov_ratio = coverage.get("coverage_ratio", 0.0)
     exec_count = coverage.get("executed_agents", {}).get("count", 0)
@@ -6189,10 +6240,9 @@ def _print_executive_summary(
                 lines.append("    no zero-fix healers")
         return lines
 
-    print(sep)
     for g in gate_criteria:
-        crit = str(g.get("criterion", ""))[:col_crit]
-        tgt = str(g.get("target", ""))[:col_tgt]
+        crit = str(g.get("criterion", ""))[:40]
+        tgt = str(g.get("target", ""))[:10]
         actual_raw = g.get("actual")
         if actual_raw is None:
             actual_str = "N/A"
@@ -6201,20 +6251,14 @@ def _print_executive_summary(
         else:
             actual_str = str(actual_raw)
         status = g.get("status", "?")
-        blocker = g.get("blocker") or "N/A"
-        status_disp = f"[{status}]"
-        print(
-            f"{crit:<{col_crit}} | {tgt:>{col_tgt}} | {actual_str:>{col_act}} | "
-            f"{status_disp:<{col_st + 2}} | {blocker}"
-        )
+        blocker = str(g.get("blocker") or "N/A")[:30]
+        print(f"| {crit} | {tgt} | {actual_str} | {status} | {blocker} |")
         for _dl in _gate_detail(str(g.get("criterion", ""))):
-            print(_dl)
-    print(sep)
+            print(f"| | | | | {_dl} |")
     print(
-        f"{'OVERALL GATE STATUS':<{col_crit}} | {'':>{col_tgt}} | {'':>{col_act}} | "
-        f"[{overall}]   | {n_fail}/{len(gate_criteria)} criteria failed"
+        f"| **OVERALL** | **{len(gate_criteria)} gates** | **{n_pass}/{len(gate_criteria)}** | **{overall}** | **{n_fail} failed** |"
     )
-    print("=" * _W)
+    print("")
 
     # Critical blockers
     if all_blockers:
