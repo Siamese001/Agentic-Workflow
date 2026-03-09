@@ -9,8 +9,8 @@ from __future__ import annotations
 import importlib.util
 import math
 
-from agentic_core.semantic_memory.interfaces import BaseVectorStore
-from agentic_core.semantic_memory.models import MemoryItem, MemoryQuery
+from agentic_core.L4_state.types.memory_item_types import MemoryItem, MemoryQuery
+from agentic_core.L4_state.types.vector_store_types import BaseVectorStore
 
 
 def _faiss_available() -> bool:
