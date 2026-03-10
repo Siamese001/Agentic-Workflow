@@ -7,16 +7,6 @@ force mode, and sentinel-based user content preservation.
 from __future__ import annotations
 
 from ops_scripts.incident.create_v15_incident_bundle import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     BUNDLE_FILES,
     SENTINEL,
     create_bundle,

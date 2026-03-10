@@ -4,16 +4,6 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_router import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     compute_heal_confidence,
     get_historical_success_rate,
     route_healing_tier,

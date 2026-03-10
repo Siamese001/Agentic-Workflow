@@ -23,16 +23,6 @@ from re import Pattern
 from typing import Any, Final
 
 from agentic_core.L5_safety.config.structure_blueprint._constants import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     ROOT_WHITELIST,  # noqa: F401 — re-exported via __init__.py
     SOVEREIGN_TERRITORIES,
 )

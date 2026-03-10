@@ -8,16 +8,6 @@ import pytest
 
 from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRouterClassifier
 from agentic_core.L0_routing.engines.shadow_routing_wiring import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     ShadowRoutingWiring,
     observe_routing_decision,
 )

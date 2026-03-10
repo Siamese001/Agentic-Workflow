@@ -12,16 +12,6 @@ from unittest.mock import Mock
 
 from tests.helpers.dev_tools_loader import load_dev_script
 from agentic_core.L0_routing.config.path_constants import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     AGENTIC_CORE_DIR,
     APPS_SHARED_DIR,
 )
@@ -99,7 +89,7 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
 
             new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(new_name, expected, f"Failed acronym-aware naming for {stem}")
-    
+
     def test_tool_registry_exclusion(self):
         """Critical Requirement: tool_registry.py must remain ignored."""
         mock_path = Mock(spec=Path)
@@ -192,7 +182,7 @@ class TestRelativeImportPatterns(unittest.TestCase):
                 self.assertIsNotNone(match, f"Should match: {content}")
                 result = pattern.sub(r"\g<prefix>NEW\g<suffix>", content)
                 self.assertEqual(result, expected, f"Failed for: {content}")
-        
+
     def test_direct_module_match(self):
         """Test direct module name matching without subpaths."""
         pattern = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape("mixin") + r"(?P<suffix>\s+import)")

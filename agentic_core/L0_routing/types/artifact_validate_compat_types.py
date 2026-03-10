@@ -11,16 +11,6 @@ Compatibility stub: agentic_core/L0_routing/types/artifact_validate_compat_types
 from __future__ import annotations
 
 from agentic_core.L0_routing.types.artifact_validators_types import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     make_healing_plan_from_dataclass,
     make_result_artifact_from_dataclass,
     to_healing_plan_dict,

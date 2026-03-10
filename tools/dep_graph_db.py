@@ -52,7 +52,13 @@ except ImportError as _e:
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
-SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
+AGENTIC_CORE_DIR = ROOT / "agentic_core"
+APPS_LIC_DIR = ROOT / "apps_lic"
+APPS_RG_DIR = ROOT / "apps_rg"
+APPS_SHARED_DIR = ROOT / "apps_shared"
+SYSTEM_LEARNING_DIR = ROOT / "system_learning"
+SSOT_DIR_PATHS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
+SSOT_DIRS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
 DB_PATH = ROOT / "artifacts" / "dep_graph.sqlite"
 
 LAYER_ORDER: dict[str, int] = {
@@ -112,8 +118,7 @@ def _build_graph() -> tuple[nx.DiGraph, dict[str, str], list]:
     module_to_file: dict[str, str] = {}
     syntax_errors: list[tuple[str, str]] = []
 
-    for d in SSOT_DIRS:
-        scan_root = ROOT / d
+    for scan_root in SSOT_DIR_PATHS:
         if not scan_root.exists():
             continue
         for py in sorted(scan_root.rglob("*.py")):

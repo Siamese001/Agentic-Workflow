@@ -15,16 +15,6 @@ from pathlib import Path
 from agentic_core.interfaces.write_gateway import InstructionPacket, get_write_gateway
 
 from .persistent_store import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     StoredArtifact,
     StoredArtifactRef,
     _canonicalize_payload,

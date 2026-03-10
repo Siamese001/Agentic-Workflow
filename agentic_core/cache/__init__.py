@@ -7,16 +7,6 @@ L4 remains the only source of truth.  Redis stores memoised derivatives only.
 """
 
 from agentic_core.cache.cache_key_builders import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     build_cap_registry_key,
     build_compiled_prompt_key,
     build_lease_key,

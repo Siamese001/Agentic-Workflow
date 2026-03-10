@@ -7,16 +7,6 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L4_state.enforcement.readonly_retrieval_scope import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     RetrievalMutationViolation,
     assert_not_read_only,
     is_read_only_retrieval_active,

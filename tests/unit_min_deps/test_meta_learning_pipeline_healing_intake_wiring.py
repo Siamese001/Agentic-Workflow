@@ -7,16 +7,6 @@ import pytest
 from system_learning.engines.healing_outcome_intake_adapter import HealingOutcomeIntakeAdapter
 from system_learning.engines.in_memory_healing_outcome_intake_store import InMemoryHealingOutcomeIntakeStore
 from system_learning.pipelines.meta_learning_pipeline import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     PipelineConfig,
     PipelineDependencies,
     run_pipeline,

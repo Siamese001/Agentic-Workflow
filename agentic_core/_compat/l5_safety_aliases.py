@@ -9,16 +9,6 @@ Remove this shim after next major version.
 from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import AutonomyGuardianAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.CognitiveDispositionAgent import CognitiveDispositionAgent  # noqa: F401
 from agentic_core.L5_safety.reasoning.ConstitutionalReviewerAgent import (
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
     ConstitutionalReviewerAgent,  # noqa: F401
 )
 from agentic_core.L5_safety.reasoning.CostGovernorAgent import CostGovernorAgent  # noqa: F401
