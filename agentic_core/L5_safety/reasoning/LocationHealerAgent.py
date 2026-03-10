@@ -1842,7 +1842,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     "expected_depth": expected_depth,
                 }
 
-        except (OSError, ImportError, AttributeError, ValueError) as e:
+        except (OSError, ImportError, AttributeError, ValueError, RuntimeError) as e:
             Logger.error(f"[LocationHealerAgent] Depth heal failed: {e}")
             return {"error": str(e)}
 

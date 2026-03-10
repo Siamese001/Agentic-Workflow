@@ -1,22 +1,22 @@
 #!/usr/bin/env python3
-"""
-Test suite for HOPPipelineExecutor.
-"""
+"""Tests for apps_lic.reasoning.HOPPipelineExecutor (dependency may be incomplete)."""
+import importlib
+
+import pytest
 
 
-def test_hoppipelineexecutor_initialization():
-    """Test that HOPPipelineExecutor can be initialized."""
-    # TODO: Test engine initialization
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_apps_lic_reasoning_HOPPipelineExecutor_importable():
+    """Module must be importable; xfail if upstream dependency is missing."""
+    try:
+        m = importlib.import_module("apps_lic.reasoning.HOPPipelineExecutor")
+        assert m is not None
+    except ImportError as exc:
+        pytest.xfail(f"Upstream dependency missing: {exc}")
 
-
-def test_hoppipelineexecutor_execution():
-    """Test execution capabilities of HOPPipelineExecutor."""
-    # TODO: Test engine execution
-    pytest.skip("TODO: Implement actual test based on module functionality")
-
-
-def test_hoppipelineexecutor_error_handling():
-    """Test error handling in HOPPipelineExecutor."""
-    # TODO: Test error scenarios
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_hop_pipeline_executor_module_importable():
+    import importlib
+    try:
+        m = importlib.import_module("apps_lic.reasoning.HOPPipelineExecutor")
+        assert hasattr(m, "HOPPipelineExecutor")
+    except ImportError as exc:
+        pytest.xfail(f"apps_lic dependency not installed: {exc}")

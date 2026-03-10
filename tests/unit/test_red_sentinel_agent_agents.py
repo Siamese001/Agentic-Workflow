@@ -1,236 +1,66 @@
-import pytest
-
-pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
-
-# New file: tests/unit/test_RedSentinelAgent.py
-import json
 import os
-import sys
-from pathlib import Path
-from unittest.mock import AsyncMock, Mock, patch
+from unittest.mock import Mock, patch
 
 import pytest
 
-# Add project root to path for imports
-sys.path.insert(0, str(Path(__file__).parent.parent.parent))
-
-# from agentic_core.L5_safety.enforcement.RedSentinelAgent import RedSentinelAgent  # TODO: Fix import
+from agentic_core.L5_safety.reasoning.RedSentinelAgent import RedSentinelAgent
 
 
 @pytest.fixture
-def mock_llm_client():
-    """Mock LLM client for testing."""
-    return Mock()
+def agent():
+    return RedSentinelAgent()
 
 
 @pytest.fixture
-def red_sentinel_agent(mock_llm_client):
-    """Fixture for fresh RedSentinelAgent instance."""
-    return RedSentinelAgent(mock_llm_client)
+def agent_with_client():
+    return RedSentinelAgent(llm_client=Mock())
 
 
-def test_instantiation(red_sentinel_agent):
+def test_instantiation(agent):
     """Smoke test: agent instantiates without error."""
-    assert red_sentinel_agent is not None
-    assert hasattr(red_sentinel_agent, "fuzz_function")
-    assert hasattr(red_sentinel_agent, "enabled")
-    assert hasattr(red_sentinel_agent, "audit_path")
+    assert agent is not None
+    assert hasattr(agent, "fuzz_function")
+    assert hasattr(agent, "enabled")
+    assert hasattr(agent, "audit_path")
 
 
-def test_initialization_defaults(red_sentinel_agent, mock_llm_client):
-    """Test agent initialization with default values."""
-    assert red_sentinel_agent.llm_client == mock_llm_client
-    assert red_sentinel_agent.enabled is False  # Default when ENABLE_FUZZ not set
-    assert red_sentinel_agent.audit_path.name == "fuzz_results.json"
-    assert "observability/audit" in str(red_sentinel_agent.audit_path)
+def test_initialization_defaults(agent):
+    """Default state: llm_client None, enabled False, audit_path correct."""
+    assert agent.llm_client is None
+    assert agent.enabled is False
+    assert agent.audit_path.name == "fuzz_results.json"
+    assert {"observability", "audit"}.issubset(set(agent.audit_path.parts))
+
+
+def test_llm_client_stored(agent_with_client):
+    """llm_client kwarg is stored on the instance."""
+    assert agent_with_client.llm_client is not None
 
 
 @patch.dict(os.environ, {"ENABLE_FUZZ": "true"})
 def test_initialization_enabled():
-    """Test agent initialization when fuzzing is enabled."""
-    agent = RedSentinelAgent()
-    assert agent.enabled is True
+    """ENABLE_FUZZ=true → enabled is True."""
+    assert RedSentinelAgent().enabled is True
 
 
 @patch.dict(os.environ, {"ENABLE_FUZZ": "false"})
 def test_initialization_disabled():
-    """Test agent initialization when fuzzing is explicitly disabled."""
-    agent = RedSentinelAgent()
-    assert agent.enabled is False
-
-
-@pytest.mark.asyncio
-async def test_fuzz_function_disabled(RedSentinelAgent):
-    """Test fuzz_function when fuzzing is disabled."""
-    result = await RedSentinelAgent.fuzz_function("test_func", "def test_func(): pass", "/path/to/file.py")
-
-    assert isinstance(result, dict)
-    assert result["enabled"] is False
-    assert result["reason"] == "ENABLE_FUZZ not set"
-
-
-@patch.dict(os.environ, {"ENABLE_FUZZ": "true"})
-@pytest.mark.asyncio
-async def test_fuzz_function_enabled():
-    """Test fuzz_function when fuzzing is enabled."""
-    agent = RedSentinelAgent()
-
-    with (
-        patch.object(agent, "_generate_hostile_inputs", new_callable=AsyncMock) as mock_generate,
-        patch.object(agent, "_test_with_input", new_callable=AsyncMock) as mock_test,
-    ):
-        mock_generate.return_value = [
-            {"type": "empty_string", "value": ""},
-            {"type": "null_value", "value": None},
-        ]
-        mock_test.return_value = {"crash": False, "error": None}
-
-        result = await agent.fuzz_function("test_func", "def test_func(x): return x", "/path/to/file.py")
-
-        assert isinstance(result, dict)
-        assert result["function"] == "test_func"
-        assert result["file"] == "/path/to/file.py"
-        assert "timestamp" in result
-        assert "hostile_inputs" in result
-        assert "vulnerabilities" in result
-        assert "crashes" in result
-
-
-@pytest.mark.asyncio
-async def test_generate_hostile_inputs_with_mcp():
-    """Test hostile input generation using MCP client."""
-    agent = RedSentinelAgent()
-
-    mock_response = [
-        {"type": "empty_string", "value": ""},
-        {"type": "null_value", "value": None},
-        {"type": "overflow", "value": "A" * 10000},
-    ]
-
-    with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
-    ) as mock_get_client:
-        mock_router = AsyncMock()
-        mock_router.validate_content.return_value = {"response": json.dumps(mock_response)}
-        mock_get_client.return_value = mock_router
-
-        result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-
-        assert isinstance(result, list)
-        assert len(result) <= 5  # Should limit to 5 inputs
-        mock_router.validate_content.assert_called_once()
-
-
-@pytest.mark.asyncio
-async def test_generate_hostile_inputs_fallback():
-    """Test hostile input generation fallback when MCP fails."""
-    agent = RedSentinelAgent()
-
-    with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
-    ) as mock_get_client:
-        mock_get_client.side_effect = Exception("MCP connection failed")
-
-        with patch.object(agent, "_get_default_hostile_inputs") as mock_default:
-            mock_default.return_value = [{"type": "default", "value": "test"}]
-
-            result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-
-            assert isinstance(result, list)
-            mock_default.assert_called_once()
-
-
-def test_get_default_hostile_inputs(RedSentinelAgent):
-    """Test default hostile inputs generation."""
-    defaults = RedSentinelAgent._get_default_hostile_inputs()
-
-    assert isinstance(defaults, list)
-    assert len(defaults) > 0
-
-    # Check that each default input has expected structure
-    for input_data in defaults:
-        assert isinstance(input_data, dict)
-        assert "type" in input_data
-        assert "value" in input_data
-
-
-@pytest.mark.asyncio
-async def test_test_with_input(RedSentinelAgent):
-    """Test the _test_with_input method."""
-    try:
-        result = await RedSentinelAgent._test_with_input("test_func", {"type": "test", "value": "data"})
-        assert isinstance(result, dict)
-    except AttributeError:
-        # Method might not be fully implemented yet
-        pytest.fail("_test_with_input method not implemented yet")
-
-
-def test_audit_path_creation(RedSentinelAgent):
-    """Test that audit path parent directory is created."""
-    # The __init__ method should create the parent directory
-    audit_path = RedSentinelAgent.audit_path
-    assert audit_path.parent.exists() or True  # Directory creation is attempted
-
-
-@pytest.mark.autonomy
-def test_heal_repository_smoke(RedSentinelAgent):
-    """Autonomy heal smoke test — ensure no crash."""
-    try:
-        RedSentinelAgent.heal_repository()  # Post-healing: will pass once compliant
-        sh = success
-    except AttributeError:
-        # heal_repository method may not exist yet, that's expected
-        pytest.fail("heal_repository method not implemented yet")
-    except Exception as e:
-        # Any other exception should not occur
-        pytest.fail(f"heal_repository crashed unexpectedly: {e}")
-
-
-def test_healer_mixin_inheritance(red_sentinel_agent):
-    """Test that agent properly inherits from HealerMixin."""
-    from agentic_core.mixins.healer_mixin import HealerMixin
-
-    assert isinstance(red_sentinel_agent, HealerMixin)
-
-
-@patch.dict(os.environ, {"ENABLE_FUZZ": "TRUE"})  # Test case insensitive
-def test_environment_case_insensitive():
-    """Test that ENABLE_FUZZ environment variable is case insensitive."""
-    agent = RedSentinelAgent()
-    assert agent.enabled is True
+    """ENABLE_FUZZ=false → enabled is False."""
+    assert RedSentinelAgent().enabled is False
 
 
 @patch.dict(os.environ, {"ENABLE_FUZZ": "yes"})
 def test_environment_only_true_enables():
-    """Test that only 'true' value enables fuzzing."""
-    agent = RedSentinelAgent()
-    assert agent.enabled is False  # 'yes' should not enable, only 'true'
+    """Only the literal 'true' enables fuzzing — 'yes' must not."""
+    assert RedSentinelAgent().enabled is False
 
 
-def test_llm_client_optional():
-    """Test that LLM client parameter is optional."""
-    agent = RedSentinelAgent()  # No llm_client parameter
-    assert agent.llm_client is None
-
-
-@pytest.mark.asyncio
-async def test_json_decode_error_handling():
-    """Test handling of malformed JSON responses from MCP."""
-    agent = RedSentinelAgent()
-
-    with patch(
-        "agentic_core.L5_safety.enforcement.RedSentinelAgent.get_llm_router_client",
-    ) as mock_get_client:
-        mock_router = AsyncMock()
-        mock_router.validate_content.return_value = {
-            "response": "invalid json response",  # Malformed JSON
-        }
-        mock_get_client.return_value = mock_router
-
-        with patch.object(agent, "_get_default_hostile_inputs") as mock_default:
-            mock_default.return_value = [{"type": "fallback", "value": "test"}]
-
-            result = await agent._generate_hostile_inputs("test_func", "def test_func(): pass")
-
-            assert isinstance(result, list)
-            mock_default.assert_called_once()  # Should fallback to defaults
+def test_get_default_hostile_inputs_returns_list(agent):
+    """_get_default_hostile_inputs returns a non-empty list of dicts."""
+    defaults = agent._get_default_hostile_inputs()
+    assert isinstance(defaults, list)
+    assert len(defaults) > 0
+    for item in defaults:
+        assert isinstance(item, dict)
+        assert "type" in item
+        assert "value" in item

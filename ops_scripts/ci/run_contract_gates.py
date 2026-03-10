@@ -50,11 +50,11 @@ def main():
         ),
         (
             [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", DOCS_REPORTS_PLANS],
-            "Evidence Contract v2 Checker",
+            "Evidence Contract v2 Checker (§2)",
         ),
         (
             [sys.executable, "ops_scripts/ci/check_tooling_apps_boundary.py"],
-            "Tooling/Apps Boundary Guard",
+            "Tooling/Apps Boundary Guard (§4.5)",
         ),
         (
             [sys.executable, "ops_scripts/ci/validate_timeout_progress.py"],
@@ -63,6 +63,34 @@ def main():
         (
             [sys.executable, "ops_scripts/ci/validate_timeout_recovery.py"],
             "Timeout Recovery with ADG (§9.6)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_adg_proof_artifact_truthfulness.py"],
+            "ADG Proof-Artifact Truthfulness (§15)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_adg_schema_field_names.py"],
+            "ADG Schema Canonical Field Names (§16)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_skip_convergence_gate.py"],
+            "Skip Convergence Gate (§17)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_policy_drift_classification.py"],
+            "Policy Drift Classification (§18)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_environment_contract.py"],
+            "Environment Contract (§20)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_c0_boundary.py"],
+            "C0 Informational Boundary (§21)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_ci_integrity.py"],
+            "CI Integrity Gates §22 (all 13 conditions)",
         ),
     ]
 

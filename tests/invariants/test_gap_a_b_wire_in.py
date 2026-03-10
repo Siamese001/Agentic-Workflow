@@ -11,6 +11,12 @@ from __future__ import annotations
 
 import json
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
+
 
 class TestGapARunManifest:
     def test_write_run_manifest_creates_file(self, tmp_path):

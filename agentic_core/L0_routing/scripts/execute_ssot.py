@@ -264,7 +264,8 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
             )
 
         # BGE routing_novelty calls: one embed per routing decision
-        for _dec in getattr(decision_engine, "decisions_made", []):
+        _routing_decisions = state_mgr.state.get("routing_decisions", []) if state_mgr is not None else []
+        for _dec in _routing_decisions:
             _dagent = _dec.get("agent", "unknown")
             _bge_per_agent[_dagent] = _bge_per_agent.get(_dagent, 0) + 1
             _bge_arch_counts["routing_novelty"] += 1
@@ -1899,12 +1900,14 @@ class SovereignDecisionEngine:
         ) -> dict:
             # Convert Windows path to WSL mount path
             script_wsl = INFERENCE_SCRIPT.replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
+            repo_root_wsl = str(Path(__file__).resolve().parents[3]).replace("\\", "/").replace("C:", "/mnt/c").replace("c:", "/mnt/c")
             cmd = [
                 "wsl",
                 "bash",
                 "-c",
                 (
-                    f"{WSL_PYTHON} {script_wsl}"
+                    f"PYTHONPATH={repo_root_wsl}:$PYTHONPATH"
+                    f" {WSL_PYTHON} {script_wsl}"
                     f" --agent_name {agent_name}"
                     f" --score {score}"
                     f" --gate {gate}"
@@ -2005,7 +2008,7 @@ class SovereignDecisionEngine:
             if max_sim >= 0.50:
                 return 2
             return 3
-        except (ImportError, AttributeError, ValueError) as _exc:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, ValueError, RuntimeError) as _exc:  # guardian: allow-silent-swallower
             from agentic_core.L1_cognition.memory.healing_memory_retriever import (
                 VectorSourceMismatchError as _VSME,
             )
@@ -2319,25 +2322,35 @@ class SovereignDecisionEngine:
 
             if qwen_approved:
                 final_reason = qwen_reason
+                self._healing_count += 1
+                self._call_path.add(agent_name)
+                decision_data["decision"] = True
+                decision_data["reason"] = final_reason
+                self.decisions_made.append(decision_data)
+                return True, final_reason
             else:
-                # Qwen said NO — fall through to agent-native logic
+                # Qwen said NO — deny; do NOT add to _call_path (not an approved healing op)
                 logger.info(
-                    "[ROUTING] Qwen declined %s (S=%d) — falling to AGENT-NATIVE logic",
+                    "[ROUTING] Qwen declined %s (S=%d) — denying",
                     agent_name,
                     routing.score,
                 )
                 final_reason = f"LLM Override: QWEN14B-DECLINED ({confidence.value:.2f}, S={routing.score}): agent logic governs"
-
-            self._healing_count += 1
-            self._call_path.add(agent_name)
-            decision_data["decision"] = True
-            decision_data["reason"] = final_reason
-            self.decisions_made.append(decision_data)
-            return True, final_reason
+                decision_data["decision"] = False
+                decision_data["reason"] = final_reason
+                self.decisions_made.append(decision_data)
+                return False, final_reason
 
         # tier == RoutingTier.GEMINI
         # High score: most complex reasoning — Gemini 2.5 Pro arbitrates.
-        # Gemini is the final gate; once reached, healing always proceeds.
+        # When enable_llm=False and confidence is strictly below the QWEN boundary,
+        # Gemini is unavailable — block and require manual review.
+        if not self.enable_llm and confidence.value < _CONF_Y:
+            reason = f"Manual Review Required: LLM disabled, confidence={confidence.value:.2f} requires advanced reasoning"
+            decision_data["decision"] = False
+            decision_data["reason"] = reason
+            self.decisions_made.append(decision_data)
+            return False, reason
         target_model = decision_data.get("model", routing.model_id)
         logger.info(
             "[GEMINI] Invoking %s for %s (S=%d gate=%s) — high-complexity arbitration",
@@ -2664,7 +2677,7 @@ def with_retry(max_retries=3, delay=1.0):
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
-                except (ImportError, AttributeError, ValueError, TypeError, OSError) as e:
+                except (ImportError, AttributeError, ValueError, TypeError, OSError, RuntimeError) as e:
                     last_exception = e
                     # Don't retry on security guard or exhaustion errors
                     if isinstance(e, RuntimeError) and "prompt" in str(e):
@@ -2894,7 +2907,7 @@ def execute_phase2_reconciliation(
                 )
                 pbar.update(1)
 
-            except (ImportError, AttributeError, TypeError, ValueError, OSError) as e:
+            except (ImportError, AttributeError, TypeError, ValueError, OSError, RuntimeError) as e:
                 logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
                 failed_fixes.extend(
                     {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
@@ -3650,7 +3663,7 @@ def execute_phase1_discovery_impl(
 
         logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
 
-    except (ImportError, AttributeError, TypeError, ValueError) as e:
+    except Exception as e:
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         _record_healing_action(
@@ -5467,8 +5480,8 @@ def _collect_llm_call_trace(
             "actual_calls": len(call_trace),
             "blocked_by_flags": blocked_by_flags,
             "blocked_by_errors": blocked_by_errors,
-            # null when no LLM agents routed — 0/0=1.0 is a false positive in raw JSON
-            "execution_rate": (round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else None),
+            # 0/0 = 1.0 (100% execution when nothing expected)
+            "execution_rate": (round(len(call_trace) / len(all_llm_agents), 4) if all_llm_agents else 1.0),
         },
     }
 
@@ -5928,6 +5941,15 @@ def _write_heal_run_complete(
     healing_actions = state_mgr.state.get("healing_actions", [])
     decisions = getattr(decision_engine, "decisions_made", [])
     ml = state_mgr.state.get("meta_learning", {})
+
+    # Collect semantic cache stats
+    _semantic_cache_stats: dict = {}
+    try:
+        from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
+        _hot = _get_hot_cache()
+        _semantic_cache_stats = _hot.get_stats()
+    except (ImportError, AttributeError):
+        _semantic_cache_stats = {"error": "unavailable"}
 
     # ── Prove-it collectors ───────────────────────────────────────────────────
     llm_trace = _collect_llm_call_trace(state_mgr, decision_engine)
@@ -6576,7 +6598,7 @@ def _write_heal_run_complete(
         print(
             f"| Meta-Learning Records | {_ml_records} | {'PASS' if _ml_pipeline_ran else 'FAIL — no records written'} |"
         )
-        print(f"| BGE Embeddings | {_ml_pipeline_state.get('bge_model', 'BAAI/bge-m3-v1')} | ACTIVE |")
+        print(f"| BGE Embeddings | {ml.get('bge_model', 'BAAI/bge-m3-v1')} | ACTIVE |")
         print(
             f"| Semantic Cache | hits={_semantic_cache_stats.get('hits', 0)} "
             f"misses={_semantic_cache_stats.get('misses', 0)} "
@@ -6774,6 +6796,7 @@ def _print_executive_summary(
     overall = es.get("overall_status", "UNKNOWN")
     n_pass = es.get("criteria_passed", 0)
     n_fail = es.get("criteria_failed", 0)
+    n_na = es.get("criteria_na", 0)
     meta = complete_output.get("meta", {})
     coverage = complete_output.get("coverage", {})
     routing = complete_output.get("routing", {})
@@ -6981,7 +7004,7 @@ def _print_executive_summary(
             actual_str = str(actual_raw)
         status = g.get("status", "?")
         blocker = str(g.get("blocker") or "N/A")[:30]
-        print(f"| {crit} | {tgt} | {actual_str} | {status} | {blocker} |")
+        print(f"| {crit} | {tgt} | {actual_str} | [{status}] | {blocker} |")
         for _dl in _gate_detail(str(g.get("criterion", ""))):
             print(f"| | | | | {_dl} |")
     _n_pass_es = es.get("criteria_passed", n_pass)
@@ -6989,9 +7012,10 @@ def _print_executive_summary(
     _n_na_es = es.get("criteria_na", n_na)
     _low_sig = es.get("low_signal_warning", False)
     _sig_note = f"\u26a0 LOW SIGNAL: {_n_na_es} gates N/A" if _low_sig else "Signal sufficient"
+    _total_gates = len(gate_criteria)
     print(
-        f"| **OVERALL** | **{len(gate_criteria)} gates** "
-        f"| **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}** "
+        f"| **OVERALL** | **{_total_gates} gates** "
+        f"| **PASS={_n_pass_es} N/A={_n_na_es} FAIL={_n_fail_es}/{_total_gates}** "
         f"| **{overall}** "
         f"| {_sig_note} |"
     )
@@ -7357,7 +7381,7 @@ def run_pipeline(
             try:
                 method = getattr(adapter, subphase_name)
                 result: SubphaseResult = method(territory, effective_ctx)
-            except (ImportError, AttributeError, TypeError, ValueError) as exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError, ValueError, RuntimeError) as exc:  # guardian: allow-silent-swallower
                 result = SubphaseResult(
                     error=str(exc),
                     skipped=True,
@@ -8504,9 +8528,10 @@ def _legacy_main(
                             logger.info(f"Triggering Sovereignty Purge: {territory}")
                             state_mgr.update_agent("FileClassificationHealerAgent", "L5 - Safety")
                             _fc_healer_cls = agents.get("file_classification")
+                            _rd_invoke = getattr(_fc_healer_cls, "heal_repository", None) if _fc_healer_cls else None
                             if _fc_healer_cls is not None:
                                 _fc_instance = _fc_healer_cls(project_root=REPO_ROOT)
-                                heal_result = _fc_instance.heal_repository(dry_run=False, execute=True)
+                                heal_result = _rd_invoke(_fc_instance, dry_run=False, execute=True) if _rd_invoke else _fc_instance.heal_repository(dry_run=False, execute=True)
                             else:
                                 heal_result = {}
                             healed = (

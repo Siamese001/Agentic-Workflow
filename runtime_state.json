@@ -1,9 +1,9 @@
 {
   "status": "terminated",
-  "start_time": "2026-03-10T12:47:14.230145",
-  "end_time": "2026-03-10T12:47:14.723859",
+  "start_time": "2026-03-10T17:18:56.455884",
+  "end_time": "2026-03-10T17:19:01.683956",
   "current_agent": null,
-  "current_layer": "L0 - Maintenance",
+  "current_layer": "L5 - Safety",
   "agents_order": [
     "L0_routing",
     "L2_execution",
@@ -22,18 +22,35 @@
     "tests",
     "tools"
   ],
-  "completed_agents": [],
+  "completed_agents": [
+    {
+      "agent": "RootHygieneAgent",
+      "time": "2026-03-10T17:19:01.682437",
+      "success": true,
+      "details": "Violations: 28 (high: 0) fixed: 0"
+    }
+  ],
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-10T12:47:14.230145",
+      "time": "2026-03-10T17:18:56.455884",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-10T12:47:14.719427",
+      "time": "2026-03-10T17:19:01.679382",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
+    },
+    {
+      "time": "2026-03-10T17:19:01.682437",
+      "type": "agent_end",
+      "message": "✓ Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-03-10T17:19:01.682437",
+      "type": "agent_start",
+      "message": "→ Executing GravityLeakHealerAgent (L5 - Safety)"
     }
   ],
   "meta_learning": {
@@ -205260,19 +205277,587 @@
   "compliance_report": {},
   "audit_chain": [],
   "apply_proposals": false,
-  "runtime_state_digest_sha256": "b1c43242eb4331853723e2a7e39494965284a1066e68dd2628b34e93a2f9bc97",
+  "runtime_state_digest_sha256": "02316af5cd789137b2cba93c277c91d23fc5fab7907690027484e14b854fbeac",
   "runtime_state_digest_schema_version": 1,
   "compliance_report_audit": {
     "success": false,
     "stats": {
-      "violations_found": 0,
+      "violations_found": 38,
       "violations_fixed": 0,
-      "errors": 1,
+      "errors": 0,
       "drift_detected": 0
     },
-    "violations": [],
+    "violations": [
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\config\\__init__.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint._constants)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\context\\c0_guard.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\agent_analysis_config.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\auto_remediate_signatures_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\bloat_analysis_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\check_duplicate_filenames_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\check_rglob_usage_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\class_info.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\collision_resolver.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\comprehensive_archive_check_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\debris_hunter.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\drift.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\flatten_scripts_directory_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\investigate_overlaps_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\root_hygiene_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_architecture_governance.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_c0_sovereignty.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_change_package_activation.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_classification_compliance.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_cross_layer_mutation.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_escalation_determinism.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_gateway_bypass.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_location_alignment.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_hygiene_guardian_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\verify_all_checkpoint_files_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\verify_intentional_variants_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\types\\guardian_contract_types.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\utils\\complexity_visitor_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\utils\\fix_all_tunnels_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\utils\\scan_util.py",
+        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L0",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\sandbox\\boundary_validator.py",
+        "message": "Gravity violation: L2 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L2",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\execution_trace_types.py",
+        "message": "Gravity violation: L2 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L2",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\engines\\proactive_fission_scanner.py",
+        "message": "Gravity violation: L3 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L3",
+        "target_layer": "L5"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\tool_call_store.py",
+        "message": "Gravity violation: L3 cannot import from L4 (module: agentic_core.L4_state.storage.filesystem_store)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L3",
+        "target_layer": "L4"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\ptc\\tool_call_store.py",
+        "message": "Gravity violation: L3 cannot import from L4 (module: agentic_core.L4_state.storage.persistent_store)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L3",
+        "target_layer": "L4"
+      },
+      {
+        "type": "GRAVITY",
+        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\scripts\\guardian_heal_orchestrator.py",
+        "message": "Gravity violation: L3 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
+        "severity": "CRITICAL",
+        "suggestion": "Use dependency injection or move logic to shared utils.",
+        "source_layer": "L3",
+        "target_layer": "L5"
+      }
+    ],
     "drift_violations": []
   },
-  "hygiene_violations": [],
+  "hygiene_violations": [
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
+      "message": "Transient cache directory '.pytest_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Delete .pytest_cache (add to .gitignore)",
+      "confidence": 0.95
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\.ruff_cache",
+      "message": "Transient cache directory '.ruff_cache' in project root",
+      "severity": "low",
+      "recommended_action": "Delete .ruff_cache (add to .gitignore)",
+      "confidence": 0.95
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\.windsurfrules_adg_repair_discipline.md",
+      "message": "Unapproved file '.windsurfrules_adg_repair_discipline.md' in project root",
+      "severity": "medium",
+      "recommended_action": "Move '.windsurfrules_adg_repair_discipline.md' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\analyze_adg_imports.py",
+      "message": "Unapproved file 'analyze_adg_imports.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'analyze_adg_imports.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\broken_files.txt",
+      "message": "Unapproved file 'broken_files.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'broken_files.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_agent_files_v2.py",
+      "message": "Unapproved file 'fix_agent_files_v2.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_agent_files_v2.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_agent_files_v3.py",
+      "message": "Unapproved file 'fix_agent_files_v3.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_agent_files_v3.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_agent_imports_safe.py",
+      "message": "Unapproved file 'fix_agent_imports_safe.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_agent_imports_safe.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_assert_true.py",
+      "message": "Unapproved file 'fix_assert_true.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_assert_true.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_assert_true_bulk.py",
+      "message": "Unapproved file 'fix_assert_true_bulk.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_assert_true_bulk.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_remaining_swallowers.py",
+      "message": "Unapproved file 'fix_remaining_swallowers.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_remaining_swallowers.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\fix_syntax_error_swallowers.py",
+      "message": "Unapproved file 'fix_syntax_error_swallowers.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'fix_syntax_error_swallowers.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\full_scan.txt",
+      "message": "Unapproved file 'full_scan.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'full_scan.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\get_collection_errors.py",
+      "message": "Unapproved file 'get_collection_errors.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'get_collection_errors.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\probe_phase8.py",
+      "message": "Unapproved file 'probe_phase8.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'probe_phase8.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\scan_output.txt",
+      "message": "Unapproved file 'scan_output.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'scan_output.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\scan_results.txt",
+      "message": "Unapproved file 'scan_results.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'scan_results.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_adg_analyzer.py",
+      "message": "Unapproved file 'temp_adg_analyzer.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_adg_analyzer.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_collection_output.txt",
+      "message": "Unapproved file 'temp_collection_output.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_collection_output.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_errors.txt",
+      "message": "Unapproved file 'temp_errors.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_errors.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_fails.txt",
+      "message": "Unapproved file 'temp_fails.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_fails.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_output.txt",
+      "message": "Unapproved file 'temp_output.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_output.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_parse_antipatterns.py",
+      "message": "Unapproved file 'temp_parse_antipatterns.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_parse_antipatterns.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\temp_scan.txt",
+      "message": "Unapproved file 'temp_scan.txt' in project root",
+      "severity": "medium",
+      "recommended_action": "Move 'temp_scan.txt' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\_fix_gov_swallowers.py",
+      "message": "Unapproved file '_fix_gov_swallowers.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move '_fix_gov_swallowers.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\_prove_zero_violations.py",
+      "message": "Unapproved file '_prove_zero_violations.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move '_prove_zero_violations.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "UNAPPROVED_ROOT_FILE",
+      "file": "C:\\Git\\Agentic-Workflow\\_show_adg_info.py",
+      "message": "Unapproved file '_show_adg_info.py' in project root",
+      "severity": "medium",
+      "recommended_action": "Move '_show_adg_info.py' to its canonical SSOT location or add to approved list",
+      "confidence": 0.8
+    },
+    {
+      "type": "ILLEGAL_CACHE_DIR",
+      "file": "C:\\Git\\Agentic-Workflow\\__pycache__",
+      "message": "Transient cache directory '__pycache__' in project root",
+      "severity": "low",
+      "recommended_action": "Delete __pycache__ (add to .gitignore)",
+      "confidence": 0.95
+    }
+  ],
   "hygiene_fixed": 0
 }

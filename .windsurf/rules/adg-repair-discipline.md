@@ -1,0 +1,99 @@
+# ADG Repair Discipline — Constitutional Rule §ADG-1
+
+## HARD GATES — NEVER BYPASS
+
+### §ADG-1.1 No Edit Without ADG Provenance
+
+Before making ANY code edit during a repair session, you MUST answer all four:
+
+1. **Which ADG cluster?** — cluster ID from `artifacts/adg_failure_clusters.json`
+2. **What is the root module?** — canonical definition node from the dependency chain
+3. **Which scoped tests?** — specific test IDs from `artifacts/adg_test_surface_map.json`
+4. **Why is this file in the blast radius?** — edge path from semantic graph
+
+If you cannot answer all four, the edit is **FORBIDDEN**.
+
+### §ADG-1.2 No Full-Suite Run Before Convergence
+
+`pytest tests/unit` is **FORBIDDEN** during scoped repair loops.
+
+Only allowed test invocations:
+```
+pytest <cluster_scoped_test_files> -q    # scoped to current cluster
+pytest <single_test_id> -xvs             # verifying a single fix
+```
+
+Full suite (`pytest tests/unit`) is ONLY allowed after ALL clusters are green AND scoped convergence (§7.2) is declared. See §7.3 for repair run completion conditions.
+
+### §ADG-1.3 Fix Root Modules, Not Call Sites
+
+When a symbol is undefined in N files:
+- **FORBIDDEN**: patch each of the N call sites
+- **REQUIRED**: fix the single root definition node identified by ADG dependency chain
+
+### §ADG-1.4 No Text-Search Debugging
+
+**FORBIDDEN** patterns:
+- `grep` / `find` for missing constants or imports as the primary triage method
+- Hunting literal strings to satisfy source-text assertion tests without ADG justification
+- Patching test files to fix `import pytest` or similar without tracing the dependency chain
+
+**REQUIRED**: Use ADG semantic graph edges to trace from failing test → import edge → root module.
+
+---
+
+## ADG-CONTROLLED REPAIR LOOP
+
+Each repair iteration MUST follow this exact sequence:
+
+```
+STEP 1: Read artifacts/adg_failure_clusters.json
+        → Identify highest-priority unresolved cluster
+
+STEP 2: Read artifacts/adg_semantic_graph.json
+        → Trace dependency chain: failing_test → import_edges → root_module
+
+STEP 3: Read artifacts/adg_test_surface_map.json
+        → Extract scoped test IDs covering root module
+
+STEP 4: Run SCOPED tests only:
+        pytest <scoped_test_ids> -q
+        → Observe actual failure messages
+
+STEP 5: Fix ROOT MODULE only (definition node, not call sites)
+        → Apply minimal change
+
+STEP 6: Rerun SCOPED tests:
+        pytest <scoped_test_ids> -q
+        → Verify cluster is green
+
+STEP 7: Mark cluster complete → load next cluster → repeat from STEP 1
+
+After ALL clusters are green → verify scoped convergence (§7.2) → then proceed to
+blast-radius verification and full suite per §7.3 repair run completion conditions.
+```
+
+---
+
+## LITMUS TEST
+
+Every edit must pass this check before being made:
+
+| Question | Required Answer |
+|---|---|
+| Which ADG cluster? | Cluster ID (e.g. `agentic_core/L0_routing/scripts/execute_ssot.py`) |
+| Root module? | Exact file path of definition node |
+| Scoped tests? | Explicit test IDs, not test directories |
+| Blast radius justification? | Edge path: `test → import → module` |
+
+---
+
+## REPAIR SCOPE GATE
+
+| Stage | Allowed pytest scope |
+|---|---|
+| Scoped repair (any cluster) | `pytest <cluster_tests_only>` |
+| Single-fix verification | `pytest <single_test_id> -xvs` |
+| Scoped convergence check (§7.2) | `pytest <all_cluster_test_files>` |
+| Blast-radius verification (§7.3 cond. 2) | `pytest <adg_reachable_dependents>` |
+| Full suite (§7.3 cond. 3) | `pytest tests/unit` — ONLY after §7.2 and blast-radius are green |

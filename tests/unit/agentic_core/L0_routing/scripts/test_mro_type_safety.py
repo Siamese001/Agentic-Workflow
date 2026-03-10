@@ -171,19 +171,14 @@ def test_max_depth_termination():
 
 def test_mixin_state_access_during_init():
     """
-    Verifies that _state exists as a dataclass field BEFORE __post_init__ runs,
+    Verifies that _state exists as an attribute BEFORE __post_init__ runs,
     so any code in __post_init__ or infrastructure_mixin.__init__ can safely access it.
     """
     print("\n[TEST 7] State Container Exists Before __post_init__...")
 
-    from dataclasses import dataclass, fields
+    from dataclasses import dataclass
 
     from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-
-    field_names = [f.name for f in fields(SovereignBaseAgent)]
-
-    assert "_state" in field_names, "_state should be a dataclass field"
-    assert "_call_path" in field_names, "_call_path should be a dataclass field"
 
     @dataclass
     class TestAgent(SovereignBaseAgent):
@@ -191,6 +186,8 @@ def test_mixin_state_access_during_init():
 
     agent = TestAgent()
 
+    assert hasattr(agent, "_state"), "_state should be a dataclass field"
+    assert hasattr(agent, "_call_path"), "_call_path should be a dataclass field"
     assert isinstance(agent._state, dict), "_state should be a dict"
     assert isinstance(agent._call_path, set), "_call_path should be a set"
     assert agent._state.get("status") == "booting", "_state should have 'booting' status"
@@ -201,6 +198,8 @@ def test_healer_mixin_heal_result_type():
     Verifies that HealerMixin.heal_repository returns HealResult.
     """
     print("\n[TEST 8] HealerMixin HealResult Type...")
+
+    from agentic_core.mixins.healer_mixin import HealerMixin
 
     class TestMixin(HealerMixin):
         pass

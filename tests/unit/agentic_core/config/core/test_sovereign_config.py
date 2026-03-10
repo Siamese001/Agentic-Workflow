@@ -1,22 +1,17 @@
 #!/usr/bin/env python3
-"""
-Test suite for sovereign_config.
-"""
+"""Tests for agentic_core.config.core.sovereign_config."""
+import importlib
+
+import pytest
 
 
-def test_sovereign_config_loading():
-    """Test that sovereign_config can be loaded properly."""
-    # TODO: Test config loading functionality
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_agentic_core_config_core_sovereign_config_importable():
+    """Module must be importable without error."""
+    m = importlib.import_module("agentic_core.config.core.sovereign_config")
+    assert m is not None
 
-
-def test_sovereign_config_validation():
-    """Test configuration validation in sovereign_config."""
-    # TODO: Test config validation
-    pytest.skip("TODO: Implement actual test based on module functionality")
-
-
-def test_sovereign_config_defaults():
-    """Test default values in sovereign_config."""
-    # TODO: Test default configuration
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_sovereign_config_manager_instantiates():
+    import importlib
+    m = importlib.import_module("agentic_core.config.core.sovereign_config")
+    mgr = m.SovereignConfigManager()
+    assert mgr is not None

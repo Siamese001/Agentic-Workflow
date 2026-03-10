@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
-"""
-Test suite for L4StateBase.
-"""
+"""Tests for agentic_core.base_agents.L4StateBase."""
+import importlib
+
+import pytest
 
 
-def test_l4statebase_initialization():
-    """Test that L4StateBase can be initialized."""
-    # This is a placeholder test - implement based on actual class requirements
-    # TODO: Add proper initialization test
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_agentic_core_base_agents_L4StateBase_importable():
+    """Module must be importable without error."""
+    m = importlib.import_module("agentic_core.base_agents.L4StateBase")
+    assert m is not None
 
+def test_l4_state_base_is_class():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L4StateBase")
+    assert hasattr(m, "L4StateBase")
+    assert isinstance(m.L4StateBase, type)
 
-def test_l4statebase_basic_functionality():
-    """Test basic functionality of L4StateBase."""
-    # This is a placeholder test - implement based on actual class methods
-    # TODO: Add proper functionality tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
-
-
-def test_l4statebase_error_handling():
-    """Test error handling in L4StateBase."""
-    # This is a placeholder test - implement based on actual error cases
-    # TODO: Add proper error handling tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_l4_state_base_name():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L4StateBase")
+    assert "L4" in m.L4StateBase.__name__

@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
-"""
-Test suite for L2ExecutionBase.
-"""
+"""Tests for agentic_core.base_agents.L2ExecutionBase."""
+import importlib
+
+import pytest
 
 
-def test_l2executionbase_initialization():
-    """Test that L2ExecutionBase can be initialized."""
-    # This is a placeholder test - implement based on actual class requirements
-    # TODO: Add proper initialization test
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_agentic_core_base_agents_L2ExecutionBase_importable():
+    """Module must be importable without error."""
+    m = importlib.import_module("agentic_core.base_agents.L2ExecutionBase")
+    assert m is not None
 
+def test_l2_execution_base_is_class():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L2ExecutionBase")
+    assert hasattr(m, "L2ExecutionBase")
+    assert isinstance(m.L2ExecutionBase, type)
 
-def test_l2executionbase_basic_functionality():
-    """Test basic functionality of L2ExecutionBase."""
-    # This is a placeholder test - implement based on actual class methods
-    # TODO: Add proper functionality tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
-
-
-def test_l2executionbase_error_handling():
-    """Test error handling in L2ExecutionBase."""
-    # This is a placeholder test - implement based on actual error cases
-    # TODO: Add proper error handling tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_l2_execution_base_name():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L2ExecutionBase")
+    assert "L2" in m.L2ExecutionBase.__name__

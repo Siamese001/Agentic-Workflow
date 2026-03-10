@@ -199,7 +199,7 @@ class TestPinnedBudget:
             classes = _parse_top_level_classes(f)
             agent_classes = [c for c in classes if c.endswith("Agent")]
             print(f"  {f.name}: {agent_classes}")
-    
+
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

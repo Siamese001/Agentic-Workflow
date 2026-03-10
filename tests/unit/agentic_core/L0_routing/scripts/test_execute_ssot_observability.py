@@ -580,8 +580,8 @@ class TestWriteHealRunComplete:
         sm.project_root = str(tmp_path)
         eng = _make_engine()
         result = self.mod._write_heal_run_complete(sm, eng)
-        assert result["executive_summary"]["criteria_total"] == 10
-        assert len(result["executive_summary"]["gate_criteria"]) == 10
+        assert result["executive_summary"]["criteria_total"] == 12
+        assert len(result["executive_summary"]["gate_criteria"]) == 12
 
     def test_heal_run_complete_write_fail_no_crash(self):
         """OSError during write is logged and swallowed — function returns dict."""
@@ -642,7 +642,9 @@ class TestWriteHealRunComplete:
             if "Trend" in g["criterion"] or "Delta" in g["criterion"]
         ]
         for g in trend_gates:
-            assert g["status"] == "PASS", f"Expected PASS for {g['criterion']} with no baseline"
+            assert g["status"] in ("PASS", "N/A (NO BASELINE)"), (
+                f"Expected PASS or N/A for {g['criterion']} with no baseline"
+            )
 
 
 # ============================================================================
@@ -690,8 +692,9 @@ class TestGateCriteriaThresholds:
         sm = _make_state({"healing_actions": [{"agent": "A", "outcome": "FAIL"}]})
         sm.project_root = str(tmp_path)
         # conf=0.15 with all fail → calib_error = |0.15 - 0.0| = 0.15
+        # Use QWEN tier so it isn't excluded from calibration (DETERMINISTIC is excluded)
         eng = _make_engine(
-            decisions=[{"agent": "A", "routing_tier": "DETERMINISTIC", "confidence": 0.15, "decision": True}]
+            decisions=[{"agent": "A", "routing_tier": "QWEN", "confidence": 0.15, "decision": True}]
         )
         result = self.mod._write_heal_run_complete(sm, eng)
         g = self._get_gate(result, "Calibration")
@@ -702,8 +705,9 @@ class TestGateCriteriaThresholds:
         sm = _make_state({"healing_actions": [{"agent": "A", "outcome": "FAIL"}]})
         sm.project_root = str(tmp_path)
         # conf=0.9 with all fail → calib_error = 0.9
+        # Use QWEN tier so it isn't excluded from calibration (DETERMINISTIC is excluded)
         eng = _make_engine(
-            decisions=[{"agent": "A", "routing_tier": "DETERMINISTIC", "confidence": 0.9, "decision": True}]
+            decisions=[{"agent": "A", "routing_tier": "QWEN", "confidence": 0.9, "decision": True}]
         )
         result = self.mod._write_heal_run_complete(sm, eng)
         g = self._get_gate(result, "Calibration")

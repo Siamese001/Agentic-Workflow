@@ -1,17 +1,22 @@
 #!/usr/bin/env python3
-"""
-Test suite for IValidatorProtocol.
-"""
+"""Tests for agentic_core.interfaces.IValidatorProtocol."""
+import importlib
+
+import pytest
 
 
-def test_ivalidatorprotocol_protocol_definition():
-    """Test that IValidatorProtocol is properly defined as a Protocol."""
-    # TODO: Import and test the actual protocol
-    # from agentic_core.interfaces import IValidatorProtocol
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_agentic_core_interfaces_IValidatorProtocol_importable():
+    """Module must be importable without error."""
+    m = importlib.import_module("agentic_core.interfaces.IValidatorProtocol")
+    assert m is not None
 
+def test_ivalidator_protocol_exports_validator_protocol():
+    import importlib
+    m = importlib.import_module("agentic_core.interfaces.IValidatorProtocol")
+    assert hasattr(m, "ValidatorProtocol"), "module must export ValidatorProtocol"
 
-def test_ivalidatorprotocol_implementation_compliance():
-    """Test that implementations comply with IValidatorProtocol."""
-    # TODO: Test implementation compliance
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_ivalidator_protocol_has_validate():
+    import importlib
+    m = importlib.import_module("agentic_core.interfaces.IValidatorProtocol")
+    cls = m.ValidatorProtocol
+    assert hasattr(cls, "validate"), "ValidatorProtocol must declare validate()"

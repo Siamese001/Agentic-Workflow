@@ -1,25 +1,22 @@
 #!/usr/bin/env python3
-"""
-Test suite for L5SafetyBase.
-"""
+"""Tests for agentic_core.base_agents.L5SafetyBase."""
+import importlib
+
+import pytest
 
 
-def test_l5safetybase_initialization():
-    """Test that L5SafetyBase can be initialized."""
-    # This is a placeholder test - implement based on actual class requirements
-    # TODO: Add proper initialization test
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_agentic_core_base_agents_L5SafetyBase_importable():
+    """Module must be importable without error."""
+    m = importlib.import_module("agentic_core.base_agents.L5SafetyBase")
+    assert m is not None
 
+def test_l5_safety_base_is_class():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L5SafetyBase")
+    assert hasattr(m, "L5SafetyBase")
+    assert isinstance(m.L5SafetyBase, type)
 
-def test_l5safetybase_basic_functionality():
-    """Test basic functionality of L5SafetyBase."""
-    # This is a placeholder test - implement based on actual class methods
-    # TODO: Add proper functionality tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
-
-
-def test_l5safetybase_error_handling():
-    """Test error handling in L5SafetyBase."""
-    # This is a placeholder test - implement based on actual error cases
-    # TODO: Add proper error handling tests
-    pytest.skip("TODO: Implement actual test based on module functionality")
+def test_l5_safety_base_name():
+    import importlib
+    m = importlib.import_module("agentic_core.base_agents.L5SafetyBase")
+    assert "L5" in m.L5SafetyBase.__name__

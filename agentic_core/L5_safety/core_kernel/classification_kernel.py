@@ -147,7 +147,7 @@ def classify_file_standalone(path: Path) -> FileType:
     """
     # Early exit for test files — before resolve() to avoid stat() calls
     _name = path.name
-    if _name.startswith("test_") or _name.endswith("_test.py") or TESTS_DIR in path.parts:
+    if _name.startswith("test_") or _name.endswith("_test.py") or "tests" in path.parts:
         return "TEST"
     # Resolve to absolute path for consistent cache keys
     try:
@@ -210,7 +210,7 @@ def _classify_impl(path: Path) -> FileType:
         return "IGNORE"
 
     # --- PRIORITY 3: TEST detection ---
-    if TESTS_DIR in path.parts or path.name.startswith("test_"):
+    if "tests" in path.parts or path.name.startswith("test_"):
         return "TEST"
     # Heuristic: file has TestCase inheritance or pytest fixtures
     for node in ast.walk(tree):
@@ -603,8 +603,6 @@ def classification_cache_context():
         from agentic_core.L5_safety.core_kernel.classification_kernel import classification_cache_context
 from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
-    TESTS_DIR,
-    TESTS_DIR,
 )
 
         with classification_cache_context():

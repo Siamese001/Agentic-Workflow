@@ -118,11 +118,12 @@ class TestSSOTE2EReporting:
     # =========================================================================
     # CASE 3: State Persistence & Crash Recovery
     # =========================================================================
-    def test_e2e_03_state_persistence_crash_recovery(self, tmp_path):
+    def test_e2e_03_state_persistence_crash_recovery(self, tmp_path, monkeypatch):
         """
         Scenario: Process 'crashes' (stops) halfway. Restart should load previous state.
         Expected: State file contains progress markers from before the crash.
         """
+        monkeypatch.setenv("AGENTIC_ALLOW_MUTATION_FOR_TESTS", "1")
         # 1. Initialize and Start Mission
         sm1 = RuntimeStateManager(tmp_path)
         sm1.start_mission("Mission_Alpha", ["Agent_A", "Agent_B"])

@@ -1044,7 +1044,7 @@ class HierarchyAgent(SovereignBaseAgent):
             else:
                 Logger.error(f"  [ERROR] Archive failed: {gk_result.error}")
                 return 0
-        except (ImportError, AttributeError, OSError) as e:
+        except (ImportError, AttributeError, OSError, RuntimeError) as e:
             Logger.error(f"Archive operation failed: {e}")
             return 0
 

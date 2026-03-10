@@ -118,6 +118,10 @@ class SovereignBaseAgent(
 
         self._initialized: bool = False
         self._security_validator: Any = None
+        if not hasattr(self, "_state") or not isinstance(self._state, dict):
+            self._state: dict = {"status": "booting", "health": "nominal"}
+        if not hasattr(self, "_call_path") or not isinstance(self._call_path, set):
+            self._call_path: set = set()
 
         # 1. THE IMMUTABLE LOCK CHECK
         try:
@@ -138,6 +142,7 @@ class SovereignBaseAgent(
         self._v15_gateway = V15ExecutionGateway() if is_v15_enforced() else None
 
         self._initialized = True
+        self._sovereign_initialized: bool = True
 
     def _security_hardening_validation(self) -> None:
         """
@@ -426,6 +431,9 @@ class SovereignBaseAgent(
         self,
         dry_run: bool = True,
         execute: bool = False,
+        _call_path: set | None = None,
+        depth: int = 0,
+        max_depth: int = 8,
         **kwargs,
     ) -> dict[str, Any]:
         """
@@ -446,13 +454,21 @@ class SovereignBaseAgent(
         import os
         import time
 
+        # Cycle detection: if this agent class is already in the call path, skip
+        agent_name = self.__class__.__name__
+        active_path = _call_path if _call_path is not None else set()
+        if agent_name in active_path:
+            return {"violations_found": 0, "violations_fixed": 0, "status": "SKIPPED", "errors": 0, "skipped": 1}
+        # Max depth guard
+        if depth > max_depth:
+            return {"violations_found": 0, "violations_fixed": 0, "status": "SKIPPED", "errors": 0, "skipped": 1}
+
         from agentic_core.L5_safety.types.heal_policy_types import (
             HealEscalationInputs,
             decide_heal_escalation,
         )
 
         start_time = time.time()
-        agent_name = self.__class__.__name__
 
         # Extract policy inputs from kwargs
         confidence_value = kwargs.pop("_confidence", 0.75)

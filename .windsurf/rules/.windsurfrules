@@ -33,7 +33,7 @@ This is the DEFAULT mode. No exceptions without explicit user override.
 
 If the ADG artifact schema differs from expectation on first access:
 1. Stop and record the actual keys present.
-2. Freeze the confirmed schema mapping in the current phase's evidence.
+2. Freeze the confirmed schema mapping in the current work unit's evidence.
 3. Reuse that frozen mapping for ALL subsequent accesses in the same run.
 4. Do NOT re-probe the schema on each access — one freeze, then commit.
 
@@ -783,7 +783,7 @@ If no tests are found through the graph, Windsurf MUST treat that as a coverage 
 Execution priority order:
 1. **Exact nodeids** from ADG test-surface output (e.g. `tests/unit/test_foo.py::TestBar::test_baz`)
 2. **File-level** fallback ONLY when nodeid extraction fails
-3. **Directory-level** ONLY in final full-suite phase (§7.2)
+3. **Directory-level** ONLY in the final full-suite run (§7.3 condition 3)
 
 **Lossiness rule:** If falling back from nodeid-level to file-level execution, the evidence MUST record:
 ```markdown
@@ -875,6 +875,8 @@ The following claims are FORBIDDEN unless the exact condition listed is met:
 | "tests are present" | Raw ADG entity count `tests > 0` for the node |
 | "fixtures are present" | Raw ADG entity count `fixtures > 0` for the node |
 | "convergence achieved" | All five conditions in §7.2 are met |
+| "repair complete" | All six conditions in §7.3 are met |
+| "stabilization complete" | All six conditions in §7.3 are met |
 | "repo is healthy" | Final full-suite run is green (zero fails, zero errors, zero unexpected skips) |
 | "no dependencies" | ADG explicitly returned empty edge set for the node |
 | "directly observed" | Fact was read directly from raw artifact or command stdout — no inference |
@@ -882,6 +884,8 @@ The following claims are FORBIDDEN unless the exact condition listed is met:
 Using these phrases without meeting the listed condition = CONSTITUTIONAL VIOLATION.
 
 ### 7.2 Convergence declaration conditions
+
+**Convergence is a scoped claim only.** It asserts that the declared target surface is green. It does NOT assert that the repository is healthy or that the repair run is complete.
 
 Convergence MUST NOT be declared until ALL five conditions hold simultaneously:
 
@@ -892,6 +896,21 @@ Convergence MUST NOT be declared until ALL five conditions hold simultaneously:
 5. **Scope lossiness documented** — if file-level fallback was used, lossiness is recorded (§5.2.1)
 
 Claiming convergence before all five = HARD FAIL.
+
+### 7.3 Repair run completion conditions
+
+**Scoped convergence (§7.2) does not complete a repair run.** A repair run is complete only when ALL six conditions hold:
+
+1. **Scoped convergence conditions met** — all five conditions in §7.2 are satisfied
+2. **Blast-radius surface verified** — every ADG-reachable dependent of the repaired surface has been executed and passed; evidence of this execution exists in `docs/reports/plans/`
+3. **Full pytest suite green** — `pytest` run against the full repository returns zero failures, zero errors, zero unexpected skips
+4. **Full-suite run is post-repair** — the full-suite run timestamp is later than the last repair commit timestamp; a pre-existing green run does NOT satisfy this condition
+5. **No new failures introduced** — full-suite failure count is ≤ the pre-repair baseline failure count
+6. **Repair run evidence artifact complete** — a final summary artifact exists in `docs/reports/plans/` with FACT_CLASSIFICATION.Unresolved empty
+
+Claiming "repair complete" or "stabilization complete" before all six = CONSTITUTIONAL VIOLATION.
+
+**Failure mode this prevents:** An agent that makes the scoped target green and then treats that as completion — skipping blast-radius verification and the full suite — satisfies §7.2 but violates §7.3. §7.2 green is a necessary but not sufficient condition for repair run completion.
 
 ---
 
@@ -3304,11 +3323,11 @@ Evidence documentation per §2.2.2. Add CLUSTER_ANALYSIS and TEST_FILE_EDIT_JUST
 
 ---
 
-## §15. PHASE-0 PROOF-ARTIFACT TRUTHFULNESS
+## §15. ADG PROOF-ARTIFACT TRUTHFULNESS
 
 ### 15.1 Core principle
 
-**A Phase 0 proof artifact MUST only assert facts that are directly supported by the raw ADG output it inspects.**
+**An ADG proof artifact MUST only assert facts that are directly supported by the raw ADG output it inspects.**
 
 Any field whose value is derived from a secondary command (e.g. `adg_cli.py impact`) rather than from the raw ADG entity/node counts MUST be labelled as `derived` and the deriving command MUST be recorded inline.
 
@@ -3323,7 +3342,7 @@ Any field whose value is derived from a secondary command (e.g. `adg_cli.py impa
 
 ### 15.3 Required truth-tracking schema
 
-Every Phase 0 proof artifact MUST use the following structure for count-derived boolean flags:
+Every ADG proof artifact MUST use the following structure for count-derived boolean flags:
 
 ```json
 {
@@ -3355,7 +3374,7 @@ Every Phase 0 proof artifact MUST use the following structure for count-derived 
 
 ### 15.4 Evidence section requirement
 
-Phase 0 evidence files MUST include a `## PROOF_ARTIFACT_TRUTHFULNESS` section:
+Any evidence file that produces or references an ADG proof artifact MUST include a `## PROOF_ARTIFACT_TRUTHFULNESS` section:
 
 ```markdown
 ## PROOF_ARTIFACT_TRUTHFULNESS
@@ -3377,11 +3396,11 @@ Phase 0 evidence files MUST include a `## PROOF_ARTIFACT_TRUTHFULNESS` section:
 - No overclaim detected: yes/no
 ```
 
-If any item is "no", the phase is **BLOCKED** until corrected.
+If any item is "no", the work unit is **BLOCKED** until corrected.
 
 ### 15.5 CI enforcement
 
-CI MUST run `ops_scripts/ci/check_phase0_artifact_truthfulness.py` on every proof artifact under `docs/reports/plans/` that contains a `raw_counts` block. The checker MUST fail if:
+CI MUST run `ops_scripts/ci/check_adg_proof_artifact_truthfulness.py` on every proof artifact under `docs/reports/plans/` that contains a `raw_counts` block. The checker MUST fail if:
 
 1. Any `*_raw` flag disagrees with the corresponding `raw_counts` value.
 2. Any `*_derived` flag is `true` but `deriving_command` is absent or empty.
@@ -3434,13 +3453,13 @@ This pre-flight MUST be run before the first field access, not discovered on fir
 
 ### 16.5 Evidence requirement
 
-Phase 0 and Phase 1 evidence files MUST include a one-line schema confirmation:
+Any evidence file that reads an ADG artifact MUST include a one-line schema confirmation:
 
 ```
 ADG schema pre-flight: PASSED (canonical keys verified: entity_type, name, imports, ...)
 ```
 
-If the pre-flight was not run, the phase evidence is **INVALID**.
+If the pre-flight was not run, the evidence file is **INVALID**.
 
 ---
 
@@ -3485,7 +3504,7 @@ All pre-existing skips MUST be recorded in `artifacts/adg/pre_existing_skip_regi
 
 ### 17.3 Convergence gate
 
-Convergence (Phase 7 validation) is **BLOCKED** unless ALL of the following hold:
+Scoped convergence (§7.2) is **BLOCKED** unless ALL of the following hold:
 
 1. **Zero unregistered skips** — every `pytest.mark.skip` or `skipif` in the scoped surface has a matching entry in the skip registry.
 2. **Zero expired registry entries** — no entry has `expiry_date` in the past.
@@ -3523,7 +3542,7 @@ def assert_convergence_skip_gate(scoped_test_ids: list[str], registry_path: str)
 
 ### 17.4 Evidence requirement
 
-Phase 3 and Phase 7 evidence MUST include a `## SKIP_CONVERGENCE_GATE` section:
+Any evidence file covering a scoped test execution or convergence check MUST include a `## SKIP_CONVERGENCE_GATE` section:
 
 ```markdown
 ## SKIP_CONVERGENCE_GATE
@@ -3824,10 +3843,11 @@ CI MUST fail immediately if ANY of the following conditions are detected:
 | 10 | Policy drift misclassified | Governance module touched with `repair_class: production_bug_fix` without POLICY_DRIFT section |
 | 11 | Contract conflict unresolved | Two conflicting contracts both touched without CONTRACT_CONFLICT section |
 | 12 | Environment contract missing | subprocess/vLLM/CUDA failure without ENVIRONMENT_CONTRACT section |
+| 13 | Repair run declared complete without full-suite evidence | Any claim of "repair complete" or "stabilization complete" without a post-repair full-suite green artifact (§7.3 condition 3–4) |
 
 ### 22.2 Integration with §5.1
 
-The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUST enforce all 12 conditions in §22.1 in addition to its existing gates.
+The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUST enforce all 13 conditions in §22.1 in addition to its existing gates.
 
 `ops_scripts/ci/check_ci_integrity.py` MUST be added to the gate sequence and run after the evidence contract checker.
 
@@ -3873,6 +3893,7 @@ The existing single entrypoint `python ops_scripts/ci/run_contract_gates.py` MUS
 
 ## Convergence
 - Convergence requires: zero scoped failures + zero unregistered skips + no expired registry entries + empty Unresolved list + documented lossiness.
+- **Scoped convergence ≠ repair complete.** Scoped green is a necessary but not sufficient condition. Blast-radius verification and a post-repair full-suite green run are also required (§7.3).
 - Full suite runs only once: at the end.
 
 ## Test Count Invariants
