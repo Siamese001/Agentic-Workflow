@@ -13,6 +13,9 @@ from functools import lru_cache
 from pathlib import Path
 from typing import Final
 
+# Core package directory name
+AGENTIC_CORE_DIR: str = "agentic_core"
+
 # Markers that indicate the root of the project
 ROOT_MARKERS: list[str] = [
     "pyproject.toml",
