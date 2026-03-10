@@ -770,6 +770,7 @@ def cmd_guardian_scope(
     focus_territory: str | None,
     boundary_violations: bool,
     repo_root: Path,
+    file_path: str | None = None,
 ) -> int:
     """Produce ADG-prioritized guardian execution scope."""
     from agentic_core.adg.applications.guardian_prioritizer import GuardianPrioritizer
@@ -777,6 +778,64 @@ def cmd_guardian_scope(
 
     result = _load_scan(repo_root)
     prioritizer = GuardianPrioritizer(result)
+
+    if file_path:
+        from agentic_core.adg.schema import module_path_to_layer
+        from tools.change_impact_engine import ChangeImpactEngine
+
+        norm_path = file_path.replace("\\", "/")
+        layer = module_path_to_layer(norm_path)
+        engine = ChangeImpactEngine(result, repo_root=repo_root)
+        impact = engine.analyze([norm_path], include_tests=False)
+        signals = prioritizer.get_signals()
+        prio_result = prioritizer.prioritize()
+
+        # Fan-out for this file
+        _MODULE_PREFIX = "ADG::Module::"
+        fan_out = sum(
+            1 for e in result.edges
+            if e.from_name == _MODULE_PREFIX + norm_path and e.relation_type == "imports"
+        )
+        fan_in = sum(
+            1 for e in result.edges
+            if e.to_name == _MODULE_PREFIX + norm_path and e.relation_type == "imports"
+        )
+
+        relevant_violations = [
+            v for v in signals.get("cross_layer_violations", [])
+            if v.get("from_module", "").endswith(norm_path)
+            or v.get("to_module", "").endswith(norm_path)
+        ]
+
+        trigger_reasons = []
+        if fan_out >= 50:
+            trigger_reasons.append(f"high_fan_out={fan_out}")
+        if fan_in >= 10:
+            trigger_reasons.append(f"high_fan_in={fan_in}")
+        if relevant_violations:
+            trigger_reasons.append(f"layer_violations={len(relevant_violations)}")
+        if len(impact.impacted_modules) > 10:
+            trigger_reasons.append(f"blast_radius={len(impact.impacted_modules)}")
+        if not trigger_reasons:
+            trigger_reasons.append("module_in_scope")
+
+        _out(
+            {
+                "mode": "file_focused",
+                "file": norm_path,
+                "layer": layer,
+                "fan_out": fan_out,
+                "fan_in": fan_in,
+                "blast_radius": len(impact.impacted_modules),
+                "layer_violations_for_file": relevant_violations[:10],
+                "trigger_reasons": trigger_reasons,
+                "route_mode": impact.route_mode,
+                "risk_score": impact.risk_score,
+                "priority_guardians": [s.to_dict() for s in prio_result.ordered()[:5]],
+                "adg_signals_digest": prio_result.adg_signals_digest,
+            }
+        )
+        return 0
 
     if boundary_violations:
         # Focus on cross-layer violating guardians
@@ -885,7 +944,20 @@ def cmd_execution_impact(file_path: str, repo_root: Path) -> int:
     norm = file_path.replace("\\", "/")
     report = build_pre_run_report([norm], repo_root=repo_root)
     emit_pre_run_log(report)
-    _out(report.to_dict())
+
+    # Write artifact to disk
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    artifacts_dir = repo_root / "artifacts" / "adg"
+    artifacts_dir.mkdir(parents=True, exist_ok=True)
+    out_path = artifacts_dir / f"execution_impact_{ts}.json"
+    payload = report.to_dict()
+    payload["target_file"] = norm
+    payload["emitted_by"] = "adg_cli.py execution-impact"
+    payload["timestamp"] = ts
+    out_path.write_text(json.dumps(payload, indent=2, sort_keys=True) + "\n", encoding="utf-8")
+    print(f"ADG-EXECUTION-IMPACT-ARTIFACT: {out_path}", file=sys.stderr)
+
+    _out(payload)
     return 0 if report.route_mode == "NORMAL" else 1
 
 
@@ -1132,7 +1204,8 @@ def main(argv: list[str] | None = None) -> int:
 
     # -- guardian-scope
     p_gs = sub.add_parser("guardian-scope", help="Produce ADG-prioritized guardian scope")
-    gs_grp = p_gs.add_mutually_exclusive_group(required=True)
+    p_gs.add_argument("--file", metavar="PATH", help="Focus guardian scope on a specific file")
+    gs_grp = p_gs.add_mutually_exclusive_group(required=False)
     gs_grp.add_argument("--high-risk-only", action="store_true", help="Only high-risk guardians")
     gs_grp.add_argument("--focus-territory", metavar="TERRITORY", help="Focus on a specific territory")
     gs_grp.add_argument("--boundary-violations", action="store_true", help="Focus on cross-layer violations")
@@ -1201,11 +1274,16 @@ def main(argv: list[str] | None = None) -> int:
     if cmd == "missing-tests":
         return cmd_missing_tests(symbol_name=args.symbol, repo_root=rr)
     if cmd == "guardian-scope":
+        file_arg = getattr(args, "file", None)
+        if not file_arg and not args.high_risk_only and not args.focus_territory and not args.boundary_violations:
+            print("guardian-scope requires --file, --high-risk-only, --focus-territory, or --boundary-violations", file=sys.stderr)
+            return 2
         return cmd_guardian_scope(
             high_risk_only=args.high_risk_only,
             focus_territory=args.focus_territory,
             boundary_violations=args.boundary_violations,
             repo_root=rr,
+            file_path=file_arg,
         )
     if cmd == "execution-impact":
         return cmd_execution_impact(file_path=args.file, repo_root=rr)

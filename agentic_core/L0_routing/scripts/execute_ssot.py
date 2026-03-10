@@ -7569,6 +7569,97 @@ def list_available_agents(project_root=None, dedupe=False):
 
 
 # ============================================================================
+# ADG PRE-RUN IMPACT ARTIFACT
+# ============================================================================
+
+_THIS_FILE = "agentic_core/L0_routing/scripts/execute_ssot.py"
+_logger_adg = logging.getLogger(__name__ + ".adg_prerun")
+
+
+def _emit_adg_pre_run_artifact(repo_root: "Path") -> None:
+    """Emit artifacts/adg/execution_impact_<timestamp>.json before main execution.
+
+    Gracefully degrades: if ADG is unavailable, writes a minimal artifact with
+    adg_available=false. Never raises — must not block main execution.
+    """
+    ts = datetime.utcnow().strftime("%Y%m%dT%H%M%SZ")
+    artifacts_dir = repo_root / "artifacts" / "adg"
+    out_path = artifacts_dir / f"execution_impact_{ts}.json"
+
+    payload: dict = {
+        "emitted_by": "execute_ssot.py",
+        "timestamp": ts,
+        "target_file": _THIS_FILE,
+        "adg_available": False,
+        "adg_error": "",
+        "impacted_modules": [],
+        "impacted_module_count": 0,
+        "impacted_tests": [],
+        "impacted_test_count": 0,
+        "risk_score": 0,
+        "route_mode": "UNKNOWN",
+        "layer_violation_count": 0,
+        "guardian_scope": [],
+        "warnings": [],
+        "confidence_summary": "ADG unavailable — no impact data",
+        "impact_digest": "",
+    }
+
+    try:
+        artifacts_dir.mkdir(parents=True, exist_ok=True)
+
+        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
+        report = build_pre_run_report(changed_files=[_THIS_FILE], repo_root=repo_root)
+        payload["adg_available"] = report.adg_available
+        payload["adg_error"] = report.adg_error
+        payload["impacted_modules"] = report.impacted_modules
+        payload["impacted_module_count"] = report.impacted_module_count
+        payload["impacted_tests"] = report.impacted_tests
+        payload["impacted_test_count"] = report.impacted_test_count
+        payload["risk_score"] = report.risk_score
+        payload["route_mode"] = report.route_mode
+        payload["layer_violation_count"] = report.layer_violation_count
+        payload["impact_digest"] = report.impact_digest
+        payload["confidence_summary"] = report.summary
+
+        if report.adg_available:
+            payload["warnings"] = []
+            if report.route_mode == "RESTRICTED":
+                payload["warnings"].append(
+                    f"RESTRICTED mode: risk_score={report.risk_score}, review before proceeding"
+                )
+            elif report.route_mode == "HUMAN_REVIEW":
+                payload["warnings"].append(
+                    f"HUMAN_REVIEW required: risk_score={report.risk_score}"
+                )
+        else:
+            payload["warnings"].append("ADG unavailable — impact analysis skipped")
+
+        _logger_adg.info(
+            "ADG pre-run artifact: route_mode=%s risk=%s impacted=%s modules tests=%s",
+            report.route_mode,
+            report.risk_score,
+            report.impacted_module_count,
+            report.impacted_test_count,
+        )
+
+    except Exception as exc:  # noqa: BLE001
+        payload["adg_error"] = str(exc)
+        payload["warnings"].append(f"ADG pre-run failed: {exc}")
+        _logger_adg.warning("ADG pre-run artifact emission failed: %s", exc)
+
+    try:
+        out_path.write_text(
+            json.dumps(payload, indent=2, sort_keys=True) + "\n",
+            encoding="utf-8",
+        )
+        _logger_adg.info("ADG pre-run artifact written: %s", out_path)
+    except Exception as exc:  # noqa: BLE001
+        _logger_adg.warning("ADG pre-run artifact write failed: %s", exc)
+
+
+# ============================================================================
 # MAIN ORCHESTRATOR
 # ============================================================================
 
@@ -7606,6 +7697,9 @@ def main() -> int:
         print("[PROTECTED-ROOT] override ENABLED: protected root mutation permitted")
     else:
         print("[PROTECTED-ROOT] override DISABLED: protected root mutation blocked")
+
+    # ADG pre-run impact artifact — emitted before main execution
+    _emit_adg_pre_run_artifact(REPO_ROOT)
 
     try:
         _legacy_main(
