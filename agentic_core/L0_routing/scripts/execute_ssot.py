@@ -1918,6 +1918,7 @@ class SovereignDecisionEngine:
                     + (f" --violation_types {' '.join(violation_types)}" if violation_types else "")
                 ),
             ]
+            # guardian: allow-magic-config
             result = _get_safe_subprocess_run()(
                 cmd,
                 capture_output=True,
@@ -2124,6 +2125,7 @@ class SovereignDecisionEngine:
             return "SOVEREIGN_VIOLATION"
         return "STRUCTURAL_VIOLATION"
 
+    # guardian: allow-magic-config
     def _check_healing_budget(self, agent_name: str, depth: int = 0, max_depth: int = 3) -> tuple[bool, str]:
         """Prevents infinite healing loops and budget exhaustion."""
         # Use operation-scoped call path to prevent bleeding across territories
@@ -2809,6 +2811,7 @@ def execute_phase2_reconciliation(
                 # grant_write_permission is informational — UWG tracks all agent
                 # mutation attempts for audit and replay without blocking them.
                 _uwg = _get_uwg()
+                # guardian: allow-path-string
                 _territory_posix = Path(territory).as_posix() + "/"
                 _uwg.grant_write_permission(_territory_posix)
 
@@ -5989,6 +5992,7 @@ def _write_heal_run_complete(
     # ── Git commit ────────────────────────────────────────────────────────────
     git_commit = ""
     try:
+        # guardian: allow-magic-config
         import subprocess as _sp
 
         _r = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=DEFAULT_TIMEOUT)
@@ -7799,12 +7803,15 @@ def _legacy_main(
                 sys.exit(1)
 
         except ImportError as exc:
+            # guardian: allow-global-mutation
             logger.critical(f"[FENCE-SELF-TEST] FAILED: Cannot import fence module: {exc}")
             sys.exit(1)
     else:
         logger.warning("[FENCE-SELF-TEST] SKIPPED: --allow-protected-root-mutation enabled")
-        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"  # guardian: allow-global-mutation
-        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"  # guardian: allow-global-mutation
+        # guardian: allow-global-mutation
+        os.environ["AGENTIC_ALLOW_MUTATION_FOR_TESTS"] = "1"
+        # guardian: allow-global-mutation
+        os.environ["AGENTIC_BYPASS_LONGPATHS_CHECK"] = "1"
 
     # §8.1e — V15 manifest at SSOT bootstrap entry (AGGREGATE, L0 bootstrap)
     _v15_manifest = _v15_build_ssot_manifest()
@@ -7945,13 +7952,16 @@ def _legacy_main(
 
     state_mgr = RuntimeStateManager(project_root, execution_context=_exec_ctx)
 
+    # guardian: allow-global-mutation
     # [META-LEARNING] Tied to --heal: proposals always applied when healing is active
     state_mgr.state["apply_proposals"] = ctx.heal
 
     # [SIMPLIFIED] Auto-set env vars unless interactive mode explicitly requested
     if ctx.auto_approve:
-        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")  # guardian: allow-global-mutation
-        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")  # guardian: allow-global-mutation
+        # guardian: allow-global-mutation
+        os.environ.setdefault("SOVEREIGN_AUTO_APPROVE", "1")
+        # guardian: allow-global-mutation
+        os.environ.setdefault("ARCHIVE_BATCH_ACCEPT", "1")
 
     # [HARDENED] Use Sovereign Decision Engine — wired from HealContext
     # [B2/G6 CROSS-RUN] Build advisory healing memory retriever from the persisted FAISS

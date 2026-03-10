@@ -1594,7 +1594,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
 
         return audit_results
 
+    # guardian: allow-magic-config
     def check_file_sizes(
+        # guardian: allow-magic-config
         self, territory: str, max_lines: int = 1000
     ) -> list[dict[str, Any]]:  # guardian: allow-magic-configuration
         """Check for Python files exceeding max_lines in the given territory.

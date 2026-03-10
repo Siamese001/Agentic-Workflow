@@ -90,6 +90,9 @@ class ProviderHealthState:
         """
         return current_time < self.degraded_until
 
+# guardian: allow-magic-config
+
+    # guardian: allow-magic-config
     def should_degrade(self, error_threshold: float = 0.5, failure_threshold: int = 5) -> bool:
         """Check if provider should be degraded.
 

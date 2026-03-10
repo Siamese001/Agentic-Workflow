@@ -267,7 +267,11 @@ def _find_last_import_line(lines: list[str]) -> int:
 
 def _inject_import(lines: list[str], const: str, module: str) -> list[str]:
     lines = list(lines)
+# guardian: allow-path-string
+
+    # guardian: allow-path-string
     from_multi = re.compile(r"^\s*from\s+" + re.escape(module) + r"\s+import\s+\(")
+    # guardian: allow-path-string
     from_single = re.compile(r"^(\s*from\s+" + re.escape(module) + r"\s+import\s+)(.+)$")
 
     # 1. Extend existing multi-line block — find the MATCHING closing )

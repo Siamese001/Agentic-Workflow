@@ -2806,6 +2806,393 @@ Evidence documentation per §2.2.2. Add TEST_COUNT_AUDIT section when applicable
 
 ---
 
+## §14. SAFE AUTOMATED REMEDIATION
+
+### 14.1 Core principle
+
+**Automated fixes are not free. Every mutation must be proven safe before it runs.**
+
+Automated remediation (codemods, fix scripts, import healers, anti-pattern sweeps, violation burndown) is high-risk by nature. These 18 rules govern all automated mutation of the repository.
+
+They apply to every tool, script, or agent that writes files, moves symbols, rewrites imports, or modifies tests.
+
+---
+
+### 14.2 Rule 1 — Never mutate blind
+
+Any automated fix MUST prove exact target scope before editing files.
+
+No broad codemods, regex sweeps, or repo-wide rewrite passes are allowed without a precomputed file set and issue class.
+
+**Integration:** Scope precomputation MUST use the AST dependency graph (§3.4). Grep or filename heuristics alone are FORBIDDEN as scope inputs (§3.5).
+
+---
+
+### 14.3 Rule 2 — Parse health is a hard gate
+
+Every touched file MUST be verified to parse immediately after mutation.
+
+```python
+import ast
+from pathlib import Path
+
+def assert_parses(path: Path) -> None:
+    try:
+        ast.parse(path.read_text(encoding="utf-8"))
+    except SyntaxError as e:
+        raise RuntimeError(
+            f"PARSE GATE FAILED: {path} does not parse after mutation: {e}"
+        )
+```
+
+If any touched file fails to parse: **stop the run on first failure**. No further edits, no next phase, no commit.
+
+---
+
+### 14.4 Rule 3 — Checker health is a hard gate
+
+If the validator, anti-pattern checker, or test collection smoke cannot run cleanly after a batch, the batch is invalid.
+
+Do not continue until tool health is restored.
+
+```python
+import subprocess, sys
+
+def assert_checker_health() -> None:
+    result = subprocess.run(
+        ["python", "ops_scripts/ci/run_contract_gates.py", "--smoke"],
+        capture_output=True, text=True, timeout=120
+    )
+    if result.returncode != 0:
+        raise RuntimeError(
+            f"CHECKER GATE FAILED after batch:\n{result.stdout}\n{result.stderr}"
+        )
+```
+
+**Integration:** Uses the canonical CI entrypoint (§5.1).
+
+---
+
+### 14.5 Rule 4 — Counts alone do not equal success
+
+A lower violation count is not success if syntax, imports, package initialization, or test collection are broken.
+
+**Integrity beats numeric burndown.**
+
+After any remediation batch, ALL of the following MUST pass before the count reduction is accepted:
+1. Parse gate (§14.3)
+2. Checker health gate (§14.4)
+3. Import health — no new import errors
+4. Test collection smoke — collected count ≥ baseline (§13)
+
+---
+
+### 14.6 Rule 5 — Baselines may hide noise, not truth
+
+Baselines (violation counts, test counts, import error counts) MUST be used for CI delta gating only.
+
+They MUST never replace live absolute measurement during active remediation.
+
+During a remediation run, the run MUST report absolute counts, not only deltas.
+
+**Integration:** §13 test-count baselines apply this principle for tests. The same principle extends to violation count baselines.
+
+---
+
+### 14.7 Rule 6 — Use small bounded batches
+
+Automated fixes MUST run in small, reversible batches with explicit blast-radius limits.
+
+**Required batch discipline:**
+- Declare maximum files per batch before the batch runs
+- Declare the issue class being fixed
+- Stop after the declared limit — do not expand mid-batch
+- Record batch boundaries in evidence (§14.12)
+
+**High-risk files require extra caution or single-file treatment:**
+- `__init__.py` package initializers
+- `conftest.py` test configuration files
+- Config loaders
+- Registry files
+- Orchestrators
+
+---
+
+### 14.8 Rule 7 — Structural changes require structural tools
+
+Do not use naive text replacement for imports, constants, exception handling, decorators, or package wiring.
+
+Use AST/CST-aware logic or deterministic placement rules.
+
+**Forbidden for structural changes:**
+- `str.replace()` on source code
+- `re.sub()` on import lines
+- `sed`-style line replacement
+- Generic grep-and-replace tools
+
+**Required for structural changes:**
+- AST-aware rewriters (e.g. `libcst`, `ast` + `astor`, custom AST transformers)
+- Deterministic placement rules (e.g. "add import after last stdlib import")
+
+**Integration:** §3.3 (deterministic analysis) and §3.5 (no grep for structural logic) apply equally to fix scripts.
+
+---
+
+### 14.9 Rule 8 — Protected file classes require special handling
+
+The following file classes are **protected** and MUST NOT be modified by generic fix scripts unless explicitly whitelisted for that run:
+
+| Class | Examples |
+|-------|---------|
+| Package initializers | `__init__.py` in any package |
+| Import hubs | Files imported by >10 other modules (per ADG) |
+| Test configuration | `conftest.py`, `pytest.ini`, `pyproject.toml` |
+| Registry files | Files containing agent/engine registries |
+| SSOT files | `structure_blueprint.py`, `agent_discovery_full.json` |
+
+**Whitelisting protocol:**
+```python
+PROTECTED_CLASS_ALLOWLIST = {
+    "run_id": "<unique-run-id>",
+    "reason": "<explicit justification>",
+    "files": ["<path1>", "<path2>"],
+}
+```
+
+A fix script MUST refuse to modify a protected file unless it finds its own `run_id` in an explicit allowlist entry.
+
+---
+
+### 14.10 Rule 9 — Fail closed on tooling damage
+
+If a fix script corrupts files, introduces syntax errors, or breaks imports: **stop and repair before resuming**.
+
+No "continue and clean up later" behavior.
+
+Repair-before-resume means:
+1. Identify all corrupted files (parse gate scan)
+2. Revert corrupted files from the last known-clean state (§14.12 rollback unit)
+3. Re-run parse gate — all files must pass
+4. Re-run checker health gate — tool must pass
+5. Only then resume or abort
+
+**Integration:** §3.6 fail-closed graph discipline applies here for tooling failures.
+
+---
+
+### 14.11 Rule 10 — No commits from a corrupted state
+
+Never commit or push if any of the following are true after a remediation run:
+- Any touched file is unparsable
+- Any critical checker is broken
+- Test collection count has dropped below baseline (§13)
+- Import errors exist in any touched file
+
+This is a **pre-commit hard gate**, not just a CI soft check.
+
+```python
+def pre_commit_remediation_gate(touched_files: list[str]) -> None:
+    for f in touched_files:
+        assert_parses(Path(f))          # §14.3
+    assert_checker_health()             # §14.4
+    assert_test_collection_healthy()    # §13
+    assert_no_new_import_errors(touched_files)
+```
+
+---
+
+### 14.12 Rule 11 — Every batch must be auditable
+
+Each mutation batch MUST record the following in evidence (§2):
+
+```markdown
+## REMEDIATION_BATCH
+- Run ID: <uuid>
+- Issue class: <e.g. silent_swallower, fake_healthy_test, import_error>
+- Files declared in scope: <count> (<list>)
+- Files actually touched: <count> (<list>)
+- Before count (absolute): <n>
+- After count (absolute): <n>
+- Parse gate result: PASS / FAIL (<files that failed>)
+- Checker result: PASS / FAIL
+- Rollback unit: <git stash id or commit sha before batch>
+```
+
+**Integration:** The `## REMEDIATION_BATCH` section extends the evidence template in §2.2.3.
+
+---
+
+### 14.13 Rule 12 — Rollback must always be available
+
+No automated remediation is allowed unless the exact changed file set can be reverted cleanly.
+
+**Required before any batch:**
+```python
+import subprocess
+
+def create_rollback_checkpoint() -> str:
+    result = subprocess.run(
+        ["git", "stash", "push", "--include-untracked",
+         "-m", f"remediation-rollback-{run_id}"],
+        capture_output=True, text=True, check=True
+    )
+    return result.stdout.strip()
+
+def rollback_to_checkpoint(stash_ref: str) -> None:
+    subprocess.run(["git", "stash", "pop", stash_ref], check=True)
+```
+
+If `git stash` is unavailable or the working tree is not clean enough to stash, the remediation run MUST abort with an explicit error.
+
+---
+
+### 14.14 Rule 13 — Do not mix recovery and burndown
+
+If the repository is damaged (parse errors, broken imports, broken test collection), recovery comes first.
+
+Do not keep reducing violations while syntax or import integrity is broken.
+
+**Ordered priority:**
+1. Restore parse health of all files
+2. Restore import health of all modules
+3. Restore test collection smoke
+4. Only then resume violation burndown
+
+Any violation reduction recorded during a damaged state is invalid and must be re-measured after recovery.
+
+---
+
+### 14.15 Rule 14 — High-risk surfaces must be opt-in
+
+Automation MUST default to **excluding** fragile surfaces unless a rule explicitly allows editing them.
+
+**Default exclusion list for all fix scripts:**
+```python
+DEFAULT_EXCLUDED_PATTERNS = [
+    "*/__init__.py",
+    "*/conftest.py",
+    "*/config/*.py",
+    "*/registry*.py",
+    "*/orchestrat*.py",
+    "*/bootstrap*.py",
+    "structure_blueprint*.py",
+    "agent_discovery*.json",
+    "pyproject.toml",
+    "pytest.ini",
+]
+```
+
+A fix script MUST refuse to process any file matching a default exclusion pattern unless that file is explicitly opt-in via `--include-protected` flag with a documented justification.
+
+---
+
+### 14.16 Rule 15 — Phase advancement requires full pass
+
+A remediation phase may advance to the next phase only if ALL of the following are true:
+- All touched files parse (§14.3)
+- All imports in touched files remain healthy
+- Checker runs clean (§14.4)
+- Test collection smoke passes (§13)
+- Target issue count decreased (absolute)
+- No new structural damage was introduced
+
+Any one failure blocks advancement. There is no partial credit.
+
+**Integration:** This extends §7 (Acceptance Discipline) to remediation phases specifically.
+
+---
+
+### 14.17 Rule 16 — Automation must preserve test truth
+
+Fix scripts MUST NOT reduce violation counts by:
+- Weakening assertions
+- Adding `@pytest.mark.skip` or `@pytest.mark.xfail` without strict=True
+- Broadening `xfail` coverage
+- Masking failures behind fallback logic
+- Converting `assert <expr>` to `assert True`
+
+**Integration:** §1.12 (zero-tolerance skip), §11.3 (fake-healthy tests), §11.4 (non-strict xfail) all apply and are enforced here as additional constraints on fix scripts.
+
+---
+
+### 14.18 Rule 17 — Observation cannot authorize execution
+
+Metrics and violation counts may prioritize work, but they MUST NOT justify expanding mutation scope without fresh structural validation.
+
+**Protocol:**
+1. Observe violation count → produces a candidate file list
+2. Build fresh AST dependency graph from that candidate list (§3.4)
+3. Validate scope via graph (§3.1)
+4. Only then authorize mutation of files confirmed by the graph
+
+Violation count alone is not scope authorization.
+
+---
+
+### 14.19 Rule 18 — First failure wins
+
+On any contradiction between lower counts and lower repo integrity, treat the batch as failed.
+
+```python
+def evaluate_batch_result(
+    before_count: int,
+    after_count: int,
+    parse_gate_passed: bool,
+    checker_passed: bool,
+    collection_healthy: bool,
+) -> bool:
+    # Integrity always wins over count reduction
+    if not parse_gate_passed:
+        raise BatchFailure("FIRST FAILURE WINS: parse gate failed — batch is invalid regardless of count reduction")
+    if not checker_passed:
+        raise BatchFailure("FIRST FAILURE WINS: checker gate failed — batch is invalid regardless of count reduction")
+    if not collection_healthy:
+        raise BatchFailure("FIRST FAILURE WINS: test collection degraded — batch is invalid regardless of count reduction")
+    return after_count < before_count
+```
+
+Integrity beats numeric burndown. Always.
+
+---
+
+### 14.20 CI enforcement
+
+The CI gate for safe remediation is `safe-remediation-gate.yml`.
+
+It enforces:
+- Parse gate on all files changed in PR (Rule 2)
+- Checker health after all changes (Rule 3)
+- No protected files modified without allowlist entry (Rule 8)
+- No commits that degrade test collection (Rule 10, via §13)
+- Batch audit section present in evidence if any fix script ran (Rule 11)
+
+---
+
+### 14.21 Integration with existing rules
+
+| Rule | Primary §§ |
+|------|------------|
+| 1 (Never mutate blind) | §3.1, §3.4, §3.5 |
+| 2 (Parse health gate) | §3.6, §10 |
+| 3 (Checker health gate) | §5.1 |
+| 4 (Counts ≠ success) | §1.12, §13 |
+| 5 (Baselines hide noise) | §13.3 |
+| 6 (Small bounded batches) | §3.1 |
+| 7 (Structural tools) | §3.3, §3.5 |
+| 8 (Protected files opt-in) | §4.2, §8 |
+| 9 (Fail closed on damage) | §3.6, §10 |
+| 10 (No commits from corrupted state) | §5, §7 |
+| 11 (Auditable batches) | §2.2 |
+| 12 (Rollback available) | §6 |
+| 13 (No mixing recovery and burndown) | §10 |
+| 14 (High-risk surfaces opt-in) | §4, §8 |
+| 15 (Phase advancement full pass) | §7, §5.1 |
+| 16 (Preserve test truth) | §1.12, §11.3, §11.4 |
+| 17 (Observation ≠ authorization) | §3.1, §3.4 |
+| 18 (First failure wins) | §3.6, §10 |
+
+---
+
 # MAXIM
 
 ## Testing & Evidence
@@ -2825,3 +3212,8 @@ Evidence documentation per §2.2.2. Add TEST_COUNT_AUDIT section when applicable
 
 ## Test Count Invariants
 - Test counts are invariants. Unexpected drops = CI failure.
+
+## Safe Automated Remediation
+- Automated fixes must prove scope before mutation.
+- Parse health and checker health are hard gates — integrity beats numeric burndown.
+- No commits from a corrupted state. Rollback must always be available.

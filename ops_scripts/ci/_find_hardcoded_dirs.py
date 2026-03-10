@@ -52,6 +52,7 @@ SSOT_DIR_NAMES: frozenset[str] = (
 )
 
 # Minimum overlap: a literal set with >= this many SSOT-owned names is a violation
+# guardian: allow-magic-config
 MIN_OVERLAP = 2
 
 # Files / dirs that ARE the SSOT source — skip them

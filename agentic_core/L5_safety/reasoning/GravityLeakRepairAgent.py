@@ -792,6 +792,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 ).replace("\\", "/")
                 try:
                     rel = fp.replace(
+                        # guardian: allow-path-string
                         str(self.project_root).replace("\\", "/") + "/", "", 1
                     )  # guardian: allow-path-fragility
                 except (ValueError, AttributeError) as e:

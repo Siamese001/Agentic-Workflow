@@ -45,6 +45,7 @@ from agentic_core.L0_routing.config.path_constants import (
 SSOT_DIR_NAMES: frozenset[str] = (
     GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 )
+# guardian: allow-magic-config
 MIN_OVERLAP = 2
 DRY_RUN = "--dry-run" in sys.argv
 

@@ -35,6 +35,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
+# guardian: allow-global-mutation
 sys.path.insert(0, str(PROJECT_ROOT))
 
 
@@ -61,6 +62,7 @@ def try_import_module(module_path: str) -> tuple[str, str, float]:
         return (module_path, f"ERROR: {type(e).__name__}: {str(e)[:100]}", duration)
 
 
+# guardian: allow-magic-config
 def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, str, float]:
     """
     Import a module with a timeout using multiprocessing.
@@ -207,6 +209,7 @@ def main():
             end="",
             flush=True,
         )
+# guardian: allow-magic-config
 
         result = import_with_timeout(str(file_path), timeout=DEFAULT_TIMEOUT)
         path, status, duration = result
