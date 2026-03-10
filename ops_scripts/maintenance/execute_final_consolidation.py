@@ -12,6 +12,7 @@ import subprocess
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = get_validated_project_root()
 
@@ -29,8 +30,7 @@ def fix_imports():
     fixed_count = 0
 
     for root, _dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
-        if "archived" in root:
-            continue
+        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
         for file in files:
             if not file.endswith(".py"):

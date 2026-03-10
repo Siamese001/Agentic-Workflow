@@ -27,6 +27,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[3]
 L3_ROOT = ROOT / L3_ORCHESTRATION_DIR
@@ -48,7 +49,8 @@ def _collect_agent_files() -> list[Path]:
     Tombstoned/retired files (no ClassDef) are excluded from the active inventory.
     """
     agent_files: list[Path] = []
-    for dirpath, _, filenames in os.walk(L3_ROOT):
+    for dirpath, dirs, filenames in os.walk(L3_ROOT):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for fname in filenames:
             if fname.endswith("Agent.py"):
                 fpath = Path(dirpath) / fname
@@ -118,9 +120,8 @@ def _find_l3_agent_imports_in_production() -> dict[str, list[str]]:
     for prod_dir in prod_dirs:
         if not prod_dir.exists():
             continue
-        for dirpath, _, filenames in os.walk(prod_dir):
-            if ".git" in dirpath or "__pycache__" in dirpath:
-                continue
+        for dirpath, dirs, filenames in os.walk(prod_dir):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for fname in filenames:
                 if not fname.endswith(".py"):
                     continue

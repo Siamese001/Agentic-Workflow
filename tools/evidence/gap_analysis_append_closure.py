@@ -20,27 +20,14 @@ from agentic_core.L0_routing.config.path_constants import (
     TOOLS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 REPO = get_validated_project_root()
 EVIDENCE = REPO / "docs" / "reports" / "plans" / "requirements-gap-analysis-evidence.md"
 REQ_MD = REPO / "docs" / "reports" / "plans" / "Agentic Master Requirements.md"
 PY = sys.executable
 
-SKIP = {
-    ".nox",
-    ".git",
-    ".backup",
-    ".pytest_tmp",
-    "archives",
-    "__pycache__",
-    ".vscode",
-    ".windsurf",
-    "node_modules",
-    ".healing_backups",
-    "logs",
-    ".venv",
-    "venv",
-}
+SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # guardian: allow-magic-config

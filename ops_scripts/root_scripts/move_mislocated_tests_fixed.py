@@ -16,6 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 _ROOT = get_validated_project_root()
 
@@ -161,6 +162,7 @@ def main():
     test_root = pathlib.Path("tests")
     if test_root.exists():
         for root, dirs, files in os.walk(test_root, topdown=False):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for dir_name in dirs:
                 dir_path = pathlib.Path(root) / dir_name
                 try:

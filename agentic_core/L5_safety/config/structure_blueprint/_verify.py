@@ -23,6 +23,7 @@ from types import MappingProxyType
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # ── Canonical allowlist for _constants.py imports ──
 ALLOWED_MODULES: frozenset[str] = frozenset(
@@ -48,16 +49,10 @@ SCAN_ROOTS: tuple[str, ...] = (
     "tests",
 )
 SCAN_EXTENSIONS: tuple[str, ...] = (".py",)
-SCAN_EXCLUDES: frozenset[str] = frozenset(
+SCAN_EXCLUDES: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS | frozenset(
     {
-        ".venv",
-        "venv",
-        "__pycache__",
-        ".git",
         "dist",
         "build",
-        ".pytest_cache",
-        "node_modules",
     },
 )
 

@@ -6,6 +6,8 @@ import os
 import re
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 
 def calculate_file_hash(file_path: str) -> str:
     """Calculate SHA-256 hash of a file."""
@@ -19,7 +21,7 @@ def calculate_file_hash(file_path: str) -> str:
 def is_excluded(path: str) -> bool:
     """Check if path should be excluded from validation."""
     parts: Any = path.split(os.sep)
-    if any(p in EXCLUDED_DIRS for p in parts):
+    if any(p in SOVEREIGN_EXCLUDED_FOLDERS for p in parts):
         return True
     if any(p.startswith(".") and len(p) > 1 and (p not in [".github"]) for p in parts):
         return True
@@ -30,9 +32,9 @@ def get_python_files(root: str = ".") -> list[str]:
     """Get all Python files excluding specified directories and files."""
     python_files: Any = []
     for root_dir, dirs, files in os.walk(root):
-        dirs[:] = [d for d in dirs if d not in EXCLUDED_DIRS]
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
-            if file.endswith(".py") and file not in EXCLUDED_FILES:
+            if file.endswith(".py"):
                 file_path: Any = os.path.join(root_dir, file)
                 if not is_excluded(file_path):
                     python_files.append(file_path)

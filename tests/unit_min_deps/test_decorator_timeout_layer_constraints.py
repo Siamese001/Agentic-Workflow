@@ -59,7 +59,7 @@ CANONICAL_FILES = {
 
 SHIM_TO_CANONICAL = {
     AGENTIC_CORE / "L5_safety" / "utils" / "decorators_util.py": "agentic_core.utils.decorators_util",
-    AGENTIC_CORE
+    ROOT
     / L0_ROUTING_DIR
     / "utils"
     / "timeout_decorator_util.py": "agentic_core.utils.timeout_decorator_util",

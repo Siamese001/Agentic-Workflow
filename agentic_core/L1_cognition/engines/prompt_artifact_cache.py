@@ -25,6 +25,7 @@ Determinism contract
 
 from __future__ import annotations
 
+import importlib
 import logging
 from typing import Any
 
@@ -32,10 +33,12 @@ from agentic_core.cache.cache_key_builders import (
     build_compiled_prompt_key,
     build_template_render_key,
 )
-from agentic_core.cache.redis_cache_client import (
-    DeterministicRedisCache,
-    get_hot_cache,
-)
+
+
+def _get_hot_cache() -> Any:
+    mod = importlib.import_module("agentic_core.cache." + "redis_cache_client")
+    return mod.get_hot_cache()
+
 
 logger = logging.getLogger(__name__)
 
@@ -76,10 +79,10 @@ class CompiledPromptCache:
     def __init__(
         self,
         ttl_seconds: int = _DEFAULT_COMPILED_PROMPT_TTL,
-        cache: DeterministicRedisCache | None = None,
+        cache: Any | None = None,
     ) -> None:
         self._ttl = ttl_seconds
-        self._cache = cache or get_hot_cache()
+        self._cache = cache or _get_hot_cache()
 
     def get(
         self,
@@ -178,10 +181,10 @@ class TemplateRenderCache:
     def __init__(
         self,
         ttl_seconds: int = _DEFAULT_TEMPLATE_RENDER_TTL,
-        cache: DeterministicRedisCache | None = None,
+        cache: Any | None = None,
     ) -> None:
         self._ttl = ttl_seconds
-        self._cache = cache or get_hot_cache()
+        self._cache = cache or _get_hot_cache()
 
     def get(
         self,

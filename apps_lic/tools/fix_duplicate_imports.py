@@ -4,6 +4,8 @@ import logging
 import os
 import re
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 logging.basicConfig(level=logging.INFO)
 Logger: Any = logging.getLogger(__name__)
 
@@ -47,7 +49,7 @@ def main() -> None:
     """Fix duplicate imports in all Python files."""
     COUNT: Any = 0
     for root, dirs, files in os.walk("."):
-        DIRS[:] = [d for d in dirs if not d.startswith(".") and d != "__pycache__"]
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py") and (not file.startswith("fix_")):
                 os.path.join(root, file)

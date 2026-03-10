@@ -17,6 +17,8 @@ import os
 
 import pytest
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # ---------------------------------------------------------------------------
 # Constants
 # ---------------------------------------------------------------------------
@@ -40,7 +42,8 @@ def _collect_l1_agent_files() -> list[str]:
     """Return all *Agent.py files under agentic_core/L1_*/."""
     agent_files: list[str] = []
     for root in L1_ROOTS:
-        for dirpath, _, filenames in os.walk(root):
+        for dirpath, dirs, filenames in os.walk(root):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for fname in filenames:
                 if fname.endswith("Agent.py"):
                     agent_files.append(os.path.join(dirpath, fname))
@@ -60,9 +63,8 @@ def _collect_l1_imports_in_repo() -> dict[str, list[str]]:
     statements.  Returns {class_name: [importing_file, ...]}.
     """
     hits: dict[str, list[str]] = {}
-    for dirpath, _, filenames in os.walk("."):
-        if ".git" in dirpath.split(os.sep):
-            continue
+    for dirpath, dirs, filenames in os.walk("."):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for fname in filenames:
             if not fname.endswith(".py"):
                 continue

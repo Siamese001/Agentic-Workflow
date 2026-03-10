@@ -14,6 +14,8 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 try:
     from google import genai
 except ImportError:
@@ -131,7 +133,8 @@ def _get_python_files(base_path: str = ".") -> list[str]:
     Recursively finds all Python files in the given base path.
     """
     python_files = []
-    for root, _, files in os.walk(base_path):
+    for root, dirs, files in os.walk(base_path):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 python_files.append(os.path.join(root, file))

@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = get_validated_project_root()
 
@@ -30,6 +31,7 @@ def scan_archives_for_moved_files() -> list[dict[str, Any]]:
         return archived_files
 
     for root, _dirs, files in os.walk(archive_root):
+        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py") or file.endswith(".json") or file.endswith(".txt"):
                 file_path = Path(root) / file

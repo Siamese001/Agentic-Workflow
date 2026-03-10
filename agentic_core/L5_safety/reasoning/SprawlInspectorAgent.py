@@ -22,6 +22,7 @@ from typing import Any
 from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.utils.decorators_compat_util import standard_heal
 
 
@@ -62,6 +63,7 @@ class SprawlInspectorAgent(SovereignBaseAgent):
             Report dictionary with violations and flattening candidates
         """
         for root, dirs, files in os.walk(self.root):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             p: Path = Path(root)
             py_files: list[str] = [f for f in files if f.endswith(".py")]
             if len(dirs) > self.MAX_BREADTH:

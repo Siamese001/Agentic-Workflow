@@ -9,14 +9,15 @@ import shutil
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.path_util import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Derived from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
@@ -66,6 +67,7 @@ def flatten_scripts() -> Any:
                 print(f"  [X] Failed: {py_file.name} - {e}")
     print("\n[*] Cleaning empty directories...")
     for root, dirs, _files in os.walk(SCRIPTS_DIR, topdown=False):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for dir_name in dirs:
             dir_path: Any = Path(root) / dir_name
             try:

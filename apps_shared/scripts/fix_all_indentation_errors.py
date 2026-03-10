@@ -10,6 +10,8 @@ import os
 import re
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 
 def fix_indentation_errors(file_path: Any) -> Any:
     """Fix indentation errors in a Python file."""
@@ -49,7 +51,7 @@ def main() -> Any:
     fixed_count: Any = 0
     total_files: Any = 0
     for root, dirs, files in os.walk("."):
-        dirs[:] = [d for d in dirs if not d.startswith(".")]
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 total_files += 1

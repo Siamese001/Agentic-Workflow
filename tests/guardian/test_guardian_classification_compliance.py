@@ -26,6 +26,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     L2_EXECUTION_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -283,7 +284,8 @@ class TestNoMutations:
 
     def test_no_files_created(self, synthetic_repo: Path) -> None:
         before = set()
-        for dirpath, _, filenames in os.walk(synthetic_repo):
+        for dirpath, dirs, filenames in os.walk(synthetic_repo):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for fname in filenames:
                 before.add(os.path.join(dirpath, fname))
 
@@ -293,7 +295,8 @@ class TestNoMutations:
         )
 
         after = set()
-        for dirpath, _, filenames in os.walk(synthetic_repo):
+        for dirpath, dirs, filenames in os.walk(synthetic_repo):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for fname in filenames:
                 after.add(os.path.join(dirpath, fname))
 
@@ -305,7 +308,8 @@ class TestNoMutations:
 
         def snapshot():
             result = {}
-            for dirpath, _, filenames in os.walk(synthetic_repo):
+            for dirpath, dirs, filenames in os.walk(synthetic_repo):
+                dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
                 for fname in filenames:
                     fpath = os.path.join(dirpath, fname)
                     with open(fpath, "rb") as f:

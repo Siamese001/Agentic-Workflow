@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import subprocess
 import sys
 import tempfile
@@ -73,10 +74,10 @@ class TestRiskCorrelator:
         ]
 
         # Write test script
-        script_content = f'''
+        script_content = f"""
 import sys
 import json
-sys.path.insert(0, r"{sys.path[0]}")
+sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
 from system_learning.correlation.engine import RiskCorrelator
 
@@ -92,7 +93,7 @@ correlator = RiskCorrelator()
 report = correlator.build(fingerprints, drift_events)
 
 print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
-'''
+"""
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(script_content)
@@ -103,7 +104,7 @@ print(f"FINGERPRINT: {{report.correlation_fingerprint}}")
                 [sys.executable, script_path],
                 capture_output=True,
                 text=True,
-                cwd=sys.path[0],
+                cwd=str(pathlib.Path(__file__).resolve().parents[2]),
             )
 
             assert result.returncode == 0

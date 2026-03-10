@@ -10,9 +10,11 @@ import ast
 import os
 import re
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # SSOT Target Directory
 TARGET_DIR = Path(AGENTIC_CORE_DIR)
@@ -154,7 +156,8 @@ def main():
     count = 0
     scanned = 0
 
-    for root, _, files in os.walk(TARGET_DIR):
+    for root, dirs, files in os.walk(TARGET_DIR):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 path = Path(root) / file

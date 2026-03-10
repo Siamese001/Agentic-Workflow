@@ -6,6 +6,8 @@ Context: Post-refactor validation tool. Critical Analysis suggests that while fi
 import os
 import sys
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # SSOT: The agents that were moved
 MOVED_AGENTS = [
     "executive_title_composer",
@@ -30,9 +32,8 @@ def scan_for_stale_imports():
     print(f"{'STATUS':<10} | {'FILE':<60} | {'ISSUE'}")
     print("-" * 100)
 
-    for root, _, files in os.walk(ROOT_DIR):
-        if "venv" in root or ".git" in root or "__pycache__" in root:
-            continue
+    for root, dirs, files in os.walk(ROOT_DIR):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
         for file in files:
             if not file.endswith(".py"):

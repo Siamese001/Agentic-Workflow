@@ -12,6 +12,7 @@ import subprocess
 import sys
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 _ROOT = get_validated_project_root()
 
@@ -193,6 +194,7 @@ def main():
 
     # Find existing tests that reference replay validation
     for root, dirs, files in os.walk(_ROOT / TESTS_DIR):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 file_path = os.path.join(root, file)

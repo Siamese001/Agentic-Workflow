@@ -19,6 +19,11 @@ from pathlib import Path
 
 sys.path.insert(0, str(Path(__file__).parent.parent))
 
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 from agentic_core.L5_safety.config.structure_blueprint import (
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,
@@ -37,7 +42,7 @@ def test_unified_eviction():
     Edge Case: Verify 'unified' is completely removed from all CORE_SUBFOLDER_MAP lists.
     It is an anti-pattern that obscures domain responsibility.
     """
-    l2 = CORE_SUBFOLDER_MAP[L2_EXECUTION_DIR]
+    l2 = CORE_SUBFOLDER_MAP["L2_execution"]
     assert "unified" not in l2, f"FAILED: 'unified' found in L2_execution: {l2}"
 
     l5 = CORE_SUBFOLDER_MAP["L5_safety"]
@@ -75,7 +80,7 @@ def test_semantic_registry_alignment():
 
     Updated legacy keys - removed 'core_components' as it's now a valid SSOT key.
     """
-    shared_sem = SEMANTIC_L2_REGISTRY[APPS_SHARED_DIR]
+    shared_sem = SEMANTIC_L2_REGISTRY[APPS_SHARED_DIR.split("/")[-1]]
 
     # Legacy keys that should NOT be present (old structure that was removed)
     legacy_keys = {"base_definitions", "common_utils", "base_agents"}
@@ -95,7 +100,7 @@ def test_apps_rg_lic_semantic_completeness():
     """
     Edge Case: Verify apps_rg and apps_lic in semantic registry have 'core' and 'domain' definitions.
     """
-    for app in [APPS_RG_DIR, APPS_LIC_DIR]:
+    for app in [APPS_RG_DIR.split("/")[-1], APPS_LIC_DIR.split("/")[-1]]:
         app_sem = SEMANTIC_L2_REGISTRY[app]
         assert "core" in app_sem, f"FAILED: {app} missing 'core' in semantic registry"
         assert "domain" in app_sem, f"FAILED: {app} missing 'domain' in semantic registry"

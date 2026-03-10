@@ -9,6 +9,8 @@ import os
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 
 def _get_redis_sovereign_agent():
     """Lazy load RedisSovereignAgent to avoid L0 → L4 dependency."""
@@ -138,6 +140,7 @@ class RescueReviewer:
     def final_lockdown(self) -> Any:
         """Cleans up empty directories in the archive."""
         for dirpath, dirnames, filenames in os.walk(self.archive_path, topdown=False):
+            dirnames[:] = [d for d in dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             if not dirnames and (not filenames):
                 os.rmdir(dirpath)
 

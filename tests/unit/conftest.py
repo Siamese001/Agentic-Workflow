@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
 )
 
-_PROJECT_ROOT = str(Path(__file__).parent.parent.parent.parent)
+_PROJECT_ROOT = str(Path(__file__).parent.parent.parent)
 
 
 def pytest_configure(config):

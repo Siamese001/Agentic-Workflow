@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
 )
 
-ROOT = Path(__file__).parent.parent.parent.parent
+ROOT = Path(__file__).parent.parent.parent
 
 SCAN_DIRS = [
     ROOT / AGENTIC_CORE_DIR,

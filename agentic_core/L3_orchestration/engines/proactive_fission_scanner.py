@@ -19,6 +19,8 @@ from datetime import datetime
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -76,7 +78,8 @@ class ProactiveFissionScanner:
         """
         Logger.info(f"[SCAN] Scanning repository: {target_dir}")
         candidates: Any = []
-        for root, _, files in os.walk(target_dir):
+        for root, dirs, files in os.walk(target_dir):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for file in files:
                 if file.endswith(".py"):
                     path: Any = os.path.join(root, file)

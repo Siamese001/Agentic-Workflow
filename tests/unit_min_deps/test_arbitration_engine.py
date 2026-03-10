@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import subprocess
 import sys
 import tempfile
@@ -184,11 +185,11 @@ class TestArbitrationEngine:
         }
 
         # Write test script
-        script_content = f'''
+        script_content = f"""
 import sys
 import json
 import hashlib
-sys.path.insert(0, r"{sys.path[0]}")
+sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
 from system_learning.arbitration.engine import ArbitrationEngine
 from system_learning.arbitration.types import (
@@ -206,7 +207,7 @@ decision = engine.arbitrate(candidates, policy)
 
 print(f"FINGERPRINT: {{decision.deterministic_fingerprint}}")
 print(f"WINNERS: {{decision.winner_ids}}")
-'''
+"""
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(script_content)
@@ -217,7 +218,7 @@ print(f"WINNERS: {{decision.winner_ids}}")
                 [sys.executable, script_path],
                 capture_output=True,
                 text=True,
-                cwd=sys.path[0],
+                cwd=str(pathlib.Path(__file__).resolve().parents[2]),
             )
 
             assert result.returncode == 0

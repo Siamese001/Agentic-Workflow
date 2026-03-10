@@ -15,6 +15,10 @@ from functools import wraps
 from pathlib import Path
 from typing import Any, Protocol
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
+
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L2_execution.types.tool_args_types import (
     CreateDirectoryArgs,
@@ -24,10 +28,8 @@ from agentic_core.L2_execution.types.tool_args_types import (
     ReadFileArgs,
     WriteFileArgs,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 
 # Define a Protocol for the Blackboard interface required by this module
@@ -48,22 +50,7 @@ class IBlackboardLeaseVerifier(Protocol):
     ) -> None: ...
 
 
-EXCLUDED_DIRS: set[str] = {
-    ".git",
-    "__pycache__",
-    ".pytest_cache",
-    "node_modules",
-    ".venv",
-    "venv",
-    "env",
-    "archives",
-    "data",
-    ".idea",
-    ".vscode",
-    "build",
-    "dist",
-    "eggs",
-}
+EXCLUDED_DIRS: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # NAMING FIXED: SandboxViolationError → SandboxViolationError

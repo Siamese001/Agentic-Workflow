@@ -10,10 +10,12 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Derive registry depth from SOVEREIGN_TERRITORIES
 SOVEREIGN_REGISTRY = {"agentic_core": {"depth": 4}}
 from agentic_core.utils.ssot_discovery_validator import get_python_files
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
@@ -54,6 +56,7 @@ def fix_tunnel_violations() -> Any:
     print("\n[*] CLEANING UP EMPTY DIRECTORIES...")
     cleaned: Any = 0
     for root, dirs, _files in os.walk(CORE, topdown=False):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for name in dirs:
             dir_path: Any = Path(root) / name
             try:

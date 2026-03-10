@@ -28,6 +28,8 @@ import sys
 from collections import defaultdict
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 SCAN_ROOTS = [
     "agentic_core",
     "apps_lic",
@@ -83,7 +85,7 @@ def compute_centrality(project_root: Path) -> tuple[dict[str, int], dict[str, se
         if not root_path.is_dir():
             continue
         for dirpath, dirs, files in os.walk(root_path):
-            dirs[:] = [d for d in dirs if d != "__pycache__" and d != ".git"]
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for f in files:
                 if not f.endswith(".py"):
                     continue

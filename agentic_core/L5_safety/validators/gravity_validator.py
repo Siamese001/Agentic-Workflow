@@ -396,26 +396,26 @@ class UnifiedSSOTValidator:
                 for dir_name in dirs:
                     folder = Path(root) / dir_name
 
-                # Skip excluded folders
-                if any(excluded in folder.parts for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
-                    continue
+                    # Skip excluded folders
+                    if any(excluded in folder.parts for excluded in SOVEREIGN_EXCLUDED_FOLDERS):
+                        continue
 
-                # Calculate depth relative to root
-                try:
-                    rel_path = folder.relative_to(root_path)
-                    actual_depth = len(rel_path.parts)
+                    # Calculate depth relative to root
+                    try:
+                        rel_path = folder.relative_to(root_path)
+                        actual_depth = len(rel_path.parts)
 
-                    if actual_depth > max_depth:
-                        violations.append(
-                            HierarchyViolation(
-                                folder_path=str(folder.relative_to(self.project_root)),
-                                actual_depth=actual_depth,
-                                max_depth=max_depth,
-                                root_folder=root_name,
-                            ),
-                        )
-                except ValueError:
-                    continue
+                        if actual_depth > max_depth:
+                            violations.append(
+                                HierarchyViolation(
+                                    folder_path=str(folder.relative_to(self.project_root)),
+                                    actual_depth=actual_depth,
+                                    max_depth=max_depth,
+                                    root_folder=root_name,
+                                ),
+                            )
+                    except ValueError:
+                        continue
 
         return violations
 

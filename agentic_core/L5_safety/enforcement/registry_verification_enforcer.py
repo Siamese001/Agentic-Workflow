@@ -26,6 +26,7 @@ from typing import Any, Final
 
 # SSOT imports
 from agentic_core.L0_routing.config.path_constants import (
+    AGENT_DISCOVERY_JSON,
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,

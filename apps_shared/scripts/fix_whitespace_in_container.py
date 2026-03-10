@@ -3,6 +3,8 @@
 import os
 from typing import Any
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 
 def fix_whitespace_in_file(filepath: Any) -> Any:
     """Fix trailing whitespace and ensure file ends with newline."""
@@ -27,6 +29,7 @@ def fix_all_files(root_dir: Any) -> Any:
     """Fix whitespace in all Python files."""
     fixed_count: Any = 0
     for root, _dirs, files in os.walk(root_dir):
+        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 filepath: Any = os.path.join(root, file)

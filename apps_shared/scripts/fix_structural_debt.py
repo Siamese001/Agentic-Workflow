@@ -9,22 +9,9 @@ import shutil
 from datetime import datetime
 from typing import Any
 
-excluded_dirs: Any = {
-    ".git",
-    ".venv",
-    "venv",
-    "env",
-    "__pycache__",
-    ".pytest_cache",
-    "node_modules",
-    ".idea",
-    ".vscode",
-    "build",
-    "dist",
-    "eggs",
-    ARCHIVES_DIR,
-    "data",
-}
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
+excluded_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
 excluded_files: Any = {
     "CanonValidatorAgent.py",
     "canon_validator_backup.py",

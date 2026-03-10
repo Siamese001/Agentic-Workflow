@@ -27,6 +27,7 @@ from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 Logger = logging.getLogger(__name__)
 
@@ -261,8 +262,8 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         for py_file in agentic_core.rglob("*.py"):
             self.stats["files_scanned"] += 1
 
-            # Skip __pycache__ and hidden directories
-            if "__pycache__" in str(py_file) or "/.git" in str(py_file):
+            # Skip excluded directories (pycache, healing backups, .backup, .git, etc.)
+            if any(part in SOVEREIGN_EXCLUDED_FOLDERS for part in py_file.parts):
                 continue
 
             # Check if file is in approved location

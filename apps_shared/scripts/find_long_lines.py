@@ -6,18 +6,15 @@ from typing import Any
 
 from apps_shared.utils.ConfigurationService import ConfigurationService
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 Logger: Any = logging.getLogger(__name__)
 
 
 def find_long_lines() -> None:
     """Find all lines longer than 100 characters."""
     for root, dirs, files in os.walk("."):
-        if ".git" in dirs:
-            dirs.remove(".git")
-        if ".venv" in dirs:
-            dirs.remove(".venv")
-        if "__pycache__" in dirs:
-            dirs.remove("__pycache__")
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 os.path.join(root, file)

@@ -13,6 +13,7 @@ import re
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Legacy to SovereignBaseAgent mapping
 LEGACY_IMPORTS = {
@@ -30,6 +31,7 @@ def find_python_files(directory: Path) -> list[Path]:
     """Find all Python files in the directory recursively."""
     python_files = []
     for root, _dirs, files in os.walk(directory):
+        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 python_files.append(Path(root) / file)

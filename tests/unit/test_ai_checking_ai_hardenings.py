@@ -49,7 +49,7 @@ class TestReflectionEngineFailClosed:
                         criteria=[required_criterion],
                     )
 
-        result = asyncio.get_event_loop().run_until_complete(_run())
+        result = asyncio.run(_run())
         assert result.is_valid is False, (
             "GAP-02: circuit open with required criterion must fail-closed (is_valid=False)"
         )
@@ -78,7 +78,7 @@ class TestReflectionEngineFailClosed:
                         criteria=[optional_criterion],
                     )
 
-        result = asyncio.get_event_loop().run_until_complete(_run())
+        result = asyncio.run(_run())
         assert result.is_valid is True, (
             "GAP-02: circuit open with ONLY optional criteria should remain fail-open (is_valid=True)"
         )
@@ -105,7 +105,7 @@ class TestReflectionEngineFailClosed:
                         criteria=[required_criterion],
                     )
 
-        result = asyncio.get_event_loop().run_until_complete(_run())
+        result = asyncio.run(_run())
         assert result.is_valid is False, (
             "GAP-02: unexpected exception with required criterion must fail-closed"
         )
@@ -131,9 +131,7 @@ class TestSocraticJudgeHardening:
 
     def test_rate_limit_returns_yes_conservatively(self):
         inspector = self._make_inspector(max_calls=0)
-        result = asyncio.get_event_loop().run_until_complete(
-            inspector._socratic_verify("fake.py", "issue", "question?")
-        )
+        result = asyncio.run(inspector._socratic_verify("fake.py", "issue", "question?"))
         assert result == "YES", "GAP-04: rate-limited call must return YES (conservative)"
         assert inspector._socratic_audit_log[-1]["reason"] == "rate_limit"
 
@@ -159,9 +157,7 @@ class TestSocraticJudgeHardening:
                 "agentic_core.L2_execution.enforcement.llm_router_mcp_client": None,
             },
         ):
-            result = asyncio.get_event_loop().run_until_complete(
-                inspector._socratic_verify("fake.py", "issue", "question?")
-            )
+            result = asyncio.run(inspector._socratic_verify("fake.py", "issue", "question?"))
 
         assert result == "YES", "GAP-04: import error must return YES (fail-closed)"
         log_entry = inspector._socratic_audit_log[-1]
@@ -174,9 +170,7 @@ class TestSocraticJudgeHardening:
 
     def test_audit_log_entry_schema(self):
         inspector = self._make_inspector(max_calls=0)
-        asyncio.get_event_loop().run_until_complete(
-            inspector._socratic_verify("some/file.py", "a problem", "is it real?")
-        )
+        asyncio.run(inspector._socratic_verify("some/file.py", "a problem", "is it real?"))
         entry = inspector._socratic_audit_log[-1]
         for required_key in ("ts", "file", "issue", "verdict", "reason"):
             assert required_key in entry, f"Audit log entry missing key: {required_key}"
@@ -190,7 +184,7 @@ class TestSocraticJudgeHardening:
                 "agentic_core.L2_execution.enforcement.llm_router_mcp_client": None,
             },
         ):
-            asyncio.get_event_loop().run_until_complete(inspector._socratic_verify("f.py", "issue", "q?"))
+            asyncio.run(inspector._socratic_verify("f.py", "issue", "q?"))
         assert inspector._socratic_call_count == 1
 
     def test_snippet_sanitization_excludes_credential_lines(self, tmp_path):
@@ -216,9 +210,7 @@ class TestSocraticJudgeHardening:
                 "agentic_core.L2_execution.enforcement.llm_router_mcp_client": mock_module,
             },
         ):
-            asyncio.get_event_loop().run_until_complete(
-                inspector._socratic_verify(str(secret_file), "secret", "real?")
-            )
+            asyncio.run(inspector._socratic_verify(str(secret_file), "secret", "real?"))
 
         if captured_prompt:
             assert "hunter2" not in captured_prompt[0], (
@@ -250,9 +242,7 @@ class TestJudgeEvaluatorAuditAndAnchor:
 
     def test_audit_log_entry_on_heuristic_evaluate(self):
         evaluator = self._make_evaluator()
-        asyncio.get_event_loop().run_until_complete(
-            evaluator.evaluate("some output text here", expected="some output text")
-        )
+        asyncio.run(evaluator.evaluate("some output text here", expected="some output text"))
         assert len(evaluator._audit_log) == 1
         entry = evaluator._audit_log[0]
         for key in ("ts", "model_id", "output_hash", "overall_score", "heuristic_anchor", "passed"):
@@ -283,7 +273,7 @@ class TestJudgeEvaluatorAuditAndAnchor:
 
     def test_audit_log_evaluation_path_is_heuristic(self):
         evaluator = self._make_evaluator(llm_client=None)
-        asyncio.get_event_loop().run_until_complete(evaluator.evaluate("output text", expected=None))
+        asyncio.run(evaluator.evaluate("output text", expected=None))
         assert evaluator._audit_log[0]["evaluation_path"] == "heuristic"
 
     def test_anchor_alert_set_on_large_deviation(self):
@@ -299,7 +289,7 @@ class TestJudgeEvaluatorAuditAndAnchor:
             deterministic_anchor_tolerance=0.01,
             enable_logging=False,
         )
-        asyncio.get_event_loop().run_until_complete(evaluator.evaluate("x", expected=None))
+        asyncio.run(evaluator.evaluate("x", expected=None))
         entry = evaluator._audit_log[0]
         # anchor for single-word output vs None is ~small; LLM claims 0.99
         # deviation will be large → anchor_alert=True
@@ -419,21 +409,21 @@ class TestJudgeEvaluatorEdgeCases:
     def test_empty_string_output_does_not_raise(self):
         """Empty output must not raise; audit log entry must be written."""
         ev = self._ev()
-        asyncio.get_event_loop().run_until_complete(ev.evaluate("", expected=None))
+        asyncio.run(ev.evaluate("", expected=None))
         assert len(ev._audit_log) == 1
         assert ev._audit_log[0]["output_hash"] is not None
 
     def test_none_expected_produces_valid_result(self):
         """None expected must be accepted (optional arg)."""
         ev = self._ev()
-        result = asyncio.get_event_loop().run_until_complete(ev.evaluate("some output", expected=None))
+        result = asyncio.run(ev.evaluate("some output", expected=None))
         assert result is not None
         assert isinstance(result.overall_score, float)
 
     def test_whitespace_only_output(self):
         """Whitespace-only output is valid input; audit entry written."""
         ev = self._ev()
-        asyncio.get_event_loop().run_until_complete(ev.evaluate("   \n\t", expected=None))
+        asyncio.run(ev.evaluate("   \n\t", expected=None))
         assert len(ev._audit_log) == 1
 
     # --- empty criteria list ---
@@ -444,7 +434,7 @@ class TestJudgeEvaluatorEdgeCases:
 
         ev = JudgeEvaluator(criteria=[], enable_logging=False)
         try:
-            result = asyncio.get_event_loop().run_until_complete(ev.evaluate("output", expected=None))
+            result = asyncio.run(ev.evaluate("output", expected=None))
             # If it returns without raising, score must be defined
             assert isinstance(result.overall_score, float)
         except (ZeroDivisionError, ValueError) as exc:  # guardian: allow-silent-swallower
@@ -463,7 +453,7 @@ class TestJudgeEvaluatorEdgeCases:
             pass_threshold=0.0,
             enable_logging=False,
         )
-        result = asyncio.get_event_loop().run_until_complete(ev.evaluate("x", expected=None))
+        result = asyncio.run(ev.evaluate("x", expected=None))
         assert result.passed is True, "threshold=0.0 must always pass"
 
     def test_threshold_above_max_score_always_fails(self):
@@ -475,9 +465,7 @@ class TestJudgeEvaluatorEdgeCases:
             pass_threshold=1.0,
             enable_logging=False,
         )
-        result = asyncio.get_event_loop().run_until_complete(
-            ev.evaluate("a", expected="completely different text here")
-        )
+        result = asyncio.run(ev.evaluate("a", expected="completely different text here"))
         # Heuristic score will be < 1.0 for mismatched strings
         assert result.passed is False, "pass_threshold=1.0 must fail on non-identical output"
 
@@ -486,9 +474,8 @@ class TestJudgeEvaluatorEdgeCases:
     def test_identical_input_produces_identical_audit_hash(self):
         """Same output string must always produce the same output_hash (deterministic)."""
         ev = self._ev()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(ev.evaluate("deterministic output", expected=None))
-        loop.run_until_complete(ev.evaluate("deterministic output", expected=None))
+        asyncio.run(ev.evaluate("deterministic output", expected=None))
+        asyncio.run(ev.evaluate("deterministic output", expected=None))
         h1 = ev._audit_log[0]["output_hash"]
         h2 = ev._audit_log[1]["output_hash"]
         assert h1 == h2, "§1.7: same input must produce identical output_hash"
@@ -496,9 +483,8 @@ class TestJudgeEvaluatorEdgeCases:
     def test_distinct_inputs_produce_distinct_hashes(self):
         """Different output strings must produce different hashes."""
         ev = self._ev()
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(ev.evaluate("output A", expected=None))
-        loop.run_until_complete(ev.evaluate("output B", expected=None))
+        asyncio.run(ev.evaluate("output A", expected=None))
+        asyncio.run(ev.evaluate("output B", expected=None))
         assert ev._audit_log[0]["output_hash"] != ev._audit_log[1]["output_hash"]
 
     # --- dependency failure (LLM client raises) ---
@@ -517,7 +503,7 @@ class TestJudgeEvaluatorEdgeCases:
             enable_logging=False,
         )
         # Must not raise; should fall back to heuristic
-        result = asyncio.get_event_loop().run_until_complete(ev.evaluate("some output", expected=None))
+        result = asyncio.run(ev.evaluate("some output", expected=None))
         assert result is not None
         assert len(ev._audit_log) == 1
 
@@ -538,7 +524,7 @@ class TestJudgeEvaluatorEdgeCases:
             deterministic_anchor_tolerance=0.5,
             enable_logging=False,
         )
-        asyncio.get_event_loop().run_until_complete(ev.evaluate("hello world", expected="hello world"))
+        asyncio.run(ev.evaluate("hello world", expected="hello world"))
         # tolerance=0.5 means deviation must exceed 0.5 to alert; won't here
         assert ev._audit_log[0]["anchor_alert"] is False
 
@@ -571,9 +557,7 @@ class TestReflectionEngineEdgeCases:
     def test_empty_criteria_list_does_not_raise(self):
         """evaluate() with no criteria must not raise."""
         engine = self._engine()
-        result = asyncio.get_event_loop().run_until_complete(
-            engine.evaluate(content={"data": "test"}, criteria=[])
-        )
+        result = asyncio.run(engine.evaluate(content={"data": "test"}, criteria=[]))
         assert result is not None
 
     # --- replayed transition: same result on repeated circuit-open ---
@@ -592,7 +576,7 @@ class TestReflectionEngineEdgeCases:
                     r2 = await engine.evaluate({"d": "1"}, criteria=[criterion])
             return r1, r2
 
-        r1, r2 = asyncio.get_event_loop().run_until_complete(_run())
+        r1, r2 = asyncio.run(_run())
         assert r1.is_valid == r2.is_valid, "§1.7: repeated circuit-open must be deterministic"
         assert r1.validation_type == r2.validation_type
 
@@ -610,7 +594,7 @@ class TestReflectionEngineEdgeCases:
                 with patch.object(engine, "_should_use_fast_path", return_value=False):
                     return await engine.evaluate({"d": "x"}, criteria=criteria)
 
-        result = asyncio.get_event_loop().run_until_complete(_run())
+        result = asyncio.run(_run())
         assert result.is_valid is False, "Required criterion must dominate → fail-closed"
 
     # --- null / malformed content ---
@@ -619,9 +603,7 @@ class TestReflectionEngineEdgeCases:
         """None content passed to evaluate must not raise."""
         engine = self._engine()
         try:
-            result = asyncio.get_event_loop().run_until_complete(
-                engine.evaluate(content=None, criteria=[self._optional()])
-            )
+            result = asyncio.run(engine.evaluate(content=None, criteria=[self._optional()]))
             assert result is not None
         except (TypeError, AttributeError):  # guardian: allow-silent-swallower
             pass  # Acceptable: contract violation surfaces explicitly
@@ -640,7 +622,7 @@ class TestReflectionEngineEdgeCases:
                 with patch.object(engine, "_should_use_fast_path", return_value=False):
                     await engine.evaluate({"d": "x"}, criteria=[self._required()])
 
-        asyncio.get_event_loop().run_until_complete(_run())
+        asyncio.run(_run())
         assert engine.stats["total_critiques"] == before + 1
 
 
@@ -662,7 +644,6 @@ class TestSocraticJudgeEdgeCases:
     def test_call_at_limit_is_rate_limited(self):
         """Call index == max_socratic_calls must be rejected (rate_limit)."""
         inspector = self._inspector(max_calls=1)
-        loop = asyncio.get_event_loop()
         # First call: consumes the one allowed slot (may error on missing client)
         with patch.dict(
             "sys.modules",
@@ -670,9 +651,9 @@ class TestSocraticJudgeEdgeCases:
                 "agentic_core.L2_execution.enforcement.llm_router_mcp_client": None,
             },
         ):
-            loop.run_until_complete(inspector._socratic_verify("f.py", "i", "q?"))
+            asyncio.run(inspector._socratic_verify("f.py", "i", "q?"))
         # Second call: must hit rate limit
-        result = loop.run_until_complete(inspector._socratic_verify("f.py", "i", "q?"))
+        result = asyncio.run(inspector._socratic_verify("f.py", "i", "q?"))
         assert result == "YES"
         assert inspector._socratic_audit_log[-1]["reason"] == "rate_limit"
 
@@ -681,9 +662,7 @@ class TestSocraticJudgeEdgeCases:
     def test_max_calls_zero_always_rate_limits(self):
         """max_socratic_calls=0 must rate-limit on the very first call."""
         inspector = self._inspector(max_calls=0)
-        result = asyncio.get_event_loop().run_until_complete(
-            inspector._socratic_verify("x.py", "issue", "q?")
-        )
+        result = asyncio.run(inspector._socratic_verify("x.py", "issue", "q?"))
         assert result == "YES"
         assert inspector._socratic_audit_log[0]["reason"] == "rate_limit"
 
@@ -692,7 +671,7 @@ class TestSocraticJudgeEdgeCases:
     def test_rate_limited_call_does_not_increment_counter(self):
         """Rate-limited calls must not increment _socratic_call_count."""
         inspector = self._inspector(max_calls=0)
-        asyncio.get_event_loop().run_until_complete(inspector._socratic_verify("x.py", "issue", "q?"))
+        asyncio.run(inspector._socratic_verify("x.py", "issue", "q?"))
         assert inspector._socratic_call_count == 0
 
     # --- audit log: every call (including rate-limited) must be logged ---
@@ -700,9 +679,8 @@ class TestSocraticJudgeEdgeCases:
     def test_audit_log_length_matches_total_calls(self):
         """Every invocation of _socratic_verify must produce an audit entry."""
         inspector = self._inspector(max_calls=0)
-        loop = asyncio.get_event_loop()
-        loop.run_until_complete(inspector._socratic_verify("a.py", "i1", "q1"))
-        loop.run_until_complete(inspector._socratic_verify("b.py", "i2", "q2"))
+        asyncio.run(inspector._socratic_verify("a.py", "i1", "q1"))
+        asyncio.run(inspector._socratic_verify("b.py", "i2", "q2"))
         assert len(inspector._socratic_audit_log) == 2
 
     # --- malformed file path (missing file) ---
@@ -716,9 +694,7 @@ class TestSocraticJudgeEdgeCases:
                 "agentic_core.L2_execution.enforcement.llm_router_mcp_client": None,
             },
         ):
-            result = asyncio.get_event_loop().run_until_complete(
-                inspector._socratic_verify("/nonexistent/path/file.py", "issue", "q?")
-            )
+            result = asyncio.run(inspector._socratic_verify("/nonexistent/path/file.py", "issue", "q?"))
         assert result == "YES"
 
 

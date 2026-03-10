@@ -22,7 +22,7 @@ from agentic_core.L0_routing.config.path_constants import (
 
 # Under --import-mode=importlib pytest collects this as package tests/agentic_core,
 # so bare 'from agentic_core...' resolves into tests/ not the project root.
-_PROJECT_ROOT = Path(__file__).parent.parent.parent.parent
+_PROJECT_ROOT = Path(__file__).parent.parent.parent
 if str(_PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(_PROJECT_ROOT))
 

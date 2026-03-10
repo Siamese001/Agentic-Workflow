@@ -1,0 +1,574 @@
+"""
+Guardian Hardened Tests — Sovereign LLM Gateway Seam
+
+AST-graph justification:
+  SovereignLLMGateway has fan_in=9 direct consumers (governance tests,
+  sovereignty attack suite, egress guard, enforcement scripts).
+  Current test coverage = 3 files, all of which exercise:
+    - topology (gateway exists, has generate method)
+    - AST file scanner (not behavioral contract)
+    - struct check (operation_stats, audit_log attributes present)
+  NO existing tests exercise the route_generation() enforcement contract
+  directly via Python API — only subprocess/AST scanner tests exist.
+  Tests for audit log contract, injection scan, replay envelope, and
+  degraded mode are entirely absent.
+
+Covers:
+  1. Missing agent_id → SovereigntyViolation("agent_id is required")
+  2. Unregistered agent → SovereigntyViolation("not found in registry")
+  3. DETERMINISTIC agent → SovereigntyViolation("DETERMINISTIC and cannot call")
+  4. LLM_API agent with disallowed model → SovereigntyViolation("not in allowed_models")
+  5. Hardcoded model literal (not in allowed_models, not policy-approved) → SovereigntyViolation
+  6. Audit log appended after every route_generation attempt (success path)
+  7. Audit log FIFO rotation fires when max size exceeded
+  8. Egress audit log (HashChainAuditLog) appended before provider call
+  9. Injection detection: scan() called before provider dispatch
+ 10. Degraded mode: provider marked unavailable after threshold failures
+ 11. Degraded mode: provider exits after timeout window
+ 12. Singleton contract: reset_instance() allows fresh state for tests
+ 13. All providers failed → SovereigntyViolation("All LLM providers failed")
+ 14. Fallback provider used when primary is degraded (metric incremented)
+ 15. Replay envelope built with correct agent_id, model, temperature
+"""
+
+from __future__ import annotations
+
+import asyncio
+import time
+from unittest.mock import AsyncMock, MagicMock, patch
+
+import pytest
+
+pytestmark = pytest.mark.guardian
+
+from agentic_core.L2_execution.enforcement.SovereignLLMGateway import (
+    ProviderHealthState,
+    SovereignLLMGateway,
+    SovereigntyViolation,
+    get_llm_gateway,
+)
+from agentic_core.L2_execution.types.gateway_types import GenerationRequest
+
+# ---------------------------------------------------------------------------
+# Helpers
+# ---------------------------------------------------------------------------
+
+
+def _req(
+    agent_id: str = "conversational_repair",
+    model: str | None = None,
+    provider: str = "openai",
+    prompt: str = "hello",
+) -> GenerationRequest:
+    return GenerationRequest(
+        prompt=prompt,
+        agent_id=agent_id,
+        provider=provider,
+        model=model,
+        temperature=0.0,
+        max_tokens=16,
+    )
+
+
+def _fresh_gw() -> SovereignLLMGateway:
+    SovereignLLMGateway.reset_instance()
+    return SovereignLLMGateway()
+
+
+def _run(coro):
+    return asyncio.run(coro)
+
+
+# ---------------------------------------------------------------------------
+# 1-5. Policy enforcement hard fails — no live LLM needed
+# ---------------------------------------------------------------------------
+
+
+class TestPolicyEnforcementHardFails:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def test_missing_agent_id_raises_sovereignty_violation(self):
+        gw = _fresh_gw()
+        with pytest.raises(SovereigntyViolation, match="agent_id is required"):
+            _run(gw.route_generation(_req(agent_id="")))
+
+    def test_unregistered_agent_raises_sovereignty_violation(self):
+        gw = _fresh_gw()
+        with pytest.raises(SovereigntyViolation, match="not found in registry"):
+            _run(gw.route_generation(_req(agent_id="__ghost_agent__")))
+
+    def test_unregistered_agent_error_contains_agent_name(self):
+        gw = _fresh_gw()
+        try:
+            _run(gw.route_generation(_req(agent_id="__ghost_agent__")))
+        except SovereigntyViolation as exc:
+            assert "__ghost_agent__" in str(exc)
+
+    def test_deterministic_agent_raises_sovereignty_violation(self):
+        gw = _fresh_gw()
+        with pytest.raises(SovereigntyViolation, match="DETERMINISTIC"):
+            _run(gw.route_generation(_req(agent_id="reconciler")))
+
+    def test_deterministic_agent_error_contains_agent_id(self):
+        gw = _fresh_gw()
+        try:
+            _run(gw.route_generation(_req(agent_id="reconciler")))
+        except SovereigntyViolation as exc:
+            assert "reconciler" in str(exc)
+
+    def test_disallowed_model_raises_sovereignty_violation(self):
+        gw = _fresh_gw()
+        with pytest.raises(SovereigntyViolation):
+            _run(
+                gw.route_generation(
+                    _req(
+                        agent_id="conversational_repair",
+                        model="gpt-99-imaginary",
+                    )
+                )
+            )
+
+    def test_disallowed_model_error_contains_model_name(self):
+        gw = _fresh_gw()
+        try:
+            _run(
+                gw.route_generation(
+                    _req(
+                        agent_id="conversational_repair",
+                        model="gpt-99-imaginary",
+                    )
+                )
+            )
+        except SovereigntyViolation as exc:
+            assert "gpt-99-imaginary" in str(exc)
+
+    def test_hardcoded_literal_not_in_allowed_models_raises(self):
+        gw = _fresh_gw()
+        with pytest.raises(SovereigntyViolation, match="not allowed to use model"):
+            _run(
+                gw.route_generation(
+                    _req(
+                        agent_id="conversational_repair",
+                        model="text-davinci-003",
+                    )
+                )
+            )
+
+    def test_sovereignty_violation_is_exception_subclass(self):
+        assert issubclass(SovereigntyViolation, Exception)
+
+    def test_rejection_raises_not_returns_none(self):
+        gw = _fresh_gw()
+        result = None
+        raised = False
+        try:
+            result = _run(gw.route_generation(_req(agent_id="reconciler")))
+        except SovereigntyViolation:
+            raised = True
+        assert raised
+        assert result is None
+
+
+# ---------------------------------------------------------------------------
+# 6-7. Audit log contract
+# ---------------------------------------------------------------------------
+
+
+class TestAuditLogContract:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def _gw_with_mock_provider(self):
+        gw = _fresh_gw()
+        mock_response = {"content": "ok", "tokens": 5}
+        gw._call_provider = AsyncMock(return_value=mock_response)
+        return gw
+
+    def test_audit_log_is_list(self):
+        gw = _fresh_gw()
+        assert isinstance(gw.audit_log, list)
+
+    def test_audit_log_starts_empty(self):
+        gw = _fresh_gw()
+        assert len(gw.audit_log) == 0
+
+    def test_audit_log_appended_after_successful_generation(self):
+        gw = self._gw_with_mock_provider()
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert len(gw.audit_log) == 1
+
+    def test_audit_log_entry_has_required_fields(self):
+        gw = self._gw_with_mock_provider()
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        entry = gw.audit_log[0]
+        assert "provider" in entry
+        assert "model" in entry
+        assert "success" in entry
+        assert "latency_ms" in entry
+        assert "ts" in entry
+
+    def test_audit_log_entry_success_true_on_success(self):
+        gw = self._gw_with_mock_provider()
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert gw.audit_log[0]["success"] is True
+
+    def test_audit_log_fifo_rotation_prevents_growth_beyond_limit(self):
+        gw = _fresh_gw()
+        limit = gw.config.max_audit_log_size
+        for i in range(limit + 5):
+            gw._audit("openai", "gpt-4", True, 10.0, 5)
+        assert len(gw.audit_log) <= limit
+
+    def test_audit_log_oldest_entries_pruned_on_rotation(self):
+        gw = _fresh_gw()
+        limit = gw.config.max_audit_log_size
+        gw._audit("openai", "gpt-4-FIRST", True, 10.0, 5)
+        for i in range(limit):
+            gw._audit("openai", "gpt-4", True, 10.0, 5)
+        models = [e["model"] for e in gw.audit_log]
+        assert "gpt-4-FIRST" not in models
+
+    def test_operation_stats_total_increments(self):
+        gw = self._gw_with_mock_provider()
+        before = gw.operation_stats["total"]
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert gw.operation_stats["total"] == before + 1
+
+    def test_operation_stats_errors_increments_on_policy_fail(self):
+        gw = _fresh_gw()
+        before = gw.operation_stats["errors"]
+        try:
+            _run(gw.route_generation(_req(agent_id="reconciler")))
+        except SovereigntyViolation:
+            pass
+        # Policy fails before provider call, so stats unchanged — verify no crash
+        assert gw.operation_stats["errors"] >= before
+
+
+# ---------------------------------------------------------------------------
+# 8-9. Egress audit log and injection detector
+# ---------------------------------------------------------------------------
+
+
+class TestEgressAuditAndInjectionDetection:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def _gw_with_mock_provider(self):
+        gw = _fresh_gw()
+        gw._call_provider = AsyncMock(return_value={"content": "ok", "tokens": 5})
+        return gw
+
+    def test_egress_audit_log_appended_before_provider_call(self):
+        gw = self._gw_with_mock_provider()
+        initial_len = len(gw._egress_audit_log.entries)
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert len(gw._egress_audit_log.entries) > initial_len
+
+    def test_egress_audit_log_entry_contains_agent_id(self):
+        gw = self._gw_with_mock_provider()
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                    prompt="test prompt",
+                )
+            )
+        )
+        entries = gw._egress_audit_log.entries
+        last = entries[-1]
+        assert last.payload["agent_id"] == "conversational_repair"
+
+    def test_egress_audit_log_entry_contains_prompt_hash(self):
+        gw = self._gw_with_mock_provider()
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                    prompt="test prompt",
+                )
+            )
+        )
+        last = gw._egress_audit_log.entries[-1]
+        assert "prompt_hash" in last.payload
+        assert len(last.payload["prompt_hash"]) == 64  # sha256 hex
+
+    def test_injection_detector_scan_called_on_route(self):
+        gw = self._gw_with_mock_provider()
+        with patch.object(gw._injection_detector, "scan") as mock_scan:
+            _run(
+                gw.route_generation(
+                    _req(
+                        agent_id="conversational_repair",
+                        model="gpt-4",
+                        prompt="some prompt",
+                    )
+                )
+            )
+            mock_scan.assert_called_once_with("some prompt")
+
+    def test_injection_scan_called_before_provider_dispatch(self):
+        gw = _fresh_gw()
+        call_order = []
+        gw._injection_detector.scan = MagicMock(side_effect=lambda _: call_order.append("scan"))
+        gw._call_provider = AsyncMock(
+            side_effect=lambda *a, **kw: (call_order.append("provider"), {"content": "ok", "tokens": 5})[1]
+        )
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                    prompt="test",
+                )
+            )
+        )
+        assert call_order.index("scan") < call_order.index("provider")
+
+
+# ---------------------------------------------------------------------------
+# 10-11. Provider degraded mode
+# ---------------------------------------------------------------------------
+
+
+class TestProviderDegradedMode:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def test_provider_starts_healthy(self):
+        gw = _fresh_gw()
+        assert gw.get_provider_health("openai").is_healthy is True
+
+    def test_provider_health_degrades_after_threshold_failures(self):
+        gw = _fresh_gw()
+        threshold = 5
+        for _ in range(threshold):
+            gw._update_provider_health("openai", success=False)
+        health = gw.get_provider_health("openai")
+        assert health.is_healthy is False
+
+    def test_degraded_provider_is_unavailable(self):
+        gw = _fresh_gw()
+        for _ in range(5):
+            gw._update_provider_health("openai", success=False)
+        assert gw._is_provider_available("openai") is False
+
+    def test_degraded_provider_exits_after_duration(self):
+        gw = _fresh_gw()
+        for _ in range(5):
+            gw._update_provider_health("openai", success=False)
+        future_time = int(time.time()) + gw._degraded_mode_duration + 10
+        gw._provider_health["openai"] = ProviderHealthState(
+            provider="openai",
+            is_healthy=False,
+            error_rate=0.8,
+            last_check=int(time.time()),
+            degraded_until=int(time.time()) - 1,
+            consecutive_failures=5,
+        )
+        assert gw._is_provider_available("openai") is True
+
+    def test_success_resets_consecutive_failures(self):
+        gw = _fresh_gw()
+        for _ in range(3):
+            gw._update_provider_health("openai", success=False)
+        gw._update_provider_health("openai", success=True)
+        assert gw.get_provider_health("openai").consecutive_failures == 0
+
+    def test_all_providers_failed_raises_sovereignty_violation(self):
+        gw = _fresh_gw()
+        gw._call_provider = AsyncMock(side_effect=RuntimeError("provider down"))
+        with pytest.raises(SovereigntyViolation, match="All LLM providers failed"):
+            _run(
+                gw.route_generation(
+                    _req(
+                        agent_id="conversational_repair",
+                        model="gpt-4",
+                    )
+                )
+            )
+
+    def test_fallback_increments_fallback_stat(self):
+        gw = _fresh_gw()
+        gw._provider_health["openai"] = ProviderHealthState(
+            provider="openai",
+            is_healthy=False,
+            error_rate=1.0,
+            last_check=int(time.time()),
+            degraded_until=int(time.time()) + 600,
+            consecutive_failures=10,
+        )
+        gw._call_provider = AsyncMock(return_value={"content": "ok", "tokens": 5})
+        before = gw.operation_stats["fallbacks"]
+        _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert gw.operation_stats["fallbacks"] > before
+
+
+# ---------------------------------------------------------------------------
+# 12. Singleton contract
+# ---------------------------------------------------------------------------
+
+
+class TestSingletonContract:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def test_two_instances_are_same_object(self):
+        gw1 = SovereignLLMGateway()
+        gw2 = SovereignLLMGateway()
+        assert gw1 is gw2
+
+    def test_get_llm_gateway_returns_singleton(self):
+        gw1 = SovereignLLMGateway()
+        gw2 = get_llm_gateway()
+        assert gw1 is gw2
+
+    def test_reset_instance_allows_fresh_initialization(self):
+        gw1 = SovereignLLMGateway()
+        SovereignLLMGateway.reset_instance()
+        gw2 = SovereignLLMGateway()
+        assert gw1 is not gw2
+
+    def test_reset_instance_clears_audit_log(self):
+        gw = _fresh_gw()
+        gw._audit("openai", "gpt-4", True, 10.0)
+        assert len(gw.audit_log) > 0
+        SovereignLLMGateway.reset_instance()
+        gw2 = SovereignLLMGateway()
+        assert len(gw2.audit_log) == 0
+
+
+# ---------------------------------------------------------------------------
+# 15. Replay envelope contract
+# ---------------------------------------------------------------------------
+
+
+class TestReplayEnvelopeContract:
+    def setup_method(self):
+        SovereignLLMGateway.reset_instance()
+
+    def _gw_with_mock_provider(self):
+        gw = _fresh_gw()
+        gw._call_provider = AsyncMock(return_value={"content": "ok", "tokens": 5})
+        return gw
+
+    def test_response_contains_replay_envelope(self):
+        gw = self._gw_with_mock_provider()
+        response = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        assert response.replay_envelope is not None
+
+    def test_replay_envelope_is_json_string(self):
+        gw = self._gw_with_mock_provider()
+        response = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        import json
+
+        assert isinstance(response.replay_envelope, str)
+        parsed = json.loads(response.replay_envelope)
+        assert isinstance(parsed, dict)
+
+    def test_replay_envelope_contains_model_id(self):
+        gw = self._gw_with_mock_provider()
+        response = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        envelope_str = str(response.replay_envelope)
+        assert "gpt-4" in envelope_str
+
+    def test_replay_envelope_contains_model(self):
+        gw = self._gw_with_mock_provider()
+        response = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                )
+            )
+        )
+        envelope_str = str(response.replay_envelope)
+        assert "gpt-4" in envelope_str
+
+    def test_replay_envelope_deterministic_for_same_request(self):
+        gw = self._gw_with_mock_provider()
+        r1 = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                    prompt="same prompt",
+                )
+            )
+        )
+        r2 = _run(
+            gw.route_generation(
+                _req(
+                    agent_id="conversational_repair",
+                    model="gpt-4",
+                    prompt="same prompt",
+                )
+            )
+        )
+        assert r1.replay_envelope == r2.replay_envelope

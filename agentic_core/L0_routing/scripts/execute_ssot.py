@@ -67,6 +67,7 @@ except ImportError:
 
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Early constants required by resolve_repo_root (full block also at bottom of file)
 AGENTIC_CORE_DIR = "agentic_core"
@@ -698,7 +699,8 @@ def run_fence_self_check() -> None:
     # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
-        if policy.immutable_roots != ("agentic_core", "tests", ".github"):
+        expected = ("agentic_core", "tests", ".github", ".windsurfrules")
+        if policy.immutable_roots != expected:
             failed_checks.append("default_policy_immutable_roots")
     # guardian: allow-silent-swallow
     except Exception:
@@ -8765,7 +8767,8 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
             continue
 
         # Walk directory
-        for root, _, files in os.walk(search_path):
+        for root, dirs, files in os.walk(search_path):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for file in files:
                 if not file.endswith(".py") or file.startswith("__"):
                     continue

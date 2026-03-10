@@ -7,6 +7,8 @@ import ast
 import os
 import sys
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # SSOT: The forbidden zone for Agents
 TARGET_DIR = r"C:\Git\Agentic-Workflow\apps_shared\common_utils"
 
@@ -23,7 +25,8 @@ def scan_for_violations() -> list[str]:
         print(f"Target directory {TARGET_DIR} does not exist. Skipping.")
         return []
 
-    for root, _, files in os.walk(TARGET_DIR):
+    for root, dirs, files in os.walk(TARGET_DIR):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if not file.endswith(".py"):
                 continue

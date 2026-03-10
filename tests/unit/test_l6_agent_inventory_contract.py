@@ -27,6 +27,7 @@ import pytest
 from agentic_core.L0_routing.config.path_constants import (
     L6_OBSERVABILITY_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 ROOT = Path(__file__).resolve().parents[3]
 L6_ROOT = ROOT / L6_OBSERVABILITY_DIR
@@ -64,7 +65,8 @@ PRODUCTION_ENTRYPOINTS = [
 def _collect_agent_files() -> list[Path]:
     """Collect all *Agent.py files under L6_ROOT."""
     result = []
-    for dp, _, fs in os.walk(L6_ROOT):
+    for dp, dirs, fs in os.walk(L6_ROOT):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for f in fs:
             if f.endswith("Agent.py"):
                 result.append(Path(dp) / f)

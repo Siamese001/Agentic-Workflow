@@ -35,6 +35,7 @@ from agentic_core.adg.schema import (
     canonical_name,
     module_path_to_layer,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 logger = logging.getLogger(__name__)
 
@@ -627,7 +628,7 @@ def _iter_python_files(repo_root: Path) -> Iterator[Path]:
         if not root_path.exists():
             continue
         for dirpath, dirnames, filenames in os.walk(root_path):
-            dirnames.sort()
+            dirnames[:] = sorted(d for d in dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS)
             for fname in sorted(filenames):
                 if fname.endswith(".py") and not fname.endswith(".pyc"):
                     all_files.append(Path(dirpath) / fname)

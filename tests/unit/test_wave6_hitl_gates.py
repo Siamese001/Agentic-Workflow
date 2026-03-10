@@ -20,7 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     SYSTEM_LEARNING_DIR,
 )
 
-ROOT = Path(__file__).parent.parent.parent.parent
+ROOT = Path(__file__).parent.parent.parent
 
 LOGGER_PATH = ROOT / SYSTEM_LEARNING_DIR / "engines" / "hitl_decision_logger.py"
 LOCATION_HEALER_PATH = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "reasoning" / "LocationHealerAgent.py"

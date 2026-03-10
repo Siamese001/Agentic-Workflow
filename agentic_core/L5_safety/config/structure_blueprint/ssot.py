@@ -671,6 +671,7 @@ SOVEREIGN_EXCLUDED_FOLDERS: frozenset[str] = frozenset(
         "stubs",
         ".sovereign_healing_backup",
         ".healing_backups",
+        ".backup",
         ".idea",
         ".vscode",
         ".DS_Store",

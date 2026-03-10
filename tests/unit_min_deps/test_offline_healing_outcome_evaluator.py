@@ -342,7 +342,7 @@ class TestOfflineHealingOutcomeEvaluator:
         for run in range(2):
             script = f"""
 import sys
-sys.path.insert(0, '{Path(__file__).parent.parent.parent.parent}')
+sys.path.insert(0, '{Path(__file__).parent.parent.parent}')
 
 import json
 from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator

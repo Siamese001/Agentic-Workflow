@@ -29,6 +29,9 @@ import logging
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config import (
+    AGENTIC_CORE_DIR,
+)
 from agentic_core.L0_routing.enforcement.execution_gateway import (
     V15ExecutionGateway,
 )
@@ -63,9 +66,6 @@ from agentic_core.mixins.runtime_safety_mixin import RuntimeSafetyMixin
 from agentic_core.mixins.validator_mixin import ValidatorMixin
 from agentic_core.runtime.exceptions.healer_exceptions import ConfigurationError
 from agentic_core.runtime.exceptions.SovereignError import SovereignError
-from agentic_core.L0_routing.config import (
-    AGENTIC_CORE_DIR,
-)
 
 logger = logging.getLogger(__name__)
 
@@ -332,12 +332,16 @@ class SovereignBaseAgent(
             """
             import os as _os
 
+            from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+                SOVEREIGN_EXCLUDED_FOLDERS as _SEF,
+            )
+
             # fs_hash: aggregate mtime+size of .py files under agentic_core/
             _core_dir = self.project_root / AGENTIC_CORE_DIR
             _fs_parts: list[str] = []
             if _core_dir.is_dir():
                 for _root, _dirs, _files in _os.walk(str(_core_dir)):
-                    _dirs.sort()
+                    _dirs[:] = sorted(d for d in _dirs if d not in _SEF)
                     for _f in sorted(_files):
                         if _f.endswith(".py"):
                             _fp = _os.path.join(_root, _f)

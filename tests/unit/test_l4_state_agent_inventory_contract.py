@@ -33,6 +33,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # ---------------------------------------------------------------------------
 
@@ -106,7 +107,8 @@ def _get_agent_files():
 
     results = []
 
-    for dirpath, _, filenames in os.walk(L4_ROOT):
+    for dirpath, dirs, filenames in os.walk(L4_ROOT):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for fn in filenames:
             if fn.endswith("Agent.py"):
                 results.append(os.path.join(dirpath, fn))

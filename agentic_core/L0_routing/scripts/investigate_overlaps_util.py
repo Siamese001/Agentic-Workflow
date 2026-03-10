@@ -1,9 +1,11 @@
 import hashlib
 import os
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = Path(__file__).parent.parent.parent
 GROUPS = {
@@ -25,7 +27,8 @@ def investigate():
     """TODO: Add documentation for investigate."""
     for _group_name, filenames in GROUPS.items():
         found_files = []
-        for root, _, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+        for root, dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for f in files:
                 if f in filenames:
                     found_files.append(Path(root) / f)

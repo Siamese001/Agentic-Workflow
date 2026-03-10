@@ -11,9 +11,11 @@ import os
 import re
 import shutil
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Configure logging
 logging.basicConfig(
@@ -153,7 +155,8 @@ class MigrationExecutor:
     def _apply_regex_patch(self, pattern: str, replacement: str):
         """Apply regex sub to all .py files in apps_rg."""
         regex = re.compile(pattern)
-        for root, _, files in os.walk(APPS_RG_DIR):
+        for root, dirs, files in os.walk(APPS_RG_DIR):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for file in files:
                 if file.endswith(".py"):
                     path = Path(root) / file
@@ -167,7 +170,8 @@ class MigrationExecutor:
                         logger.error(f"Failed to patch {path.name}: {e}")
 
     def _apply_string_replace(self, old: str, new: str):
-        for root, _, files in os.walk(APPS_RG_DIR):
+        for root, dirs, files in os.walk(APPS_RG_DIR):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for file in files:
                 if file.endswith(".py"):
                     path = Path(root) / file

@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import json
+import pathlib
 import subprocess
 import sys
 import tempfile
@@ -78,11 +79,11 @@ class TestFailureFingerprinting:
         }
 
         # Write test script
-        script_content = f'''
+        script_content = f"""
 import sys
 import json
 import hashlib
-sys.path.insert(0, r"{sys.path[0]}")
+sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
 from system_learning.fingerprinting.engine import FailureFingerprinter
 from system_learning.fingerprinting.types import FailureEvent
@@ -92,7 +93,7 @@ fingerprinter = FailureFingerprinter()
 fp = fingerprinter.fingerprint(event)
 
 print(f"FINGERPRINT: {{fp.fingerprint_sha256}}")
-'''
+"""
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(script_content)
@@ -103,7 +104,7 @@ print(f"FINGERPRINT: {{fp.fingerprint_sha256}}")
                 [sys.executable, script_path],
                 capture_output=True,
                 text=True,
-                cwd=sys.path[0],
+                cwd=str(pathlib.Path(__file__).resolve().parents[2]),
             )
 
             assert result.returncode == 0

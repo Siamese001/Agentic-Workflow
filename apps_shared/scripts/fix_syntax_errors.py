@@ -10,6 +10,8 @@ from typing import Any
 
 from apps_shared.utils.ConfigurationService import ConfigurationService
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 Logger: Any = logging.getLogger(__name__)
 
 
@@ -105,7 +107,7 @@ def main() -> Any:
     except:
         logger_instance: Any = logging.getLogger(__name__)
     for root, dirs, files in os.walk("."):
-        dirs[:] = [d for d in dirs if d not in excluded_dirs]
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py"):
                 filepath: Any = os.path.join(root, file)

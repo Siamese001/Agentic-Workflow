@@ -4,8 +4,11 @@ Move mislocated tests to canonical mirror locations.
 Phase 2: Structural remediation - move tests from unit/ structure to mirror structure.
 """
 
+import os
 import pathlib
 import shutil
+
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 
 def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathlib.Path]]:
@@ -155,6 +158,7 @@ def main():
     test_root = pathlib.Path("tests")
     if test_root.exists():
         for root, dirs, files in os.walk(test_root, topdown=False):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for dir_name in dirs:
                 dir_path = pathlib.Path(root) / dir_name
                 try:

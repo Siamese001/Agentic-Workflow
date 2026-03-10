@@ -31,9 +31,11 @@ import logging
 import os
 import threading
 from pathlib import Path
+
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 Logger = logging.getLogger(__name__)
 
@@ -51,23 +53,7 @@ class FileCache:
     _lock: threading.Lock = threading.Lock()
 
     # Directories to exclude from all scans (pruned during os.walk)
-    EXCLUDED_DIRS: set[str] = {
-        ".git",
-        "__pycache__",
-        ".sovereign_healing_backup",
-        "healing_backups",
-        "node_modules",
-        ".venv",
-        "venv",
-        ".pytest_cache",
-        ".mypy_cache",
-        "coverage_html",
-        ".tox",
-        "dist",
-        "build",
-        ".idea",
-        ".vscode",
-    }
+    EXCLUDED_DIRS: frozenset[str] = SOVEREIGN_EXCLUDED_FOLDERS
 
     def __init__(self, project_root: Path | None = None):
         """

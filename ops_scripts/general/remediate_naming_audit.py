@@ -20,6 +20,8 @@ import re
 import sys
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # --- CONFIGURATION ---
 ROOT_DIR = Path(__file__).resolve().parent.parent
 AUDIT_LOG = ROOT_DIR / "pascal_case_audit_log.txt"
@@ -90,7 +92,8 @@ def update_imports(renames: list[tuple[Path, str]]):
     print("\n[Phase 2] Updating Imports (Safe Regex)...")
     rename_map = {p.stem: Path(n).stem for p, n in renames}
     count = 0
-    for root, _, files in os.walk(ROOT_DIR):
+    for root, dirs, files in os.walk(ROOT_DIR):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if not file.endswith(".py"):
                 continue

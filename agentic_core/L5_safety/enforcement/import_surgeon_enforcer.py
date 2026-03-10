@@ -16,8 +16,9 @@ from pathlib import Path
 from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
-exclude_dirs: Any = {".venv", "__pycache", ".git", "node_modules", "archives"}
+exclude_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
 exclude_files: Any = {"SovereignImportSurgeon.py"}
 
 

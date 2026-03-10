@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = get_validated_project_root()
 ARCHIVE_ROOT = (
@@ -45,9 +46,7 @@ def hunt_and_archive():
         ARCHIVE_ROOT.mkdir(parents=True)
 
     for root, _dirs, files in os.walk(scan_dir):
-        # Skip archive directory
-        if "archived" in root:
-            continue
+        _dirs[:] = [d for d in _dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
         for file in files:
             if file in WANTED_LIST:

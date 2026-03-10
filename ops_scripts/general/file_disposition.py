@@ -7,6 +7,8 @@ import ast
 import os
 from dataclasses import dataclass
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # SSOT Path Validation
 TARGET_DIR = r"C:\Git\Agentic-Workflow\apps_shared\common_utils"
 
@@ -70,7 +72,8 @@ def analyze_directory(directory: str) -> list[FileDisposition]:
         print(f"Directory not found: {directory}")
         return []
 
-    for root, _, files in os.walk(directory):
+    for root, dirs, files in os.walk(directory):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if not file.endswith(".py"):
                 continue

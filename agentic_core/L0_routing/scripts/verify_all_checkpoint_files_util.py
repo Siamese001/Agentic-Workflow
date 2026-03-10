@@ -2,9 +2,11 @@ from pathlib import Path
 
 """Verify archival status of all files mentioned in checkpoint summary."""
 import os
+
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 edited_files = [
@@ -42,9 +44,8 @@ for file_path in all_files:
     archives_path = PROJECT_ROOT / ARCHIVES_DIR
     exists_archived = False
     if archives_path.exists():
-        for root, _dirs, files in os.walk(archives_path):
-            if ".sovereign_healing_backup" in root:
-                continue
+        for root, dirs, files in os.walk(archives_path):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             if filename in files:
                 exists_archived = True
                 break

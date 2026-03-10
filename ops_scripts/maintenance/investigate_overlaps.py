@@ -3,6 +3,7 @@ import os
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = get_validated_project_root()
 
@@ -28,7 +29,8 @@ def investigate():
     for group_name, filenames in GROUPS.items():
         print(f"\n--- Group: {group_name} ---")
         found_files = []
-        for root, _, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+        for root, dirs, files in os.walk(PROJECT_ROOT / AGENTIC_CORE_DIR):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             for f in files:
                 if f in filenames:
                     found_files.append(Path(root) / f)

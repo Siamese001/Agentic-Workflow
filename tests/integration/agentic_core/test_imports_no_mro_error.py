@@ -82,7 +82,7 @@ def _resolve_source_path(module_path: str) -> Path:
     """Resolve a dotted module path to its on-disk .py file."""
     parts = module_path.split(".")
     # Walk from project root (two levels up from this test file)
-    base = Path(__file__).resolve().parent.parent.parent.parent
+    base = Path(__file__).resolve().parent.parent.parent
     candidate = base / Path(*parts)
     py_file = candidate.with_suffix(".py")
     if py_file.is_file():

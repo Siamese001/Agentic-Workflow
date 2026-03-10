@@ -16,6 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 REPO = get_validated_project_root()
 REQ_MD = REPO / "docs" / "reports" / "plans" / "Agentic Master Requirements.md"
@@ -23,21 +24,7 @@ OUT = REPO / "docs" / "reports" / "plans" / "requirements-gap-analysis-evidence.
 PY = sys.executable
 
 # Dirs to skip in all searches
-SKIP = {
-    ".nox",
-    ".git",
-    ".backup",
-    ".pytest_tmp",
-    "archives",
-    "__pycache__",
-    ".vscode",
-    ".windsurf",
-    "node_modules",
-    ".healing_backups",
-    "logs",
-    ".venv",
-    "venv",
-}
+SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # ═══════════════════════════════════════════════════════════════════════════════

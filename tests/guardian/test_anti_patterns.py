@@ -24,7 +24,11 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L5_safety.validators.base_detector_validator import (
+    AntiPatternCategory,
+    AntiPatternDetector,
+    AntiPatternViolation,
     CompositeDetector,
+    DetectionResult,
     EnforcementLevel,
 )
 from agentic_core.L5_safety.validators.global_mutation_validator import (
@@ -582,3 +586,253 @@ def bad_function():
 
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])
+
+
+# ============================================================================
+# Tier 1 Guardian: base_detector_validator ABC Contract Tests
+# AST-graph justification: fan_in=11, ABC base for all concrete detectors;
+# if the abstract interface regresses, all 11 consumers silently break.
+# ============================================================================
+
+
+class TestAntiPatternDetectorABCContract:
+    """AntiPatternDetector is an ABC — direct instantiation must raise."""
+
+    def test_direct_instantiation_raises_type_error(self):
+        with pytest.raises(TypeError):
+            AntiPatternDetector()  # type: ignore[abstract]
+
+    def test_concrete_subclass_without_category_raises(self):
+        """Subclass missing category property must raise on instantiation."""
+
+        class MissingCategory(AntiPatternDetector):
+            def detect(self, file_path, tree):
+                return []
+
+        with pytest.raises(TypeError):
+            MissingCategory()
+
+    def test_concrete_subclass_without_detect_raises(self):
+        """Subclass missing detect() must raise on instantiation."""
+
+        class MissingDetect(AntiPatternDetector):
+            @property
+            def category(self):
+                return AntiPatternCategory.SILENT_SWALLOWER
+
+        with pytest.raises(TypeError):
+            MissingDetect()
+
+    def test_concrete_subclass_with_both_abstracts_instantiates(self):
+        """Valid concrete subclass must instantiate without error."""
+
+        class MinimalDetector(AntiPatternDetector):
+            @property
+            def category(self):
+                return AntiPatternCategory.SILENT_SWALLOWER
+
+            def detect(self, file_path, tree):
+                return []
+
+        detector = MinimalDetector()
+        assert detector.category == AntiPatternCategory.SILENT_SWALLOWER
+
+
+class TestEnforcementLevelOrdering:
+    """EnforcementLevel values and ordering contract."""
+
+    def test_all_levels_defined(self):
+        levels = {e.value for e in EnforcementLevel}
+        assert "disabled" in levels
+        assert "warning" in levels
+        assert "soft_block" in levels
+        assert "hard_block" in levels
+
+    def test_enforcement_level_is_str_enum(self):
+        assert isinstance(EnforcementLevel.WARNING, str)
+        assert EnforcementLevel.WARNING == "warning"
+
+    def test_hard_block_is_most_restrictive(self):
+        levels = list(EnforcementLevel)
+        assert levels.index(EnforcementLevel.HARD_BLOCK) > levels.index(EnforcementLevel.DISABLED)
+
+    def test_detector_stores_enforcement_level(self):
+        detector = SilentSwallowerDetector(enforcement_level=EnforcementLevel.HARD_BLOCK)
+        assert detector.enforcement_level == EnforcementLevel.HARD_BLOCK
+
+
+class TestDetectionResultContract:
+    """DetectionResult field contract and computed properties."""
+
+    def test_empty_result_has_no_violations(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        result = DetectionResult(file_path=p)
+        assert result.has_violations is False
+        assert result.violation_count == 0
+
+    def test_whitelisted_violations_not_counted(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=1,
+            category=AntiPatternCategory.SILENT_SWALLOWER,
+            message="test",
+            evidence="",
+            whitelisted=True,
+        )
+        result = DetectionResult(file_path=p, violations=[v])
+        assert result.has_violations is False
+        assert result.violation_count == 0
+
+    def test_non_whitelisted_violation_counted(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=1,
+            category=AntiPatternCategory.TYPE_ERASURE,
+            message="type erasure",
+            evidence="def foo() -> dict:",
+            whitelisted=False,
+        )
+        result = DetectionResult(file_path=p, violations=[v])
+        assert result.has_violations is True
+        assert result.violation_count == 1
+
+    def test_error_field_none_by_default(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        result = DetectionResult(file_path=p)
+        assert result.error is None
+
+    def test_cached_field_false_by_default(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        result = DetectionResult(file_path=p)
+        assert result.cached is False
+
+
+class TestAntiPatternViolationContract:
+    """AntiPatternViolation.to_dict() serialization contract."""
+
+    def test_to_dict_contains_all_required_keys(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=5,
+            category=AntiPatternCategory.PATH_FRAGILITY,
+            message="fragile path",
+            evidence="os.path.join(...)",
+        )
+        d = v.to_dict()
+        for key in (
+            "file_path",
+            "line_number",
+            "category",
+            "message",
+            "evidence",
+            "severity",
+            "suggested_fix",
+            "whitelisted",
+            "metadata",
+        ):
+            assert key in d, f"Missing key in to_dict(): {key}"
+
+    def test_to_dict_category_is_string_value(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=1,
+            category=AntiPatternCategory.TYPE_ERASURE,
+            message="msg",
+            evidence="ev",
+        )
+        d = v.to_dict()
+        assert d["category"] == "type_erasure"
+
+    def test_to_dict_file_path_is_string(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=1,
+            category=AntiPatternCategory.GLOBAL_MUTATION,
+            message="msg",
+            evidence="ev",
+        )
+        d = v.to_dict()
+        assert isinstance(d["file_path"], str)
+
+    def test_whitelisted_defaults_to_false(self, tmp_path):
+        p = tmp_path / "x.py"
+        p.write_text("", encoding="utf-8")
+        v = AntiPatternViolation(
+            file_path=p,
+            line_number=1,
+            category=AntiPatternCategory.MAGIC_CONFIGURATION,
+            message="msg",
+            evidence="ev",
+        )
+        assert v.whitelisted is False
+
+
+class TestScanFileErrorHandling:
+    """scan_file() must be fail-safe — never raises, always returns DetectionResult."""
+
+    def test_nonexistent_file_returns_result_with_error(self, tmp_path):
+        detector = SilentSwallowerDetector()
+        result = detector.scan_file(tmp_path / "ghost.py")
+        assert isinstance(result, DetectionResult)
+        # No violations — error path returns empty
+        assert result.violation_count == 0
+
+    def test_syntax_error_file_returns_result_not_raise(self, tmp_path):
+        p = tmp_path / "broken.py"
+        p.write_text("def bad(:\n    pass\n", encoding="utf-8")
+        detector = SilentSwallowerDetector()
+        result = detector.scan_file(p)
+        assert isinstance(result, DetectionResult)
+
+    def test_whitelisted_file_returns_empty_result(self, tmp_path):
+        p = tmp_path / "my_module.py"
+        p.write_text("try:\n    x()\nexcept Exception:\n    pass\n", encoding="utf-8")
+        detector = SilentSwallowerDetector(whitelisted_files=["my_module.py"])
+        result = detector.scan_file(p)
+        assert result.violation_count == 0
+
+
+class TestTypeErasureDetectorABCInheritance:
+    """TypeErasureDetector correctly inherits and extends AntiPatternDetector."""
+
+    def test_is_subclass_of_anti_pattern_detector(self):
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
+        assert issubclass(TypeErasureDetector, AntiPatternDetector)
+
+    def test_category_returns_type_erasure(self):
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
+        detector = TypeErasureDetector(check_agent_classes_only=False)
+        assert detector.category == AntiPatternCategory.TYPE_ERASURE
+
+    def test_category_value_is_string(self):
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
+        detector = TypeErasureDetector()
+        assert isinstance(detector.category.value, str)
+
+    def test_allowed_dict_types_are_not_flagged(self, tmp_path):
+        from agentic_core.L5_safety.validators.type_erasure_validator import TypeErasureDetector
+
+        p = tmp_path / "my_agent.py"
+        p.write_text(
+            "class MyAgent:\n    def run(self) -> dict[str, str]:\n        return {}\n",
+            encoding="utf-8",
+        )
+        detector = TypeErasureDetector(check_agent_classes_only=False)
+        result = detector.scan_file(p)
+        assert result.violation_count == 0

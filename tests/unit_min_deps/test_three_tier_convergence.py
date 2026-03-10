@@ -82,8 +82,8 @@ class TestTier2Thresholds:
             HEALING_CONFIDENCE_Y,
         )
 
-        assert HEALING_CONFIDENCE_X == 0.75, "X threshold drifted from 0.75"
-        assert HEALING_CONFIDENCE_Y == 0.40, "Y threshold drifted from 0.40"
+        assert HEALING_CONFIDENCE_X == 0.80, "X threshold drifted from 0.80"
+        assert HEALING_CONFIDENCE_Y == 0.50, "Y threshold drifted from 0.50"
 
     def test_thresholds_are_ordered(self) -> None:
         from agentic_core.L2_execution.healers.healing_tier_config import (
@@ -100,8 +100,8 @@ class TestTier2Thresholds:
         )
 
         cfg = load_default_healing_tier_config()
-        assert cfg.heal_confidence_x == 0.75
-        assert cfg.heal_confidence_y == 0.40
+        assert cfg.heal_confidence_x == 0.80
+        assert cfg.heal_confidence_y == 0.50
 
 
 # ---------------------------------------------------------------------------

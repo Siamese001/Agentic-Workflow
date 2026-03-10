@@ -17,7 +17,6 @@ import pytest
 from system_learning.engines.openai_embedder import OpenAIEmbedder
 from system_learning.engines.seed_embedding_pack_builder import (
     DeterministicHashEmbedder,
-    SeedEmbeddingPackBuilder,
     build_seed_embedding_pack,
 )
 from system_learning.types.seed_embedding_pack_types import (

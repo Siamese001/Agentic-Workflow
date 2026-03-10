@@ -13,11 +13,13 @@ import os
 import sys
 from pathlib import Path
 
-# SSOT Integration
-from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+
+# SSOT Integration
+from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 
 class DebrisHunter:
@@ -34,10 +36,8 @@ class DebrisHunter:
         print(f"Scanning for collision debris in {self.root}...")
 
         # Walk manually to group by directory
-        for dirpath, _, filenames in os.walk(self.root):
-            # Skip .git, __pycache__, archives
-            if any(skip in dirpath for skip in [".git", "__pycache__", "archives", "node_modules"]):
-                continue
+        for dirpath, dirs, filenames in os.walk(self.root):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
 
             py_files = [f for f in filenames if f.endswith(".py")]
 

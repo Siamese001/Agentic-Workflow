@@ -1,0 +1,16 @@
+# Critical agent modules that must import without MRO errors.
+# Each line is a dotted module path. Lines starting with # are comments.
+# Lines starting with EXCLUDE are documentation-only exclusions (not loaded).
+agentic_core.L0_routing.reasoning.RootCustomsAgent
+agentic_core.L0_routing.reasoning.SSOTFolderCleanupAgent
+agentic_core.L1_cognition.reasoning.MetaLearningAgent
+agentic_core.L1_cognition.reasoning.StrategicRecommendationAgent
+agentic_core.L2_execution.reasoning.RedisSovereignAgent
+agentic_core.L2_execution.reasoning.StructuredEngineAgent
+agentic_core.L2_execution.reasoning.ToolsmithAgent
+agentic_core.L3_orchestration.reasoning.DomainPlannerAgent
+agentic_core.L3_orchestration.reasoning.NervousSystemAgent
+agentic_core.L3_orchestration.reasoning.SemanticGatekeeperAgent
+agentic_core.L5_safety.reasoning.HygieneGuardianAgent
+agentic_core.L5_safety.reasoning.LocationHealerAgent
+agentic_core.L5_safety.reasoning.StructureHealerAgent

@@ -8,6 +8,8 @@ import re
 import shutil
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 # Target root directories
 ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
 
@@ -20,6 +22,7 @@ def find_legacy_folders() -> list[Path]:
             continue
 
         for root_dir, dirs, _files in os.walk(path):
+            dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             if "legacy" in dirs:
                 legacy_paths.append(Path(root_dir) / "legacy")
     return legacy_paths

@@ -2,18 +2,19 @@ from pathlib import Path
 
 """Comprehensive check of ALL agents that might have been archived in entire chat history."""
 import os
+
 from agentic_core.L0_routing.config import (
     ARCHIVES_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 PROJECT_ROOT = Path("C:/Git/Agentic-Workflow")
 l4_active = PROJECT_ROOT / "agentic_core/L4_state/memory/L4Agent.py"
 archives_path = PROJECT_ROOT / ARCHIVES_DIR
 l4_archived = []
 if archives_path.exists():
-    for root, _dirs, files in os.walk(archives_path):
-        if ".sovereign_healing_backup" in root:
-            continue
+    for root, dirs, files in os.walk(archives_path):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         if "L4Agent.py" in files:
             # guardian: allow-path-string
             l4_archived.append(os.path.join(root, "L4Agent.py"))
@@ -21,11 +22,8 @@ for _path in l4_archived:
     pass
 archived_agents = []
 if archives_path.exists():
-    for root, _dirs, files in os.walk(archives_path):
-        if ".sovereign_healing_backup" in root:
-            continue
-        if "healing_backups" in root:
-            continue
+    for root, dirs, files in os.walk(archives_path):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         if "identity_duplicates" in root:
             continue
         for file in files:

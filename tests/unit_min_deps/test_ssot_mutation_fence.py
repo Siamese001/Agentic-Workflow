@@ -83,8 +83,10 @@ class TestWriteGatewayIntegration:
         # Ensure no actual write occurred
         mock_write.assert_not_called()
 
+    @patch("pathlib.Path.mkdir")
+    @patch("pathlib.Path.read_bytes", return_value=b"test content")
     @patch("pathlib.Path.write_text")
-    def test_write_gateway_allows_outside_protected_root(self, mock_write):
+    def test_write_gateway_allows_outside_protected_root(self, mock_write, mock_read, mock_mkdir):
         """Test that write_gateway allows writes outside protected roots."""
         target_path = Path("docs/evidence/test.md")
 
@@ -178,7 +180,7 @@ class TestPolicyContract:
     def test_default_policy_immutable_roots(self):
         """Test that default policy has exactly the canonical immutable roots."""
         policy = get_default_protected_root_policy()
-        assert policy.immutable_roots == (AGENTIC_CORE_DIR, TESTS_DIR, ".github")
+        assert policy.immutable_roots == (AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".windsurfrules")
 
     def test_default_policy_log_path(self):
         """Test that default policy has the canonical log path."""

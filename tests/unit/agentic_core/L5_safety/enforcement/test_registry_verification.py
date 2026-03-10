@@ -298,5 +298,180 @@ class TestPathMismatchDetection:
             assert total_issues >= 0  # At minimum, verify the check runs
 
 
+# ============================================================================
+# Tier 1 Guardian: Hard-fail path tests for RegistryVerifier
+# AST-graph justification: fan_in=7; current tests miss fail-closed paths,
+# empty-registry contract, syntax/unicode error hardening, and report content.
+# ============================================================================
+
+
+class TestRegistryVerifierHardFailPaths:
+    """Fail-closed path contracts: verifier must never raise, always report."""
+
+    def test_parse_syntax_error_file_returns_none(self, tmp_path):
+        p = tmp_path / "BrokenAgent.py"
+        p.write_text("def bad(:\n    pass\n", encoding="utf-8")
+        verifier = RegistryVerifier(project_root=tmp_path)
+        result = verifier._parse_agent_file(p)
+        assert result is None
+
+    def test_parse_file_with_only_non_agent_class_returns_none(self, tmp_path):
+        p = tmp_path / "HelperAgent.py"
+        p.write_text("class HelperTool:\n    pass\n", encoding="utf-8")
+        verifier = RegistryVerifier(project_root=tmp_path)
+        result = verifier._parse_agent_file(p)
+        assert result is None
+
+    def test_parse_empty_file_returns_none(self, tmp_path):
+        p = tmp_path / "EmptyAgent.py"
+        p.write_text("", encoding="utf-8")
+        verifier = RegistryVerifier(project_root=tmp_path)
+        result = verifier._parse_agent_file(p)
+        assert result is None
+
+    def test_parse_file_with_no_agent_class_returns_none(self, tmp_path):
+        p = tmp_path / "helpers.py"
+        p.write_text("def helper():\n    return 1\n", encoding="utf-8")
+        verifier = RegistryVerifier(project_root=tmp_path)
+        result = verifier._parse_agent_file(p)
+        assert result is None
+
+    def test_verify_with_empty_registry_all_agents_missing(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        with patch.object(verifier, "load_registry", return_value=[]):
+            result = verifier.verify_registry()
+        assert len(result.missing_agents) == result.total_filesystem_agents
+        assert result.orphan_agents == []
+
+    def test_verify_with_empty_filesystem_no_missing(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        with patch.object(verifier, "scan_filesystem", return_value=[]):
+            result = verifier.verify_registry()
+        assert result.total_filesystem_agents == 0
+        assert result.missing_agents == []
+
+    def test_verify_empty_filesystem_empty_registry_is_complete(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        with (
+            patch.object(verifier, "scan_filesystem", return_value=[]),
+            patch.object(verifier, "load_registry", return_value=[]),
+        ):
+            result = verifier.verify_registry()
+        assert result.is_complete is True
+        assert result.orphan_agents == []
+        assert result.missing_agents == []
+
+    def test_verify_result_is_not_complete_when_missing_agents(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        with patch.object(verifier, "load_registry", return_value=[]):
+            result = verifier.verify_registry()
+        if result.total_filesystem_agents > 0:
+            assert result.is_complete is False
+
+
+class TestGenerateReportContent:
+    """generate_report() must render all violation categories in report text."""
+
+    def test_report_contains_orphan_section(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        mock_registry = [
+            {"class_name": "OrphanAgent", "path": "fake/OrphanAgent.py"},
+        ]
+        with patch.object(verifier, "load_registry", return_value=mock_registry):
+            result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert "Orphan" in report or "orphan" in report.lower()
+
+    def test_report_contains_missing_agents_section(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        with patch.object(verifier, "load_registry", return_value=[]):
+            result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert "Missing" in report or "missing" in report.lower()
+
+    def test_report_shows_total_filesystem_agents(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert str(result.total_filesystem_agents) in report
+
+    def test_report_shows_coverage_percentage(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert "Coverage" in report or "coverage" in report.lower()
+
+    def test_report_is_string(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert isinstance(report, str)
+
+    def test_report_not_empty(self):
+        verifier = RegistryVerifier(project_root=PROJECT_ROOT)
+        result = verifier.verify_registry()
+        report = verifier.generate_report(result)
+        assert len(report) > 0
+
+
+class TestVerificationResultFieldContract:
+    """VerificationResult field contract completeness."""
+
+    def test_is_complete_false_when_orphans_present(self):
+        result = VerificationResult()
+        result.orphan_agents = [{"class_name": "GhostAgent", "path": "fake.py"}]
+        result.is_complete = (
+            len(result.orphan_agents) == 0
+            and len(result.missing_agents) == 0
+            and len(result.path_mismatches) == 0
+        )
+        assert result.is_complete is False
+
+    def test_is_complete_false_when_missing_agents_present(self):
+        result = VerificationResult()
+        result.missing_agents = [
+            AgentInfo(
+                class_name="MissingAgent",
+                file_path=Path("/fake/MissingAgent.py"),
+                relative_path="fake/MissingAgent.py",
+            )
+        ]
+        result.is_complete = (
+            len(result.orphan_agents) == 0
+            and len(result.missing_agents) == 0
+            and len(result.path_mismatches) == 0
+        )
+        assert result.is_complete is False
+
+    def test_coverage_100_when_all_valid(self):
+        result = VerificationResult()
+        result.total_filesystem_agents = 3
+        result.valid_agents = [
+            AgentInfo(
+                class_name=f"Agent{i}",
+                file_path=Path(f"/fake/Agent{i}.py"),
+                relative_path=f"fake/Agent{i}.py",
+            )
+            for i in range(3)
+        ]
+        result.coverage_percentage = len(result.valid_agents) / result.total_filesystem_agents * 100
+        assert result.coverage_percentage == 100.0
+
+    def test_coverage_zero_when_no_valid_agents(self):
+        result = VerificationResult()
+        result.total_filesystem_agents = 5
+        result.valid_agents = []
+        result.coverage_percentage = 0.0
+        assert result.coverage_percentage == 0.0
+
+    def test_path_mismatches_empty_by_default(self):
+        result = VerificationResult()
+        assert result.path_mismatches == []
+
+    def test_valid_agents_empty_by_default(self):
+        result = VerificationResult()
+        assert result.valid_agents == []
+
+
 if __name__ == "__main__":
     pytest.main([__file__, "-v"])

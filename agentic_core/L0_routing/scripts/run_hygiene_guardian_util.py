@@ -15,6 +15,7 @@ sys.path.insert(0, str(PROJECT_ROOT))
 
 from agentic_core.L0_routing.config import ROOT_WHITELIST
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 ALLOWED_ROOT_FOLDERS = set(ROOT_WHITELIST)
 ARTIFACT_PATTERNS = ["*.heal_tmp", "*.temp", "*.tmp", ".pytest_cache", "__pycache__"]
@@ -45,6 +46,7 @@ def scan_empty_folders(root: Path) -> list[Path]:
 
         # Walk bottom-up
         for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
+            _dirnames[:] = [d for d in _dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             current_dir = Path(dirpath)
 
             # Skip .git and sovereign roots
@@ -74,6 +76,7 @@ def scan_folders_with_only_init(root: Path) -> list[Path]:
             continue
 
         for dirpath, _dirnames, _filenames in os.walk(root_path, topdown=False):
+            _dirnames[:] = [d for d in _dirnames if d not in SOVEREIGN_EXCLUDED_FOLDERS]
             current_dir = Path(dirpath)
 
             # Skip .git and sovereign roots

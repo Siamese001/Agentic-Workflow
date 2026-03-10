@@ -11,6 +11,8 @@ All location-related agents should import from this module.
 import os
 from pathlib import Path
 
+from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+
 
 def normalize_location_path(path: str) -> str:
     """
@@ -36,7 +38,8 @@ def get_agent_files(root_dir: str) -> list[str]:
         List of Python file paths
     """
     agent_files = []
-    for root, _, files in os.walk(root_dir):
+    for root, dirs, files in os.walk(root_dir):
+        dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]
         for file in files:
             if file.endswith(".py") and not file.startswith("__"):
                 agent_files.append(os.path.join(root, file))

@@ -2,6 +2,7 @@
 
 from __future__ import annotations
 
+import pathlib
 import subprocess
 import sys
 import tempfile
@@ -106,10 +107,10 @@ class TestHealingConfidenceScorer:
         ]
 
         # Write test script
-        script_content = f'''
+        script_content = f"""
 import sys
 import json
-sys.path.insert(0, r"{sys.path[0]}")
+sys.path.insert(0, r"C:\\Git\\Agentic-Workflow")
 
 from system_learning.confidence.engine import HealingConfidenceScorer
 from system_learning.confidence.types import HealingAttempt
@@ -119,7 +120,7 @@ scorer = HealingConfidenceScorer()
 report = scorer.score(attempts)
 
 print(f"FINGERPRINT: {{report.confidence_fingerprint}}")
-'''
+"""
 
         with tempfile.NamedTemporaryFile(mode="w", suffix=".py", delete=False) as f:
             f.write(script_content)
@@ -130,7 +131,7 @@ print(f"FINGERPRINT: {{report.confidence_fingerprint}}")
                 [sys.executable, script_path],
                 capture_output=True,
                 text=True,
-                cwd=sys.path[0],
+                cwd=str(pathlib.Path(__file__).resolve().parents[2]),
             )
 
             assert result.returncode == 0
