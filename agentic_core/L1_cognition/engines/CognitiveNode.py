@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Cognitive Node - Central L1 Cognition Pipeline
 
@@ -344,8 +354,10 @@ class CognitiveNode:
         """Async replay and learning."""
         if self.meta_learner:
             try:
-                self.meta_learner.replay_and_learn(batch_size=16)
+                self.meta_learner.replay_and_learn(batch_size=BATCH_SIZE)
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
     def get_statistics(self) -> dict[str, Any]:

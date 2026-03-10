@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Data Layer Integration Example - Batch Embeddings + In-Memory Vector cache.
 
 Demonstrates how to use BatchEmbeddingService and InMemoryVectorCache together
@@ -41,7 +51,7 @@ async def example_batch_embedding_workflow() -> Any:
         "Reduced API latency by 60% through caching optimization",
     ] * 100
     # guardian: allow-magic-config
-    batch_service: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
+    batch_service: Any = create_batch_embedding_service(batch_size=BATCH_SIZE, max_workers=4)
     Logger.info(f"Generating embeddings for {len(resume_sections)} sections...")
     embeddings: Any = await batch_service.embed_batch(
         texts=resume_sections,
@@ -90,7 +100,7 @@ async def example_full_pipeline() -> Any:
     """Example: Complete pipeline with batch embeddings + hot cache."""
     Logger.info("\n=== Full Pipeline Example ===")
     # guardian: allow-magic-config
-    batch_service: Any = create_batch_embedding_service(batch_size=32, max_workers=4)
+    batch_service: Any = create_batch_embedding_service(batch_size=BATCH_SIZE, max_workers=4)
     # guardian: allow-magic-config
     hot_cache: Any = create_memory_vector_cache(collection_name="resumes", max_memory_gb=8)
     resume_texts: Any = [

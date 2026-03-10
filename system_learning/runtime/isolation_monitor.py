@@ -11,6 +11,16 @@ from __future__ import annotations
 import sys
 from typing import List
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _FORBIDDEN = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 _FORBIDDEN_LAYER_PREFIXES = (
     "agentic_core.L0_routing",

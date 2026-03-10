@@ -21,6 +21,16 @@ from typing import Any
 
 from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -51,6 +61,8 @@ class MetaLearningEngine:
                         cls._kg_bridge.register_agent(agent_name, agent_type="Agent")
                         Logger.debug(f"[{agent_name}] Connected to Knowledge Graph")
                     except Exception as e:
+                        # TODO: Handle specific exception properly
+                        raise  # Re-raise after logging/handling
                         Logger.warning(f"[{agent_name}] Knowledge Graph unavailable: {e}")
 
     @classmethod
@@ -143,6 +155,8 @@ class MetaLearningEngine:
             )
             cls._kg_bridge.reflect_on_execution(trace)
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{agent_name}] Reflection failed: {e}")
 
     @classmethod
@@ -165,6 +179,8 @@ class MetaLearningEngine:
                 error_type=error_type,
             )
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{caller_agent}] Interaction recording failed: {e}")
 
     @classmethod
@@ -179,6 +195,8 @@ class MetaLearningEngine:
                 parent_entity=parent_entity,
             )
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{child_entity}] Inheritance setup failed: {e}")
 
     @classmethod
@@ -199,6 +217,8 @@ class MetaLearningEngine:
                 reason=reason,
             )
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{entity_a}] Incompatibility marking failed: {e}")
 
     @classmethod
@@ -213,6 +233,8 @@ class MetaLearningEngine:
                 observation=observation,
             )
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[{agent_name}] Observation recording failed: {e}")
 
     @classmethod

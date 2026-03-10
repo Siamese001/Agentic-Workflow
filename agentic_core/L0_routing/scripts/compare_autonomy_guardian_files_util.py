@@ -3,6 +3,16 @@
 import difflib
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 file1 = Path("agentic_core/L5_safety/validators/AutonomyGuardianAgent.py")
 file2 = Path("agentic_core/config/blueprint_sovereign/AutonomyGuardianAgent.py")
 

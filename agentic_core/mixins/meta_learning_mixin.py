@@ -25,6 +25,16 @@ from agentic_core.mixins.meta_learning_contract_mixin import BaseMetaLearner
 from agentic_core.utils.meta_learning_engine_util import MetaLearningEngine
 from agentic_core.utils.meta_learning_storage_util import MetaLearningStorage
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 

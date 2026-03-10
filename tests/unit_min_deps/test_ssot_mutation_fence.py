@@ -7,6 +7,16 @@ from unittest.mock import patch
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
     TESTS_DIR,
 )
@@ -445,7 +455,7 @@ class TestDeterministicReplay:
         _emit_block_event(target_path, matched_root, str(log_file_1))
 
         # Small delay to ensure different timestamp
-        time.sleep(1.1)
+        time.sleep(DEFAULT_SLEEP)
 
         # Run 2
         log_file_2 = tmp_path / "run2.jsonl"

@@ -9,6 +9,16 @@ from pydantic import BaseModel
 from runtime.core.telemetry import TraceEvent
 from services.configuration import ConfigurationService
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 if TYPE_CHECKING:
     pass
 
@@ -325,6 +335,8 @@ class SubatomicHop:
                     results.append({"tool": tool_name, "result": result})
                 total_cost += self.governor.track("tool_execution", 10, 10)
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 self.telemetry.record(
                     TraceEvent(
                         trace_id=trace_id,  # Use the passed 'trace_id' argument

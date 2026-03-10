@@ -8,6 +8,16 @@ import socket
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Import SSOT for dashboard directory - NO HARDCODING
 from agentic_core.L5_safety.config.structure_blueprint import DASHBOARD_DIR
 from agentic_core.utils.security_util import safe_popen
@@ -32,7 +42,7 @@ def signal_handler(signum, frame):
     if server_process:
         server_process.terminate()
         # guardian: allow-magic-config
-        server_process.wait(timeout=5)
+        server_process.wait(timeout=DEFAULT_TIMEOUT)
     print("✅ Server stopped gracefully.")
     sys.exit(0)
 

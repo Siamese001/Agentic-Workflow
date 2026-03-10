@@ -15,6 +15,16 @@ import time
 import traceback
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 REPO_ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(REPO_ROOT))
 
@@ -350,7 +360,7 @@ try:
 
     optimizer = HealingConfigOptimizer(
         min_sample_size=1,  # lowered for proof (production=20)
-        low_success_rate_threshold=0.6,
+        low_success_rate_threshold=THRESHOLD,
     )
 
     agg_snapshot = optimizer.create_snapshot_from_intake(record, created_utc=0)

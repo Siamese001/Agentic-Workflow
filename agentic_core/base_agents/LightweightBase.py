@@ -42,6 +42,16 @@ from agentic_core.mixins.cost_mixin import CostGuardrailMixin
 from agentic_core.mixins.metrics_mixin import MetricsMixin
 from agentic_core.mixins.tracing_mixin import TracingMixin
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 

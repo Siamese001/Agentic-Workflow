@@ -10,6 +10,16 @@ from __future__ import annotations
 import os
 
 from agentic_core.utils.ast_fuzzy_util import (  # noqa: F401
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ast_dump_hash,
     normalize_repo_path,
     parse_ast_safe,

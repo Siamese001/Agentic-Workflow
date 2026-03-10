@@ -16,6 +16,16 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class BypassViolation:
     """Represents a detected bypass violation."""
 
@@ -84,6 +94,8 @@ class SystemInvariantScanner(ast.NodeVisitor):
                     if 0 <= node.lineno - 1 < len(lines):
                         self.current_line_content = lines[node.lineno - 1].strip()
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 self.current_line_content = ""
 
         super().visit(node)
@@ -239,6 +251,8 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
                     description=f"Syntax error: {e}"
                 ))
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Record other errors
                 violations.append(BypassViolation(
                     file_path=str(file_path),

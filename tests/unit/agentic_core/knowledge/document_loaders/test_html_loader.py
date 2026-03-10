@@ -5,6 +5,16 @@ from pathlib import Path
 from agentic_core.knowledge.document_loaders.html_loader import HTMLDocumentLoader
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def test_html_loader_extracts_visible_text(tmp_path: Path):
     """Visible text is extracted and HTML tags are stripped."""
     html_file = tmp_path / "sample.html"

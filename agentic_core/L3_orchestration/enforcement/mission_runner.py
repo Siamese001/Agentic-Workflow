@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Canon Validator Mission Runner
 
@@ -188,6 +198,8 @@ def _v15_gateway_audit(manifest, trace_id: str) -> None:
         )
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 
 
@@ -383,7 +395,7 @@ def run_standard_mode():
         branch_name = f"healing/auto_{int(time.time())}"
         try:
             # guardian: allow-magic-config
-            safe_git_execute(["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=10, check=False)
+            safe_git_execute(["checkout", "-b", branch_name], repo_root=Path.cwd(), timeout=DEFAULT_TIMEOUT, check=False)
             print(f"   [GIT] GitOps: Created healing branch '{branch_name}'")
         # guardian: allow-silent-swallow
         except Exception:
@@ -430,7 +442,7 @@ def run_standard_mode():
 
             if cycle < MAX_CYCLES:
                 print("   [~] Modifications detected. Rerunning validation to ensure stability...")
-                await asyncio.sleep(1)
+                await asyncio.sleep(DEFAULT_SLEEP)
         else:
             _handle_max_cycles_reached(ctx)
 

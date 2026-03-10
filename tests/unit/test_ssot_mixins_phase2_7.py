@@ -19,6 +19,16 @@ from typing import Any
 import pytest
 
 from agentic_core.L2_execution.deterministic_providers import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     unpatch_deterministic,
 )
 from agentic_core.mixins.replay_guard_mixin import ReplayGuardMixin
@@ -206,7 +216,7 @@ class TestSSOTCaching:
         # Under replay, TTL is None so entry never expires
         import time
 
-        time.sleep(0.01)  # patched sleep advances virtual clock
+        time.sleep(DEFAULT_SLEEP)  # patched sleep advances virtual clock
         assert obj.cache_get("k") == "v"
 
     @pytest.mark.unit_min_deps
@@ -295,36 +305,36 @@ class TestSSOTRateLimit:
     @pytest.mark.unit_min_deps
     def test_rate_check_allows_within_limit(self):
         obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        assert obj.rate_check("bucket", limit=5) is True
+        assert obj.rate_check("bucket", limit=LIMIT) is True
 
     @pytest.mark.unit_min_deps
     def test_rate_check_raises_on_exceed(self):
         obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
         for _ in range(3):
-            obj.rate_check("b", limit=3, window=60.0)
+            obj.rate_check("b", limit=LIMIT, window=60.0)
         with pytest.raises(RateLimitExceeded):
-            obj.rate_check("b", limit=3, window=60.0)
+            obj.rate_check("b", limit=LIMIT, window=60.0)
 
     @pytest.mark.unit_min_deps
     def test_replay_mode_disables_rate_limit(self):
         ctx = _Ctx(trace_id="t-replay", active_policy_hash="ph", replay_mode=True)
         obj = _RateLimitObj(ctx)
         for _ in range(100):
-            assert obj.rate_check("b", limit=1) is True
+            assert obj.rate_check("b", limit=LIMIT) is True
 
     @pytest.mark.unit_min_deps
     def test_rate_remaining(self):
         obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
-        obj.rate_check("b", limit=5)
-        assert obj.rate_remaining("b", limit=5) == 4
+        obj.rate_check("b", limit=LIMIT)
+        assert obj.rate_remaining("b", limit=LIMIT) == 4
 
     @pytest.mark.unit_min_deps
     def test_rate_reset(self):
         obj = _RateLimitObj(_Ctx(trace_id="t", active_policy_hash="ph"))
         for _ in range(3):
-            obj.rate_check("b", limit=5)
+            obj.rate_check("b", limit=LIMIT)
         obj.rate_reset("b")
-        assert obj.rate_remaining("b", limit=5) == 5
+        assert obj.rate_remaining("b", limit=LIMIT) == 5
 
 
 class TestSSOTStateValidation:

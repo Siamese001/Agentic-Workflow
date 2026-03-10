@@ -37,6 +37,16 @@ import time
 from datetime import datetime
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Windows UTF-8 support
 if sys.platform.startswith("win"):
     os.system("chcp 65001 >nul 2>&1")
@@ -62,7 +72,7 @@ def cleanup_server():
         print("\n🛑 Stopping dashboard server...")
         try:
             _server_process.terminate()
-            _server_process.wait(timeout=5)
+            _server_process.wait(timeout=DEFAULT_TIMEOUT)
         except (subprocess.TimeoutExpired, OSError):
             _server_process.kill()
         _server_process = None
@@ -96,7 +106,7 @@ def kill_existing_servers():
                 pass
         if killed > 0:
             print(f"   Killed {killed} existing server(s)")
-            time.sleep(1)
+            time.sleep(DEFAULT_SLEEP)
     except ImportError:
         # psutil not available, try socket-based check
         if is_port_in_use(SERVER_PORT):
@@ -120,7 +130,7 @@ def start_server() -> bool:
         if not is_port_in_use(SERVER_PORT):
             break
         print(f"   Waiting for port {SERVER_PORT} to be free... ({i + 1}/{max_wait})")
-        time.sleep(1)
+        time.sleep(DEFAULT_SLEEP)
 
     if is_port_in_use(SERVER_PORT):
         print(f"   ❌ Port {SERVER_PORT} still in use after {max_wait}s")
@@ -138,7 +148,7 @@ def start_server() -> bool:
 
         # Wait for server to start
         for i in range(10):
-            time.sleep(0.5)
+            time.sleep(DEFAULT_SLEEP)
             if is_port_in_use(SERVER_PORT):
                 print(f"   ✅ Server started on port {SERVER_PORT} (PID: {_server_process.pid})")
                 print(f"   🌐 URL: {DASHBOARD_URL}")
@@ -355,9 +365,9 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
 
             # Navigate to dashboard
             print(f"   Navigating to {DASHBOARD_URL}...")
-            page.goto(DASHBOARD_URL, timeout=30000)
-            page.wait_for_load_state("networkidle", timeout=30000)
-            time.sleep(2)  # Allow JS to render
+            page.goto(DASHBOARD_URL, timeout=DEFAULT_TIMEOUT)
+            page.wait_for_load_state("networkidle", timeout=DEFAULT_TIMEOUT)
+            time.sleep(DEFAULT_SLEEP)  # Allow JS to render
 
             # Test 6: No JavaScript errors in browser
             if not js_errors:
@@ -379,7 +389,7 @@ def run_playwright_tests(headless: bool = True) -> tuple[int, int, list[str]]:
                     passed += 1
                 else:
                     # Try waiting for table to appear
-                    page.wait_for_selector("table", timeout=5000)
+                    page.wait_for_selector("table", timeout=DEFAULT_TIMEOUT)
                     table_count = page.locator("table").count()
                     if table_count > 0:
                         print(f"   ✅ Test 7: {table_count} table(s) rendered visually")
@@ -509,7 +519,7 @@ def run_regeneration() -> bool:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=120,
+            timeout=DEFAULT_TIMEOUT,
         )
 
         if result.returncode == 0:

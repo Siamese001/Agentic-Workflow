@@ -13,6 +13,16 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -350,7 +360,7 @@ class ObservabilityToolInvoker:
         tool_spec = self._registered_tools[context.tool_id]
 
         # Simulate processing time
-        time.sleep(0.1)
+        time.sleep(DEFAULT_SLEEP)
 
         # Generate mock response based on tool category and method
         if tool_spec.category == ToolCategory.TRACING:

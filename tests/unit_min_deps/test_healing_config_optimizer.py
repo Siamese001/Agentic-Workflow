@@ -7,6 +7,16 @@ from __future__ import annotations
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.unit_min_deps
 
 from system_learning.engines.healing_config_optimizer import (
@@ -29,7 +39,7 @@ class TestHealingConfigOptimizer:
     def test_threshold_proposal_deterministic(self):
         """Test that proposals are deterministic given same input."""
         optimizer = HealingConfigOptimizer(
-            min_sample_size=10, low_success_rate_threshold=0.6, escalation_delta=0.1, max_threshold=2.0
+            min_sample_size=10, low_success_rate_threshold=THRESHOLD, escalation_delta=0.1, max_threshold=THRESHOLD
         )
 
         # Create test snapshot
@@ -102,9 +112,9 @@ class TestHealingConfigOptimizer:
         """Test that proposed thresholds are capped at max_threshold."""
         optimizer = HealingConfigOptimizer(
             min_sample_size=10,
-            low_success_rate_threshold=0.5,
+            low_success_rate_threshold=THRESHOLD,
             escalation_delta=1.5,  # Large delta
-            max_threshold=1.0,  # Low max
+            max_threshold=THRESHOLD,  # Low max
         )
 
         # Create snapshot with low success rate
@@ -192,8 +202,8 @@ class TestHealingConfigOptimizer:
             healer_name="healer1",
             tier="LOCAL_AGENT",
             failure_type="failure1",
-            current_threshold=0.5,
-            proposed_threshold=0.6,
+            current_threshold=THRESHOLD,
+            proposed_threshold=THRESHOLD,
             reason="Low success rate",
             confidence=0.8,
         )
@@ -217,8 +227,8 @@ class TestHealingConfigOptimizer:
             healer_name="healer1",
             tier="LOCAL_AGENT",
             failure_type="failure1",
-            current_threshold=0.5,
-            proposed_threshold=0.6,
+            current_threshold=THRESHOLD,
+            proposed_threshold=THRESHOLD,
             reason="Low success rate",
             confidence=0.8,
         )
@@ -244,7 +254,7 @@ class TestHealingConfigOptimizer:
         """Test optimizer parameter validation."""
         # Valid initialization
         optimizer = HealingConfigOptimizer(
-            min_sample_size=10, low_success_rate_threshold=0.5, escalation_delta=0.1, max_threshold=2.0
+            min_sample_size=10, low_success_rate_threshold=THRESHOLD, escalation_delta=0.1, max_threshold=THRESHOLD
         )
         assert optimizer._min_sample_size == 10
 
@@ -254,7 +264,7 @@ class TestHealingConfigOptimizer:
 
         # Invalid success rate threshold
         with pytest.raises(ValueError, match="low_success_rate_threshold must be in"):
-            HealingConfigOptimizer(low_success_rate_threshold=1.5)
+            HealingConfigOptimizer(low_success_rate_threshold=THRESHOLD)
 
         # Invalid escalation delta
         with pytest.raises(ValueError, match="escalation_delta must be > 0"):
@@ -262,4 +272,4 @@ class TestHealingConfigOptimizer:
 
         # Invalid max threshold
         with pytest.raises(ValueError, match="max_threshold must be > 0"):
-            HealingConfigOptimizer(max_threshold=0)
+            HealingConfigOptimizer(max_threshold=THRESHOLD)

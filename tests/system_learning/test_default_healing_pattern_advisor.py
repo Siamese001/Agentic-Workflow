@@ -6,6 +6,16 @@ from unittest.mock import MagicMock, patch
 
 from agentic_core.L2_execution.healers.healing_tier_types import HealingInput
 from system_learning.engines.default_healing_pattern_advisor import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DefaultHealingPatternAdvisor,
     HealingPattern,
 )

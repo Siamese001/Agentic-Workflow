@@ -5,6 +5,16 @@ import tempfile
 import pytest
 
 from agentic_core.L3_orchestration.replay.deterministic_replay import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ReplayCommand,
     _truncate_if_needed,
     run_and_record,
@@ -74,7 +84,7 @@ def test_store_list_limit_deterministic():
             store.put(artifact)
 
         # List with limit should return first N in deterministic order
-        limited_refs = store.list(limit=5)
+        limited_refs = store.list(limit=LIMIT)
         all_refs = store.list()
 
         assert len(limited_refs) == 5
@@ -130,7 +140,7 @@ def test_scaling_200_small_artifacts():
                 assert prev_ref.kind < curr_ref.kind
 
         # Test listing with limits
-        first_10 = store.list(limit=10)
+        first_10 = store.list(limit=LIMIT)
         assert len(first_10) == 10
         assert first_10 == all_refs[:10]
 

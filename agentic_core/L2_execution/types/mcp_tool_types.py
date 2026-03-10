@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """MCP Tool Server Integration.
 
 Provides MCP (Model Context Protocol) tool server integration
@@ -312,6 +322,8 @@ class MCPToolServer:
             emitter.emit_typed_artifact("TOOL_ENFORCEMENT", artifact)
         # guardian: allow-silent-swallow
         except Exception as _emit_exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(
                 "§Wave2.4 ToolEnforcementArtifact emission failed: %s",
                 _emit_exc,

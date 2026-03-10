@@ -15,6 +15,16 @@ from typing import Any
 from .tool_contract import ToolArg, ToolSpec
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def repo_rg_handler(args: dict[str, Any]) -> str:
     """Search repository using Python (no external rg dependency).
 

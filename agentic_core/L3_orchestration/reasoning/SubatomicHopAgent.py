@@ -6,6 +6,16 @@ from __future__ import annotations
 import logging
 from dataclasses import dataclass
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import (
@@ -362,6 +372,8 @@ class SubatomicHopAgent(SovereignBaseAgent):
                     results.append({"tool": tool_name, "result": result})
                 total_cost += self.governor.track("tool_execution", 10, 10)
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 self.telemetry.record(
                     TraceEvent(
                         trace_id=trace_id,

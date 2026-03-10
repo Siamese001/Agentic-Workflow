@@ -18,6 +18,16 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ArchivalGatekeeper,
     ArchivalOperation,
     ArchivalResult,
@@ -311,7 +321,7 @@ class TestAuditLog:
             source.write_text(f"content {i}")
             gatekeeper.safe_archive(source, "TestAgent", f"Archive {i}")
 
-        logs = gatekeeper.get_audit_log(limit=5)
+        logs = gatekeeper.get_audit_log(limit=LIMIT)
         assert len(logs) == 5
 
 

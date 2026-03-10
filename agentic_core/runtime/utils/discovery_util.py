@@ -16,6 +16,16 @@ from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_fi
 from agentic_core.utils.ssot_discovery_validator import get_python_files
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -121,6 +131,8 @@ class AgentRegistry:
                     instance = class_ref()
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 instance = Mock()
 
             agent = DiscoveredAgentRecord(

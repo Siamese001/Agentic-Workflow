@@ -3,6 +3,16 @@
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     APPS_LIC_DIR,
     APPS_RG_DIR,
 )
@@ -22,7 +32,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
         )
         assert config.domain == "test"
@@ -35,7 +45,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
         )
         assert config.rate_limit_requests == 100
@@ -48,7 +58,7 @@ class TestIntegrationConfig:
         config = IntegrationConfig(
             domain="test",
             domain_prefix="apps_test",
-            similarity_threshold=0.85,
+            similarity_threshold=THRESHOLD,
             ttl_seconds=3600,
             required_flags=["FLAG1"],
         )

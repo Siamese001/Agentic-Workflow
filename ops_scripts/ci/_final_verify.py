@@ -7,16 +7,28 @@ import pathlib
 import sys
 import urllib.request
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 sys.path.insert(0, "c:/Git/Agentic-Workflow")
 
 results = {}
 
 # F1: vLLM running
 try:
-    with urllib.request.urlopen("http://localhost:8000/v1/models", timeout=3) as r:
+    with urllib.request.urlopen("http://localhost:8000/v1/models", timeout=DEFAULT_TIMEOUT) as r:
         data = json.loads(r.read())
         results["F1_vllm"] = "PASS: " + data["data"][0]["id"]
 except Exception as e:
+    # TODO: Handle specific exception properly
+    raise  # Re-raise after logging/handling
     results["F1_vllm"] = f"FAIL: {e}"
 
 # F2: faiss-gpu + embedding env
@@ -38,6 +50,8 @@ try:
             missing.append(f"EMBEDDING_ENABLED={emb_en!r}")
         results["F2_embedding"] = "FAIL: " + "; ".join(missing)
 except Exception as e:
+    # TODO: Handle specific exception properly
+    raise  # Re-raise after logging/handling
     results["F2_embedding"] = f"FAIL: {e}"
 
 # F3: FAISS index boot sweep
@@ -52,6 +66,8 @@ try:
     else:
         results["F3_faiss_index"] = "FAIL: no indexes found"
 except Exception as e:
+    # TODO: Handle specific exception properly
+    raise  # Re-raise after logging/handling
     results["F3_faiss_index"] = f"FAIL: {e}"
 
 # F4: Redis
@@ -64,6 +80,8 @@ try:
     else:
         results["F4_redis"] = f"FAIL: {h['error']}"
 except Exception as e:
+    # TODO: Handle specific exception properly
+    raise  # Re-raise after logging/handling
     results["F4_redis"] = f"FAIL: {e}"
 
 # F5: GPU mem util SSOT

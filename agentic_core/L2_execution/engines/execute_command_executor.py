@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Secure Subprocess Execution - Timeout-Protected Command Execution
 Prevents livelocks and provides safe subprocess management.
@@ -220,7 +230,7 @@ def check_tool_installed(tool_name: str) -> bool:
         return False
     for command in ALLOWED_COMMANDS[tool_name]:
         try:
-            result: Any = safe_execute([command, "--version"], capture_output=True, timeout=5, check=False)
+            result: Any = safe_execute([command, "--version"], capture_output=True, timeout=DEFAULT_TIMEOUT, check=False)
             if result.returncode == 0:
                 return True
         except (subprocess.TimeoutExpired, FileNotFoundError):
@@ -247,7 +257,7 @@ def run_linter(tool: str, target_path: str = ".", extra_args: list[str] | None =
         args.extend(extra_args)
     args.append(target_path)
     try:
-        result: Any = execute_with_timeout(command=args, timeout=120, capture_output=True, check=False)
+        result: Any = execute_with_timeout(command=args, timeout=DEFAULT_TIMEOUT, capture_output=True, check=False)
         success: Any = result.returncode == 0
         output: Any = result.stdout if result.stdout else result.stderr
         return (success, output)

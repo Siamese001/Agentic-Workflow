@@ -26,6 +26,16 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.governance_contracts import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     build_hil_policy_proposal,
 )
 from agentic_core.L0_routing.types.governance_types import HILOutcome
@@ -413,6 +423,8 @@ class HumanReviewQueue:
                 callback(request_id, action)
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"[REVIEW_QUEUE] Callback error: {e}")
 
     def _emit_policy_update_proposal(
@@ -449,6 +461,8 @@ class HumanReviewQueue:
             emitter.flush_to_artifacts_dir(_log_dir)
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(
                 "§Wave2.3 PolicyUpdateProposal emission failed at HIL boundary: %s",
                 exc,

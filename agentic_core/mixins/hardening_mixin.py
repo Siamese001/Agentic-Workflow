@@ -22,6 +22,16 @@ from agentic_core.L5_safety.enforcement.error_recovery_strategy import ErrorReco
 from agentic_core.L6_observability.utils.system_telemetry_util import SystemTelemetry, get_telemetry
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class TokenLimitError(Exception):
     """Raised when token budget exceeds model limits."""
 
@@ -104,7 +114,7 @@ class HardeningMixin:
             if validate_token_budget:
                 await asyncio.wait_for(
                     asyncio.to_thread(validate_token_budget),
-                    timeout=2.5,
+                    timeout=DEFAULT_TIMEOUT,
                 )
             # Execute with retry and circuit breaking
             result = await self.error_recovery.invoke_with_retry(

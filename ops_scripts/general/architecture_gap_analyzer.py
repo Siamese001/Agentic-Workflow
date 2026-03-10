@@ -30,6 +30,16 @@ from typing import Any
 from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @dataclass
 class ArchitectureComponent:
     """Represents a component from the architecture diagram."""

@@ -8,6 +8,16 @@ from agentic_core.L2_execution.types.execution_trace_types import ExecutionTrace
 from agentic_core.L5_safety.types.hardening_errors import ExecutionTraceIntegrityError
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _complete_trace() -> ExecutionTrace:
     b = ExecutionTraceBuilder("trace-001", "ip-001")
     b.set_governed_payload("abc123")

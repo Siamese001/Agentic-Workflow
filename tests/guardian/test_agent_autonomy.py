@@ -15,6 +15,16 @@ from pathlib import Path
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
@@ -101,7 +111,7 @@ class TestAgentAutonomy:
                 temp_path.unlink(missing_ok=True)
                 break
             except PermissionError:
-                time.sleep(0.1)
+                time.sleep(DEFAULT_SLEEP)
 
     def test_agent_with_heal_repository(self, validator):
         """TC-AA-01: Agent with heal_repository passes."""

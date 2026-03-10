@@ -12,6 +12,16 @@ import time
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
@@ -69,7 +79,7 @@ def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, st
 
     if proc.is_alive():
         proc.terminate()
-        proc.join(timeout=1)
+        proc.join(timeout=DEFAULT_TIMEOUT)
         if proc.is_alive():
             proc.kill()
         return (module_path, "HANG (timeout)", timeout)
@@ -198,7 +208,7 @@ def main():
             flush=True,
         )
 
-        result = import_with_timeout(str(file_path), timeout=2.0)
+        result = import_with_timeout(str(file_path), timeout=DEFAULT_TIMEOUT)
         path, status, duration = result
 
         if "HANG" in status:

@@ -18,6 +18,16 @@ from pathlib import Path
 from unittest.mock import patch
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L0_routing.types.determinism_types import (
@@ -209,7 +219,7 @@ class TestRuntimeRetryManifest:
         )
 
         mixin = _TestableReliabilityMixin()
-        mixin.configure_tool_retry("flaky", max_retries=3, base_delay_seconds=0.0, jitter=False)
+        mixin.configure_tool_retry("flaky", max_retries=MAX_RETRIES, base_delay_seconds=0.0, jitter=False)
 
         captured_manifests = []
         _orig = V15ExecutionGateway.execute
@@ -240,7 +250,7 @@ class TestRuntimeRetryManifest:
     def test_trace_id_stable_across_retries(self):
         """The single manifest's trace_id must not change across retries."""
         mixin = _TestableReliabilityMixin()
-        mixin.configure_tool_retry("flaky2", max_retries=2, base_delay_seconds=0.0, jitter=False)
+        mixin.configure_tool_retry("flaky2", max_retries=MAX_RETRIES, base_delay_seconds=0.0, jitter=False)
 
         # Build manifest once (same as what with_retry_sync does internally)
         manifest = mixin._v15_build_retry_manifest("flaky2")

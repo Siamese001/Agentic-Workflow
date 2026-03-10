@@ -22,6 +22,16 @@ from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # --- CONFIGURATION ---
 ROOT_DIR = Path(__file__).resolve().parent.parent
 AUDIT_LOG = ROOT_DIR / "pascal_case_audit_log.txt"

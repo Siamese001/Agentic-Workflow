@@ -5,6 +5,16 @@ from pathlib import Path
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.config import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ARCHIVES_DIR,
 )
 
@@ -35,6 +45,8 @@ def main():
             ARCHIVE_BASE.mkdir(parents=True, exist_ok=True)
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             sys.exit(1)
     moved_count = 0
     missing_count = 0
@@ -52,6 +64,8 @@ def main():
                 moved_count += 1
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
         else:
             missing_count += 1

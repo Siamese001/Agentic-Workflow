@@ -68,6 +68,16 @@ from __future__ import annotations
 
 import pytest
 from agentic_core.evaluation.monitoring.completeness_monitors import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ConditionLossDriftMonitor,
     HighSimilarityWrongAnswerMonitor,
     ParentExpansionMissMonitor,
@@ -441,7 +451,7 @@ class TestKeywordAnswerSupportValidator:
     """
 
     def _make_validator(self) -> KeywordAnswerSupportValidator:
-        return KeywordAnswerSupportValidator(min_overlap_words=3, fully_supported_threshold=0.8)
+        return KeywordAnswerSupportValidator(min_overlap_words=3, fully_supported_threshold=THRESHOLD)
 
     def test_fully_supported_when_all_sentences_covered(self):
         v = self._make_validator()
@@ -513,7 +523,7 @@ class TestKeywordAnswerSupportValidator:
 
     def test_invalid_threshold_raises(self):
         with pytest.raises(ValueError):
-            KeywordAnswerSupportValidator(fully_supported_threshold=1.5)
+            KeywordAnswerSupportValidator(fully_supported_threshold=THRESHOLD)
 
 
 # ===========================================================================

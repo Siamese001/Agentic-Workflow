@@ -23,6 +23,16 @@ from unittest.mock import MagicMock
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     L4_STATE_DIR,
     TOOLS_DIR,
 )
@@ -514,7 +524,7 @@ def test_tombstoned_classes_reject_keyword_args():
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
 
     with pytest.raises(RuntimeError, match="tombstoned"):
-        bsp._TombstonedRedisDistributedLock(redis_client=None, lock_timeout=30)
+        bsp._TombstonedRedisDistributedLock(redis_client=None, lock_timeout=DEFAULT_TIMEOUT)
 
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache(redis_client=None, default_ttl=3600)
@@ -528,7 +538,7 @@ def test_tombstoned_classes_reject_mixed_args():
     from agentic_core.L4_state.memory import blob_storage_provider as bsp
 
     with pytest.raises(RuntimeError, match="tombstoned"):
-        bsp._TombstonedRedisDistributedLock(None, lock_timeout=30)
+        bsp._TombstonedRedisDistributedLock(None, lock_timeout=DEFAULT_TIMEOUT)
 
     with pytest.raises(RuntimeError, match="tombstoned"):
         bsp._TombstonedRedisHotCache(None, default_ttl=7200)

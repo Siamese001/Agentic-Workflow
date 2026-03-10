@@ -7,6 +7,16 @@ from pathlib import Path
 from apps_shared.utils.ConfigurationService import ConfigurationService
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def fix_micro_fragments() -> Any:
     """Docstring."""
 
@@ -82,6 +92,8 @@ def split_large_types_files() -> Any:
                         f"  Updated {ConfigurationService().full_path.name} as re-export shim",
                     )
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 ConfigurationService().Logger.info(f"Error processing {file_path}: {e}")
 
 

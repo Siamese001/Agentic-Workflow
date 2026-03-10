@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 Proactive Fission Scanner - L3 Orchestration
 
@@ -250,4 +260,4 @@ def get_proactive_scanner(McpRouterAgent: Any, line_threshold: int = 600) -> Pro
     return ProactiveFissionScanner(McpRouterAgent=McpRouterAgent, line_threshold=line_threshold)
 
 
-'\nfrom agentic_core.core.proactive_audit import ProactiveFissionScanner\nfrom agentic_core.infra.McpRouterAgent import MCPRouter\nfrom agentic_core.infra.tui_dashboard import AgenticTUI\n\n# Initialize components\nmcp_router = MCPRouter(tui_handle=tui)\nscanner = ProactiveFissionScanner(McpRouterAgent=McpRouterAgent, line_threshold=600)\n\n# Run proactive scan\ncandidates = await scanner.scan_repository("agentic_core/")\n\n# Generate strategies for each candidate\nfor candidate in candidates:\n    strategy = await scanner.generate_pre_emptive_strategy(candidate["path"])\n    print(f"Strategy for {candidate[\'path\']}: {strategy}")\n\n# Create refactor proposal branch\nbranch_name = await scanner.create_refactor_proposal(candidates)\n\n# Generate audit report\nreport = await scanner.generate_audit_report(candidates)\nprint(f"Audit Report: {report}")\n'
+'\nfrom agentic_core.core.proactive_audit import ProactiveFissionScanner\nfrom agentic_core.infra.McpRouterAgent import MCPRouter\nfrom agentic_core.infra.tui_dashboard import AgenticTUI\n\n# Initialize components\nmcp_router = MCPRouter(tui_handle=tui)\nscanner = ProactiveFissionScanner(McpRouterAgent=McpRouterAgent, line_threshold=THRESHOLD)\n\n# Run proactive scan\ncandidates = await scanner.scan_repository("agentic_core/")\n\n# Generate strategies for each candidate\nfor candidate in candidates:\n    strategy = await scanner.generate_pre_emptive_strategy(candidate["path"])\n    print(f"Strategy for {candidate[\'path\']}: {strategy}")\n\n# Create refactor proposal branch\nbranch_name = await scanner.create_refactor_proposal(candidates)\n\n# Generate audit report\nreport = await scanner.generate_audit_report(candidates)\nprint(f"Audit Report: {report}")\n'

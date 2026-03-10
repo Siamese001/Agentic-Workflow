@@ -19,6 +19,16 @@ from typing import Any
 import pytest
 
 from agentic_core.L2_execution.deterministic_providers import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     is_patched,
     unpatch_deterministic,
 )
@@ -154,7 +164,7 @@ class TestCrossMixinIntegration:
         """SSOTRateLimitMixin methods accessible from full stack."""
         ctx = _Ctx(trace_id="t", active_policy_hash="ph")
         obj = _FullStackEngine(execution_context=ctx)
-        assert obj.rate_check("b", limit=10) is True
+        assert obj.rate_check("b", limit=LIMIT) is True
 
     @pytest.mark.unit_min_deps
     def test_state_validation_accessible(self):
@@ -242,7 +252,7 @@ class TestReplayModeAcrossStack:
         ctx = _Ctx(trace_id="t-rep", active_policy_hash="ph", replay_mode=True)
         obj = _FullStackEngine(execution_context=ctx)
         for _ in range(100):
-            assert obj.rate_check("b", limit=1) is True
+            assert obj.rate_check("b", limit=LIMIT) is True
 
     @pytest.mark.unit_min_deps
     def test_replay_freezes_flags(self):

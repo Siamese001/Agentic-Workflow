@@ -28,6 +28,16 @@ from agentic_core.L2_execution.types.gateway_types import GenerationRequest, Gen
 from agentic_core.prompt_governance.security.detectors.injection_detector import InjectionDetector
 from agentic_core.L2_execution.types.replay_envelope_types import ReplayEnvelope
 from data.sdks_mcps.client_wrappers import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     create_anthropic_client,
     create_openai_client,
     create_vertex_client,
@@ -448,6 +458,8 @@ class SovereignLLMGateway:
 
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 latency = (time.time() - start) * 1000
                 self._audit(current_provider, str(model), False, latency)
                 last_error = e
@@ -479,6 +491,8 @@ class SovereignLLMGateway:
             emitter.emit_typed_artifact("TOKEN_ENFORCEMENT", artifact)
         # guardian: allow-silent-swallow
         except Exception as _emit_exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(
                 "§Wave1.8 TokenEnforcementArtifact emission failed: %s",
                 _emit_exc,

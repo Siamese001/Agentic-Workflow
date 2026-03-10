@@ -13,6 +13,16 @@ from typing import Any
 from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR, APPS_RG_DIR
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @dataclass
 class IntegrationConfig:
     """Configuration for domain integration."""
@@ -44,7 +54,7 @@ class IntegrationConfig:
 RG_CONFIG = IntegrationConfig(
     domain="rg",
     domain_prefix=APPS_RG_DIR,
-    similarity_threshold=0.85,
+    similarity_threshold=THRESHOLD,
     ttl_seconds=3600,
     rate_limit_requests=100,
     rate_limit_window_seconds=60,
@@ -61,7 +71,7 @@ RG_CONFIG = IntegrationConfig(
 LIC_CONFIG = IntegrationConfig(
     domain="lic",
     domain_prefix=APPS_LIC_DIR,
-    similarity_threshold=0.92,  # Stricter for LIC
+    similarity_threshold=THRESHOLD,  # Stricter for LIC
     ttl_seconds=7200,  # 2 hours
     rate_limit_requests=50,  # More conservative
     rate_limit_window_seconds=60,

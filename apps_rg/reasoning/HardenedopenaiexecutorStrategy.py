@@ -18,6 +18,16 @@ from agentic_core.interfaces.observability import SystemTelemetry
 from agentic_core.mixins.hardening_mixin import HardeningMixin
 from apps_rg.utils.agent_executor import AgentMessage, AgentResponse
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 

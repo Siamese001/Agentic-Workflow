@@ -10,6 +10,16 @@ import os
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Import agent registry for validation
 try:
     from agentic_core.agents.agent_registry import get_all_agent_ids, get_profile
@@ -134,6 +144,8 @@ def scan_file(file_path: Path) -> list[AgentUsageViolation]:
             )
         )
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         violations.append(
             AgentUsageViolation(
                 str(file_path.relative_to(Path.cwd())), 0, "SCAN_ERROR", f"Error scanning file: {e}"

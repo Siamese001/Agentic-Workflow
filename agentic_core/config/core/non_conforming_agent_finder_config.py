@@ -17,6 +17,16 @@ Finds all Python classes in agentic_core that:
 import warnings
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -130,6 +140,8 @@ def main():
             tree = ast.parse(source)
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             continue  # Skip unparseable files
 
         source_lines = source.splitlines()

@@ -16,6 +16,16 @@ from typing import Any
 
 from pydantic import BaseModel, Field, validator
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -322,7 +332,7 @@ class NodeNegotiator:
 
         while negotiation.status == "ACTIVE" and rounds_completed < self.config.max_rounds:
             # Wait for responses (simplified - would use proper async waiting)
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(DEFAULT_SLEEP)
 
             # Check if resolved
             if len(negotiation.messages) >= 2:  # Request + Response

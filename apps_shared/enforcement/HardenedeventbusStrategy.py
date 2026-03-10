@@ -16,6 +16,16 @@ from .core.event_bus import EventBus, EventType, SystemEvent, get_event_bus
 from .dead_letter_queue import FailureReason, get_dead_letter_queue
 from .retry_policy import RetryConfig, get_retry_executor
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -93,6 +103,8 @@ class HardenedEventBus:
             return True
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._stats["events_failed"] += 1
 
             # Send to dead letter queue
@@ -188,13 +200,13 @@ class HardenedEventBus:
         # Circuit breaker for publishing
         await registry.get_circuit_breaker(
             "event_publish",
-            CircuitBreakerConfig(failure_threshold=5, timeout=30.0, failure_rate_threshold=0.5),
+            CircuitBreakerConfig(failure_threshold=THRESHOLD, timeout=DEFAULT_TIMEOUT, failure_rate_threshold=THRESHOLD),
         )
 
         # Circuit breaker for processing
         await registry.get_circuit_breaker(
             "event_process",
-            CircuitBreakerConfig(failure_threshold=10, timeout=60.0, failure_rate_threshold=0.3),
+            CircuitBreakerConfig(failure_threshold=THRESHOLD, timeout=DEFAULT_TIMEOUT, failure_rate_threshold=THRESHOLD),
         )
 
         logger.debug("Registered event bus circuit breakers")
@@ -397,6 +409,8 @@ def hardened_event_publisher(event_type: EventType, priority: TaskPriority = Tas
                 return result
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Publish error event
                 await publish_hardened_event(
                     EventType.ERROR_OCCURRED,

@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 [PHASE 15/17] Tiered Batch Processor - Smart Hybrid Disposition.
 
@@ -94,6 +104,8 @@ class TieredBatchProcessor:
             _wg.ensure_dir(self.checkpoint_file.parent)
             _wg.write_text(self.checkpoint_file, json.dumps(self.results, indent=2), encoding="utf-8")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[TIERED] Checkpoint save failed: {e}")
 
     def _get_semantic_cache(self):
@@ -167,6 +179,8 @@ class TieredBatchProcessor:
                 content = self.agent._read_file_safe(Path(file_path))
                 cache.cache_decision(content, violation_type, decision)
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.debug(f"[TIERED] cache store failed: {e}")
 
     def process_batch(self, violations: list[Any]) -> dict[str, Any]:
@@ -310,6 +324,8 @@ class TieredBatchProcessor:
                 time.sleep(self.rate_limit_delay)
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"    -> Error: {e}")
                 # Fall back to heuristic
                 self.results[file_path_str] = {

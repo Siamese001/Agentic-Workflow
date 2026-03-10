@@ -18,6 +18,16 @@ from typing import Any
 
 import psutil
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -114,7 +124,7 @@ class MemoryManager:
         """Stop memory monitoring."""
         self._monitoring = False
         if self._monitor_thread:
-            self._monitor_thread.join(timeout=1.0)
+            self._monitor_thread.join(timeout=DEFAULT_TIMEOUT)
         logger.info(f"Stopped memory monitoring for {self.name}")
 
     def add_context(
@@ -408,6 +418,8 @@ class MemoryManager:
                 stats["process_memory_mb"] = process.memory_info().rss / 1024 / 1024
                 stats["process_memory_percent"] = process.memory_percent()
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 stats["process_memory_mb"] = 0
                 stats["process_memory_percent"] = 0
 

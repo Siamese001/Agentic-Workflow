@@ -3,7 +3,7 @@ apps_lic/shared/core/agent_base.py - Linked-In Canonical Sovereign Bridge
 
 PHASE 3 META-LEARNING (Feb 2026):
 - MetaLearningClientMixin activation for LIC domain
-- Domain-specific healing pattern memory (similarity_threshold=0.92)
+- Domain-specific healing pattern memory (similarity_threshold=THRESHOLD)
 - Campaign pattern learning and compliance rule memory
 
 PHASE 1.1 GUARDRAILS INTEGRATION (Feb 2026):
@@ -23,6 +23,16 @@ import logging
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any, Final
+
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
 
 # CORE SOCKETING: Align with Phase 2A Unified Base Class
 from apps_shared.utils.AppBase import AppBase

@@ -3,6 +3,16 @@
 This module implements rate limiting with multiple strategies including
 token bucket, sliding window, and fixed window to protect the system
 from abuse while ensuring fair usage.
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 
 import asyncio
@@ -553,15 +563,15 @@ def rate_limit(limiter_name: str, identifier_extractor: Callable | None = None):
 
 # Predefined configurations
 RATE_LIMIT_CONFIGS = {
-    "api_default": RateLimitConfig(limit=100, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
+    "api_default": RateLimitConfig(limit=LIMIT, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
     "api_heavy": RateLimitConfig(
-        limit=1000,
+        limit=LIMIT,
         window=60,
         strategy=RateLimitStrategy.TOKEN_BUCKET,
         burst_size=2000,
     ),
-    "api_strict": RateLimitConfig(limit=10, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
-    "upload": RateLimitConfig(limit=5, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
+    "api_strict": RateLimitConfig(limit=LIMIT, window=60, strategy=RateLimitStrategy.SLIDING_WINDOW),
+    "upload": RateLimitConfig(limit=LIMIT, window=60, strategy=RateLimitStrategy.TOKEN_BUCKET),
 }
 
 

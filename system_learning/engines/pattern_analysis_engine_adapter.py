@@ -7,6 +7,16 @@ import math
 
 from system_learning.engines.pattern_analysis_engine import PatternAnalysisEngine as BaseEngine
 from system_learning.types.healing_outcome_learning_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     HealingOutcomeAggregateSnapshot,
 )
 from system_learning.types.pattern_analysis_types import (

@@ -10,6 +10,16 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L5_safety.invariants.runtime_invariant_checker import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     assert_c0_no_authority_fields,
     assert_mutation_in_ledger,
     assert_mutation_source_is_l2,

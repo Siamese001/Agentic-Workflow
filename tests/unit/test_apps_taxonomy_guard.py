@@ -10,6 +10,16 @@ import pytest
 from agentic_core.L0_routing.enforcement.apps_taxonomy_guard import AppsTaxonomyGuard
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 @pytest.mark.unit
 class TestAppsTaxonomyGuard:
     """Test AppsTaxonomyGuard AST-based import scanning."""

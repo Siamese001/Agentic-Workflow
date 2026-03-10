@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 SwarmScheduler - L3 Task Scheduling System
 
@@ -242,13 +252,15 @@ class SwarmScheduler:
                         break
                     await self._start_task(Task)
                 await self._cleanup_completed()
-                await asyncio.sleep(0.1)
+                await asyncio.sleep(DEFAULT_SLEEP)
             except asyncio.CancelledError:
                 break
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"Error in scheduler loop: {e}")
-                await asyncio.sleep(1)
+                await asyncio.sleep(DEFAULT_SLEEP)
 
     async def _start_task(self, Task: Task):
         """Start executing a Task."""
@@ -275,6 +287,8 @@ class SwarmScheduler:
             LOGGER.warning(f"Task timed out: {Task.id}")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Task.error = str(e)
             Task.status = TaskStatus.FAILED
             Task.completed_at = datetime.utcnow()

@@ -30,6 +30,16 @@ from agentic_core.L2_execution.types.instruction_packet_types import Instruction
 from agentic_core.L2_execution.UniversalWriteGateway import UniversalWriteGateway, get_write_gateway
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def compute_replay_key(
     plan_hash: str,
     tool_calls: Sequence[str],

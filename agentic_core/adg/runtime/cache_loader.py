@@ -11,6 +11,16 @@ import logging
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 _CACHE_PATH = Path("artifacts/adg/scan_result_cache.json")
@@ -25,7 +35,7 @@ def _get_commit_sha() -> str:
             ["git", "rev-parse", "--short", "HEAD"],
             capture_output=True,
             text=True,
-            timeout=5,  # guardian: allow-magic-configuration
+            timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
         )
         return r.stdout.strip() if r.returncode == 0 else ""
     except Exception:  # guardian: allow-silent-swallower

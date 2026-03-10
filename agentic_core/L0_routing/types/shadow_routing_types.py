@@ -17,6 +17,16 @@ from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapsho
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_canonical_json():
     from agentic_core.L2_execution.types.vllm_infrastructure_fingerprint_types import canonical_json as _cj
 

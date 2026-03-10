@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 L5 Streamer - Live Reasoning Broadcast System
 
@@ -94,8 +104,10 @@ class L5Streamer:
                                 asyncio.run_coroutine_threadsafe(
                                     client.send(message),
                                     asyncio.get_event_loop(),
-                                ).result(timeout=1.0)
+                                ).result(timeout=DEFAULT_TIMEOUT)
                             except Exception:
+                                # TODO: Handle specific exception properly
+                                raise  # Re-raise after logging/handling
                                 disconnected.add(client)
                         self._websocket_clients -= disconnected
                 finally:
@@ -103,6 +115,8 @@ class L5Streamer:
             except asyncio.CancelledError:
                 break
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"Streamer error writing to stream: {e}")
 
     def _run_websocket_server(self):
@@ -124,6 +138,8 @@ class L5Streamer:
                 )
                 await websocket.wait_closed()
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"WebSocket client error: {e}")
             finally:
                 self._websocket_clients.discard(websocket)
@@ -136,6 +152,8 @@ class L5Streamer:
                     LOGGER.info("🌐 WebSocket server started at ws://127.0.0.1:8765")
                     await asyncio.Future()
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"WebSocket server error: {e}")
 
         loop = asyncio.new_event_loop()
@@ -219,8 +237,10 @@ class L5Streamer:
             self.stream_task = None
         for client in list(self._websocket_clients):
             try:
-                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(timeout=1.0)
+                asyncio.run_coroutine_threadsafe(client.close(), asyncio.get_event_loop()).result(timeout=DEFAULT_TIMEOUT)
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
         self._websocket_clients.clear()
         self._streamer_initialized = False

@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 [PHASE 13] Cognitive Batch Processor - High-Volume AI Audit Management.
 
@@ -103,6 +113,8 @@ class CognitiveBatchProcessor:
             _wg.write_text(self.checkpoint_file, json.dumps(self.results, indent=2), encoding="utf-8")
             Logger.debug(f"[BATCH] Checkpoint saved: {len(self.results)} items")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[BATCH] Failed to save checkpoint: {e}")
 
     def process_batch(
@@ -238,6 +250,8 @@ class CognitiveBatchProcessor:
                 return True
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"    Attempt {attempt}/{self.max_retries} failed: {e}")
 
                 if attempt < self.max_retries:

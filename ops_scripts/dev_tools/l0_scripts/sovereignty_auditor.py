@@ -15,6 +15,16 @@ import importlib.util
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Ensure repo root is in sys.path
 REPO_ROOT = Path(__file__).parent.parent.resolve()
 # guardian: allow-global-mutation
@@ -56,6 +66,8 @@ class SovereigntyAuditor:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self.naming_violations.append(f"{path.name}: AST Parse Error - {e}")
 
         # 3. Runtime Import Check (Dynamic Analysis)

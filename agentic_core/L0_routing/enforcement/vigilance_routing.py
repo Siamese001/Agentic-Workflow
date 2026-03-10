@@ -15,6 +15,16 @@ from __future__ import annotations
 from typing import Any
 
 from agentic_core.L0_routing.seams.vigilance_seam import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     get_vigilance_severity,
 )
 from agentic_core.L0_routing.types.routing_artifact_types import RoutePath

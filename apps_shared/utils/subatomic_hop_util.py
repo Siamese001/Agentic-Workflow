@@ -19,6 +19,16 @@ from typing import Any
 
 from .quality.signal_enhancer import QualityThresholds, SignalQuality, get_signal_enhancer
 from .reflection_engine import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     STANDARD_CRITERIA,
     MutationRequest,
     ReflectionConfig,
@@ -115,9 +125,9 @@ class SubatomicHop:
         self.generation_breaker = CircuitBreakerFactory.get(
             "generation_engine",
             CircuitBreakerConfig(
-                failure_threshold=3,
-                recovery_timeout=60.0,
-                timeout=30.0,  # 30 second timeout for generation
+                failure_threshold=THRESHOLD,
+                recovery_timeout=DEFAULT_TIMEOUT,
+                timeout=DEFAULT_TIMEOUT,  # 30 second timeout for generation
             ),
         )
 
@@ -600,7 +610,7 @@ class SubatomicHop:
                         "signal_score": signal_assessment.composite_score,
                     },
                 ),
-                timeout=15.0,
+                timeout=DEFAULT_TIMEOUT,
             )
         except asyncio.TimeoutError:
             logger.warning(

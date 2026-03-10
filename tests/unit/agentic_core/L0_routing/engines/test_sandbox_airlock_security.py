@@ -20,6 +20,16 @@ from unittest.mock import MagicMock
 import pytest
 
 from agentic_core.L0_routing.engines.assembly_stage import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AirlockAssembler,
     GovernedPayload,
     canonical_bytes,
@@ -455,70 +465,70 @@ class TestExecutionOrchestrator:
 class TestEscalationRouter:
     @pytest.mark.governance
     def test_returns_normal_when_no_prior_events(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "normal"
 
     @pytest.mark.governance
     def test_returns_escalated_when_severity_at_threshold(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.5)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "escalated"
 
     @pytest.mark.governance
     def test_returns_escalated_when_severity_exceeds_threshold(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.9)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "escalated"
 
     @pytest.mark.governance
     def test_returns_normal_when_severity_just_below_threshold(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.49)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "normal"
 
     @pytest.mark.governance
     def test_returns_escalated_when_code_in_denylist(self):
-        cfg = _make_routing_config(threshold=10.0, denylist=["CRITICAL_CODE"])
+        cfg = _make_routing_config(threshold=THRESHOLD, denylist=["CRITICAL_CODE"])
         store = _make_store([_ViolationEvent(severity_score=0.0, violation_codes=["CRITICAL_CODE"])])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "escalated"
 
     @pytest.mark.governance
     def test_returns_normal_when_code_not_in_denylist(self):
-        cfg = _make_routing_config(threshold=10.0, denylist=["OTHER_CODE"])
+        cfg = _make_routing_config(threshold=THRESHOLD, denylist=["OTHER_CODE"])
         store = _make_store([_ViolationEvent(severity_score=0.0, violation_codes=["SAFE_CODE"])])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "normal"
 
     @pytest.mark.governance
     def test_returns_normal_when_denylist_empty_and_severity_below(self):
-        cfg = _make_routing_config(threshold=10.0, denylist=[])
+        cfg = _make_routing_config(threshold=THRESHOLD, denylist=[])
         store = _make_store([_ViolationEvent(severity_score=0.1, violation_codes=["ANY"])])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "normal"
 
     @pytest.mark.governance
     def test_fetch_window_called_with_correct_tick_and_window(self):
-        cfg = _make_routing_config(threshold=0.5, window_ticks=5)
+        cfg = _make_routing_config(threshold=THRESHOLD, window_ticks=5)
         store = _make_store([])
         decide_mode_from_prior_violations(20, cfg, store)
         store.fetch_window.assert_called_once_with(before_tick=20, window_ticks=5)
 
     @pytest.mark.governance
     def test_returns_custom_escalation_mode(self):
-        cfg = _make_routing_config(threshold=0.1, escalation_mode="critical_hold")
+        cfg = _make_routing_config(threshold=THRESHOLD, escalation_mode="critical_hold")
         store = _make_store([_ViolationEvent(severity_score=0.5)])
         result = decide_mode_from_prior_violations(10, cfg, store)
         assert result == "critical_hold"
 
     @pytest.mark.governance
     def test_escalation_triggered_by_first_event_in_list(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         events = [
             _ViolationEvent(severity_score=0.9),
             _ViolationEvent(severity_score=0.1),
@@ -528,7 +538,7 @@ class TestEscalationRouter:
 
     @pytest.mark.governance
     def test_escalation_triggered_by_second_event_when_first_is_normal(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         events = [
             _ViolationEvent(severity_score=0.1),
             _ViolationEvent(severity_score=0.9),
@@ -538,19 +548,19 @@ class TestEscalationRouter:
 
     @pytest.mark.governance
     def test_boundary_exactly_at_threshold_escalates(self):
-        cfg = _make_routing_config(threshold=0.75)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.75)])
         assert decide_mode_from_prior_violations(10, cfg, store) == "escalated"
 
     @pytest.mark.governance
     def test_boundary_one_epsilon_below_threshold_does_not_escalate(self):
-        cfg = _make_routing_config(threshold=0.75)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.749)])
         assert decide_mode_from_prior_violations(10, cfg, store) == "normal"
 
     @pytest.mark.governance
     def test_deterministic_for_same_inputs_twice(self):
-        cfg = _make_routing_config(threshold=0.5)
+        cfg = _make_routing_config(threshold=THRESHOLD)
         store = _make_store([_ViolationEvent(severity_score=0.6)])
         r1 = decide_mode_from_prior_violations(10, cfg, store)
         store.fetch_window.reset_mock()

@@ -11,6 +11,16 @@ from pathlib import Path
 from typing import Dict, Optional, Any, List
 import hashlib
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # REQ-114: No wall-clock in critical computation paths.
 # Use a deterministic sequence counter instead of time.time().
 _SEQUENCE_COUNTER: list[int] = [0]
@@ -59,6 +69,8 @@ class PhaseLockStore:
             Logger.info(f"Loaded {len(self._locks)} phase locks from storage")
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to load phase locks: {e}")
             self._locks = {}
 
@@ -79,6 +91,8 @@ class PhaseLockStore:
             Logger.debug(f"Saved {len(self._locks)} phase locks to storage")
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save phase locks: {e}")
 
     def lock_phase(self,

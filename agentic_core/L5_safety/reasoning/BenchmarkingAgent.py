@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: engine, memory, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
@@ -422,6 +432,8 @@ class BenchmarkingAgent(SovereignBaseAgent):
             _wg.write_json(alert_file, alerts, indent=2)
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save performance alert: {e}")
 
     def get_benchmark_summary(self, name: str) -> dict | None:

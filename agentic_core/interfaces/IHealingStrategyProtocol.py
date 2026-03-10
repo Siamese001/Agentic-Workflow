@@ -14,6 +14,16 @@ import asyncio
 import logging
 from typing import Any, Protocol
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -166,6 +176,8 @@ def register_chaos_healing() -> dict[str, Any]:
             orchestrator.register_strategy("chaos_resilience", get_chaos_strategy())
             registered.append("chaos_resilience")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             errors.append(f"chaos_resilience: {e}")
 
         Logger.info(f"[Chaos Integration] Registered {len(registered)} strategies")

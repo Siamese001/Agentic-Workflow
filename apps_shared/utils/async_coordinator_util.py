@@ -12,6 +12,16 @@ from dataclasses import dataclass, field
 from enum import Enum
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -336,7 +346,7 @@ class AsyncCoordinator:
         """Background cleanup loop for old tasks."""
         while self._running:
             try:
-                await asyncio.sleep(30)  # Cleanup every 30 seconds
+                await asyncio.sleep(DEFAULT_SLEEP)  # Cleanup every 30 seconds
 
                 # Clean up completed tasks older than 5 minutes
                 cutoff_time = time.time() - 300

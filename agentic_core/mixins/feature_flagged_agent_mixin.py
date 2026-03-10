@@ -12,6 +12,16 @@ from typing import Any, TypeVar
 
 from agentic_core.utils.dependency_resolver import DynamicLoader
 from agentic_core.utils.detection_protocol_util import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DetectionResult,
     DetectionSignalProtocol,
     Severity,
@@ -545,6 +555,8 @@ class FeatureFlaggedAgentMixin:
             try:
                 result = do_heal()
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 result = {
                     "status": "error",
                     "error": str(e),

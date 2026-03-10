@@ -3,6 +3,16 @@
 import pytest
 
 from system_learning.pipelines.approval_gates import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ApprovalDecision,
     DefaultRiskClassifier,
     DefaultRuleBasedGate,
@@ -126,7 +136,7 @@ class TestDefaultRuleBasedGate:
     def test_medium_impact_approves(self):
         """Medium impact changes are APPROVED (below threshold)."""
         classifier = DefaultRiskClassifier()
-        gate = DefaultRuleBasedGate(classifier, high_impact_threshold=3, allow_high_impact=False)
+        gate = DefaultRuleBasedGate(classifier, high_impact_threshold=THRESHOLD, allow_high_impact=False)
 
         # Medium impact package (tier 2)
         pkg = MockChangePackage(num_surfaces=2, max_delta=0.03, affects_l5=False)

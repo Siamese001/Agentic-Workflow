@@ -17,6 +17,16 @@ from typing import TYPE_CHECKING
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import SubatomicTestingMixin
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Import mixins with fallbacks
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin
@@ -345,6 +355,8 @@ class OutreachHealingCycle:
                     failed_agents.append(agent.name)
 
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 agents_executed.append(agent.name)
                 failed_agents.append(agent.name)
                 self.ctx.record_result(agent.name, passed=False, details=str(e))

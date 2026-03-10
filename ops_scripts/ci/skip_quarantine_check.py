@@ -21,6 +21,16 @@ import json
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 SCAN_ROOTS = [TESTS_DIR]
 QUARANTINE_MANIFEST = "tests/_quarantine/QUARANTINE_MANIFEST.json"
 KNOWN_FAILING_MD = "docs/reports/plans/KNOWN_FAILING_TESTS.md"

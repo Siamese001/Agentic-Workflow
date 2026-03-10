@@ -14,6 +14,16 @@ from agentic_core.L0_routing.engines.shadow_router_classifier import ShadowRoute
 from agentic_core.L0_routing.types.routing_artifact_types import RouteDecisionArtifact
 from agentic_core.L0_routing.types.shadow_routing_types import ShadowRoutingTelemetry
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 

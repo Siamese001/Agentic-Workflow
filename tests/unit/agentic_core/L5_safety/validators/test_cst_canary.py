@@ -13,6 +13,16 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L5_safety.enforcement.SurgicalHealingAdapter import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     SurgicalHealingAdapter,
 )
 from agentic_core.mixins.cst_healer_mixin import (

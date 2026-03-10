@@ -27,6 +27,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 REPO_ROOT = Path(__file__).parent.parent.parent
 EVIDENCE_FILE = REPO_ROOT / "docs" / REPORTS_DIR / "evidence" / "qwen_migration_phase_1_token_budgeting.md"
 

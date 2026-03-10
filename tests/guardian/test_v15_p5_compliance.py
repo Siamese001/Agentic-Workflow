@@ -19,6 +19,16 @@ import hashlib
 import pytest
 
 from agentic_core.L0_routing.enforcement.crypto_trust_contracts import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     EscalationRequiredError,
     ReplayDetectedError,
     ReplayGuardStore,
@@ -489,7 +499,7 @@ class TestP5_26_HashMismatchEscalation:
         assert tracker.escalated is True
 
     def test_custom_threshold(self):
-        tracker = HashMismatchTracker(wave_id="w1", escalation_threshold=3)
+        tracker = HashMismatchTracker(wave_id="w1", escalation_threshold=THRESHOLD)
         record_hash_mismatch(tracker)
         record_hash_mismatch(tracker)
         assert tracker.escalated is False

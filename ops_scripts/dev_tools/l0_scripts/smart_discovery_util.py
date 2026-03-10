@@ -21,6 +21,16 @@ from datetime import datetime, timedelta
 from pathlib import Path
 
 from agentic_core.L5_safety.config.structure_blueprint import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENT_DISCOVERY_JSON,
     AGENT_DISCOVERY_MANIFEST_JSON,
     SCRIPTS_DIR,
@@ -189,7 +199,7 @@ def run_discovery(force: bool = False) -> int:
             cwd=str(PROJECT_ROOT),
             capture_output=True,
             text=True,
-            timeout=300,  # 5 min max
+            timeout=DEFAULT_TIMEOUT,  # 5 min max
             check=False,
         )
         elapsed = time.time() - start

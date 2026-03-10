@@ -8,6 +8,16 @@ from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ROOT = get_validated_project_root()
 sys.path.insert(0, str(ROOT))
 
@@ -53,6 +63,8 @@ for p in all_py:
             v["file"] = str(Path(v["file"]).relative_to(ROOT)).replace("\\", "/")
             layer_violations.append(v)
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         pass
 
 # Tag parse

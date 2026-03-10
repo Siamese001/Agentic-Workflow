@@ -32,6 +32,16 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L2_execution.healers.healing_tier_config import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     load_default_healing_tier_config,
 )
 from agentic_core.L2_execution.healers.healing_tier_dispatcher import (
@@ -626,6 +636,8 @@ def _invoke_healer(
         result = healer_fn(check_dict, repo_root=repo_root, apply=apply)
     # guardian: allow-silent-swallow
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         result = HealCheckResult(
             check_id=check_id,
             status=HealStatus.FAILED,

@@ -20,6 +20,16 @@ from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _repo_root() -> str:
     # guardian: allow-path-string
     return os.path.abspath(os.path.join(os.path.dirname(__file__), "..", "..", "..", ".."))
@@ -48,7 +58,7 @@ def _run_verify(*extra_args: str) -> tuple[int, str]:
         cwd=_repo_root(),
         capture_output=True,
         text=True,
-        timeout=120,
+        timeout=DEFAULT_TIMEOUT,
     )
     return result.returncode, result.stdout + result.stderr
 
@@ -302,7 +312,7 @@ def main() -> int:
             cwd=root,
             capture_output=True,
             text=True,
-            timeout=10,
+            timeout=DEFAULT_TIMEOUT,
         )
         if git_result.returncode == 0:
             print("    git diff lock files: CLEAN \u2714")

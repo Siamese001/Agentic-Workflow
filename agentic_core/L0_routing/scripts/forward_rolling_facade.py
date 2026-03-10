@@ -20,6 +20,16 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from agentic_core.seams.contracts.forward_rolling import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AdaptiveDepthManager,
     ContextPruningStrategy,
     ExecutionMode,
@@ -191,6 +201,8 @@ class ForwardRollingFacade:
                 self._metrics.static_dag_executions += 1
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Fallback on error if enabled
             if self._config.get_config().fallback_on_error:
                 self._metrics.fallback_count += 1

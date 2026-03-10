@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: memory, orchestrator, prompt, state, workflow
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # ruff: noqa: E501, E402, F811
 from dataclasses import dataclass
 
@@ -370,6 +380,8 @@ class HierarchyAgent(SovereignBaseAgent):
             Logger.info(f"   [✓] CREATED: {rel_label}/")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"   [!] FAILED: {rel_label}: {e}")
             results["errors"].append(f"Failed to create {rel_label}: {e}")
 
@@ -707,6 +719,8 @@ class HierarchyAgent(SovereignBaseAgent):
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _relocate_l3_territory_files(
@@ -843,6 +857,8 @@ class HierarchyAgent(SovereignBaseAgent):
                 Logger.info(f"      [!] SKIP (exists): {py_file.name}")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             results["errors"].append(f"{py_file.name}: {e}")
 
     def _cleanup_empty_folder(self, folder_path: Path, folder_label: str, results: dict[str, Any]) -> None:
@@ -854,6 +870,8 @@ class HierarchyAgent(SovereignBaseAgent):
                 results["folders_removed"] += 1
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             results["errors"].append(f"Remove {folder_label}: {e}")
 
     # ========================================================================
@@ -1257,6 +1275,8 @@ class HierarchyAgent(SovereignBaseAgent):
                         Logger.error(f"      [!] ARCHIVE FAILED: {file_path.name} - {gk_result.error}")
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 errors.append(f"Failed to purge {file_path}: {e}")
 
         if violations_found > 0:
@@ -1701,6 +1721,8 @@ class HierarchyAgent(SovereignBaseAgent):
                         results["errors"].append(f"Failed to move {filename}: {gk_result.error}")
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     action["error"] = str(e)
                     results["errors"].append(f"Failed to move {filename}: {e}")
 
@@ -1807,6 +1829,8 @@ class HierarchyAgent(SovereignBaseAgent):
                         result["errors"].append(f"Failed to move {src_file}: {gk_result.error}")
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     action["error"] = str(e)
                     result["errors"].append(f"Failed to move {src_file}: {e}")
 

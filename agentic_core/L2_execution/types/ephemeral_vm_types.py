@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Ephemeral VM with Isolation and Auto-Teardown.
 
 Phase 3 - Pillar 14: Execution Sandbox (Hardened Ephemeral)
@@ -230,6 +240,8 @@ class EphemeralVm:
                 if self.enable_logging:
                     LOGGER.debug("vm_torn_down", extra={"vm_id": vm_id})
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 if self.enable_logging:
                     LOGGER.error("vm_teardown_failed", extra={"vm_id": vm_id, "error": str(e)})
 

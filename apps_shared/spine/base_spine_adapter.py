@@ -14,6 +14,16 @@ from agentic_core.interfaces.execution import CIDRegistry, ExecutionCycle
 from apps_shared.utils.determinism_util import canonical_hash, strip_nondeterministic
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class BaseSpineAdapter:
     """
     Shared base contract for all spine adapters.

@@ -13,6 +13,16 @@ from pathlib import Path
 from agentic_core.utils.fs_util import calculate_file_hash
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def load_registry(registry_path: Path) -> dict:
     """Load the prompt registry JSON file."""
     try:

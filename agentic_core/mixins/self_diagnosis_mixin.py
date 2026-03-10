@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 SelfDiagnosisMixin – Sovereign Agent Role Mixin (Phase 31 – Dec 30, 2025)
 
@@ -104,6 +114,8 @@ class SelfDiagnosisMixin:
                                 {"component": component_name, "success": True},
                             )
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     issue = {
                         "type": "component_diagnosis_failed",
                         "component": component_name,

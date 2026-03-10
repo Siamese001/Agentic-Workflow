@@ -17,6 +17,16 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.cache.redis_cache_client import get_hot_cache as _get_hot_cache
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def get_redis_client():
     """Shim: redirect legacy callers to the canonical DeterministicRedisCache client."""
     return _get_hot_cache()
@@ -52,6 +62,8 @@ class SovereignSemanticCache(SovereignBaseAgent):
             Logger.info("[L4 REDIS] Sovereign MCP cache armed.")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.critical(f"[L4 REDIS BREACH] MCP cache failed: {e}")
             self.redis = None
 
@@ -93,6 +105,8 @@ class SovereignSemanticCache(SovereignBaseAgent):
                     return
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
         ast_features: Any = self._extract_ast_features(code)
         embed_text: Any = f"File: {file_path}\nStructure: {json.dumps(ast_features)}\nContent: {code[:1000]}"
@@ -120,6 +134,8 @@ class SovereignSemanticCache(SovereignBaseAgent):
             Logger.info(f"[L4 STORE] Dual-sync complete for {Path(file_path).name}")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"[L4 CACHE FAILURE] Could not cache {file_path}: {e}")
 
     # guardian: allow-type-erasure

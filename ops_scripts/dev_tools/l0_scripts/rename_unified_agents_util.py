@@ -8,6 +8,16 @@ then updates all imports across the codebase.
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
@@ -68,6 +78,8 @@ def update_class_names_in_unified():
                 py_file.write_text(content, encoding="utf-8")
         # guardian: allow-silent-swallow
         except Exception:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pass
 
 
@@ -108,6 +120,8 @@ def update_imports_codebase():
                     files_updated += 1
             # guardian: allow-silent-swallow
             except Exception:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 pass
 
 

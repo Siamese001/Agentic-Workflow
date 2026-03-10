@@ -7,6 +7,16 @@ outcome logging, reconciliation, and SHA-256 immutability.
 import pytest
 
 from agentic_core.L4_state.enforcement.telemetry_recorder import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     OutcomeRecord,
     ReconResult,
     TelemetryRecorder,
@@ -54,7 +64,7 @@ class TestTelemetryRecorder:
     def test_get_events_limit(self):
         for i in range(5):
             self.recorder.record(f"event{i}", {}, commit_tick=i)
-        events = self.recorder.get_events(limit=3)
+        events = self.recorder.get_events(limit=LIMIT)
         assert len(events) == 3
         # Should return last 3 events
         assert events[0]["event_type"] == "event2"

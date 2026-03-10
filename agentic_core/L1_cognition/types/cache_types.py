@@ -11,6 +11,16 @@ from dataclasses import dataclass
 from enum import Enum
 from typing import Final
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Constants
 DEFAULT_TTL_SECONDS: Final[int] = 3600  # 1 hour
 MIN_TTL_SECONDS: Final[int] = 60  # 1 minute minimum

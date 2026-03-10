@@ -22,6 +22,16 @@ from unittest.mock import MagicMock, patch
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # ---------------------------------------------------------------------------
 # Module import helper
 # ---------------------------------------------------------------------------
@@ -81,16 +91,16 @@ class TestCheckHealingBudget:
         assert "AgentA" in msg
 
     def test_depth_at_limit_is_ok(self, sde):
-        ok, msg = sde._check_healing_budget("AgentX", depth=3, max_depth=3)
+        ok, msg = sde._check_healing_budget("AgentX", depth=3, max_depth=MAX_DEPTH)
         assert ok is True
 
     def test_depth_exceeds_limit_blocked(self, sde):
-        ok, msg = sde._check_healing_budget("AgentX", depth=4, max_depth=3)
+        ok, msg = sde._check_healing_budget("AgentX", depth=4, max_depth=MAX_DEPTH)
         assert ok is False
         assert "Healing depth limit exceeded" in msg
 
     def test_depth_boundary_minus_one_ok(self, sde):
-        ok, _ = sde._check_healing_budget("AgentX", depth=2, max_depth=3)
+        ok, _ = sde._check_healing_budget("AgentX", depth=2, max_depth=MAX_DEPTH)
         assert ok is True
 
     def test_budget_exhausted_blocks(self, sde):

@@ -19,6 +19,16 @@ import subprocess
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Import SSOT paths
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
@@ -174,7 +184,7 @@ class DashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=300,  # 5 minutes
+                timeout=DEFAULT_TIMEOUT,  # 5 minutes
             )
 
             if result.returncode != 0:
@@ -226,7 +236,7 @@ class DashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=60,
+                timeout=DEFAULT_TIMEOUT,
             )
 
             if result.returncode != 0:
@@ -276,7 +286,7 @@ class DashboardE2EPipeline:
                 capture_output=True,
                 check=False,
                 text=True,
-                timeout=30,
+                timeout=DEFAULT_TIMEOUT,
                 env={"PYTHONPATH": str(self.project_root)},
             )
 

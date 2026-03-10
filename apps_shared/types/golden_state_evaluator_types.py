@@ -10,6 +10,16 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 try:
     from apps_rg.core.JudgeEvaluation import (
         JudgeEvaluationResult,
@@ -140,6 +150,8 @@ class GoldenStateEvaluator:
             if self.enable_logging:
                 Logger.warning("golden_dataset_not_found", extra={"path": str(self.dataset_path)})
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             if self.enable_logging:
                 Logger.error(
                     "failed_to_load_golden_cases",

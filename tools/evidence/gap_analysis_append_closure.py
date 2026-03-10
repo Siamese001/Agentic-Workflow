@@ -17,6 +17,16 @@ import time
 from collections import Counter, defaultdict
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     TOOLS_DIR,
     get_validated_project_root,
 )
@@ -31,7 +41,7 @@ SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # guardian: allow-magic-config
-def run(argv, timeout=60):
+def run(argv, timeout=DEFAULT_TIMEOUT):
     cmd = " ".join(str(a) for a in argv)
     try:
         r = subprocess.run(
@@ -217,9 +227,9 @@ def run_determinism_proof():
     try:
         cmd1 = [PY, str(script_path), str(REPO)]
         # guardian: allow-magic-config
-        c1_str, out1, err1, rc1 = run(cmd1, timeout=60)
+        c1_str, out1, err1, rc1 = run(cmd1, timeout=DEFAULT_TIMEOUT)
         # guardian: allow-magic-config
-        c2_str, out2, err2, rc2 = run(cmd1, timeout=60)
+        c2_str, out2, err2, rc2 = run(cmd1, timeout=DEFAULT_TIMEOUT)
 
         d1 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", out1)
         d2 = re.search(r"DETERMINISM_DIGEST: ([a-f0-9]+)", out2)

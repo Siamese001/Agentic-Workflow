@@ -9,6 +9,16 @@ POLICY:
 -------
 All path literals that reference sovereign directories MUST use SSOT constants
 from `path_constants.py` or `ssot.py`. Hardcoded string literals like
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 "agentic_core", "apps_rg", "tests", etc. are FORBIDDEN in safe contexts.
 
 SAFE CONTEXTS (must use constants):

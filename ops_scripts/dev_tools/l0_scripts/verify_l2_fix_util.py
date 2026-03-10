@@ -2,6 +2,16 @@
 
 import json
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Load source data
 agents = json.load(open("agent_discovery_full.json"))
 l2_agents = [a for a in agents if "L2_execution" in a.get("path", "")]

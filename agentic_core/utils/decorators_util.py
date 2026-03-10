@@ -28,6 +28,16 @@ from collections.abc import Callable
 from typing import Any, TypeVar, cast
 
 from agentic_core.L5_safety.types.heal_llm_seam_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     HealLlmRequest,
     PolicyDecisionRecord,
     guarded_heal_llm_call,
@@ -338,6 +348,8 @@ def standard_heal(func: F) -> F:
             return normalized
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(
@@ -400,6 +412,8 @@ def standard_heal_async(func: F) -> F:
             return normalized
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             execution_time_ms = (time.time() - start_time) * 1000
 
             Logger.error(

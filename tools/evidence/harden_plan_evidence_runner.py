@@ -13,12 +13,22 @@ import sys
 from pathlib import Path
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def run_command(argv: list[str], cwd: Path) -> tuple[str, int]:
     """Run command and return (output, exit_code)."""
     # guardian: allow-magic-config
     try:
         result = subprocess.run(
-            argv, cwd=cwd, shell=False, encoding="utf-8", errors="replace", capture_output=True, timeout=60
+            argv, cwd=cwd, shell=False, encoding="utf-8", errors="replace", capture_output=True, timeout=DEFAULT_TIMEOUT
         )
 
         output = result.stdout + result.stderr

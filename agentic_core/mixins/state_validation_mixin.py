@@ -19,6 +19,16 @@ from functools import wraps
 from typing import Any
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class StateValidationError(Exception):
     """Raised when a pre-condition or post-condition fails."""
 
@@ -105,7 +115,7 @@ class StateValidationMixin:
                         # guardian: allow-magic-config
                         await asyncio.wait_for(
                             asyncio.to_thread(lambda: self._run_conditions(pre_conditions, None)),
-                            timeout=3.5,
+                            timeout=DEFAULT_TIMEOUT,
                         )
                     except asyncio.TimeoutError:
                         raise StateValidationError(f"Pre-condition check timeout for {func.__name__}")

@@ -20,6 +20,16 @@ import sys
 from datetime import datetime, timezone
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     # guardian: allow-global-mutation
@@ -130,6 +140,8 @@ class P4EvidenceCollector:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self.violations.append(
                 {
                     "check": "validate_trace_id_callable",
@@ -164,6 +176,8 @@ class P4EvidenceCollector:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self.violations.append(
                 {
                     "check": "generate_trace_id_callable",

@@ -17,6 +17,16 @@ from pathlib import Path
 
 from agentic_core.L0_routing.types.guardian_contract_types import normalize_repo_path
 from agentic_core.L2_execution.types.heal_contract_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     HealCheckResult,
     HealStatus,
 )
@@ -82,6 +92,8 @@ def heal_missing_structure(
             performed.append(f"created_{level}:{normalize_repo_path(rel_path)}")
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             remaining.append(f"failed_mkdir:{rel_path}:{exc}")
 
     performed.sort()

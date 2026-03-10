@@ -21,6 +21,16 @@ from typing import Any
 from agentic_core.L4_state.utils.telemetry_sanitizer_util import sanitize_tool_output
 from agentic_core.L5_safety.enforcement.process_guardrail import ProcessGuard
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 

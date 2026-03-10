@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: guardrail, orchestrator, prompt, state, validator, workflow
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L2_execution.tools import write_gateway as _wg
@@ -227,6 +237,8 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
                     self.rules[rule.rule_id] = rule
             Logger.info(f"Loaded {len(self.rules)} safety rules")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to load rules: {e}")
 
     def _save_rules(self) -> Any:
@@ -240,6 +252,8 @@ class SelfUpdatingSafetyEngineAgent(SovereignBaseAgent):
             _wg.write_json(self.rules_storage_path, data, indent=2)
             Logger.debug(f"Saved {len(self.rules)} rules")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save rules: {e}")
 
     async def detect_threats(self, text: str, context: dict[str, Any] | None = None) -> ThreatDetection:

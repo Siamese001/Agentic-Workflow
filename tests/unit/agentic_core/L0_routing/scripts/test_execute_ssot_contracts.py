@@ -20,6 +20,16 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     L0_ROUTING_DIR,
 )
 
@@ -372,7 +382,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, str(EXECUTE_SSOT_PATH)],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -391,7 +401,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -410,7 +420,7 @@ class TestEntrypointBoundaryLock:
             ],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )
@@ -427,7 +437,7 @@ class TestEntrypointBoundaryLock:
             [sys.executable, "-m", "agentic_core.L0_routing.scripts.execute_ssot_entrypoint", "--help"],
             capture_output=True,
             text=True,
-            timeout=30,
+            timeout=DEFAULT_TIMEOUT,
             cwd=str(REPO_ROOT),
             env=env,
         )

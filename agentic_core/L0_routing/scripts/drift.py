@@ -9,6 +9,16 @@ import os
 import sys
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -127,6 +137,8 @@ def scan_repository(root_path: str = ".") -> int:
                 parse_errors.append(f"{full_path} [SYNTAX ERROR: line {e.lineno}]")
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 parse_errors.append(f"{full_path} [UNKNOWN ERROR: {str(e)}]")
 
     # REPORTING

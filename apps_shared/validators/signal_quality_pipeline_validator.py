@@ -10,6 +10,16 @@ import re
 
 from pydantic import BaseModel, Field, confloat, validator
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -496,9 +506,9 @@ def create_quality_pipeline(
     """
     if strict_mode:
         return SignalQualityPipeline(
-            relevance_threshold=0.4,
-            authority_threshold=0.6,
-            specificity_threshold=0.7,
+            relevance_threshold=THRESHOLD,
+            authority_threshold=THRESHOLD,
+            specificity_threshold=THRESHOLD,
             enable_coherence_check=True,
         )
 

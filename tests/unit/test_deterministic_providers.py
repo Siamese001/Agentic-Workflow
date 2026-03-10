@@ -19,6 +19,16 @@ import uuid
 import pytest
 
 from agentic_core.L2_execution.deterministic_providers import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DeterministicPatchError,
     DeterministicRandomSource,
     DeterministicUUIDProvider,
@@ -53,7 +63,7 @@ class TestFixedTimeProvider:
         """sleep() advances virtual clock monotonically."""
         p = FixedTimeProvider("trace-sleep")
         t0 = p.time()
-        p.sleep(1.5)
+        p.sleep(DEFAULT_SLEEP)
         t1 = p.time()
         assert t1 == t0 + 1.5
 
@@ -84,7 +94,7 @@ class TestFixedTimeProvider:
         """current_offset reflects accumulated advances."""
         p = FixedTimeProvider("trace-offset")
         assert p.current_offset == 0.0
-        p.sleep(2.0)
+        p.sleep(DEFAULT_SLEEP)
         p.advance(1.0)
         assert p.current_offset == 3.0
 

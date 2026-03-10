@@ -12,6 +12,16 @@ from concurrent.futures import ThreadPoolExecutor, as_completed
 import pytest
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class FreezeTimingAuthority:
     """Authority for testing freeze timing."""
 
@@ -43,7 +53,7 @@ class FreezeTimingAuthority:
     def concurrent_operation(self, operation_id: str) -> str:
         """Operation that can run concurrently with freeze."""
         # Simulate some work
-        time.sleep(0.001)  # 1ms work
+        time.sleep(DEFAULT_SLEEP)  # 1ms work
 
         if self.freeze_active:
             return f"{operation_id}_blocked"
@@ -79,7 +89,7 @@ def test_p1_freeze_no_execution_window():
 
     # Start a thread that will activate freeze after a short delay
     def delayed_freeze():
-        time.sleep(0.01)  # 10ms delay
+        time.sleep(DEFAULT_SLEEP)  # 10ms delay
         authority.activate_freeze()
 
     freeze_thread = threading.Thread(target=delayed_freeze)
@@ -97,7 +107,7 @@ def test_p1_freeze_no_execution_window():
             failed_ops.append(f"op{i}")
 
         # Very small delay between operations
-        time.sleep(0.0001)  # 0.1ms
+        time.sleep(DEFAULT_SLEEP)  # 0.1ms
 
     freeze_thread.join()
 
@@ -138,7 +148,7 @@ def test_p1_freeze_concurrent_operations():
             futures.append(future)
 
         # Let workers run for a bit
-        time.sleep(0.005)  # 5ms
+        time.sleep(DEFAULT_SLEEP)  # 5ms
 
         # Activate freeze while workers are running
         authority.activate_freeze()
@@ -189,10 +199,10 @@ def test_p1_freeze_timing_precision():
         thread = threading.Thread(target=timed_operation, args=(f"op{i}",))
         threads.append(thread)
         thread.start()
-        time.sleep(0.0001)  # 0.1ms between starts
+        time.sleep(DEFAULT_SLEEP)  # 0.1ms between starts
 
     # Activate freeze after some operations have started
-    time.sleep(0.002)  # 2ms
+    time.sleep(DEFAULT_SLEEP)  # 2ms
     freeze_time = authority.activate_freeze()
 
     # Wait for all operations to complete
@@ -293,7 +303,7 @@ def test_p1_freeze_microsecond_precision():
         thread.start()
 
     # Very short delay before freeze
-    time.sleep(0.0001)  # 0.1ms
+    time.sleep(DEFAULT_SLEEP)  # 0.1ms
 
     # Activate freeze with high precision
     freeze_start = time.perf_counter()
@@ -354,7 +364,7 @@ def test_p1_freeze_no_execution_window_stress():
         futures = [executor.submit(stress_worker, i, 50) for i in range(20)]
 
         # Let workers run, then activate freeze
-        time.sleep(0.01)  # 10ms
+        time.sleep(DEFAULT_SLEEP)  # 10ms
         authority.activate_freeze()
 
         # Collect all results

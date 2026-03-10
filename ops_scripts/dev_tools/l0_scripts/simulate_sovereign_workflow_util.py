@@ -6,6 +6,16 @@ import logging
 import sys
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Ensure path visibility
 # guardian: allow-global-mutation
 sys.path.insert(0, str(Path(__file__).parent.parent))
@@ -31,6 +41,8 @@ def run_simulation():
             Logger.info("    PASS: Immutable Lock Verified.")
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"    WARNING: Core Integrity check failed (expected during dev): {e}")
 
         # 2. Boot RG Agent (The Creator)

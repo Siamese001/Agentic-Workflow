@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 SOVEREIGN CODE is IMMORTAL - Track file deletions and renames for CanonValidatorAgent.py Key 00.
 Writes changes to a tracker file that CanonValidatorAgent reads.
@@ -31,7 +41,7 @@ def main() -> None:
     result: Any = safe_git_execute(
         ["diff", "--cached", "--name-status"],
         repo_root=root,
-        timeout=30,
+        timeout=DEFAULT_TIMEOUT,
         check=False,
     )
     if result.returncode != 0:

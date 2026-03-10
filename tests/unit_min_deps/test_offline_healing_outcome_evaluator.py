@@ -19,6 +19,16 @@ from system_learning.engines.in_memory_healing_outcome_intake_store import InMem
 from system_learning.engines.in_memory_scoring_report_store import InMemoryScoringReportStore
 from system_learning.engines.offline_healing_outcome_evaluator import OfflineHealingOutcomeEvaluator
 from system_learning.types.healing_outcome_scoring_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     ScoringWeights,
 )
 from system_learning.types.healing_outcome_types import (

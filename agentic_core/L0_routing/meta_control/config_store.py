@@ -12,6 +12,16 @@ import tempfile
 from pathlib import Path
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Module-level cache for start-of-run state (time-shifted consumption)
 _START_OF_RUN_CACHE: dict[tuple[str, str], dict[str, Any]] = {}
 # Flag to track if we're in a write context

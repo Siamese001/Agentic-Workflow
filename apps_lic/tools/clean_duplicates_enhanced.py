@@ -2,6 +2,16 @@ from __future__ import annotations
 
 import argparse
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Brief description of functionality and purpose."""
 
 import ast
@@ -27,6 +37,8 @@ def aggressive_cleanup():
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # Remove temporary and cache files
@@ -45,6 +57,8 @@ def aggressive_cleanup():
             Logger.info(f"🗑️ Purged temp file: {file}")
             purged_count += 1
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"❌ Failed to delete {file}: {e}")
 
     # Remove __pycache__ directories
@@ -319,6 +333,8 @@ def purge_everything(
                 Logger.info(f"🗑️ PURGED DIRECTORY: {item}")
                 purged_count += 1
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.error(f"❌ Failed to delete directory {item}: {e}")
 
     # 2. Target individual "clean" file clones and reports
@@ -331,6 +347,8 @@ def purge_everything(
                     Logger.info(f"🗑️ Purged File: {file_path}")
                     purged_count += 1
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.error(f"❌ Failed to delete {file_path}: {e}")
 
     # 3. Aggressive cleanup if requested

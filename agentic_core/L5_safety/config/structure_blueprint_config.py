@@ -38,6 +38,16 @@ DO NOT add new definitions here. Add them to the modular package instead.
 
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Re-export the entire public API from the package.
 # The canonical __all__ lives in the package __init__.py; this shim mirrors it.
 from agentic_core.L5_safety.config.structure_blueprint import *  # noqa: F401,F403

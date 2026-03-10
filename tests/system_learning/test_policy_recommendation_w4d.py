@@ -9,6 +9,16 @@ import os
 import pytest
 
 from system_learning.engines.policy_recommendation_engine import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     PolicyRecommendationEngine,
 )
 from system_learning.engines.retrieval_profile import RetrievalProfile
@@ -24,7 +34,7 @@ class TestPolicyRecommendationW4D:
         # Create fixed drift summary
         drift_summary = DriftSummary(
             profile_id="test-profile",
-            batch_size=3,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.916667,
             p95_cosine=0.947,
             drift_flag=False,
@@ -79,7 +89,7 @@ class TestPolicyRecommendationW4D:
         # Create high drift summary
         drift_summary = DriftSummary(
             profile_id="test-profile",
-            batch_size=3,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.80,
             p95_cosine=0.85,  # Below 0.92 threshold
             drift_flag=True,
@@ -144,7 +154,7 @@ class TestPolicyRecommendationW4D:
         # Create no drift summary
         drift_summary = DriftSummary(
             profile_id="test-profile",
-            batch_size=3,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.95,
             p95_cosine=0.96,  # Above 0.92 threshold
             drift_flag=False,
@@ -192,7 +202,7 @@ class TestPolicyRecommendationW4D:
         # Create drift summary
         drift_summary = DriftSummary(
             profile_id="test-profile",
-            batch_size=3,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.80,
             p95_cosine=0.85,
             drift_flag=True,
@@ -241,7 +251,7 @@ class TestPolicyRecommendationW4D:
         # Test with minimal drift score
         drift_summary_minimal = DriftSummary(
             profile_id="test-profile",
-            batch_size=1,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.919999,
             p95_cosine=0.919999,  # Just below threshold
             drift_flag=True,
@@ -304,7 +314,7 @@ class TestW4DNegativeControl:
             # Create fixed inputs
             drift_summary = DriftSummary(
                 profile_id="test-profile",
-                batch_size=3,
+                batch_size=BATCH_SIZE,
                 mean_cosine=0.916667,
                 p95_cosine=0.947,
                 drift_flag=True,
@@ -371,7 +381,7 @@ class TestW4DNegativeControl:
         # Create fixed inputs
         drift_summary = DriftSummary(
             profile_id="test-profile",
-            batch_size=3,
+            batch_size=BATCH_SIZE,
             mean_cosine=0.916667,
             p95_cosine=0.947,
             drift_flag=False,

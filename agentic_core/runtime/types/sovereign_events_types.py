@@ -19,6 +19,16 @@ from pydantic import BaseModel, Field
 from agentic_core.mixins.context_propagation_mixin import span_id_var, trace_id_var
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class SovereignEvent(BaseModel):
     """Standardized schema for all agentic events (Report 4.3)."""
 
@@ -133,6 +143,8 @@ class event_emission_mixin:
                     self._ee_logger.warning(f"Redis dispatch timeout (attempt {attempt}/{MAX_RETRIES})")
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     self._ee_logger.warning(f"Redis dispatch failed (attempt {attempt}/{MAX_RETRIES}): {e}")
 
                 if attempt < MAX_RETRIES:
@@ -153,6 +165,8 @@ class event_emission_mixin:
                 )
             # guardian: allow-silent-swallow
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 self._ee_logger.error(f"Redis Dispatch Failed: {e}")
 
     @staticmethod
@@ -179,6 +193,8 @@ class event_emission_mixin:
                     )
                     return result
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     self.emit_event(
                         f"{event_prefix}.failed",
                         {"error": str(e), "success": False},

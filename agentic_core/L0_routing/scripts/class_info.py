@@ -16,6 +16,16 @@ from datetime import datetime
 from pathlib import Path
 
 from agentic_core.L0_routing.config import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
@@ -479,6 +489,8 @@ def analyze_file(file_path: Path, archive_base: Path) -> FileAnalysis:
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             analysis.docstring = f"ANALYSIS_ERROR: {e}"
 
     # Classification

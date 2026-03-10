@@ -11,6 +11,16 @@ import statistics
 from dataclasses import dataclass
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _DEFAULT_DRIFT_THRESHOLD = 0.92
 
 
@@ -72,7 +82,7 @@ class ShadowDriftAnalyzer:
             # Empty batch - return neutral drift
             return DriftSummary(
                 profile_id=profile_id,
-                batch_size=0,
+                batch_size=BATCH_SIZE,
                 mean_cosine=1.0,
                 p95_cosine=1.0,
                 drift_flag=False,

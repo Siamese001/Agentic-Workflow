@@ -18,6 +18,16 @@ from .dead_letter_queue import FailureReason, get_dead_letter_queue
 from .event_bus_integration import HardenedEventBus, get_hardened_event_bus
 from .health_check import HealthCheckRegistry, initialize_system_health_checks
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -383,6 +393,8 @@ class InfrastructureOrchestrator:
             }
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Publish error event
             await self.event_bus.publish(
                 "events.error_occurred",

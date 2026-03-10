@@ -15,6 +15,16 @@ from pathlib import Path
 import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
 )
 
@@ -349,7 +359,7 @@ def get_model():
     def test_detects_hardcoded_timeout(self, magic_validator, temp_python_file):
         """Hardcoded timeout values should be detected."""
         code = """
-def call_api(timeout=30):
+def call_api(timeout=DEFAULT_TIMEOUT):
     pass
 """
         file_path = temp_python_file(code)

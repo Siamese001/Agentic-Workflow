@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Constitutional Overseer for validating ActionRequests.
 
 This module provides safety validation for action requests, including:
@@ -375,7 +385,7 @@ class SafetyInspectorAgent(SovereignBaseAgent):
 
             result_dict = await asyncio.wait_for(
                 llm_router.validate_content(prompt=prompt),
-                timeout=5.0,  # guardian: allow-magic-configuration
+                timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic-configuration
             )
             if isinstance(result_dict, dict):
                 response_text = result_dict.get("response", result_dict.get("reason", ""))

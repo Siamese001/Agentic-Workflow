@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 RAGGuardrail - L5 RAG Content Filtering and Reranking
 
@@ -103,7 +113,7 @@ class RagGuardrail:
             pairs: Any = [[query, doc.text] for doc in documents]
 
             def _compute():
-                return self.bge_reranker.compute_score(pairs, batch_size=32)
+                return self.bge_reranker.compute_score(pairs, batch_size=BATCH_SIZE)
 
             raw_logits: Any = await asyncio.to_thread(_compute)
             if isinstance(raw_logits, float | int):

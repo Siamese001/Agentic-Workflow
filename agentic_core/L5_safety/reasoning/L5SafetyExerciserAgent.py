@@ -11,6 +11,16 @@ from typing import Any
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_layer_entry():
     """Lazy load layer_entry to avoid upward import."""
     from agentic_core.L6_observability.reasoning.layer_decorator import layer_entry

@@ -24,6 +24,16 @@ import logging
 from typing import Any
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
@@ -77,6 +87,8 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_client = get_meta_learning_client()
                 Logger.debug(f"[{self.__class__.__name__}] MetaLearningClient initialized")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] MetaLearningClient unavailable: {e}")
 
     def _ensure_ml_embedder(self) -> None:
@@ -90,6 +102,8 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_embedder = get_healing_memory_embedder()
                 Logger.debug(f"[{self.__class__.__name__}] HealingMemoryEmbedder initialized")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] HealingMemoryEmbedder unavailable: {e}")
 
     def _ensure_ml_cache_manager(self) -> None:
@@ -103,6 +117,8 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_cache_manager = get_cache_strategy_manager()
                 Logger.debug(f"[{self.__class__.__name__}] CacheStrategyManager initialized")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] CacheStrategyManager unavailable: {e}")
 
     def _ensure_ml_guardrails(self) -> None:
@@ -114,6 +130,8 @@ class MetaLearningClientMixin:
                 MetaLearningClientMixin._ml_guardrails = get_guardrails()
                 Logger.debug(f"[{self.__class__.__name__}] Guardrails initialized")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 Logger.warning(f"[{self.__class__.__name__}] Guardrails unavailable: {e}")
 
     def _get_ml_domain(self) -> str:

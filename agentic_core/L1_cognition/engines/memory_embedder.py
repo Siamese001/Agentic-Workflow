@@ -17,6 +17,16 @@ from dataclasses import dataclass, field
 from typing import Any
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_embedding_sovereign_agent():
     from agentic_core.interfaces.execution_agents import EmbeddingSovereignAgent
 
@@ -95,6 +105,8 @@ class HealingMemoryEmbedder:
             self._embedding_agent = _get_embedding_sovereign_agent()(Path.cwd())
             Logger.info("[HealingMemoryEmbedder] Embedding agent initialized")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning(f"[HealingMemoryEmbedder] Embedding agent unavailable: {e}")
             self._embedding_agent = None
 

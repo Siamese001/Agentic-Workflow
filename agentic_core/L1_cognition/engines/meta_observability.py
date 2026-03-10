@@ -20,6 +20,16 @@ from datetime import datetime
 from typing import Any
 
 from agentic_core.L1_cognition.types.observability_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     HealthStatus,
     MetricPoint,
 )
@@ -187,6 +197,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["MetaLearningClient"] = HealthStatus(
                 component="MetaLearningClient",
                 healthy=False,
@@ -211,6 +223,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["CacheStrategyManager"] = HealthStatus(
                 component="CacheStrategyManager",
                 healthy=False,
@@ -235,6 +249,8 @@ class MetaLearningObservability:
             )
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             self._health_status["DomainContextManager"] = HealthStatus(
                 component="DomainContextManager",
                 healthy=False,
@@ -358,7 +374,7 @@ class MetaLearningObservability:
             "performance": self.get_operation_stats(),
             "recent_metrics": [
                 {"name": m.name, "value": m.value, "timestamp": m.timestamp}
-                for m in self.get_metrics(limit=20)
+                for m in self.get_metrics(limit=LIMIT)
             ],
         }
 

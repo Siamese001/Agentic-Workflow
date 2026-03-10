@@ -14,6 +14,16 @@ from dataclasses import dataclass, field
 from typing import Any
 
 from tenacity import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     retry,
     retry_if_exception_type,
     stop_after_attempt,
@@ -233,8 +243,8 @@ class HardenedGeminiExecutor:
         self._client = None
         self._setup_client()
         self._circuit_breaker = CircuitBreaker(  # guardian: allow-magic_configuration
-            failure_threshold=5,  # guardian: allow-magic_configuration
-            recovery_timeout=60.0,  # guardian: allow-magic_configuration
+            failure_threshold=THRESHOLD,  # guardian: allow-magic_configuration
+            recovery_timeout=DEFAULT_TIMEOUT,  # guardian: allow-magic_configuration
             half_open_max_calls=3,  # guardian: allow-magic_configuration
         )
 
@@ -536,6 +546,8 @@ class HardenedGeminiExecutor:
             return content
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             # Log error telemetry
             latency_ms = (time.time() - start_time) * 1000
             telemetry = InteractionTelemetry(

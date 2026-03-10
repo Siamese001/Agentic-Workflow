@@ -26,6 +26,16 @@ from enum import Enum
 from typing import Any, TypeVar
 
 from agentic_core.L0_routing.enforcement.runtime_guard import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     runtime_guard,
 )
 from agentic_core.L0_routing.types.guardian_contract_types import is_v15_enforced
@@ -126,7 +136,7 @@ class ToolReliabilityMixin:
         class MyAgent(ToolReliabilityMixin, SovereignBaseAgent):
             def __init__(self):
                 super().__init__()
-                self.configure_tool_retry("llm_call", max_retries=3)
+                self.configure_tool_retry("llm_call", max_retries=MAX_RETRIES)
                 self.configure_circuit_breaker("external_api")
 
             async def call_external_api(self, data):
@@ -419,6 +429,8 @@ class ToolReliabilityMixin:
             )
         # guardian: allow-silent-swallow
         except Exception as exc:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.warning("[V15] Retry gateway audit failed (LOG_ONLY): %s", exc)
 
     @runtime_guard("D.with_retry.tool_reliability_mixin")

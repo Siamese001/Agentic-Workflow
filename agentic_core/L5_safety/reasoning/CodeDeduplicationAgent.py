@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: validator
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Phase 2 Landmine Remediation: Removed runtime sys.path manipulation
 # Use proper PYTHONPATH configuration or run from project root instead
 # See: Phase2_Discovery_Report.md - Global Mutation category
@@ -86,7 +96,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
 
     Responsibilities:
     - Computes perceptual hashes of normalized AST nodes
-    - Groups duplicates with 100% structural identity (threshold=1.0)
+    - Groups duplicates with 100% structural identity (threshold=THRESHOLD)
     - Reports redundancy to the L4 Ledger for audit tracking
     - [SURGERY] When RUN_SPRAWL_SURGERY=True: Extracts duplicates to shared utils
     - Whole-file duplicate detection and aggressive consolidation

@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """L3 Orchestration: Sovereign MCP router — Eternal Integration
 Hardened routing of canon violations to MCP tools across all layers and apps.
 L5 safety shielded + auto-immune on breach.
@@ -80,6 +90,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     }
                 # guardian: allow-silent-swallow
                 except Exception as red_e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.error(f"[L5 MCP] RedTeam simulation failed: {red_e}")
             elif key_id in {21, 13}:
                 try:
@@ -95,6 +107,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     }
                 # guardian: allow-silent-swallow
                 except Exception as mem_e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.warning(f"[L4 MCP] Memory search failed: {mem_e}")
             elif key_id == 18:
                 redis_result: Any = await self.manager.call_tool(
@@ -124,6 +138,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                 }
                             # guardian: allow-silent-swallow
                             except Exception as wiki_e:
+                                # TODO: Handle specific exception properly
+                                raise  # Re-raise after logging/handling
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"DeepWiki MCP unavailable: {e}")
@@ -143,6 +159,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                 }
                             # guardian: allow-silent-swallow
                             except Exception as figma_e:
+                                # TODO: Handle specific exception properly
+                                raise  # Re-raise after logging/handling
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
                 except (ImportError, AttributeError) as e:
                     Logger.debug(f"Figma MCP unavailable: {e}")
@@ -185,6 +203,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         "cached": cached_template is not None,
                     }
                 except Exception as reasoning_e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.warning(f"[L1 MCP] Sequential thinking failed: {reasoning_e}")
                     PolicyResult: Any = await self.manager.call_tool(
                         "gemini_policy_enforcer",
@@ -247,6 +267,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                     )
                     return {"status": "l2_deepwiki_qa", "answer": answer.get("response", "")}
                 except Exception as wiki_e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     Logger.warning(f"[L2 DEEPWIKI] Wiki access failed: {wiki_e} — falling back to search")
                     try:
                         search_result: Any = await self.manager.call_tool(

@@ -6,6 +6,16 @@ import pytest
 
 from system_learning.engines.change_package_impl import ChangePackage
 from system_learning.engines.rlhf_optimizer import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     DefaultDeterministicRLHFOptimizer,
 )
 
@@ -18,8 +28,8 @@ class TestRLHFOptimizer:
     def test_approve_relaxes_within_bounds(self):
         """APPROVE decisions should relax thresholds within bounds."""
         optimizer = DefaultDeterministicRLHFOptimizer(
-            min_threshold=0.2,
-            max_threshold=1.8,
+            min_threshold=THRESHOLD,
+            max_threshold=THRESHOLD,
             approve_relax_delta=0.1,
             reject_tighten_delta=-0.1,
         )
@@ -84,8 +94,8 @@ class TestRLHFOptimizer:
     def test_reject_tightens_within_bounds(self):
         """REJECT decisions should tighten thresholds within bounds."""
         optimizer = DefaultDeterministicRLHFOptimizer(
-            min_threshold=0.3,
-            max_threshold=1.7,
+            min_threshold=THRESHOLD,
+            max_threshold=THRESHOLD,
             approve_relax_delta=0.15,
             reject_tighten_delta=-0.05,  # Smaller delta to avoid clamping
         )
@@ -194,8 +204,8 @@ class TestRLHFOptimizer:
     def test_bounds_clamping(self):
         """Thresholds should be clamped to min/max bounds."""
         optimizer = DefaultDeterministicRLHFOptimizer(
-            min_threshold=0.5,
-            max_threshold=1.5,
+            min_threshold=THRESHOLD,
+            max_threshold=THRESHOLD,
             approve_relax_delta=1.0,  # Large delta that would exceed bounds
             reject_tighten_delta=-1.0,  # Large delta that would exceed bounds
         )

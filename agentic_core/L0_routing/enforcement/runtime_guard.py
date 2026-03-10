@@ -24,6 +24,16 @@ import uuid
 from typing import Any, Callable, TypeVar
 
 from agentic_core.L0_routing.types.guardian_contract_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     V15EnforcementError,
     is_v15_enforced,
     is_v15_hard_fail,
@@ -115,6 +125,8 @@ def _guarded_call(
         )
         return result
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.debug(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,
@@ -155,6 +167,8 @@ async def _async_guarded_call(
         )
         return result
     except Exception:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.debug(
             "[V15-GUARD] EXIT %s correlation_id=%s status=ERROR",
             entry_point_id,

@@ -7,6 +7,16 @@ Re-exports HealerMixin and MetaLearningMixin so apps_* utility files
 can import from the approved interface boundary rather than directly
 from L5_safety or L1_cognition.
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 AUTHORITY CONSTRAINTS:
 - Mixin re-exports only — no mutation authority granted
 - Fallback stubs provided if optional deps not installed

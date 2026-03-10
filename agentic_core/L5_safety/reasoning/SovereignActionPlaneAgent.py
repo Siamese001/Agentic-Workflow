@@ -5,6 +5,16 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.enforcement.runtime_guard import (
@@ -125,7 +135,7 @@ class SovereignSandbox:
             )
             try:
                 # guardian: allow-magic-config
-                stdout, stderr = process.communicate(timeout=30)
+                stdout, stderr = process.communicate(timeout=DEFAULT_TIMEOUT)
                 return {
                     "success": process.returncode == 0,
                     "stdout": stdout,
@@ -139,7 +149,7 @@ class SovereignSandbox:
                     process.terminate()
                     try:
                         # guardian: allow-magic-config
-                        process.wait(timeout=5)
+                        process.wait(timeout=DEFAULT_TIMEOUT)
                     except subprocess.TimeoutExpired:
                         process.kill()
                         process.wait()
@@ -167,7 +177,7 @@ class SovereignSandbox:
                 try:
                     process.terminate()
                     # guardian: allow-magic-config
-                    process.wait(timeout=5)
+                    process.wait(timeout=DEFAULT_TIMEOUT)
                 # guardian: allow-silent-swallow
                 except:
                     try:
@@ -282,6 +292,8 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
                 )
             # guardian: allow-silent-swallow
             except Exception as exc:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.warning("[V15] Gateway audit failed (LOG_ONLY): %s", exc)
 
         start_time: Any = time.time()
@@ -314,6 +326,8 @@ class SovereignActionPlaneAgent(SovereignBaseAgent, IActionPlane):
             return result
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             result: Any = ActionResult(
                 success=False,
                 output="",

@@ -1,5 +1,15 @@
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 pytestmark = pytest.mark.skip(reason="DEPRECATED: Test requires external modules or complex import chains")
 
 # New file: tests/unit/test_RedSentinelAgent.py
@@ -182,6 +192,8 @@ def test_heal_repository_smoke(RedSentinelAgent):
         # heal_repository method may not exist yet, that's expected
         pytest.fail("heal_repository method not implemented yet")
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         # Any other exception should not occur
         pytest.fail(f"heal_repository crashed unexpectedly: {e}")
 

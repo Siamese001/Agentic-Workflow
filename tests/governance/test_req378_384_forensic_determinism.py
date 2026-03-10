@@ -8,6 +8,16 @@ from __future__ import annotations
 import pytest
 
 from agentic_core.L0_routing.enforcement.trace_id_generator import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     TraceIdGenerator,
     generate_trace_id,
     validate_trace_id,
@@ -24,7 +34,7 @@ def test_req378_forensic_buffer_uses_semantic_clock():
     # Create buffer with semantic clock
     clock = SemanticClockSnapshot(tick=42)
     buffer = ForensicTraceBuffer(
-        trace_id="test-trace", semantic_clock_tick=clock.tick, velocity_threshold=100
+        trace_id="test-trace", semantic_clock_tick=clock.tick, velocity_threshold=THRESHOLD
     )
 
     # Verify semantic clock is used
@@ -54,7 +64,7 @@ def test_req378_forensic_buffer_velocity_threshold():
     assert buffer.velocity_threshold == TRACE_BUFFER_VELOCITY_THRESHOLD
 
     # Custom threshold
-    custom_buffer = ForensicTraceBuffer(trace_id="test-trace", semantic_clock_tick=42, velocity_threshold=200)
+    custom_buffer = ForensicTraceBuffer(trace_id="test-trace", semantic_clock_tick=42, velocity_threshold=THRESHOLD)
 
     assert custom_buffer.velocity_threshold == 200
 

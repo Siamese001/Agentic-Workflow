@@ -37,6 +37,16 @@ from contextlib import contextmanager
 from dataclasses import dataclass, field
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 _CTR: list[int] = [0]
 
 
@@ -149,6 +159,8 @@ class TracingMixin:
                 self._tracing_initialized = True
                 TracingMixin._circuit_breaker_failures = 0  # Reset on success
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # Increment failure counter
                 TracingMixin._circuit_breaker_failures += 1
 

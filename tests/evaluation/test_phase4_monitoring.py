@@ -15,6 +15,16 @@ Branch coverage:
 
 import pytest
 from agentic_core.evaluation.monitoring.drift_monitor import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AnswerQualityMonitor,
     EmbeddingDriftMonitor,
     RetrievalDriftMonitor,
@@ -187,9 +197,9 @@ class TestDriftAlert:
 class TestRetrievalDriftMonitor:
     def _monitor(self, **kwargs):
         return RetrievalDriftMonitor(
-            hit_rate_threshold=0.70,
-            score_std_threshold=0.20,
-            stability_threshold=0.60,
+            hit_rate_threshold=THRESHOLD,
+            score_std_threshold=THRESHOLD,
+            stability_threshold=THRESHOLD,
             system_version="v1",
             **kwargs,
         )
@@ -300,8 +310,8 @@ class TestRetrievalDriftMonitor:
 class TestEmbeddingDriftMonitor:
     def _monitor(self, current_version="v1.2"):
         return EmbeddingDriftMonitor(
-            norm_std_threshold=0.15,
-            similarity_mean_threshold=0.50,
+            norm_std_threshold=THRESHOLD,
+            similarity_mean_threshold=THRESHOLD,
             current_model_version=current_version,
         )
 
@@ -391,9 +401,9 @@ class TestEmbeddingDriftMonitor:
 class TestAnswerQualityMonitor:
     def _monitor(self):
         return AnswerQualityMonitor(
-            groundedness_threshold=0.70,
-            hallucination_threshold=0.15,
-            override_threshold=0.20,
+            groundedness_threshold=THRESHOLD,
+            hallucination_threshold=THRESHOLD,
+            override_threshold=THRESHOLD,
             system_version="v1",
         )
 
@@ -539,7 +549,7 @@ class TestShadowEvaluationRunner:
         assert result.candidate_retrieval_snapshot is not None
 
     def test_retrieval_monitor_alerts_in_result(self):
-        monitor = RetrievalDriftMonitor(hit_rate_threshold=0.99)  # very strict → always alerts
+        monitor = RetrievalDriftMonitor(hit_rate_threshold=THRESHOLD)  # very strict → always alerts
         baseline = SystemConfig("base", "v1", retrieval_fn=_bad_retrieval)
         candidate = SystemConfig("cand", "v2", retrieval_fn=_bad_retrieval)
         runner = ShadowEvaluationRunner(baseline, candidate, retrieval_monitor=monitor)

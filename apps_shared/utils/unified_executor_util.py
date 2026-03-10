@@ -16,6 +16,16 @@ from datetime import datetime
 from enum import Enum
 from typing import Any
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -108,8 +118,8 @@ class LLMExecutionStrategy(ExecutionStrategy):
         self.model_name = model_name
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"llm_{model_name}",
-            failure_threshold=5,
-            recovery_timeout=60,
+            failure_threshold=THRESHOLD,
+            recovery_timeout=DEFAULT_TIMEOUT,
         )
         self.rate_limiter = get_rate_limiter("llm_calls", "10/minute")
         self.resource_manager = get_resource_manager()
@@ -177,7 +187,7 @@ class LLMExecutionStrategy(ExecutionStrategy):
             LLM response
         """
         # Simulate LLM call
-        await asyncio.sleep(0.5)
+        await asyncio.sleep(DEFAULT_SLEEP)
 
         # Process input based on engine type
         if context.engine_type == EngineType.RESUME:
@@ -251,8 +261,8 @@ class APIExecutionStrategy(ExecutionStrategy):
         self.timeout = timeout
         self.circuit_breaker = CircuitBreakerFactory.get_breaker(
             f"api_{api_endpoint}",
-            failure_threshold=3,
-            recovery_timeout=30,
+            failure_threshold=THRESHOLD,
+            recovery_timeout=DEFAULT_TIMEOUT,
         )
 
     async def execute(self, context: ExecutionContext) -> ExecutionResult:
@@ -304,7 +314,7 @@ class APIExecutionStrategy(ExecutionStrategy):
             API response
         """
         # Simulate API call
-        await asyncio.sleep(0.3)
+        await asyncio.sleep(DEFAULT_SLEEP)
 
         # Return mock response
         return {
@@ -391,7 +401,7 @@ class BatchExecutionStrategy(ExecutionStrategy):
         """
         async with self.semaphore:
             # Simulate processing
-            await asyncio.sleep(0.1)
+            await asyncio.sleep(DEFAULT_SLEEP)
 
             if context.engine_type == EngineType.RESUME:
                 return f"Processed resume item: {str(item)[:50]}"

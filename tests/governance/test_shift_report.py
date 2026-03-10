@@ -13,6 +13,16 @@ Validates:
 import pytest
 
 from agentic_core.L5_safety.types.shift_report_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     MIN_SAMPLE_SIZE,
     CovariateShiftDetector,
     ShiftReport,
@@ -85,7 +95,7 @@ class TestMMDDetection:
     def test_identical_data_no_shift(self):
         detector = CovariateShiftDetector(
             feature_names=["f1"],
-            mmd_threshold=0.1,
+            mmd_threshold=THRESHOLD,
         )
         data = _make_baseline(40, dim=1)
         report = detector.detect_shift(data, data)
@@ -94,7 +104,7 @@ class TestMMDDetection:
     def test_shifted_data_detected(self):
         detector = CovariateShiftDetector(
             feature_names=["f1"],
-            mmd_threshold=0.01,
+            mmd_threshold=THRESHOLD,
         )
         baseline = _make_baseline(40, dim=1)
         treatment = _make_shifted(40, dim=1)
@@ -109,7 +119,7 @@ class TestPSIDetection:
     def test_per_feature_flags(self):
         detector = CovariateShiftDetector(
             feature_names=["f1", "f2"],
-            psi_threshold=0.1,
+            psi_threshold=THRESHOLD,
         )
         baseline = _make_baseline(40, dim=2)
         treatment = _make_shifted(40, dim=2)
@@ -122,8 +132,8 @@ class TestPSIDetection:
     def test_no_drift_low_psi(self):
         detector = CovariateShiftDetector(
             feature_names=["f1"],
-            psi_threshold=0.2,
-            mmd_threshold=1.0,
+            psi_threshold=THRESHOLD,
+            mmd_threshold=THRESHOLD,
         )
         data = _make_baseline(40, dim=1)
         report = detector.detect_shift(data, data)
@@ -149,8 +159,8 @@ class TestJointShiftLogic:
     def test_joint_true_when_mmd_exceeds(self):
         detector = CovariateShiftDetector(
             feature_names=["f1"],
-            mmd_threshold=0.001,
-            psi_threshold=999.0,
+            mmd_threshold=THRESHOLD,
+            psi_threshold=THRESHOLD,
         )
         baseline = _make_baseline(40, dim=1)
         treatment = _make_shifted(40, dim=1)
@@ -160,8 +170,8 @@ class TestJointShiftLogic:
     def test_joint_true_when_psi_exceeds(self):
         detector = CovariateShiftDetector(
             feature_names=["f1"],
-            mmd_threshold=999.0,
-            psi_threshold=0.01,
+            mmd_threshold=THRESHOLD,
+            psi_threshold=THRESHOLD,
         )
         baseline = _make_baseline(40, dim=1)
         treatment = _make_shifted(40, dim=1)

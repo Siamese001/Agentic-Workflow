@@ -13,6 +13,16 @@ import sys
 from datetime import datetime
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Add project root to path
 project_root = Path(__file__).parent.parent
 sys.path.insert(0, str(project_root))  # guardian: allow-global-mutation
@@ -123,6 +133,8 @@ async def main():
 
     # guardian: allow-silent-swallower
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         Logger.critical(f"❌ SYSTEM CRASH: {e}", exc_info=True)
         sys.exit(1)
 

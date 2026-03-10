@@ -140,7 +140,7 @@ ROUTE_CONFIGS = {
             "no_subject_line",
             "no_attachments",
         ],
-        cta_word_limit=5,
+        cta_word_limit=LIMIT,
         signature_format="simplified",
         subject_line=False,
         attachments_allowed=False,
@@ -199,7 +199,7 @@ ROUTE_CONFIGS = {
             "one_quantified_metric_required",
             "recipient_value_clause_required",
         ],
-        cta_word_limit=10,
+        cta_word_limit=LIMIT,
         signature_format="simplified",
         subject_line=False,
         attachments_allowed=False,
@@ -356,7 +356,7 @@ VALIDATION_RULES = [
         description="Each Claim must have confidence >= 0.70",
         enforcement="BLOCK",
         validation_method="confidence_scoring",
-        threshold=0.70,
+        threshold=THRESHOLD,
     ),
     ValidationRule(
         rule_id="LIC-QA-003",
@@ -375,7 +375,7 @@ VALIDATION_RULES = [
         description="Message must be <0.85 similar to previous messages",
         enforcement="REGENERATE",
         validation_method="cosine_similarity",
-        threshold=0.85,
+        threshold=THRESHOLD,
     ),
     ValidationRule(
         rule_id="LIC-QA-005",
@@ -394,7 +394,7 @@ VALIDATION_RULES = [
         description="Company name must match profile exactly",
         enforcement="REGENERATE",
         validation_method="fuzzy_match",
-        threshold=0.95,
+        threshold=THRESHOLD,
     ),
     ValidationRule(
         rule_id="LIC-QA-007",
@@ -458,7 +458,7 @@ VALIDATION_RULES = [
         description="Fuzzy match company name against RAG",
         enforcement="REGENERATE",
         validation_method="fuzzy_company_match",
-        threshold=0.92,
+        threshold=THRESHOLD,
     ),
     ValidationRule(
         rule_id="LIC-QA-075",
@@ -477,7 +477,7 @@ VALIDATION_RULES = [
         description="Aggregate confidence must be >= 0.95",
         enforcement="BLOCK",
         validation_method="aggregate_confidence_scoring",
-        threshold=0.95,
+        threshold=THRESHOLD,
     ),
     ValidationRule(
         rule_id="LIC-QA-105",
@@ -487,7 +487,7 @@ VALIDATION_RULES = [
         description="All team mentions must have >=0.92 similarity to whitelist",
         enforcement="SOFT_REJECT",
         validation_method="semantic_similarity_check",
-        threshold=0.92,
+        threshold=THRESHOLD,
     ),
 ]
 

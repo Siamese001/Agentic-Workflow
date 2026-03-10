@@ -13,6 +13,16 @@ from collections import Counter, defaultdict
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     AGENTIC_CORE_DIR,
     get_validated_project_root,
 )
@@ -33,7 +43,7 @@ SKIP = SOVEREIGN_EXCLUDED_FOLDERS
 
 
 # guardian: allow-magic-config
-def run_cmd(argv, cwd=None, timeout=30):
+def run_cmd(argv, cwd=None, timeout=DEFAULT_TIMEOUT):
     """Run command, return (cmd_string, stdout, stderr, exitcode)."""
     cmd_str = " ".join(str(a) for a in argv)
     try:
@@ -1414,7 +1424,7 @@ def main():
 
     w("## 5a. pytest collection count")
     # guardian: allow-magic-config
-    cmd, stdout, stderr, rc = run_cmd([PY, "-m", "pytest", "--collect-only", "-q", "--color=no"], timeout=60)
+    cmd, stdout, stderr, rc = run_cmd([PY, "-m", "pytest", "--collect-only", "-q", "--color=no"], timeout=DEFAULT_TIMEOUT)
     w("```")
     w(f"$ {cmd}")
     # Show last 20 lines of output (collection summary)

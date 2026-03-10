@@ -17,6 +17,16 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.utils.security_util import safe_execute
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 class CCMeasurement:
     """Measure and report cyclomatic complexity metrics."""
 
@@ -47,7 +57,7 @@ class CCMeasurement:
             ]
 
             # guardian: allow-magic-config
-            result = safe_execute(cmd, capture_output=True, text=True, timeout=60, check=False)
+            result = safe_execute(cmd, capture_output=True, text=True, timeout=DEFAULT_TIMEOUT, check=False)
 
             if result.returncode != 0:
                 print(f"Error running radon: {result.stderr}")

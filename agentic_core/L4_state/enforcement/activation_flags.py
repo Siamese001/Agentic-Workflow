@@ -11,6 +11,16 @@ import time
 from dataclasses import asdict, dataclass
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger = logging.getLogger(__name__)
 
 
@@ -86,6 +96,8 @@ class ActivationFlagsStore:
             Logger.info("Activation flags loaded from L4")
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to load activation flags: {e}")
             self._current_flags = ActivationFlags()
 
@@ -104,6 +116,8 @@ class ActivationFlagsStore:
             Logger.debug("Activation flags saved to L4")
 
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Logger.error(f"Failed to save activation flags: {e}")
 
     def _compute_flags_hash(self, flags: ActivationFlags) -> str:

@@ -3,6 +3,16 @@
 # Suggested keywords to add in docstring/code: orchestrator, prompt, validator
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 
@@ -347,6 +357,8 @@ class DagEngineAgent(SovereignBaseAgent):
                 Logger.info("task_completed", extra={"task_id": task_id})
             return True
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             Task.status = TaskStatus.FAILED
             Task.error = str(e)
             failed_tasks.append(task_id)
@@ -504,6 +516,8 @@ class DagEngineAgent(SovereignBaseAgent):
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             LOGGER.error(f"[{agent_name}] DAG Healing Failed: {str(e)}")
             metrics["errors"] += 1
         finally:

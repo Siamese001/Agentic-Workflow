@@ -17,6 +17,16 @@ from enum import Enum
 from typing import Any
 
 from agentic_core.L0_routing.seams.layer_emission_seam import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     assert_layer_may_emit,
 )
 from agentic_core.L0_routing.types.determinism_types import SemanticClockSnapshot

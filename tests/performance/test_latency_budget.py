@@ -16,6 +16,16 @@ from pathlib import Path
 
 import pytest
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Latency budgets in seconds
 LATENCY_BUDGETS = {
     "file_hash": 0.1,  # 100ms for file hashing
@@ -64,6 +74,8 @@ class TestLatencyBudget:
             assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
             assert agent is not None
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             pytest.fail(f"CodeHealerAgent not available: {e}")
 
     def test_file_hash_computation_latency(self, temp_file):

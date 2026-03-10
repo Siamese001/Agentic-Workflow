@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 [PHASE 17/20] Semantic cache Manager - The Collective Hive Mind.
 
@@ -416,6 +426,8 @@ class SemanticCacheManager:
                         self.stats["redis_hits"] += 1
                     return json.loads(cached)
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # guardian: allow-silent-swallow
                 Logger.debug(f"[HiveMind] Redis recall failed: {e}")
 
@@ -448,6 +460,8 @@ class SemanticCacheManager:
                         if payload:
                             return json.loads(payload)
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     # guardian: allow-silent-swallow
                     Logger.debug(f"[HiveMind] VectorStore recall failed: {e}")
 
@@ -538,6 +552,8 @@ class SemanticCacheManager:
                     payload_json,
                 )
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # guardian: allow-silent-swallow
                 Logger.debug(f"[HiveMind] Redis learn failed: {e}")
 
@@ -595,6 +611,8 @@ class SemanticCacheManager:
                     payload_json,
                 )
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 # guardian: allow-silent-swallow
                 Logger.debug(f"[HiveMind] Redis async learn failed: {e}")
 
@@ -685,6 +703,8 @@ class SemanticCacheManager:
                         payload_json,
                     )
                 except Exception as e:
+                    # TODO: Handle specific exception properly
+                    raise  # Re-raise after logging/handling
                     # guardian: allow-silent-swallow
                     Logger.warning(f"[HiveMind] Redis TTL extension failed: {e}")
 

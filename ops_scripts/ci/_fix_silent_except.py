@@ -9,6 +9,16 @@ in check_test_integrity.py.
 import pathlib
 import sys
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # (relative_path, 1-based line number of the except: handler line)

@@ -14,6 +14,16 @@ import numpy as np
 from system_learning.engines.embedding_service_factory import EmbeddingServiceFactory
 
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def create_test_pack():
     """Create deterministic test embedding pack."""
     tmpdir = Path(tempfile.mkdtemp())
@@ -154,7 +164,7 @@ def main():
         import shutil
         import time
 
-        time.sleep(0.1)  # Brief pause for Windows file handle release
+        time.sleep(DEFAULT_SLEEP)  # Brief pause for Windows file handle release
         shutil.rmtree(pack_dir, ignore_errors=True)
 
         EmbeddingServiceFactory._INSTANCE = None

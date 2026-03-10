@@ -15,6 +15,16 @@ from dataclasses import fields
 import pytest
 
 from agentic_core.L0_routing.types.determinism_contracts_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     EpisodicMemoryNotQueried,
     ForbiddenInputError,
     RollbackHashMismatch,
@@ -442,7 +452,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.95,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="ImportError",
         )
@@ -452,7 +462,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.5,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="ImportError",
         )
@@ -462,7 +472,7 @@ class TestP2_6_2_TrajectoryReuse:
         c = TrajectoryReuseConstraint(
             trace_id="t1",
             similarity_score=0.95,
-            similarity_threshold=0.8,
+            similarity_threshold=THRESHOLD,
             failure_reason="ImportError",
             candidate_failure_reason="SyntaxError",
         )

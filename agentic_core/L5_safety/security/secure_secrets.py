@@ -9,6 +9,16 @@ from pathlib import Path
 
 from cryptography.fernet import Fernet
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 SECRETS_DIR = Path(r"C:\Users\amita\.agentic_secrets")
 KEY_FILE = SECRETS_DIR / ".key"
 SECRETS_FILE = SECRETS_DIR / "secrets.enc"

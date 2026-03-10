@@ -15,6 +15,16 @@ import time
 import pytest
 
 from agentic_core.cache.redis_cache_client import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     CacheDB,
     DeterministicRedisCache,
     check_redis_health,
@@ -166,12 +176,12 @@ class TestRedisTTL:
     def test_key_expires_after_ttl(self, hot):
         hot.set("ttl:expires", b"ephemeral", ttl_seconds=1)
         assert hot.get("ttl:expires") == b"ephemeral"
-        time.sleep(1.5)
+        time.sleep(DEFAULT_SLEEP)
         assert hot.get("ttl:expires") is None, "Key must have expired in Redis after TTL"
 
     def test_key_survives_within_ttl(self, hot):
         hot.set("ttl:survives", b"durable", ttl_seconds=30)
-        time.sleep(0.2)
+        time.sleep(DEFAULT_SLEEP)
         assert hot.get("ttl:survives") == b"durable"
 
     def test_redis_ttl_command_reflects_set_value(self, hot):

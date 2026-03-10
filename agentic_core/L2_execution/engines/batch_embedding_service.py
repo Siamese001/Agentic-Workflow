@@ -1,5 +1,15 @@
 from __future__ import annotations
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """Batch Embedding Service - Parallel embedding generation for 5-10x speedup.
 
 Optimized for i7-10750H (6 cores/12 threads) with 32GB RAM allocation.
@@ -47,7 +57,7 @@ class BatchEmbeddingService:
             List of embeddings as numpy arrays
 
         Example:
-            >>> service = BatchEmbeddingService(batch_size=32, max_workers=4)
+            >>> service = BatchEmbeddingService(batch_size=BATCH_SIZE, max_workers=4)
             >>> embeddings = await service.embed_batch(
             ...     texts=["text1", "text2", ...],
             ...     model_func=my_embedding_model.embed

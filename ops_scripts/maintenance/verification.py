@@ -11,6 +11,16 @@ import tempfile
 import time
 from pathlib import Path
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parent
 if str(PROJECT_ROOT) not in sys.path:
@@ -36,7 +46,7 @@ def test_circuit_breaker():
     print("\n1.1 Testing state transitions...")
     breaker = CircuitBreaker(
         "test_1",
-        CircuitBreakerConfig(failure_threshold=3, reset_timeout_seconds=0.1),
+        CircuitBreakerConfig(failure_threshold=THRESHOLD, reset_timeout_seconds=0.1),
     )
     assert breaker.state == CircuitState.CLOSED
     for _ in range(3):
@@ -49,14 +59,14 @@ def test_circuit_breaker():
     breaker2 = CircuitBreaker(
         "test_2",
         CircuitBreakerConfig(
-            failure_threshold=1,
+            failure_threshold=THRESHOLD,
             backoff_multiplier=2.0,
             reset_timeout_seconds=0.1,
         ),
     )
     breaker2.record_failure()  # Open
     assert breaker2._current_reset_timeout == 0.1
-    time.sleep(0.15)
+    time.sleep(DEFAULT_SLEEP)
     breaker2.allow_request()  # Half-open
     breaker2.record_failure()  # Fail again -> Open + Backoff
     assert breaker2._current_reset_timeout == 0.2
@@ -66,10 +76,10 @@ def test_circuit_breaker():
     print("\n1.3 Testing recovery...")
     breaker3 = CircuitBreaker(
         "test_3",
-        CircuitBreakerConfig(failure_threshold=1, success_threshold=1, reset_timeout_seconds=0.1),
+        CircuitBreakerConfig(failure_threshold=THRESHOLD, success_threshold=THRESHOLD, reset_timeout_seconds=0.1),
     )
     breaker3.record_failure()
-    time.sleep(0.15)
+    time.sleep(DEFAULT_SLEEP)
     breaker3.allow_request()
     breaker3.record_success()
     assert breaker3.state == CircuitState.CLOSED
@@ -79,7 +89,7 @@ def test_circuit_breaker():
     print("\n1.4 Testing decorator...")
     breaker4 = CircuitBreaker(
         "test_4",
-        CircuitBreakerConfig(failure_threshold=2, execution_timeout_seconds=1.0),
+        CircuitBreakerConfig(failure_threshold=THRESHOLD, execution_timeout_seconds=1.0),
     )
     count = 0
 
@@ -112,7 +122,7 @@ def test_circuit_breaker():
 
     @breaker5.protect
     def hung_task():
-        time.sleep(2.0)  # Longer than timeout
+        time.sleep(DEFAULT_SLEEP)  # Longer than timeout
         return "Should not see this"
 
     try:

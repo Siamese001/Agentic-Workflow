@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.interfaces.write_gateway import get_write_gateway
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
@@ -102,6 +112,8 @@ class ExperienceBuffer:
                 _get_write_gateway().write_text(self.path, "".join(kept), encoding="utf-8")
                 self.Logger.info(f"Trimmed experience buffer from {len(lines)} to {len(kept)} entries")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 self.Logger.error(f"Failed to trim buffer: {e}")
 
     def load_all(self) -> list[dict[str, Any]]:

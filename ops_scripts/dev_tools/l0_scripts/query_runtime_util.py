@@ -6,6 +6,16 @@ from collections.abc import Callable
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.runtime_guard import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     runtime_guard,
 )
 
@@ -53,7 +63,7 @@ def retry_query(max_retries: int = 3, base_delay: float = 1.0):
 
 
 # guardian: allow-magic-config
-@retry_query(max_retries=3)
+@retry_query(max_retries=MAX_RETRIES)
 def execute_sql(sql: str) -> Any:
     """
     Placeholder database execution function.
@@ -101,7 +111,7 @@ def run_hardened_query(
                 # guardian: allow-magic-config
                 done, _ = concurrent.futures.wait(
                     [future],
-                    timeout=0.05,
+                    timeout=DEFAULT_TIMEOUT,
                     return_when=concurrent.futures.FIRST_COMPLETED,
                 )
 

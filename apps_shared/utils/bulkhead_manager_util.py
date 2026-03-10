@@ -18,6 +18,16 @@ from typing import Any
 from .circuit_breaker import CircuitBreaker, CircuitBreakerConfig, get_circuit_breaker_registry
 from .signal_infrastructure import EngineType
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 logger = logging.getLogger(__name__)
 
 
@@ -105,8 +115,8 @@ class Bulkhead:
         if enable_circuit_breaker:
             self._circuit_breaker_config = CircuitBreakerConfig(
                 failure_threshold=max(3, config.max_concurrency // 2),
-                timeout=60.0,
-                failure_rate_threshold=0.5,
+                timeout=DEFAULT_TIMEOUT,
+                failure_rate_threshold=THRESHOLD,
             )
 
         logger.info(f"Created bulkhead '{name}' with max_concurrency={config.max_concurrency}")

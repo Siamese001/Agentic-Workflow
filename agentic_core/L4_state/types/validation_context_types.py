@@ -4,6 +4,16 @@ import hashlib
 
 from agentic_core.interfaces.write_gateway import get_write_gateway
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 def _get_write_gateway():
     """Get UWG instance - L4 may only use, not import tools."""
     return get_write_gateway()
@@ -106,6 +116,8 @@ class Historian:
                     self.file_history = json.load(f)
                 LOGGER.info(f"Loaded history for {len(self.file_history)} files")
             except Exception as e:
+                # TODO: Handle specific exception properly
+                raise  # Re-raise after logging/handling
                 LOGGER.error(f"Failed to load file history: {e}")
                 self.file_history = {}
 
@@ -115,6 +127,8 @@ class Historian:
         try:
             _get_write_gateway().write_json(self.file_history_file, self.file_history, indent=2)
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             LOGGER.error(f"Failed to save file history: {e}")
 
     def calculate_file_hash(self, file_path: Path) -> str:

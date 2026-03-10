@@ -2,6 +2,16 @@ from __future__ import annotations
 
 from agentic_core.L2_execution.tools import write_gateway as _wg
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 """
 L6 Codebase Telepathy - Human Instruction Watcher
 
@@ -142,6 +152,8 @@ class TelepathyInterface:
             self._last_consumed = instructions
             LOGGER.info(f"Instructions consumed and marked done (Cycle {self._cycle})")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             LOGGER.error(f"Failed to mark instructions as done: {e}")
 
     def inject_into_context(self, context: Any, commands: dict[str, Any]) -> Any:
@@ -172,6 +184,8 @@ class TelepathyInterface:
                 _wg.remove_file(self.instructions_path)
                 LOGGER.info("Telepathy instructions cleared")
         except Exception as e:
+            # TODO: Handle specific exception properly
+            raise  # Re-raise after logging/handling
             LOGGER.error(f"Failed to clear instructions: {e}")
 
 

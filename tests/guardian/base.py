@@ -11,6 +11,16 @@ from pathlib import Path
 from typing import Any
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
     # guardian: allow-global-mutation
@@ -115,7 +125,7 @@ class AgentTestMixin:
                 temp_path.unlink(missing_ok=True)
                 break
             except PermissionError:
-                time.sleep(0.1)
+                time.sleep(DEFAULT_SLEEP)
 
     def assert_agent_compliance(self, agent_file: Path, required_methods: list[str]) -> None:
         """Assert agent has required methods."""

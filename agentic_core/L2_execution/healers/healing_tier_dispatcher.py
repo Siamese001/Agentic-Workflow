@@ -24,6 +24,16 @@ from typing import TYPE_CHECKING, Any, Protocol
 from agentic_core.L2_execution.healers.healing_tier_config import HealingTierConfig
 from agentic_core.L2_execution.healers.healing_tier_router import route_healing_tier
 from agentic_core.L2_execution.healers.healing_tier_types import (
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
     HealingDecision,
     HealingInput,
     HealingTier,
@@ -495,6 +505,8 @@ def invoke_qwen_with_oom_protection(
     try:
         return invoker.invoke_qwen_vllm(healing_input, decision, config, agent_name=agent_name)
     except Exception as exc:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         if "out of memory" in str(exc).lower():
             # Route through choke point - router handles retry_count >= 3 -> GEMINI escalation
             escalated_decision = handle_qwen_oom_via_router(healing_input, config)

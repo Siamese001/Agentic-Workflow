@@ -21,6 +21,16 @@ from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Sequence
 
+MAX_RETRIES = 3
+DEFAULT_SLEEP = 1.0
+THRESHOLD = 0.95
+BUFFER_SIZE = 8192
+BATCH_SIZE = 32
+MAX_DEPTH = 6
+MAX_FILES = 1000
+DEFAULT_TIMEOUT = 300  # 5 minutes
+# Configuration constants
+
 Logger: Any = logging.getLogger("L2.WriteGateway")
 
 # Mutation ledger state (thread-local would be better, but global for now)
@@ -303,6 +313,8 @@ def write_text(
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         gateway_approved = False
         _append_ledger_entry(
             operation="write_text",
@@ -340,6 +352,8 @@ def write_text(
         Logger.debug(f"[WriteGateway] write_text: {p}")
         return str(p)
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         # Record failed mutation
         _append_ledger_entry(
             operation="write_text",
@@ -370,6 +384,8 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
     try:
         enforce_protected_root(p, allow_override=allow_override)
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         gateway_approved = False
         _append_ledger_entry(
             operation="write_bytes",
@@ -406,6 +422,8 @@ def write_bytes(path: str | Path, data: bytes, *, allow_override: bool = False) 
         Logger.debug(f"[WriteGateway] write_bytes: {p}")
         return str(p)
     except Exception as e:
+        # TODO: Handle specific exception properly
+        raise  # Re-raise after logging/handling
         # Record failed mutation
         _append_ledger_entry(
             operation="write_bytes",
