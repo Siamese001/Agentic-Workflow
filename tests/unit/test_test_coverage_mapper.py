@@ -117,10 +117,12 @@ class TestTestsForModules:
     def test_tests_for_modules_deduplicates(self) -> None:
         result = _make_result_with_test_imports()
         mapper = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
-        tests = mapper.tests_for_modules([
-            "agentic_core/adg/schema.py",
-            "agentic_core/adg/__init__.py",
-        ])
+        tests = mapper.tests_for_modules(
+            [
+                "agentic_core/adg/schema.py",
+                "agentic_core/adg/__init__.py",
+            ]
+        )
         assert tests.count("tests/unit/test_a.py") == 1
 
     @pytest.mark.unit
@@ -147,9 +149,13 @@ class TestCoverageReport:
         mapper = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
         report = mapper.coverage_report()
         required = {
-            "source_module_count", "test_module_count",
-            "covered_count", "uncovered_count",
-            "coverage_pct", "uncovered_modules", "hotspot_modules",
+            "source_module_count",
+            "test_module_count",
+            "covered_count",
+            "uncovered_count",
+            "coverage_pct",
+            "uncovered_modules",
+            "hotspot_modules",
         }
         assert required <= set(report.keys())
 
@@ -182,10 +188,13 @@ class TestToIndexDict:
     @pytest.mark.unit
     def test_to_index_dict_deterministic(self) -> None:
         import json
+
         result = _make_result_with_test_imports()
         m1 = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
         m2 = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
-        assert json.dumps(m1.to_index_dict(), sort_keys=True) == json.dumps(m2.to_index_dict(), sort_keys=True)
+        assert json.dumps(m1.to_index_dict(), sort_keys=True) == json.dumps(
+            m2.to_index_dict(), sort_keys=True
+        )
 
     @pytest.mark.unit
     def test_build_is_idempotent(self) -> None:
@@ -195,3 +204,22 @@ class TestToIndexDict:
         mapper.build()
         tests = mapper.tests_for_module("agentic_core/adg/schema.py")
         assert tests.count("tests/unit/test_a.py") == 1
+
+
+class TestSortedOutputGuarantees:
+    """tests_for_module always returns sorted output."""
+
+    @pytest.mark.unit
+    def test_tests_for_module_result_is_sorted(self) -> None:
+        result = _make_result_with_test_imports()
+        mapper = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
+        tests = mapper.tests_for_module("agentic_core/adg/schema.py")
+        assert tests == sorted(tests)
+
+    @pytest.mark.unit
+    def test_module_to_tests_values_are_sorted_lists(self) -> None:
+        result = _make_result_with_test_imports()
+        mapper = TestCoverageMapper(result, repo_root=_REPO_ROOT).build()
+        idx = mapper.to_index_dict()
+        for module, tests in idx["module_to_tests"].items():
+            assert tests == sorted(tests), f"Tests for {module} are not sorted"

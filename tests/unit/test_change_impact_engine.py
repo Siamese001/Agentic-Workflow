@@ -17,7 +17,7 @@ from pathlib import Path
 import pytest
 
 from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
-from tools.change_impact_engine import ChangeImpactEngine, ChangeImpactResult
+from tools.change_impact_engine import ChangeImpactEngine
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -240,9 +240,16 @@ class TestChangeImpactResultToDict:
         impact = engine.analyze([], include_tests=False)
         d = impact.to_dict()
         required = {
-            "changed_files", "impacted_module_count", "impacted_modules",
-            "impacted_test_count", "impacted_tests", "risk_score", "route_mode",
-            "scope_widening_events", "uncovered_changed_files", "impact_digest",
+            "changed_files",
+            "impacted_module_count",
+            "impacted_modules",
+            "impacted_test_count",
+            "impacted_tests",
+            "risk_score",
+            "route_mode",
+            "scope_widening_events",
+            "uncovered_changed_files",
+            "impact_digest",
         }
         assert required <= set(d.keys())
 
@@ -257,3 +264,47 @@ class TestChangeImpactResultToDict:
         d1 = impact.to_dict()
         d2 = impact.to_dict()
         assert d1 == d2
+
+
+class TestScopeWideningEvents:
+    """scope_widening_events is always present in output and is a list."""
+
+    @pytest.mark.unit
+    def test_scope_widening_events_present_in_to_dict(self) -> None:
+        result = _make_scan_result_with_imports()
+        engine = ChangeImpactEngine(result, repo_root=_REPO_ROOT)
+        impact = engine.analyze(
+            ["agentic_core/L0_routing/config/path_constants.py"],
+            include_tests=False,
+        )
+        d = impact.to_dict()
+        assert "scope_widening_events" in d
+        assert isinstance(d["scope_widening_events"], list)
+
+    @pytest.mark.unit
+    def test_include_tests_flag_separates_test_paths(self) -> None:
+        """With include_tests=False, test files appear in impacted_modules but
+        are separated into impacted_tests; include_tests=True puts them in both."""
+        result = ScanResult(commit_sha="test")
+        result.modules = [
+            "agentic_core/L0_routing/config/path_constants.py",
+            "tests/unit/test_something.py",
+        ]
+        result.edges = [
+            Edge(
+                from_name="ADG::Module::tests/unit/test_something.py",
+                relation_type="imports",
+                to_name="ADG::Module::agentic_core/L0_routing/config/path_constants.py",
+                edge_kind="import",
+                source_file="tests/unit/test_something.py",
+                line_no=1,
+            )
+        ]
+        result.compute_digest()
+        engine = ChangeImpactEngine(result, repo_root=_REPO_ROOT)
+        # include_tests=True: test files appear in impacted_tests list
+        impact_with_tests = engine.analyze(
+            ["agentic_core/L0_routing/config/path_constants.py"],
+            include_tests=True,
+        )
+        assert "tests/unit/test_something.py" in impact_with_tests.impacted_tests

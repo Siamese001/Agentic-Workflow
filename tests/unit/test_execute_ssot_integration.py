@@ -63,10 +63,20 @@ class TestPreRunADGReportToDict:
         report = PreRunADGReport.unavailable(["foo.py"], "error")
         d = report.to_dict()
         required = {
-            "changed_files", "impacted_module_count", "impacted_modules",
-            "impacted_test_count", "impacted_tests", "risk_score", "route_mode",
-            "scope_widening_events", "uncovered_changed_files", "layer_violation_count",
-            "impact_digest", "adg_available", "adg_error", "summary",
+            "changed_files",
+            "impacted_module_count",
+            "impacted_modules",
+            "impacted_test_count",
+            "impacted_tests",
+            "risk_score",
+            "route_mode",
+            "scope_widening_events",
+            "uncovered_changed_files",
+            "layer_violation_count",
+            "impact_digest",
+            "adg_available",
+            "adg_error",
+            "summary",
         }
         assert required <= set(d.keys())
 
@@ -188,3 +198,12 @@ class TestBuildPreRunReportIntegration:
         report = build_pre_run_report(changed_files=[], repo_root=_REPO_ROOT)
         assert report.risk_score == 0
         assert report.route_mode == "NORMAL"
+
+    @pytest.mark.unit
+    def test_available_report_has_empty_adg_error(self) -> None:
+        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
+        report = build_pre_run_report(changed_files=[], repo_root=_REPO_ROOT)
+        # When ADG is available, adg_error must be empty string (not None)
+        assert report.adg_error == ""
+        assert report.adg_available is True

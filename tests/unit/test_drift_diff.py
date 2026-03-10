@@ -18,7 +18,7 @@ from pathlib import Path
 
 import pytest
 
-from agentic_core.adg.applications.drift_diff import DriftDiffResult, run_drift_diff
+from agentic_core.adg.applications.drift_diff import run_drift_diff
 
 _REPO_ROOT = Path(__file__).resolve().parents[2]
 
@@ -45,7 +45,11 @@ def _minimal_artifact(
         "artifact_digest": digest,
         "entities": [{"adg_name": f"ADG::Module::mod_{i}.py"} for i in range(entity_count)],
         "relations": [
-            {"from_name": f"ADG::Module::mod_{i}.py", "relation_type": "imports", "to_name": f"ADG::Module::mod_{i+1}.py"}
+            {
+                "from_name": f"ADG::Module::mod_{i}.py",
+                "relation_type": "imports",
+                "to_name": f"ADG::Module::mod_{i + 1}.py",
+            }
             for i in range(relation_count)
         ],
         "unresolved_imports": [{"raw_name": f"unresolved_{i}"} for i in range(unresolved_count)],
@@ -231,8 +235,13 @@ class TestDriftDiffResultToDict:
             result = run_drift_diff(p, p)
         d = result.to_dict()
         required = {
-            "baseline_path", "current_path", "passed", "summary",
-            "regressions", "improvements", "neutral_changes",
+            "baseline_path",
+            "current_path",
+            "passed",
+            "summary",
+            "regressions",
+            "improvements",
+            "neutral_changes",
         }
         assert required <= set(d.keys())
 
@@ -243,3 +252,20 @@ class TestDriftDiffResultToDict:
             _write_artifact(_minimal_artifact(), p)
             result = run_drift_diff(p, p)
         assert len(result.summary) > 0
+
+
+class TestR4EntityRemoval:
+    """R4: >10 entities removed with 0 additions -> MEDIUM regression."""
+
+    @pytest.mark.unit
+    def test_r4_fires_on_mass_entity_removal(self) -> None:
+        with tempfile.TemporaryDirectory() as tmpdir:
+            b = Path(tmpdir) / "b.json"
+            c = Path(tmpdir) / "c.json"
+            # baseline has 20 entities, current has 5 (15 removed, 0 added)
+            _write_artifact(_minimal_artifact(entity_count=20, relation_count=0), b)
+            _write_artifact(_minimal_artifact(entity_count=5, relation_count=0), c)
+            result = run_drift_diff(b, c)
+        r4 = [r for r in result.regressions if r.rule == "R4"]
+        assert len(r4) == 1
+        assert r4[0].severity == "MEDIUM"

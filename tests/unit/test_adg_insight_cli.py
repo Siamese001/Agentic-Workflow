@@ -19,6 +19,8 @@ import pytest
 from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
 from agentic_core.adg.schema import canonical_name
 from tools.adg_insight_cli import (
+    cmd_blast_radius,
+    cmd_config_reads,
     cmd_coverage,
     cmd_depends_on,
     cmd_territory,
@@ -212,3 +214,37 @@ class TestCmdCoverage:
         result = _make_result()
         out = cmd_coverage(_MODULE_B, result, _REPO_ROOT)
         assert "note" in out
+
+
+class TestCmdBlastRadius:
+    """cmd_blast_radius delegates to ChangeImpactEngine and returns to_dict keys."""
+
+    @pytest.mark.unit
+    def test_returns_dict_with_required_keys(self) -> None:
+        result = _make_result()
+        out = cmd_blast_radius(_MODULE_A, result, _REPO_ROOT)
+        for key in ("changed_files", "impacted_module_count", "route_mode", "impact_digest"):
+            assert key in out, f"Missing key: {key}"
+
+    @pytest.mark.unit
+    def test_impact_digest_is_nonempty(self) -> None:
+        result = _make_result()
+        out = cmd_blast_radius(_MODULE_A, result, _REPO_ROOT)
+        assert len(out["impact_digest"]) == 64
+
+
+class TestCmdConfigReads:
+    """cmd_config_reads returns config/env symbols for a module."""
+
+    @pytest.mark.unit
+    def test_returns_dict_with_required_keys(self) -> None:
+        result = _make_result()
+        out = cmd_config_reads(_MODULE_A, result)
+        for key in ("module", "config_symbols_read"):
+            assert key in out, f"Missing key: {key}"
+
+    @pytest.mark.unit
+    def test_config_reads_is_list(self) -> None:
+        result = _make_result()
+        out = cmd_config_reads(_MODULE_A, result)
+        assert isinstance(out["config_symbols_read"], list)

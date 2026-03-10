@@ -35,6 +35,12 @@ dependencies = [
     "watchdog>=3.0.0",
 ]
 
+[project.scripts]
+adg-build = "tools.adg_cli:main"
+adg-health = "tools.adg_cli:main"
+adg-impact = "tools.adg_cli:main"
+adg-scoped-tests = "tools.adg_cli:main"
+
 [project.optional-dependencies]
 dev = [
     "pytest>=7.4.0",

@@ -297,3 +297,48 @@ class TestBuildIdentityIndex:
         records, report = build_identity_index([], repo_root=_REPO_ROOT)
         assert records == {}
         assert report.total == 0
+
+
+class TestIdentityRecordAdgName:
+    """Every IdentityRecord has a non-empty adg_name."""
+
+    @pytest.mark.unit
+    def test_repo_module_adg_name_nonempty(self) -> None:
+        rec = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
+        assert len(rec.adg_name) > 0
+
+    @pytest.mark.unit
+    def test_external_adg_name_starts_with_adg_symbol(self) -> None:
+        rec = normalize_identity("openai", repo_root=_REPO_ROOT)
+        assert rec.adg_name.startswith("ADG::Symbol::")
+
+    @pytest.mark.unit
+    def test_inferred_symbol_adg_name_nonempty(self) -> None:
+        rec = normalize_identity("agentic_core.adg.schema.EntityType", repo_root=_REPO_ROOT)
+        assert len(rec.adg_name) > 0
+
+
+class TestNormalizeFromScanResult:
+    """normalize_from_scan_result processes edges from a ScanResult."""
+
+    @pytest.mark.unit
+    def test_normalize_from_scan_result_returns_tuple(self) -> None:
+        from agentic_core.adg.extraction.static_scanner import Edge, ScanResult
+
+        result = ScanResult(commit_sha="test")
+        result.modules = ["agentic_core/adg/schema.py"]
+        result.edges = [
+            Edge(
+                from_name="ADG::Module::agentic_core/adg/schema.py",
+                relation_type="imports",
+                to_name="ADG::Symbol::openai.ChatCompletion",
+                edge_kind="import",
+                source_file="agentic_core/adg/schema.py",
+                line_no=1,
+            )
+        ]
+        result.compute_digest()
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        records, report = normalizer.normalize_from_scan_result(result)
+        assert isinstance(records, dict)
+        assert isinstance(report, NormalizationReport)
