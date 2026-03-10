@@ -25,6 +25,11 @@ if str(_ROOT) not in sys.path:
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    TOOLS_DIR,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    OPS_SCRIPTS_DIR,
 )
 
 # Allowed canonical+shim pairs (canonical_location -> shim_location)
@@ -314,7 +319,7 @@ def discover_roots(repo_root: Path) -> dict[str, Path]:
     roots = {}
 
     # Fixed roots
-    for name in ["agentic_core", "tools", "ops_scripts"]:
+    for name in [AGENTIC_CORE_DIR, TOOLS_DIR, OPS_SCRIPTS_DIR]:
         path = repo_root / name
         if path.exists():
             roots[name] = path

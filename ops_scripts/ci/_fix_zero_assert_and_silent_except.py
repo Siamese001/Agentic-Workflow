@@ -14,7 +14,7 @@ import sys
 from collections import defaultdict
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-SCAN_DIRS = ["tests"]
+SCAN_DIRS = [TESTS_DIR]
 
 GUARDIAN = "  # guardian: allow-silent-swallower"
 ASSERT_STUB = "assert True  # no-exception contract"

@@ -47,10 +47,10 @@ class L4MetaPriorProvider:
             return _NEUTRAL_PRIOR
         try:
             return self._store.get_prior(error_signature)
-        except Exception:
+        except (AttributeError, KeyError, ValueError) as e:
             logger.debug(
                 "L4MetaPriorProvider: store.get_prior raised; returning neutral",
-                extra={"error_signature": error_signature},
+                extra={"error_signature": error_signature, "error": str(e)},
                 exc_info=True,
             )
             return _NEUTRAL_PRIOR

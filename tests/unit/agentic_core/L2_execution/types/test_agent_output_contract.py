@@ -34,7 +34,6 @@ def test_verify_roundtrip():
     out = _FakeOutput(result="ok", score=0.9)
     contract = wrap_output("MyAgent", "trace-1", out, SECRET)
     contract.verify(SECRET)  # must not raise
-    assert True  # no-exception contract
 
 
 def test_different_payloads_produce_different_hashes():

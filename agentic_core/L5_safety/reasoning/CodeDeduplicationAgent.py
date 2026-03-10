@@ -64,9 +64,13 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    ARCHIVES_DIR,
+)
 
 # Archives directory constant for exclusion
-ARCHIVES_DIR = "archives"
+ARCHIVES_DIR = ARCHIVES_DIR
 
 
 class CodeDeduplicationAgent(SovereignBaseAgent):
@@ -120,7 +124,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             try:
                 self.ts_parser = Parser()
                 self.ts_parser.set_language(Language(tspython.language()))
-            except Exception:
+            except (ImportError, AttributeError) as e:
+                self.logger.debug(f"Tree-sitter unavailable: {e}")
                 self.ts_parser = None
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
@@ -169,7 +174,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     "errors": [],
                 }
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": "Exception during healing",
@@ -243,7 +248,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 tree = ast.parse(code)
                 norm_tree = self._normalize_ast_tree(tree)
                 return hashlib.sha256(str(norm_tree).encode()).hexdigest()
-        except Exception:
+        except (SyntaxError, ValueError) as e:
+            self.logger.debug(f"AST parsing failed, using text normalization: {e}")
             # Fallback to text-based normalization
             normalized = self._normalize_code(code)
             return hashlib.sha256(normalized.encode("utf-8")).hexdigest()
@@ -253,7 +259,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         try:
             source = file_path.read_text(encoding="utf-8")
             tree = ast.parse(source)
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            self.logger.debug(f"Failed to extract blocks from {file_path.name}: {e}")
             return []
         blocks = []
         source_lines = source.splitlines()
@@ -306,7 +313,8 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     else:
                         tree = ast.parse(code)
                         norm_str = self._normalize_ast_tree(tree)
-                except Exception:
+                except (SyntaxError, ValueError) as e:
+                    self.logger.debug(f"AST normalization failed: {e}")
                     normalized = self._normalize_code(code)
                     norm_str = normalized
 
@@ -393,7 +401,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     backup_path = file_path.parent / f"{file_path.stem}_backup{file_path.suffix}"
                     _wg.copy_file(file_path, backup_path)
                     print(f"      [✓] Created backup: {backup_path}")
-                except Exception as e:
+                except (OSError, TypeError) as e:
                     print(f"      [!] Backup failed for {file_path}: {e}")
         print(f"   [SURGERY COMPLETE] {self.extracted_count} instances extracted")
 
@@ -411,7 +419,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                     lines.append(" ".join(stripped.split()))
             content = "\n".join(lines)
             return hashlib.sha256(content.encode("utf-8")).hexdigest()
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             self.errors.append(f"File hash error {file_path}: {e}")
             return None
 
@@ -588,7 +596,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         if NAMING_AGENT_AVAILABLE:
             try:
                 get_naming_agent(project_root)
-            except Exception as e:
+            except (ImportError, AttributeError) as e:
                 self.errors.append(f"NamingAgent call failed: {e}")
 
         try:
@@ -596,7 +604,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
             target_dir = self._get_target_dir_from_content(preview, project_root)
             _wg.ensure_dir(target_dir)
             return self._get_unique_path(target_dir, file_path)
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             self.errors.append(f"Uniqueness suggestion failed for {file_path}: {e}")
             return file_path.with_name(f"UNIQUE_{file_path.name}")
 
@@ -742,7 +750,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
 
             # Filter out __pycache__ and archives
             python_files = [
-                f for f in python_files if "__pycache__" not in str(f) and "archives" not in str(f)
+                f for f in python_files if "__pycache__" not in str(f) and ARCHIVES_DIR not in str(f)
             ]
 
             self.logger.info(f"  Scanning {len(python_files)} Python files...")
@@ -752,7 +760,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 self.scan_for_duplicates([str(f) for f in python_files])
                 block_duplicates = len(self.duplicate_blocks) if hasattr(self, "duplicate_blocks") else 0
                 violations_found += block_duplicates
-            except Exception as e:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
                 self.logger.error(f"  Error scanning code blocks: {e}")
                 errors += 1
 
@@ -761,7 +769,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 self.scan_file_level_duplicates(python_files)
                 file_duplicates = len(self.file_duplicates) if hasattr(self, "file_duplicates") else 0
                 violations_found += file_duplicates
-            except Exception as e:
+            except (OSError, UnicodeDecodeError) as e:
                 self.logger.error(f"  Error scanning file duplicates: {e}")
                 errors += 1
 
@@ -770,7 +778,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 self.scan_filename_duplicates(python_files)
                 name_duplicates = len(self.filename_duplicates) if hasattr(self, "filename_duplicates") else 0
                 violations_found += name_duplicates
-            except Exception as e:
+            except (OSError, UnicodeDecodeError) as e:
                 self.logger.error(f"  Error scanning filename duplicates: {e}")
                 errors += 1
 
@@ -828,7 +836,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 print("[*] Running in dry-run mode - diagnostics only")
             else:
                 print("[*] Running in healing mode - modifications will be applied")
-        except Exception as e:
+        except (ImportError, AttributeError) as e:
             print(f"[!] HealerMixin diagnostic failed: {e}")
 
         if not hasattr(ctx, "python_files"):
@@ -898,7 +906,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
         """Analyze a single Python file for dead code."""
         try:
             content = file_path.read_text(encoding="utf-8")
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             return {"error": f"Could not read {file_path}: {e}"}
 
         if not content.strip() or file_path.name == "__init__.py":
@@ -1003,7 +1011,7 @@ class CodeDeduplicationAgent(SovereignBaseAgent):
                 new_lines = [line for i, line in enumerate(lines, 1) if i not in lines_to_remove]
                 _wg.write_text(file_path, "".join(new_lines), encoding="utf-8")
                 results["applied"] = True
-            except Exception as e:
+            except (OSError, TypeError) as e:
                 results["error"] = str(e)
 
 

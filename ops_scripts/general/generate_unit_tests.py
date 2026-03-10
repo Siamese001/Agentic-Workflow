@@ -32,7 +32,7 @@ def get_test_path(agent_path: str) -> Path:
     test_filename = "test_" + to_snake_case(class_name) + ".py"
 
     # Build test path
-    test_path = Path("tests/unit") / "/".join(dir_parts) / test_filename
+    test_path = Path(TESTS_UNIT_DIR) / "/".join(dir_parts) / test_filename
     return test_path
 
 

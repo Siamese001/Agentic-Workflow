@@ -48,11 +48,13 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L6_OBSERVABILITY_DIR,
+    ARCHIVES_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    REPORTS_DIR,
 )
 
 # Ensure project root is in path
@@ -181,7 +183,7 @@ class TestSSOTAlignment:
                 existing_paths.append(territory_name)
             else:
                 # Some territories are optional (e.g., archives, reports)
-                if territory_name in {"archives", "reports", ".sovereign_healing_backup"}:
+                if territory_name in {ARCHIVES_DIR, REPORTS_DIR, ".sovereign_healing_backup"}:
                     print(f"  [INFO] Optional territory '{territory_name}' does not exist (OK)")
                 else:
                     missing_paths.append(f"Territory: {territory_name}")

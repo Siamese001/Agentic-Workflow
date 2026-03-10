@@ -35,7 +35,7 @@ from agentic_core.L0_routing.config.path_constants import (
 # ---------------------------------------------------------------------------
 REPO_ROOT = Path(__file__).resolve().parent.parent.parent
 SSOT_JSON = REPO_ROOT / "artifacts" / "discovery" / "agent_discovery_full.json"
-REPORT_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "qwen_vllm_healing_recommendations.md"
+REPORT_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "qwen_vllm_healing_recommendations.md"
 
 VLLM_BASE_URL = "http://localhost:8000/v1"
 VLLM_MODEL = "qwen-14b-quantized"

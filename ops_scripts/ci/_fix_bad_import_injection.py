@@ -37,6 +37,7 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 SSOT_IMPORT_BLOCK = """\
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -49,7 +50,7 @@ SKIP_DIRS: frozenset[str] = frozenset(
         ".venv",
         "venv",
         "__pycache__",
-        "archives",
+        ARCHIVES_DIR,
         "node_modules",
         ".healing_backups",
         ".sovereign_healing_backup",

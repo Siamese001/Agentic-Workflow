@@ -146,7 +146,7 @@ def classify_all_files(project_root: Path) -> list[FileClassification]:
 
                 # Map source path to test path
                 rel_path = path.relative_to(project_root)
-                test_path = project_root / "tests" / "unit" / rel_path.parent / test_name
+                test_path = project_root / TESTS_DIR / "unit" / rel_path.parent / test_name
 
                 # Determine if test is needed
                 needs_test = file_type not in ("STUB", "TYPES", "CONFIG", "SCRIPT")

@@ -19,7 +19,7 @@ proc = subprocess.Popen(
         "agentic_core.L0_routing.scripts.execute_ssot_entrypoint",
         "--heal",
         "--territory",
-        "system_learning",
+        SYSTEM_LEARNING_DIR,
         "-vv",
     ],
     cwd=r"c:\Git\Agentic-Workflow",

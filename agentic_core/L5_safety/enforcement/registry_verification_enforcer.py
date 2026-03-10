@@ -31,6 +31,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
+    TESTS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
@@ -107,7 +108,7 @@ class RegistryVerifier:
 
     def _is_test_file(self, path: Path) -> bool:
         """Check if path is a test file."""
-        return "tests" in path.parts or path.name.startswith("test_")
+        return TESTS_DIR in path.parts or path.name.startswith("test_")
 
     def _extract_layer(self, relative_path: str) -> str:
         """Extract layer from relative path."""

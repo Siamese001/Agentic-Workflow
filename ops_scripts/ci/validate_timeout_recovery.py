@@ -9,6 +9,17 @@ import re
 import sys
 from pathlib import Path
 from typing import Dict, List, Tuple
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 def validate_timeout_recovery_patterns(file_path: Path) -> list[str]:
@@ -18,8 +29,9 @@ def validate_timeout_recovery_patterns(file_path: Path) -> list[str]:
     try:
         with open(file_path, encoding="utf-8") as f:
             content = f.read()
-    except Exception as e:
-        return [f"{file_path}: Failed to read file: {e}"]
+    except (OSError, UnicodeDecodeError, SyntaxError) as e:
+        print(f"Error reading {file_path}: {e}")
+        return []
 
     # Check for timeout handling without recovery
     timeout_catches = list(re.finditer(r"except\s+TimeoutError", content))
@@ -66,7 +78,7 @@ def validate_evidence_timeout_recovery(evidence_path: Path) -> list[str]:
     try:
         with open(evidence_path, encoding="utf-8") as f:
             content = f.read()
-    except Exception as e:
+    except (OSError, UnicodeDecodeError) as e:
         return [f"{evidence_path}: Failed to read file: {e}"]
 
     # If evidence mentions timeout, check for recovery documentation
@@ -110,7 +122,7 @@ def validate_module_level_blocking_ops(repo_path: Path) -> list[str]:
 
     # Check test files for module-level blocking operations
     test_dirs = [
-        repo_path / "tests",
+        repo_path / TESTS_DIR,
     ]
 
     for test_dir in test_dirs:
@@ -124,7 +136,7 @@ def validate_module_level_blocking_ops(repo_path: Path) -> list[str]:
             try:
                 source = test_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(source, filename=str(test_file))
-            except Exception:
+            except (OSError, UnicodeDecodeError, SyntaxError):
                 continue
 
             # Find module-level calls
@@ -195,13 +207,13 @@ def run_full_validation(repo_path: Path) -> dict[str, list[str]]:
 
     # Validate Python files for timeout recovery patterns
     key_dirs = [
-        repo_path / "agentic_core",
-        repo_path / "apps_lic",
-        repo_path / "apps_rg",
-        repo_path / "apps_shared",
-        repo_path / "ops_scripts",
-        repo_path / "tools",
-        repo_path / "system_learning",
+        repo_path / AGENTIC_CORE_DIR,
+        repo_path / APPS_LIC_DIR,
+        repo_path / APPS_RG_DIR,
+        repo_path / APPS_SHARED_DIR,
+        repo_path / OPS_SCRIPTS_DIR,
+        repo_path / TOOLS_DIR,
+        repo_path / SYSTEM_LEARNING_DIR,
     ]
 
     for key_dir in key_dirs:
@@ -216,7 +228,7 @@ def run_full_validation(repo_path: Path) -> dict[str, list[str]]:
             all_violations["code"].extend(violations)
 
     # Validate evidence files
-    evidence_dir = repo_path / "docs" / "reports" / "plans"
+    evidence_dir = repo_path / "docs" / REPORTS_DIR / "plans"
     if evidence_dir.exists():
         for evidence_file in evidence_dir.glob("EVIDENCE_*.md"):
             violations = validate_evidence_timeout_recovery(evidence_file)

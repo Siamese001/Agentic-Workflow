@@ -32,6 +32,7 @@ MECE Test Categories:
 
 import pytest
 from unittest.mock import MagicMock, patch
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 class Test{class_name_title}Initialization:
@@ -88,7 +89,7 @@ class Test{class_name_title}TypeBoundaries:
 
 def fix_all_test_headers(project_root: Path):
     """Fix headers for all test files."""
-    test_dir = project_root / "tests" / "unit"
+    test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
     skipped_count = 0
     error_count = 0

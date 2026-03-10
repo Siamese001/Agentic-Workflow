@@ -22,6 +22,13 @@ from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    ARCHIVES_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 
 @dataclass
@@ -246,9 +253,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         except SyntaxError:
             pass  # Unparseable Python is a different issue
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass  # Non-blocking for other errors
+        except (OSError, UnicodeDecodeError) as e:
+            self.logger.debug(f"Failed to check import depth for {rel_path}: {e}")
+            # Non-blocking for other errors
 
         return True, "OK"
 
@@ -285,7 +292,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
         actual_depth = len(parts) - 1
 
         # Check if this is a variable-depth subfolder (exempt from strict depth check)
-        if root_folder == "agentic_core" and len(parts) > 1:
+        if root_folder == AGENTIC_CORE_DIR and len(parts) > 1:
             subfolder = parts[1]
             if subfolder in VARIABLE_DEPTH_SUBFOLDERS:
                 # Allow any depth >= 2 for variable-depth subfolders
@@ -315,7 +322,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
             is_app_specific_file,
         )
 
-        if root_folder == "agentic_core" and is_app_specific_file(file_path.name):
+        if root_folder == AGENTIC_CORE_DIR and is_app_specific_file(file_path.name):
             correct_path = get_correct_app_path(file_path.name) or "appropriate apps_* folder"
             return False, (
                 f"APP-SPECIFIC IN CORE VIOLATION: '{file_path.name}' is application-specific "
@@ -362,9 +369,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
                 if file_path.stat().st_size < 1_000_000:  # 1MB limit
                     try:
                         content = file_path.read_text(encoding="utf-8", errors="ignore")
-                    # guardian: allow-silent-swallow
-                    except Exception:
-                        pass  # Content check is optional
+                    except (OSError, UnicodeDecodeError) as e:
+                        self.logger.debug(f"Failed to read content for artifact check: {e}")
+                        # Content check is optional
 
             rejection_reason = check_forbidden_signals(file_path.name, content)
             if rejection_reason:
@@ -372,9 +379,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     False,
                     f"ARTIFACT ROUTING VIOLATION: {rejection_reason}",
                 )
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass  # Non-blocking - routing check is supplementary
+        except (ImportError, AttributeError) as e:
+            self.logger.debug(f"Artifact routing check failed: {e}")
+            # Non-blocking - routing check is supplementary
 
         return True, "OK"
 
@@ -400,7 +407,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
     def _validate_ast_violations(self, root_folder: str, file_path: Path, rel_path: Path) -> tuple[bool, str]:
         """Validate AST-based violations for agentic_core Python files."""
-        if root_folder != "agentic_core" or file_path.suffix != ".py":
+        if root_folder != AGENTIC_CORE_DIR or file_path.suffix != ".py":
             return True, "OK"
 
         try:
@@ -426,9 +433,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
             if not result[0]:
                 return result
 
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass  # AST parsing failures are non-blocking
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            self.logger.debug(f"AST parsing failed for {rel_path}: {e}")
+            # AST parsing failures are non-blocking
 
         return True, "OK"
 
@@ -508,15 +515,15 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         # [SHARED GRAVITY] Check app-layer horizontal isolation
         # apps_shared MUST NOT import from apps_rg or apps_lic
-        if current_l1 == "apps_shared":
+        if current_l1 == APPS_SHARED_DIR:
             if module.startswith(("apps_rg.", "apps_lic.")):
                 imported_app = module.split(".")[0]
                 return f"apps_shared → {imported_app} (HORIZONTAL ISOLATION VIOLATION)"
 
         # Apps cannot import from each other
-        if current_l1 == "apps_rg" and module.startswith("apps_lic."):
+        if current_l1 == APPS_RG_DIR and module.startswith("apps_lic."):
             return "apps_rg → apps_lic (HORIZONTAL ISOLATION VIOLATION)"
-        if current_l1 == "apps_lic" and module.startswith("apps_rg."):
+        if current_l1 == APPS_LIC_DIR and module.startswith("apps_rg."):
             return "apps_lic → apps_rg (HORIZONTAL ISOLATION VIOLATION)"
 
         return None
@@ -571,9 +578,9 @@ class LocationValidatorAgent(SovereignBaseAgent):
                             f"belongs in '{correct_folder}/' not '{current_subfolder}/'. "
                             f"File: {rel_path}"
                         )
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass  # Fall through to legacy scoring if FCA unavailable
+        except (ImportError, AttributeError, OSError) as e:
+            self.logger.debug(f"FCA classification failed for {rel_path}: {e}")
+            # Fall through to legacy scoring if FCA unavailable
 
         # Fallback to legacy territory scoring
         return self._check_territory_alignment(current_territory, territory_scores, rel_path)
@@ -620,7 +627,7 @@ class LocationValidatorAgent(SovereignBaseAgent):
 
         # 1. GLOBAL CANDIDATE DETECTION (Vacuum to apps_shared)
         # If file is in an app folder but has near-ZERO domain DNA (Resume or LinkedIn)
-        if current_root in ["apps_rg", "apps_lic"]:
+        if current_root in [APPS_RG_DIR, APPS_LIC_DIR]:
             # Threshold: < 0.5 indicates purely generic utility logic (e.g., date_helper.py)
             if app_rg_score < 0.5 and app_lic_score < 0.5:
                 # Disqualify files that already carry explicit app-specific prefixes
@@ -633,13 +640,13 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     )
 
         # 2. CROSS-CONTAMINATION CHECK (App vs App)
-        if current_root == "apps_rg" and app_lic_score > app_rg_score * 2.0:
+        if current_root == APPS_RG_DIR and app_lic_score > app_rg_score * 2.0:
             return (
                 False,
                 f"APP DOMAIN VIOLATION: Strong apps_lic signals ({app_lic_score:.1f} vs {app_rg_score:.1f})",
             )
 
-        if current_root == "apps_lic" and app_rg_score > app_lic_score * 2.0:
+        if current_root == APPS_LIC_DIR and app_rg_score > app_lic_score * 2.0:
             return (
                 False,
                 f"APP DOMAIN VIOLATION: Strong apps_rg signals ({app_rg_score:.1f} vs {app_lic_score:.1f})",
@@ -833,11 +840,11 @@ class LocationValidatorAgent(SovereignBaseAgent):
                     for skip in [
                         "__pycache__",
                         ".git",
-                        "archives",
+                        ARCHIVES_DIR,
                         ".venv",
                         ".sovereign_healing_backup",
                         "node_modules",
-                        "ops_scripts",
+                        OPS_SCRIPTS_DIR,
                         "artifacts",
                     ]
                 ):

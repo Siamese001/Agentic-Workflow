@@ -7,6 +7,7 @@ Enforces Bounded Contexts and Aggregate Root access.
 import ast
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 # from agentic_core.L1_cognition.P2_domain.sovereign  # Refactored to dynamic import to avoid upward dependency
 
@@ -76,7 +77,7 @@ def check_bounded_contexts(filepath: Path) -> list[str]:
                             issues.append(
                                 f"Potential Context Violation: Importing {ctx} logic ({node.module}) into {current_context}",
                             )
-    except Exception:
+    except (OSError, UnicodeDecodeError, SyntaxError):
         pass
     return issues
 
@@ -88,7 +89,7 @@ def validate_ddd_alignment(target_dir: str) -> tuple[float, list[str]]:
     from agentic_core.utils.ssot_discovery_validator import get_python_files
 
     for path in get_python_files(Path(target_dir)):
-        if "tests" in str(path):
+        if TESTS_DIR in str(path):
             continue
         total_files += 1
         issues.extend([f"{str(path)}: {i}" for i in check_bounded_contexts(path)])

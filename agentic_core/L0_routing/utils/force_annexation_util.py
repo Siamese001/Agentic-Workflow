@@ -19,7 +19,7 @@ from agentic_core.L0_routing.config import (
 
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
-excluded_zones: Any = ["data", "archives", "tests", ".git", ".venv", "__pycache__"]
+excluded_zones: Any = ["data", ARCHIVES_DIR, TESTS_DIR, ".git", ".venv", "__pycache__"]
 logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 annexation_plan: Any = {
     "config": CORE / "config/P1_core",
@@ -44,7 +44,7 @@ def force_annexation() -> Any:
             continue
         logging.info(f"  [>] Moving {old_name} contents to {destination.relative_to(ROOT)}...")
         for item in list(old_path.iterdir()):
-            if item.name == "agentic_core":
+            if item.name == AGENTIC_CORE_DIR:
                 continue
             target_item: Any = destination / item.name
             if target_item.exists():

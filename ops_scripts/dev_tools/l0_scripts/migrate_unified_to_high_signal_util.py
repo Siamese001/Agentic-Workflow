@@ -19,6 +19,7 @@ to Sovereign Posture (defining the single source of truth).
 import re
 import shutil
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 
 def migrate_unified():
@@ -136,7 +137,7 @@ def migrate_unified():
 
     for py_file in project_root.rglob("*.py"):
         # Safety skip
-        if "archives" in str(py_file) or ".venv" in str(py_file) or "__pycache__" in str(py_file):
+        if ARCHIVES_DIR in str(py_file) or ".venv" in str(py_file) or "__pycache__" in str(py_file):
             continue
 
         # Skip this migration script itself

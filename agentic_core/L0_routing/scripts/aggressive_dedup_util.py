@@ -18,6 +18,7 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 
@@ -128,7 +129,7 @@ def find_low_value_files(dirs: list[str]) -> list[str]:
                     continue
 
                 # Check for test-only files in non-test locations
-                if "test" in py_file.stem.lower() and "tests" not in str(py_file):
+                if "test" in py_file.stem.lower() and TESTS_DIR not in str(py_file):
                     tree = ast.parse(content)
                     classes = [n for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
                     # If all classes are test classes

@@ -32,6 +32,7 @@ from data.sdks_mcps.client_wrappers import (
     create_openai_client,
     create_vertex_client,
 )
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 
 # Agent execution profile enforcement
 try:
@@ -563,7 +564,7 @@ class SovereignLLMGateway:
 
         # [PHASE 21] Tool Adapter: Handle Pure Dicts from tool_registry
         call_kwargs = {}
-        if "tools" in kwargs:
+        if TOOLS_DIR in kwargs:
             call_kwargs["tools"] = kwargs["tools"]
 
         response = await gen_model.generate_content_async(

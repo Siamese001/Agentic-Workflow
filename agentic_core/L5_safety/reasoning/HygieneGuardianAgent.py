@@ -169,7 +169,7 @@ class HygieneGuardianAgent(SovereignBaseAgent):
         try:
             content = file_path.read_text(encoding="utf-8")
             return len(content.strip()) == 0
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             return False
 
     def _is_orphaned_init(self, file_path: Path) -> bool:
@@ -204,8 +204,8 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                         debug_lines.append(i)
 
             return debug_lines
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            self.logger.debug(f"Failed to scan for debug statements in {file_path.name}: {e}")
             return []
 
     def _has_commented_code(self, file_path: Path) -> tuple[bool, int]:
@@ -224,8 +224,8 @@ class HygieneGuardianAgent(SovereignBaseAgent):
                 return True, len(matches)
 
             return False, 0
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            self.logger.debug(f"Failed to scan for commented code in {file_path.name}: {e}")
             return False, 0
 
     def _has_repeated_filename_parts(self, filename: str) -> tuple[bool, str | None]:

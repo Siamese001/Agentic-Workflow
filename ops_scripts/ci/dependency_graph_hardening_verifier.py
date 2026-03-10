@@ -35,6 +35,10 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
 from agentic_core.L5_safety.enforcement.dependency_graph_enforcer import DependencyGraph
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 EXCLUDED_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
@@ -181,7 +185,7 @@ class HardeningVerifier:
         imports = self.dep_graph.get_imports(execute_ssot_path)
 
         # Check if apps_rg or apps_lic are imported
-        apps_imported = any("apps_rg" in imp or "apps_lic" in imp for imp in imports)
+        apps_imported = any(APPS_RG_DIR in imp or APPS_LIC_DIR in imp for imp in imports)
 
         if apps_imported:
             gap.status = "DISPROVEN"
@@ -272,7 +276,7 @@ class HardeningVerifier:
         heal_methods = [
             func
             for func in self.call_graph.default_args.keys()
-            if "heal_repository" in func and ("apps_rg" in func or "apps_lic" in func)
+            if "heal_repository" in func and (APPS_RG_DIR in func or APPS_LIC_DIR in func)
         ]
 
         dry_run_true_count = 0

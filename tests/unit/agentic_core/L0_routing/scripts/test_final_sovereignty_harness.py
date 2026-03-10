@@ -31,7 +31,6 @@ class TestFinalSovereignty(unittest.TestCase):
         except Exception as e:  # guardian: allow-silent-swallower
             status = f"FAIL: {e}"
         self.assertEqual(status, "PASS", "Performance regression: Import refactoring must use memory cache.")
-        assert True  # no-exception contract
 
     def test_test_exemption_100_percent_pass(self):
         """Verify that test files are strictly ignored to prevent CI destruction."""
@@ -45,7 +44,6 @@ class TestFinalSovereignty(unittest.TestCase):
             "IGNORE",
             "Fail: Test suffix files must be exempted.",
         )
-        assert True  # no-exception contract
 
     def test_agent_detection_logic_100_percent_pass(self):
         """Verify that real agents are correctly identified for renaming."""
@@ -66,13 +64,11 @@ class TestFinalSovereignty(unittest.TestCase):
                 "IGNORE",
                 "Agent files should not be ignored when they exist and contain agent classes.",
             )
-            assert True  # no-exception contract
-
+    
     def test_windows_registry_validation_100_percent_pass(self):
         """Confirm environment verification logic remains active for Windows safety."""
         #
         self.assertTrue(self.fixer.verify_environment(), "Environment check missing or failing.")
-        assert True  # no-exception contract
 
 
 if __name__ == "__main__":

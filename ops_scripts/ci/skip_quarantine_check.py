@@ -21,7 +21,7 @@ import json
 import sys
 from pathlib import Path
 
-SCAN_ROOTS = ["tests"]
+SCAN_ROOTS = [TESTS_DIR]
 QUARANTINE_MANIFEST = "tests/_quarantine/QUARANTINE_MANIFEST.json"
 KNOWN_FAILING_MD = "docs/reports/plans/KNOWN_FAILING_TESTS.md"
 

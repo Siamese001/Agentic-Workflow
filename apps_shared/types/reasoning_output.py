@@ -12,6 +12,10 @@ import ast
 from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 
 @dataclass
@@ -62,7 +66,7 @@ def scan_for_violations(scan_dirs: list[Path] | None = None) -> list[tuple[str, 
     """
     if scan_dirs is None:
         repo_root = Path(__file__).resolve().parents[2]
-        scan_dirs = [repo_root / "apps_rg", repo_root / "apps_lic"]
+        scan_dirs = [repo_root / APPS_RG_DIR, repo_root / APPS_LIC_DIR]
 
     violations: list[tuple[str, int, str]] = []
 

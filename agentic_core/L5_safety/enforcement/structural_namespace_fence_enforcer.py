@@ -19,7 +19,7 @@ import sys
 from pathlib import Path
 
 _TRACKED_ROOTS: frozenset = frozenset(
-    {"apps_lic", "apps_rg", "apps_shared", "agentic_core", "system_learning"}
+    {APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR}
 )
 
 _ALLOWED_CROSS: dict[str, set[str]] = {
@@ -78,7 +78,7 @@ def _extract_namespace(path: Path) -> str:
     """Derive namespace string from file path."""
     for part in path.parts:
         if part in _TRACKED_ROOTS:
-            if part == "agentic_core":
+            if part == AGENTIC_CORE_DIR:
                 idx = list(path.parts).index(part)
                 rest = path.parts[idx + 1 :]
                 if rest and rest[0].startswith("L") and "_" in rest[0]:
@@ -91,7 +91,7 @@ def _namespace_from_module_name(module_name: str) -> str:
     """Derive namespace from a dotted module name."""
     for root in _TRACKED_ROOTS:
         if module_name == root or module_name.startswith(root + "."):
-            if root == "agentic_core":
+            if root == AGENTIC_CORE_DIR:
                 parts = module_name.split(".")
                 if len(parts) >= 2 and parts[1].startswith("L") and "_" in parts[1]:
                     return f"agentic_core.{parts[1]}"

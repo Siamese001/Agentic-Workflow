@@ -8,7 +8,7 @@ import pathlib
 
 def main():
     """Handle non-canonical tests."""
-    test_root = pathlib.Path("tests")
+    test_root = pathlib.Path(TESTS_DIR)
 
     # Known non-mirror test areas that are allowed
     allowed_areas = {
@@ -38,7 +38,7 @@ def main():
             continue
 
         first_part = relative_path.parts[0]
-        if first_part not in ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]:
+        if first_part not in [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]:
             non_canonical_tests.append(test_file)
 
     print(f"Found {len(non_canonical_tests)} non-canonical tests")

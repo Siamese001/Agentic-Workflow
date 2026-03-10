@@ -95,7 +95,7 @@ def _find_l6_imports_in_file(filepath: Path) -> set[str]:
     try:
         src = filepath.read_text(encoding="utf-8")
         tree = ast.parse(src, filename=str(filepath))
-    except Exception:
+    except (OSError, UnicodeDecodeError, SyntaxError):
         return set()
     symbols: set[str] = set()
     for node in ast.walk(tree):

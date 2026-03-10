@@ -70,8 +70,8 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Early constants required by resolve_repo_root (full block also at bottom of file)
-AGENTIC_CORE_DIR = "agentic_core"
-OPS_SCRIPTS_DIR = "ops_scripts"
+AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
+OPS_SCRIPTS_DIR = OPS_SCRIPTS_DIR
 
 
 def _get_uwg():
@@ -209,8 +209,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                         novelty_flag = bool(float(sims.max()) < 0.75)
                     else:
                         novelty_flag = True
-                except Exception:  # guardian: allow-silent-swallower
-                    pass
+                except (ValueError, AttributeError, ImportError) as e:
+                    logging.debug(f"Novelty detection failed, using default: {e}")
+                    novelty_flag = True
 
             # A5: hash-fallback vector (stdlib-only, deterministic)
             if failure_vector is None:
@@ -224,8 +225,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     )
 
                     failure_vector = tuple(_gen_fallback(_fb_text))
-                except Exception:  # guardian: allow-silent-swallower
-                    pass
+                except (ImportError, ValueError, AttributeError) as e:
+                    logging.debug(f"Fallback vector generation failed: {e}")
+                    # Continue without failure vector
 
             # A4: accumulate for FAISS wiring
             if failure_vector is not None:
@@ -271,7 +273,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
             _bge_arch_counts["semantic_cache"] = _cs.get(
                 "embed_calls", _cs.get("hits", 0) + _cs.get("misses", 0)
             )
-        except Exception:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, KeyError):  # guardian: allow-silent-swallower
             pass
 
         # Persist BGE usage to state for downstream consumers (_write_mandatory_json_output)
@@ -291,7 +293,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                 )
                 _sr_store.record_outcome(_sig, _action.get("outcome", "SUCCESS") == "SUCCESS")
             state_mgr.state.setdefault("meta_learning", {})["success_rate_store"] = _sr_store.export_state()
-        except Exception as _sr_err:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, KeyError) as _sr_err:  # guardian: allow-silent-swallower
             logging.warning("[MetaLearning] Wave1 success_rate_store failed (non-fatal): %s", _sr_err)
 
         store = InMemoryHealingOutcomeIntakeStore()
@@ -329,7 +331,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     )
                 with open(_corpus_path, "a", encoding="utf-8") as _cf:
                     _cf.write("\n".join(_new_lines) + "\n")
-            except Exception as _w2_err:  # guardian: allow-silent-swallower
+            except (OSError, TypeError) as _w2_err:  # guardian: allow-silent-swallower
                 logging.warning("[MetaLearning] Wave2 JSONL corpus append failed (non-fatal): %s", _w2_err)
 
             # Wave 3: Persist HealingOutcomeIntakeRecord via FileBackedVersionStore
@@ -339,7 +341,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                 _intake_dir = REPO_ROOT / "data" / "golden_state" / "healing_intakes"
                 _file_store = _FBVS(_intake_dir)
                 _file_store.commit_change_package(record)
-            except Exception as _w3_err:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, OSError) as _w3_err:  # guardian: allow-silent-swallower
                 logging.warning("[MetaLearning] Wave3 FileBackedVersionStore failed (non-fatal): %s", _w3_err)
 
         # Wave 4: Reload and merge prior intake records (cap at 50) into aggregator
@@ -385,9 +387,9 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                                         timestamp_utc=now_utc,
                                     )
                                 )
-                    except Exception:  # guardian: allow-silent-swallow malformed record
+                    except (KeyError, ValueError, TypeError):  # guardian: allow-silent-swallow malformed record
                         continue
-        except Exception as _w4_err:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, OSError) as _w4_err:  # guardian: allow-silent-swallower
             logging.warning("[MetaLearning] Wave4 prior record merge failed (non-fatal): %s", _w4_err)
 
         # A4: wire accumulated failure_vectors into LocalFAISSStore (healing_context_v1)
@@ -462,7 +464,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                     len(_all_vecs),
                     _faiss_disk_dir,
                 )
-            except Exception as _faiss_err:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, OSError, ValueError) as _faiss_err:  # guardian: allow-silent-swallower
                 logging.warning("[MetaLearning] FAISS wiring failed (non-fatal): %s", _faiss_err)
 
         # Gap 6: persist new failure vectors to L4 state (capped at 200) for cross-run novelty
@@ -485,7 +487,7 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
         )
     except ImportError:
         logging.debug("[MetaLearning] Intake adapter not yet available (pre-Wave 0B). Skipping.")
-    except Exception as _ml_err:  # guardian: allow-silent-swallower
+    except (AttributeError, TypeError, OSError) as _ml_err:  # guardian: allow-silent-swallower
         logging.warning("[MetaLearning] Intake adapter failed (non-fatal): %s", _ml_err)
 
     try:
@@ -532,12 +534,12 @@ def _fire_meta_learning_intake(state_mgr: "RuntimeStateManager", now_utc: int) -
                             )
                             + "\n"
                         )
-            except Exception as _prop_err:
+            except (OSError, TypeError) as _prop_err:
                 logging.warning("[MetaLearning] proposal write failed: %s", _prop_err)
         logging.info("[MetaLearning] meta_learning_pipeline.run_pipeline() completed.")
     except ImportError as _imp_err:
         logging.debug("[MetaLearning] Pipeline not yet available (pre-Wave 0B): %s", _imp_err)
-    except Exception as _pl_err:  # guardian: allow-silent-swallower
+    except (AttributeError, TypeError, ValueError) as _pl_err:  # guardian: allow-silent-swallower
         logging.warning("[MetaLearning] Pipeline run failed (non-fatal): %s", _pl_err)
 
 
@@ -621,8 +623,7 @@ def _optional_runtime_guard():
         from agentic_core.L0_routing.enforcement.runtime_guard import runtime_guard
 
         return runtime_guard
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError):
         if os.getenv("V15_ENFORCEMENT") == "1":
             raise  # fail-closed: enforcement is on but guard is unavailable
 
@@ -699,11 +700,10 @@ def run_fence_self_check() -> None:
     # Check 1: Default policy immutable_roots
     try:
         policy = get_default_protected_root_policy()
-        expected = ("agentic_core", "tests", ".github", ".windsurfrules")
+        expected = (AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".windsurfrules")
         if policy.immutable_roots != expected:
             failed_checks.append("default_policy_immutable_roots")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError):
         failed_checks.append("default_policy_immutable_roots")
 
     # Check 2: Default policy log_path is outside IMMUTABLE_ROOTS
@@ -726,8 +726,7 @@ def run_fence_self_check() -> None:
 
         if is_under_immutable:
             failed_checks.append("log_path_outside_immutable_roots")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError, ValueError):
         failed_checks.append("log_path_outside_immutable_roots")
 
     # Check 3: write_gateway entrypoints accept allow_override AND call enforce_protected_root
@@ -757,8 +756,7 @@ def run_fence_self_check() -> None:
                 # Source unavailable - fail with actionable message
                 failed_checks.append("write_gateway_enforces_protected_root")
                 break
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError):
         failed_checks.append("write_gateway_enforces_protected_root")
 
     # Check 4: Telemetry emitter path is outside IMMUTABLE_ROOTS (pure path check)
@@ -780,8 +778,7 @@ def run_fence_self_check() -> None:
 
         if is_under_immutable:
             failed_checks.append("telemetry_path_outside_immutable_roots")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError, ValueError):
         failed_checks.append("telemetry_path_outside_immutable_roots")
 
     # Output deterministic JSON summary
@@ -844,13 +841,11 @@ def _maybe_force_utf8_console() -> None:
             pass
     try:
         sys.stdout.reconfigure(encoding="utf-8", errors="replace")
-    # guardian: allow-silent-swallow
-    except Exception:  # guardian: allow-silent-swallower
+    except (AttributeError, OSError):
         pass
     try:
         sys.stderr.reconfigure(encoding="utf-8", errors="replace")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (AttributeError, OSError):
         return
 
 
@@ -870,8 +865,7 @@ def _maybe_force_utf8_logging_handlers() -> None:
             continue
         try:
             reconfigure(encoding="utf-8", errors="replace")
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (AttributeError, OSError):
             pass
 
 
@@ -918,8 +912,7 @@ def _v15_build_ssot_manifest():
             change_history=(),
             provenance_chain=(trace_id,),
         )
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError, TypeError):
         if os.getenv("V15_ENFORCEMENT") == "1":
             raise  # fail-closed when hard enforcement is on
         return None
@@ -948,8 +941,7 @@ def _v15_ssot_gateway_audit(manifest, trace_id: str) -> None:
             trace_id=trace_id,
             agent_id="ssot_audit",
         )
-    # guardian: allow-silent-swallow
-    except Exception as exc:
+    except (ImportError, AttributeError, TypeError) as exc:
         logging.getLogger(__name__).warning("[V15] SSOT gateway audit failed (LOG_ONLY): %s", exc)
 
 
@@ -1004,6 +996,23 @@ from agentic_core.L0_routing.config import (
     L5_SAFETY_DIR,
     OPS_SCRIPTS_DIR,
     RUNTIME_STATE_JSON,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
 )
 
 
@@ -1600,7 +1609,7 @@ def _write_artifact_integrity_json(
                 "sha256": sha256_hash,
                 "size_bytes": len(content),
             }
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             logger.warning(f"[ARTIFACT-INTEGRITY] Failed to hash {artifact_path.name}: {e}")
 
     integrity = {
@@ -1818,7 +1827,7 @@ class SovereignDecisionEngine:
         try:
             bmg_fn = self._get_bmg_cosine_similarity()
             return bmg_fn(unknown, existing)
-        except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+        except (ImportError, AttributeError, ValueError):  # guardian: allow-silent-swallower  # noqa: BLE001
             pass
 
         # Jaccard word-overlap fallback (original implementation)
@@ -1991,7 +2000,7 @@ class SovereignDecisionEngine:
             if max_sim >= 0.50:
                 return 2
             return 3
-        except Exception as _exc:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, ValueError) as _exc:  # guardian: allow-silent-swallower
             from agentic_core.L1_cognition.memory.healing_memory_retriever import (
                 VectorSourceMismatchError as _VSME,
             )
@@ -2047,7 +2056,7 @@ class SovereignDecisionEngine:
                         _advisory[0].similarity,
                         _advisory[0].advisory_only,
                     )
-            except Exception as _exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, ValueError) as _exc:  # guardian: allow-silent-swallower
                 from agentic_core.L1_cognition.memory.healing_memory_retriever import (
                     SovereigntyError as _SE,
                 )
@@ -2057,7 +2066,7 @@ class SovereignDecisionEngine:
                 # All other retrieval errors are non-fatal — routing proceeds unchanged.
 
         C = min(3, max(0, int(3 - confidence.value * 3)))
-        B = 3 if territory.startswith("L5") else (2 if "agentic_core" in territory else 1)
+        B = 3 if territory.startswith("L5") else (2 if AGENTIC_CORE_DIR in territory else 1)
         A = 0 if confidence.value >= 0.75 else (2 if confidence.value < 0.50 else 1)
         N = self._compute_novelty_score(failure_type, territory, confidence)
         high_cost = {
@@ -2163,7 +2172,7 @@ class SovereignDecisionEngine:
                         agent_name,
                         sem_score,
                     )
-            except Exception:  # guardian: allow-silent-swallower  # noqa: BLE001
+            except (ImportError, AttributeError, ValueError):  # guardian: allow-silent-swallower  # noqa: BLE001
                 pass
 
             if not bmg_used:
@@ -2300,7 +2309,7 @@ class SovereignDecisionEngine:
                 raw_reason = vllm_result.get("reason", "")[:120]
                 qwen_reason = f"LLM Override: LLM-ARBITRATED-QWEN14B ({confidence.value:.2f}, S={routing.score}): {raw_reason}"
                 logger.warning("[QWEN14B] %s -> decision=%s reason=%s", agent_name, qwen_approved, raw_reason)
-            except Exception as _qwen_err:  # guardian: allow-silent-swallow
+            except (ImportError, AttributeError, ValueError, KeyError) as _qwen_err:  # guardian: allow-silent-swallow
                 logger.warning("[QWEN14B] vLLM call failed, falling to agent-native: %s", _qwen_err)
 
             if qwen_approved:
@@ -2449,8 +2458,7 @@ class SovereignDecisionEngine:
                 agent_name="location",
             )
             return [], bmg_conf
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (ImportError, AttributeError, ValueError) as e:
             logger.error(f"Cognitive analysis failed: {e}")
             return [], ConfidenceScore(value=0.5, reasoning=f"CDA error: {str(e)}")
 
@@ -2539,8 +2547,7 @@ class PreFlightValidator:
                         )
                     else:
                         errors.append("Windows LongPathsEnabled is NOT active (Set to 1 in Registry)")
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (OSError, ImportError) as e:
                 logging.warning(f"Could not verify Windows LongPathsEnabled: {e}")
 
         # 2. Critical Directory Structure (SSOT Integrity)
@@ -2569,8 +2576,7 @@ class PreFlightValidator:
             try:
                 # Force instantiation to catch import/mixin errors immediately
                 agent = agent_cls(project_root=self.project_root) if inspect.isclass(agent_cls) else agent_cls
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ImportError, AttributeError, TypeError, ValueError) as e:
                 integrity_errors.append(f"Agent {name} FAILED INSTANTIATION: {e}")
                 continue
 
@@ -2653,8 +2659,7 @@ def with_retry(max_retries=3, delay=1.0):
             for attempt in range(max_retries):
                 try:
                     return func(*args, **kwargs)
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except (ImportError, AttributeError, ValueError, TypeError, OSError) as e:
                     last_exception = e
                     # Don't retry on security guard or exhaustion errors
                     if isinstance(e, RuntimeError) and "prompt" in str(e):
@@ -2843,7 +2848,7 @@ def execute_phase2_reconciliation(
                         repo_root=REPO_ROOT,
                     )
                     fix_result["_heal_check_result"] = _hcr.to_dict()
-                except Exception as _tier3_err:  # guardian: allow-silent-swallower
+                except (ImportError, AttributeError, TypeError) as _tier3_err:  # guardian: allow-silent-swallower
                     logger.warning("Tier-3 adapt failed for %s: %s", agent_key, _tier3_err)
 
                 if fix_result.get("success", True) is False:
@@ -2884,8 +2889,7 @@ def execute_phase2_reconciliation(
                 )
                 pbar.update(1)
 
-            # guardian: allow-silent-swallow
-            except Exception as e:
+            except (ImportError, AttributeError, TypeError, ValueError, OSError) as e:
                 logging.error(f"Phase 2: Fix failed for {agent_key}: {e}")
                 failed_fixes.extend(
                     {"violation": v, "error": str(e), "status": "execution_error"} for v in agent_violations
@@ -2935,10 +2939,10 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
 # ============================================================================
 
 # Directory Constants
-AGENTIC_CORE_DIR = "agentic_core"
-APPS_SHARED_DIR = "apps_shared"
-APPS_LIC_DIR = "apps_lic"
-APPS_RG_DIR = "apps_rg"
+AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
+APPS_SHARED_DIR = APPS_SHARED_DIR
+APPS_LIC_DIR = APPS_LIC_DIR
+APPS_RG_DIR = APPS_RG_DIR
 SCRIPTS_DIR = "scripts"
 AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 RUNTIME_STATE_FILE = "runtime_state.json"
@@ -2975,7 +2979,7 @@ class RuntimeStateManager:
 
                 _prior_raw = _json_init.loads(_prior_state_path.read_text(encoding="utf-8"))
                 _prior_meta = _prior_raw.get("meta_learning", {})
-            except Exception:  # guardian: allow-silent-swallower
+            except (OSError, json.JSONDecodeError, KeyError):  # guardian: allow-silent-swallower
                 _prior_meta = {}
 
         # Wave 1 restore: reload HealingSuccessRateStore EMA state from prior run
@@ -2987,7 +2991,7 @@ class RuntimeStateManager:
                 )
 
                 _get_sr_init().import_state(_prior_sr_state)
-            except Exception:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, KeyError):  # guardian: allow-silent-swallower
                 pass
 
         self.state = {
@@ -3112,8 +3116,7 @@ class RuntimeStateManager:
 
             self.state["runtime_state_digest_sha256"] = compute_runtime_state_digest(self.state)
             self.state["runtime_state_digest_schema_version"] = DIGEST_SCHEMA_VERSION
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, ValueError):
             pass
 
         try:
@@ -3149,20 +3152,17 @@ class RuntimeStateManager:
                     # guardian: allow-path-string
                     if "temp_name" in locals() and os.path.exists(temp_name):
                         os.remove(temp_name)
-                # guardian: allow-silent-swallow
-                except Exception:
+                except OSError:
                     pass
             else:
                 logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, TypeError, ValueError) as e:
             logger.error(f"Failed to save runtime state (Atomic Write Failed): {e}")
             try:
                 # guardian: allow-path-string
                 if "temp_name" in locals() and os.path.exists(temp_name):
                     os.remove(temp_name)
-            # guardian: allow-silent-swallow
-            except Exception:
+            except OSError:
                 pass
 
     def _emergency_cleanup(self):
@@ -3232,14 +3232,12 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                             continue
 
                         agents.append((agent["class_name"], module_path))
-                    # guardian: allow-silent-swallow
-                    except Exception as p_err:
+                    except (ValueError, KeyError, TypeError) as p_err:
                         # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
                         continue
             logger.info(f"Loaded {len(agents)} agents from cache")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (OSError, json.JSONDecodeError, KeyError) as e:
             logger.warning(f"Cache load failed: {e}")
 
     # Try Live Scan if empty
@@ -3279,8 +3277,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                             continue
 
                         agents.append((agent["class_name"], module_path))
-                    # guardian: allow-silent-swallow
-                    except Exception as p_err:
+                    except (ValueError, KeyError, TypeError) as p_err:
                         # Log but don't crash on single bad path
                         logger.warning(f"Skipping malformed agent path '{raw_path}': {p_err}")
                         continue
@@ -3299,8 +3296,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                 os.chmod(temp_name, stat.S_IRUSR | stat.S_IWUSR)
                 os.replace(temp_name, json_path)
                 logger.info(f"Discovered {len(agents)} agents (cached)")
-            # guardian: allow-silent-swallow
-            except Exception as cache_err:
+            except (OSError, TypeError) as cache_err:
                 logger.warning(f"Failed to cache agent discovery: {cache_err}")
                 # guardian: allow-path-string
                 if temp_name and os.path.exists(temp_name):
@@ -3308,8 +3304,7 @@ def discover_agents_from_registry(project_root: Path, dedupe: bool = True) -> li
                     os.remove(temp_name)
         except ImportError:
             logger.warning("Live discovery unavailable - Full_Agent_discovery not found")
-        # guardian: allow-silent-swallow
-        except Exception as e:
+        except (AttributeError, TypeError, ValueError) as e:
             logger.error(f"Live discovery failed: {e}")
 
     if dedupe:
@@ -3654,7 +3649,7 @@ def execute_phase1_discovery_impl(
 
         logger.info(f"FileClassificationAgent early detection: {classification_count} issues found")
 
-    except Exception as e:
+    except (ImportError, AttributeError, TypeError, ValueError) as e:
         logger.error(f"FileClassificationHealerAgent early detection FAILED: {e}\n{traceback.format_exc()}")
         state_mgr.complete_agent("FileClassificationHealerAgent", False, f"Early detection error: {e}")
         _record_healing_action(
@@ -3849,8 +3844,7 @@ def _run_gravity_repair_global(agents, state_mgr, ctx: "HealContext" = None):
             state_mgr.complete_agent("GravityLeakHealerAgent", True, "No gravity violations found")
             logger.info("No gravity violations detected")
 
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except (ImportError, AttributeError, TypeError, ValueError) as e:
         logger.error(f"Gravity violation detection failed: {e}")
         state_mgr.complete_agent("GravityValidatorAgent", False, f"Detection failed: {str(e)}")
         state_mgr.complete_agent("GravityLeakHealerAgent", False, f"Detection failed: {str(e)}")
@@ -3902,7 +3896,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
     # If territory is in ENFORCED_TERRITORIES, audit all of them (not just current)
     # This ensures comprehensive architectural validation across all territories
-    if territory in ENFORCED_TERRITORIES or territory == "agentic_core":
+    if territory in ENFORCED_TERRITORIES or territory == AGENTIC_CORE_DIR:
         target_territories = sorted(ENFORCED_TERRITORIES)
         logger.info(f"ArchitectureGovernorAgent: Auditing all {len(target_territories)} enforced territories")
     else:
@@ -3935,7 +3929,7 @@ def execute_phase4_validation_impl(agents, territory, state_mgr, ctx: "HealConte
 
     # [FIX-B10] Only run file-size check for agentic_core L-layer territories
     _ac_layer_prefixes = ("L0_", "L1_", "L2_", "L3_", "L4_", "L5_", "L6_")
-    if territory != "agentic_core" and not any(territory.startswith(p) for p in _ac_layer_prefixes):
+    if territory != AGENTIC_CORE_DIR and not any(territory.startswith(p) for p in _ac_layer_prefixes):
         return gov_report, None
 
     size_violations = arch_gov.check_file_sizes(territory)
@@ -4474,8 +4468,7 @@ def save_comprehensive_reports(
         logger.info(f"   JSON: {json_path.relative_to(project_root)}")
         logger.info(f"   Markdown: {md_path.relative_to(project_root)}")
 
-    # guardian: allow-silent-swallow
-    except Exception as e:
+    except (OSError, TypeError, ValueError) as e:
         logger.error(f"Failed to save comprehensive reports: {e}")
         # Don't fail the entire process if report saving fails
 
@@ -4514,7 +4507,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                 continue
             try:
                 t_data = json.loads(t_path.read_text(encoding="utf-8"))
-            except Exception:  # guardian: allow-silent-swallower
+            except (OSError, json.JSONDecodeError):  # guardian: allow-silent-swallower
                 continue
 
             meta = t_data.get("meta", {})
@@ -4579,7 +4572,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
                         global_violations.append(
                             {**gv, "source": "GravityLeakHealerAgent", "scope": "global"}
                         )
-            except Exception:  # guardian: allow-silent-swallower
+            except (OSError, json.JSONDecodeError, KeyError):  # guardian: allow-silent-swallower
                 pass
 
         aggregate = {
@@ -4625,7 +4618,7 @@ def save_aggregate_report(targets: list[str], project_root: Path) -> Path | None
         )
         return agg_path
 
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (OSError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
         logger.error(f"[AGGREGATE] Failed to save aggregate report: {e}")
         return None
 
@@ -4665,8 +4658,7 @@ def try_summon_orchestrator(project_root: Path, targets: list[str], execute: boo
         logger.error(f"L3 Orchestration failed: {result.get('error')}. Falling back.")
         return False, None
 
-    # guardian: allow-silent-swallow
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
         logger.error(f"L3 Orchestration failed: {e}. Falling back to L5 iteration.")
         return False, None
 
@@ -5726,7 +5718,7 @@ def _write_mandatory_json_output(
 
         _hot = _get_hot_cache()
         _semantic_cache_stats = _hot.get_stats()
-    except Exception:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError):  # guardian: allow-silent-swallower
         _semantic_cache_stats = {"error": "unavailable"}
 
     # Collect meta-learning pipeline summary from state (populated by _fire_meta_learning_intake)
@@ -5909,7 +5901,7 @@ def _write_mandatory_json_output(
         print(f"| Semantic Cache Hits | {_semantic_cache_stats.get('hits', 0)} | |")
         print(f"| Failure Vectors (FAISS) | {len(ml.get('recent_failure_vectors', []))} | |")
         print("")
-    except Exception as _e:  # guardian: allow-silent-swallower
+    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_output.json: %s", _e)
 
 
@@ -5991,7 +5983,7 @@ def _write_heal_run_complete(
 
         _r = _sp.run(["git", "rev-parse", "--short", "HEAD"], capture_output=True, text=True, timeout=5)
         git_commit = _r.stdout.strip()
-    except Exception:
+    except (subprocess.CalledProcessError, OSError, subprocess.TimeoutExpired):
         pass
 
     run_ts = datetime.datetime.now().isoformat()
@@ -6590,7 +6582,7 @@ def _write_heal_run_complete(
             f"| {'ACTIVE' if _semantic_cache_stats.get('hits', 0) + _semantic_cache_stats.get('misses', 0) > 0 else 'DORMANT'} |"
         )
         print("")
-    except Exception as _e:  # guardian: allow-silent-swallower
+    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
         logger.error("[MANDATORY OUTPUT] Failed to write heal_run_complete.json: %s", _e)
 
     return output  # returned so _print_executive_summary can reuse computed data
@@ -6758,7 +6750,7 @@ def _write_failure_forensics(
                     f"| {fa.get('agent', '?')[:20]} | {fa.get('territory', '')[:15]} | {fa.get('actual_behavior', '')[:15]} |"
                 )
         print("")
-    except Exception as _e:  # guardian: allow-silent-swallower
+    except (OSError, TypeError, ValueError) as _e:  # guardian: allow-silent-swallower
         logger.error("[FORENSICS] Failed to write failure_forensics.json: %s", _e)
 
 
@@ -7266,7 +7258,7 @@ def _print_executive_summary(
         _link_complete = (_rdir / "heal_run_complete.json").as_uri()
         _link_forensics = (_rdir / "failure_forensics.json").as_uri()
         _link_output = (_rdir / "heal_run_output.json").as_uri()
-    except Exception:
+    except (OSError, AttributeError):
         _link_complete = "logs/compliance_reports/heal_run_complete.json"
         _link_forensics = "logs/compliance_reports/failure_forensics.json"
         _link_output = "logs/compliance_reports/heal_run_output.json"
@@ -7364,7 +7356,7 @@ def run_pipeline(
             try:
                 method = getattr(adapter, subphase_name)
                 result: SubphaseResult = method(territory, effective_ctx)
-            except Exception as exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError, ValueError) as exc:  # guardian: allow-silent-swallower
                 result = SubphaseResult(
                     error=str(exc),
                     skipped=True,
@@ -7460,7 +7452,7 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
             print(f"Merged Rationale: {decision.merged_rationale}")
             print(f"Merged Risks: {decision.merged_risks}")
 
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (OSError, AttributeError, TypeError) as e:  # guardian: allow-silent-swallower
             print(f"Error listing artifacts: {e}")
 
         print()
@@ -7527,7 +7519,7 @@ def print_execution_plan(arbitrate_plan: bool = False, ptc_plan: bool = False) -
 
             print(json.dumps(ptc_plan_data, sort_keys=True, separators=(",", ":")))
 
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
             # Create error plan data but don't fail plan mode
             ptc_plan_data = {"tool_calls": [], "summary": f"PTC setup failed: {str(e)}", "error": str(e)}
             import json
@@ -7668,7 +7660,7 @@ def _build_ssot_territory_targets(project_root: "Path") -> list[str]:
             targets.append(sub)
 
     # Add all other SOVEREIGN_TERRITORIES keys that exist and are not excluded/already added
-    skip = set(agentic_core_sublayers) | excluded | {"agentic_core"}
+    skip = set(agentic_core_sublayers) | excluded | {AGENTIC_CORE_DIR}
     for key in sorted(all_keys):
         if key in skip:
             continue
@@ -7720,7 +7712,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
             _policy_hash = _h.sha256(_policy_bytes).hexdigest()
         else:
             _policy_hash = _h.sha256(b"policy:file-not-found").hexdigest()
-    except Exception:  # guardian: allow-silent-swallower
+    except (OSError, ImportError, AttributeError):  # guardian: allow-silent-swallower
         _policy_hash = _h.sha256(b"policy:load-failed").hexdigest()
 
     try:
@@ -7728,7 +7720,7 @@ def _compute_pipeline_digest(targets: "list[str]") -> str:
 
         _reg_bytes = _j.dumps(_rd(), sort_keys=True, separators=(",", ":"), ensure_ascii=True).encode("utf-8")
         _registry_hash = _h.sha256(_reg_bytes).hexdigest()
-    except Exception:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, TypeError):  # guardian: allow-silent-swallower
         _registry_hash = _h.sha256(b"registry:fallback").hexdigest()
 
     _config_hash = _hcs(_gcs())
@@ -7869,8 +7861,7 @@ def _legacy_main(
             else:
                 logger.error(f"Baseline capture failed: {result.get('error')}")
                 sys.exit(1)
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
             logger.error(f"Baseline capture failed: {e}")
             sys.exit(1)
 
@@ -7914,8 +7905,7 @@ def _legacy_main(
 
             logger.info(f"Result: {result}")
 
-        # guardian: allow-silent-swallow
-        except Exception as e:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
             logger.error(f"Failed to run agent: {e}")
             traceback.print_exc()
         return
@@ -7964,7 +7954,7 @@ def _legacy_main(
         )
 
         _hmr = _build_hmr(base_path=REPO_ROOT / "logs" / "faiss_store")
-    except Exception:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, OSError):  # guardian: allow-silent-swallower
         pass
     decision_engine = SovereignDecisionEngine(
         enable_llm=ctx.enable_llm,
@@ -8004,8 +7994,7 @@ def _legacy_main(
                 logger.critical(f"🛑 FATAL: Mandatory agent or dependency missing: {error_msg}")
                 sys.exit(1)
 
-    # guardian: allow-silent-swallow
-    except Exception as e:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, TypeError, ValueError) as e:  # guardian: allow-silent-swallower
         logger.critical(f"🛑 FATAL: Agent roster validation failed: {e}")
         sys.exit(1)
 
@@ -8083,7 +8072,7 @@ def _legacy_main(
                     agents_executed=list(agents.keys()),
                     output_dir=_run_manifest_dir,
                 )
-            except Exception as _gap_a_exc:  # guardian: allow-silent-swallower
+            except (OSError, TypeError) as _gap_a_exc:  # guardian: allow-silent-swallower
                 logger.warning("[GAP-A] run_manifest.json write failed (non-fatal): %s", _gap_a_exc)
 
             # GAP-B: Wire mutation ledger before Phase 2 mutations begin.
@@ -8096,7 +8085,7 @@ def _legacy_main(
 
                 _set_ledger(_ledger_path, ctx.trace_id)
                 logger.info("[GAP-B] Mutation ledger wired: %s", _ledger_path)
-            except Exception as _gap_b_exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, OSError) as _gap_b_exc:  # guardian: allow-silent-swallower
                 logger.warning("[GAP-B] set_mutation_ledger_path failed (non-fatal): %s", _gap_b_exc)
 
             # [PHASE 8] Integrated Integrity Check
@@ -8134,7 +8123,7 @@ def _legacy_main(
                                 logger.warning("⚠️  Proceeding with caution (Heal mode active)...")
                     else:
                         logger.warning(f"Integrity check failed: {result.get('error')}")
-                except Exception as e:
+                except (ImportError, AttributeError, TypeError, ValueError) as e:
                     logger.error(f"Integrity check FAILED: {e}\n{traceback.format_exc()}")
                     state_mgr.add_event("error", f"Integrity check failed: {e}")
 
@@ -8156,7 +8145,7 @@ def _legacy_main(
             _SCAN_ONLY_TERRITORIES = [
                 t
                 for t in targets
-                if t != "agentic_core" and not any(t.startswith(p) for p in _agentic_core_sublayer_prefixes)
+                if t != AGENTIC_CORE_DIR and not any(t.startswith(p) for p in _agentic_core_sublayer_prefixes)
             ]
             _NON_AC_TERRITORIES = set(_SCAN_ONLY_TERRITORIES)
 
@@ -8185,7 +8174,7 @@ def _legacy_main(
                                         _v.get("type"),
                                         _v.get("file", ""),
                                     )
-                            except Exception as _he:
+                            except (ImportError, AttributeError, TypeError, ValueError) as _he:
                                 logger.error(
                                     "[RootHygiene] heal() FAILED for %s: %s\n%s",
                                     _v.get("type"),
@@ -8215,7 +8204,7 @@ def _legacy_main(
                         )
                 else:
                     state_mgr.complete_agent("RootHygieneAgent", False, "No scan_root_violations method")
-            except Exception as e:
+            except (ImportError, AttributeError, TypeError, ValueError) as e:
                 logger.error(f"RootHygieneAgent FAILED: {e}\n{traceback.format_exc()}")
                 state_mgr.add_event("error", f"RootHygieneAgent failed: {e}")
                 state_mgr.complete_agent("RootHygieneAgent", False, str(e))
@@ -8223,7 +8212,7 @@ def _legacy_main(
             # [FIX-B8] Run GravityLeakRepairAgent once globally (same pattern as RootHygieneAgent)
             try:
                 _run_gravity_repair_global(agents, state_mgr, ctx=ctx)
-            except Exception as e:
+            except (ImportError, AttributeError, TypeError, ValueError) as e:
                 logger.error(f"GravityLeakRepairAgent global run FAILED: {e}\n{traceback.format_exc()}")
                 state_mgr.add_event("error", f"GravityLeakRepairAgent failed: {e}")
 
@@ -8236,7 +8225,7 @@ def _legacy_main(
             # location scans — skip them from the full pipeline entirely.
             # Code territories outside agentic_core (apps_*, tests, ops_scripts,
             # system_learning) are NOT in this set and still get the full pipeline.
-            _DATA_ONLY_TERRITORIES = frozenset({"logs", "docs", "data", "archives", "artifacts", "tools"})
+            _DATA_ONLY_TERRITORIES = frozenset({"logs", "docs", "data", ARCHIVES_DIR, "artifacts", TOOLS_DIR})
 
             for territory in targets:
                 logger.info(f"\n{'=' * 60}")
@@ -8326,7 +8315,7 @@ def _legacy_main(
                                     validators_used=["Phase1Discovery"],
                                     output_dir=validation_dir,
                                 )
-                            except Exception as _pre_err:
+                            except (OSError, TypeError) as _pre_err:
                                 logger.warning(
                                     f"[PRE-VALIDATION] Failed to write pre_validation.json: {_pre_err}"
                                 )
@@ -8374,7 +8363,7 @@ def _legacy_main(
                                     territory=territory,
                                     output_dir=validation_dir,
                                 )
-                            except Exception as _post_err:
+                            except (OSError, TypeError) as _post_err:
                                 logger.warning(
                                     f"[POST-VALIDATION] Failed to write post_validation.json: {_post_err}"
                                 )
@@ -8536,7 +8525,7 @@ def _legacy_main(
                                     fix_summary=f"ObservabilityProbeExecutorAgent unavailable in {territory}",
                                     outcome="SKIPPED",
                                 )
-                        except Exception as e:
+                        except (ImportError, AttributeError, TypeError, ValueError) as e:
                             logger.error(
                                 f"ObservabilityProbeExecutorAgent FAILED: {e}\n{traceback.format_exc()}"
                             )
@@ -8590,7 +8579,7 @@ def _legacy_main(
                                     fix_summary=f"CognitiveDispositionAgent unavailable in {territory}",
                                     outcome="SKIPPED",
                                 )
-                        except Exception as e:
+                        except (ImportError, AttributeError, TypeError, ValueError) as e:
                             logger.error(f"CognitiveDispositionAgent FAILED: {e}\n{traceback.format_exc()}")
                             state_mgr.add_event(
                                 "error", f"CognitiveDispositionAgent failed in {territory}: {e}"
@@ -8630,7 +8619,7 @@ def _legacy_main(
                         state_mgr.add_event("error", f"Blocked Prompt in {territory}")
                         continue  # Skip this territory, try next
                     raise runtime_err
-                except Exception as e:
+                except (ImportError, AttributeError, TypeError, ValueError, OSError) as e:
                     logger.error(f"❌ Protocol crashed on {territory}: {e}\n{traceback.format_exc()}")
                     state_mgr.add_event("error", f"Crash in {territory}: {type(e).__name__}: {str(e)[:500]}")
                     if is_autonomous:
@@ -8658,7 +8647,7 @@ def _legacy_main(
                 _det_digest = _compute_pipeline_digest(targets)
                 _det_line = _DET_EMITTER().emit_once(_det_digest)
                 print(_det_line)
-            except Exception as _det_exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError) as _det_exc:  # guardian: allow-silent-swallower
                 logger.warning(f"[DETERMINISM-DIGEST] emission failed: {_det_exc}")
 
             # Final Summary
@@ -8676,12 +8665,12 @@ def _legacy_main(
 
             try:
                 _print_healing_heatmap(state_mgr, decision_engine)
-            except Exception as _hm_exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError, ValueError) as _hm_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[HEATMAP] Output failed (non-fatal): {_hm_exc}")
 
             try:
                 _print_meta_learning_summary(state_mgr, decision_engine)
-            except Exception as _ml_exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError, ValueError) as _ml_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[META-LEARNING] Output failed (non-fatal): {_ml_exc}")
 
             # [ZERO-TOLERANCE] Print full agent/phase coverage manifest.
@@ -8694,7 +8683,7 @@ def _legacy_main(
                         f"[RUN MANIFEST] {_manifest_gaps} agent/phase gap(s) detected. "
                         "See RUN MANIFEST output above for full details."
                     )
-            except Exception as _rm_exc:  # guardian: allow-silent-swallower
+            except (ImportError, AttributeError, TypeError, ValueError) as _rm_exc:  # guardian: allow-silent-swallower
                 logger.error(f"[RUN MANIFEST] Output failed (non-fatal): {_rm_exc}")
 
             # [MANDATORY-OBSERVABILITY] These outputs MUST always emit regardless of
@@ -8713,8 +8702,7 @@ def _legacy_main(
 
             return results
 
-    # guardian: allow-silent-swallow
-    except Exception as fatal_e:  # guardian: allow-silent-swallower
+    except (ImportError, AttributeError, TypeError, ValueError, OSError) as fatal_e:  # guardian: allow-silent-swallower
         # Catch-all for top-level crashes (e.g., initialization failure)
         logger.critical(f"\U0001f525 FATAL PROTOCOL ERROR: {fatal_e}")
         traceback.print_exc()
@@ -8730,7 +8718,7 @@ def _legacy_main(
             if isinstance(_complete_output, dict):
                 _print_executive_summary(_complete_output)
             sys.stdout.flush()
-        except Exception:  # guardian: allow-silent-swallower
+        except (ImportError, AttributeError, TypeError):
             pass
         sys.exit(1)
 
@@ -8781,9 +8769,11 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
                         if "class " not in content or (
                             "Agent" not in content and "Validator" not in content and "Fixer" not in content
                         ):
-                            continue
-                # guardian: allow-silent-swallow
-                except Exception:  # guardian: allow-silent-swallower
+                            if not any(
+                                p in file_path.parts for p in ["__pycache__", ".git", "node_modules", ".venv"]
+                            ):
+                                continue
+                except (OSError, AttributeError):
                     continue
 
                 # Construct module path for import
@@ -8828,12 +8818,10 @@ def load_agents(project_root: Path | None = None) -> dict[str, Any]:
                                     logging.info(f"Wrapping Legacy Agent: {name}")
                                     discovered_agents[name] = LegacyAgentAdapter(instance)
 
-                            # guardian: allow-silent-swallow
-                            except Exception as e:
+                            except (ImportError, AttributeError, TypeError) as e:
                                 logging.warning(f"Failed to instantiate {name}: {e}")
 
-                # guardian: allow-silent-swallow
-                except Exception as e:
+                except (ImportError, AttributeError, SyntaxError) as e:
                     logging.debug(f"Skipping module {file_path}: {e}")
 
     logging.info(f"Discovery complete. Loaded {len(discovered_agents)} agents (including adapters).")

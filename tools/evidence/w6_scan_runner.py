@@ -122,7 +122,7 @@ def grep_file(path: Path, pattern: str) -> list[tuple[int, str]]:
         for i, line in enumerate(lines, 1):
             if rx.search(line):
                 hits.append((i, line.rstrip()))
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         pass
     return hits
 

@@ -272,15 +272,15 @@ class OutreachMemoryPersistence:
         if self.memory_file.exists():
             try:
                 self._memory = json.loads(self.memory_file.read_text())
-            except Exception:
+            except (OSError, json.JSONDecodeError):
                 self._memory = {}
 
     def _save(self):
         """Save memory to file."""
         try:
             self.memory_file.write_text(json.dumps(self._memory, indent=2))
-        except Exception:
-            pass
+        except (OSError, TypeError) as e:
+            self.logger.debug(f"Failed to save memory: {e}")
 
     def store(self, key: str, value: Any) -> Any:
         """Store a value in memory."""

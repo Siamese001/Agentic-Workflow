@@ -8,7 +8,7 @@ from pathlib import Path
 
 def fix_test_headers(project_root: Path):
     """Remove problematic headers from generated test files."""
-    test_dir = project_root / "tests" / "unit"
+    test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
 
     for test_file in test_dir.rglob("*.py"):

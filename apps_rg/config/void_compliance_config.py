@@ -25,6 +25,8 @@ from agentic_core.L0_routing.config.path_constants import (
     L1_COGNITION_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
@@ -325,7 +327,7 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
             return True, "Sovereign Structural Component"
 
         # [ETERNAL DEPTH 4] Universal enforcement for all L-layers
-        if root_folder == "agentic_core":
+        if root_folder == AGENTIC_CORE_DIR:
             agentic_core_exact_depth = SOVEREIGN_REGISTRY["agentic_core"][
                 "depth"
             ]  # Legacy bridge – migrate to SOVEREIGN_REGISTRY
@@ -343,13 +345,13 @@ def validate_file_location(file_path: Path, project_root: Path) -> tuple[bool, s
                 return False, f"{reason} VIOLATION (apps_*): '{rel_path}' depth {depth} != 3"
 
         # [ETERNAL DEPTH 3] tests/ folder lockdown
-        if root_folder == "tests":
+        if root_folder == TESTS_DIR:
             if depth != 3:
                 reason = "SHALLOW" if depth < 3 else "DEEP"
                 return False, f"{reason} VIOLATION (tests): '{rel_path}' depth {depth} != 3"
 
         # Rule 1a: Core Stage Enforcement (Identity/Inference/Meta or P/S/L)
-        if root_folder == "agentic_core":
+        if root_folder == AGENTIC_CORE_DIR:
             stage = parts[2]
             # Check against authorized list AND standard P/S/L naming convention
             if stage not in ALLOWED_CORE_STAGES and not (
@@ -542,7 +544,7 @@ def validate_canonical_hierarchy(project_root: Path) -> list[tuple[Path, str]]:
 
         # 3. Level 2 Validation + Min Depth Enforcement
         # For L2 validation, we need to check CORE_SUBFOLDER_MAP for agentic_core
-        if root_key == "agentic_core" and isinstance(layers, list):
+        if root_key == AGENTIC_CORE_DIR and isinstance(layers, list):
             for l1_name in layers:
                 l1_path = root_path / l1_name
                 if not l1_path.exists():
@@ -639,7 +641,7 @@ def check_import_waterfall_violations(file_path: Path, project_root: Path) -> li
 
     # Upstream sovereign: brain core + any future non-domain sovereign supports (e.g., prompt_governance, schemas)
     upstream_sovereign_roots = {
-        root for root in all_registry_roots if not root.startswith("apps_") and root != "tests"
+        root for root in all_registry_roots if not root.startswith("apps_") and root != TESTS_DIR
     }
 
     # Downstream: everything else (domains + tests)

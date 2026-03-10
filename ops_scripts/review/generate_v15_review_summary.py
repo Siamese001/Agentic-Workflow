@@ -31,14 +31,14 @@ from agentic_core.L0_routing.types.integration_contract_types import (
 REPO_ROOT = get_validated_project_root()
 
 EVIDENCE_FILES = {
-    "P3": REPO_ROOT / "docs" / "reports" / "plans" / "v15_p3_evidence.json",
-    "P4": REPO_ROOT / "docs" / "reports" / "plans" / "v15_p4_evidence.json",
-    "P5": REPO_ROOT / "docs" / "reports" / "plans" / "v15_p5_evidence.json",
-    "P6": REPO_ROOT / "docs" / "reports" / "plans" / "v15_p6_evidence.json",
+    "P3": REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_p3_evidence.json",
+    "P4": REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_p4_evidence.json",
+    "P5": REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_p5_evidence.json",
+    "P6": REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_p6_evidence.json",
 }
 
 GUARDIAN_REPORT_PATHS = [
-    REPO_ROOT / "docs" / "reports" / "plans" / "guardian_report.json",
+    REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "guardian_report.json",
     REPO_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "logs" / "guardian_report.json",
 ]
 

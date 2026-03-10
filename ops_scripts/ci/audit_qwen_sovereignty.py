@@ -7,6 +7,10 @@ outside authorized choke point files.
 
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import (
+    L0_MAINTENANCE_DIR,
+    L4_STATE_DIR,
+)
 
 ALLOWED_FILES = {
     "healing_tier_router.py",
@@ -99,8 +103,8 @@ def validate_threshold_immutability() -> None:
 def validate_architectural_separation() -> None:
     """Ensure Qwen logic stays within healing tier boundaries."""
     forbidden_directories = [
-        "agentic_core/L0_routing",
-        "agentic_core/L4_state",
+        L0_MAINTENANCE_DIR,
+        L4_STATE_DIR,
         "agentic_core/embeddings",
         "system_learning/engines/embedding_service_factory.py",
     ]

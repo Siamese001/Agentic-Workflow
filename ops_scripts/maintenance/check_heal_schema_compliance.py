@@ -23,7 +23,7 @@ def check_heal_schema_compliance():
 
     # Find all Python files (excluding tests and archives)
     for py_file in PROJECT_ROOT.rglob("*.py"):
-        if "tests" in str(py_file) or "archives" in str(py_file) or "ops_scripts" in str(py_file):
+        if TESTS_DIR in str(py_file) or ARCHIVES_DIR in str(py_file) or OPS_SCRIPTS_DIR in str(py_file):
             continue
 
         files_checked += 1

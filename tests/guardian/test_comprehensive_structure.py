@@ -37,6 +37,10 @@ from ops_scripts.general.validate_structure import (
     validate_subfolder_structure,
     validate_territory,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+)
 
 
 class TestComprehensiveSSOTStructure:
@@ -215,7 +219,7 @@ class TestComprehensiveSSOTStructure:
 
         # Find all test files outside tests/ directory
         for territory in VALID_TERRITORIES:
-            if territory == "tests":
+            if territory == TESTS_DIR:
                 continue  # Skip tests directory itself
 
             territory_path = PROJECT_ROOT / territory
@@ -268,7 +272,7 @@ class TestComprehensiveSSOTStructure:
                     ".git",
                     ".pytest_cache",
                     "node_modules",
-                    "archives",
+                    ARCHIVES_DIR,
                     ".sovereign_healing_backup",
                 ]
             ):

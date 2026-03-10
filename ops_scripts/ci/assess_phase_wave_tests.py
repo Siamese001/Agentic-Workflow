@@ -134,7 +134,7 @@ def _extract_test_names(tree: ast.Module) -> list[str]:
 def _extract_docstring(tree: ast.Module) -> str:
     try:
         return ast.get_docstring(tree) or ""
-    except Exception:
+    except (AttributeError, TypeError):
         return ""
 
 

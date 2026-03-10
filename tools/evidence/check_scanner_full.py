@@ -4,7 +4,7 @@ from agentic_core.L5_safety.static_checks.system_invariant_scanner import scan_r
 
 root = Path(__file__).resolve().parents[2]
 
-for bucket_rel in ["agentic_core/L2_execution", "agentic_core/L5_safety", "tests/sovereign_hardening"]:
+for bucket_rel in [L2_EXECUTION_DIR, L5_SAFETY_DIR, "tests/sovereign_hardening"]:
     bucket = (root / bucket_rel).resolve()
     violations = scan_repository_for_bypasses(bucket)
     prefix = str(bucket)

@@ -39,11 +39,11 @@ _FORBIDDEN_EMISSION_CALLS = frozenset(
 
 # Scan these roots for violations
 _SCAN_ROOTS = [
-    "agentic_core/L0_routing",
-    "agentic_core/L1_cognition",
-    "agentic_core/L2_execution",
-    "agentic_core/L3_orchestration",
-    "agentic_core/L5_safety",
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L5_SAFETY_DIR,
 ]
 
 

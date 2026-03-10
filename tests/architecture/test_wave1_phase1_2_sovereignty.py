@@ -45,6 +45,10 @@ from tools.semantic_gap_analyzer import (
     FileAnalysis,
     _detect_upward_imports,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -53,7 +57,7 @@ from tools.semantic_gap_analyzer import (
 
 def _make_analysis_from_source(source: str, file_path: Path | None = None) -> FileAnalysis:
     """Parse source with ASTAnalyzer by writing to a temp file."""
-    tmp = REPO_ROOT / "tests" / "architecture" / "_tmp_sovereignty_test.py"
+    tmp = REPO_ROOT / TESTS_DIR / "architecture" / "_tmp_sovereignty_test.py"
     tmp.write_text(dedent(source), encoding="utf-8")
     try:
         aa = ASTAnalyzer(AGENTIC_CORE)
@@ -285,7 +289,7 @@ def test_direct_provider_patterns_are_top_level_package_names():
 def test_direct_provider_patterns_does_not_contain_agentic_core():
     """Invariant: DIRECT_PROVIDER_IMPORT_PATTERNS must never include agentic_core."""
     for pattern in DIRECT_PROVIDER_IMPORT_PATTERNS:
-        assert "agentic_core" not in pattern, (
+        assert AGENTIC_CORE_DIR not in pattern, (
             f"Internal package in DIRECT_PROVIDER_IMPORT_PATTERNS: {pattern!r}"
         )
 

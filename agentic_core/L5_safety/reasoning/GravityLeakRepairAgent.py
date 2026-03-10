@@ -646,8 +646,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     _ln = getattr(v, "line_number", 0) or 0
                     if 1 <= _ln <= len(_lines):
                         _import_stmt = _lines[_ln - 1].strip()
-                except Exception:  # guardian: allow-silent-swallow
-                    pass
+                except (OSError, UnicodeDecodeError, IndexError) as e:
+                    self.logger.warning(f"Failed to extract import statement from {v.file_path.name}: {e}")
+                    _import_stmt = ""
                 fix = self.analyze_violation(
                     file_path=v.file_path,
                     import_statement=_import_stmt,
@@ -665,8 +666,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                         _lines = _Path(_fp).read_text(encoding="utf-8", errors="replace").splitlines()
                         if 1 <= _ln <= len(_lines):
                             _import_stmt = _lines[_ln - 1].strip()
-                except Exception:  # guardian: allow-silent-swallow
-                    pass
+                except (OSError, UnicodeDecodeError, IndexError, TypeError) as e:
+                    self.logger.warning(f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}")
+                    _import_stmt = ""
                 fix = self.analyze_violation(
                     file_path=v.get("file_path"),
                     import_statement=_import_stmt,
@@ -768,6 +770,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.config.structure_blueprint import (
                 SOVEREIGN_TERRITORIES as _ST,
             )
+            from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
             _APPS_ROOTS: frozenset[str] = frozenset(k for k in _ST if k.startswith("apps_"))
 
@@ -779,7 +782,8 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     rel = fp.replace(
                         str(self.project_root).replace("\\", "/") + "/", "", 1
                     )  # guardian: allow-path-fragility
-                except Exception:  # guardian: allow-silent-swallower
+                except (ValueError, AttributeError) as e:
+                    self.logger.debug(f"Failed to make path relative: {e}")
                     rel = fp
                 parts = [p for p in rel.split("/") if p]
                 if not parts:
@@ -787,7 +791,7 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                 root = parts[0]
                 if root in _APPS_ROOTS:
                     return True
-                if root == "agentic_core" and len(parts) > 1:
+                if root == AGENTIC_CORE_DIR and len(parts) > 1:
                     return bool(_LAYER_DIR_PATTERN.match(parts[1]))
                 return False
 
@@ -829,8 +833,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                     _ln = getattr(v, "line_number", 0) or 0
                     if 1 <= _ln <= len(_lines):
                         _import_stmt = _lines[_ln - 1].strip()
-                except Exception:  # guardian: allow-silent-swallower
-                    pass
+                except (OSError, UnicodeDecodeError, IndexError, AttributeError) as e:
+                    self.logger.warning(f"Failed to extract import statement from {getattr(v.file_path, 'name', 'unknown')}: {e}")
+                    _import_stmt = ""
                 fix = self.analyze_violation(
                     file_path=v.file_path,
                     import_statement=_import_stmt,
@@ -847,8 +852,9 @@ class GravityLeakRepairAgent(SovereignBaseAgent):
                         _lines = Path(_fp).read_text(encoding="utf-8", errors="replace").splitlines()
                         if 1 <= _ln <= len(_lines):
                             _import_stmt = _lines[_ln - 1].strip()
-                except Exception:  # guardian: allow-silent-swallower
-                    pass
+                except (OSError, UnicodeDecodeError, IndexError, TypeError) as e:
+                    self.logger.warning(f"Failed to extract import statement from {v.get('file_path', 'unknown')}: {e}")
+                    _import_stmt = ""
                 fix = self.analyze_violation(
                     file_path=v.get("file_path"),
                     import_statement=_import_stmt,

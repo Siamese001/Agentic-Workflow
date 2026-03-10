@@ -280,6 +280,20 @@ Commands executed via:
 
 PowerShell invocation is forbidden.
 
+**File-based Python scripts are REQUIRED for complex analysis operations.**
+
+Inline Python commands via PowerShell are FORBIDDEN due to:
+- Heredoc parsing issues
+- Complex pipeline failures
+- Quote escaping fragility
+- Silent hangs and errors
+
+For any analysis, evidence generation, or multi-step operation:
+
+1. Write analysis logic to a Python script file in `ops_scripts/ci/` or `tools/evidence/`
+2. Execute the script via `subprocess.run(["python", script_path], ...)`
+3. Never attempt inline Python via PowerShell `-Command` or heredocs
+
 ANSI escape sequences MUST be stripped.
 
 Evidence file MUST be ASCII-only.
@@ -294,22 +308,116 @@ Contradictory success/failure markers in same block = HARD FAIL.
 
 ### 2.2 Evidence sections
 
-Evidence MUST include:
+All evidence files MUST include the following sections in order:
 
-`## BRANCH_INVENTORY`
-`## ROBUSTNESS_MATRIX`
-`## DEFECT_MODEL`
+#### 2.2.1 Core evidence sections (REQUIRED for all phases)
 
-`ROBUSTNESS_MATRIX` MUST map each changed surface to:
+**`## DEPENDENCY_GRAPH`** (§3.7)
 
-- success tests
-- edge tests
-- failure tests
-- recovery tests
-- determinism tests
-- side-effect tests
+MUST contain:
+1. Graph roots analyzed
+2. Impacted nodes
+3. Upstream set
+4. Downstream set
+5. Edge classes used
+6. Boundary/cycle findings
+7. Exact reason each changed file is in scope
 
-`DEFECT_MODEL` MUST list defect classes targeted by tests.
+Any changed file not justified by the dependency graph = scope contamination.
+
+**`## BRANCH_INVENTORY`**
+
+List of all branches and control paths exercised.
+
+**`## ROBUSTNESS_MATRIX`**
+
+MUST map each changed surface to:
+- Success tests
+- Edge tests
+- Failure tests
+- Recovery tests
+- Determinism tests
+- Side-effect tests
+
+**`## DEFECT_MODEL`**
+
+MUST list defect classes targeted by tests (e.g., `fake_healthy_test`, `silent_swallower`, `skip_drift`).
+
+#### 2.2.2 Specialized evidence sections (REQUIRED when applicable)
+
+**`## TIMEOUT_RECOVERY`** (§9.6.5)
+
+Required when timeout occurs. MUST include:
+- Initial timeout details (operation, timeout, scope, items attempted)
+- ADG analysis (bottleneck identification, blocking operations found, problematic files)
+- Isolation strategy (strategy used, isolated scope, items excluded)
+- Recovery result (retry timeout, success/failure, items processed, duration)
+
+**`## TEST_QUALITY_AUDIT`** (§11.7)
+
+Required when test quality enforcement runs. MUST include:
+- Silent swallowers (files scanned, violations, allow markers, remediation)
+- Fake-healthy tests (tests scanned, pattern breakdown, total violations, remediation, merge blocked)
+- Non-strict xfail (tests scanned, non-strict count, strict count, remediation)
+
+**`## SKIP_DRIFT_AUDIT`** (§12.9)
+
+Required when skip drift enforcement runs. MUST include:
+- Allowlist status (file location, total allowed skips, skips with expiry_date, skips with owner)
+- Violations (skips outside allowlist, missing metadata, forbidden reasons, total)
+- Warnings (expired skips, long-running skips >90 days, skips without owner)
+- Enforcement (CI check pass/fail, merge blocked yes/no)
+
+**`## TEST_COUNT_AUDIT`** (§13.8)
+
+Required when test count invariant enforcement runs. MUST include:
+- Baseline comparison (baseline total, current total, delta)
+- Directory counts (per critical directory: baseline → current)
+- Marker counts (per critical marker: baseline → current)
+- Special counts (xfail, skip allowlist: baseline → current)
+- Violations (total violations, count drops, count increases)
+- Enforcement (CI check pass/fail, merge blocked yes/no, baseline updated yes/no)
+
+#### 2.2.3 Evidence template
+
+Complete evidence file structure:
+
+```markdown
+# <Phase Title>
+
+## Scope
+<Declared scope with graph justification>
+
+## INSPECTED_FILES
+<List of files analyzed>
+
+## DEPENDENCY_GRAPH
+<Graph analysis per §2.2.1>
+
+## <Command Sections>
+<Command outputs>
+
+## BRANCH_INVENTORY
+<Branch coverage>
+
+## ROBUSTNESS_MATRIX
+<Test coverage matrix>
+
+## DEFECT_MODEL
+<Defect classes targeted>
+
+## TIMEOUT_RECOVERY (if applicable)
+<Timeout recovery details per §2.2.2>
+
+## TEST_QUALITY_AUDIT (if applicable)
+<Test quality metrics per §2.2.2>
+
+## SKIP_DRIFT_AUDIT (if applicable)
+<Skip drift metrics per §2.2.2>
+
+## TEST_COUNT_AUDIT (if applicable)
+<Test count invariant metrics per §2.2.2>
+```
 
 ---
 
@@ -446,32 +554,17 @@ Silent fallback from AST graph analysis to text search = HARD FAIL.
 
 ### 3.7 Dependency graph evidence contract
 
-For every meaningful code change, repair, or audit, evidence MUST include:
+For every meaningful code change, repair, or audit, evidence MUST include a `## DEPENDENCY_GRAPH` section per §2.2.1.
 
-- graph roots analyzed
-- node types included
-- edge types included
-- impacted nodes
-- upstream dependencies
-- downstream dependents
-- cross-layer edges
-- cycle / SCC findings where relevant
-- boundary violations where relevant
-- test surfaces implied by the graph
+The dependency graph evidence MUST contain:
 
-Add a required evidence section:
-
-`## DEPENDENCY_GRAPH`
-
-This section MUST contain:
-
-1. graph roots
-2. impacted nodes
-3. upstream set
-4. downstream set
-5. edge classes used
-6. boundary/cycle findings
-7. exact reason each changed file is in scope
+1. Graph roots analyzed
+2. Impacted nodes
+3. Upstream set
+4. Downstream set
+5. Edge classes used (imports, calls, inheritance, registry, tests, etc.)
+6. Boundary/cycle findings
+7. Exact reason each changed file is in scope
 
 Any changed file not justified by the dependency graph = scope contamination.
 
@@ -654,11 +747,36 @@ All Python file I/O MUST use:
 
 `encoding="utf-8"`
 
-Evidence files are raw execution captures.
+Evidence files are raw execution captures following the template in §2.2.3.
 
-All plan and evidence artifacts involving code analysis MUST include:
+### 8.1 Mandatory artifact links in every response
 
-`## DEPENDENCY_GRAPH`
+**CRITICAL:** Cascade MUST provide clickable links to ALL artifacts on EVERY turn.
+
+**FORBIDDEN patterns:**
+```
+❌ "Plan updated and saved to @c:\Git\Agentic-Workflow\docs\reports\plans\file.md"
+❌ "Evidence saved to docs/reports/plans/evidence.md"
+❌ "Created plan at <path>"
+```
+
+**REQUIRED patterns:**
+```
+✅ "Plan updated: `@c:\Git\Agentic-Workflow\docs\reports\plans\file.md`"
+✅ "Evidence: `@c:\Git\Agentic-Workflow\docs\reports\plans\evidence.md`"
+✅ "Created: `@c:\Git\Agentic-Workflow\docs\reports\plans\plan.md`"
+```
+
+**Requirements:**
+- Every artifact reference MUST use backtick citation format: `` `@<absolute_path>` ``
+- Artifact links MUST be clickable in the IDE
+- Plain text paths without backticks are FORBIDDEN
+- Parenthetical notes like "(since no link)" indicate a VIOLATION
+
+**Enforcement:**
+- Any response mentioning an artifact without a clickable link = CONSTITUTIONAL VIOLATION
+- CI gates MUST verify all artifact references use citation format
+- User feedback indicating missing links = immediate remediation required
 
 ---
 
@@ -763,15 +881,12 @@ def process_with_progress(items: list, operation: str):
 
 ### 9.5 Validation
 
-Evidence files MUST document:
-- Timeout values used for each operation
-- Whether progress reporting was active
-- Any timeout violations encountered
-
 CI gates MUST verify:
 - No queries without timeout parameters
 - No long operations without progress reporting
 - Timeout values within acceptable ranges
+
+Evidence documentation per §2.2.2 (TIMEOUT_RECOVERY section when applicable).
 
 ### 9.6 Automatic timeout recovery with AST dependency graph
 
@@ -919,36 +1034,7 @@ def collect_tests_with_timeout_recovery(test_dirs: list[str], timeout: int) -> l
 
 #### 9.6.5 Evidence documentation for timeout recovery
 
-Evidence MUST include:
-
-```markdown
-## TIMEOUT_RECOVERY
-
-### Initial Timeout
-- Operation: <operation_name>
-- Timeout: <seconds>s
-- Scope: <original_scope>
-- Items attempted: <count>
-
-### ADG Analysis
-- Bottleneck identification method: <method>
-- Blocking operations found: <count>
-- Problematic files:
-  - <file1>:<line> - <operation>
-  - <file2>:<line> - <operation>
-
-### Isolation Strategy
-- Strategy used: <strategy_name>
-- Isolated scope: <new_scope>
-- Items in isolated scope: <count>
-- Items excluded: <count>
-
-### Recovery Result
-- Retry timeout: <seconds>s
-- Retry succeeded: <yes/no>
-- Items processed: <count>
-- Duration: <seconds>s
-```
+Evidence documentation per §2.2.2 (TIMEOUT_RECOVERY section).
 
 #### 9.6.6 Fail-closed recovery behavior
 
@@ -972,12 +1058,1770 @@ Timeout recovery integrates with:
 
 ---
 
+## §10. CRITICAL FUNCTIONALITY FAIL-CLOSED
+
+### 10.1 No graceful fallbacks for critical infrastructure
+
+Critical infrastructure components MUST fail-closed when unavailable or misconfigured.
+
+**FORBIDDEN:** Graceful fallbacks, silent degradation, or "best effort" modes for critical functionality.
+
+**REQUIRED:** Hard failures with explicit error messages when critical components are unavailable.
+
+### 10.2 Critical infrastructure inventory
+
+The following are classified as **critical infrastructure** and MUST NOT have graceful fallbacks:
+
+#### 10.2.1 BGE Embeddings
+- **Component:** BGE embedding model (BAAI/bge-small-en-v1.5 or equivalent)
+- **Critical operations:**
+  - Vector store recall
+  - Semantic search
+  - Long-term memory promotion
+  - Embedding-based retrieval
+- **Fail-closed behavior:**
+  - If BGE model unavailable → raise `RuntimeError("BGE embedding model required but unavailable")`
+  - If embedding generation fails → raise exception, do NOT return None or empty vector
+  - If vector store write fails → raise exception, do NOT silently skip
+  - If vector store recall fails → raise exception, do NOT return None or empty results
+- **FORBIDDEN patterns:**
+  ```python
+  # ❌ FORBIDDEN: Graceful fallback
+  try:
+      embedding = bge_model.encode(text)
+  except Exception:
+      return None  # Silent failure
+  
+  # ❌ FORBIDDEN: Optional degradation
+  if bge_available:
+      return vector_search(query)
+  else:
+      return keyword_search(query)  # Fallback to inferior method
+  
+  # ❌ FORBIDDEN: Best-effort mode
+  try:
+      store_in_vector_db(embedding)
+  except Exception:
+      logger.warning("Vector store unavailable, skipping")
+      pass  # Silent skip
+  ```
+- **REQUIRED patterns:**
+  ```python
+  # ✅ REQUIRED: Fail-closed
+  if not bge_model_available():
+      raise RuntimeError("BGE embedding model required but unavailable")
+  
+  embedding = bge_model.encode(text)
+  if embedding is None or len(embedding) == 0:
+      raise ValueError(f"BGE embedding generation failed for text: {text[:50]}")
+  
+  # ✅ REQUIRED: Explicit dependency check
+  def require_bge_embeddings():
+      if not BGE_MODEL_LOADED:
+          raise RuntimeError(
+              "BGE embeddings are critical infrastructure. "
+              "Install: pip install sentence-transformers"
+          )
+  ```
+
+#### 10.2.2 AST Dependency Graph
+- **Component:** AST parsing and dependency graph construction (§0, §3.4)
+- **Fail-closed behavior:** Already enforced by §3.6
+- If AST parsing fails → fail closed, no grep fallback
+
+#### 10.2.3 Test Execution
+- **Component:** pytest collection and execution (§1.12)
+- **Fail-closed behavior:** Already enforced by §1.12
+- If test collection/execution mismatch → HARD FAIL
+
+#### 10.2.4 SSOT Configuration
+- **Component:** Structure blueprint, agent registry (§4.2)
+- **Fail-closed behavior:** Already enforced by §4.2
+- If conflicting SSOT sources → execution BLOCKED
+
+### 10.3 Graceful fallback audit
+
+Code reviews and CI gates MUST detect and reject graceful fallbacks for critical infrastructure:
+
+**Detection patterns:**
+- `try/except` blocks that catch exceptions from critical components and return None/empty/default
+- Conditional logic that provides alternative implementations when critical components unavailable
+- `logger.warning()` followed by `pass` or `return None` for critical operations
+- Optional parameters that disable critical functionality
+- Feature flags that bypass critical infrastructure
+
+**CI enforcement:**
+```python
+# CI gate must verify:
+def audit_critical_infrastructure_fallbacks():
+    """Detect graceful fallbacks in critical infrastructure."""
+    
+    critical_components = [
+        "bge_model", "vector_store", "embedding",
+        "ast_parse", "dependency_graph",
+        "pytest", "test_collection"
+    ]
+    
+    for file in get_python_files():
+        ast_tree = ast.parse(file.read_text())
+        
+        for node in ast.walk(ast_tree):
+            if isinstance(node, ast.Try):
+                # Check if exception handler returns None/empty for critical ops
+                if has_critical_component_in_try(node, critical_components):
+                    for handler in node.handlers:
+                        if returns_none_or_empty(handler):
+                            raise CriticalFallbackViolation(
+                                f"{file}:{node.lineno} - "
+                                f"Graceful fallback detected for critical infrastructure"
+                            )
+```
+
+### 10.4 Test requirements for critical infrastructure
+
+Tests for critical infrastructure MUST verify fail-closed behavior:
+
+**Required test cases:**
+1. **Unavailable component test:** Verify exception raised when component unavailable
+2. **Failed operation test:** Verify exception raised when operation fails
+3. **No silent degradation test:** Verify no fallback to inferior methods
+4. **Error message quality test:** Verify error messages are actionable
+
+**Example for BGE embeddings:**
+```python
+def test_bge_unavailable_raises_error():
+    """BGE embeddings MUST fail-closed when unavailable."""
+    with patch('bge_model.encode', side_effect=RuntimeError("Model not loaded")):
+        with pytest.raises(RuntimeError, match="BGE embedding model required"):
+            promote_to_long_term_memory(memory)
+
+def test_bge_embedding_none_raises_error():
+    """BGE embeddings MUST fail-closed on None result."""
+    with patch('bge_model.encode', return_value=None):
+        with pytest.raises(ValueError, match="BGE embedding generation failed"):
+            promote_to_long_term_memory(memory)
+
+def test_vector_store_write_failure_raises_error():
+    """Vector store writes MUST fail-closed on failure."""
+    with patch('vector_store.add', side_effect=Exception("DB unavailable")):
+        with pytest.raises(Exception, match="DB unavailable"):
+            promote_to_long_term_memory(memory)
+
+def test_no_fallback_to_keyword_search():
+    """MUST NOT fall back to keyword search when vector search fails."""
+    with patch('bge_model.encode', side_effect=RuntimeError("Model unavailable")):
+        with pytest.raises(RuntimeError):
+            # Should raise, not fall back to keyword search
+            recall_from_long_term_memory(query)
+```
+
+### 10.5 Documentation requirements
+
+Every critical infrastructure component MUST document:
+
+1. **Criticality declaration:** Why this component is critical
+2. **Fail-closed contract:** Exact failure modes and exceptions raised
+3. **No fallback policy:** Explicit statement that graceful fallbacks are forbidden
+4. **Setup requirements:** How to properly configure the component
+5. **Failure recovery:** How to diagnose and fix failures (not how to bypass them)
+
+**Example documentation:**
+```python
+class BGEEmbeddingService:
+    """
+    BGE embedding service for semantic search and vector storage.
+    
+    CRITICAL INFRASTRUCTURE: This component is fail-closed.
+    
+    Fail-closed contract:
+    - Raises RuntimeError if BGE model is not loaded
+    - Raises ValueError if embedding generation returns None/empty
+    - Raises Exception if vector store operations fail
+    - NO graceful fallbacks or degraded modes
+    
+    Setup requirements:
+    - pip install sentence-transformers
+    - Model: BAAI/bge-small-en-v1.5
+    - Vector store: ChromaDB or equivalent
+    
+    Failure recovery:
+    - If model not loaded: Install dependencies and restart
+    - If embedding fails: Check input text validity
+    - If vector store fails: Check DB connection and permissions
+    """
+```
+
+---
+
+## §11. TEST QUALITY ENFORCEMENT
+
+### 11.1 Core principle
+
+**No hidden failure. No fake pass. No ambiguous expected failure.**
+
+All test code MUST adhere to three quality gates:
+
+1. **No silent exception swallowers**
+2. **No zero-assert tests** (without real contract assertions)
+3. **No non-strict xfail**
+
+These are enforced in priority order during code review and CI.
+
+### 11.2 Silent exception swallowers
+
+#### 11.2.1 Default assumption: VIOLATION
+
+Any silent `except` block is assumed to be a **violation** until proven otherwise.
+
+**FORBIDDEN patterns:**
+```python
+# ❌ FORBIDDEN: Bare except with pass
+try:
+    critical_operation()
+except:
+    pass
+
+# ❌ FORBIDDEN: Broad except returning None with no signal
+try:
+    result = important_function()
+except Exception:
+    return None  # Silent failure
+
+# ❌ FORBIDDEN: Fallback behavior that hides failure
+try:
+    use_primary_method()
+except:
+    use_fallback_method()  # No logging, no signal, hides failure
+```
+
+#### 11.2.2 Required remediation
+
+Silent swallowers MUST be converted to one of these acceptable outcomes:
+
+**Option 1: Convert to assertion**
+```python
+# ✅ ACCEPTABLE: Explicit assertion
+result = critical_operation()
+assert result is not None, "Critical operation must return a value"
+```
+
+**Option 2: Explicit error propagation**
+```python
+# ✅ ACCEPTABLE: Re-raise with context
+try:
+    result = critical_operation()
+except SpecificError as e:
+    raise RuntimeError(f"Critical operation failed: {e}") from e
+```
+
+**Option 3: Logged/warned degraded path with test coverage**
+```python
+# ✅ ACCEPTABLE: Observable degradation with coverage
+try:
+    result = primary_method()
+except SpecificError as e:
+    logger.warning(f"Primary method failed ({e}), using fallback")
+    result = fallback_method()
+    # REQUIRED: Test must verify this path is exercised
+```
+
+**Option 4: Documented narrow allow marker**
+```python
+# ✅ ACCEPTABLE: Explicit annotation for intentional swallowing
+try:
+    optional_cleanup()
+except OSError:
+    # guardian: allow-silent-swallower
+    # Justification: Cleanup is best-effort, failure is acceptable
+    pass
+```
+
+#### 11.2.3 Allow marker requirements
+
+The `# guardian: allow-silent-swallower` marker is ONLY acceptable when:
+
+1. **Tightly scoped:** Catches specific exception types, not `Exception` or bare `except`
+2. **Documented:** Includes justification comment explaining why silence is acceptable
+3. **Truly intentional:** The operation is genuinely optional or best-effort
+4. **Narrow scope:** Limited to cleanup, optional telemetry, or non-critical operations
+
+**FORBIDDEN use of allow marker:**
+```python
+# ❌ FORBIDDEN: Allow marker on critical operation
+try:
+    save_user_data()
+except Exception:
+    # guardian: allow-silent-swallower
+    # Justification: We'll try again later
+    pass  # VIOLATION: Data loss is not acceptable
+```
+
+#### 11.2.4 CI enforcement
+
+CI gates MUST detect silent swallowers:
+
+```python
+def audit_silent_swallowers():
+    """Detect silent exception swallowers in test and production code."""
+    
+    violations = []
+    
+    for file in get_python_files():
+        tree = ast.parse(file.read_text())
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.Try):
+                for handler in node.handlers:
+                    # Check for silent swallowing
+                    if is_silent_swallower(handler):
+                        # Check for allow marker
+                        if not has_allow_marker(file, handler.lineno):
+                            violations.append({
+                                'file': file,
+                                'line': handler.lineno,
+                                'type': 'silent_swallower',
+                                'pattern': get_handler_pattern(handler)
+                            })
+    
+    if violations:
+        raise SilentSwallowerViolation(violations)
+```
+
+### 11.3 Zero-assert and fake-healthy tests
+
+#### 11.3.1 Default assumption: FAKE HEALTHY TEST
+
+Tests that appear to pass but provide no real verification are **fake healthy tests** that provide false confidence.
+
+**Canonical defect class:** `fake_healthy_test` (from failure mode catalog)
+
+**FORBIDDEN patterns:**
+
+**Pattern 1: Zero assertions**
+```python
+# ❌ FORBIDDEN: Zero assertions, no contract verification
+def test_process_data():
+    """Test data processing."""
+    result = process_data(input_data)
+    # No assertions - fake pass
+```
+
+**Pattern 2: `assert True` (meaningless assertion)**
+```python
+# ❌ FORBIDDEN: Fake assertion added to satisfy linter
+def test_calculate():
+    """Test calculation."""
+    result = calculate(10, 20)
+    assert True  # Meaningless assertion
+```
+
+**Pattern 3: `pass` statement only**
+```python
+# ❌ FORBIDDEN: Test body is just pass
+def test_feature():
+    """Test feature."""
+    pass  # Placeholder test that always passes
+```
+
+**Pattern 4: "No exception raised" without verification**
+```python
+# ❌ FORBIDDEN: Implicit no-exception test without output verification
+def test_no_error():
+    """Test that operation doesn't error."""
+    process_data(input_data)
+    # No exception = pass, but doesn't verify correctness
+```
+
+**Pattern 5: Broad mocks with no assertion on behavior**
+```python
+# ❌ FORBIDDEN: Mock everything, assert nothing
+def test_with_mocks():
+    """Test with mocks."""
+    with patch('module.function1'), \
+         patch('module.function2'), \
+         patch('module.function3'):
+        result = run_operation()
+        # No assertions on mock calls or result
+```
+
+#### 11.3.2 Required remediation
+
+Fake-healthy tests MUST be replaced with **real contract assertions**.
+
+**Do NOT blindly add `assert True`** - that creates fake healthy tests.
+
+**REQUIRED: Assert on real contracts**
+
+**Option 1: Assert on returned value**
+```python
+# ✅ REQUIRED: Assert on actual return value
+def test_calculate_sum():
+    """Test sum calculation."""
+    result = calculate_sum(10, 20)
+    assert result == 30, "Sum should be 30"
+```
+
+**Option 2: Assert on emitted signal**
+```python
+# ✅ REQUIRED: Assert on signal emission
+def test_event_emitted():
+    """Test event emission."""
+    with capture_events() as events:
+        trigger_action()
+    assert len(events) == 1, "Should emit exactly one event"
+    assert events[0].type == "action_triggered"
+```
+
+**Option 3: Assert on state change**
+```python
+# ✅ REQUIRED: Assert on state mutation
+def test_state_update():
+    """Test state update."""
+    initial_state = get_state()
+    update_state(new_value=42)
+    final_state = get_state()
+    assert final_state.value == 42, "State should be updated"
+    assert final_state != initial_state, "State should change"
+```
+
+**Option 4: Assert on side effect**
+```python
+# ✅ REQUIRED: Assert on observable side effect
+def test_file_written():
+    """Test file write."""
+    write_output(data, path)
+    assert path.exists(), "File should be created"
+    assert path.read_text() == expected_content, "Content should match"
+```
+
+**Option 5: Assert on specific invariant**
+```python
+# ✅ REQUIRED: Assert on invariant preservation
+def test_invariant_preserved():
+    """Test invariant preservation."""
+    before_count = count_items()
+    process_items()
+    after_count = count_items()
+    assert after_count >= before_count, "Items should not decrease"
+```
+
+**Option 6: Assert on mock behavior (when mocks are necessary)**
+```python
+# ✅ REQUIRED: Assert on mock calls and behavior
+def test_with_mocks():
+    """Test with mocks."""
+    with patch('module.external_api') as mock_api:
+        mock_api.return_value = {'status': 'success'}
+        
+        result = run_operation()
+        
+        # Assert on mock interactions
+        mock_api.assert_called_once_with(expected_param)
+        # Assert on result
+        assert result.status == 'success'
+        assert result.processed is True
+```
+
+#### 11.3.3 "Should not raise" tests
+
+If the intent is "should not raise an exception," make that **explicit and meaningful**.
+
+**FORBIDDEN: Implicit no-exception test**
+```python
+# ❌ FORBIDDEN: Implicit assumption that no exception = pass
+def test_no_error():
+    """Test that operation doesn't error."""
+    process_data()  # Implicit: if no exception, test passes
+```
+
+**REQUIRED: Explicit no-exception contract**
+```python
+# ✅ REQUIRED: Explicit no-exception assertion with context
+def test_valid_input_does_not_raise():
+    """Test that valid input processes without exception."""
+    try:
+        result = process_data(valid_input)
+        # Also assert on the result to verify correctness
+        assert result is not None, "Should return a result"
+        assert result.status == "success", "Should succeed"
+    except Exception as e:
+        pytest.fail(f"Should not raise exception for valid input: {e}")
+```
+
+**ACCEPTABLE: pytest.raises context with negative assertion**
+```python
+# ✅ ACCEPTABLE: Use does_not_raise for clarity (pytest 7.0+)
+from pytest import does_not_raise
+
+def test_valid_input_accepted():
+    """Test that valid input is accepted."""
+    with does_not_raise():
+        result = process_data(valid_input)
+    assert result.is_valid(), "Result should be valid"
+```
+
+#### 11.3.4 CI enforcement
+
+CI gates MUST detect ALL fake-healthy test patterns and BLOCK merges.
+
+**Canonical defect class:** `fake_healthy_test`
+
+```python
+def audit_fake_healthy_tests():
+    """
+    Detect fake-healthy tests that provide false confidence.
+    
+    Scans for:
+    1. Zero assertions
+    2. assert True (meaningless assertion)
+    3. pass statement only
+    4. No exception raised without verification
+    5. Broad mocks with no assertion on behavior
+    """
+    
+    violations = []
+    
+    for test_file in get_test_files():
+        tree = ast.parse(test_file.read_text())
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
+                
+                # Pattern 1: Zero assertions
+                assert_count = count_assertions(node)
+                if assert_count == 0:
+                    # Acceptable: pytest.raises or pytest.warns context
+                    if not has_pytest_raises(node) and not has_pytest_warns(node):
+                        violations.append({
+                            'file': test_file,
+                            'line': node.lineno,
+                            'test': node.name,
+                            'type': 'fake_healthy_test',
+                            'pattern': 'zero_assertions',
+                            'message': 'Test has zero assertions - no contract verification'
+                        })
+                
+                # Pattern 2: assert True (meaningless assertion)
+                if has_assert_true_only(node):
+                    violations.append({
+                        'file': test_file,
+                        'line': node.lineno,
+                        'test': node.name,
+                        'type': 'fake_healthy_test',
+                        'pattern': 'assert_true',
+                        'message': 'Test only contains "assert True" - meaningless assertion'
+                    })
+                
+                # Pattern 3: pass statement only
+                if is_pass_only_test(node):
+                    violations.append({
+                        'file': test_file,
+                        'line': node.lineno,
+                        'test': node.name,
+                        'type': 'fake_healthy_test',
+                        'pattern': 'pass_only',
+                        'message': 'Test body is only "pass" - placeholder test'
+                    })
+                
+                # Pattern 4: No exception raised without verification
+                if is_no_exception_without_verification(node):
+                    violations.append({
+                        'file': test_file,
+                        'line': node.lineno,
+                        'test': node.name,
+                        'type': 'fake_healthy_test',
+                        'pattern': 'no_exception_without_verification',
+                        'message': 'Test relies on "no exception" without verifying output/state/signal'
+                    })
+                
+                # Pattern 5: Broad mocks with no assertion on behavior
+                if has_broad_mocks_without_assertions(node):
+                    violations.append({
+                        'file': test_file,
+                        'line': node.lineno,
+                        'test': node.name,
+                        'type': 'fake_healthy_test',
+                        'pattern': 'broad_mocks_no_assertions',
+                        'message': 'Test uses mocks but has no assertions on mock behavior or result'
+                    })
+    
+    if violations:
+        raise FakeHealthyTestViolation(
+            f"Found {len(violations)} fake-healthy tests. "
+            f"These tests provide false confidence and MUST be fixed.",
+            violations
+        )
+
+
+def has_assert_true_only(test_node: ast.FunctionDef) -> bool:
+    """
+    Detect tests that only contain 'assert True' or 'assert 1'.
+    
+    Returns True if:
+    - Test has exactly one assertion
+    - That assertion is 'assert True' or 'assert 1'
+    """
+    assertions = [
+        node for node in ast.walk(test_node)
+        if isinstance(node, ast.Assert)
+    ]
+    
+    if len(assertions) != 1:
+        return False
+    
+    assertion = assertions[0]
+    
+    # Check for 'assert True'
+    if isinstance(assertion.test, ast.Constant) and assertion.test.value is True:
+        return True
+    
+    # Check for 'assert 1'
+    if isinstance(assertion.test, ast.Constant) and assertion.test.value == 1:
+        return True
+    
+    # Check for 'assert True' as Name node (older Python AST)
+    if isinstance(assertion.test, ast.Name) and assertion.test.id == 'True':
+        return True
+    
+    return False
+
+
+def is_pass_only_test(test_node: ast.FunctionDef) -> bool:
+    """
+    Detect tests whose body is only a 'pass' statement.
+    
+    Returns True if test body contains only:
+    - pass statement
+    - docstring + pass statement
+    """
+    body = test_node.body
+    
+    # Skip docstring if present
+    start_idx = 0
+    if (body and isinstance(body[0], ast.Expr) and 
+        isinstance(body[0].value, (ast.Str, ast.Constant))):
+        start_idx = 1
+    
+    # Check if remaining body is only 'pass'
+    remaining_body = body[start_idx:]
+    
+    if len(remaining_body) == 1 and isinstance(remaining_body[0], ast.Pass):
+        return True
+    
+    return False
+
+
+def is_no_exception_without_verification(test_node: ast.FunctionDef) -> bool:
+    """
+    Detect tests that rely on "no exception raised" without verifying output.
+    
+    Returns True if:
+    - Test has function calls
+    - Test has zero assertions
+    - Test does NOT use pytest.raises or pytest.warns
+    - Test does NOT use pytest.does_not_raise
+    """
+    has_function_calls = any(
+        isinstance(node, ast.Call)
+        for node in ast.walk(test_node)
+    )
+    
+    assert_count = count_assertions(test_node)
+    
+    has_pytest_context = (
+        has_pytest_raises(test_node) or 
+        has_pytest_warns(test_node) or
+        has_pytest_does_not_raise(test_node)
+    )
+    
+    return has_function_calls and assert_count == 0 and not has_pytest_context
+
+
+def has_broad_mocks_without_assertions(test_node: ast.FunctionDef) -> bool:
+    """
+    Detect tests with mocks but no assertions on mock behavior.
+    
+    Returns True if:
+    - Test uses patch/Mock
+    - Test has no assertions on mock calls (assert_called, assert_called_once, etc.)
+    - Test has no assertions on result/state
+    """
+    has_mocks = any(
+        is_mock_usage(node)
+        for node in ast.walk(test_node)
+    )
+    
+    if not has_mocks:
+        return False
+    
+    has_mock_assertions = any(
+        is_mock_assertion(node)
+        for node in ast.walk(test_node)
+    )
+    
+    has_value_assertions = count_assertions(test_node) > 0
+    
+    # If has mocks but no mock assertions AND no value assertions = violation
+    return has_mocks and not has_mock_assertions and not has_value_assertions
+
+
+def is_mock_usage(node: ast.AST) -> bool:
+    """Detect usage of patch, Mock, MagicMock, etc."""
+    if isinstance(node, ast.Call):
+        if isinstance(node.func, ast.Name):
+            return node.func.id in {'patch', 'Mock', 'MagicMock', 'AsyncMock'}
+        if isinstance(node.func, ast.Attribute):
+            return node.func.attr in {'patch', 'object'}
+    
+    if isinstance(node, ast.With):
+        for item in node.items:
+            if isinstance(item.context_expr, ast.Call):
+                if is_mock_usage(item.context_expr):
+                    return True
+    
+    return False
+
+
+def is_mock_assertion(node: ast.AST) -> bool:
+    """Detect assertions on mock behavior."""
+    if isinstance(node, ast.Call):
+        if isinstance(node.func, ast.Attribute):
+            # Mock assertion methods
+            mock_assertion_methods = {
+                'assert_called',
+                'assert_called_once',
+                'assert_called_with',
+                'assert_called_once_with',
+                'assert_any_call',
+                'assert_has_calls',
+                'assert_not_called'
+            }
+            return node.func.attr in mock_assertion_methods
+    
+    return False
+```
+
+**Merge blocking:**
+
+CI MUST fail and block merge if ANY fake-healthy tests are detected:
+
+```python
+# In CI pipeline
+try:
+    audit_fake_healthy_tests()
+except FakeHealthyTestViolation as e:
+    print(f"❌ MERGE BLOCKED: {e}")
+    print("\nViolations:")
+    for v in e.violations:
+        print(f"  {v['file']}:{v['line']} - {v['test']}")
+        print(f"    Pattern: {v['pattern']}")
+        print(f"    Message: {v['message']}")
+    sys.exit(1)
+```
+
+### 11.4 Non-strict xfail
+
+#### 11.4.1 Default assumption: AMBIGUOUS EXPECTED FAILURE
+
+`@pytest.mark.xfail` without `strict=True` is **ambiguous** and hides real failures.
+
+**FORBIDDEN patterns:**
+```python
+# ❌ FORBIDDEN: Non-strict xfail
+@pytest.mark.xfail
+def test_known_bug():
+    """Test for known bug."""
+    assert buggy_function() == expected_result
+
+# ❌ FORBIDDEN: xfail with reason but no strict
+@pytest.mark.xfail(reason="Bug #123")
+def test_regression():
+    """Test for regression."""
+    assert broken_feature() works()
+```
+
+#### 11.4.2 Required remediation
+
+**Rule: `xfail` is ONLY acceptable with `strict=True`**
+
+**Option 1: Convert to strict xfail with tracked defect**
+```python
+# ✅ REQUIRED: Strict xfail tied to tracked defect
+@pytest.mark.xfail(
+    strict=True,
+    reason="Bug #123: BGE embeddings fail on empty input"
+)
+def test_empty_input_handling():
+    """Test handling of empty input - currently fails."""
+    result = process_with_bge("")
+    assert result is not None
+```
+
+**Option 2: Convert to normal failing test**
+```python
+# ✅ ACCEPTABLE: Remove xfail, let it fail normally
+def test_known_bug():
+    """Test for known bug #123."""
+    # This test currently fails - fix the bug to make it pass
+    assert buggy_function() == expected_result
+```
+
+**Option 3: Remove the test**
+```python
+# ✅ ACCEPTABLE: Remove if test is no longer relevant
+# (Delete the test entirely if the feature is deprecated or the bug is wontfix)
+```
+
+#### 11.4.3 Strict xfail requirements
+
+When using `@pytest.mark.xfail(strict=True)`:
+
+1. **MUST include reason:** Explain why the test is expected to fail
+2. **SHOULD reference defect:** Link to tracked issue/bug number
+3. **MUST be temporary:** Plan to fix and remove xfail marker
+4. **MUST fail consistently:** If test passes, strict=True will fail the test
+
+**Example of proper strict xfail:**
+```python
+@pytest.mark.xfail(
+    strict=True,
+    reason="Issue #456: Vector store recall returns None after promotion. "
+           "BGE embeddings not properly initialized in test environment."
+)
+def test_promote_to_long_term_enables_vector_store_recall():
+    """Test that promotion enables vector store recall."""
+    memory = create_test_memory()
+    promoted = promote_to_long_term(memory)
+    assert promoted, "Promotion should succeed"
+    
+    # This assertion currently fails - vector store not working
+    recalled = recall_from_long_term(memory.query)
+    assert recalled is not None, "Should recall from vector store"
+```
+
+#### 11.4.4 CI enforcement
+
+CI gates MUST detect non-strict xfail:
+
+```python
+def audit_non_strict_xfail():
+    """Detect xfail markers without strict=True."""
+    
+    violations = []
+    
+    for test_file in get_test_files():
+        tree = ast.parse(test_file.read_text())
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef):
+                for decorator in node.decorator_list:
+                    if is_xfail_decorator(decorator):
+                        if not has_strict_true(decorator):
+                            violations.append({
+                                'file': test_file,
+                                'line': node.lineno,
+                                'test': node.name,
+                                'type': 'non_strict_xfail'
+                            })
+    
+    if violations:
+        raise NonStrictXfailViolation(violations)
+```
+
+### 11.5 Priority order for remediation
+
+When fixing test quality issues, address them in this order:
+
+**Priority 1: Silent swallowers** (highest risk)
+- Hidden failures in production code
+- Hidden failures in test setup/teardown
+- Masked exceptions that prevent proper debugging
+
+**Priority 2: Fake/weak zero-assert tests**
+- Tests that provide false confidence
+- Tests that never actually verify behavior
+- Tests that pass regardless of correctness
+
+**Priority 3: Non-strict xfail**
+- Ambiguous expected failures
+- Tests that hide regressions
+- Tests that may be passing but marked as failing
+
+### 11.6 Integration with existing rules
+
+Test quality enforcement integrates with:
+
+- **§1 (Testing & Evidence):** All tests must be deterministic and meaningful
+- **§1.12 (Zero-tolerance for test skipping):** No silent test deselection
+- **§10 (Critical Functionality Fail-Closed):** No graceful fallbacks in critical paths
+
+### 11.7 Evidence requirements
+
+Evidence documentation per §2.2.2 (TEST_QUALITY_AUDIT section when applicable).
+
+---
+
+## §12. BAN SKIP DRIFT AT COLLECTION TIME
+
+### 12.1 Core principle
+
+**No permanent "temporary" skips.**
+
+Test skips MUST be:
+- **Explicitly allowed** (via allowlist file)
+- **Fully documented** (reason, ticket, expiry/owner)
+- **Tracked and reviewed** (not forgotten)
+
+Skip drift (temporary skips becoming permanent) is a **constitutional violation**.
+
+### 12.2 Forbidden skip patterns
+
+The following skip mechanisms are **FORBIDDEN** outside the explicit allowlist:
+
+**Pattern 1: `@pytest.mark.skip`**
+```python
+# ❌ FORBIDDEN outside allowlist
+@pytest.mark.skip
+def test_feature():
+    pass
+```
+
+**Pattern 2: `@pytest.mark.skipif`**
+```python
+# ❌ FORBIDDEN outside allowlist
+@pytest.mark.skipif(condition, reason="...")
+def test_conditional():
+    pass
+```
+
+**Pattern 3: `pytest.skip()` (runtime skip)**
+```python
+# ❌ FORBIDDEN outside allowlist
+def test_runtime_skip():
+    pytest.skip("Not ready yet")
+```
+
+**Pattern 4: `unittest.skip*` decorators**
+```python
+# ❌ FORBIDDEN outside allowlist
+@unittest.skip("Broken")
+def test_unittest_style():
+    pass
+
+@unittest.skipIf(condition, "reason")
+def test_conditional_skip():
+    pass
+
+@unittest.skipUnless(condition, "reason")
+def test_unless_skip():
+    pass
+```
+
+### 12.3 Skip allowlist
+
+**Allowlist file location:**
+```
+tests/_config/skip_allowlist.py
+```
+
+**Allowlist format:**
+```python
+"""
+Skip allowlist for tests that are legitimately skipped.
+
+All skips MUST be documented here with:
+- reason: Why the test is skipped
+- ticket: Issue/bug tracker reference
+- expiry_date: When skip should be reviewed (YYYY-MM-DD)
+- owner: Who is responsible for fixing/reviewing
+
+Skips outside this allowlist will FAIL CI.
+"""
+
+ALLOWED_SKIPS = [
+    {
+        'test': 'test_external_api_integration',
+        'file': 'tests/integration/test_external_api.py',
+        'reason': 'External API unavailable in CI environment',
+        'ticket': 'INFRA-456',
+        'expiry_date': '2026-04-01',
+        'owner': 'infrastructure-team',
+        'skip_type': 'pytest.mark.skipif'
+    },
+    {
+        'test': 'test_windows_only_feature',
+        'file': 'tests/platform/test_windows.py',
+        'reason': 'Windows-specific test, skipped on Linux CI',
+        'ticket': 'PLAT-123',
+        'expiry_date': '2026-06-01',
+        'owner': 'platform-team',
+        'skip_type': 'pytest.mark.skipif'
+    },
+]
+```
+
+### 12.4 Required skip metadata
+
+Every skip in the allowlist MUST include:
+
+**1. `reason` string (REQUIRED)**
+- Clear explanation of why test is skipped
+- MUST be specific, not generic ("broken", "TODO", "later")
+- MUST explain the blocking condition
+
+**2. `ticket` reference (REQUIRED)**
+- Issue tracker reference (JIRA, GitHub issue, etc.)
+- Format: `PROJ-123` or `#456` or full URL
+- MUST link to tracked work item
+
+**3. `expiry_date` OR `owner` (REQUIRED - at least one)**
+- **`expiry_date`**: Date when skip should be reviewed (YYYY-MM-DD format)
+- **`owner`**: Team/person responsible for fixing or reviewing
+- Prevents "temporary" skips from becoming permanent
+
+**4. `skip_type` (REQUIRED)**
+- Exact skip mechanism used
+- One of: `pytest.mark.skip`, `pytest.mark.skipif`, `pytest.skip`, `unittest.skip`, `unittest.skipIf`, `unittest.skipUnless`
+
+**5. `test` name (REQUIRED)**
+- Exact test function name
+
+**6. `file` path (REQUIRED)**
+- Relative path from repository root
+
+### 12.5 Forbidden skip reasons
+
+The following skip reasons are **FORBIDDEN** and will fail CI:
+
+**Generic/vague reasons:**
+- ❌ "broken"
+- ❌ "TODO"
+- ❌ "fix later"
+- ❌ "not working"
+- ❌ "WIP"
+- ❌ "temporary"
+- ❌ "skip for now"
+
+**REQUIRED: Specific reasons:**
+- ✅ "BGE embeddings not available in CI environment - requires GPU"
+- ✅ "External API rate limit exceeded - waiting for quota increase"
+- ✅ "Windows-specific COM interface not available on Linux CI"
+- ✅ "Database migration pending - blocked by INFRA-789"
+
+### 12.6 CI enforcement
+
+CI gates MUST detect and fail on skip drift:
+
+```python
+def audit_skip_drift():
+    """
+    Detect test skips outside the allowlist.
+    
+    Fails if:
+    - Skip found outside allowlist
+    - Skip in allowlist missing required metadata
+    - Skip reason is generic/forbidden
+    - Skip expiry date has passed
+    """
+    
+    from tests._config.skip_allowlist import ALLOWED_SKIPS
+    
+    violations = []
+    warnings = []
+    
+    # Build allowlist lookup
+    allowlist_lookup = {
+        (skip['file'], skip['test']): skip
+        for skip in ALLOWED_SKIPS
+    }
+    
+    # Scan all test files for skip markers
+    for test_file in get_test_files():
+        tree = ast.parse(test_file.read_text())
+        source_lines = test_file.read_text().splitlines()
+        
+        for node in ast.walk(tree):
+            if isinstance(node, ast.FunctionDef) and node.name.startswith('test_'):
+                
+                # Check for skip decorators
+                for decorator in node.decorator_list:
+                    skip_type = get_skip_type(decorator)
+                    
+                    if skip_type:
+                        # Check if in allowlist
+                        key = (str(test_file), node.name)
+                        
+                        if key not in allowlist_lookup:
+                            violations.append({
+                                'file': test_file,
+                                'line': node.lineno,
+                                'test': node.name,
+                                'skip_type': skip_type,
+                                'type': 'skip_drift',
+                                'message': f'Skip found outside allowlist: {skip_type}'
+                            })
+                        else:
+                            # Validate allowlist entry
+                            skip_entry = allowlist_lookup[key]
+                            validate_skip_metadata(skip_entry, violations, warnings)
+                
+                # Check for runtime pytest.skip() calls
+                for child in ast.walk(node):
+                    if is_pytest_skip_call(child):
+                        key = (str(test_file), node.name)
+                        
+                        if key not in allowlist_lookup:
+                            violations.append({
+                                'file': test_file,
+                                'line': child.lineno,
+                                'test': node.name,
+                                'skip_type': 'pytest.skip',
+                                'type': 'skip_drift',
+                                'message': 'Runtime pytest.skip() found outside allowlist'
+                            })
+    
+    # Check for expired skips
+    check_expired_skips(ALLOWED_SKIPS, warnings)
+    
+    if violations:
+        raise SkipDriftViolation(
+            f"Found {len(violations)} test skips outside allowlist. "
+            f"All skips MUST be in tests/_config/skip_allowlist.py",
+            violations
+        )
+    
+    if warnings:
+        print(f"⚠️  {len(warnings)} skip warnings:")
+        for w in warnings:
+            print(f"  {w['message']}")
+
+
+def get_skip_type(decorator: ast.AST) -> str | None:
+    """Detect skip decorator type."""
+    if isinstance(decorator, ast.Call):
+        func = decorator.func
+    else:
+        func = decorator
+    
+    # pytest.mark.skip
+    if isinstance(func, ast.Attribute):
+        if (isinstance(func.value, ast.Attribute) and
+            isinstance(func.value.value, ast.Name) and
+            func.value.value.id == 'pytest' and
+            func.value.attr == 'mark'):
+            if func.attr in {'skip', 'skipif'}:
+                return f'pytest.mark.{func.attr}'
+    
+    # unittest.skip*
+    if isinstance(func, ast.Attribute):
+        if (isinstance(func.value, ast.Name) and
+            func.value.id == 'unittest'):
+            if func.attr in {'skip', 'skipIf', 'skipUnless'}:
+                return f'unittest.{func.attr}'
+    
+    return None
+
+
+def is_pytest_skip_call(node: ast.AST) -> bool:
+    """Detect pytest.skip() runtime calls."""
+    if isinstance(node, ast.Call):
+        if isinstance(node.func, ast.Attribute):
+            if (isinstance(node.func.value, ast.Name) and
+                node.func.value.id == 'pytest' and
+                node.func.attr == 'skip'):
+                return True
+    return False
+
+
+def validate_skip_metadata(skip_entry: dict, violations: list, warnings: list):
+    """Validate skip allowlist entry has required metadata."""
+    
+    # Required fields
+    required_fields = ['test', 'file', 'reason', 'ticket', 'skip_type']
+    for field in required_fields:
+        if field not in skip_entry or not skip_entry[field]:
+            violations.append({
+                'file': skip_entry.get('file', 'unknown'),
+                'test': skip_entry.get('test', 'unknown'),
+                'type': 'skip_metadata_missing',
+                'message': f'Skip allowlist entry missing required field: {field}'
+            })
+    
+    # Must have expiry_date OR owner
+    if 'expiry_date' not in skip_entry and 'owner' not in skip_entry:
+        violations.append({
+            'file': skip_entry.get('file', 'unknown'),
+            'test': skip_entry.get('test', 'unknown'),
+            'type': 'skip_metadata_missing',
+            'message': 'Skip allowlist entry must have expiry_date OR owner'
+        })
+    
+    # Check for forbidden generic reasons
+    forbidden_reasons = {
+        'broken', 'todo', 'fix later', 'not working', 
+        'wip', 'temporary', 'skip for now'
+    }
+    
+    reason = skip_entry.get('reason', '').lower()
+    if any(forbidden in reason for forbidden in forbidden_reasons):
+        violations.append({
+            'file': skip_entry.get('file', 'unknown'),
+            'test': skip_entry.get('test', 'unknown'),
+            'type': 'skip_reason_forbidden',
+            'message': f'Skip reason is too generic: "{skip_entry.get("reason")}"'
+        })
+
+
+def check_expired_skips(allowed_skips: list, warnings: list):
+    """Check for skips past their expiry date."""
+    from datetime import datetime
+    
+    today = datetime.now().date()
+    
+    for skip in allowed_skips:
+        if 'expiry_date' in skip:
+            try:
+                expiry = datetime.strptime(skip['expiry_date'], '%Y-%m-%d').date()
+                
+                if expiry < today:
+                    warnings.append({
+                        'file': skip['file'],
+                        'test': skip['test'],
+                        'type': 'skip_expired',
+                        'message': (
+                            f"{skip['file']}::{skip['test']} - "
+                            f"Skip expired on {skip['expiry_date']}. "
+                            f"Review and update or remove. "
+                            f"Owner: {skip.get('owner', 'unassigned')}"
+                        )
+                    })
+            except ValueError:
+                warnings.append({
+                    'file': skip['file'],
+                    'test': skip['test'],
+                    'type': 'skip_date_invalid',
+                    'message': f"Invalid expiry_date format: {skip['expiry_date']} (use YYYY-MM-DD)"
+                })
+```
+
+**Merge blocking:**
+
+CI MUST fail and block merge if ANY skip drift violations are detected:
+
+```python
+# In CI pipeline
+try:
+    audit_skip_drift()
+except SkipDriftViolation as e:
+    print(f"❌ MERGE BLOCKED: {e}")
+    print("\nViolations:")
+    for v in e.violations:
+        print(f"  {v['file']}:{v.get('line', '?')} - {v['test']}")
+        print(f"    Type: {v['type']}")
+        print(f"    Message: {v['message']}")
+    print("\nTo fix:")
+    print("1. Add skip to tests/_config/skip_allowlist.py with full metadata")
+    print("2. Or remove the skip and fix the test")
+    sys.exit(1)
+```
+
+### 12.7 Skip allowlist maintenance
+
+**Monthly review (REQUIRED):**
+
+Run skip allowlist audit to identify:
+- Expired skips (past `expiry_date`)
+- Long-running skips (>90 days)
+- Skips without owners
+
+**Automated reminder:**
+```python
+def generate_skip_review_report():
+    """Generate monthly skip review report."""
+    from tests._config.skip_allowlist import ALLOWED_SKIPS
+    from datetime import datetime, timedelta
+    
+    today = datetime.now().date()
+    ninety_days_ago = today - timedelta(days=90)
+    
+    expired = []
+    long_running = []
+    no_owner = []
+    
+    for skip in ALLOWED_SKIPS:
+        # Check expiry
+        if 'expiry_date' in skip:
+            expiry = datetime.strptime(skip['expiry_date'], '%Y-%m-%d').date()
+            if expiry < today:
+                expired.append(skip)
+        
+        # Check age (if created_date tracked)
+        if 'created_date' in skip:
+            created = datetime.strptime(skip['created_date'], '%Y-%m-%d').date()
+            if created < ninety_days_ago:
+                long_running.append(skip)
+        
+        # Check owner
+        if 'owner' not in skip or not skip['owner']:
+            no_owner.append(skip)
+    
+    report = f"""
+# Skip Allowlist Review Report
+Generated: {today}
+
+## Expired Skips ({len(expired)})
+{format_skip_list(expired)}
+
+## Long-Running Skips >90 days ({len(long_running)})
+{format_skip_list(long_running)}
+
+## Skips Without Owner ({len(no_owner)})
+{format_skip_list(no_owner)}
+
+## Action Required
+- Review expired skips: Fix test or extend expiry with justification
+- Review long-running skips: Prioritize fixing or document permanent skip
+- Assign owners to unowned skips
+"""
+    
+    return report
+```
+
+### 12.8 Integration with existing rules
+
+Skip drift enforcement integrates with:
+
+- **§1.12 (Zero-tolerance for test skipping):** No silent test deselection
+- **§11 (Test Quality Enforcement):** No fake-healthy tests
+- **§2 (Evidence Contract):** Document skip audit in evidence
+
+### 12.9 Evidence requirements
+
+Evidence documentation per §2.2.2 (SKIP_DRIFT_AUDIT section when applicable).
+
+---
+
+## §13. TEST-COUNT AND COLLECTION-COUNT INVARIANTS
+
+### 13.1 Core principle
+
+**Test counts are invariants. Unexpected drops = CI failure.**
+
+Test collection counts MUST be tracked, stored, and compared across CI runs to detect:
+- Renamed files not discovered
+- Broken test collection
+- Silent deselection
+- Moved tests
+- Accidental marker filtering
+
+This is a **critical anti-cheat control** that prevents tests from disappearing silently.
+
+### 13.2 Required count tracking
+
+CI MUST store and compare the following counts:
+
+**1. Total tests collected**
+```python
+total_collected = pytest.collect(all_test_dirs)
+```
+
+**2. Tests per critical directory**
+```python
+directory_counts = {
+    'tests/architecture/': count_tests('tests/architecture/'),
+    'tests/integration/': count_tests('tests/integration/'),
+    'tests/unit/': count_tests('tests/unit/'),
+    'tests/ci/': count_tests('tests/ci/'),
+    # Add all critical test directories
+}
+```
+
+**3. Tests per marker**
+```python
+marker_counts = {
+    'unit': count_tests_with_marker('unit'),
+    'integration': count_tests_with_marker('integration'),
+    'slow': count_tests_with_marker('slow'),
+    'requires_gpu': count_tests_with_marker('requires_gpu'),
+    # Add all critical markers
+}
+```
+
+**4. xfail count**
+```python
+xfail_count = count_tests_with_marker('xfail')
+```
+
+**5. skip count (from allowlist)**
+```python
+skip_count = len(ALLOWED_SKIPS)  # From tests/_config/skip_allowlist.py
+```
+
+### 13.3 Count baseline storage
+
+**Baseline file location:**
+```
+tests/_config/test_count_baseline.json
+```
+
+**Baseline format:**
+```json
+{
+  "last_updated": "2026-03-09T22:00:00Z",
+  "commit_sha": "abc123def456",
+  "total_collected": 1247,
+  "directory_counts": {
+    "tests/architecture/": 156,
+    "tests/integration/": 89,
+    "tests/unit/": 892,
+    "tests/ci/": 45,
+    "tests/system_learning/": 65
+  },
+  "marker_counts": {
+    "unit": 892,
+    "integration": 89,
+    "slow": 34,
+    "requires_gpu": 12
+  },
+  "xfail_count": 3,
+  "skip_count": 2,
+  "metadata": {
+    "python_version": "3.11.5",
+    "pytest_version": "7.4.3"
+  }
+}
+```
+
+### 13.4 Count comparison and validation
+
+CI MUST compare current counts against baseline and FAIL if:
+
+**Condition 1: Total collected drops**
+```python
+if current_total < baseline_total:
+    raise TestCountDropViolation(
+        f"Total tests dropped from {baseline_total} to {current_total}. "
+        f"Missing {baseline_total - current_total} tests."
+    )
+```
+
+**Condition 2: Directory count drops unexpectedly**
+```python
+for directory, baseline_count in baseline_directory_counts.items():
+    current_count = current_directory_counts.get(directory, 0)
+    
+    if current_count < baseline_count:
+        raise TestCountDropViolation(
+            f"Tests in {directory} dropped from {baseline_count} to {current_count}. "
+            f"Missing {baseline_count - current_count} tests."
+        )
+```
+
+**Condition 3: Marker count drops unexpectedly**
+```python
+for marker, baseline_count in baseline_marker_counts.items():
+    current_count = current_marker_counts.get(marker, 0)
+    
+    if current_count < baseline_count:
+        raise TestCountDropViolation(
+            f"Tests with @pytest.mark.{marker} dropped from {baseline_count} to {current_count}. "
+            f"Missing {baseline_count - current_count} tests."
+        )
+```
+
+**Condition 4: xfail count increases (strict xfail only allowed)**
+```python
+if current_xfail_count > baseline_xfail_count:
+    raise TestCountViolation(
+        f"xfail count increased from {baseline_xfail_count} to {current_xfail_count}. "
+        f"New xfails must use strict=True and be documented (§11.4)."
+    )
+```
+
+**Condition 5: skip count increases (must be in allowlist)**
+```python
+if current_skip_count > baseline_skip_count:
+    raise TestCountViolation(
+        f"Skip count increased from {baseline_skip_count} to {current_skip_count}. "
+        f"New skips must be in allowlist with full metadata (§12)."
+    )
+```
+
+### 13.5 Acceptable count changes
+
+Count increases are ACCEPTABLE and update the baseline:
+
+**New tests added:**
+```python
+if current_total > baseline_total:
+    logger.info(f"✅ Test count increased: {baseline_total} → {current_total} (+{current_total - baseline_total})")
+    update_baseline(current_counts)
+```
+
+**Intentional test removal (requires justification):**
+
+To intentionally reduce test count, developer MUST:
+1. Document reason in commit message
+2. Update baseline manually with justification
+3. Get code review approval
+
+```python
+# In baseline file, add justification
+{
+  "total_collected": 1200,  # Reduced from 1247
+  "reduction_justification": {
+    "commit": "def789abc123",
+    "reason": "Removed 47 duplicate tests after consolidation",
+    "approved_by": "tech-lead",
+    "date": "2026-03-10"
+  }
+}
+```
+
+### 13.6 CI enforcement implementation
+
+```python
+def audit_test_count_invariants():
+    """
+    Enforce test-count and collection-count invariants.
+    
+    Detects:
+    - Renamed files not discovered
+    - Broken test collection
+    - Silent deselection
+    - Moved tests
+    - Accidental marker filtering
+    """
+    
+    from tests._config.test_count_baseline import BASELINE
+    import json
+    from pathlib import Path
+    
+    # Collect current counts
+    current_counts = collect_test_counts()
+    
+    violations = []
+    
+    # Check total collected
+    if current_counts['total_collected'] < BASELINE['total_collected']:
+        violations.append({
+            'type': 'total_count_drop',
+            'baseline': BASELINE['total_collected'],
+            'current': current_counts['total_collected'],
+            'missing': BASELINE['total_collected'] - current_counts['total_collected'],
+            'message': f"Total tests dropped from {BASELINE['total_collected']} to {current_counts['total_collected']}"
+        })
+    
+    # Check directory counts
+    for directory, baseline_count in BASELINE['directory_counts'].items():
+        current_count = current_counts['directory_counts'].get(directory, 0)
+        
+        if current_count < baseline_count:
+            violations.append({
+                'type': 'directory_count_drop',
+                'directory': directory,
+                'baseline': baseline_count,
+                'current': current_count,
+                'missing': baseline_count - current_count,
+                'message': f"Tests in {directory} dropped from {baseline_count} to {current_count}"
+            })
+    
+    # Check marker counts
+    for marker, baseline_count in BASELINE['marker_counts'].items():
+        current_count = current_counts['marker_counts'].get(marker, 0)
+        
+        if current_count < baseline_count:
+            violations.append({
+                'type': 'marker_count_drop',
+                'marker': marker,
+                'baseline': baseline_count,
+                'current': current_count,
+                'missing': baseline_count - current_count,
+                'message': f"Tests with @pytest.mark.{marker} dropped from {baseline_count} to {current_count}"
+            })
+    
+    # Check xfail count (increases are violations)
+    if current_counts['xfail_count'] > BASELINE['xfail_count']:
+        violations.append({
+            'type': 'xfail_count_increase',
+            'baseline': BASELINE['xfail_count'],
+            'current': current_counts['xfail_count'],
+            'added': current_counts['xfail_count'] - BASELINE['xfail_count'],
+            'message': f"xfail count increased from {BASELINE['xfail_count']} to {current_counts['xfail_count']}. Must use strict=True (§11.4)"
+        })
+    
+    # Check skip count (increases are violations)
+    if current_counts['skip_count'] > BASELINE['skip_count']:
+        violations.append({
+            'type': 'skip_count_increase',
+            'baseline': BASELINE['skip_count'],
+            'current': current_counts['skip_count'],
+            'added': current_counts['skip_count'] - BASELINE['skip_count'],
+            'message': f"Skip count increased from {BASELINE['skip_count']} to {current_counts['skip_count']}. Must be in allowlist (§12)"
+        })
+    
+    if violations:
+        raise TestCountInvariantViolation(
+            f"Found {len(violations)} test count invariant violations. "
+            f"Test counts unexpectedly dropped or increased.",
+            violations
+        )
+    
+    # If counts increased (new tests added), update baseline
+    if current_counts['total_collected'] > BASELINE['total_collected']:
+        logger.info(f"✅ Test count increased: {BASELINE['total_collected']} → {current_counts['total_collected']}")
+        update_baseline_file(current_counts)
+
+
+def collect_test_counts() -> dict:
+    """Collect current test counts."""
+    import pytest
+    from tests._config.skip_allowlist import ALLOWED_SKIPS
+    
+    # Collect all tests
+    collected = pytest.main(['--collect-only', '-q', 'tests/'])
+    total_collected = parse_collection_count(collected)
+    
+    # Count by directory
+    directory_counts = {}
+    for test_dir in get_critical_test_directories():
+        count = pytest.main(['--collect-only', '-q', test_dir])
+        directory_counts[test_dir] = parse_collection_count(count)
+    
+    # Count by marker
+    marker_counts = {}
+    for marker in get_critical_markers():
+        count = pytest.main(['--collect-only', '-q', '-m', marker, 'tests/'])
+        marker_counts[marker] = parse_collection_count(count)
+    
+    # Count xfail
+    xfail_count = pytest.main(['--collect-only', '-q', '-m', 'xfail', 'tests/'])
+    
+    # Count skips from allowlist
+    skip_count = len(ALLOWED_SKIPS)
+    
+    return {
+        'total_collected': total_collected,
+        'directory_counts': directory_counts,
+        'marker_counts': marker_counts,
+        'xfail_count': parse_collection_count(xfail_count),
+        'skip_count': skip_count,
+        'metadata': {
+            'python_version': sys.version,
+            'pytest_version': pytest.__version__
+        }
+    }
+
+
+def update_baseline_file(current_counts: dict):
+    """Update baseline file with new counts."""
+    from datetime import datetime
+    import json
+    from pathlib import Path
+    
+    baseline_path = Path('tests/_config/test_count_baseline.json')
+    
+    baseline = {
+        'last_updated': datetime.utcnow().isoformat() + 'Z',
+        'commit_sha': get_current_commit_sha(),
+        **current_counts
+    }
+    
+    baseline_path.write_text(json.dumps(baseline, indent=2))
+    logger.info(f"Updated test count baseline: {baseline_path}")
+```
+
+**Merge blocking:**
+
+CI MUST fail and block merge if ANY test count invariant violations are detected:
+
+```python
+# In CI pipeline
+try:
+    audit_test_count_invariants()
+except TestCountInvariantViolation as e:
+    print(f"❌ MERGE BLOCKED: {e}")
+    print("\nViolations:")
+    for v in e.violations:
+        print(f"  {v['type']}: {v['message']}")
+        if 'missing' in v:
+            print(f"    Missing: {v['missing']} tests")
+        if 'added' in v:
+            print(f"    Added: {v['added']} tests")
+    print("\nPossible causes:")
+    print("- Renamed test files not discovered by pytest")
+    print("- Broken test collection (import errors, syntax errors)")
+    print("- Silent test deselection (conftest hooks, markers)")
+    print("- Moved tests to different directory")
+    print("- Accidental marker filtering")
+    sys.exit(1)
+```
+
+### 13.7 Integration with existing rules
+
+Test count invariants integrate with:
+
+- **§1.12 (Zero-tolerance for test skipping):** Prevents collection/execution mismatch
+- **§11.4 (Non-strict xfail):** Tracks xfail count increases
+- **§12 (Ban skip drift):** Tracks skip count increases
+- **§2 (Evidence Contract):** Document count audit in evidence
+
+### 13.8 Evidence requirements
+
+Evidence documentation per §2.2.2. Add TEST_COUNT_AUDIT section when applicable:
+
+```markdown
+## TEST_COUNT_AUDIT
+
+### Baseline Comparison
+- Baseline total: <count>
+- Current total: <count>
+- Delta: <+/- count>
+
+### Directory Counts
+- tests/architecture/: <baseline> → <current>
+- tests/integration/: <baseline> → <current>
+- tests/unit/: <baseline> → <current>
+- tests/ci/: <baseline> → <current>
+
+### Marker Counts
+- @pytest.mark.unit: <baseline> → <current>
+- @pytest.mark.integration: <baseline> → <current>
+- @pytest.mark.slow: <baseline> → <current>
+
+### Special Counts
+- xfail: <baseline> → <current>
+- skip (allowlist): <baseline> → <current>
+
+### Violations
+- Total violations: <count>
+- Count drops: <count>
+- Count increases (xfail/skip): <count>
+
+### Enforcement
+- CI check: <pass/fail>
+- Merge blocked: <yes/no>
+- Baseline updated: <yes/no>
+```
+
+---
+
 # MAXIM
 
-Every defect fixed becomes a deterministic invariant enforced by automated tests.
+## Testing & Evidence
+- Every defect fixed becomes a deterministic invariant enforced by automated tests.
+- If the evidence does not prove it, it did not happen.
 
-If the evidence does not prove it, it did not happen.
+## Analysis & Dependencies
+- If the dependency graph does not prove the relationship, assume the relationship is unproven.
 
-If the dependency graph does not prove the relationship, assume the relationship is unproven.
+## Performance & Reliability
+- Every query has a timeout. Every long operation reports progress.
 
-Every query has a timeout. Every long operation reports progress.
+## Fail-Closed Discipline
+- Critical infrastructure fails closed. No graceful fallbacks.
+- No hidden failure. No fake pass. No ambiguous expected failure.
+- No permanent "temporary" skips.
+
+## Test Count Invariants
+- Test counts are invariants. Unexpected drops = CI failure.

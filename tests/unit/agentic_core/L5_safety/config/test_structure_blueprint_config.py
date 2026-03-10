@@ -3,6 +3,11 @@
 from pathlib import Path
 
 import pytest
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    APPS_RG_DIR,
+)
 
 
 class TestStructureBlueprintConfig:
@@ -67,7 +72,7 @@ class TestBlueprintConsistency:
         try:
             from agentic_core.L0_routing.config import SOVEREIGN_TERRITORIES
 
-            for app in ["apps_rg", "apps_lic", "apps_shared"]:
+            for app in [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]:
                 assert app in SOVEREIGN_TERRITORIES, f"{app} should be in SOVEREIGN_TERRITORIES"
         except ImportError as e:
             pytest.fail(f"Could not import: {e}")

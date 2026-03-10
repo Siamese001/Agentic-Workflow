@@ -32,6 +32,9 @@ def _get_checkpoint_manager():
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
 )
 
 # Color-coded terminal output for progress visibility
@@ -83,9 +86,9 @@ except ImportError:
 
 
 # Define missing directory constants
-APPS_SHARED_DIR = "apps_shared"
-APPS_LIC_DIR = "apps_lic"
-APPS_RG_DIR = "apps_rg"
+APPS_SHARED_DIR = APPS_SHARED_DIR
+APPS_LIC_DIR = APPS_LIC_DIR
+APPS_RG_DIR = APPS_RG_DIR
 
 # Load environment variables from .env file
 try:

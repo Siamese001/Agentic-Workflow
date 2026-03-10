@@ -95,9 +95,9 @@ class EvidenceContractChecker:
                     self.violations.append(
                         f"{filepath}: {field_name} does not exist in repository: {commit_hash}"
                     )
-            except Exception:
+            except (subprocess.CalledProcessError, ValueError) as e:
                 # If git check fails, just warn but don't fail
-                pass
+                print(f"Git check failed for {commit_hash}: {e}")
 
     def check_file(self, filepath: Path) -> None:
         """Check a single evidence file for compliance."""

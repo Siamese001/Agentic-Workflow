@@ -10,7 +10,10 @@ import sys
 from datetime import datetime
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TOOLS_DIR,
+)
 
 dry_run: Any = False
 target_root: Any = AGENTIC_CORE_DIR
@@ -129,7 +132,7 @@ def main() -> Any:
             "planning_logic",
             "mcp",
             "sandbox",
-            "tools",
+            TOOLS_DIR,
             "P2_tools",
             "P3_engines",
             "P4_agents",

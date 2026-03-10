@@ -41,7 +41,7 @@ _FORBIDDEN_SDK_ROOTS = frozenset(
 )
 
 _ALLOWED_ROOTS = (
-    "agentic_core/L2_execution",
+    L2_EXECUTION_DIR,
     "data/sdks_mcps",
     TESTS_DIR,
     OPS_SCRIPTS_DIR,
@@ -115,10 +115,7 @@ def test_llm_egress_only_via_sovereign_gateway():
             canon = _canonical(py)
             if _in_allowed(canon) or canon in _KNOWN_BYPASS_DEBT:
                 continue
-            try:
-                source = py.read_text(encoding="utf-8", errors="replace")
-            except OSError:  # guardian: allow-silent-swallower
-                continue
+            source = py.read_text(encoding="utf-8", errors="replace")
             hits = _ast_scan_sdk_imports(source, canon)
             if hits:
                 violations[canon] = hits

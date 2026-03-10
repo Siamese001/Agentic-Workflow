@@ -100,21 +100,17 @@ class TestMutationAllowedOutsideReadOnlyScope:
         Core Wave 1 guarantee: assert_not_read_only() is a no-op outside scope.
         """
         assert_not_read_only("redis.setex")  # must not raise
-        assert True  # no-exception contract
 
     def test_mutation_allowed_after_scope_exits(self):
         with read_only_retrieval_scope():
             pass
         assert_not_read_only("pinecone.upsert")  # must not raise
-        assert True  # no-exception contract
 
     def test_mutation_allowed_with_empty_operation(self):
         assert_not_read_only("")  # must not raise
-        assert True  # no-exception contract
 
     def test_mutation_allowed_with_no_operation(self):
         assert_not_read_only()  # must not raise
-        assert True  # no-exception contract
 
 
 class TestRetrievalMutationViolation:

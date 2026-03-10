@@ -20,13 +20,13 @@ from agentic_core.L0_routing.config import (
 root: Any = Path("C:/Git/Agentic-Workflow")
 core: Any = ROOT / AGENTIC_CORE_DIR
 approved_root_folders: Any = [
-    "agentic_core",
-    "apps_rg",
-    "apps_lic",
-    "apps_shared",
-    "tests",
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,
     "data",
-    "archives",
+    ARCHIVES_DIR,
     ".git",
     ".venv",
     ".vscode",
@@ -46,7 +46,7 @@ catch_all_mapping: Any = {
     "prompt": CORE / "prompt_governance/P1_core",
     "schema": CORE / "schemas/P1_core",
     "script": CORE / "L0_routing/scripts",
-    "test": ROOT / "tests/unit",
+    "test": ROOT / TESTS_UNIT_DIR,
     "DEFAULT_LOGIC": CORE / "utils/P1_core",
     "DEFAULT_ADMIN": CORE / "L0_routing/automation",
 }

@@ -248,8 +248,8 @@ class TestDeletedShimsAreGone:
             source = py_file.read_text(encoding="utf-8", errors="replace")
             try:
                 tree = ast.parse(source, filename=str(py_file))
-            except SyntaxError:  # guardian: allow-silent-swallower
-                continue
+            except SyntaxError as e:
+                assert False, f"SyntaxError in {py_file}: {e}"
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:
                     if node.module in deleted_shim_modules:

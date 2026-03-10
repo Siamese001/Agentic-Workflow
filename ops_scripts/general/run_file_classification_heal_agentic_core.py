@@ -16,6 +16,7 @@ project_root = get_validated_project_root()
 sys.path.insert(0, str(project_root))
 
 from agentic_core.L5_safety.reasoning.FileClassificationAgent import FileClassificationAgent
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 def run_healing_with_detailed_report():
@@ -103,7 +104,7 @@ def run_healing_with_detailed_report():
     }
 
     # Save report to SSOT-approved location (docs/reports/)
-    output_path = project_root / "docs" / "reports" / "file_classification_healing_agentic_core.json"
+    output_path = project_root / "docs" / REPORTS_DIR / "file_classification_healing_agentic_core.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:

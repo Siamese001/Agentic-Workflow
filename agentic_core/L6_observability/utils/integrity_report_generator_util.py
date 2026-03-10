@@ -37,6 +37,7 @@ from agentic_core.L5_safety.enforcement.three_tier_compliance_enforcer import (
     ComplianceResult,
     ThreeTierComplianceChecker,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 @dataclass
@@ -378,7 +379,7 @@ class AgentIntegrityReporter:
     def save_report(self, result: IntegrityReportResult, output_path: Path | None = None) -> Path:
         """Save report to markdown file."""
         if output_path is None:
-            output_path = self.project_root / "docs" / "reports" / "agent_integrity_audit.md"
+            output_path = self.project_root / "docs" / REPORTS_DIR / "agent_integrity_audit.md"
 
         _wg.ensure_dir(output_path.parent)
 

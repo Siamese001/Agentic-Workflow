@@ -26,13 +26,13 @@ def _make(**kwargs) -> HumanDecisionArtifact:
 def test_approve_roundtrip():
     art = _make().sign(SECRET)
     art.verify(SECRET)  # must not raise
-    assert True  # no-exception contract
+    assert art.action == "APPROVE"
 
 
 def test_reject_roundtrip():
     art = _make(action="REJECT").sign(SECRET)
     art.verify(SECRET)
-    assert True  # no-exception contract
+    assert art.action == "REJECT"
 
 
 def test_modify_diff_empty_patch_schema_rejected():

@@ -15,9 +15,9 @@ _AGENTIC_CORE_ROOT = Path(__file__).parent.parent
 
 FORBIDDEN_IMPORT_PREFIXES = frozenset(
     {
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
     }
 )
 

@@ -2,6 +2,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    REPORTS_DIR,
 )
 
 """
@@ -28,6 +29,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 # Optional: Import SovereignBaseAgent if available for full integration
 try:
@@ -141,7 +143,7 @@ class RootHygieneAgent(SovereignBaseAgent):
                 continue
             # skip archive/backup/cache dirs
             rel = candidate.relative_to(self.project_root)
-            if any(p in rel.parts for p in (".git", "__pycache__", "archives", ".healing_backups", ".venv")):
+            if any(p in rel.parts for p in (".git", "__pycache__", ARCHIVES_DIR, ".healing_backups", ".venv")):
                 continue
             m = _n_pattern.match(candidate.name)
             if not m:
@@ -195,7 +197,7 @@ class RootHygieneAgent(SovereignBaseAgent):
                     if item.is_file() and item.suffix == ".py":
                         # Decision Logic: Does it import agentic_core?
                         content = item.read_text(encoding="utf-8")
-                        if "agentic_core" in content or "from agentic_core" in content:
+                        if AGENTIC_CORE_DIR in content or "from agentic_core" in content:
                             target = l0_scripts / item.name
                             action = "REPATRIATE (Core)"
                         else:
@@ -236,7 +238,7 @@ class RootHygieneAgent(SovereignBaseAgent):
     def _evacuate_coverage_html(self):
         """Evacuate coverage_html directory to reports/."""
         cov_html = self.project_root / "coverage_html"
-        reports_cov = self.project_root / "reports" / "coverage_html"
+        reports_cov = self.project_root / REPORTS_DIR / "coverage_html"
 
         if cov_html.exists():
             print("\n[DETECT] Illegal root 'coverage_html/' found.")
@@ -289,7 +291,7 @@ class RootHygieneAgent(SovereignBaseAgent):
             from agentic_core.L5_safety.config.structure_blueprint import SOVEREIGN_TERRITORIES as _ST
 
             _sovereign_dirs: set[str] = set(_ST.keys())
-        except Exception:
+        except (ImportError, AttributeError):
             _sovereign_dirs = set()
 
         _tooling_dirs: set[str] = {

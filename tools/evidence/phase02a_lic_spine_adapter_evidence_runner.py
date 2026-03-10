@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 PROJECT_ROOT = get_validated_project_root()
-EVIDENCE_PATH = PROJECT_ROOT / "docs" / "reports" / "plans" / "phase_02a_lic_spine_adapter.md"
+EVIDENCE_PATH = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "phase_02a_lic_spine_adapter.md"
 ADAPTER_FILE = PROJECT_ROOT / APPS_LIC_DIR / "engines" / "lic_spine_adapter.py"
 TEST_FILE = PROJECT_ROOT / TESTS_DIR / "unit_min_deps" / "test_apps_lic_spine_adapter.py"
 

@@ -33,14 +33,14 @@ ROOT = pathlib.Path(__file__).resolve().parents[2]
 
 # Directories to scan for violations (production + test code)
 SCAN_DIRS = [
-    "agentic_core",
-    "apps_rg",
-    "apps_lic",
-    "apps_shared",
-    "system_learning",
-    "tools",
-    "ops_scripts",
-    "tests",
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
 ]
 
 # Paths that are allowed to import sub-modules directly
@@ -53,8 +53,8 @@ ALLOWED_DIRECT = {
     # eviction test manipulates sys.modules keys directly — not real imports
     "tests/unit/agentic_core/L5_safety/reasoning/test_blueprint_module_eviction.py",
     # ops_scripts and tools are maintenance/tooling scripts, not production code
-    "ops_scripts",
-    "tools",
+    OPS_SCRIPTS_DIR,
+    TOOLS_DIR,
     # L5_safety enforcement and reasoning are blueprint-adjacent and have legitimate direct imports
     "agentic_core/L5_safety/enforcement",
     "agentic_core/L5_safety/reasoning",

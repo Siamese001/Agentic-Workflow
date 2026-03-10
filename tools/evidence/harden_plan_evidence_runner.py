@@ -40,7 +40,7 @@ def strip_ansi(text: str) -> str:
 
 def main():
     repo_root = Path(__file__).parent.parent.parent
-    evidence_dir = repo_root / "docs" / "reports" / "plans"
+    evidence_dir = repo_root / "docs" / REPORTS_DIR / "plans"
     evidence_dir.mkdir(parents=True, exist_ok=True)
 
     evidence_file = evidence_dir / "HARDEN_PLAN_EVIDENCE.md"

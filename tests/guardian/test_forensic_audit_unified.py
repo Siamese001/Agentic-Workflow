@@ -33,6 +33,12 @@ from tests.guardian.guardian_report import (
     GuardianReportBuilder,
     ViolationCode,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 
 @dataclass
@@ -111,7 +117,7 @@ class ForensicAuditScanner:
         result = UnifiedAuditResult()
         self._all_agents = []
 
-        territories = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+        territories = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
         for territory in territories:
             territory_path = self.project_root / territory
@@ -151,7 +157,7 @@ class ForensicAuditScanner:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             tree = ast.parse(content)
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             return AgentInfo(
                 class_name="ParseError",
                 file_path=file_path,

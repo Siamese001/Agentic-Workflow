@@ -25,7 +25,7 @@ RENAMES = {
     "Prompts": "resume_prompts",
 }
 
-SEARCH_PATHS = ["agentic_core", "apps_shared", "apps_lic", "scripts"]
+SEARCH_PATHS = [AGENTIC_CORE_DIR, APPS_SHARED_DIR, APPS_LIC_DIR, "scripts"]
 
 
 def main():
@@ -35,7 +35,7 @@ def main():
 
     # 1. Verify New Files Exist
     print("\n[Phase 1] Verifying File Existence...")
-    base_utils = ROOT_DIR / "apps_shared" / "common_utils"
+    base_utils = ROOT_DIR / APPS_SHARED_DIR / "common_utils"
     for old_stem, new_name in RENAMES.items():
         target = base_utils / f"{new_name}.py"
         if not target.exists():

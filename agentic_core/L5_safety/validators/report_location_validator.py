@@ -30,6 +30,7 @@ from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint import (
     get_validated_project_root,
 )
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -69,7 +70,7 @@ EXCLUDED_DIRECTORIES: Final[tuple[str, ...]] = (
     ".ruff_cache",
     "node_modules",
     ".sovereign_healing_backup",
-    "archives",
+    ARCHIVES_DIR,
 )
 
 APPROVED_REPORT_LOCATIONS: Final[tuple[str, ...]] = (

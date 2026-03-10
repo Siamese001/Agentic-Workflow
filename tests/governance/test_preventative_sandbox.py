@@ -73,11 +73,9 @@ class TestSandboxRestoration:
     def test_restored_on_exception(self):
         original = os.remove
         sandbox = PreventativeSandbox()
-        try:
+        with pytest.raises(ValueError, match="test error"):
             with sandbox.activated():
                 raise ValueError("test error")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         assert os.remove is original
 
 

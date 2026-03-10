@@ -195,7 +195,6 @@ class TestPhase2DecisionEngineBlocks:
             ctx=_make_ctx(),
         )
         agent_instance.heal_repository.assert_not_called()
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -243,7 +242,6 @@ class TestPhase2NoHeal:
         )
         # No mutations when ctx.heal=False
         agent_instance.heal_repository.assert_not_called()
-        assert True  # no-exception contract
 
     def test_would_fix_entry_has_action_field(self, mod):
         de = _make_decision_engine(mod)
@@ -305,7 +303,6 @@ class TestPhase2SovereigntyDenied:
             ctx=_make_ctx(),
         )
         de.release_sovereignty_token.assert_not_called()
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -498,7 +495,6 @@ class TestPhase2HealExecution:
                 )
 
         uwg.revoke_write_permission.assert_called_once()
-        assert True  # no-exception contract
 
     def test_multiple_violations_same_agent_grouped(self, mod):
         de = _make_decision_engine(mod, allow=True)

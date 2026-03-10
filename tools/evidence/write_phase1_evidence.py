@@ -18,7 +18,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 REPO = get_validated_project_root()
-EVIDENCE_PATH = REPO / "docs" / "reports" / "plans" / "phase1_gap_remediation_evidence.md"
+EVIDENCE_PATH = REPO / "docs" / REPORTS_DIR / "plans" / "phase1_gap_remediation_evidence.md"
 
 # Correction commit (W2.3 scope fix) is the final Phase 1 code state.
 # Original Phase 1 code commit (7 files) is tracked as PRIOR_CODE_COMMIT.

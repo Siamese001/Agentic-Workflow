@@ -25,7 +25,7 @@ def undo_core_moves() -> Any:
         "observability",
         "schemas",
         SCRIPTS_DIR,
-        "tools",
+        TOOLS_DIR,
         "validator",
         "prompt_governance",
     ]

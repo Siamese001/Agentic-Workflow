@@ -17,6 +17,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
+    TOOLS_DIR,
 )
 
 REPO_ROOT = get_validated_project_root()
@@ -70,7 +71,7 @@ _EXEMPT_PATH_SEGMENTS = frozenset(
         "reasoning",
         "healers",
         "scripts",
-        "tools",
+        TOOLS_DIR,
         "engines",
         "constraints",
         "utils",

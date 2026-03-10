@@ -27,6 +27,7 @@ from dataclasses import dataclass, field
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 @dataclass
@@ -619,7 +620,7 @@ def main():
     report = analyzer.generate_report()
 
     # Save report to SSOT location
-    output_path = repo_root / "docs" / "reports" / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.json"
+    output_path = repo_root / "docs" / REPORTS_DIR / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.json"
     output_path.parent.mkdir(parents=True, exist_ok=True)
 
     with open(output_path, "w", encoding="utf-8") as f:
@@ -646,7 +647,7 @@ def main():
     print(f"\nDetailed report saved to: {output_path}")
 
     # Also save markdown report to SSOT location
-    md_path = repo_root / "docs" / "reports" / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.md"
+    md_path = repo_root / "docs" / REPORTS_DIR / "plans" / "ARCHITECTURE_GAP_ANALYSIS_AST.md"
     with open(md_path, "w", encoding="utf-8") as f:
         f.write("# Architecture Gap Analysis (AST-Based)\n\n")
         f.write("**Generated:** 2026-02-03\n")

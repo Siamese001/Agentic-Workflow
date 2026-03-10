@@ -58,7 +58,7 @@ def find_agents_outside_reasoning(root: Path) -> list[str]:
                             break
         except SyntaxError:
             continue
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             continue
 
     return violations

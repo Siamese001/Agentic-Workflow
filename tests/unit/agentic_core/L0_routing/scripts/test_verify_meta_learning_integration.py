@@ -17,7 +17,7 @@ try:
     from agentic_core.L5_safety.reasoning.AutonomyGuardianAgent import get_autonomy_guardian
 
     _HAS_GUARDIAN = True
-except Exception:
+except (ImportError, AttributeError):
     get_autonomy_guardian = None  # type: ignore[assignment]
     _HAS_GUARDIAN = False
 
@@ -48,7 +48,6 @@ def test_redis_cache_method():
         print("❌ _cache_result method NOT found")
         print(f"   Available methods: {[m for m in dir(guardian) if not m.startswith('_')]}")
         return False
-        assert True  # no-exception contract
 
 
 def test_pinecone_vector_method():
@@ -75,7 +74,6 @@ def test_pinecone_vector_method():
     else:
         print("❌ _store_vector method NOT found")
         return False
-        assert True  # no-exception contract
 
 
 def test_meta_learning_trigger():
@@ -110,7 +108,6 @@ def test_meta_learning_trigger():
         print(f"   - dry_run={dry_run}")
         print(f"   - fixed={fixed_count}")
         return False
-        assert True  # no-exception contract
 
 
 def verify_mixin_inheritance():

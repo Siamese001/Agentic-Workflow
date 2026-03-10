@@ -272,21 +272,23 @@ class CircuitBreaker:
                 # Record failure outside of any thread locks
                 try:
                     self.record_failure(error)
-                except Exception:
-                    pass
+                except (AttributeError, TypeError) as e:
+                    self.logger.debug(f"Failed to record failure: {e}")
                 raise error
 
             if "exception" in result_container:
                 try:
                     self.record_failure(result_container["exception"])
-                except Exception:
-                    pass  # Still raise the original exception
+                except (AttributeError, TypeError) as e:
+                    self.logger.debug(f"Failed to record failure: {e}")
+                    # Still raise the original exception
                 raise result_container["exception"]
 
             try:
                 self.record_success()
-            except Exception:
-                pass  # Still return the result
+            except (AttributeError, TypeError) as e:
+                self.logger.debug(f"Failed to record success: {e}")
+                # Still return the result
             return result_container["result"]
 
         wrapper.__name__ = func.__name__

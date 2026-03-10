@@ -95,7 +95,6 @@ class TestVerifyStable:
         )
         # Positive control: same inputs → same digest → no exception
         proof.verify_stable(lambda: canonical_digest(inputs))
-        assert True  # no-exception contract
 
     def test_changed_inputs_raises(self):
         inputs = {"registry": "v1", "policy": "v2"}
@@ -158,7 +157,6 @@ class TestVerifyUnstable:
         tampered_inputs = {"registry": "TAMPERED", "policy": "v2"}
         # verify_unstable should pass (tamper detected = digest changed)
         proof.verify_unstable(lambda: canonical_digest(tampered_inputs))
-        assert True  # no-exception contract
 
     def test_unchanged_inputs_fails_negative_control(self):
         """Negative control integrity: if we claim tamper but digest is same, raise."""
@@ -211,7 +209,6 @@ class TestMakeProof:
         )
         # Re-verify with same inputs — must pass
         proof.verify_stable(lambda: canonical_digest(inputs))
-        assert True  # no-exception contract
 
     def test_make_proof_then_verify_unstable_on_tamper(self):
         inputs = {"a": 1}
@@ -222,4 +219,3 @@ class TestMakeProof:
         )
         tampered = {"a": 999}
         proof.verify_unstable(lambda: canonical_digest(tampered))
-        assert True  # no-exception contract

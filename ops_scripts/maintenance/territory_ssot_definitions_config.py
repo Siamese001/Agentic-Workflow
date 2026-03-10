@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    APPS_RG_DIR,
+)
 """
 scripts/maintenance/territory_ssot_definitions.py
 -------------------------------------------------
@@ -126,11 +131,11 @@ def get_territory_from_path(
     if is_base_class:
         return get_base_agent_territory(layer)
 
-    if "apps_lic" in path_str:
+    if APPS_LIC_DIR in path_str:
         return TERRITORY_APPS_LIC
-    elif "apps_rg" in path_str:
+    elif APPS_RG_DIR in path_str:
         return TERRITORY_APPS_RG
-    elif "apps_shared" in path_str:
+    elif APPS_SHARED_DIR in path_str:
         return TERRITORY_APPS_SHARED
 
     if layer == "L5":

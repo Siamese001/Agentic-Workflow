@@ -18,10 +18,10 @@ import sys
 from pathlib import Path
 
 CORPUS_PATH = (
-    Path(__file__).resolve().parents[2] / "docs" / "reports" / "plans" / "Agentic Master Requirements.md"
+    Path(__file__).resolve().parents[2] / "docs" / REPORTS_DIR / "plans" / "Agentic Master Requirements.md"
 )
 REPORT_PATH = (
-    Path(__file__).resolve().parents[2] / "docs" / "reports" / "plans" / "EnforcementAuditReport.json"
+    Path(__file__).resolve().parents[2] / "docs" / REPORTS_DIR / "plans" / "EnforcementAuditReport.json"
 )
 
 TAGGED_HEADER_RE = re.compile(

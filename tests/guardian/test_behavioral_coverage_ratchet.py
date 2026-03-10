@@ -22,6 +22,7 @@ if str(PROJECT_ROOT) not in sys.path:
 from agentic_core.L0_routing.types.guardian_registry_types import (
     ALL_GUARDIANS,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 pytestmark = pytest.mark.guardian
 
@@ -149,7 +150,7 @@ class TestStatusPromotionCoverage:
 
     def test_contract_test_covers_promotion(self):
         """The contract test file must contain status promotion tests."""
-        contract_test = PROJECT_ROOT / "tests" / "guardian" / "test_guardian_contract.py"
+        contract_test = PROJECT_ROOT / TESTS_DIR / "guardian" / "test_guardian_contract.py"
         assert contract_test.exists()
         _extract_string_literals_from_test(contract_test)
         classes = _extract_test_class_names(contract_test)
@@ -159,7 +160,7 @@ class TestStatusPromotionCoverage:
 
     def test_aggregation_test_covers_rollup(self):
         """The aggregation test file must test global status rollup."""
-        agg_test = PROJECT_ROOT / "tests" / "guardian" / "test_guardian_aggregation.py"
+        agg_test = PROJECT_ROOT / TESTS_DIR / "guardian" / "test_guardian_aggregation.py"
         assert agg_test.exists()
         classes = _extract_test_class_names(agg_test)
         assert any("dirty" in c.lower() or "fail" in c.lower() for c in classes), (

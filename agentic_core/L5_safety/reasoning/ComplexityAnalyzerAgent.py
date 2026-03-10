@@ -28,6 +28,7 @@ from agentic_core.L3_orchestration.reasoning.UnifiedAgent import (
     ValidatorStrategy,
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -123,7 +124,7 @@ class ComplexityAnalyzerAgent(SovereignBaseAgent):
         files = list(target.rglob("*.py"))
         for file_path in files:
             if self._complexity_config.ignore_tests and (
-                "test" in file_path.name or "tests" in file_path.parts
+                "test" in file_path.name or TESTS_DIR in file_path.parts
             ):
                 continue
             self.analyze_file(file_path)

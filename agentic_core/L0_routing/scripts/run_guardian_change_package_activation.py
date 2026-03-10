@@ -36,7 +36,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 
 GUARDIAN_ID = "change_package_activation_guard"
 
-SCAN_ROOTS: tuple[str, ...] = ("agentic_core", "system_learning")
+SCAN_ROOTS: tuple[str, ...] = (AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR)
 SKIP_DIRS: frozenset[str] = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 # Direct VersionStore commit method names

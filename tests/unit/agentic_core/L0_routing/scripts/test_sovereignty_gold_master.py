@@ -11,6 +11,10 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from tests.helpers.dev_tools_loader import load_dev_script
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+)
 
 _psf = load_dev_script("pascal_sovereignty_fixer.py")
 PascalSovereigntyFixer = _psf.PascalSovereigntyFixer
@@ -39,7 +43,6 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
 
         self.assertIn("from .LLMMixin import", updated, "Single-dot relative import should be preserved")
         self.assertIn("from ..LLMMixin import", updated, "Double-dot relative import should be preserved")
-        assert True  # no-exception contract
 
     def test_relative_import_no_dots(self):
         """Verify absolute imports still work without dots."""
@@ -55,7 +58,6 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
             updated,
             "Absolute import should be updated to new module name",
         )
-        assert True  # no-exception contract
 
     def test_relative_import_triple_dots(self):
         """Edge Case: Triple-dot relative imports (from ...module)."""
@@ -71,7 +73,6 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
             updated,
             "Triple-dot relative import should be preserved",
         )
-        assert True  # no-exception contract
 
     def test_mixin_acronym_consistency(self):
         """Standard Case: Validate acronym-aware snake_case for Mixins."""
@@ -88,50 +89,45 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
 
             new_name = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(new_name, expected, f"Failed acronym-aware naming for {stem}")
-            assert True  # no-exception contract
-
+    
     def test_tool_registry_exclusion(self):
         """Critical Requirement: tool_registry.py must remain ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "tool_registry.py"
-        mock_path.parts = ("apps_shared", "utils")
+        mock_path.parts = (APPS_SHARED_DIR, "utils")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "The tool registry is a core SSOT and must be excluded")
-        assert True  # no-exception contract
 
     def test_execute_ssot_exclusion(self):
         """Critical Requirement: execute_ssot.py must remain ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "execute_ssot.py"
-        mock_path.parts = ("agentic_core", "L0_routing", "scripts")
+        mock_path.parts = (AGENTIC_CORE_DIR, "L0_routing", "scripts")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "execute_ssot.py must remain in exclusion list")
-        assert True  # no-exception contract
 
     def test_structure_blueprint_exclusion(self):
         """Critical Requirement: structure_blueprint.py must remain ignored."""
         mock_path = Mock(spec=Path)
         mock_path.name = "structure_blueprint.py"
-        mock_path.parts = ("agentic_core", "L5_safety", "validators")
+        mock_path.parts = (AGENTIC_CORE_DIR, "L5_safety", "validators")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "structure_blueprint.py must remain in exclusion list")
-        assert True  # no-exception contract
 
     def test_long_path_verification(self):
         """Environment: Ensure verify_environment correctly checks for Windows LongPaths."""
         # This is a passive check; we ensure it doesn't crash the pipeline
         status = self.fixer.verify_environment()
         self.assertIsInstance(status, bool, "verify_environment should return a boolean")
-        assert True  # no-exception contract
 
     def test_relative_import_direct_module(self):
         """Verify relative imports work for direct module references."""
@@ -148,7 +144,6 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
             updated,
             "Direct relative import should be updated to new module name",
         )
-        assert True  # no-exception contract
 
     def test_import_alias_with_relative(self):
         """Verify import aliases work with absolute imports."""
@@ -166,7 +161,6 @@ class TestSovereigntyGoldMaster(unittest.TestCase):
             updated,
             "Import alias should be updated to new module name",
         )
-        assert True  # no-exception contract
 
 
 class TestRelativeImportPatterns(unittest.TestCase):
@@ -188,8 +182,7 @@ class TestRelativeImportPatterns(unittest.TestCase):
                 self.assertIsNotNone(match, f"Should match: {content}")
                 result = pattern.sub(r"\g<prefix>NEW\g<suffix>", content)
                 self.assertEqual(result, expected, f"Failed for: {content}")
-                assert True  # no-exception contract
-
+        
     def test_direct_module_match(self):
         """Test direct module name matching without subpaths."""
         pattern = re.compile(r"(?P<prefix>from\s+\.*)" + re.escape("mixin") + r"(?P<suffix>\s+import)")
@@ -199,7 +192,6 @@ class TestRelativeImportPatterns(unittest.TestCase):
         result = pattern.sub(r"\g<prefix>NEW\g<suffix>", content)
 
         self.assertIn("from .NEW import", result, "Direct module name should be updated")
-        assert True  # no-exception contract
 
 
 if __name__ == "__main__":

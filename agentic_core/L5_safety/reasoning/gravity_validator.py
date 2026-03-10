@@ -28,7 +28,7 @@ def _get_apps_roots() -> frozenset[str]:
 
 
 _APPS_ROOTS: frozenset[str] = _get_apps_roots()
-_EXCLUDED_PATHS: tuple[str, ...] = ("ops_scripts", "scripts")
+_EXCLUDED_PATHS: tuple[str, ...] = (OPS_SCRIPTS_DIR, "scripts")
 
 logger = logging.getLogger(__name__)
 
@@ -74,7 +74,7 @@ class GravityValidatorAgent:
             root = parts[0]
             if root in _APPS_ROOTS:
                 return True
-            if root == "agentic_core" and len(parts) > 1:
+            if root == AGENTIC_CORE_DIR and len(parts) > 1:
                 return bool(_LAYER_DIR_PATTERN.match(parts[1]))
             return False
 
@@ -99,7 +99,6 @@ class GravityValidatorAgent:
                 return _ast_cache[fp_str]
             try:
                 from pathlib import Path as _Path
-
                 tree = _ast.parse(_Path(fp_str).read_text(encoding="utf-8", errors="replace"))
                 _ast_cache[fp_str] = tree
                 return tree

@@ -38,6 +38,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.decorators_compat_util import standard_heal
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 
 def _get_RedisSovereignAgent():
@@ -451,7 +452,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
         from agentic_core.utils.ssot_discovery_validator import get_python_files
 
         for py_file in get_python_files(self.root):
-            if "archives" in str(py_file):
+            if ARCHIVES_DIR in str(py_file):
                 continue
 
             try:
@@ -477,9 +478,8 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
                             },
                         )
 
-            # guardian: allow-silent-swallow
-
-            except Exception:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                print(f"Failed to index {py_file.name}: {e}")
                 continue
 
         return methods
@@ -503,10 +503,8 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             try:
                 self.redis.set(cache_key, json.dumps(m), ex=86400)  # 24h
 
-            # guardian: allow-silent-swallow
-
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError) as e:
+                print(f"Failed to warm cache for {py_file.name}: {e}")
 
         print(f"   [OK] SubAtomicRegistry: Indexed {len(methods)} methods + cache Warmed")
 
@@ -523,10 +521,8 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
                 return json.loads(cached)
 
-        # guardian: allow-silent-swallow
-
-        except Exception:
-            pass
+        except (ImportError, AttributeError) as e:
+            print(f"Gemini embedding failed: {e}")
 
         task_lower = Task.lower()
 
@@ -543,10 +539,8 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             if results:
                 self.redis.set(cache_key, json.dumps(results), ex=3600)  # 1h
 
-        # guardian: allow-silent-swallow
-
-        except Exception:
-            pass
+        except (ImportError, AttributeError, ValueError) as e:
+            print(f"Gemini reranking failed: {e}")
 
         return results
 
@@ -594,7 +588,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
             else:
                 return method(*args, **kwargs)
 
-        except Exception as e:
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
             print(f"   [ERROR] Failed to invoke {method_meta['method']}: {e}")
 
             raise
@@ -697,7 +691,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
                 "errors": [],
             }
 
-        except Exception as e:
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
             return {
                 "status": "failed",
                 "details": f"SubAtomicRegistryAgent heal() failed: {str(e)}",
@@ -721,7 +715,7 @@ class SubAtomicRegistryAgent(SovereignBaseAgent):
 
             return query_engine.find_agents_by_base_class(base_class)
 
-        except Exception as exc:
+        except (ImportError, AttributeError) as exc:
             Logger.warning("[SubAtomicRegistry] ADG discovery unavailable: %s", exc)
 
             return []

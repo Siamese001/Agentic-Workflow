@@ -26,7 +26,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 # ============================================================================
 
 ARCHIVES_ROOT = Path(ARCHIVES_DIR)
-CURRENT_DIRS = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "scripts"]
+CURRENT_DIRS = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, "scripts"]
 
 # Folders to EXCLUDE (duplicates/backups)
 EXCLUDE_FOLDERS = {
@@ -45,9 +45,9 @@ EXCLUDE_PATTERNS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY
 
 # Priority folders (scan these first)
 PRIORITY_FOLDERS = [
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
     "Reachout Engine Archive",
     "legacy_agents",
     "legacy_validators",
@@ -73,7 +73,7 @@ def build_codebase_index() -> tuple[set[str], set[str], set[str]]:
         if not Path(dir_path).exists():
             continue
         for py_file in Path(dir_path).rglob("*.py"):
-            if "__pycache__" in str(py_file) or "archives" in str(py_file):
+            if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")

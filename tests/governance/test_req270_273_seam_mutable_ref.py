@@ -169,15 +169,11 @@ def test_req270_violation_tracking():
 
     with MutableReferenceTracker():
         # Generate some violations
-        try:
+        with pytest.raises(MutableReferenceError):
             assert_immutable_reference([1, 2, 3], "test1")
-        except MutableReferenceError:  # guardian: allow-silent-swallower
-            pass
 
-        try:
+        with pytest.raises(MutableReferenceError):
             assert_immutable_reference({"a": 1}, "test2")
-        except MutableReferenceError:  # guardian: allow-silent-swallower
-            pass
 
         # Check violations were recorded
         violations = get_mutable_ref_violations()

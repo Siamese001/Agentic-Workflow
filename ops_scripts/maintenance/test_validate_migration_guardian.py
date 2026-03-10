@@ -24,9 +24,9 @@ def test_basic_functionality():
 
     try:
         # Create test structure
-        (test_dir / "apps_rg" / "engines").mkdir(parents=True)
-        (test_dir / "apps_lic" / "tools").mkdir(parents=True)
-        (test_dir / "agentic_core" / "L5_safety" / "validators").mkdir(parents=True)
+        (test_dir / APPS_RG_DIR / "engines").mkdir(parents=True)
+        (test_dir / APPS_LIC_DIR / TOOLS_DIR).mkdir(parents=True)
+        (test_dir / AGENTIC_CORE_DIR / "L5_safety" / "validators").mkdir(parents=True)
 
         # Create test files
         test_files = {

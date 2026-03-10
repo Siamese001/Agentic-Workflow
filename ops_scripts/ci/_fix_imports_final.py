@@ -165,7 +165,7 @@ def audit(fp: Path) -> list[str]:
 
 
 def main():
-    test_files = sorted((ROOT / "tests").rglob("*.py"))
+    test_files = sorted((ROOT / TESTS_DIR).rglob("*.py"))
     test_files = [f for f in test_files if "__pycache__" not in str(f)]
 
     # Pass 1: fix

@@ -16,6 +16,12 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
@@ -68,7 +74,7 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
                 if func_name in ("setup", "configure", "init", "initialize", "connect"):
                     suspicious.append(f"Line {node.lineno}: {func_name}() called at module level")
 
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError) as e:
         suspicious.append(f"Parse error: {e}")
 
     return suspicious
@@ -77,7 +83,7 @@ def find_suspicious_patterns(file_path: Path) -> list[str]:
 def get_python_files() -> list[Path]:
     """Get all Python files in priority directories."""
     files = []
-    priority_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    priority_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     exclude = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
     for dir_name in priority_dirs:
@@ -140,7 +146,7 @@ def main():
             try:
                 __import__(module_name)
                 result["status"] = "ok"
-            except Exception as e:
+            except (ImportError, AttributeError, SyntaxError, ValueError, TypeError) as e:
                 result["status"] = "error"
                 result["error"] = f"{type(e).__name__}: {str(e)[:100]}"
 

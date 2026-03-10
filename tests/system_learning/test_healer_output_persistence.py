@@ -34,6 +34,7 @@ from system_learning.engines.in_memory_healing_outcome_intake_store import (
 from system_learning.stores.version_store import FileBackedVersionStore, InMemoryVersionStore
 from system_learning.types.healing_outcome_intake_types import HealingOutcomeIntakeRecord
 from system_learning.types.healing_outcome_types import HealingOutcomeEvent, HealingOutcomeStats
+from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 
 pytestmark = pytest.mark.system_learning
 
@@ -748,7 +749,7 @@ class TestFireMetaLearningIntakeFaultIsolation:
         real_import = builtins.__import__
 
         def blocking(name, *args, **kwargs):
-            if "system_learning" in name:
+            if SYSTEM_LEARNING_DIR in name:
                 raise ImportError(f"Simulated: {name}")
             return real_import(name, *args, **kwargs)
 

@@ -47,7 +47,7 @@ if sys.platform.startswith("win"):
 PROJECT_ROOT = Path(__file__).parent.parent
 sys.path.insert(0, str(PROJECT_ROOT))
 
-DASHBOARD_DIR = PROJECT_ROOT / "agentic_core" / "L6_observability" / "dashboards"
+DASHBOARD_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
 DASHBOARD_URL = "http://localhost:8765/autonomy_dashboard.html"
 SERVER_PORT = 8765
 
@@ -63,7 +63,7 @@ def cleanup_server():
         try:
             _server_process.terminate()
             _server_process.wait(timeout=5)
-        except Exception:
+        except (subprocess.TimeoutExpired, OSError):
             _server_process.kill()
         _server_process = None
 

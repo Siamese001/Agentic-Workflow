@@ -15,6 +15,11 @@ import ast
 import sys
 from dataclasses import dataclass, field
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_SHARED_DIR,
+)
 
 # ---------------------------------------------------------------------------
 # Layer hierarchy: higher number = higher authority.
@@ -48,9 +53,9 @@ ALLOWED_UPWARD_EXCEPTIONS: frozenset[tuple[str, str]] = frozenset(
 )
 
 SCAN_ROOTS_DEFAULT: tuple[str, ...] = (
-    "agentic_core",
-    "system_learning",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_SHARED_DIR,
 )
 
 

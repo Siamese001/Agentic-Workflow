@@ -246,7 +246,7 @@ def test_negative_control_bypass_attempt():
         verifier = L2BoundaryVerifier()
         try:
             verifier.verify_instruction_packet(packet)  # Should raise
-        except Exception:  # guardian: allow-silent-swallower
+        except (ValueError, TypeError, AttributeError):
             pytest.xfail("Negative control: bypass attempt correctly failed")
     else:
         # Normal mode - this test should pass

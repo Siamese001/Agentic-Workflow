@@ -8,7 +8,10 @@ from dataclasses import dataclass
 
 # This boosts alignment detection — review and integrate appropriately
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+)
 from agentic_core.L2_execution.tools import write_gateway as _wg
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -275,7 +278,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 continue
 
             # Handle agentic_core specially (has L2/L3 layer structure)
-            if territory_name == "agentic_core":
+            if territory_name == AGENTIC_CORE_DIR:
                 self._create_agentic_core_structure(territory_path, target_territory, results)
             else:
                 # Handle other territories (ops_scripts, system_learning, tools, data, docs, etc.)
@@ -414,11 +417,11 @@ class HierarchyAgent(SovereignBaseAgent):
             results["roots_processed"].append(root_name)
 
             # Dispatch based on root type
-            if root_name == "agentic_core":
+            if root_name == AGENTIC_CORE_DIR:
                 self._enforce_agentic_core_structure(root_path, results)
             elif root_name.startswith("apps_"):
                 self._enforce_apps_structure(root_path, results)
-            elif root_name == "tests":
+            elif root_name == TESTS_DIR:
                 self._enforce_tests_structure(root_path, results)
 
         # [FIX-2] Belt-and-suspenders: Agent files must never be in tests/
@@ -643,9 +646,9 @@ class HierarchyAgent(SovereignBaseAgent):
                     Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass  # Non-blocking
+            except (ImportError, AttributeError) as e:
+                Logger.debug(f"Gatekeeper check failed for {py_file.name}: {e}")
+                # Non-blocking - continue without gatekeeper check
 
             target_layer_l2 = get_best_target_l1(bad_layer_l2, approved_layers_l2)
             target_path = agentic_core_path / target_layer_l2
@@ -664,9 +667,8 @@ class HierarchyAgent(SovereignBaseAgent):
                 )
                 file_type = fca.classify_file(py_file)
                 target_territory_l3 = fca._get_correct_folder_for_type(file_type)
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (ImportError, AttributeError, OSError) as e:
+                Logger.debug(f"FCA classification failed for {py_file.name}: {e}")
 
             # Fallback to heuristic if FCA unavailable or returns None
             if not target_territory_l3:
@@ -783,9 +785,9 @@ class HierarchyAgent(SovereignBaseAgent):
                     Logger.warning(f"      [!] SKIP (forbidden): {py_file.name} - {rejection_reason}")
                     results["errors"].append(f"{py_file.name}: {rejection_reason}")
                     return
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass  # Non-blocking
+            except (ImportError, AttributeError) as e:
+                Logger.debug(f"Gatekeeper check failed for {py_file.name}: {e}")
+                # Non-blocking - continue without gatekeeper check
 
             # [DEDUP] Use FCA for classification-based L3 routing
             target_territory_l3 = None
@@ -801,9 +803,8 @@ class HierarchyAgent(SovereignBaseAgent):
                 )
                 file_type = fca.classify_file(py_file)
                 target_territory_l3 = fca._get_correct_folder_for_type(file_type)
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (ImportError, AttributeError, OSError) as e:
+                Logger.debug(f"FCA classification failed for {py_file.name}: {e}")
 
             # Fallback to heuristic if FCA unavailable or returns None
             if not target_territory_l3:
@@ -892,14 +893,14 @@ class HierarchyAgent(SovereignBaseAgent):
                 results["apps_archived"] = apps_count
 
         # [SCOPED] Skip tests depth if targeting core/apps
-        if not target_territory or target_territory == "tests":
+        if not target_territory or target_territory == TESTS_DIR:
             tests_count = self._enforce_tests_depth()
             results["violations_found"] += tests_count
             if self.healing_enabled:
                 results["tests_archived"] = tests_count
 
         # Universal depth (agentic_core)
-        if not target_territory or not (target_territory.startswith("apps_") or target_territory == "tests"):
+        if not target_territory or not (target_territory.startswith("apps_") or target_territory == TESTS_DIR):
             universal_count = self._enforce_universal_depth()
             results["violations_found"] += universal_count
             if self.healing_enabled:
@@ -1043,7 +1044,8 @@ class HierarchyAgent(SovereignBaseAgent):
             else:
                 Logger.error(f"  [ERROR] Archive failed: {gk_result.error}")
                 return 0
-        except Exception:
+        except (ImportError, AttributeError, OSError) as e:
+            Logger.error(f"Archive operation failed: {e}")
             return 0
 
     def _enforce_apps_depth(self) -> int:
@@ -1082,7 +1084,7 @@ class HierarchyAgent(SovereignBaseAgent):
                 continue
 
             rel = file_path.relative_to(self.project_root)
-            if rel.parts[0] == "agentic_core":
+            if rel.parts[0] == AGENTIC_CORE_DIR:
                 # [FIX] Depth = folder level where file resides, not path length
                 # agentic_core/L0_routing/scripts/file.md → depth 3 (scripts is level 3)
                 depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
@@ -1222,7 +1224,7 @@ class HierarchyAgent(SovereignBaseAgent):
                     continue
 
                 if parts and parts[0] in self.protected_folders:
-                    if parts[0] in {"data", "archives"}:
+                    if parts[0] in {"data", ARCHIVES_DIR}:
                         continue
                     violations_found += 1
                     Logger.warning(f"      [⚠]  ORPHANED IN {parts[0].upper()}: {rel_path}")
@@ -1304,9 +1306,8 @@ class HierarchyAgent(SovereignBaseAgent):
             new_content = "\n".join(new_lines).rstrip() + "\n"
 
             _wg.write_text(gitignore_path, new_content, encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError) as e:
+            Logger.debug(f"Failed to update .gitignore: {e}")
 
     # ========================================================================
     # UNIFIED INTERFACE

@@ -28,6 +28,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L6_OBSERVABILITY_DIR,
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
+    TOOLS_DIR,
 )
 
 REPO_ROOT = get_validated_project_root()
@@ -176,7 +177,7 @@ ARCHITECTURE_COMPONENT_RULES = (
         "key": "write_gateway",
         "layer": "L2",
         "artery": "Universal Write Gateway Coverage",
-        "path": AGENTIC_CORE / "L2_execution" / "tools" / "write_gateway.py",
+        "path": AGENTIC_CORE / "L2_execution" / TOOLS_DIR / "write_gateway.py",
         "required_any": ("WriteAmplificationError", "WriteSizeCapError", "append_text", "append_csv_row"),
         "impact": "The analyzer does not verify the sole durable mutation authority described by the architecture.",
         "priority": "HIGH",
@@ -589,7 +590,7 @@ def _detect_upward_imports(file_path: Path, analysis: FileAnalysis) -> list[str]
 def _looks_like_meta_pipeline(file_path: Path, analysis: FileAnalysis) -> bool:
     rel = _stable_relpath(file_path).lower()
     return (
-        "meta_learning_pipeline" in rel or "system_learning" in rel or len(analysis.meta_stage_mentions) >= 3
+        "meta_learning_pipeline" in rel or SYSTEM_LEARNING_DIR in rel or len(analysis.meta_stage_mentions) >= 3
     )
 
 
@@ -1594,12 +1595,13 @@ def main() -> None:
     """Main entry point."""
     import argparse
     import sys
+    from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
     parser = argparse.ArgumentParser(description="Semantic Gap Analyzer")
     parser.add_argument(
         "--output",
         type=Path,
-        default=REPO_ROOT / "docs" / "reports" / "plans" / "semantic_gap_analysis.md",
+        default=REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "semantic_gap_analysis.md",
         help="Output path for the analysis report",
     )
     parser.add_argument(

@@ -7,7 +7,7 @@ from pathlib import Path
 
 def regenerate_headers(project_root: Path):
     """Add proper Python headers to test files."""
-    test_dir = project_root / "tests" / "unit"
+    test_dir = project_root / TESTS_DIR / "unit"
     fixed_count = 0
 
     for test_file in test_dir.rglob("*.py"):

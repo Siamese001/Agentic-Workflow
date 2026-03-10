@@ -116,7 +116,7 @@ def get_file_hash(filepath):
     try:
         with open(filepath, "rb") as f:
             return hashlib.md5(f.read()).hexdigest()
-    except Exception:
+    except OSError:
         return None
 
 

@@ -31,7 +31,7 @@ class PolicyConfig:
         "pinecone_query",
         "pinecone_upsert",
     )
-    file_scope_whitelist: tuple[str, ...] = ("/tmp", "/workspace", "agentic_core")
+    file_scope_whitelist: tuple[str, ...] = ("/tmp", "/workspace", AGENTIC_CORE_DIR)
     token_budget: int = 1_000_000
 
     def canonical_bytes(self) -> bytes:

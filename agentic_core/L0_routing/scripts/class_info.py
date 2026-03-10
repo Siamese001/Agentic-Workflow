@@ -87,8 +87,7 @@ def compute_file_hash(file_path: Path) -> str:
             for chunk in iter(lambda: f.read(8192), b""):
                 sha256.update(chunk)
         return sha256.hexdigest()[:16]
-    # guardian: allow-silent-swallow
-    except Exception:
+    except OSError:
         return "ERROR"
 
 
@@ -97,7 +96,7 @@ def count_lines(file_path: Path) -> int:
     try:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
             return sum(1 for _ in f)
-    except Exception:
+    except OSError:
         return 0
 
 
@@ -107,8 +106,7 @@ def get_snippet(file_path: Path, chars: int = 200) -> str:
         with open(file_path, encoding="utf-8", errors="ignore") as f:
             content = f.read(chars)
             return content.replace("\n", " ").strip()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         return "[BINARY OR UNREADABLE]"
 
 

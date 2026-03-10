@@ -41,7 +41,7 @@ def sync_pre_commit(dry_run: bool = False):
     sovereign_roots = list(SOVEREIGN_TERRITORIES.keys())
 
     # Add system folders that should be included in patterns
-    system_folders = ["data", "archives"]
+    system_folders = ["data", ARCHIVES_DIR]
     all_roots = sovereign_roots + system_folders
 
     # Build regex patterns

@@ -40,6 +40,10 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TOOLS_DIR,
+)
 
 GUARDIAN_ID = "classification_compliance"
 
@@ -57,7 +61,7 @@ LCD_FOLDERS: frozenset[str] = frozenset(
         "enforcement",
         "validators",
         "utils",
-        "tools",
+        TOOLS_DIR,
         "scripts",
     },
 )
@@ -89,7 +93,7 @@ def _collect_python_files(repo_root: Path) -> list[Path]:
     for item in sorted(repo_root.iterdir(), key=lambda p: p.name):
         if not item.is_dir():
             continue
-        if item.name == "agentic_core" or item.name.startswith("apps_"):
+        if item.name == AGENTIC_CORE_DIR or item.name.startswith("apps_"):
             scan_roots.append(item)
 
     for scan_root in scan_roots:
@@ -166,7 +170,7 @@ def scan_territory_compliance(
         parts = fpath.parts
 
         # Only check files inside agentic_core/ layers in LCD folders
-        if "agentic_core" not in parts:
+        if AGENTIC_CORE_DIR not in parts:
             continue
 
         # Must be inside a recognized LCD subfolder

@@ -24,7 +24,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "healing_tier_router_evidence.md"
+EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "healing_tier_router_evidence.md"
 EVIDENCE_REL = "docs/reports/plans/healing_tier_router_evidence.md"
 
 _HEX40_RE = re.compile(r"^[0-9a-f]{40}$")

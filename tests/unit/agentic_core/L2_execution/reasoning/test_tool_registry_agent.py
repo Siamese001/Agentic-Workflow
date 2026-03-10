@@ -56,8 +56,9 @@ class TestExecutionLayerIntegrity:
 
     def test_execution_can_use_subprocess(self):
         """L2 execution is allowed to use subprocess (it's the execution layer)."""
-        # This is a documentation test - L2 is the correct layer for subprocess
-        assert True
+        import subprocess
+
+        assert subprocess is not None
 
     def test_execution_agents_in_reasoning(self):
         """Agent classes in L2 should be in reasoning/."""

@@ -12,6 +12,7 @@ from typing import Any
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR
 
 
 class LazySeamClassifier:
@@ -67,7 +68,7 @@ class LazySeamClassifier:
         # D2_ENTRYPOINT_SCRIPT: Scripts and orchestration
         if (
             "scripts" in file_path
-            or "ops_scripts" in file_path
+            or OPS_SCRIPTS_DIR in file_path
             or function_name.endswith("_orchestrator")
             or function_name.endswith("_runner")
         ):

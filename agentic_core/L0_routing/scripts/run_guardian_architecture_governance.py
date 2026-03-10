@@ -78,13 +78,13 @@ def _get_layer_from_path(file_path: Path) -> str | None:
 def _extract_target_layer(node: ast.AST) -> str | None:
     """Extract target layer from an import AST node."""
     if isinstance(node, ast.ImportFrom):
-        if node.module and "agentic_core" in node.module:
+        if node.module and AGENTIC_CORE_DIR in node.module:
             for part in node.module.split("."):
                 if len(part) >= 2 and part[0] == "L" and part[1].isdigit():
                     return part[:2]
     elif isinstance(node, ast.Import):
         for alias in node.names:
-            if "agentic_core" in alias.name:
+            if AGENTIC_CORE_DIR in alias.name:
                 for part in alias.name.split("."):
                     if len(part) >= 2 and part[0] == "L" and part[1].isdigit():
                         return part[:2]

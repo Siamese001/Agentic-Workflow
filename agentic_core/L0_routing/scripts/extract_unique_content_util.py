@@ -21,7 +21,7 @@ def build_codebase_index(dirs: list[str]) -> tuple[set[str], set[str]]:
 
     for dir_path in dirs:
         for py_file in Path(dir_path).rglob("*.py"):
-            if "__pycache__" in str(py_file) or "archives" in str(py_file):
+            if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")

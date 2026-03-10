@@ -17,6 +17,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
 def is_cache_directory(dir_path: Path) -> bool:
@@ -74,7 +75,7 @@ def is_forbidden_location(dir_path: Path, root_path: Path) -> bool:
         path_parts = relative_path.parts
 
         # Forbidden if under agentic_core/ or apps_*/
-        if path_parts and path_parts[0] in {"agentic_core"}:
+        if path_parts and path_parts[0] in {AGENTIC_CORE_DIR}:
             return True
         if path_parts and path_parts[0].startswith("apps_"):
             return True

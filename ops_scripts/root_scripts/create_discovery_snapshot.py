@@ -102,7 +102,7 @@ def load_waivers() -> set[str]:
                 waivers = yaml.safe_load(f)
             for waiver in waivers.get("waivers", []):
                 waived_patterns.add(waiver["module"])
-        except Exception:
+        except (OSError, yaml.YAMLError, KeyError):
             pass
 
     return waived_patterns

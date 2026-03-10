@@ -165,8 +165,8 @@ class TestREQ414NetworkEgressGuard:
                 sock.connect(("example.com", 80))
             except NetworkEgressViolation:
                 pytest.fail("Non-LLM connection should not be blocked")
-            except:  # guardian: allow-silent-swallower
-                # Other connection errors are expected (e.g., connection refused)
+            except (OSError, ConnectionError):
+                # Other connection errors are expected (e.g., connection refused, timeout)
                 pass
 
             sock.close()

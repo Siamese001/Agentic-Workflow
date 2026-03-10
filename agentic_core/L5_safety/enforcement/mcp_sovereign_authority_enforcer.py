@@ -8,6 +8,13 @@ from datetime import datetime
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 Logger: Any = logging.getLogger(__name__)
 
@@ -72,7 +79,7 @@ class MCPSovereignAuthority:
             target: Any = args.get("target") or args.get("scope", "")
             if not target or ".." in str(target) or str(target).startswith("/"):
                 raise PermissionError(f"L0 tool target '{target}' invalid — path traversal blocked.")
-            allowed_prefixes: Any = {"L0_routing", "logs", "benchmarks", "apps_shared"}
+            allowed_prefixes: Any = {"L0_routing", "logs", "benchmarks", APPS_SHARED_DIR}
             if not any(str(target).startswith(p) for p in allowed_prefixes):
                 raise PermissionError("L0 tool target outside sovereign maintenance zones.")
         if tool_name == "redteam_simulate":
@@ -100,11 +107,11 @@ class MCPSovereignAuthority:
         if tool_name in {"write_file", "edit_file", "move_file", "create_directory"}:
             path: Any = args.get("path", "")
             allowed_roots: Any = [
-                "agentic_core",
-                "apps_shared",
-                "apps_rg",
-                "apps_lic",
-                "tests",
+                AGENTIC_CORE_DIR,
+                APPS_SHARED_DIR,
+                APPS_RG_DIR,
+                APPS_LIC_DIR,
+                TESTS_DIR,
                 "config",
             ]
             if path and (not any(str(path).startswith(p) for p in allowed_roots)):

@@ -22,7 +22,7 @@ layer_order = [
     "Base",
     "Apps",
     "Utils",
-    "tests",
+    TESTS_DIR,
     "Unknown",
 ]
 for layer in layer_order:

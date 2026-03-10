@@ -7,7 +7,7 @@ from pathlib import Path
 project_root = Path(__file__).parent.parent.parent
 
 from_utils = list(project_root.rglob("*_from_utils.py"))
-from_utils = [f for f in from_utils if "archives" not in str(f)]
+from_utils = [f for f in from_utils if ARCHIVES_DIR not in str(f)]
 
 print(f"Total _from_utils files: {len(from_utils)}")
 

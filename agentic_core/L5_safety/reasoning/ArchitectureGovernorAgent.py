@@ -66,6 +66,10 @@ from agentic_core.L5_safety.reasoning.FileClassificationAgent import (
 )
 from agentic_core.utils.decorators_compat_util import standard_heal
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    TESTS_DIR,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -365,7 +369,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     _vt_raw = getattr(violation, "violation_type", "")
                     _vt = _vt_raw.name if hasattr(_vt_raw, "name") else str(_vt_raw)
                     if _vt == "GRAVITY" and violation.file_path:
-                        if any(p in ("tests", "test") for p in Path(str(violation.file_path)).parts):
+                        if any(p in (TESTS_DIR, "test") for p in Path(str(violation.file_path)).parts):
                             continue
 
                     violations_found += 1
@@ -636,7 +640,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     _vt2_raw = getattr(violation, "violation_type", "")
                     _vt2 = _vt2_raw.name if hasattr(_vt2_raw, "name") else str(_vt2_raw)
                     if _vt2 == "GRAVITY" and violation.file_path:
-                        if any(p in ("tests", "test") for p in Path(str(violation.file_path)).parts):
+                        if any(p in (TESTS_DIR, "test") for p in Path(str(violation.file_path)).parts):
                             continue
 
                     total_violations += 1
@@ -1600,7 +1604,8 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                             "recommended_action": "Split or refactor file to reduce line count",
                         }
                     )
-            except Exception:  # guardian: allow-silent-swallow
+            except (OSError, UnicodeDecodeError, KeyError, AttributeError) as e:
+                self.logger.warning(f"Failed to analyze {py_file.name}: {type(e).__name__}")
                 continue
         return violations
 

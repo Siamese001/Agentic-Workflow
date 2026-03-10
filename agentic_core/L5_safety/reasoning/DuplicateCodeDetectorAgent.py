@@ -35,7 +35,7 @@ Logger: logging.Logger = logging.getLogger(__name__)
 
 # Constants for excluded directories
 UTILS_DIR = "agentic_core/utils"
-ARCHIVES_DIR = "archives"
+ARCHIVES_DIR = ARCHIVES_DIR
 
 # Tree-sitter for AST fingerprinting
 try:

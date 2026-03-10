@@ -126,7 +126,7 @@ def process_file(filepath: Path) -> tuple[bool, list[str]]:
 
 
 def main():
-    tests_dir = ROOT / "tests"
+    tests_dir = ROOT / TESTS_DIR
     all_test_files = list(tests_dir.rglob("*.py"))
 
     fixed = 0

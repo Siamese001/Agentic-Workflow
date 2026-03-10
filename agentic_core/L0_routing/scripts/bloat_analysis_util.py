@@ -10,6 +10,12 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 ROOT = Path(__file__).parent.parent
 APPROVED = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS
@@ -106,9 +112,8 @@ def find_empty_or_stub_files():
                             "total_lines": len(content.splitlines()),
                         },
                     )
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError) as e:
+                print(f"Failed to scan {f.name}: {e}")
     return stubs
 
 
@@ -129,9 +134,8 @@ def find_deprecated_markers():
                     if marker.lower() in content.lower():
                         deprecated.append({"path": str(f.relative_to(ROOT)), "marker": marker})
                         break
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError) as e:
+                print(f"Failed to scan {f.name}: {e}")
     return deprecated
 
 
@@ -139,7 +143,7 @@ def find_test_files_outside_tests():
     """Find test files outside tests/ folder."""
     misplaced = []
     for folder in APPROVED:
-        if folder == "tests":
+        if folder == TESTS_DIR:
             continue
         folder_path = ROOT / folder
         if not folder_path.exists():
@@ -156,7 +160,7 @@ def find_test_files_outside_tests():
 def find_unused_imports():
     """Find files with potentially unused imports (simple heuristic)."""
     candidates = []
-    for folder in ["agentic_core", "apps_rg", "apps_lic"]:
+    for folder in [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR]:
         folder_path = ROOT / folder
         if not folder_path.exists():
             continue
@@ -192,9 +196,8 @@ def find_unused_imports():
                             "examples": unused[:5],
                         },
                     )
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                print(f"Failed to analyze {f.name}: {e}")
     return sorted(candidates, key=lambda x: -x["unused_count"])[:30]
 
 
@@ -234,9 +237,8 @@ def find_script_candidates():
                         "signals": signals,
                     },
                 )
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError) as e:
+            print(f"Failed to scan {f.name}: {e}")
     return candidates
 
 

@@ -27,6 +27,7 @@ from agentic_core.L0_routing.config.path_constants import (
     L0_ROUTING_DIR,
     OPS_SCRIPTS_DIR,
     get_validated_project_root,
+    AGENTIC_CORE_DIR,
 )
 
 # --- CONFIGURATION ---
@@ -88,7 +89,7 @@ def migrate_and_audit_scripts():
             content = file_path.read_text(encoding="utf-8")
 
             # 1. Check for Core Dependency Violation
-            if "agentic_core" in content:
+            if AGENTIC_CORE_DIR in content:
                 dest = CORE_SCRIPTS_DEST / file_path.name
                 print(f"    [CORE_MOVE] {file_path.name} -> L0_routing (Dependency Detected)")
                 shutil.move(str(file_path), str(dest))
@@ -174,7 +175,7 @@ def validate_structure():
         for py_file in NEW_OPS_DIR.glob("*.py"):
             try:
                 content = py_file.read_text(encoding="utf-8")
-                if "agentic_core" in content:
+                if AGENTIC_CORE_DIR in content:
                     issues.append(f"Core dependency found in ops_scripts/{py_file.name}")
             # guardian: allow-silent-swallow
             except Exception:

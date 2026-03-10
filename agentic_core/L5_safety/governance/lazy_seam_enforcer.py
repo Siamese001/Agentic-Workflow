@@ -20,6 +20,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import OPS_SCRIPTS_DIR
 
 
 @dataclass
@@ -287,7 +288,7 @@ class LazySeamEnforcer:
             # Skip artifacts and ops scripts (focus on core source)
             if any(
                 pattern in file_path.parts
-                for pattern in ["artifacts", "ops_scripts", "docs", "data", ".pytest_tmp"]
+                for pattern in ["artifacts", OPS_SCRIPTS_DIR, "docs", "data", ".pytest_tmp"]
             ):
                 continue
 

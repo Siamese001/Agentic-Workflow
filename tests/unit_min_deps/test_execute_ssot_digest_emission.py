@@ -20,6 +20,11 @@ from contextlib import redirect_stdout
 from unittest.mock import patch
 
 import pytest
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_LIC_DIR,
+)
 
 pytestmark = pytest.mark.unit_min_deps
 
@@ -72,7 +77,7 @@ class TestComputePipelineDigestExists:
     @pytest.mark.unit_min_deps
     def test_returns_64_hex_string(self):
         fn = _get_compute_fn()
-        result = fn(["agentic_core"])
+        result = fn([AGENTIC_CORE_DIR])
         assert isinstance(result, str)
         assert len(result) == 64
         assert all(c in "0123456789abcdef" for c in result)
@@ -81,7 +86,7 @@ class TestComputePipelineDigestExists:
 class TestTwoRunIdenticalDigest:
     """Core closure proof: two independent runs produce identical digest."""
 
-    _TARGETS = ["agentic_core", "system_learning", "apps_lic"]
+    _TARGETS = [AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR, APPS_LIC_DIR]
 
     @pytest.mark.unit_min_deps
     def test_run1_equals_run2(self):
@@ -107,16 +112,16 @@ class TestTwoRunIdenticalDigest:
     @pytest.mark.unit_min_deps
     def test_different_targets_different_digest(self):
         fn = _get_compute_fn()
-        d1 = fn(["agentic_core"])
-        d2 = fn(["system_learning"])
+        d1 = fn([AGENTIC_CORE_DIR])
+        d2 = fn([SYSTEM_LEARNING_DIR])
         assert d1 != d2, "Different targets must produce different digest"
 
     @pytest.mark.unit_min_deps
     def test_target_order_does_not_matter(self):
         """Digest uses sorted targets — order must not affect output."""
         fn = _get_compute_fn()
-        d1 = fn(["agentic_core", "system_learning"])
-        d2 = fn(["system_learning", "agentic_core"])
+        d1 = fn([AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR])
+        d2 = fn([SYSTEM_LEARNING_DIR, AGENTIC_CORE_DIR])
         assert d1 == d2, "Target order must not affect digest (sorted internally)"
 
 
@@ -125,7 +130,7 @@ class TestEmitLineFormat:
 
     @pytest.mark.unit_min_deps
     def test_emit_line_format(self):
-        line = _emit_for_targets(["agentic_core"])
+        line = _emit_for_targets([AGENTIC_CORE_DIR])
         assert line.startswith("DETERMINISM-DIGEST: "), f"Bad format: {line!r}"
         hex_part = line.split(": ", 1)[1]
         assert len(hex_part) == 64
@@ -133,8 +138,8 @@ class TestEmitLineFormat:
 
     @pytest.mark.unit_min_deps
     def test_two_runs_emit_identical_line(self):
-        line1 = _emit_for_targets(["agentic_core"])
-        line2 = _emit_for_targets(["agentic_core"])
+        line1 = _emit_for_targets([AGENTIC_CORE_DIR])
+        line2 = _emit_for_targets([AGENTIC_CORE_DIR])
         assert line1 == line2, f"Emitted lines differ:\n  run1={line1!r}\n  run2={line2!r}"
 
     @pytest.mark.unit_min_deps
@@ -146,7 +151,7 @@ class TestEmitLineFormat:
 
         fn = _get_compute_fn()
         emitter = DeterminismDigestEmitter()
-        digest = fn(["agentic_core"])
+        digest = fn([AGENTIC_CORE_DIR])
         emitter.emit_once(digest)
         with pytest.raises(DuplicateEmissionError):
             emitter.emit_once(digest)
@@ -155,7 +160,7 @@ class TestEmitLineFormat:
 class TestTwoRunStdoutCapture:
     """Simulate the pipeline print() path: exactly one DETERMINISM-DIGEST line per run."""
 
-    _TARGETS = ["agentic_core", "system_learning"]
+    _TARGETS = [AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR]
 
     @pytest.mark.unit_min_deps
     def test_exactly_one_digest_line_per_run(self):
@@ -188,7 +193,7 @@ class TestTwoRunStdoutCapture:
 class TestNegativeControlTwoRun:
     """Tamper env breaks digest; restoring it restores identical output."""
 
-    _TARGETS = ["agentic_core"]
+    _TARGETS = [AGENTIC_CORE_DIR]
 
     @pytest.mark.unit_min_deps
     def test_tamper_changes_digest(self):

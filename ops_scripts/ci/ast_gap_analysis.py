@@ -21,7 +21,7 @@ SOURCE_TARGETS = [
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
-    "system_learning",
+    SYSTEM_LEARNING_DIR,
     "L6_observability",
 ]
 TEST_ROOT = ROOT / TESTS_DIR

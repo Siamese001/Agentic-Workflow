@@ -37,11 +37,11 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 GUARDIAN_ID = "gateway_bypass"
 
 SCAN_ROOTS: tuple[str, ...] = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "system_learning",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
 )
 
 ALLOWED_SDK_FILES: frozenset[str] = frozenset(

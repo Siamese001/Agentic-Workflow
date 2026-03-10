@@ -16,7 +16,7 @@ from agentic_core.L0_routing.config.path_constants import (
 )
 
 PROJECT_ROOT = get_validated_project_root()
-EVIDENCE_PATH = PROJECT_ROOT / "docs" / "reports" / "plans" / "phase_01b_ci_spine_guard.md"
+EVIDENCE_PATH = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "phase_01b_ci_spine_guard.md"
 GUARD_SCRIPT = PROJECT_ROOT / OPS_SCRIPTS_DIR / "ci" / "check_spine_bypass.py"
 WORKFLOW_FILE = PROJECT_ROOT / ".github" / "workflows" / "spine-determinism-guard.yml"
 BASELINE_FILE = PROJECT_ROOT / OPS_SCRIPTS_DIR / "hooks" / "spine_bypass_baseline.txt"

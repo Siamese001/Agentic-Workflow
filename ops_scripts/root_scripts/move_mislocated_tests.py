@@ -16,7 +16,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
     mislocated = []
 
     # Existing tests in old structure
-    test_root = pathlib.Path("tests")
+    test_root = pathlib.Path(TESTS_DIR)
     if not test_root.exists():
         return mislocated
 
@@ -50,7 +50,7 @@ def discover_mislocated_tests() -> list[tuple[pathlib.Path, pathlib.Path, pathli
 
                 # Compute expected test location (mirror structure)
                 expected_test_path = (
-                    pathlib.Path("tests") / module_parts[0] / pathlib.Path(*module_parts[1:]) / test_filename
+                    pathlib.Path(TESTS_DIR) / module_parts[0] / pathlib.Path(*module_parts[1:]) / test_filename
                 )
 
                 if test_file != expected_test_path:
@@ -155,7 +155,7 @@ def main():
 
     # Clean up empty directories
     print("\n### Cleaning up empty directories...")
-    test_root = pathlib.Path("tests")
+    test_root = pathlib.Path(TESTS_DIR)
     if test_root.exists():
         for root, dirs, files in os.walk(test_root, topdown=False):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]

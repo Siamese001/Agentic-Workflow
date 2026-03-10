@@ -56,6 +56,18 @@ from agentic_core.L5_safety.validators.gravity_validator import (
     SovereignHealthReport,
     UnifiedSSOTValidator,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+)
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -79,7 +91,7 @@ def _make_import(name: str, lineno: int = 1) -> ast.Import:
 
 def _fresh_validator(tmp_path: Path) -> UnifiedSSOTValidator:
     """Create an UnifiedSSOTValidator pointed at a minimal empty project root."""
-    (tmp_path / "agentic_core").mkdir(exist_ok=True)
+    (tmp_path / AGENTIC_CORE_DIR).mkdir(exist_ok=True)
     return UnifiedSSOTValidator(project_root=tmp_path)
 
 
@@ -356,23 +368,23 @@ class TestExtractTargetLayer:
 
 class TestUnifiedSSOTValidatorInit:
     def test_initialises_without_error_on_valid_root(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         assert v.project_root == tmp_path.resolve()
 
     def test_project_root_resolved(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         assert v.project_root.is_absolute()
 
     def test_layer_hierarchy_covers_l0_to_l5(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         for layer in ("L0", "L1", "L2", "L3", "L4", "L5"):
             assert layer in v.layer_hierarchy
 
     def test_layer_hierarchy_ordering_is_correct(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         lh = v.layer_hierarchy
         assert lh["L0"] < lh["L1"] < lh["L2"] < lh["L3"] < lh["L4"] < lh["L5"]
@@ -398,35 +410,35 @@ def _patch_ssot_discovery(tmp_path: Path):
 
 class TestValidateAllFailSafe:
     def test_validate_all_returns_sovereign_health_report(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         with _patch_ssot_discovery(tmp_path):
             result = v.validate_all()
         assert isinstance(result, SovereignHealthReport)
 
     def test_validate_all_does_not_raise_on_empty_root(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         with _patch_ssot_discovery(tmp_path):
             result = v.validate_all()
         assert result is not None
 
     def test_validate_all_reports_scan_duration_positive(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         with _patch_ssot_discovery(tmp_path):
             result = v.validate_all()
         assert result.scan_duration >= 0.0
 
     def test_empty_project_has_zero_agents(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         with _patch_ssot_discovery(tmp_path):
             result = v.validate_all()
         assert result.total_agents == 0
 
     def test_validate_all_result_is_compliant_on_empty_repo(self, tmp_path):
-        (tmp_path / "agentic_core").mkdir()
+        (tmp_path / AGENTIC_CORE_DIR).mkdir()
         v = UnifiedSSOTValidator(project_root=tmp_path)
         with _patch_ssot_discovery(tmp_path):
             result = v.validate_all()

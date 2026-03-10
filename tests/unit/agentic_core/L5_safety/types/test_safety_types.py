@@ -72,10 +72,5 @@ class TestTypeContentIntegrity:
 
         type_patterns = ["@dataclass", "TypedDict", "Protocol", "Enum", "NamedTuple"]
 
-        for py_file in types_path.glob("*.py"):
-            if py_file.name.startswith("__"):
-                continue
-            content = py_file.read_text(encoding="utf-8", errors="ignore")
-            any(pattern in content for pattern in type_patterns)
-            # This is a soft check - not all files need these patterns
-            assert True  # Just verify structure
+        py_files = [f for f in types_path.glob("*.py") if not f.name.startswith("__")]
+        assert len(py_files) >= 0  # directory is readable

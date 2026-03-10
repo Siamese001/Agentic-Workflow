@@ -44,6 +44,35 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    DOCS_REPORTS_PLANS,
+    TESTS_UNIT_DIR,
+    REPORTS_DIR,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    L0_MAINTENANCE_DIR,
+    L3_ORCHESTRATION_DIR,
+    L6_OBSERVABILITY_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L5_SAFETY_DIR,
+    L4_STATE_DIR,
+    SYSTEM_LEARNING_DIR,
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    ARCHIVES_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+    SYSTEM_LEARNING_DIR,
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
 )
 
 # ---------------------------------------------------------------------------
@@ -58,16 +87,16 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 # (value, constant_name, canonical_module, category_tag)
 SSOT_TARGETS: list[tuple[str, str, str, str]] = [
     # ---- Root directories --------------------------------------------------
-    ("archives", "ARCHIVES_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("agentic_core", "AGENTIC_CORE_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("apps_lic", "APPS_LIC_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("apps_rg", "APPS_RG_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("apps_shared", "APPS_SHARED_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("ops_scripts", "OPS_SCRIPTS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("tests", "TESTS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("system_learning", "SYSTEM_LEARNING_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("tools", "TOOLS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
-    ("reports", "REPORTS_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "root_dir"),
+    (ARCHIVES_DIR, "ARCHIVES_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (AGENTIC_CORE_DIR, "AGENTIC_CORE_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (APPS_LIC_DIR, "APPS_LIC_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (APPS_RG_DIR, "APPS_RG_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (APPS_SHARED_DIR, "APPS_SHARED_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (OPS_SCRIPTS_DIR, "OPS_SCRIPTS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (TESTS_DIR, "TESTS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (SYSTEM_LEARNING_DIR, "SYSTEM_LEARNING_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (TOOLS_DIR, "TOOLS_DIR", "agentic_core.L0_routing.config.path_constants", "root_dir"),
+    (REPORTS_DIR, "REPORTS_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "root_dir"),
     ("data", "DATA_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "root_dir"),
     ("docs", "DOCS_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "root_dir"),
     # ---- Layer root bare names (single component) --------------------------
@@ -90,38 +119,38 @@ SSOT_TARGETS: list[tuple[str, str, str, str]] = [
     ),
     # ---- Layer compound paths ----------------------------------------------
     (
-        "agentic_core/L0_routing",
+        L0_MAINTENANCE_DIR,
         "L0_ROUTING_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
     ),
     (
-        "agentic_core/L1_cognition",
+        L1_COGNITION_DIR,
         "L1_COGNITION_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
     ),
     (
-        "agentic_core/L2_execution",
+        L2_EXECUTION_DIR,
         "L2_EXECUTION_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
     ),
     (
-        "agentic_core/L3_orchestration",
+        L3_ORCHESTRATION_DIR,
         "L3_ORCHESTRATION_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
     ),
-    ("agentic_core/L4_state", "L4_STATE_DIR", "agentic_core.L0_routing.config.path_constants", "layer_path"),
+    (L4_STATE_DIR, "L4_STATE_DIR", "agentic_core.L0_routing.config.path_constants", "layer_path"),
     (
-        "agentic_core/L5_safety",
+        L5_SAFETY_DIR,
         "L5_SAFETY_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
     ),
     (
-        "agentic_core/L6_observability",
+        L6_OBSERVABILITY_DIR,
         "L6_OBSERVABILITY_DIR",
         "agentic_core.L0_routing.config.path_constants",
         "layer_path",
@@ -164,7 +193,7 @@ SSOT_TARGETS: list[tuple[str, str, str, str]] = [
         "compound_path",
     ),
     (
-        "docs/reports/plans",
+        DOCS_REPORTS_PLANS,
         "DOCS_REPORTS_PLANS",
         "agentic_core.L5_safety.config.structure_blueprint.ssot",
         "compound_path",
@@ -176,7 +205,7 @@ SSOT_TARGETS: list[tuple[str, str, str, str]] = [
         "compound_path",
     ),
     # ---- Test mirror paths -------------------------------------------------
-    ("tests/unit", "TESTS_UNIT_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "test_path"),
+    (TESTS_UNIT_DIR, "TESTS_UNIT_DIR", "agentic_core.L5_safety.config.structure_blueprint.ssot", "test_path"),
     (
         "tests/integration",
         "TESTS_INTEGRATION_DIR",
@@ -252,14 +281,14 @@ WRONG_IMPORT_PATTERNS: list[tuple[str, str]] = [
 
 # ---- Scan scope -----------------------------------------------------------
 SCAN_ROOTS: list[str] = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "ops_scripts",
-    "tests",
-    "tools",
-    "system_learning",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+    SYSTEM_LEARNING_DIR,
     "data",
     "docs",
 ]
@@ -468,7 +497,7 @@ def scan_file(file_path: Path, project_root: Path) -> list[dict]:
     try:
         source = file_path.read_text(encoding="utf-8", errors="replace")
         tree = ast.parse(source, filename=str(file_path))
-    except (SyntaxError, Exception):
+    except (SyntaxError, OSError, UnicodeDecodeError):
         return []
 
     source_lines = source.splitlines()

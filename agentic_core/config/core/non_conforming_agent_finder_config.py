@@ -36,7 +36,7 @@ try:
         ARCHIVES_DIR,
     )
 except ImportError:
-    AGENTIC_CORE_DIR = "agentic_core"
+    AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
     ARCHIVES_DIR = ".sovereign_healing_backup"
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]

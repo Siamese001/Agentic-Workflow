@@ -12,6 +12,7 @@ from agentic_core.L0_routing.config.path_constants import (
     OPS_SCRIPTS_DIR,
 )
 from agentic_core.L0_routing.scripts.root_hygiene_util import enforce_root_hygiene
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 @pytest.fixture
@@ -55,7 +56,7 @@ def test_hygiene_enforcement(dirty_repo, monkeypatch):
     assert (dirty_repo / L0_ROUTING_DIR / "scripts" / "core_tool.py").exists()
 
     # 4. Coverage -> reports
-    assert (dirty_repo / "reports" / "coverage_html" / "index.html").exists()
+    assert (dirty_repo / REPORTS_DIR / "coverage_html" / "index.html").exists()
 
 
 def test_purge_cache_refiling(dirty_repo, monkeypatch):

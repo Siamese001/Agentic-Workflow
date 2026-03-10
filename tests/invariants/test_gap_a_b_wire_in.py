@@ -20,7 +20,7 @@ class TestGapARunManifest:
         _write_run_manifest_json(
             trace_id=trace_id,
             execution_mode="heal",
-            territories=["apps_rg", "apps_lic"],
+            territories=[APPS_RG_DIR, APPS_LIC_DIR],
             agents_executed=["AgentA", "AgentB"],
             output_dir=tmp_path,
         )
@@ -33,7 +33,7 @@ class TestGapARunManifest:
 
         assert data["trace_id"] == trace_id
         assert data["execution_mode"] == "heal"
-        assert set(data["territories"]) == {"apps_rg", "apps_lic"}
+        assert set(data["territories"]) == {APPS_RG_DIR, APPS_LIC_DIR}
         assert data["agent_count"] == 2
 
     def test_negative_control_no_call_means_no_file(self, tmp_path):
@@ -47,7 +47,7 @@ class TestGapARunManifest:
         _write_run_manifest_json(
             trace_id=trace_id,
             execution_mode="scan",
-            territories=["agentic_core"],
+            territories=[AGENTIC_CORE_DIR],
             agents_executed=["ScanAgent"],
             output_dir=tmp_path,
         )

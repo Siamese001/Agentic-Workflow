@@ -15,9 +15,9 @@ try:
         TESTS_DIR,
     )
 except ImportError:
-    AGENTIC_CORE_DIR = "agentic_core"
-    SCRIPTS_DIR = "ops_scripts"
-    TESTS_DIR = "tests"
+    AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
+    SCRIPTS_DIR = OPS_SCRIPTS_DIR
+    TESTS_DIR = TESTS_DIR
 
 logging.basicConfig(level=logging.INFO, format="%(message)s")
 Logger: Any = logging.getLogger(__name__)

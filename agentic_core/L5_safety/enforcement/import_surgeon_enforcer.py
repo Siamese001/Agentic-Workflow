@@ -17,6 +17,7 @@ from typing import Any
 
 # [SSOT IMPORT] Structure blueprint is the single source of truth
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
 
 exclude_dirs: Any = SOVEREIGN_EXCLUDED_FOLDERS
 exclude_files: Any = {"SovereignImportSurgeon.py"}
@@ -75,7 +76,7 @@ class SovereignImportSurgeon:
                         violations.append(
                             ImportViolation(str(file_path), line_num, line, "COMMENTED_IMPORT", suggested),
                         )
-                if "apps_shared" in str(file_path) and "P1_core" in str(file_path):
+                if APPS_SHARED_DIR in str(file_path) and "P1_core" in str(file_path):
                     if not line.strip().startswith("#") and self.relative_import_pattern.search(line):
                         suggested: Any = self._convert_relative_to_absolute(line.strip(), file_path)
                         if suggested != line.strip():

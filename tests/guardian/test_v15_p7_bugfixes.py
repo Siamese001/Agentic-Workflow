@@ -118,14 +118,12 @@ def _make_agent(env_val: str):
     # Ensure golden seal exists so __post_init__ doesn't crash
     try:
         CoreIntegrityVerifier.verify_core_integrity()
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (ImportError, AttributeError, ValueError):
         if CoreIntegrityVerifier.GOLDEN_SEAL_FILE.exists():
             CoreIntegrityVerifier.GOLDEN_SEAL_FILE.unlink()
         try:
             CoreIntegrityVerifier.verify_core_integrity()
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (ImportError, AttributeError, ValueError):
             pass
 
     with patch.dict(os.environ, {"V15_ENFORCEMENT": env_val}):

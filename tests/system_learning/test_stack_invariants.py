@@ -542,7 +542,7 @@ def _cleanup_esf(svc, esf_cls) -> None:
     if hasattr(svc, "_raw") and hasattr(svc._raw, "_mmap"):
         try:
             svc._raw._mmap.close()
-        except Exception:
+        except OSError:
             pass
     if hasattr(svc, "_raw"):
         del svc._raw

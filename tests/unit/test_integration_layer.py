@@ -17,6 +17,7 @@ from apps_shared.types.integration_layer_types import (
     ServiceRegistry,
     get_integration_bridge,
 )
+from agentic_core.L0_routing.config.path_constants import APPS_LIC_DIR
 
 
 class TestAppDomain:
@@ -153,7 +154,7 @@ class TestConfigurationLoader:
         loader = ConfigurationLoader(config)
 
         path = loader._get_config_path(AppDomain.LIC, "agent_specs")
-        expected = Path("/project") / "apps_lic" / "domain" / "config" / "agent_specs.json"
+        expected = Path("/project") / APPS_LIC_DIR / "domain" / "config" / "agent_specs.json"
         assert path == expected
 
     def test_load_nonexistent_file(self):

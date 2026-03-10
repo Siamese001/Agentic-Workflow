@@ -13,6 +13,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     LEAF_DOMAINS_NO_LCD,
     validate_no_nested_lcd,
 )
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
 class TestLeafDomainsNoLCD:
@@ -52,7 +53,7 @@ class TestValidateNoNestedLCD:
     )
     def test_nested_lcd_under_leaf_domain_flagged(self, leaf_domain: str, lcd_subfolder: str):
         """LCD subfolders under leaf domains must be flagged as violations."""
-        path_parts = ["agentic_core", leaf_domain, lcd_subfolder]
+        path_parts = [AGENTIC_CORE_DIR, leaf_domain, lcd_subfolder]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None, f"Expected violation for {leaf_domain}/{lcd_subfolder}"
         assert result["domain"] == leaf_domain
@@ -72,14 +73,14 @@ class TestValidateNoNestedLCD:
     )
     def test_lcd_under_layer_root_allowed(self, layer: str, lcd_subfolder: str):
         """LCD subfolders under layer roots are allowed."""
-        path_parts = ["agentic_core", layer, lcd_subfolder]
+        path_parts = [AGENTIC_CORE_DIR, layer, lcd_subfolder]
         result = validate_no_nested_lcd(path_parts)
         assert result is None, f"Unexpected violation for {layer}/{lcd_subfolder}"
 
     def test_deeply_nested_lcd_allowed_under_layer(self):
         """LCD subfolders nested under layer scripts are allowed."""
         # L0_routing/scripts/prompt_governance is OK because L0 is a layer root
-        path_parts = ["agentic_core", "L0_routing", "scripts", "prompt_governance"]
+        path_parts = [AGENTIC_CORE_DIR, "L0_routing", "scripts", "prompt_governance"]
         result = validate_no_nested_lcd(path_parts)
         # This should be allowed because L0_routing is a layer root ancestor
         assert result is None
@@ -87,7 +88,7 @@ class TestValidateNoNestedLCD:
     def test_non_lcd_subfolder_under_leaf_allowed(self):
         """Non-LCD subfolders under leaf domains are allowed."""
         # prompt_governance/templates is not an LCD subfolder
-        path_parts = ["agentic_core", "prompt_governance", "templates"]
+        path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "templates"]
         result = validate_no_nested_lcd(path_parts)
         assert result is None
 
@@ -98,7 +99,7 @@ class TestValidateNoNestedLCD:
 
     def test_single_element_path(self):
         """Single element path should not cause errors."""
-        result = validate_no_nested_lcd(["agentic_core"])
+        result = validate_no_nested_lcd([AGENTIC_CORE_DIR])
         assert result is None
 
 
@@ -107,21 +108,21 @@ class TestNestedLCDViolationMessage:
 
     def test_violation_message_contains_domain(self):
         """Violation message should mention the offending domain."""
-        path_parts = ["agentic_core", "prompt_governance", "reasoning"]
+        path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "reasoning"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
         assert "prompt_governance" in result["message"]
 
     def test_violation_message_contains_subfolder(self):
         """Violation message should mention the illegal subfolder."""
-        path_parts = ["agentic_core", "knowledge", "enforcement"]
+        path_parts = [AGENTIC_CORE_DIR, "knowledge", "enforcement"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
         assert "enforcement" in result["message"]
 
     def test_violation_message_mentions_layer_roots(self):
         """Violation message should mention that only layer roots may have LCD."""
-        path_parts = ["agentic_core", "runtime", "validators"]
+        path_parts = [AGENTIC_CORE_DIR, "runtime", "validators"]
         result = validate_no_nested_lcd(path_parts)
         assert result is not None
         assert "L0" in result["message"] or "layer roots" in result["message"].lower()

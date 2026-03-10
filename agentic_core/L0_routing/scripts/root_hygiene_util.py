@@ -16,6 +16,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
     OPS_SCRIPTS_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 # SSOT Constants
 ROOT_MARKERS = [AGENTIC_CORE_DIR, "pyproject.toml"]
@@ -50,7 +51,7 @@ def enforce_root_hygiene():
                 # Decision Logic: Does it import agentic_core?
                 try:
                     content = item.read_text(encoding="utf-8")
-                    if "agentic_core" in content or "from agentic_core" in content:
+                    if AGENTIC_CORE_DIR in content or "from agentic_core" in content:
                         target = l0_scripts / item.name
                         action = "REPATRIATE (Core)"
                     else:
@@ -86,7 +87,7 @@ def enforce_root_hygiene():
 
     # 2. EVACUATE COVERAGE_HTML
     cov_html = root / "coverage_html"
-    reports_cov = root / "reports" / "coverage_html"
+    reports_cov = root / REPORTS_DIR / "coverage_html"
 
     if cov_html.exists():
         print("\n[DETECT] Illegal root 'coverage_html/' found.")

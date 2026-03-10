@@ -10,6 +10,7 @@ from pathlib import Path
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 def get_repo_root() -> Path:
@@ -52,7 +53,7 @@ def scan_forbidden_tokens(file_path: Path, forbidden_tokens: list[str]) -> list[
 def main():
     """Generate Phase 3 Path Router evidence bundle."""
     repo_root = get_repo_root()
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase3_path_router_evidence.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase3_path_router_evidence.md"
 
     # Ensure evidence directory exists
     evidence_file.parent.mkdir(parents=True, exist_ok=True)

@@ -426,7 +426,6 @@ class TestEnforcementGapDocumentation:
                 ],
             )
         agent.gatekeeper.safe_move.assert_not_called()
-        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

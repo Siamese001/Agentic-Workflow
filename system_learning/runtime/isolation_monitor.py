@@ -11,7 +11,7 @@ from __future__ import annotations
 import sys
 from typing import List
 
-_FORBIDDEN = frozenset({"apps_lic", "apps_rg", "apps_shared"})
+_FORBIDDEN = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 _FORBIDDEN_LAYER_PREFIXES = (
     "agentic_core.L0_routing",
     "agentic_core.L1_cognition",

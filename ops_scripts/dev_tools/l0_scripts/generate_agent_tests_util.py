@@ -24,7 +24,7 @@ def get_test_template(agent: dict) -> str:
     layer = agent["layer"]
 
     # Determine test file path
-    test_dir = project_root / "tests" / layer.lower()
+    test_dir = project_root / TESTS_DIR / layer.lower()
     test_dir.mkdir(parents=True, exist_ok=True)
 
     template = f'''#!/usr/bin/env python3
@@ -103,7 +103,7 @@ def generate_tests_for_layer(layer: str, agents: list[dict], max_count: int = 10
     generated = 0
     for agent in layer_agents[:max_count]:
         class_name = agent["class_name"]
-        test_file = project_root / "tests" / layer.lower() / f"test_{class_name}.py"
+        test_file = project_root / TESTS_DIR / layer.lower() / f"test_{class_name}.py"
 
         # Skip if test already exists
         if test_file.exists():

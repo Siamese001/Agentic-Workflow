@@ -15,7 +15,7 @@ from pathlib import Path
 import pytest
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
-DISCOVERY_OUTPUT = PROJECT_ROOT / "docs" / "reports" / "plans" / "v54_discovery_wave12.json"
+DISCOVERY_OUTPUT = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "v54_discovery_wave12.json"
 
 
 @pytest.fixture(scope="module")

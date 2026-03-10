@@ -22,6 +22,7 @@ from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import (
     ArchivalOperation,
     ArchivalResult,
 )
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 
 @pytest.fixture
@@ -180,7 +181,7 @@ class TestSafeArchive:
         assert result.operation == ArchivalOperation.ARCHIVE
         assert not source.exists()
         assert result.destination_path.exists()
-        assert "archives" in str(result.destination_path) and "gatekeeper" in str(result.destination_path)
+        assert ARCHIVES_DIR in str(result.destination_path) and "gatekeeper" in str(result.destination_path)
 
     def test_safe_archive_preserves_relative_path(self, gatekeeper, temp_project):
         """Test that archive preserves relative path structure."""
@@ -229,7 +230,7 @@ class TestSafeDelete:
         assert not source.exists()
         # File should be in archive, not permanently deleted
         assert result.destination_path.exists()
-        assert "archives" in str(result.destination_path) and "gatekeeper" in str(result.destination_path)
+        assert ARCHIVES_DIR in str(result.destination_path) and "gatekeeper" in str(result.destination_path)
 
     def test_safe_delete_reason_prefixed(self, gatekeeper, temp_project):
         """Test that delete reason is prefixed with SOFT DELETE."""

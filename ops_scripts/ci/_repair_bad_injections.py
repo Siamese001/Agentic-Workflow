@@ -35,7 +35,7 @@ SKIP_DIRS: frozenset[str] = frozenset(
         ".venv",
         "venv",
         "__pycache__",
-        "archives",
+        ARCHIVES_DIR,
         "node_modules",
         ".healing_backups",
         ".sovereign_healing_backup",

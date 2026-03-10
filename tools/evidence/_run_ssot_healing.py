@@ -40,7 +40,7 @@ class _TeeBuffer:
         n = self._real.write(data)
         try:
             self._text_buf.write(data.decode(self._encoding, errors="replace"))
-        except Exception:
+        except (UnicodeDecodeError, AttributeError):
             pass
         return n
 
@@ -69,7 +69,7 @@ class _Tee:
     def reconfigure(self, **kw):
         try:
             self.real.reconfigure(**kw)
-        except Exception:
+        except (AttributeError, TypeError):
             pass
 
     def fileno(self):

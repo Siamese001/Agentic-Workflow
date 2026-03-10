@@ -55,7 +55,7 @@ def get_commit_message() -> str:
         if commit_msg_file.exists():
             return commit_msg_file.read_text()
         return ""
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         return ""
 
 

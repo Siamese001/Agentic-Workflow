@@ -23,6 +23,7 @@ EXIT CODES:
 import re
 import sys
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 
 # =============================================================================
 # SSOT CONSTANTS (Derived from structure_blueprint.py)
@@ -31,17 +32,17 @@ from pathlib import Path
 # Valid top-level directories (Sovereign Territories)
 VALID_TERRITORIES: frozenset[str] = frozenset(
     {
-        "agentic_core",
-        "apps_rg",
-        "apps_lic",
-        "apps_shared",
-        "tests",
-        "ops_scripts",
-        "archives",
+        AGENTIC_CORE_DIR,
+        APPS_RG_DIR,
+        APPS_LIC_DIR,
+        APPS_SHARED_DIR,
+        TESTS_DIR,
+        OPS_SCRIPTS_DIR,
+        ARCHIVES_DIR,
         "data",
         "docs",
         "logs",
-        "reports",
+        REPORTS_DIR,
         "scripts",
         ".sovereign_healing_backup",
         ".github",
@@ -67,9 +68,9 @@ APPS_VALID_SUBFOLDERS: frozenset[str] = frozenset(
         "system_flow",
         "validation",
         # apps_lic
-        "reports",
+        REPORTS_DIR,
         "scripts",
-        "tools",
+        TOOLS_DIR,
         # apps_shared
         "agents",
         "common_utils",
@@ -269,7 +270,7 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
                 )
 
     # Validate agentic_core subfolder structure
-    if territory == "agentic_core":
+    if territory == AGENTIC_CORE_DIR:
         subfolder = parts[1]
         if not subfolder.endswith(".py"):
             if subfolder not in AGENTIC_CORE_VALID_SUBFOLDERS:
@@ -279,7 +280,7 @@ def validate_subfolder_structure(file_path: str) -> tuple[bool, str]:
                 )
 
     # Validate tests structure
-    if territory == "tests":
+    if territory == TESTS_DIR:
         if len(parts) >= 2:
             test_type = parts[1]
             if not test_type.endswith(".py") and test_type not in TESTS_VALID_TYPES:

@@ -18,10 +18,14 @@ from pathlib import Path
 # Add project root to path for imports
 sys.path.insert(0, str(Path(__file__).resolve().parents[2]))
 from agentic_core.utils.project_root_util import get_project_root
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 PROJECT_ROOT = get_project_root()
-SOURCE_ROOTS = ["agentic_core", "apps_rg", "apps_lic"]
-TEST_UNIT_ROOT = PROJECT_ROOT / "tests/unit"
+SOURCE_ROOTS = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR]
+TEST_UNIT_ROOT = PROJECT_ROOT / TESTS_UNIT_DIR
 
 
 def build_source_map():
@@ -63,8 +67,8 @@ def execute_sentry():
         f
         for f in PROJECT_ROOT.rglob("test_*.py")
         if "/tests/" not in str(f.as_posix())
-        and "ops_scripts" not in str(f.as_posix())
-        and "archives" not in str(f.as_posix())
+        and OPS_SCRIPTS_DIR not in str(f.as_posix())
+        and ARCHIVES_DIR not in str(f.as_posix())
     ]
 
     moved = 0

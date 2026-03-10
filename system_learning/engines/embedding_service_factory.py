@@ -275,7 +275,7 @@ class EmbeddingServiceFactory:
             blas_info = np.__config__.blas_opt_info
             libraries = blas_info.get("libraries", ["unknown"])
             return libraries[0] if libraries else "unknown"
-        except Exception:
+        except (AttributeError, KeyError):
             return "unknown"
 
     def _load_pack(self) -> None:

@@ -57,10 +57,9 @@ class TestInfrastructureDependencyError:
         )
 
         cause = ConnectionRefusedError("refused")
-        try:
+        with pytest.raises(InfrastructureDependencyError) as exc_info:
             raise InfrastructureDependencyError("infra down") from cause
-        except InfrastructureDependencyError as exc:  # guardian: allow-silent-swallower
-            assert exc.__cause__ is cause
+        assert exc_info.value.__cause__ is cause
 
     def test_error_can_be_caught_as_runtime_error(self):
         from agentic_core.L2_execution.types.infra_error_types import (

@@ -32,7 +32,7 @@ def _load_registry_keys() -> set[str]:
         from agentic_core.agents.agent_registry import AGENT_REGISTRY
 
         return set(AGENT_REGISTRY.keys())
-    except Exception:
+    except (ImportError, AttributeError):
         return set()
 
 

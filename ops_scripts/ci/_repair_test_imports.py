@@ -243,7 +243,7 @@ def main():
     ]
 
     # Also scan ALL test files for any missed NameError cases
-    test_root = ROOT / "tests"
+    test_root = ROOT / TESTS_DIR
     all_test_files = {str(p.relative_to(ROOT)).replace("\\", "/") for p in test_root.rglob("*.py")}
     all_targets = set(problem_files) | all_test_files
 

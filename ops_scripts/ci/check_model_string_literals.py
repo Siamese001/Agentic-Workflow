@@ -15,7 +15,7 @@ ALLOWED_PATHS = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway.py",
     "data/sdks_mcps/client_wrappers.py",
 }
-SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 
 def main() -> int:

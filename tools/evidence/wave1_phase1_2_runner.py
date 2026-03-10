@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "wave1_phase1_2_evidence.md"
+EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "wave1_phase1_2_evidence.md"
 
 SCOPE_FILES = [
     "tools/semantic_gap_analyzer.py",

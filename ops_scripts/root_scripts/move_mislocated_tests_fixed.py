@@ -159,7 +159,7 @@ def main():
 
     # Clean up empty directories
     print("\n### Cleaning up empty directories...")
-    test_root = pathlib.Path("tests")
+    test_root = pathlib.Path(TESTS_DIR)
     if test_root.exists():
         for root, dirs, files in os.walk(test_root, topdown=False):
             dirs[:] = [d for d in dirs if d not in SOVEREIGN_EXCLUDED_FOLDERS]

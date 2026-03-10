@@ -15,6 +15,7 @@ logging.basicConfig(level=logging.INFO, format="%(levelname)s: %(message)s")
 from typing import Any
 
 from agentic_core.L5_safety.config.structure_blueprint import CORE_SUBFOLDER_MAP
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 core_map: Any = CORE_SUBFOLDER_MAP
 external_map: Any = {
@@ -53,7 +54,7 @@ def forge_fortress() -> Any:
         for stage in stages:
             stage_path: Any = folder_path / stage
             _wg.ensure_dir(stage_path)
-            if folder not in ["data", "archives"]:
+            if folder not in ["data", ARCHIVES_DIR]:
                 _wg.touch_file(stage_path / "__init__.py")
     for old_name, destination in ANNEXATION_PLAN.items():
         old_path: Any = ROOT / old_name

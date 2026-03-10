@@ -29,7 +29,7 @@ def run_command(cmd: list[str], cwd: Path) -> str:
 def main():
     """Generate Phase 2 Assembly Stage evidence bundle."""
     repo_root = get_repo_root()
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase2_assembly_stage_evidence.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase2_assembly_stage_evidence.md"
 
     # Ensure evidence directory exists
     evidence_file.parent.mkdir(parents=True, exist_ok=True)

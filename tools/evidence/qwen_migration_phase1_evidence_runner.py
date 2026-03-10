@@ -28,7 +28,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-EVIDENCE_FILE = REPO_ROOT / "docs" / "reports" / "evidence" / "qwen_migration_phase_1_token_budgeting.md"
+EVIDENCE_FILE = REPO_ROOT / "docs" / REPORTS_DIR / "evidence" / "qwen_migration_phase_1_token_budgeting.md"
 
 PHASE_TITLE = "qwen-migration Phase 1: Token Budgeting + Tiered Routing Foundation"
 

@@ -14,7 +14,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
-EVIDENCE_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "wave3_phase3_1_evidence.md"
+EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "wave3_phase3_1_evidence.md"
 
 SCOPE_FILES = [
     "tests/architecture/test_wave3_phase3_1_cache_wirings.py",

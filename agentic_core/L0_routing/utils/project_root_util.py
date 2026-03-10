@@ -17,7 +17,7 @@ from typing import Final
 ROOT_MARKERS: list[str] = [
     "pyproject.toml",
     ".git",
-    "agentic_core",  # The core package directory itself
+    AGENTIC_CORE_DIR,  # The core package directory itself
     "requirements.txt",
 ]
 
@@ -61,7 +61,7 @@ def get_project_root(start_path: str | None = None) -> Path:
     try:
         current = Path(start_path).resolve() if start_path else Path.cwd().resolve()
         parts = current.parts
-        if "agentic_core" in parts:
+        if AGENTIC_CORE_DIR in parts:
             # Find the index of agentic_core and take the parent of that
             idx = parts.index("agentic_core")
             # If agentic_core is at root/agentic_core, the root is parts[:idx]
@@ -84,7 +84,7 @@ PROJECT_ROOT_MARKERS: Final[frozenset[str]] = frozenset(
     {
         "pyproject.toml",
         "canon_validator_agentic_v2_thin.py",
-        "agentic_core",
+        AGENTIC_CORE_DIR,
         ".git",
     },
 )

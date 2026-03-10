@@ -19,6 +19,13 @@ from typing import Any, Final
 from agentic_core.L0_routing.config import (
     DASHBOARD_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TOOLS_DIR,
+)
 
 # Standard LCD subfolders for L0-L6 layers
 STANDARD_LCD_SUBFOLDERS: Final[tuple[str, ...]] = (
@@ -191,7 +198,7 @@ def _identify_variable_depth_subfolders(territories: Mapping[str, Any]) -> froze
     # Add known variable-depth folders
     known_variable = [
         "scripts",
-        "tools",
+        TOOLS_DIR,
         "memory",
         "dashboards",
         "base_agents",
@@ -234,7 +241,7 @@ def compile_blueprint(territories: Mapping[str, Any]) -> CompiledBlueprint:
         subfolders = territory_def.get("subfolders", {})
 
         # Build core_subfolder_map for agentic_core territories
-        if territory_name == "agentic_core":
+        if territory_name == AGENTIC_CORE_DIR:
             # Process agentic_core's nested structure
             for domain_name, domain_def in subfolders.items():
                 if isinstance(domain_def, dict):
@@ -250,13 +257,13 @@ def compile_blueprint(territories: Mapping[str, Any]) -> CompiledBlueprint:
                 else:
                     core_subfolder_map[domain_name] = []
 
-        elif territory_name == "apps_rg":
+        elif territory_name == APPS_RG_DIR:
             apps_rg_map = dict(_extract_nested_subfolders(subfolders))
 
-        elif territory_name == "apps_lic":
+        elif territory_name == APPS_LIC_DIR:
             apps_lic_map = dict(_extract_nested_subfolders(subfolders))
 
-        elif territory_name == "apps_shared":
+        elif territory_name == APPS_SHARED_DIR:
             apps_shared_map = dict(_extract_nested_subfolders(subfolders))
 
     # Derive L4 structures

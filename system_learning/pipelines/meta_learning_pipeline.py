@@ -586,8 +586,9 @@ def _analyze_historical_patterns(
         print(f"W3-PATTERN-DIGEST: {pattern_summary.pattern_digest}")
         return pattern_summary
 
-    except Exception:
+    except (ImportError, AttributeError, ValueError) as e:
         # Pattern analysis failure should not break pipeline
+        print(f"Pattern analysis failed: {e}")
         return None
 
 
@@ -799,9 +800,10 @@ def _retrieve_semantic_context(
             **shadow_telemetry,  # W4-B: Include shadow telemetry
         }
 
-    except Exception:  # guardian: allow-silent_swallower
+    except (ImportError, AttributeError, ValueError) as e:  # guardian: allow-silent_swallower
         # Embedding retrieval failure should not break pipeline
         # Return minimal metadata indicating failure
+        print(f"Embedding retrieval failed: {e}")
         _wc_dig = _wc_digest("ERROR", "error", retrieval_profile.profile_id, 0)
         return {
             "embedding_enabled_at_time": True,
@@ -1011,9 +1013,9 @@ def run_pipeline(
                 timestamp_utc=now_utc,
             )
             proposals.append(resource_proposal)
-        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
+        except (ImportError, AttributeError, ValueError) as e:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
-            pass
+            print(f"Resource prediction failed: {e}")
 
     if deps.rollback_refinement_decision_bytes is not None:
         try:
@@ -1034,9 +1036,9 @@ def run_pipeline(
                 timestamp_utc=now_utc,
             )
             proposals.append(rollback_proposal)
-        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
+        except (ImportError, AttributeError, ValueError) as e:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
-            pass
+            print(f"Rollback refinement failed: {e}")
 
     # Step 6c: Process DPO batch (Path D - HITL + Deterministic DPO Loop)
     # GAP-003: DPO proposals must enter proposals list BEFORE Stage 7 loop
@@ -1072,9 +1074,9 @@ def run_pipeline(
             # DPO proposal enters proposals list here, before Stage 7, so it
             # flows through all validators (replay, shadow, cooldown, oscillation).
             proposals.append(dpo_proposal)
-        except Exception:  # noqa: BLE001  # guardian: allow-silent_swallower
+        except (ImportError, AttributeError, ValueError) as e:  # noqa: BLE001  # guardian: allow-silent_swallower
             # Log error but continue pipeline
-            pass
+            print(f"DPO batch processing failed: {e}")
 
     # Step 7: Validate each proposal
     from system_learning.validators.dampening import (
@@ -1238,10 +1240,12 @@ def run_pipeline(
                 deps.l4_state_writer.write_l4b_healing_snapshot(
                     payload_bytes=payload_bytes, component_name="meta-learning", created_utc=now_utc
                 )
-            except Exception:  # guardian: allow-silent-swallow
+            except (AttributeError, TypeError, OSError) as e:
                 # L4B write failure should not break pipeline
-                # In production, this would be logged
-                pass
+                print(f"L4 write failed: {e}")
+                return None
+        else:
+            pass
 
         # Step 8.6: Pattern analysis (W3 - deterministic, informational only)
         # Read optional detection/drift signal bytes from L4 writer if available

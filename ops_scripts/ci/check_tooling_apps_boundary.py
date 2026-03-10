@@ -24,7 +24,7 @@ class ToolingAppsBoundaryChecker:
     ]
 
     # Forbidden import prefixes
-    FORBIDDEN_IMPORTS = ["apps_lic", "apps_rg", "apps_shared"]
+    FORBIDDEN_IMPORTS = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     def __init__(self, repo_root: Path):
         """Initialize checker.

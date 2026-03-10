@@ -30,8 +30,8 @@ class WriteGatewayVisitor(ast.NodeVisitor):
                     lines = f.readlines()
                     if 0 <= node.lineno - 1 < len(lines):
                         self.current_line_content = lines[node.lineno - 1]
-            except Exception:  # guardian: allow-silent-swallower
-                pass
+            except (OSError, UnicodeDecodeError, IndexError, AttributeError) as e:
+                # File read errors are non-critical for this check
                 self.current_line_content = ""
 
         super().visit(node)

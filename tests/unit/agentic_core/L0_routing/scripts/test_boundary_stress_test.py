@@ -157,7 +157,6 @@ class BoundaryStressTest:
             result["violations"].append(f"❌ ERROR: {str(e)}")
 
         return result
-        assert True  # no-exception contract
 
     def test_b_archival_enforcement(self) -> dict:
         """
@@ -248,7 +247,6 @@ class BoundaryStressTest:
             result["violations"].append(f"❌ ERROR: {str(e)}")
 
         return result
-        assert True  # no-exception contract
 
     def test_c_cli_flag_interaction(self) -> dict:
         """
@@ -331,7 +329,6 @@ class BoundaryStressTest:
             result["violations"].append(f"❌ ERROR: {str(e)}")
 
         return result
-        assert True  # no-exception contract
 
     def generate_findings_report(self) -> str:
         """Generate comprehensive findings report."""

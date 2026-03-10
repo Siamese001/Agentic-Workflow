@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import ast
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 
 
 class PowerShellBanVisitor(ast.NodeVisitor):
@@ -65,7 +66,7 @@ class PowerShellBanVisitor(ast.NodeVisitor):
                                         self.violations.append((node.lineno, "PS_SUBPROCESS_ARGV0", snippet))
 
         # Check for shell=True with subprocess calls (in tools/ directory)
-        if "tools" in str(self.file_path):
+        if TOOLS_DIR in str(self.file_path):
             for keyword in node.keywords:
                 if keyword.arg == "shell" and isinstance(keyword.value, ast.Constant):
                     if keyword.value.value is True:

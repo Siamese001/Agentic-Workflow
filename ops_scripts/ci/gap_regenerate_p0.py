@@ -40,7 +40,7 @@ from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_
 
 SCRIPT_DIR = Path(__file__).resolve().parent
 PROJECT_ROOT = get_validated_project_root()
-BASELINE_GAP_JSON = PROJECT_ROOT / "docs" / "reports" / "plans" / "v15_gap_analysis.json"
+BASELINE_GAP_JSON = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_gap_analysis.json"
 
 # Canonical layer keys — must match the schema contract
 CANONICAL_LAYER_KEYS = frozenset(

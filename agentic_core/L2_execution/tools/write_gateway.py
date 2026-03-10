@@ -32,6 +32,12 @@ _TRACE_ID: str | None = None
 from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     enforce_protected_root,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+)
 
 # =============================================================================
 # Write Amplification + Size Cap Guards (RCA Phase 5)
@@ -151,11 +157,11 @@ def _get_repo_root() -> Path:
 
 _SOURCE_ROOTS_RELATIVE: frozenset[str] = frozenset(
     {
-        "agentic_core",
+        AGENTIC_CORE_DIR,
         "prompt_governance",
-        "tests",
-        "ops_scripts",
-        "apps_shared",
+        TESTS_DIR,
+        OPS_SCRIPTS_DIR,
+        APPS_SHARED_DIR,
     }
 )
 

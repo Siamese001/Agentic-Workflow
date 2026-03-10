@@ -51,4 +51,3 @@ def test_verify_passes_with_budget():
     secret = TestKeySource.TEST_SECRET
     env = _make_env(budget=ToolBudget(compute_ms=5000, memory_mb=64, stdout_bytes=1024))
     env.verify(secret)  # must not raise
-    assert True  # no-exception contract

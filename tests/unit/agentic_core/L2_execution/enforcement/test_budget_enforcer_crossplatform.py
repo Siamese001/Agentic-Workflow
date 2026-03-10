@@ -87,7 +87,6 @@ class TestBudgetEnforcerComputeCap:
         """Verify no exception raised when work completes before deadline."""
         with _wall_clock_cap_threading(500):
             time.sleep(0.01)  # well within 500 ms
-            assert True  # no-exception contract
 
 
 class TestBudgetEnforcerReturnContract:

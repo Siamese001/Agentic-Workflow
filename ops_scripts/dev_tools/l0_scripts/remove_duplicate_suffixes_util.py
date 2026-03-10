@@ -41,7 +41,7 @@ def find_duplicate_files() -> list[Path]:
     for suffix in PROBLEMATIC_SUFFIXES:
         pattern = f"*{suffix}.py"
         files = list(project_root.rglob(pattern))
-        files = [f for f in files if "archives" not in str(f)]
+        files = [f for f in files if ARCHIVES_DIR not in str(f)]
         all_duplicates.extend(files)
     return all_duplicates
 

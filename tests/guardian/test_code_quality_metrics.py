@@ -18,6 +18,14 @@ from collections import defaultdict
 from pathlib import Path
 
 import pytest
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    ARCHIVES_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 # Ensure project root is in path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -58,7 +66,7 @@ class TestCodeQualityMetrics:
                     ".git",
                     ".pytest_cache",
                     "node_modules",
-                    "archives",
+                    ARCHIVES_DIR,
                     ".sovereign_healing_backup",
                 ]
             ):
@@ -184,9 +192,9 @@ class TestCodeQualityMetrics:
                     ".git",
                     ".pytest_cache",
                     "node_modules",
-                    "archives",
+                    ARCHIVES_DIR,
                     ".sovereign_healing_backup",
-                    "tests",
+                    TESTS_DIR,
                 ]
             ):
                 continue
@@ -258,7 +266,7 @@ class TestCodeQualityMetrics:
                     ".git",
                     ".pytest_cache",
                     "node_modules",
-                    "archives",
+                    ARCHIVES_DIR,
                     ".sovereign_healing_backup",
                 ]
             ):
@@ -387,7 +395,7 @@ class TestCodeQualityMetrics:
                     ".git",
                     ".pytest_cache",
                     "node_modules",
-                    "archives",
+                    ARCHIVES_DIR,
                     ".sovereign_healing_backup",
                 ]
             ):
@@ -471,7 +479,7 @@ class TestCodeQualityMetrics:
                                 "logging",
                             ]:
                                 stdlib_imports.append((line_num, import_stmt))
-                            elif module.startswith(("agentic_core", "apps_rg", "apps_lic", "apps_shared")):
+                            elif module.startswith((AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR)):
                                 local_imports.append((line_num, import_stmt))
                             else:
                                 thirdparty_imports.append((line_num, import_stmt))

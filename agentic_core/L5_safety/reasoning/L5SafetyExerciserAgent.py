@@ -35,7 +35,7 @@ def _get_hierarchy_agent() -> Any:
         from agentic_core.L5_safety.reasoning.hierarchy_healer import HierarchyAgent
 
         return HierarchyAgent
-    except Exception:
+    except ImportError:
         return None
 
 
@@ -45,7 +45,7 @@ def _get_naming_agent() -> Any:
         from agentic_core.L5_safety.reasoning.NamingAgent import NamingAgent
 
         return NamingAgent
-    except Exception:
+    except ImportError:
         return None
 
 
@@ -57,7 +57,7 @@ def _get_import_agent() -> Any:
         )
 
         return create_legacy_import_healer
-    except Exception:
+    except ImportError:
         return None
 
 
@@ -67,7 +67,7 @@ def _get_RedTeamAgent() -> Any:
         from agentic_core.L5_safety.reasoning.RedTeamAgent import RedTeamAgent
 
         return RedTeamAgent
-    except Exception:
+    except ImportError:
         return None
 
 
@@ -77,7 +77,7 @@ def _get_healer_agent() -> Any:
         from agentic_core.L5_safety.enforcement.StructuralHealerAgent import StructuralHealerAgent
 
         return StructuralHealerAgent
-    except Exception:
+    except ImportError:
         return None
 
 
@@ -87,8 +87,8 @@ def log_event(event_type: str, payload: dict) -> Any:
         from agentic_core.runtime.shared_runtime import log_event as _log_event
 
         _log_event(event_type, payload)
-    except Exception:
-        print(f"[L5SafetyExerciserAgent] Event logged (stub): {event_type} = {payload}")
+    except (ImportError, AttributeError) as e:
+        print(f"[L5SafetyExerciserAgent] Event logging unavailable ({type(e).__name__}): {event_type}")
 
 
 @dataclass

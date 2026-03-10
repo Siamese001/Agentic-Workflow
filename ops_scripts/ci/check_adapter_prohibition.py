@@ -21,7 +21,7 @@ from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_
 _ROOT = get_validated_project_root()
 SCAN_ROOTS = [_ROOT / AGENTIC_CORE_DIR]
 EXCLUDED_PREFIXES = (
-    "archives",
+    ARCHIVES_DIR,
     "archives/deprecated",
 )
 # v15-exception annotated files are allowed

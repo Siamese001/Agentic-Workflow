@@ -12,6 +12,7 @@ import re
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 class PhaseAcceptanceGuard:
@@ -76,7 +77,7 @@ class PhaseAcceptanceGuard:
 
     def check_evidence_files_protocol(self) -> None:
         """Rule 48: Evidence files must contain raw, untruncated outputs."""
-        evidence_dir = self.repo_root / "docs" / "reports" / "governance"
+        evidence_dir = self.repo_root / "docs" / REPORTS_DIR / "governance"
 
         if not evidence_dir.exists():
             return
@@ -141,7 +142,7 @@ class PhaseAcceptanceGuard:
 
     def check_phase_evidence_completeness(self) -> None:
         """Rule 47: Phase evidence must distinguish pre-existing vs new issues."""
-        evidence_dir = self.repo_root / "docs" / "reports" / "governance"
+        evidence_dir = self.repo_root / "docs" / REPORTS_DIR / "governance"
 
         for evidence_file in evidence_dir.glob("phase*evidence.md"):
             content = evidence_file.read_text(encoding="utf-8")

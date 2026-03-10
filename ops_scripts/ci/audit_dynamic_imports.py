@@ -39,7 +39,7 @@ PROVIDER_MODULES = {
 ALLOWLIST_MODULES = {
     "data/sdks_mcps/client_wrappers",
     "agentic_core/L2_execution/enforcement",
-    "tests",
+    TESTS_DIR,
     "ops_scripts/ci",
     "system_learning/engines/embedding_service_factory",  # Known exception
 }
@@ -75,7 +75,7 @@ class DynamicImportScanner(ast.NodeVisitor):
                 return True
 
         # Check test files
-        if "tests" in str(abs_path):
+        if TESTS_DIR in str(abs_path):
             return True
 
         return False

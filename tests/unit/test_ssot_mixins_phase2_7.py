@@ -332,7 +332,6 @@ class TestSSOTStateValidation:
     def test_precondition_passes(self):
         obj = _StateValObj(_Ctx(trace_id="t", active_policy_hash="ph"))
         obj.validate_precondition("check_ok", True)  # Should not raise
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_precondition_fails(self):
@@ -350,7 +349,6 @@ class TestSSOTStateValidation:
     def test_safety_cleared_validation(self):
         obj = _StateValObj(_Ctx(trace_id="t", active_policy_hash="ph", safety_status="CLEARED"))
         obj.validate_safety_cleared()  # Should not raise
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_safety_not_cleared_raises(self):
@@ -362,7 +360,6 @@ class TestSSOTStateValidation:
     def test_policy_hash_stable_validation(self):
         obj = _StateValObj(_Ctx(trace_id="t", active_policy_hash="ph"))
         obj.validate_policy_hash_stable()  # Should not raise
-        assert True  # no-exception contract
 
     @pytest.mark.unit_min_deps
     def test_policy_hash_drift_raises(self):

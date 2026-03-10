@@ -25,7 +25,7 @@ def test_write_run_manifest_json_structure(tmp_path):
 
     trace_id = "TEST-TRACE-001"
     execution_mode = "heal"
-    territories = ["apps_core", "apps_shared"]
+    territories = ["apps_core", APPS_SHARED_DIR]
     agents_executed = ["AgentA", "AgentB", "AgentC"]
 
     _write_run_manifest_json(

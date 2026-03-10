@@ -73,7 +73,7 @@ def detect_corruption_patterns(project_root: Path) -> list[tuple[Path, int, str]
                         suspicious.append(
                             (py_file, line_num, f"{pattern_name}: {line.strip()[:80]}"),
                         )
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             pass
 
     return suspicious

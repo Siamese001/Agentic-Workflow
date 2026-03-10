@@ -73,10 +73,7 @@ def test_route_generation_writes_egress_audit():
         ),
         patch.object(gw._egress_audit_log, "append") as mock_append,
     ):
-        try:
-            asyncio.run(gw.route_generation(req))
-        except Exception:  # guardian: allow-silent-swallower
-            pass
+        asyncio.run(gw.route_generation(req))
         assert mock_append.called, "Egress audit log.append must be called by route_generation"
 
     SovereignLLMGateway.reset_instance()
@@ -130,10 +127,7 @@ def test_route_generation_egress_payload_contains_agent_id():
         ),
         patch.object(gw._egress_audit_log, "append", side_effect=_capture),
     ):
-        try:
-            asyncio.run(gw.route_generation(req))
-        except Exception:  # guardian: allow-silent-swallower
-            pass
+        asyncio.run(gw.route_generation(req))
 
     assert len(captured) >= 1, "Egress audit log must be written at least once"
     payload = captured[0].get("payload", {})

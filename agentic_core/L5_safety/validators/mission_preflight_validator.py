@@ -66,6 +66,7 @@ class MissionPreflight:
         """Lazy load import healer."""
         if self._import_agent is None:
             try:
+                from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
                 # Phase 5 Migration: ImportAgent -> CodeHealerAgent
                 from agentic_core.L5_safety.reasoning.CodeHealerAgent import (
                     create_legacy_import_healer,
@@ -207,11 +208,13 @@ class MissionPreflight:
                     try:
                         rel_path = py_file.relative_to(self.project_root)
                         root_folder = rel_path.parts[0]
-                        if root_folder == "agentic_core":
+                        if root_folder == AGENTIC_CORE_DIR:
                             violations = import_agent.check_waterfall_violations(str(py_file))
                             if violations:
                                 waterfall_violations.extend([(py_file, v) for v in violations])
-                    except Exception:
+                    except (OSError, UnicodeDecodeError, KeyError, AttributeError) as e:
+                        # Log file processing errors but continue scanning
+                        print(f"   [WARNING] Failed to process {py_file.name}: {type(e).__name__}")
                         continue
 
             if not scan_limit_reached:
@@ -245,7 +248,9 @@ class MissionPreflight:
                         is_valid, reason = location_agent.validate_file_location(py_file)
                         if not is_valid:
                             location_violations.append((py_file, reason))
-                    except Exception:
+                    except (OSError, AttributeError, KeyError) as e:
+                        # Log file processing errors but continue scanning
+                        print(f"   [WARNING] Failed to validate {py_file.name}: {type(e).__name__}")
                         continue
 
         # Whitelist autonomous agents

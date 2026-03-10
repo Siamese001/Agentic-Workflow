@@ -3,7 +3,14 @@
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 ROOT = get_validated_project_root()
 data = json.loads((ROOT / "ops_scripts/ci/ast_gap_results.json").read_text())
@@ -90,7 +97,7 @@ for tgt, counts in sorted(target_gaps.items()):
 # Guardian-specific check: does tests/guardian or tests/architecture exist?
 print()
 print("=== GUARDIAN / ARCHITECTURE TEST INVENTORY ===")
-for subdir in ["guardian", "architecture", "agentic_core", "apps_lic", "apps_rg", "apps_shared"]:
+for subdir in ["guardian", "architecture", AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]:
     p = ROOT / TESTS_DIR / subdir
     if p.exists():
         files = list(p.rglob("test_*.py"))

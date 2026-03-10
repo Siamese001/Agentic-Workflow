@@ -14,6 +14,10 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    TESTS_DIR,
+    TOOLS_DIR,
+)
 
 
 @dataclass
@@ -178,7 +182,7 @@ def get_scoped_directories(repo_root: Path) -> list[Path]:
         repo_root / AGENTIC_CORE_DIR / APPS_LIC_DIR / "reasoning",
         repo_root / AGENTIC_CORE_DIR / APPS_RG_DIR / "reasoning",
         repo_root / AGENTIC_CORE_DIR / APPS_SHARED_DIR / "reasoning",
-        repo_root / AGENTIC_CORE_DIR / "tools",
+        repo_root / AGENTIC_CORE_DIR / TOOLS_DIR,
         repo_root / AGENTIC_CORE_DIR / "L0_routing" / "scripts",
         repo_root / AGENTIC_CORE_DIR / "L1_cognition" / "scripts",
         repo_root / AGENTIC_CORE_DIR / "L2_execution" / "scripts",
@@ -191,7 +195,7 @@ def is_protected_root_path(path_str: str) -> bool:
     """Check if a path string points to a protected root."""
     path = Path(path_str).resolve()
 
-    protected_roots = {"agentic_core", "tests", ".github"}
+    protected_roots = {AGENTIC_CORE_DIR, TESTS_DIR, ".github"}
 
     # Check if any part of the path starts with a protected root
     for part in path.parts:

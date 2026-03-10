@@ -3,12 +3,12 @@
 import pathlib
 import re
 
-roots = ["agentic_core", "system_learning", "tools"]
+roots = [AGENTIC_CORE_DIR, SYSTEM_LEARNING_DIR, TOOLS_DIR]
 for root in roots:
     for fp in pathlib.Path(root).rglob("*.py"):
         try:
             src = fp.read_text(encoding="utf-8", errors="replace")
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             continue
         for i, line in enumerate(src.splitlines(), 1):
             if re.search(r'safe_shutil_mutate|assert_no_persistent_write|layer=["\']L0', line):

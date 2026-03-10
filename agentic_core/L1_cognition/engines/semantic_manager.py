@@ -23,8 +23,8 @@ class EmbeddingProvider:
             result = bmg_embed_text(text)
             if result:
                 return result
-        except Exception:
-            pass
+        except (ImportError, AttributeError, ValueError) as e:
+            print(f"Embedding failed: {e}")
         return [0.0] * 1024  # BGE-m3 fallback dimension
 
 
@@ -53,7 +53,8 @@ class VectorIndex:
                 scored.append((float(np.dot(q_norm, v_norm)), key))
             scored.sort(reverse=True)
             return [k for _, k in scored[:top_k]]
-        except Exception:
+        except (ImportError, AttributeError, ValueError) as e:
+            print(f"Vector search failed: {e}")
             return list(self._vectors.keys())[:top_k]
 
 
@@ -103,7 +104,8 @@ class SemanticMemory:
                     results.append({"key": key, "value": self._memories[key]["value"], "similarity": similarity})
             results.sort(key=lambda x: x["similarity"], reverse=True)
             return results[:top_k]
-        except Exception:
+        except (ImportError, AttributeError, KeyError) as e:
+            print(f"Memory search failed: {e}")
             return []
 
     def delete(self, key: str) -> None:

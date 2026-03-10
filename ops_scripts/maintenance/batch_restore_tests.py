@@ -92,7 +92,7 @@ def get_file_content(commit: str, file_path: str) -> str:
             errors="replace",
         )
         return result.stdout
-    except Exception:
+    except (subprocess.CalledProcessError, OSError):
         return ""
 
 

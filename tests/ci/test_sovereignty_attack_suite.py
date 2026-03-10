@@ -33,6 +33,10 @@ from agentic_core.L6_observability.engines.replay_key_computer import (
 from system_learning.engines.surface_isolation_validator import (
     SurfaceIsolationValidator,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_RG_DIR,
+    SYSTEM_LEARNING_DIR,
+)
 
 pytestmark = pytest.mark.ci
 
@@ -73,8 +77,8 @@ class TestKernelBoundaryViolation:
     def test_sovereign_kernel_excludes_non_kernel_modules(self):
         """Malicious or extension modules must not be in the kernel."""
         assert "malicious.kernel.bypass" not in SOVEREIGN_KERNEL_COMPONENTS
-        assert "system_learning" not in SOVEREIGN_KERNEL_COMPONENTS
-        assert "apps_rg" not in SOVEREIGN_KERNEL_COMPONENTS
+        assert SYSTEM_LEARNING_DIR not in SOVEREIGN_KERNEL_COMPONENTS
+        assert APPS_RG_DIR not in SOVEREIGN_KERNEL_COMPONENTS
 
     def test_sovereign_kernel_is_immutable(self):
         """frozenset cannot be modified at runtime — attack surface is zero."""

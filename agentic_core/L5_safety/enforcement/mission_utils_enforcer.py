@@ -12,6 +12,12 @@ from agentic_core.L0_routing.config.path_constants import (
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,
     L5_SAFETY_DIR,
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
 )
 
 # Import SSOT registries
@@ -71,13 +77,13 @@ def get_legal_l2_for_l1(root: str, l1_name: str) -> list[str]:
     Returns:
         List of approved L2 subfolder names
     """
-    if root == "agentic_core":
+    if root == AGENTIC_CORE_DIR:
         return CORE_SUBFOLDER_MAP.get(l1_name, [])
-    elif root == "apps_rg":
+    elif root == APPS_RG_DIR:
         return APPS_RG_SUBFOLDER_MAP.get(l1_name, [])
-    elif root == "apps_lic":
+    elif root == APPS_LIC_DIR:
         return APPS_LIC_SUBFOLDER_MAP.get(l1_name, [])
-    elif root == "apps_shared":
+    elif root == APPS_SHARED_DIR:
         return APPS_SHARED_SUBFOLDER_MAP.get(l1_name, [])
     return []
 
@@ -164,7 +170,7 @@ def get_best_target_l1(folder_name: str, approved_l1: set) -> str:
     return "utils"
 
 
-_AGENT_LOW_CONFIDENCE_ROOTS: frozenset[str] = frozenset({"tests", "docs", "data", "artifacts", "ops_scripts"})
+_AGENT_LOW_CONFIDENCE_ROOTS: frozenset[str] = frozenset({TESTS_DIR, "docs", "data", "artifacts", OPS_SCRIPTS_DIR})
 
 
 def _calculate_subfolder_confidence_for_agent(l1_name: str, item_name: str) -> float:

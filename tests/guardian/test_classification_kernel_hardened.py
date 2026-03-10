@@ -40,6 +40,7 @@ from agentic_core.L5_safety.core_kernel.classification_kernel import (
     is_agent_file,
     is_agent_or_orchestrator,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 pytestmark = pytest.mark.guardian
 
@@ -86,7 +87,7 @@ class TestFileTypeTaxonomy:
         assert classify_file_standalone(p) == "TEST"
 
     def test_test_type_from_tests_directory(self, tmp_path):
-        tests_dir = tmp_path / "tests" / "unit"
+        tests_dir = tmp_path / TESTS_DIR / "unit"
         tests_dir.mkdir(parents=True)
         p = _w(tests_dir, "check_me.py", "class CheckMe: pass\n")
         assert classify_file_standalone(p) == "TEST"

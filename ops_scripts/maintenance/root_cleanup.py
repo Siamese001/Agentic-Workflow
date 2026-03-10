@@ -10,6 +10,7 @@ from agentic_core.L0_routing.config.path_constants import (
     TESTS_DIR,
     get_validated_project_root,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 def main():
@@ -80,7 +81,7 @@ def main():
 
     # Move audit files
     print("[1/4] Moving audit files to docs/reports/audit...")
-    audit_dir = root / "docs" / "reports" / "audit"
+    audit_dir = root / "docs" / REPORTS_DIR / "audit"
     for filename in audit_files:
         source = root / filename
         if source.exists():
@@ -91,7 +92,7 @@ def main():
     # Move assessment files
     print()
     print("[2/4] Moving assessment files to docs/reports/assessments...")
-    assessment_dir = root / "docs" / "reports" / "assessments"
+    assessment_dir = root / "docs" / REPORTS_DIR / "assessments"
     for filename in assessment_files:
         source = root / filename
         if source.exists():

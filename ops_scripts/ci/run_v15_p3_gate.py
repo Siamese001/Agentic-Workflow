@@ -23,7 +23,7 @@ if str(PROJECT_ROOT) not in sys.path:
     # guardian: allow-global-mutation
     sys.path.insert(0, str(PROJECT_ROOT))
 
-EVIDENCE_DIR = PROJECT_ROOT / "docs" / "reports" / "plans"
+EVIDENCE_DIR = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans"
 
 # Files in the enforcement critical path
 ENFORCEMENT_FILES = [

@@ -176,7 +176,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 analysis.imports.append(alias.name)
-                if alias.name.startswith(("agentic_core", "apps_")):
+                if alias.name.startswith((AGENTIC_CORE_DIR, "apps_")):
                     analysis.internal_deps.append(alias.name)
                 elif not alias.name.startswith(
                     ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses"),
@@ -185,7 +185,7 @@ def analyze_file(file_path: Path, archive_folder: str) -> FileAnalysis | None:
         elif isinstance(node, ast.ImportFrom):
             module = node.module or ""
             analysis.imports.append(module)
-            if module.startswith(("agentic_core", "apps_")):
+            if module.startswith((AGENTIC_CORE_DIR, "apps_")):
                 analysis.internal_deps.append(module)
             elif not module.startswith(
                 ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum"),
@@ -257,7 +257,7 @@ def build_current_codebase_index(dirs: list[str]) -> dict[str, set[str]]:
 
     for dir_path in dirs:
         for py_file in Path(dir_path).rglob("*.py"):
-            if "__pycache__" in str(py_file) or "archives" in str(py_file):
+            if "__pycache__" in str(py_file) or ARCHIVES_DIR in str(py_file):
                 continue
             try:
                 content = py_file.read_text(encoding="utf-8", errors="replace")

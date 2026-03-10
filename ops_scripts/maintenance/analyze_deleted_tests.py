@@ -20,6 +20,12 @@ import subprocess
 from difflib import SequenceMatcher
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 PROJECT_ROOT = Path(__file__).parent
 
@@ -116,7 +122,7 @@ def analyze_file_with_ast(content: str, file_path: str) -> dict[str, Any]:
     except SyntaxError as e:
         result["reasons"].append(f"Syntax error: {e}")
         result["confidence"] = 0.7
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, AttributeError) as e:
         result["reasons"].append(f"Analysis error: {e}")
 
     return result
@@ -127,7 +133,7 @@ def fuzzy_match_module(broken_module: str) -> list[tuple[str, float]]:
     matches = []
 
     # Get all Python files in agentic_core, apps_lic, apps_rg, apps_shared
-    search_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    search_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     parts = broken_module.split(".")
     target_name = parts[-1] if parts else broken_module

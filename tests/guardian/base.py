@@ -9,6 +9,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
 if str(PROJECT_ROOT) not in sys.path:
@@ -64,7 +65,7 @@ class GuardianTestBase:
         try:
             content = file_path.read_text(encoding="utf-8", errors="ignore")
             return ast.parse(content)
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             return None
 
     @staticmethod
@@ -145,7 +146,7 @@ class AgentTestMixin:
 
         for imp in imports:
             parts = imp.split(".")
-            if len(parts) >= 2 and parts[0] == "agentic_core":
+            if len(parts) >= 2 and parts[0] == AGENTIC_CORE_DIR:
                 imported_layer = parts[1]
                 if imported_layer in LAYER_HIERARCHY:
                     imported_level = LAYER_HIERARCHY[imported_layer]

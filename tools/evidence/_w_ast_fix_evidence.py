@@ -85,6 +85,7 @@ def main():
     det_script = REPO / TOOLS_DIR / "evidence" / "_det_probe.py"
     det_code = """
 import hashlib, os, sys
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 repo = sys.argv[1]
 skip = {".nox", ".git", ".backup", ".pytest_tmp", "archives",
         "__pycache__", ".vscode", ".windsurf", "node_modules",
@@ -211,7 +212,7 @@ print(f"W-AST-FIX-DETERMINISM-DIGEST: {digest}")
     w("")
 
     # Extract REQ-PT-011 and REQ-RAGX-006 detail sections from the report
-    report_path = REPO / "docs" / "reports" / "plans" / "requirements-gap-analysis-evidence.md"
+    report_path = REPO / "docs" / REPORTS_DIR / "plans" / "requirements-gap-analysis-evidence.md"
     if report_path.exists():
         report_text = report_path.read_text(encoding="utf-8")
         for req_id in ["REQ-PT-011", "REQ-RAGX-006"]:

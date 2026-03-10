@@ -54,6 +54,7 @@ from tools.semantic_gap_analyzer import (
     SemanticGapAnalyzer,
     _has_any_marker,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 def _ok_analysis(file_path: Path, **kwargs) -> FileAnalysis:
@@ -77,7 +78,7 @@ def _failed_analysis(file_path: Path) -> FileAnalysis:
 
 
 def _make_analysis(source: str) -> FileAnalysis:
-    tmp = REPO_ROOT / "tests" / "architecture" / "_tmp_governance_test.py"
+    tmp = REPO_ROOT / TESTS_DIR / "architecture" / "_tmp_governance_test.py"
     tmp.write_text(dedent(source), encoding="utf-8")
     try:
         aa = ASTAnalyzer(AGENTIC_CORE)

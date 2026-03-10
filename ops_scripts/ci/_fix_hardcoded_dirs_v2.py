@@ -42,12 +42,12 @@ SSOT_PATHS = {
 SKIP_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 
 SCAN_ROOTS = [
-    ROOT / "ops_scripts",
-    ROOT / "agentic_core",
-    ROOT / "tests",
-    ROOT / "apps_rg",
-    ROOT / "apps_lic",
-    ROOT / "apps_shared",
+    ROOT / OPS_SCRIPTS_DIR,
+    ROOT / AGENTIC_CORE_DIR,
+    ROOT / TESTS_DIR,
+    ROOT / APPS_RG_DIR,
+    ROOT / APPS_LIC_DIR,
+    ROOT / APPS_SHARED_DIR,
 ]
 
 DRY_RUN = "--dry-run" in sys.argv

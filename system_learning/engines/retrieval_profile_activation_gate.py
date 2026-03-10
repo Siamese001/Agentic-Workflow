@@ -298,8 +298,9 @@ class RetrievalProfileActivationGate:
                 created_utc=now_utc,
             )
             return profile.profile_id
-        except Exception:
+        except (AttributeError, TypeError) as e:
             # L4 write failure should not break activation
+            logger.debug(f"Failed to write profile to L4 store: {e}")
             return profile.profile_id
 
     def _update_active_profile_id(self, *, new_profile_id: str, l4_writer: L4StateWriter, now_utc: int) -> None:
@@ -323,9 +324,9 @@ class RetrievalProfileActivationGate:
                 component_name="activation-gate",
                 created_utc=now_utc,
             )
-        except Exception:
+        except (AttributeError, TypeError) as e:
             # L4 write failure should not break activation
-            pass
+            logger.debug(f"Failed to write activation event to L4 store: {e}")
 
     def _compute_activation_digest(
         self,

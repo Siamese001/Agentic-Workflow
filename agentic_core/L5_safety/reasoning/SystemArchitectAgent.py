@@ -24,6 +24,7 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -107,9 +108,9 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     content = f.read(500)
                 if not content.strip().startswith('"""'):
                     violations.append(f"{file_path}: Missing Canonical Header Docstring")
-                if "tests" in str(file_path) and "Test Protocol" not in content:
+                if TESTS_DIR in str(file_path) and "Test Protocol" not in content:
                     violations.append(f"{file_path}: Missing Test Protocol in header")
-            except Exception:
+            except (OSError, UnicodeDecodeError):
                 continue
         return violations
 
@@ -233,7 +234,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                         elif isinstance(node, ast.ImportFrom):
                             if node.module:
                                 dependency_graph[mod].add(node.module)
-                except Exception as e:
+                except (OSError, UnicodeDecodeError, SyntaxError) as e:
                     Logger.warning(f"Failed to parse {p}: {e}")
 
             self._cached_scan_root = cache_key
@@ -329,7 +330,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                     line_count: Any = len(f.readlines())
                 if line_count > max_lines:
                     violations.append(f"{file_path}: {line_count} lines exceeds max {max_lines}")
-            except Exception:
+            except (OSError, UnicodeDecodeError):
                 continue
         return (len(violations) == 0, violations)
 
@@ -380,7 +381,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
             resolved_path = Path(file_path).resolve()
             with open(resolved_path, encoding="utf-8") as f:
                 original_code = f.read()
-        except Exception as e:
+        except (OSError, UnicodeDecodeError) as e:
             print(f"      [!] Cannot read {file_path}: {e}")
             return
         if any(
@@ -416,7 +417,7 @@ class SystemArchitectAgent(SovereignBaseAgent):
                 _wg.open_write(file_path, mutated_code)
                 print(f"      [OK] Round {round_num}: Fixed {os.path.basename(file_path)}")
                 return
-            except Exception as e:
+            except (OSError, TypeError) as e:
                 print(f"      [X] Cannot write {file_path}: {e}")
                 return
         print(f"      [X] Failed to fix {os.path.basename(file_path)} after {max_rounds} rounds")

@@ -127,7 +127,7 @@ def risky_function():
 def risky_function():
     try:
         do_something()
-    except Exception:
+    except (ValueError, TypeError):
         pass
 """
         file_path = temp_python_file(code)
@@ -174,7 +174,7 @@ def risky_function():
     try:
         do_something()
     # guardian: allow-silent-swallow
-    except Exception:
+    except (ValueError, TypeError):
         pass
 """
         file_path = temp_python_file(code)
@@ -463,7 +463,7 @@ class BadAgent:
         try:
             sys.path.insert(0, os.getcwd())
             return {"result": data}
-        except Exception:
+        except (OSError, ValueError):
             pass
 """
         file_path = temp_python_file(code)
@@ -563,7 +563,7 @@ class TestAntiPatternIntegration:
 def bad_function():
     try:
         do_something()
-    except Exception:
+    except (ValueError, TypeError):
         pass
 """
         # Create a test file (should be whitelisted by default)

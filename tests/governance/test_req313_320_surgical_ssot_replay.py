@@ -70,7 +70,7 @@ class MockSSOTStore:
                 self._files[change.target] = "\n".join(lines)
 
             return True
-        except Exception:
+        except (ValueError, KeyError, IndexError):
             return False
 
     def compute_ssot_hash(self) -> str:

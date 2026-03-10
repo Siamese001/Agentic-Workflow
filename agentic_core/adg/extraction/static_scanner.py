@@ -40,14 +40,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXC
 logger = logging.getLogger(__name__)
 
 _SCAN_ROOTS: tuple[str, ...] = (
-    "agentic_core",
-    "apps_rg",
-    "apps_lic",
-    "apps_shared",
-    "system_learning",
-    "tools",
-    "tests",  # H1
-    "ops_scripts",  # H1
+    AGENTIC_CORE_DIR,
+    APPS_RG_DIR,
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
+    TESTS_DIR,  # H1
+    OPS_SCRIPTS_DIR,  # H1
 )
 
 _SCANNER_VERSION = "2.0.0"
@@ -272,7 +272,7 @@ class _InheritanceVisitor(ast.NodeVisitor):
             if not base_name or base_name in ("object",):
                 continue
             # Classify: internal vs external vs unresolved
-            if any(base_name.startswith(r) for r in ("agentic_core", "apps_")):
+            if any(base_name.startswith(r) for r in (AGENTIC_CORE_DIR, "apps_")):
                 edge_kind = "resolved_internal"
             elif "." in base_name:
                 edge_kind = "external"

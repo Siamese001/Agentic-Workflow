@@ -18,6 +18,7 @@ import os
 import pytest
 
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 # ---------------------------------------------------------------------------
 # Constants
@@ -124,7 +125,7 @@ class TestL1Reachability:
             return
 
         importers = import_index.get(agent_name, [])
-        prod_importers = [p for p in importers if "tests" not in p.replace(os.sep, "/").split("/")]
+        prod_importers = [p for p in importers if TESTS_DIR not in p.replace(os.sep, "/").split("/")]
         assert len(prod_importers) >= 1, (
             f"{agent_name} (in {agent_file}) has 0 non-test importers. "
             f"Either add a production import or add to REACHABILITY_ALLOWLIST with justification."

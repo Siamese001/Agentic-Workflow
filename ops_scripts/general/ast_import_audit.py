@@ -56,6 +56,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    REPORTS_DIR,
 )
 
 # ── Constants ────────────────────────────────────────────────────────────────
@@ -992,7 +993,7 @@ def main() -> None:
     )
     args = parser.parse_args()
 
-    out_dir = PROJECT_ROOT / "docs" / "reports" / "plans"
+    out_dir = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans"
     out_dir.mkdir(parents=True, exist_ok=True)
 
     if args.merge:

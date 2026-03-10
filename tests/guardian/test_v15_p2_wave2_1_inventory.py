@@ -15,7 +15,7 @@ import pytest
 INVENTORY_PATH = (
     Path(__file__).resolve().parents[2]
     / "docs"
-    / "reports"
+    / REPORTS_DIR
     / "plans"
     / "v15_phase2_wave2_1_runtime_entrypoints.json"
 )

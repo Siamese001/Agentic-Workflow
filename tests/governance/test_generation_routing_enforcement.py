@@ -140,6 +140,15 @@ def test_ast_scanner_allows_clean_code():
 # This file contains no violations
 from data.sdks_mcps.client_wrappers import create_openai_client
 from agentic_core.L2_execution.enforcement.SovereignLLMGateway import SovereignLLMGateway
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 def generate_properly():
     gateway = SovereignLLMGateway()
@@ -173,7 +182,7 @@ def generate_properly():
 
 def test_no_direct_sdk_imports_in_agents():
     """Test that agent files don't have direct SDK imports."""
-    agent_dirs = ["apps_lic", "apps_rg", "apps_shared", "agentic_core"]
+    agent_dirs = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR]
 
     violations = []
 
@@ -188,8 +197,8 @@ def test_no_direct_sdk_imports_in_agents():
                 allowed in str(py_file)
                 for allowed in [
                     "data/sdks_mcps",
-                    "tests",
-                    "ops_scripts",
+                    TESTS_DIR,
+                    OPS_SCRIPTS_DIR,
                     "system_learning/engines/openai_embedder.py",  # Known exception
                 ]
             ):
@@ -233,7 +242,7 @@ def test_openai_embedder_is_exception():
         assert "text-embedding-3-large" in content
 
         # Should be properly isolated (not in agent code)
-        assert "system_learning" in str(embedder_path)
+        assert SYSTEM_LEARNING_DIR in str(embedder_path)
 
 
 # ---------------------------------------------------------------------------

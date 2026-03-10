@@ -14,6 +14,7 @@ from typing import Any
 
 from agentic_core.L5_safety.core_kernel.classification_kernel import is_agent_file
 from agentic_core.utils.ssot_discovery_validator import get_python_files
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -200,7 +201,7 @@ class AgentRegistry:
         """
         # Convert path to module path
         parts = file_path.parts
-        if "agentic_core" in parts:
+        if AGENTIC_CORE_DIR in parts:
             start_idx = parts.index("agentic_core")
             module_parts = parts[start_idx:-1]  # Exclude filename
             module_parts = [p.replace(".py", "") for p in module_parts if not p.startswith("__")]

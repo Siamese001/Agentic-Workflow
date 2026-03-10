@@ -9,17 +9,18 @@ import ast
 from pathlib import Path
 
 import pytest
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Core directories to check (L0-L5)
 CORE_DIRS = [
-    "agentic_core/L0_routing",
-    "agentic_core/L1_cognition",
-    "agentic_core/L2_execution",
-    "agentic_core/L3_orchestration",
-    "agentic_core/L4_state",
-    "agentic_core/L5_safety",
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
 ]
 
 
@@ -77,7 +78,7 @@ def test_req118_no_reflection_bypass_core_layers():
 def test_req118_reflection_negative_control():
     """REQ-118: Negative control - should detect reflection when present."""
     # Create a temporary file with reflection usage
-    temp_file = REPO_ROOT / "agentic_core" / "temp_test_reflection.py"
+    temp_file = REPO_ROOT / AGENTIC_CORE_DIR / "temp_test_reflection.py"
     try:
         temp_file.write_text("""
 # This should be flagged as potential bypass
@@ -119,7 +120,7 @@ def modify_layer(obj, value):
 def test_req118_safe_reflection_allowed():
     """REQ-118: Verify that safe reflection patterns (getattr with default) are allowed."""
     # Create a file with safe reflection usage
-    temp_file = REPO_ROOT / "agentic_core" / "temp_test_safe_reflection.py"
+    temp_file = REPO_ROOT / AGENTIC_CORE_DIR / "temp_test_safe_reflection.py"
     try:
         temp_file.write_text("""
 # This should be allowed - safe getattr with default

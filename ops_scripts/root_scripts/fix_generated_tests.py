@@ -21,7 +21,7 @@ def fix_test_file(test_path: pathlib.Path):
     # Extract module path from test file path
     # tests/agentic_core/config/core/test_agent_defaults_config.py
     # -> agentic_core.config.core.agent_defaults_config
-    rel_path = test_path.relative_to(pathlib.Path("tests"))
+    rel_path = test_path.relative_to(pathlib.Path(TESTS_DIR))
     parts = list(rel_path.parts)
 
     # Remove "test_" prefix and ".py" suffix
@@ -90,7 +90,7 @@ def test_{test_path.stem}_has_public_attributes():
 
 def main():
     """Fix all generated tests."""
-    test_root = pathlib.Path("tests")
+    test_root = pathlib.Path(TESTS_DIR)
     fixed_count = 0
 
     for test_file in test_root.rglob("test_*.py"):

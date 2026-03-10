@@ -304,7 +304,6 @@ def test_enforcer_validates_envelope_before_use():
     enforcer = ReasoningIntensityEnforcer(envelope, trace_id="trace-test")
     enforcer.validate_envelope()
     enforcer.enforce_pre_stage(stage_id=1)
-    assert True  # no-exception contract
 
 
 @pytest.mark.governance

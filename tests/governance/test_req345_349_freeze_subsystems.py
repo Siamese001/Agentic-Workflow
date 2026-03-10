@@ -18,7 +18,7 @@ def test_freeze_is_all_or_nothing():
         try:
             for s in FREEZE_SUBSYSTEMS:
                 frozen.add(s)
-        except Exception:
+        except (TypeError, ValueError) as e:
             frozen.clear()  # atomic rollback
             raise
 

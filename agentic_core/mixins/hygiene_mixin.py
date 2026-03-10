@@ -96,8 +96,9 @@ class HygieneMixin:
                     except SyntaxError as e:
                         results["syntax_errors"].append({"file": str(rel_path), "error": str(e)})
 
-                except Exception:
+                except (OSError, UnicodeDecodeError) as e:
                     # Log error but continue processing other files
+                    self.logger.debug(f"Failed to scan {rel_path}: {e}")
                     continue
 
         except Exception as e:
@@ -119,8 +120,9 @@ class HygieneMixin:
                 if file_path.exists():
                     file_path.unlink()
                     fixed += 1
-            except Exception:
+            except OSError as e:
                 # Log error but continue
+                self.logger.debug(f"Failed to remove {file_path.name}: {e}")
                 continue
 
         # Fix duplicate files (remove duplicates, keep original)
@@ -130,8 +132,9 @@ class HygieneMixin:
                 if duplicate_path.exists():
                     duplicate_path.unlink()
                     fixed += 1
-            except Exception:
+            except OSError as e:
                 # Log error but continue
+                self.logger.debug(f"Failed to remove {duplicate_path.name}: {e}")
                 continue
 
         return fixed

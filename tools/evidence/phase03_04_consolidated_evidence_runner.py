@@ -23,7 +23,7 @@ def main():
     evidence_commit = args.evidence_commit
 
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_03_04_consolidated.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase_03_04_consolidated.md"
 
     print(f"Generating Phases 3-4 consolidated evidence: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")

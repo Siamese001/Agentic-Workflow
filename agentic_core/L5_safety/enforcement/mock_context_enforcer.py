@@ -17,6 +17,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
     CORE_SUBFOLDER_MAP,
     SOVEREIGN_TERRITORIES,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 class MockContext:
@@ -101,7 +102,7 @@ def validate_tests_depth(project_root: Path) -> dict:
             continue
 
         rel = file_path.relative_to(project_root)
-        if rel.parts[0] != "tests":
+        if rel.parts[0] != TESTS_DIR:
             continue
 
         # [FIX] Depth = folder level where file resides, not path length
@@ -129,7 +130,7 @@ def validate_universal_depth(project_root: Path) -> dict:
             continue
 
         rel = file_path.relative_to(project_root)
-        if rel.parts[0] == "agentic_core":
+        if rel.parts[0] == AGENTIC_CORE_DIR:
             # [FIX] Depth = folder level where file resides, not path length
             depth = len(rel.parts) - 1  # Subtract 1 because file itself is not a level
             if depth != agentic_core_exact_depth:

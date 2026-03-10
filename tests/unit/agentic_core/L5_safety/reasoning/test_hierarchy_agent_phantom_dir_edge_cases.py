@@ -143,7 +143,6 @@ class TestFileInsideDepthAlignedDir:
         _call(agent, file_path, rel, depth=3, expected=3)
 
         agent._legacy_archive_depth_violation.assert_not_called()
-        assert True  # no-exception contract
 
     def test_file_in_depth_aligned_too_deep_healed_out(self, tmp_path):
         """
@@ -200,7 +199,6 @@ class TestExtremeBoundaries:
         _call(agent, file_path, rel, depth=20, expected=2)
 
         agent.gatekeeper.safe_move.assert_called_once()
-        assert True  # no-exception contract
 
     def test_extreme_depth_100_flattened_to_expected_depth(self, tmp_path):
         """depth=20, expected=2 → flattened target has exactly 3 parts (root/sub/file)."""
@@ -252,7 +250,6 @@ class TestExtremeBoundaries:
         _call(agent, file_path, rel, depth=0, expected=3)
 
         agent.gatekeeper.safe_move.assert_not_called()
-        assert True  # no-exception contract
 
     def test_extreme_shallow_depth_0_no_filesystem_mutation(self, tmp_path):
         """depth=0, expected=3 → no dirs created, file untouched."""
@@ -341,7 +338,6 @@ class TestStressHealDepthViolation:
             _call(agent, fp, rel, depth=1, expected=2)
 
         agent.gatekeeper.safe_move.assert_not_called()
-        assert True  # no-exception contract
 
     def test_stress_25_shallow_no_new_dirs_created(self, tmp_path):
         """25 SHALLOW files → no directories added by the healing calls."""
@@ -659,7 +655,6 @@ class TestAppsDepthAlignedBypassScenario:
         _call(agent, file_path, rel, depth=2, expected=2)
 
         agent._legacy_archive_depth_violation.assert_not_called()
-        assert True  # no-exception contract
 
     def test_apps_rg_depth_aligned_subfile_too_deep_is_detected(self, tmp_path):
         """

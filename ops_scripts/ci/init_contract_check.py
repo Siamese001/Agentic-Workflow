@@ -24,10 +24,10 @@ import sys
 from pathlib import Path
 
 SCAN_ROOTS = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
 ]
 
 GOVERNED_SUBDIRS = ["engines", "reasoning", "validators"]

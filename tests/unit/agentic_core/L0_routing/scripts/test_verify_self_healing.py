@@ -30,7 +30,6 @@ def test_checksum_immutability():
     else:
         print("⚠️  Sealed manifest not found")
         return False
-        assert True  # no-exception contract
 
 
 def test_unauthorized_agent_detection():
@@ -65,10 +64,9 @@ def test_unauthorized_agent_detection():
             print("❌ Tampering detection failed")
             return False
 
-    except Exception as e:  # guardian: allow-silent-swallower
+    except Exception as e:
         print(f"❌ Test failed: {e}")
-        return False
-        assert True  # no-exception contract
+        raise
 
 
 def test_testing_namespace_migration():
@@ -90,7 +88,6 @@ def test_testing_namespace_migration():
     else:
         print("✅ Legacy tests directory does not exist")
         return True
-        assert True  # no-exception contract
 
 
 def test_boot_performance():
@@ -116,10 +113,9 @@ def test_boot_performance():
             print(f"❌ Boot too slow: {total_time:.2f}s")
             return False
 
-    except Exception as e:  # guardian: allow-silent-swallower
+    except Exception as e:
         print(f"❌ Performance test failed: {e}")
-        return False
-        assert True  # no-exception contract
+        raise
 
 
 def test_manifest_guardian_core():
@@ -167,10 +163,9 @@ def test_manifest_guardian_core():
             print("❌ ManifestGuardian core functionality failed")
             return False
 
-    except Exception as e:  # guardian: allow-silent-swallower
+    except Exception as e:
         print(f"❌ ManifestGuardian test failed: {e}")
-        return False
-        assert True  # no-exception contract
+        raise
 
 
 def test_cryptographic_handshake_logic():
@@ -191,14 +186,14 @@ def test_cryptographic_handshake_logic():
                 handshake_success = True
             else:
                 handshake_success = False
-        except SystemExit:  # guardian: allow-silent-swallower
+        except SystemExit:
             handshake_success = False
 
         # Test failed handshake
         try:
             simulate_handshake(False)
             handshake_failure = False  # Should not reach here
-        except SystemExit:  # guardian: allow-silent-swallower
+        except SystemExit:
             handshake_failure = True  # Expected
 
         if handshake_success and handshake_failure:
@@ -208,10 +203,9 @@ def test_cryptographic_handshake_logic():
             print("❌ Cryptographic handshake logic failed")
             return False
 
-    except Exception as e:  # guardian: allow-silent-swallower
+    except Exception as e:
         print(f"❌ Handshake test failed: {e}")
-        return False
-        assert True  # no-exception contract
+        raise
 
 
 if __name__ == "__main__":

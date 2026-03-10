@@ -35,6 +35,11 @@ import os
 import threading
 import time
 from pathlib import Path
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+)
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 # [SSOT] Import exclusion patterns from the single source of truth
 try:
@@ -90,10 +95,10 @@ class SovereignIndex:
             "coverage_html",
             "htmlcov",
             ".coverage",
-            "reports",
-            "archives",
+            REPORTS_DIR,
+            ARCHIVES_DIR,
             ".sovereign_healing_backup",
-            "tests",  # Production Lens - exclude test files from healing scans
+            TESTS_DIR,  # Production Lens - exclude test files from healing scans
         }
     )
 

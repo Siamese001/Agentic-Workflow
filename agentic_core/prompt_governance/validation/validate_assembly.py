@@ -21,7 +21,7 @@ from pathlib import Path
 # Since this is now in agentic_core, we need to find the prompt-modules directory
 # relative to the repo root
 REPO_ROOT = Path(__file__).resolve().parents[4]
-PROMPT_MODULES_DIR = REPO_ROOT / "docs" / "reports" / "assessments" / "prompt-modules"
+PROMPT_MODULES_DIR = REPO_ROOT / "docs" / REPORTS_DIR / "assessments" / "prompt-modules"
 MANIFEST_PATH = PROMPT_MODULES_DIR / "modules.json"
 
 # Directories allowed to exist in prompt-modules/ without being in the manifest

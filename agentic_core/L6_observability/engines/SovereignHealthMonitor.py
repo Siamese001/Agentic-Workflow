@@ -83,8 +83,8 @@ class SovereignHealthMonitor:
             data = self.redis.get(f"sovereign_health:{domain}")
             if data:
                 return json.loads(data)
-        except Exception:
-            pass
+        except (AttributeError, json.JSONDecodeError) as e:
+            self.logger.debug(f"Failed to get health for {domain}: {e}")
         return None
 
     def get_health_history(self, limit: int = 100) -> list:
@@ -100,7 +100,8 @@ class SovereignHealthMonitor:
         try:
             snapshots = self.redis.lrange("sovereign_health_history", 0, limit - 1)
             return [json.loads(s) for s in snapshots]
-        except Exception:
+        except (AttributeError, json.JSONDecodeError) as e:
+            self.logger.debug(f"Failed to get health history: {e}")
             return []
 
     def get_total_fixes(self) -> int:
@@ -113,5 +114,6 @@ class SovereignHealthMonitor:
         try:
             total = self.redis.get("autonomous_fixes_total")
             return int(total) if total else 0
-        except Exception:
+        except (AttributeError, ValueError) as e:
+            self.logger.debug(f"Failed to get total fixes: {e}")
             return 0

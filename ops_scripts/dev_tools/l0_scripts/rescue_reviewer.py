@@ -46,7 +46,7 @@ class RescueReviewer:
     def _map_active_canon(self) -> dict[str, str]:
         """Map every active .py file hash to its current path"""
         hash_map = {}
-        targets = ["agentic_core", "apps_rg", "apps_lic", "apps_shared", "tests"]
+        targets = [AGENTIC_CORE_DIR, APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, TESTS_DIR]
         for folder in targets:
             path = self.root / folder
             if not path.exists():

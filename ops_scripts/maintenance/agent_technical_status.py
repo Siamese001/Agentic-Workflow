@@ -296,8 +296,7 @@ class NuclearAuditor:
             else:
                 return "[BROKEN]"
 
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             return "[ERROR]"
 
     def _check_mixin_compliance(self, class_node: ast.ClassDef) -> str:

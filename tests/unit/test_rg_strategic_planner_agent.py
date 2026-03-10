@@ -78,7 +78,6 @@ class TestRgStrategicPlannerAgent:
                 pass  # Would test actual processing
             except (TypeError, ValueError, AttributeError):  # guardian: allow-silent-swallower
                 pass  # Expected for invalid inputs
-                assert True  # no-exception contract
 
     def test_no_network_calls_on_import(self):
         """Verify no network calls during import."""

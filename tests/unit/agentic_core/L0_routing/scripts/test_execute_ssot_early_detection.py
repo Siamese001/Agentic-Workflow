@@ -175,13 +175,9 @@ class TestPhase1EarlyDetectionIntegration:
         mock_state_mgr = MagicMock()
         mock_state_mgr.state = {}
 
-        # Simulate error scenario
-        try:
-            raise Exception("Test error")
-        except Exception:  # guardian: allow-silent-swallower
-            # Error handling should set empty lists
-            mock_state_mgr.state["classification_violations"] = []
-            mock_state_mgr.state["classification_scan_result"] = {}
+        # Simulate error scenario: set empty state as error handling would
+        mock_state_mgr.state["classification_violations"] = []
+        mock_state_mgr.state["classification_scan_result"] = {}
 
         assert mock_state_mgr.state["classification_violations"] == []
         assert mock_state_mgr.state["classification_scan_result"] == {}

@@ -25,7 +25,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).parent.parent.parent
-EVIDENCE_PATH = REPO_ROOT / "docs" / "reports" / "plans" / "adg_implementation_evidence.md"
+EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "adg_implementation_evidence.md"
 
 PHASE_TITLE = "ADG System Implementation"
 

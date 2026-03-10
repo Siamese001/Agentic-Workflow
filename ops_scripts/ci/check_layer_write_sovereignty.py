@@ -12,8 +12,8 @@ from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 WRITE_LAYERS = [
-    "agentic_core/L0_routing",
-    "agentic_core/L4_state",  # if present
+    L0_MAINTENANCE_DIR,
+    L4_STATE_DIR,  # if present
     "L6_observability",
 ]
 

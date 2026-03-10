@@ -1,4 +1,9 @@
 #!/usr/bin/env python3
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_SHARED_DIR,
+    APPS_RG_DIR,
+)
 """
 SSOT: Territory Name Definitions
 =================================
@@ -148,11 +153,11 @@ def get_territory_from_path(layer: str, path_str: str, is_base_class: bool, clas
         return get_base_agent_territory(layer)
 
     # Apps territories
-    if "apps_lic" in path_str:
+    if APPS_LIC_DIR in path_str:
         return TERRITORY_APPS_LIC
-    elif "apps_rg" in path_str:
+    elif APPS_RG_DIR in path_str:
         return TERRITORY_APPS_RG
-    elif "apps_shared" in path_str:
+    elif APPS_SHARED_DIR in path_str:
         return TERRITORY_APPS_SHARED
 
     # Utils territory

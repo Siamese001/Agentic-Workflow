@@ -57,8 +57,9 @@ def _collect_execute_calls() -> tuple[list[str], list[str]]:
                         present.append(f"{rel}:{node.lineno}")
                     else:
                         missing.append(f"{rel}:{node.lineno}  kwargs={kws}")
-            except Exception:
-                pass
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                # Skip files with parse errors - not relevant to agent_id check
+                continue
     return missing, present
 
 

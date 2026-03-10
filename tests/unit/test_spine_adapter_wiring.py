@@ -192,12 +192,10 @@ class TestVigilanceDispatcherAdapter:
     def test_dispatch_does_not_raise(self):
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch(trace_id="t1", signals=("sig_a",), summary="test dispatch")
-        assert True  # no-exception contract
 
     def test_dispatch_with_no_kwargs_does_not_raise(self):
         adapter = VigilanceDispatcherAdapter()
         adapter.dispatch()
-        assert True  # no-exception contract
 
     def test_dispatch_enqueues_event_when_real(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import _drain_event_queue
@@ -216,7 +214,6 @@ class TestVigilanceDispatcherAdapter:
         # Pass None as trace_id to trigger potential conversion errors
         # Must not raise
         adapter.dispatch(trace_id=None, signals=None, summary=None)
-        assert True  # no-exception contract
 
     def test_event_queue_bounded(self):
         from apps_shared.spine.vigilance_dispatcher_adapter import _EVENT_QUEUE, _drain_event_queue

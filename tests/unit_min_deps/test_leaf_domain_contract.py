@@ -72,7 +72,7 @@ def _get_declared_subfolders(domain: str) -> set[str]:
         if "optional_subfolders" in domain_def:
             declared.update(domain_def["optional_subfolders"])
         return declared
-    except Exception:
+    except (OSError, json.JSONDecodeError, KeyError):
         return set()
 
 

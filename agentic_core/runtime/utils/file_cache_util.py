@@ -36,6 +36,7 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -101,7 +102,7 @@ class FileCache:
 
         # Walk up looking for project markers
         for parent in [current] + list(current.parents):
-            if (parent / AGENTIC_CORE_DIR).is_dir() and (parent / "tests").is_dir():
+            if (parent / AGENTIC_CORE_DIR).is_dir() and (parent / TESTS_DIR).is_dir():
                 return parent
             if (parent / "pyproject.toml").exists():
                 return parent

@@ -60,14 +60,14 @@ SSOT_TARGETS: dict[str, str] = {
 
 # Folders to scan (SOVEREIGN_TERRITORIES with executable code or docs)
 SCAN_ROOTS: list[str] = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "ops_scripts",
-    "tests",
-    "tools",
-    "system_learning",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+    SYSTEM_LEARNING_DIR,
     "data",
     "docs",
 ]
@@ -188,7 +188,7 @@ def scan_file(file_path: Path, project_root: Path) -> list[dict]:
         tree = ast.parse(source, filename=str(file_path))
     except SyntaxError:
         return []
-    except Exception:
+    except (OSError, UnicodeDecodeError):
         return []
 
     source_lines = source.splitlines()

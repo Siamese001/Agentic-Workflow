@@ -200,7 +200,6 @@ class TestPhase3Alignment:
                 mod.execute_phase3_alignment_impl(agents, "neutral", de, sm)
 
         sm.add_event.assert_called()
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -280,7 +279,6 @@ class TestPhase4Validation:
                 mod.execute_phase4_validation_impl(agents, "L0_routing", sm)
 
         arch_inst.check_file_sizes.assert_called_once_with("L0_routing")
-        assert True  # no-exception contract
 
     def test_l_layer_size_violations_logged_as_warnings(self, mod):
         sm = _make_state_mgr()
@@ -319,7 +317,6 @@ class TestPhase4Validation:
                     mod.execute_phase4_validation_impl(agents, territory, sm)
 
             arch_inst.check_file_sizes.assert_called_once(), f"check_file_sizes not called for {territory}"
-            assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -491,7 +488,6 @@ class TestPhase5Healing:
                 )
 
         sm.complete_agent.assert_called()
-        assert True  # no-exception contract
 
 
 # ===========================================================================
@@ -550,7 +546,6 @@ class TestPhaseMatrix:
             healer_inst.heal_repository.assert_called()
         else:
             healer_inst.heal_repository.assert_not_called()
-            assert True  # no-exception contract
 
     @pytest.mark.parametrize(
         "heal,proceed,requires_healing,expect_healer",
@@ -600,4 +595,3 @@ class TestPhaseMatrix:
             arch_inst.heal_repository.assert_called()
         else:
             arch_inst.heal_repository.assert_not_called()
-            assert True  # no-exception contract

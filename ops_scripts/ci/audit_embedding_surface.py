@@ -39,7 +39,7 @@ EMBEDDING_FACTORY_PATH = "system_learning/engines/embedding_service_factory.py"
 ALLOWLIST_MODULES = {
     "data/sdks_mcps/client_wrappers",
     "system_learning/engines/embedding_service_factory",
-    "tests",
+    TESTS_DIR,
     "ops_scripts/ci",
 }
 

@@ -44,7 +44,7 @@ def scan_forbidden_tokens(file_path: Path, forbidden_tokens: list[str]) -> list[
 def main():
     """Generate Phase 11 L1 Telemetry Emitter evidence bundle."""
     repo_root = get_repo_root()
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase11_l1_telemetry_emitter_evidence.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase11_l1_telemetry_emitter_evidence.md"
 
     # Ensure evidence directory exists
     evidence_file.parent.mkdir(parents=True, exist_ok=True)

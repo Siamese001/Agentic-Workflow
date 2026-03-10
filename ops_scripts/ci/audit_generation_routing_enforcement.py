@@ -22,7 +22,7 @@ ALLOWLIST_MODULES = {
     "agentic_core/L2_execution/enforcement/SovereignLLMGateway",
     "agentic_core/config/core",
     "ops_scripts/ci",
-    "tests",
+    TESTS_DIR,
 }
 
 FORBIDDEN_IMPORTS = {
@@ -73,7 +73,7 @@ class GenerationRoutingScanner(ast.NodeVisitor):
                 return True
 
         # Check test files
-        if "tests" in str(abs_path):
+        if TESTS_DIR in str(abs_path):
             return True
 
         return False

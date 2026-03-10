@@ -133,11 +133,9 @@ class TestReplayGuardRandom:
 
 class TestReplayGuardContextManager:
     def test_exception_in_context_restores_patches(self, tmp_path) -> None:
-        try:
+        with pytest.raises(ValueError, match="test error"):
             with ReplayGuard():
                 raise ValueError("test error")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         # Patching should be fully restored
         path = tmp_path / "recovery.txt"
         with open(str(path), "w") as f:

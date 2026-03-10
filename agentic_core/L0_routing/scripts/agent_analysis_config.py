@@ -24,6 +24,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 @dataclass
@@ -305,7 +306,7 @@ if __name__ == "__main__":
     # [HYGIENE] Removed debug print: print(report)
 
     # Also save to file
-    report_path = project_root / AGENTIC_CORE_DIR / "L0_routing" / "reports" / "cache_first_hardening.txt"
+    report_path = project_root / AGENTIC_CORE_DIR / "L0_routing" / REPORTS_DIR / "cache_first_hardening.txt"
     report_path.parent.mkdir(parents=True, exist_ok=True)
     assert_no_persistent_write("L0", "write_text")  # G-12-1: mutation prohibition guard
     report_path.write_text(report, encoding="utf-8")

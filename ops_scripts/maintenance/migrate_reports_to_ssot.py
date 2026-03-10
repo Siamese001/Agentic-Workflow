@@ -85,7 +85,7 @@ class ReportMigrator:
         self.pilot_count = pilot_count
         self.validator = ReportLocationValidator(self.project_root)
         self.manifest: MigrationManifest | None = None
-        self.manifest_dir = self.project_root / "docs" / "reports" / ".migration"
+        self.manifest_dir = self.project_root / "docs" / REPORTS_DIR / ".migration"
 
     def is_git_tracked(self, file_path: Path) -> bool:
         """Check if a file is tracked by git."""
@@ -125,7 +125,7 @@ class ReportMigrator:
 
     def backup_file(self, file_path: Path) -> Path | None:
         """Create a backup of a file before migration."""
-        backup_dir = self.project_root / ".sovereign_healing_backup" / "reports"
+        backup_dir = self.project_root / ".sovereign_healing_backup" / REPORTS_DIR
         backup_dir.mkdir(parents=True, exist_ok=True)
 
         try:

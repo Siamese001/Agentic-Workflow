@@ -467,7 +467,7 @@ class RGAgentBase(SemanticCacheMixin, AppBase):
         # Check domain field if present (both "domain" and "_domain" metadata)
         domain_value = pattern.get("domain") or pattern.get("_domain")
         if domain_value:
-            if domain_value != "apps_rg":
+            if domain_value != APPS_RG_DIR:
                 Logger.warning(f"[{self.__class__.__name__}] Rejected cross-domain pattern: {domain_value}")
                 return False
         return True

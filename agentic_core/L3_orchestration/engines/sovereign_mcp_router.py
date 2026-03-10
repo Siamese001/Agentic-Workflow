@@ -125,9 +125,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             # guardian: allow-silent-swallow
                             except Exception as wiki_e:
                                 Logger.warning(f"[L2 DEEPWIKI] Q&A failed: {wiki_e}")
-                # guardian: allow-silent-swallow
-                except Exception:
-                    pass
+                except (ImportError, AttributeError) as e:
+                    Logger.debug(f"DeepWiki MCP unavailable: {e}")
             elif key_id in {42, 49} and "ui" in violation_desc.lower():
                 try:
                     ValidationContext = self._get_ValidationContext()
@@ -145,9 +144,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                             # guardian: allow-silent-swallow
                             except Exception as figma_e:
                                 Logger.warning(f"[L2 FIGMA] Token extraction failed: {figma_e}")
-                # guardian: allow-silent-swallow
-                except Exception:
-                    pass
+                except (ImportError, AttributeError) as e:
+                    Logger.debug(f"Figma MCP unavailable: {e}")
             if key_id in {40, 41, 42, 49}:
                 try:
                     template_key: Any = f"seq_template:key{key_id}"
@@ -157,9 +155,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                         if cached:
                             cached_template: Any = json.loads(cached)
                             Logger.info(f"[L1 CACHE HIT] Using proven template for Key {key_id}")
-                    # guardian: allow-silent-swallow
-                    except Exception:
-                        pass
+                    except (json.JSONDecodeError, AttributeError) as e:
+                        Logger.debug(f"Cache retrieval failed: {e}")
                     reasoning_result: Any = await self.manager.call_tool(
                         "sequential_thinking",
                         {
@@ -178,9 +175,8 @@ class SovereignMcpRouter(SovereignBaseAgent):
                                 json.dumps(reasoning_result.get("steps", [])),
                                 ex=60 * 60 * 24 * 30,
                             )
-                        # guardian: allow-silent-swallow
-                        except Exception:
-                            pass
+                        except (AttributeError, TypeError) as e:
+                            Logger.debug(f"Cache write failed: {e}")
                     return {
                         "status": "l1_sequential",
                         "tool": "sequential_thinking",

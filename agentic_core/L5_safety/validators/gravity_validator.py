@@ -490,14 +490,14 @@ class UnifiedSSOTValidator:
     def _extract_target_layer(self, node: ast.AST) -> str | None:
         """Extract target layer from import statement."""
         if isinstance(node, ast.ImportFrom):
-            if node.module and "agentic_core" in node.module:
+            if node.module and AGENTIC_CORE_DIR in node.module:
                 parts = node.module.split(".")
                 for part in parts:
                     if part.startswith("L") and len(part) >= 2 and part[1].isdigit():
                         return part[:2]
         elif isinstance(node, ast.Import):
             for alias in node.names:
-                if "agentic_core" in alias.name:
+                if AGENTIC_CORE_DIR in alias.name:
                     parts = alias.name.split(".")
                     for part in parts:
                         if part.startswith("L") and len(part) >= 2 and part[1].isdigit():

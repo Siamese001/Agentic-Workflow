@@ -8,6 +8,7 @@ from __future__ import annotations
 
 from dataclasses import dataclass
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
 @dataclass
@@ -65,7 +66,7 @@ class L5Guardian:
             "pinecone_query",
             "pinecone_upsert",
         }
-        self.file_scope_whitelist = {"/tmp", "/workspace", "agentic_core"}
+        self.file_scope_whitelist = {"/tmp", "/workspace", AGENTIC_CORE_DIR}
         # guardian: allow-magic_configuration - Token budget configured externally in production
         self.token_budget = 1000000
         self.agent_permissions = {

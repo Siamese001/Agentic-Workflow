@@ -419,7 +419,7 @@ class FilesystemSSOTReconcilerAgent(
             )
 
             # Logic: If territory is a root (apps_lic), scan only that. Else target agentic_core.
-            if target_territory in SOVEREIGN_TERRITORIES and target_territory != "agentic_core":
+            if target_territory in SOVEREIGN_TERRITORIES and target_territory != AGENTIC_CORE_DIR:
                 roots_to_scan = [target_territory]
             else:
                 roots_to_scan = [AGENTIC_CORE_DIR]
@@ -445,7 +445,7 @@ class FilesystemSSOTReconcilerAgent(
                     l1_folders.add(item.name)
 
                     # For agentic_core, scan L2 subfolders
-                    if root == "agentic_core":
+                    if root == AGENTIC_CORE_DIR:
                         l2_folders = set()
                         for subitem in item.iterdir():
                             if subitem.is_dir() and not subitem.name.startswith((".", "__")):
@@ -503,7 +503,7 @@ class FilesystemSSOTReconcilerAgent(
         from agentic_core.utils.ssot_discovery_validator import get_agent_files
 
         for py_file in get_agent_files(agentic_core):
-            if any(skip in py_file.parts for skip in ["__pycache__", ".git", "archives"]):
+            if any(skip in py_file.parts for skip in ["__pycache__", ".git", ARCHIVES_DIR]):
                 continue
 
             try:
@@ -1469,6 +1469,11 @@ class FilesystemSSOTReconcilerAgent(
                 return {"drift_detected": True, "forbidden": len(forbidden), "applied": False}
             # Execute: archive forbidden root folders
             from agentic_core.L5_safety.enforcement.archival_gatekeeper_gate import ArchivalGatekeeper
+            from agentic_core.L0_routing.config.path_constants import (
+                AGENTIC_CORE_DIR,
+                ARCHIVES_DIR,
+    AGENTIC_CORE_DIR,
+            )
 
             gk = ArchivalGatekeeper.get_instance(self.project_root)
             archived = 0

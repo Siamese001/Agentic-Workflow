@@ -72,6 +72,10 @@ from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 
 Logger: Any = logging.getLogger(__name__)
 LOGGER = Logger  # Alias for compatibility
@@ -384,11 +388,11 @@ class GovernanceAgent(SovereignBaseAgent):
         self.MAX_NESTING_SPACES = 40
         self.stats = {"files_checked": 0, "violations_found": 0, "files_sanitized": 0}
         self.sovereign_dirs = {
-            "agentic_core",
+            AGENTIC_CORE_DIR,
             "schemas",
             "scripts",
             "docs",
-            "tests",
+            TESTS_DIR,
             "config",
             "data",
             "cache",

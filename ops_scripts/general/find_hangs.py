@@ -15,6 +15,13 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).parent.parent
@@ -39,7 +46,7 @@ def try_import_module(module_path: str) -> tuple[str, str, float]:
         __import__(module_name)
         duration = time.time() - start
         return (module_path, "OK", duration)
-    except Exception as e:
+    except (ImportError, AttributeError, SyntaxError, ValueError, TypeError) as e:
         duration = time.time() - start
         return (module_path, f"ERROR: {type(e).__name__}: {str(e)[:100]}", duration)
 
@@ -69,7 +76,7 @@ def import_with_timeout(module_path: str, timeout: float = 2.0) -> tuple[str, st
 
     try:
         return queue.get_nowait()
-    except:
+    except (queue.Empty, OSError):
         return (module_path, "UNKNOWN", 0.0)
 
 
@@ -112,7 +119,7 @@ def has_top_level_execution(file_path: Path) -> list[str]:
                                 attr = node.value.func.attr
                                 if attr in ("connect", "setup", "configure", "getLogger"):
                                     suspicious.append(f"Top-level: {name} = ...{attr}()")
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError) as e:
         suspicious.append(f"Parse error: {e}")
 
     return suspicious
@@ -128,7 +135,7 @@ def find_all_python_files(root: Path) -> list[Path]:
         if any(excl in path.parts for excl in exclude_dirs):
             continue
         # Skip test files for now
-        if "tests" in path.parts:
+        if TESTS_DIR in path.parts:
             continue
         files.append(path)
 
@@ -173,7 +180,7 @@ def main():
     print("-" * 60)
 
     # Focus on agentic_core and apps_* directories
-    priority_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    priority_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
     priority_files = [f for f in all_files if any(d in f.parts for d in priority_dirs)]
 
     print(f"Testing {len(priority_files)} priority files...")

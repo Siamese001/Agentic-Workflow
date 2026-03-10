@@ -38,11 +38,9 @@ class TestValidateLedgerChain:
         append_with_hash(entries, {"op": "write", "file": "a.py"})
         append_with_hash(entries, {"op": "write", "file": "b.py"})
         validate_ledger_chain(entries)
-        assert True  # no-exception contract
 
     def test_empty_chain_passes(self):
         validate_ledger_chain([])
-        assert True  # no-exception contract
 
     def test_tampered_hash_raises(self):
         entries: list = []
@@ -89,8 +87,6 @@ class TestValidateLedgerFile:
             for e in entries:
                 f.write(json.dumps(e) + "\n")
         validate_ledger_file(ledger_path)
-        assert True  # no-exception contract
 
     def test_nonexistent_file_passes_silently(self, tmp_path):
         validate_ledger_file(tmp_path / "nonexistent.jsonl")
-        assert True  # no-exception contract

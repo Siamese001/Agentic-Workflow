@@ -22,6 +22,10 @@ from typing import Any
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
 from agentic_core.mixins.subatomic_testing_mixin import subatomic_testing_mixin
 from agentic_core.utils.timeout_decorator_util import timeout
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+)
 
 try:
     from agentic_core.mixins.mcp_hardened_mixin import mcp_hardened_mixin  # noqa: F401
@@ -256,7 +260,7 @@ class DDDAlignmentAgent(SovereignBaseAgent):
             self.project_root = Path(self.project_root).resolve()
 
         self.violations: list[DDDViolation] = []
-        self._skip_patterns = {"tests", "archives", "__pycache__", ".git", "venv", ".venv"}
+        self._skip_patterns = {TESTS_DIR, ARCHIVES_DIR, "__pycache__", ".git", "venv", ".venv"}
 
     def heal(self, violation: dict[str, Any]) -> dict[str, Any]:
         """

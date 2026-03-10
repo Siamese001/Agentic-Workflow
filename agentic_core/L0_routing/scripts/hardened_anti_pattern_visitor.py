@@ -185,7 +185,7 @@ def main():
         if not path.exists():
             continue
         for py_file in path.rglob("*.py"):
-            if "archives" in str(py_file) or "__pycache__" in str(py_file):
+            if ARCHIVES_DIR in str(py_file) or "__pycache__" in str(py_file):
                 continue
             try:
                 tree = ast.parse(py_file.read_text(encoding="utf-8"))

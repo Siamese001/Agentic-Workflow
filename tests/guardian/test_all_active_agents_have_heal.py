@@ -13,7 +13,7 @@ from pathlib import Path
 import pytest
 
 DISCOVERY_JSON = (
-    Path(__file__).resolve().parents[2] / "docs" / "reports" / "plans" / "v54_discovery_wave14.json"
+    Path(__file__).resolve().parents[2] / "docs" / REPORTS_DIR / "plans" / "v54_discovery_wave14.json"
 )
 
 

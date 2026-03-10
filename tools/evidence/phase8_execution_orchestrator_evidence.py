@@ -8,6 +8,7 @@ import sys
 from pathlib import Path
 
 from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR, get_validated_project_root
+from agentic_core.L5_safety.config.structure_blueprint.ssot import TESTS_UNIT_DIR
 
 
 def get_repo_root() -> Path:
@@ -44,7 +45,7 @@ def scan_forbidden_tokens(file_path: Path, forbidden_tokens: list[str]) -> list[
 def main():
     """Generate Phase 8 Execution Orchestrator evidence bundle."""
     repo_root = get_repo_root()
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase8_execution_orchestrator_evidence.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase8_execution_orchestrator_evidence.md"
 
     # Ensure evidence directory exists
     evidence_file.parent.mkdir(parents=True, exist_ok=True)
@@ -93,7 +94,7 @@ def main():
     sections.append("# All Unit Tests\n")
     sections.append("```")
     sections.append(
-        run_command([sys.executable, "-m", "pytest", "-q", "tests/unit", "-m", "unit"], repo_root)
+        run_command([sys.executable, "-m", "pytest", "-q", TESTS_UNIT_DIR, "-m", "unit"], repo_root)
     )
     sections.append("```\n\n")
 

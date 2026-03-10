@@ -61,7 +61,7 @@ class ManifestManager(MCPHardenedMixin, HealerMixin):
             with open(target_file, "w", encoding="utf-8") as f:
                 json.dump(data, f, indent=2)
             return target_file
-        except Exception:
+        except (OSError, TypeError) as e:
             raise
 
     def load_manifest(self, manifest_id: str) -> dict[str, Any]:

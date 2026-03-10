@@ -31,10 +31,10 @@ def test_ssot_import():
     print("\n[TEST 1] SSOT Import Test")
     try:
         # Verify ARCHIVES_DIR value
-        assert ARCHIVES_DIR == "archives", f"Expected 'archives', got '{ARCHIVES_DIR}'"
+        assert ARCHIVES_DIR == ARCHIVES_DIR, f"Expected 'archives', got '{ARCHIVES_DIR}'"
 
         # Verify ArchivalGatekeeper uses correct name
-        assert ArchivalGatekeeper.ARCHIVE_ROOT_NAME == "archives", (
+        assert ArchivalGatekeeper.ARCHIVE_ROOT_NAME == ARCHIVES_DIR, (
             f"Expected 'archives', got '{ArchivalGatekeeper.ARCHIVE_ROOT_NAME}'"
         )
 
@@ -60,11 +60,11 @@ def test_path_resolution():
         # Verify path contains 'archives' not '.archive'
         archive_path = str(gatekeeper.archive_root)
 
-        assert "archives" in archive_path, f"'archives' not in path: {archive_path}"
+        assert ARCHIVES_DIR in archive_path, f"'archives' not in path: {archive_path}"
         assert ".archive" not in archive_path, f"'.archive' found in path: {archive_path}"
         assert "gatekeeper" in archive_path, f"'gatekeeper' not in path: {archive_path}"
 
-        expected = project_root / "archives" / "gatekeeper"
+        expected = project_root / ARCHIVES_DIR / "gatekeeper"
         assert gatekeeper.archive_root == expected, f"Expected {expected}, got {gatekeeper.archive_root}"
 
         print("  ✅ PASS: Archive root resolves correctly")
@@ -81,7 +81,7 @@ def test_exclusion_logic():
     """Test 3: Verify archives/ is in SOVEREIGN_EXCLUDED_FOLDERS."""
     print("\n[TEST 3] Exclusion Logic Test")
     try:
-        assert "archives" in SOVEREIGN_EXCLUDED_FOLDERS, "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
+        assert ARCHIVES_DIR in SOVEREIGN_EXCLUDED_FOLDERS, "'archives' not in SOVEREIGN_EXCLUDED_FOLDERS"
 
         print("  ✅ PASS: 'archives' is in SOVEREIGN_EXCLUDED_FOLDERS")
         print(f"     SOVEREIGN_EXCLUDED_FOLDERS = {sorted(SOVEREIGN_EXCLUDED_FOLDERS)}")

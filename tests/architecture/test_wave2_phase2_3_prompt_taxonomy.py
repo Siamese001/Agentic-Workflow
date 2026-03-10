@@ -63,6 +63,7 @@ from tools.semantic_gap_analyzer import (
     _report_slot_status,
     _slot_coverage_score,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 # ---------------------------------------------------------------------------
 # Helpers
@@ -91,7 +92,7 @@ def _no_slots_hit() -> dict:
 
 
 def _make_analysis(source: str) -> FileAnalysis:
-    tmp = REPO_ROOT / "tests" / "architecture" / "_tmp_prompt_tax_test.py"
+    tmp = REPO_ROOT / TESTS_DIR / "architecture" / "_tmp_prompt_tax_test.py"
     tmp.write_text(dedent(source), encoding="utf-8")
     try:
         aa = ASTAnalyzer(AGENTIC_CORE)

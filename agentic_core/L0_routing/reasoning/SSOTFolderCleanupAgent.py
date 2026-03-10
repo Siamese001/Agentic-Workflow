@@ -25,9 +25,15 @@ import re
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    ARCHIVES_DIR,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L5_safety.config.structure_blueprint.ssot import (
+    REPORTS_DIR,
+    SOVEREIGN_EXCLUDED_FOLDERS,
+)
 
 Logger = logging.getLogger(__name__)
 
@@ -152,7 +158,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
         self.approved_paths.add(ARCHIVES_DIR)
         self.approved_paths.add("data")
         self.approved_paths.add("docs")
-        self.approved_paths.add("reports")
+        self.approved_paths.add(REPORTS_DIR)
 
     def _get_cognitive_agent(self):
         """Lazy-load CognitiveDispositionAgent."""
@@ -208,7 +214,7 @@ class SSOTFolderCleanupAgent(SovereignBaseAgent):
             return False
 
         # For agentic_core, we need stricter checking
-        if parts[0] == "agentic_core" and len(parts) >= 2:
+        if parts[0] == AGENTIC_CORE_DIR and len(parts) >= 2:
             layer = parts[1]
 
             # Check if layer is valid

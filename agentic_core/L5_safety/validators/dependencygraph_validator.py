@@ -321,8 +321,8 @@ class ValidationContext:
                 self._client = genai.Client(api_key=api_key)
                 self.intelligence_enabled = True
                 print("      [OK] Gemini Connected")
-            except Exception:
-                pass
+            except (ImportError, AttributeError, ValueError) as e:
+                print(f"      [WARN] Gemini unavailable: {type(e).__name__}")
 
     def _load_memory(self):
         if self.memory_file.exists():
@@ -331,15 +331,15 @@ class ValidationContext:
                     data = json.load(f)
                     self.file_hashes = data.get("hashes", {})
                     self.skip_files = set(data.get("skip", []))
-            except Exception:
-                pass
+            except (OSError, json.JSONDecodeError) as e:
+                print(f"      [DEBUG] Failed to load memory: {e}")
 
     def _save_memory(self):
         try:
             data = {"hashes": self.file_hashes, "skip": list(self.skip_files)}
             _wg.write_json(self.memory_file, data, indent=2)
-        except Exception:
-            pass
+        except (OSError, TypeError) as e:
+            print(f"      [DEBUG] Failed to save memory: {e}")
 
     def report(self, agent: str, key: int, passed: bool, details: Any):
         self.results[key] = {"passed": passed, "details": details, "agent": agent}
@@ -350,7 +350,7 @@ class ValidationContext:
         try:
             with open(file_path, encoding="utf-8") as f:
                 return f.read()
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             return ""
 
     def write_compliant_file(self, path: str, content: str) -> bool:
@@ -361,7 +361,8 @@ class ValidationContext:
             _wg.makedirs(os.path.dirname(path), exist_ok=True)
             _wg.open_write(path, content)
             return True
-        except Exception:
+        except (OSError, TypeError) as e:
+            print(f"      [DEBUG] Failed to write file {path}: {e}")
             return False
 
     @property
@@ -390,7 +391,7 @@ class ValidationContext:
             )
             await self.budget.track(prompt, response.text)
             return _clean_llm_code(response.text)  # Refactored
-        except Exception as e:
+        except (ImportError, AttributeError, TypeError, ValueError) as e:
             print(f"   [{agent_name}] Mutation failed: {e}")
             return code
 
@@ -435,7 +436,7 @@ class ValidationContext:
                 try:
                     _wg.open_write(file_path, content)
                     print(f"   ↩️ Rolled back: {file_path}")
-                except Exception as e:
+                except (OSError, TypeError) as e:
                     print(f"   [!] Rollback failed for {file_path}: {e}")
             self.file_backups.clear()
 

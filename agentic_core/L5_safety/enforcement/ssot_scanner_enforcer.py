@@ -16,6 +16,7 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
 @dataclass
@@ -153,7 +154,7 @@ class SSOTScanner:
         parts = relative_path.parts
 
         # Check if in agentic_core
-        if parts[0] == "agentic_core" and len(parts) > 1:
+        if parts[0] == AGENTIC_CORE_DIR and len(parts) > 1:
             folder = parts[1]
             return self.LAYER_ASSIGNMENTS.get(folder, "UNKNOWN")
 
@@ -177,7 +178,7 @@ class SSOTScanner:
         parts = relative_path.parts
 
         # Check if in agentic_core
-        if parts[0] == "agentic_core" and len(parts) > 1:
+        if parts[0] == AGENTIC_CORE_DIR and len(parts) > 1:
             folder = parts[1]
 
             # Direct layer folders

@@ -7,7 +7,11 @@ Goal: 100% test coverage for all agents.
 import json
 from pathlib import Path
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR, get_validated_project_root
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    get_validated_project_root,
+)
 
 _ROOT = get_validated_project_root()
 
@@ -119,7 +123,7 @@ for agent in agents_without_tests:
     # Determine test directory based on agent location
     path_parts = agent_path.replace("\\", "/").split("/")
 
-    if path_parts[0] == "agentic_core":
+    if path_parts[0] == AGENTIC_CORE_DIR:
         # For agentic_core agents, put tests in tests/unit/agentic_core/
         test_dir = Path("tests/unit/agentic_core")
         if len(path_parts) > 2:

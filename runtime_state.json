@@ -1,9 +1,9 @@
 {
   "status": "running",
-  "start_time": "2026-03-09T21:17:06.328145",
+  "start_time": "2026-03-09T21:48:16.276803",
   "end_time": null,
-  "current_agent": "FileClassificationHealerAgent",
-  "current_layer": "L5 - Safety (Validator)",
+  "current_agent": "LocationHealerAgent",
+  "current_layer": "L5 - Safety",
   "agents_order": [
     "L0_routing",
     "L2_execution",
@@ -25,871 +25,278 @@
   "completed_agents": [
     {
       "agent": "RootHygieneAgent",
-      "time": "2026-03-09T21:17:11.133503",
-      "success": true,
-      "details": "Violations: 1 (high: 0) fixed: 0"
+      "time": "2026-03-09T21:48:16.764075",
+      "success": false,
+      "details": "CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
       "agent": "GravityValidatorAgent",
-      "time": "2026-03-09T21:17:17.796377",
-      "success": true,
-      "details": "Scanned: 11 gravity violation(s) found"
+      "time": "2026-03-09T21:48:16.767589",
+      "success": false,
+      "details": "Detection failed: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
       "agent": "GravityLeakHealerAgent",
-      "time": "2026-03-09T21:17:17.796377",
-      "success": true,
-      "details": "Violations: 11 | Fixed: 0"
+      "time": "2026-03-09T21:48:16.767589",
+      "success": false,
+      "details": "Detection failed: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:18.052141",
+      "time": "2026-03-09T21:48:17.020502",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:18.054674",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:18.054674",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:18.309652",
+      "time": "2026-03-09T21:48:18.023595",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:18.311175",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:18.311175",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:18.564614",
+      "time": "2026-03-09T21:48:20.027162",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:18.566151",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:18.566656",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:18.821930",
+      "time": "2026-03-09T21:48:24.283979",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:18.823935",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:18.823935",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:19.076311",
+      "time": "2026-03-09T21:48:25.287122",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:19.091776",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:19.092780",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:19.348261",
+      "time": "2026-03-09T21:48:27.289929",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:19.367565",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:19.368092",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:19.621207",
+      "time": "2026-03-09T21:48:31.543670",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:19.647674",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:19.647674",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:19.899618",
+      "time": "2026-03-09T21:48:32.546141",
       "success": true,
       "details": "Drift violations: 1"
     },
     {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:20.263613",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:20.264152",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
       "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:20.514807",
+      "time": "2026-03-09T21:48:34.549297",
       "success": true,
       "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:20.521855",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:20.521855",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:20.778397",
-      "success": true,
-      "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:33.961031",
-      "success": true,
-      "details": "Violations: 2 | Conf: 0.69 (healing skipped)"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:33.961031",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:34.258181",
-      "success": true,
-      "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:34.270865",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:34.270865",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:34.541912",
-      "success": true,
-      "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:34.545535",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:34.546047",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:34.813407",
-      "success": true,
-      "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:34.817553",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:34.817553",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "time": "2026-03-09T21:17:35.083891",
-      "success": true,
-      "details": "Drift violations: 1"
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "time": "2026-03-09T21:17:35.102193",
-      "success": true,
-      "details": "Violations: 0 | Conf: 1.00"
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "time": "2026-03-09T21:17:35.102193",
-      "success": true,
-      "details": "Early detection: 0 classification issues"
     }
   ],
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-09T21:17:06.328145",
+      "time": "2026-03-09T21:48:16.276803",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-09T21:17:11.131172",
+      "time": "2026-03-09T21:48:16.761474",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     },
     {
-      "time": "2026-03-09T21:17:11.133503",
-      "type": "agent_end",
-      "message": "✓ Completed RootHygieneAgent"
+      "time": "2026-03-09T21:48:16.764075",
+      "type": "error",
+      "message": "RootHygieneAgent failed: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
-      "time": "2026-03-09T21:17:11.133503",
+      "time": "2026-03-09T21:48:16.764075",
+      "type": "agent_end",
+      "message": "❌ Completed RootHygieneAgent"
+    },
+    {
+      "time": "2026-03-09T21:48:16.764075",
       "type": "agent_start",
       "message": "→ Executing GravityLeakHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:17.796377",
+      "time": "2026-03-09T21:48:16.767589",
       "type": "agent_end",
-      "message": "✓ Completed GravityValidatorAgent"
+      "message": "❌ Completed GravityValidatorAgent"
     },
     {
-      "time": "2026-03-09T21:17:17.796377",
+      "time": "2026-03-09T21:48:16.767589",
       "type": "agent_end",
-      "message": "✓ Completed GravityLeakHealerAgent"
+      "message": "❌ Completed GravityLeakHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.050586",
+      "time": "2026-03-09T21:48:17.019482",
       "type": "domain_start",
       "message": "Entering Domain: L0_routing"
     },
     {
-      "time": "2026-03-09T21:17:18.050586",
+      "time": "2026-03-09T21:48:17.019482",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.052141",
+      "time": "2026-03-09T21:48:17.020502",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.052141",
+      "time": "2026-03-09T21:48:17.020502",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:18.054674",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.054674",
+      "time": "2026-03-09T21:48:18.023595",
       "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.054674",
+      "time": "2026-03-09T21:48:18.023595",
       "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.056705",
+      "time": "2026-03-09T21:48:18.023595",
+      "type": "agent_start",
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-03-09T21:48:20.026775",
+      "type": "agent_start",
+      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-09T21:48:20.027162",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
+    },
+    {
+      "time": "2026-03-09T21:48:20.027162",
+      "type": "agent_start",
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-03-09T21:48:24.029735",
       "type": "error",
-      "message": "Crash in L0_routing: NameError: name 'trace_id' is not defined"
+      "message": "Crash in L0_routing: SovereignLockError: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
-      "time": "2026-03-09T21:17:18.308145",
+      "time": "2026-03-09T21:48:24.282364",
       "type": "domain_start",
       "message": "Entering Domain: L2_execution"
     },
     {
-      "time": "2026-03-09T21:17:18.309149",
+      "time": "2026-03-09T21:48:24.283403",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.309652",
+      "time": "2026-03-09T21:48:24.283979",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.309652",
+      "time": "2026-03-09T21:48:24.283979",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:18.311175",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.311175",
+      "time": "2026-03-09T21:48:25.286118",
       "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
+      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.311175",
+      "time": "2026-03-09T21:48:25.287122",
       "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.312175",
+      "time": "2026-03-09T21:48:25.287122",
+      "type": "agent_start",
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-03-09T21:48:27.288920",
+      "type": "agent_start",
+      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
+    },
+    {
+      "time": "2026-03-09T21:48:27.289929",
+      "type": "agent_end",
+      "message": "✓ Completed FilesystemSSOTHealerAgent"
+    },
+    {
+      "time": "2026-03-09T21:48:27.289929",
+      "type": "agent_start",
+      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
+    },
+    {
+      "time": "2026-03-09T21:48:31.291626",
       "type": "error",
-      "message": "Crash in L2_execution: NameError: name 'trace_id' is not defined"
+      "message": "Crash in L2_execution: SovereignLockError: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     },
     {
-      "time": "2026-03-09T21:17:18.563582",
+      "time": "2026-03-09T21:48:31.543109",
       "type": "domain_start",
       "message": "Entering Domain: L3_orchestration"
     },
     {
-      "time": "2026-03-09T21:17:18.563582",
+      "time": "2026-03-09T21:48:31.543109",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.564614",
+      "time": "2026-03-09T21:48:31.543670",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.564614",
+      "time": "2026-03-09T21:48:31.543670",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:18.566151",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.566151",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:18.566656",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.567674",
-      "type": "error",
-      "message": "Crash in L3_orchestration: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:18.821930",
-      "type": "domain_start",
-      "message": "Entering Domain: L5_safety"
-    },
-    {
-      "time": "2026-03-09T21:17:18.821930",
+      "time": "2026-03-09T21:48:32.546141",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:18.821930",
+      "time": "2026-03-09T21:48:32.546141",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:18.821930",
+      "time": "2026-03-09T21:48:32.546141",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:18.823935",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.823935",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:18.823935",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:18.825438",
-      "type": "error",
-      "message": "Crash in L5_safety: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:19.075268",
-      "type": "domain_start",
-      "message": "Entering Domain: apps_lic"
-    },
-    {
-      "time": "2026-03-09T21:17:19.075268",
+      "time": "2026-03-09T21:48:34.549297",
       "type": "agent_start",
       "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
     },
     {
-      "time": "2026-03-09T21:17:19.076311",
+      "time": "2026-03-09T21:48:34.550300",
       "type": "agent_end",
       "message": "✓ Completed FilesystemSSOTHealerAgent"
     },
     {
-      "time": "2026-03-09T21:17:19.076311",
+      "time": "2026-03-09T21:48:34.550300",
       "type": "agent_start",
       "message": "→ Executing LocationHealerAgent (L5 - Safety)"
     },
     {
-      "time": "2026-03-09T21:17:19.091776",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.091776",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.092780",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.093786",
+      "time": "2026-03-09T21:48:38.552186",
       "type": "error",
-      "message": "Crash in apps_lic: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:19.346380",
-      "type": "domain_start",
-      "message": "Entering Domain: apps_rg"
-    },
-    {
-      "time": "2026-03-09T21:17:19.346380",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.348261",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.348261",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:19.367565",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.367565",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.368092",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.369095",
-      "type": "error",
-      "message": "Crash in apps_rg: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:19.620209",
-      "type": "domain_start",
-      "message": "Entering Domain: apps_shared"
-    },
-    {
-      "time": "2026-03-09T21:17:19.620209",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.621207",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.621207",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:19.647674",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.647674",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.647674",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.648677",
-      "type": "error",
-      "message": "Crash in apps_shared: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:19.898619",
-      "type": "domain_start",
-      "message": "Entering Domain: archives"
-    },
-    {
-      "time": "2026-03-09T21:17:19.898619",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:19.899618",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:19.899618",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:20.263613",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.263613",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:20.264152",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.265156",
-      "type": "error",
-      "message": "Crash in archives: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:20.514807",
-      "type": "domain_start",
-      "message": "Entering Domain: artifacts"
-    },
-    {
-      "time": "2026-03-09T21:17:20.514807",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:20.514807",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.514807",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:20.521855",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.521855",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:20.521855",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.523363",
-      "type": "error",
-      "message": "Crash in artifacts: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:20.778397",
-      "type": "domain_start",
-      "message": "Entering Domain: data"
-    },
-    {
-      "time": "2026-03-09T21:17:20.778397",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:20.778397",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:20.778397",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:33.961031",
-      "type": "decision",
-      "message": "Location Healing: LLM Override: LLM-ARBITRATED-QWEN14B (0.69, S=15)"
-    },
-    {
-      "time": "2026-03-09T21:17:33.961031",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:33.961031",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:33.961031",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:33.962641",
-      "type": "error",
-      "message": "Crash in data: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:34.257177",
-      "type": "domain_start",
-      "message": "Entering Domain: docs"
-    },
-    {
-      "time": "2026-03-09T21:17:34.257177",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.258181",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.258181",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:34.270865",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.270865",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.270865",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.273893",
-      "type": "error",
-      "message": "Crash in docs: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:34.541351",
-      "type": "domain_start",
-      "message": "Entering Domain: logs"
-    },
-    {
-      "time": "2026-03-09T21:17:34.541351",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.541912",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.541912",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:34.545535",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.545535",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.546047",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.546047",
-      "type": "error",
-      "message": "Crash in logs: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:34.812393",
-      "type": "domain_start",
-      "message": "Entering Domain: ops_scripts"
-    },
-    {
-      "time": "2026-03-09T21:17:34.812393",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.813407",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.813407",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:34.817553",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.817553",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:34.817553",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:34.819107",
-      "type": "error",
-      "message": "Crash in ops_scripts: NameError: name 'trace_id' is not defined"
-    },
-    {
-      "time": "2026-03-09T21:17:35.083384",
-      "type": "domain_start",
-      "message": "Entering Domain: system_learning"
-    },
-    {
-      "time": "2026-03-09T21:17:35.083384",
-      "type": "agent_start",
-      "message": "→ Executing FilesystemSSOTHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:35.083891",
-      "type": "agent_end",
-      "message": "✓ Completed FilesystemSSOTHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:35.083891",
-      "type": "agent_start",
-      "message": "→ Executing LocationHealerAgent (L5 - Safety)"
-    },
-    {
-      "time": "2026-03-09T21:17:35.102193",
-      "type": "agent_end",
-      "message": "✓ Completed LocationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:35.102193",
-      "type": "agent_start",
-      "message": "→ Executing FileClassificationHealerAgent (L5 - Safety (Validator))"
-    },
-    {
-      "time": "2026-03-09T21:17:35.102193",
-      "type": "agent_end",
-      "message": "✓ Completed FileClassificationHealerAgent"
-    },
-    {
-      "time": "2026-03-09T21:17:35.104208",
-      "type": "error",
-      "message": "Crash in system_learning: NameError: name 'trace_id' is not defined"
+      "message": "Crash in L3_orchestration: SovereignLockError: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!"
     }
   ],
   "meta_learning": {
@@ -206111,331 +205518,26 @@
       ]
     ]
   },
-  "compliance_scores": {
-    "L0_routing": 1.0,
-    "L2_execution": 1.0,
-    "L3_orchestration": 1.0,
-    "L5_safety": 1.0,
-    "apps_lic": 1.0,
-    "apps_rg": 1.0,
-    "apps_shared": 1.0,
-    "archives": 1.0,
-    "artifacts": 1.0,
-    "data": 0.6892709302902222,
-    "docs": 1.0,
-    "logs": 1.0,
-    "ops_scripts": 1.0,
-    "system_learning": 1.0
-  },
+  "compliance_scores": {},
   "decisions_made": [],
   "compliance_report": {},
   "audit_chain": [],
   "apply_proposals": false,
-  "runtime_state_digest_sha256": "39c4ebdef45d9026339e45cf9f33390a51a75c32b43a734b1ef5d28af2d6a6e8",
+  "runtime_state_digest_sha256": "0d2eb3a70bc1a62d3dec4b964142682cce444f56b321911dcbb499efecca7bc2",
   "runtime_state_digest_schema_version": 1,
   "compliance_report_audit": {
     "success": false,
     "stats": {
-      "violations_found": 31,
+      "violations_found": 0,
       "violations_fixed": 0,
-      "errors": 0,
+      "errors": 1,
       "drift_detected": 0
     },
-    "violations": [
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\context\\c0_guard.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\reasoning\\SSOTFolderCleanupAgent.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\auto_remediate_signatures_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\bloat_analysis_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\check_duplicate_filenames_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\check_rglob_usage_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\class_info.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\collision_resolver.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\comprehensive_archive_check_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\debris_hunter.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\drift.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\execute_ssot.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\flatten_scripts_directory_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\investigate_overlaps_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_architecture_governance.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_c0_sovereignty.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_change_package_activation.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_classification_compliance.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_cross_layer_mutation.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_escalation_determinism.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_gateway_bypass.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_guardian_location_alignment.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\run_hygiene_guardian_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\verify_all_checkpoint_files_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\scripts\\verify_intentional_variants_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\types\\guardian_contract_types.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\utils\\fix_all_tunnels_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L0_routing\\utils\\scan_util.py",
-        "message": "Gravity violation: L0 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L0",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\sandbox\\boundary_validator.py",
-        "message": "Gravity violation: L2 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L2",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L2_execution\\types\\execution_trace_types.py",
-        "message": "Gravity violation: L2 cannot import from L5 (module: agentic_core.L5_safety.types.hardening_errors)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L2",
-        "target_layer": "L5"
-      },
-      {
-        "type": "GRAVITY",
-        "file": "C:\\Git\\Agentic-Workflow\\agentic_core\\L3_orchestration\\engines\\proactive_fission_scanner.py",
-        "message": "Gravity violation: L3 cannot import from L5 (module: agentic_core.L5_safety.config.structure_blueprint.ssot)",
-        "severity": "CRITICAL",
-        "suggestion": "Use dependency injection or move logic to shared utils.",
-        "source_layer": "L3",
-        "target_layer": "L5"
-      }
-    ],
+    "violations": [],
     "drift_violations": []
   },
-  "hygiene_violations": [
-    {
-      "type": "ILLEGAL_CACHE_DIR",
-      "file": "C:\\Git\\Agentic-Workflow\\.pytest_cache",
-      "message": "Transient cache directory '.pytest_cache' in project root",
-      "severity": "low",
-      "recommended_action": "Delete .pytest_cache (add to .gitignore)",
-      "confidence": 0.95
-    }
-  ],
+  "hygiene_violations": [],
   "hygiene_fixed": 0,
-  "gravity_fixed": 0,
   "healing_actions": [
     {
       "agent": "GravityValidatorAgent",
@@ -206444,10 +205546,10 @@
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
-      "confidence": 0.9,
-      "fix_summary": "Scanned for gravity violations: 11 found",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:17.796377",
+      "confidence": 0.0,
+      "fix_summary": "GravityValidatorAgent error: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c096",
+      "outcome": "FAILED",
+      "timestamp": "2026-03-09T21:48:16.767589",
       "routing_digest": null,
       "check_id": null
     },
@@ -206458,10 +205560,10 @@
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
-      "confidence": 0.9,
-      "fix_summary": "Fixed 0 of 11 gravity violations",
-      "outcome": "PARTIAL",
-      "timestamp": "2026-03-09T21:17:17.796377",
+      "confidence": 0.0,
+      "fix_summary": "GravityLeakHealerAgent error: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c096",
+      "outcome": "FAILED",
+      "timestamp": "2026-03-09T21:48:16.767589",
       "routing_digest": null,
       "check_id": null
     },
@@ -206475,35 +205577,35 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.052141",
+      "timestamp": "2026-03-09T21:48:17.020502",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "LocationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L0_routing",
-      "routing_score": 1.0,
+      "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in L0_routing",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.054674",
+      "timestamp": "2026-03-09T21:48:18.023595",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "FileClassificationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L0_routing",
-      "routing_score": 1.0,
+      "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Scanned L0_routing: 0 classification issue(s) detected",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L0_routing",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.054674",
+      "timestamp": "2026-03-09T21:48:20.027162",
       "routing_digest": null,
       "check_id": null
     },
@@ -206517,35 +205619,35 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.309652",
+      "timestamp": "2026-03-09T21:48:24.283979",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "LocationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L2_execution",
-      "routing_score": 1.0,
+      "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in L2_execution",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.311175",
+      "timestamp": "2026-03-09T21:48:25.287122",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "FileClassificationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L2_execution",
-      "routing_score": 1.0,
+      "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Scanned L2_execution: 0 classification issue(s) detected",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L2_execution",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.311175",
+      "timestamp": "2026-03-09T21:48:27.289929",
       "routing_digest": null,
       "check_id": null
     },
@@ -206559,633 +205661,48 @@
       "confidence": 1.0,
       "fix_summary": "SSOT drift scan: 1 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.564614",
+      "timestamp": "2026-03-09T21:48:31.543670",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "LocationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L3_orchestration",
-      "routing_score": 1.0,
+      "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in L3_orchestration",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.566151",
+      "timestamp": "2026-03-09T21:48:32.546141",
       "routing_digest": null,
       "check_id": null
     },
     {
-      "agent": "FileClassificationHealerAgent",
+      "agent": "FilesystemSSOTHealerAgent",
       "territory": "L3_orchestration",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned L3_orchestration: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.566656",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "L5_safety",
       "routing_score": 0.0,
       "routing_tier": "DETERMINISTIC",
       "model": "none",
       "routing_gate": "N/A",
       "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in L5_safety",
+      "fix_summary": "SSOT drift scan: 1 violation(s) in L3_orchestration",
       "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.821930",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "L5_safety",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in L5_safety",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.823935",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "L5_safety",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned L5_safety: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:18.823935",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "apps_lic",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in apps_lic",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.076311",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "apps_lic",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in apps_lic",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.091776",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "apps_lic",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned apps_lic: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.092780",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "apps_rg",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in apps_rg",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.348261",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "apps_rg",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in apps_rg",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.367565",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "apps_rg",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned apps_rg: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.368092",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "apps_shared",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in apps_shared",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.621207",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "apps_shared",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in apps_shared",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.647674",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "apps_shared",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned apps_shared: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.647674",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "archives",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in archives",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:19.899618",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "archives",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in archives",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.263613",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "archives",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned archives: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.264152",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "artifacts",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in artifacts",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.514807",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "artifacts",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in artifacts",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.521855",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "artifacts",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned artifacts: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.521855",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "data",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in data",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:20.778397",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "data",
-      "routing_score": 0.6893,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 0.6893,
-      "fix_summary": "Location scan: 2 violation(s), healing skipped in data",
-      "outcome": "SKIPPED",
-      "timestamp": "2026-03-09T21:17:33.961031",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "data",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned data: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:33.961031",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "docs",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in docs",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.258181",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "docs",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in docs",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.270865",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "docs",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned docs: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.270865",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "logs",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in logs",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.541912",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "logs",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in logs",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.545535",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "logs",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned logs: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.546047",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "ops_scripts",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in ops_scripts",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.813407",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "ops_scripts",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in ops_scripts",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.817553",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "ops_scripts",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned ops_scripts: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:34.817553",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FilesystemSSOTHealerAgent",
-      "territory": "system_learning",
-      "routing_score": 0.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "SSOT drift scan: 1 violation(s) in system_learning",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:35.083891",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "LocationHealerAgent",
-      "territory": "system_learning",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Location scan: 0 violations in system_learning",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:35.102193",
-      "routing_digest": null,
-      "check_id": null
-    },
-    {
-      "agent": "FileClassificationHealerAgent",
-      "territory": "system_learning",
-      "routing_score": 1.0,
-      "routing_tier": "DETERMINISTIC",
-      "model": "none",
-      "routing_gate": "N/A",
-      "confidence": 1.0,
-      "fix_summary": "Scanned system_learning: 0 classification issue(s) detected",
-      "outcome": "SUCCESS",
-      "timestamp": "2026-03-09T21:17:35.102193",
+      "timestamp": "2026-03-09T21:48:34.550300",
       "routing_digest": null,
       "check_id": null
     }
   ],
   "gravity_violations": [
     {
-      "type": "GRAVITY",
-      "message": "Found 11 gravity violations (layer inversions)",
+      "type": "GRAVITY_ERROR",
+      "message": "Gravity detection failed: CORE INTEGRITY COMPROMISED. TERMINATING AGENT. CRITICAL: CORE INTEGRITY COMPROMISED!\nExpected: 6044f3f3c1aeea5350610c09639d7071adc2b18c2a4579a20c87dea1e720df95\nFound: e96a9814c98ef0edb35794768e87d8e692f06a744e55f026d7aa498ad9f968fe\nThe Sovereign Core has been tampered with!",
       "severity": "high",
-      "recommended_action": "Review and fix layer boundary violations",
-      "confidence": 0.9,
-      "violations_found": 11,
-      "violations_fixed": 0
+      "recommended_action": "Fix gravity detection error",
+      "confidence": 0.5
     }
   ],
   "agent_execution_log": [],
-  "current_territory": "tests",
-  "location_violations": [],
-  "location_scan_result": {
-    "violations": [],
-    "total_files_scanned": 133,
-    "compliant_files": 133,
-    "roots_scanned": [
-      "system_learning"
-    ],
-    "status": "COMPLETE"
-  },
-  "classification_violations": [],
-  "classification_scan_result": {
-    "success": false,
-    "stats": {
-      "analyzed": 0,
-      "compliant": 0,
-      "renamed": 0,
-      "imports_fixed": 0,
-      "deep_refactors": 0,
-      "collisions_resolved": 0,
-      "violations": {
-        "AGENT": 0,
-        "CLASS": 0,
-        "MIXIN": 0,
-        "UTILITY": 0,
-        "PROTOCOL": 0,
-        "ENGINE": 0,
-        "STUB": 0,
-        "TEST": 0,
-        "SCRIPT": 0,
-        "TYPES": 0,
-        "GATEWAY": 0,
-        "ORCHESTRATOR": 0,
-        "VALIDATOR": 0,
-        "FACTORY": 0,
-        "CONFIG": 0,
-        "ADAPTER": 0,
-        "STRATEGY": 0,
-        "ENFORCER": 0,
-        "SEAM": 0,
-        "EXCEPTION": 0,
-        "ORCHESTRATOR_INVARIANT_FAIL": {
-          "mutation_hard": 0,
-          "mutation_soft": 0,
-          "thin_wrapper": 0,
-          "insufficient_roles": 0
-        },
-        "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
-        "AGENT_DETERMINISTIC": 0,
-        "ROUTER_INVARIANT_FAIL": {
-          "mutation": 0,
-          "workflow": 0,
-          "inheritance": 0,
-          "structure": 0
-        }
-      },
-      "territory_moves": 0
-    },
-    "summary": "Renamed: 0, Refactors: 0"
-  },
-  "classification_check_dict": {
-    "check_id": "file_classification",
-    "evidence": {
-      "scan_result": {
-        "success": false,
-        "stats": {
-          "analyzed": 0,
-          "compliant": 0,
-          "renamed": 0,
-          "imports_fixed": 0,
-          "deep_refactors": 0,
-          "collisions_resolved": 0,
-          "violations": {
-            "AGENT": 0,
-            "CLASS": 0,
-            "MIXIN": 0,
-            "UTILITY": 0,
-            "PROTOCOL": 0,
-            "ENGINE": 0,
-            "STUB": 0,
-            "TEST": 0,
-            "SCRIPT": 0,
-            "TYPES": 0,
-            "GATEWAY": 0,
-            "ORCHESTRATOR": 0,
-            "VALIDATOR": 0,
-            "FACTORY": 0,
-            "CONFIG": 0,
-            "ADAPTER": 0,
-            "STRATEGY": 0,
-            "ENFORCER": 0,
-            "SEAM": 0,
-            "EXCEPTION": 0,
-            "ORCHESTRATOR_INVARIANT_FAIL": {
-              "mutation_hard": 0,
-              "mutation_soft": 0,
-              "thin_wrapper": 0,
-              "insufficient_roles": 0
-            },
-            "ORCHESTRATOR_LAYER_MISALIGNMENT": 0,
-            "AGENT_DETERMINISTIC": 0,
-            "ROUTER_INVARIANT_FAIL": {
-              "mutation": 0,
-              "workflow": 0,
-              "inheritance": 0,
-              "structure": 0
-            }
-          },
-          "territory_moves": 0
-        },
-        "summary": "Renamed: 0, Refactors: 0"
-      },
-      "violations": [],
-      "file_registry": []
-    },
-    "violations_count": 0,
-    "territory": "system_learning",
-    "repo_root": "C:\\Git\\Agentic-Workflow"
-  },
-  "classification_file_registry": [],
-  "cognitive_dispositions": []
+  "current_territory": "L5_safety"
 }

@@ -283,7 +283,7 @@ class ThreeTierComplianceChecker:
             return f"tests/unit/test_{agent.class_name.lower()}.py"
 
         # Build test path
-        test_parts = ["tests", "unit"] + parts[:-1]
+        test_parts = [TESTS_DIR, "unit"] + parts[:-1]
         # Convert CamelCase to snake_case for test file
         agent_name = agent.class_name
         snake_name = re.sub(r"(?<!^)(?=[A-Z])", "_", agent_name).lower()

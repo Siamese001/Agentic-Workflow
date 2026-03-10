@@ -25,7 +25,7 @@ def check_syntax(root: Path) -> int:
 
     for f in root.rglob("*.py"):
         # Skip common exclusions
-        if any(x in f.parts for x in ["__pycache__", ".git", "node_modules", ".venv", "venv", "archives"]):
+        if any(x in f.parts for x in ["__pycache__", ".git", "node_modules", ".venv", "venv", ARCHIVES_DIR]):
             continue
 
         try:

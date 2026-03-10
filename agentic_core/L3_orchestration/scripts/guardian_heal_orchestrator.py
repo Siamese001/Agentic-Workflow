@@ -30,6 +30,7 @@ from pathlib import Path
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 from agentic_core.L0_routing.utils.project_root_util import get_validated_project_root
 from agentic_core.L2_execution.tools import write_gateway as _wg
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 TOOL_ID = "guardian_heal_orchestrator"
 
@@ -164,7 +165,7 @@ def run_pipeline(
         return pipeline_result
 
     # Stage 2+3: Dispatcher + Healers
-    heal_dir = Path(write_artifacts_dir) if write_artifacts_dir else repo_root / "docs" / "reports" / "plans"
+    heal_dir = Path(write_artifacts_dir) if write_artifacts_dir else repo_root / "docs" / REPORTS_DIR / "plans"
     heal_result = _run_dispatcher(
         guardian_aggregate=guardian_aggregate,
         write_artifacts_dir=heal_dir,

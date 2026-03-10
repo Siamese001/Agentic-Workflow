@@ -444,8 +444,8 @@ class TestNoTieringEnforcement:
             try:
                 source = agent_file.read_text(encoding="utf-8", errors="replace")
                 tree = ast.parse(source, filename=str(agent_file))
-            except (SyntaxError, UnicodeDecodeError):  # guardian: allow-silent-swallower
-                continue
+            except (SyntaxError, UnicodeDecodeError) as e:
+                assert False, f"Parse error in {agent_file}: {e}"
 
             for node in ast.walk(tree):
                 if isinstance(node, ast.ImportFrom) and node.module:

@@ -40,7 +40,7 @@ excluded_dirs: Any = {
     ".cache",
     "cache",
     "data",
-    "archives",
+    ARCHIVES_DIR,
     "htmlcov",
     "_build",
     "site",

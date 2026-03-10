@@ -257,7 +257,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     metadata={"agent": self.__class__.__name__, "target": str(file_path)},
                 )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             Logger.error(f"Error healing location violation for {file_path}: {e}")
             return HealResult(
                 violations_found=1,
@@ -331,7 +331,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 proposed=str(_cp),
                                 decision=f"HITL-SSOT-{_ssot_raw if '_ssot_raw' in dir() else 'AUTO'}",
                             )
-                        except Exception:  # guardian: allow-silent-swallow
+                        except (OSError, TypeError):  # guardian: allow-silent-swallow
                             pass
                 if file_path:
                     violation_list.append(
@@ -375,7 +375,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 "auto_approve": auto_approve,
             }
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             Logger.error(f"Error in heal_violations: {e}")
             return {
                 "healed": 0,
@@ -420,8 +420,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                         return self.project_root / AGENTIC_CORE_DIR / layer / correct_folder
                 except ValueError:
                     pass
-        except Exception:
-            pass
+        except (AttributeError, KeyError, IndexError) as e:
+            self.logger.debug(f"Failed to determine target path for {src_path.name}: {e}")
 
         return self.project_root / DEFAULT_APP_HEALING_TARGET
 
@@ -494,7 +494,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         print(f"  [!] ERROR: {file_path.name} - {cleanup_results[0]['error']}")
                     else:
                         counts["skipped"] += 1
-                except Exception as e:
+                except (OSError, ImportError, AttributeError, ValueError) as e:
                     counts["errors"] += 1
                     print(f"  [!] ERROR on {file_path.name}: {e}")
 
@@ -621,13 +621,13 @@ class LocationHealerAgent(SovereignBaseAgent):
             result.update(self.fix_imports_after_move(src_path, final_dst, dry_run=False))
 
             # Gravity integration flag: if move is core → apps, mark for special gravity handling
-            if "agentic_core" in str(src_path) and "apps_" in str(final_dst):
+            if AGENTIC_CORE_DIR in str(src_path) and "apps_" in str(final_dst):
                 result["gravity_resolution_expected"] = True
                 result["moved_module"] = compute_module_path(final_dst, self.project_root)
             else:
                 result["gravity_resolution_expected"] = False
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Move failed: {e}")
 
@@ -662,7 +662,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             # Auto post-heal validation (now using LocationHealerAgent's own method)
             result.update(self.post_heal_validation(file_path, None, dry_run=False))
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Delete failed: {e}")
 
@@ -730,7 +730,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             if original_path.exists():
                 report["post_heal_message"] += " | WARNING: Original file still exists (partial move?)"
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             report["post_heal_status"] = "ERROR"
             report["post_heal_message"] = f"Post-heal validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Post-heal validation failed: {e}")
@@ -785,12 +785,13 @@ class LocationHealerAgent(SovereignBaseAgent):
             for py_file in python_files:
                 if py_file == new_path or py_file == old_path:
                     continue  # Skip self
-                if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
+                if any(part in {".git", "__pycache__", ARCHIVES_DIR} for part in py_file.parts):
                     continue
 
                 try:
                     content = py_file.read_text(encoding="utf-8", errors="ignore")
-                except Exception:
+                except (OSError, UnicodeDecodeError) as e:
+                    self.logger.warning(f"Failed to read {py_file.name}: {e}")
                     continue
 
                 new_content = content
@@ -807,8 +808,9 @@ class LocationHealerAgent(SovereignBaseAgent):
                         backup_path = backup_dir / py_file.relative_to(self.project_root)
                         _wg.ensure_dir(backup_path.parent)
                         _wg.copy_file(py_file, backup_path)
-                    except Exception:
-                        pass  # Best effort backup
+                    except (OSError, ValueError) as e:
+                        self.logger.debug(f"Backup failed for {py_file.name}: {e}")
+                        # Best effort backup - continue anyway
 
                     _wg.write_text(py_file, new_content, encoding="utf-8")
                     touched_files.append(str(py_file.relative_to(self.project_root)))
@@ -825,7 +827,7 @@ class LocationHealerAgent(SovereignBaseAgent):
 
             validation_pattern = re.compile(rf"{re.escape(old_module)}")
             for py_file in python_files:
-                if any(part in {".git", "__pycache__", "archives"} for part in py_file.parts):
+                if any(part in {".git", "__pycache__", ARCHIVES_DIR} for part in py_file.parts):
                     continue
 
                 try:
@@ -840,7 +842,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 },
                             )
                             remaining_count += 1
-                except Exception:
+                except (OSError, UnicodeDecodeError, ValueError) as e:
+                    self.logger.debug(f"Failed to scan {py_file.name} for remaining references: {e}")
                     continue
 
             import_result["import_remaining_references"] = remaining_references[:20]
@@ -865,7 +868,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"{import_result['import_post_fix_status']} ({remaining_count} remaining)",
             )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             import_result["import_message"] = f"ERROR during import fix: {e}"
             import_result["import_post_fix_status"] = "ERROR"
             Logger.error(f"[LocationHealerAgent] Import fix failed: {e}")
@@ -956,8 +959,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                         proposed="ARCHIVE",
                         decision=decision,
                     )
-                except Exception:
-                    pass
+                except (ImportError, AttributeError) as e:
+                    self.logger.debug(f"HITL logging failed: {e}")
                 return {
                     "action_taken": f"SKIPPED: HITL gate rejected archive ({decision})",
                     "applied": False,
@@ -984,8 +987,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                     proposed="ARCHIVE",
                     decision="APPROVED",
                 )
-            except Exception:
-                pass
+            except (ImportError, AttributeError) as e:
+                self.logger.debug(f"HITL logging failed: {e}")
         return move_result
 
     # ========================================================================
@@ -1206,7 +1209,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 result["action_taken"] = "SKIPPED: User chose to skip"
                 return result
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Void violation healing failed: {e}")
 
@@ -1350,7 +1353,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
                 )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] SSOT update failed: {e}")
 
@@ -1433,7 +1436,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             archive_result["autonomous_decision"] = f"Low confidence ({confidence_score:.2f}) - archived"
             return archive_result
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous resolution failed: {e}")
             return result
@@ -1489,8 +1492,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 file_type = classify_file_standalone(file_path)
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     _is_agent = True
-            except Exception:
-                pass
+            except (ImportError, AttributeError, OSError) as e:
+                self.logger.debug(f"File classification failed for {file_path.name}: {e}")
             # Filename heuristic always fires for *Agent.py regardless of path classification.
             # A file named *Agent.py that lives in tests/ is a misplaced production agent.
             if not _is_agent and file_path.name.endswith("Agent.py"):
@@ -1603,8 +1606,8 @@ class LocationHealerAgent(SovereignBaseAgent):
                 file_type = classify_file_standalone(file_path)
                 if file_type in ("AGENT", "ORCHESTRATOR"):
                     is_agent_type = True
-            except Exception:
-                pass
+            except (ImportError, AttributeError, OSError) as e:
+                self.logger.debug(f"File classification failed for {file_path.name}: {e}")
             # Filename heuristic always fires for *Agent.py — a production agent
             # named *Agent.py must never be routed to a non-source subfolder.
             if not is_agent_type and file_path.name.endswith("Agent.py"):
@@ -1745,7 +1748,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     f"Could not find subfolders list for '{root_folder}' in structure_blueprint.py"
                 )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             result["error"] = str(e)
             Logger.error(f"[LocationHealerAgent] Autonomous subfolder creation failed: {e}")
 
@@ -1839,7 +1842,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     "expected_depth": expected_depth,
                 }
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             Logger.error(f"[LocationHealerAgent] Depth heal failed: {e}")
             return {"error": str(e)}
 
@@ -1922,7 +1925,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 except ValueError:
                     pass
 
-            except Exception as e:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
                 heal_actions.append({"type": "NAMING_FILE_ERROR", "error": str(e)})
 
         return heal_actions, semantic_issues
@@ -1951,7 +1954,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     self._apply_convention_fixes(path, action, affected_paths)
                     healed_count += 1
 
-            except Exception as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:
                 action["error"] = str(e)
 
         return healed_count
@@ -2113,7 +2116,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"[LocationHealerAgent] Post-naming validation: {naming_report['naming_post_heal_status']} ({total_naming_issues} issues)",
             )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             naming_report["naming_post_heal_status"] = "ERROR"
             naming_report["naming_message"] = f"Naming validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Naming validation failed: {e}")
@@ -2182,7 +2185,7 @@ class LocationHealerAgent(SovereignBaseAgent):
             else:
                 heal_report["naming_heal_message"] = "No naming issues required auto-heal"
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             heal_report["naming_heal_message"] = f"ERROR during naming auto-heal: {e}"
             Logger.error(f"[LocationHealerAgent] Naming auto-heal failed: {e}")
 
@@ -2278,7 +2281,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f" → Final: {full_report['import_final_status']} (gravity remaining: {final_gravity})"
             )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             full_report["import_validation_status"] = "ERROR"
             full_report["import_message"] = f"Import validation error: {e}"
             Logger.error(f"[LocationHealerAgent] Import validation failed: {e}")
@@ -2369,7 +2372,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                         )
                         affected_paths.append(new_path)
 
-            except Exception as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:
                 heal_actions.append(
                     {
                         "type": "NAMING_CONVENTION_HEAL_ERROR",
@@ -2509,7 +2512,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                                 move_result = self.safe_move(path, target, dry_run=False)
                                 additional_moves.append(move_result)
 
-                except Exception as e:
+                except (OSError, ImportError, AttributeError, ValueError) as e:
                     convention_actions.append(
                         {"type": "IMPORT_HEAL_ERROR", "file": str(path), "error": str(e)},
                     )
@@ -2540,7 +2543,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 f"→ Final: {deep_report['import_final_status']}"
             )
 
-        except Exception as e:
+        except (OSError, ImportError, AttributeError, ValueError) as e:
             deep_report["import_deep_status"] = "ERROR"
             deep_report["import_message"] = f"Deep import error: {e}"
             Logger.error(f"[LocationHealerAgent] Deep import heal failed: {e}")
@@ -2734,7 +2737,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                 else:
                     batch_report["batch_post_heal_status"] = "NO_ACTIONS"
                     batch_report["batch_message"] = "No healing actions applied"
-            except Exception as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:
                 batch_report["batch_post_heal_status"] = "ERROR"
                 batch_report["batch_message"] = f"Batch validation error: {e}"
                 Logger.error(f"[LocationHealerAgent] Batch post-heal failed: {e}")
@@ -2819,7 +2822,7 @@ class LocationHealerAgent(SovereignBaseAgent):
                     duplicate_report["duplicate_message"] = f"Resolved {len(duplicate_actions)} duplicates"
                 else:
                     duplicate_report["duplicate_message"] = "No duplicates detected"
-            except Exception as e:
+            except (OSError, ImportError, AttributeError, ValueError) as e:
                 duplicate_report["duplicate_message"] = f"ERROR: {e}"
                 Logger.error(f"[LocationHealerAgent] Duplicate resolution failed: {e}")
 

@@ -37,10 +37,10 @@ PROTECTED_LAYERS = {
     "L5_safety",
     "L6_observability",
     "L7_meta_learning",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "agentic_core",
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    AGENTIC_CORE_DIR,
 }
 
 # Protected attributes that cannot be modified

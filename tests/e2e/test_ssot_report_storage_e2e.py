@@ -34,7 +34,7 @@ class TestE2EDiscoveryToEnforcement:
         """Test full workflow on empty project."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             from agentic_core.L5_safety.reasoning.ReportLocationAgent import (
@@ -52,7 +52,7 @@ class TestE2EDiscoveryToEnforcement:
         """Test full workflow with violations present."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             # Create misplaced reports
@@ -89,7 +89,7 @@ class TestE2EDiscoveryToEnforcement:
         """Test workflow with mixed compliant and non-compliant files."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             # Create compliant reports
@@ -119,7 +119,7 @@ class TestE2EMigrationWorkflow:
         """Test migration and rollback workflow."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             # Create misplaced report
@@ -147,7 +147,7 @@ class TestE2EMigrationWorkflow:
         """Test that migration preserves file content."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             content = "Important report content with special chars: éàü"
@@ -208,7 +208,7 @@ class TestE2EAgentIntegration:
         """Test agent standard heal interface."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             (project_root / "test_report.md").write_text("Test")
@@ -230,7 +230,7 @@ class TestE2EAgentIntegration:
         """Test agent inventory generation and saving."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             (docs_reports / "report1.md").write_text("Report 1")
@@ -258,12 +258,12 @@ class TestE2EDocumentation:
 
     def test_all_documentation_exists(self) -> None:
         """Test that all required documentation exists."""
-        guide_path = PROJECT_ROOT / "docs" / "reports" / "SSOT_REPORT_STORAGE_GUIDE.md"
+        guide_path = PROJECT_ROOT / "docs" / REPORTS_DIR / "SSOT_REPORT_STORAGE_GUIDE.md"
         assert guide_path.exists()
 
     def test_documentation_references_valid(self) -> None:
         """Test that documentation references valid files."""
-        guide_path = PROJECT_ROOT / "docs" / "reports" / "SSOT_REPORT_STORAGE_GUIDE.md"
+        guide_path = PROJECT_ROOT / "docs" / REPORTS_DIR / "SSOT_REPORT_STORAGE_GUIDE.md"
 
         if guide_path.exists():
             # Check referenced modules exist
@@ -281,7 +281,7 @@ class TestE2ECompleteSystem:
         """Test complete SSOT enforcement cycle."""
         with tempfile.TemporaryDirectory() as tmpdir:
             project_root = Path(tmpdir)
-            docs_reports = project_root / "docs" / "reports"
+            docs_reports = project_root / "docs" / REPORTS_DIR
             docs_reports.mkdir(parents=True)
 
             # Create initial state with violations

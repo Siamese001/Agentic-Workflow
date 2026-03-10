@@ -20,7 +20,7 @@ import pytest
 pytestmark = pytest.mark.unit_min_deps
 
 ROOT = Path(__file__).resolve().parents[2]
-QUARANTINE_DIR = ROOT / "tests" / "_quarantine"
+QUARANTINE_DIR = ROOT / TESTS_DIR / "_quarantine"
 MANIFEST_PATH = QUARANTINE_DIR / "QUARANTINE_MANIFEST.json"
 
 VALID_CATEGORIES = frozenset(

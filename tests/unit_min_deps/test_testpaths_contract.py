@@ -29,10 +29,10 @@ REQUIRED_TESTPATHS = {
     "tests/governance",
     "tests/system_learning",
     "tests/sovereign_hardening",
-    "tests/unit",
+    TESTS_UNIT_DIR,
 }
 
-REQUIRED_NORECURSEDIRS = {"apps_rg", "apps_lic", "apps_shared", "ops_scripts", "_quarantine"}
+REQUIRED_NORECURSEDIRS = {APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR, OPS_SCRIPTS_DIR, "_quarantine"}
 
 
 def _read_pytest_ini() -> configparser.ConfigParser:

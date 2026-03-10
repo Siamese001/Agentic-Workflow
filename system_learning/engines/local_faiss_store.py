@@ -534,7 +534,7 @@ class LocalFAISSStore:
                     _fh.flush()
                     os.fsync(_fh.fileno())
                 tmp.replace(path)
-            except Exception:
+            except (OSError, IOError) as e:
                 if tmp.exists():
                     tmp.unlink(missing_ok=True)
                 raise

@@ -558,7 +558,7 @@ class TestMainCLI:
         try:
             exit_code = main()
             assert exit_code in (0, 1)
-        except SystemExit as exc:  # guardian: allow-silent-swallower
+        except SystemExit as exc:
             assert exc.code in (0, 1)
 
 

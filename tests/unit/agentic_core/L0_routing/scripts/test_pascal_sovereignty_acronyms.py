@@ -11,6 +11,10 @@ from pathlib import Path
 from unittest.mock import Mock
 
 from tests.helpers.dev_tools_loader import load_dev_script
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+)
 
 _psf = load_dev_script("pascal_sovereignty_fixer.py")
 PascalSovereigntyFixer = _psf.PascalSovereigntyFixer
@@ -49,7 +53,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
             compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(compliant, expected, f"Failed to correctly convert acronym for {stem}")
-            assert True  # no-exception contract
 
     def test_simple_pascalcase_mixin_conversion(self):
         """Test simple PascalCase mixins without acronyms."""
@@ -67,7 +70,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
             compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(compliant, expected, f"Failed to convert simple PascalCase for {stem}")
-            assert True  # no-exception contract
 
     def test_multi_word_mixin_conversion(self):
         """Test multi-word PascalCase mixins."""
@@ -87,7 +89,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
             compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(compliant, expected, f"Failed to convert multi-word for {stem}")
-            assert True  # no-exception contract
 
     def test_acronym_at_start(self):
         """Test acronyms at the beginning of the name."""
@@ -104,7 +105,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
             compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertEqual(compliant, expected, f"Failed to convert acronym at start for {stem}")
-            assert True  # no-exception contract
 
     def test_already_compliant_mixins(self):
         """Test that already compliant mixins return None."""
@@ -122,7 +122,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
             compliant = self.fixer.get_compliant_name(mock_path, "MIXIN")
             self.assertIsNone(compliant, f"Already compliant mixin {stem} should return None")
-            assert True  # no-exception contract
 
     def test_import_alias_refactoring(self):
         """
@@ -144,7 +143,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
 
         self.assertIn("import LLMProviderMixin as lpm", updated)
         self.assertIn("from LLMProviderMixin import Provider", updated)
-        assert True  # no-exception contract
 
     def test_summary_output_integrity(self):
         """
@@ -155,7 +153,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         # We check that the logic allows marking them as violations for the return code
         total_violations = sum(self.fixer.stats["violations"].values())
         self.assertEqual(total_violations, 5, "Mixin violations should be counted in total")
-        assert True  # no-exception contract
 
     def test_ssot_exclusion_protection(self):
         """
@@ -163,7 +160,7 @@ class TestSovereigntyAcronyms(unittest.TestCase):
         """
         mock_path = Mock(spec=Path)
         mock_path.name = "tool_registry.py"
-        mock_path.parts = ("apps_shared", "utils")
+        mock_path.parts = (APPS_SHARED_DIR, "utils")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -173,25 +170,23 @@ class TestSovereigntyAcronyms(unittest.TestCase):
             "IGNORE",
             "tool_registry.py must remain ignored to protect dynamic tool lookups",
         )
-        assert True  # no-exception contract
 
     def test_execute_ssot_exclusion(self):
         """Verify execute_ssot.py remains protected."""
         mock_path = Mock(spec=Path)
         mock_path.name = "execute_ssot.py"
-        mock_path.parts = ("agentic_core", "L0_routing", "scripts")
+        mock_path.parts = (AGENTIC_CORE_DIR, "L0_routing", "scripts")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
         ftype = self.fixer.classify_file(mock_path)
         self.assertEqual(ftype, "IGNORE", "execute_ssot.py must remain ignored per SSOT exclusion list")
-        assert True  # no-exception contract
 
     def test_structure_blueprint_exclusion(self):
         """Verify structure_blueprint.py remains protected."""
         mock_path = Mock(spec=Path)
         mock_path.name = "structure_blueprint.py"
-        mock_path.parts = ("agentic_core", "L5_safety", "validators")
+        mock_path.parts = (AGENTIC_CORE_DIR, "L5_safety", "validators")
         mock_path.exists.return_value = True
         mock_path.stat.return_value = Mock(st_size=1000)
 
@@ -201,7 +196,6 @@ class TestSovereigntyAcronyms(unittest.TestCase):
             "IGNORE",
             "structure_blueprint.py must remain ignored per SSOT exclusion list",
         )
-        assert True  # no-exception contract
 
 
 class TestAcronymRegexPatterns(unittest.TestCase):
@@ -220,7 +214,6 @@ class TestAcronymRegexPatterns(unittest.TestCase):
         for input_str, expected in test_cases.items():
             result = pattern.sub(r"\1_\2", input_str)
             self.assertEqual(result, expected, f"Pass 1 failed for {input_str}")
-            assert True  # no-exception contract
 
     def test_camelcase_boundaries(self):
         """Test Pass 2: Handle camelCase boundaries (llmProvider -> llm_Provider)."""
@@ -231,7 +224,6 @@ class TestAcronymRegexPatterns(unittest.TestCase):
         result = pattern.sub(r"\1_\2", s1).lower()
 
         self.assertEqual(result, "llm_provider_mixin", "Two-pass conversion should produce clean snake_case")
-        assert True  # no-exception contract
 
     def test_full_conversion_pipeline(self):
         """Test the complete conversion pipeline."""
@@ -249,7 +241,6 @@ class TestAcronymRegexPatterns(unittest.TestCase):
             result = re.sub("([a-z0-9])([A-Z])", r"\1_\2", s1).lower()
 
             self.assertEqual(result, expected, f"Full pipeline failed for {input_str}")
-            assert True  # no-exception contract
 
 
 if __name__ == "__main__":

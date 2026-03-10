@@ -83,7 +83,7 @@ def _scan_filesystem_for_agents(base_class: str) -> list[str]:
         try:
             source = py_file.read_text(encoding="utf-8", errors="replace")
             tree = ast.parse(source)
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             continue
         for node in ast.walk(tree):
             if isinstance(node, ast.ClassDef):

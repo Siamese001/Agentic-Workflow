@@ -40,7 +40,7 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
         for target in node.targets:
             if isinstance(target, ast.Attribute):
                 val = ast.unparse(target.value) if hasattr(ast, "unparse") else ""
-                if "agentic_core" in val:
+                if AGENTIC_CORE_DIR in val:
                     self.violations.append(
                         f"Line {node.lineno}: Write to agentic_core attribute '{ast.unparse(target)}'"
                         if hasattr(ast, "unparse")
@@ -52,7 +52,7 @@ class _ReadOnlyVisitor(ast.NodeVisitor):
         if isinstance(node.func, ast.Attribute):
             val = ast.unparse(node.func.value) if hasattr(ast, "unparse") else ""
             method = node.func.attr.lower()
-            if "agentic_core" in val and any(
+            if AGENTIC_CORE_DIR in val and any(
                 method.startswith(w) for w in _WRITE_INDICATORS
             ):
                 self.violations.append(

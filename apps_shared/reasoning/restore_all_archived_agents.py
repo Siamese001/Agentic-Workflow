@@ -49,7 +49,7 @@ def get_current_agents() -> set:
     agents = set()
     for f in AGENTIC_CORE.rglob("*Agent.py"):
         agents.add(f.stem)
-    for d in ["apps_lic", "apps_rg"]:
+    for d in [APPS_LIC_DIR, APPS_RG_DIR]:
         p = PROJECT_ROOT / d
         if p.exists():
             for f in p.rglob("*Agent.py"):
@@ -178,7 +178,7 @@ def main():
             elif folder in ["runtime", "Reachout Engine Archive"]:
                 # k-agents go to apps_lic outreach engine
                 target_dir = PROJECT_ROOT / APPS_LIC_DIR / "engines" / "outreach_engine"
-            elif folder == "apps_rg":
+            elif folder == APPS_RG_DIR:
                 target_dir = PROJECT_ROOT / APPS_RG_DIR / "engines" / "resume_engine"
             elif folder == "location_violations":
                 # Infer from agent name

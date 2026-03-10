@@ -102,8 +102,9 @@ class MockAtomicExecutionMixin:
         try:
             result = operation()
             return result
-        except Exception:
+        except (OSError, ValueError, TypeError) as e:
             # Rollback: restore pre-operation state
+            print(f"Operation failed, rolling back: {e}")
             if pre_state is not None:
                 target_file.write_text(pre_state)
             elif target_file.exists():

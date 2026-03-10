@@ -19,7 +19,7 @@ from pathlib import Path
 # CONFIGURATION
 # ============================================================================
 
-APPS_DIRS = ["apps_rg", "apps_lic", "apps_shared"]
+APPS_DIRS = [APPS_RG_DIR, APPS_LIC_DIR, APPS_SHARED_DIR]
 SKIP_FILES = {"__init__.py", "conftest.py"}
 
 # ============================================================================

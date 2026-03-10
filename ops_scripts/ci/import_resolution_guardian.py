@@ -46,12 +46,18 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 SCAN_ROOTS: tuple[str, ...] = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
 )
 
 INTERNAL_ROOTS: frozenset[str] = frozenset(SCAN_ROOTS)

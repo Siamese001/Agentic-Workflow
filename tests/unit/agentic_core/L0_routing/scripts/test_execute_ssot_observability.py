@@ -834,7 +834,6 @@ class TestWriteFailureForensics:
         eng = _make_engine()
         with patch("builtins.open", side_effect=OSError("disk full")):
             self.mod._write_failure_forensics(sm, eng)
-            assert True  # no-exception contract
 
     def test_forensics_with_failed_agents(self, tmp_path):
         """Failed agents → file written with failed_agents populated."""
@@ -954,7 +953,6 @@ class TestWriteFailureForensics:
         with patch("builtins.open", side_effect=OSError("no space")):
             # Should not raise
             self.mod._write_failure_forensics(sm, eng)
-            assert True  # no-exception contract
 
     def test_forensics_report_type_field(self, tmp_path):
         """meta.report_type == 'FAILURE_FORENSICS'."""

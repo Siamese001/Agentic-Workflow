@@ -12,6 +12,7 @@ Fails if argv0 contains pwsh/powershell.
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.L5_safety.config.structure_blueprint.ssot import DOCS_REPORTS_PLANS
 
 
 def run_cmd(args, cwd=None):
@@ -48,7 +49,7 @@ def main():
             "Full Test Suite",
         ),
         (
-            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
+            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", DOCS_REPORTS_PLANS],
             "Evidence Contract v2 Checker",
         ),
         (

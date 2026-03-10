@@ -9,6 +9,7 @@ PowerShell detection via argv-level checks only (no output scanning).
 import subprocess
 import sys
 from pathlib import Path
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 
 def run_cmd(args, cwd=None):
@@ -52,7 +53,7 @@ def main():
         sys.exit(1)
 
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_02_spine_adapters.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase_02_spine_adapters.md"
 
     print(f"Generating Phase 2 evidence: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")

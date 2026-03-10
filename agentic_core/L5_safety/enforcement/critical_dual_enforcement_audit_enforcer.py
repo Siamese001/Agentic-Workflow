@@ -13,6 +13,7 @@ import logging
 from dataclasses import dataclass
 from pathlib import Path
 from typing import Literal
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 Logger = logging.getLogger(__name__)
 
@@ -61,7 +62,7 @@ class CriticalDualEnforcementAuditor:
             self.requirements_path = (
                 Path(__file__).resolve().parents[3]
                 / "docs"
-                / "reports"
+                / REPORTS_DIR
                 / "plans"
                 / "Agentic Master Requirements.md"
             )

@@ -92,10 +92,8 @@ class TestSecureToolsPathTraversalGuard:
     def test_safe_path_does_not_mutate_work_dir(self, tmp_path):
         tools = _tools(tmp_path)
         original = tools.work_dir
-        try:
+        with pytest.raises(ValueError):
             tools._safe_path("../../escape")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         assert tools.work_dir == original
 
 
@@ -258,10 +256,8 @@ class TestSecureToolsRunCommand:
     def test_run_command_does_not_mutate_blacklist_on_raise(self, tmp_path):
         tools = _tools(tmp_path)
         original = list(tools.BLACKLIST_COMMANDS)
-        try:
+        with pytest.raises(ValueError):
             tools.tool_run_command("sudo bad")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         assert tools.BLACKLIST_COMMANDS == original
 
     @pytest.mark.governance
@@ -320,10 +316,8 @@ class TestSecureToolsSideEffectSafety:
     def test_safe_path_violation_produces_no_filesystem_side_effect(self, tmp_path):
         tools = _tools(tmp_path)
         before = list(tmp_path.iterdir())
-        try:
+        with pytest.raises(ValueError):
             tools._safe_path("../../escape")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         after = list(tmp_path.iterdir())
         assert before == after
 
@@ -331,10 +325,8 @@ class TestSecureToolsSideEffectSafety:
     def test_blacklist_violation_produces_no_filesystem_side_effect(self, tmp_path):
         tools = _tools(tmp_path)
         before = list(tmp_path.iterdir())
-        try:
+        with pytest.raises(ValueError):
             tools.tool_run_command("rm -rf .")
-        except ValueError:  # guardian: allow-silent-swallower
-            pass
         after = list(tmp_path.iterdir())
         assert before == after
 

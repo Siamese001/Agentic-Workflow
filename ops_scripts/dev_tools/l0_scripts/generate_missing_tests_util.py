@@ -9,7 +9,7 @@ from pathlib import Path
 from typing import Any
 
 PROJECT_ROOT = Path(__file__).parent.parent
-TESTS_DIR = PROJECT_ROOT / "tests"
+TESTS_DIR = PROJECT_ROOT / TESTS_DIR
 
 
 def load_agents_without_tests() -> list[dict[str, Any]]:

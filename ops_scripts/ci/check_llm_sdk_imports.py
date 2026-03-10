@@ -40,7 +40,7 @@ ALLOWED_PATHS = {
     "apps_shared/utils/late_interaction_reranker_util.py",
 }
 
-SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 
 def _blocked(node: ast.Import | ast.ImportFrom) -> str | None:

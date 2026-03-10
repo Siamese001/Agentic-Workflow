@@ -20,6 +20,7 @@ from pathlib import Path
 sys.path.insert(0, str(Path(__file__).parent))
 
 from evidence_contract_v2 import EvidenceContractV2
+from agentic_core.L5_safety.config.structure_blueprint.ssot import DOCS_REPORTS_PLANS
 
 _ANSI_RE = re.compile(r"\x1b\[[0-9;]*[mABCDEFGHJKSTfhilmnprsu]")
 
@@ -38,7 +39,7 @@ def main():
     evidence_commit = args.evidence_commit
 
     repo_root = Path(__file__).parent.parent.parent
-    evidence_file = repo_root / "docs" / "reports" / "plans" / "phase_10c_11_12_consolidated.md"
+    evidence_file = repo_root / "docs" / REPORTS_DIR / "plans" / "phase_10c_11_12_consolidated.md"
 
     print(f"Generating Phases 10C-11-12 consolidated evidence: {evidence_file}")
     print(f"CODE_COMMIT: {code_commit}")
@@ -101,7 +102,7 @@ def main():
             "Full Test Suite",
         ),
         (
-            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", "docs/reports/plans"],
+            [sys.executable, "ops_scripts/ci/check_evidence_contract_v2.py", "--paths", DOCS_REPORTS_PLANS],
             "Evidence Contract v2 Checker",
         ),
         (

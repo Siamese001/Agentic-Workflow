@@ -24,7 +24,7 @@ def _check_app_domain_violation_logic(
     current_root = rel_path.parts[0]
 
     # 1. GLOBAL CANDIDATE DETECTION (Vacuum to apps_shared)
-    if current_root in ["apps_rg", "apps_lic"]:
+    if current_root in [APPS_RG_DIR, APPS_LIC_DIR]:
         if app_rg_score < 0.5 and app_lic_score < 0.5:
             filename = rel_path.name
             if not filename.startswith(("rg_", "lic_", "resume_", "outreach_")):
@@ -34,13 +34,13 @@ def _check_app_domain_violation_logic(
                 )
 
     # 2. CROSS-CONTAMINATION CHECK (App vs App)
-    if current_root == "apps_rg" and app_lic_score > app_rg_score * 2.0:
+    if current_root == APPS_RG_DIR and app_lic_score > app_rg_score * 2.0:
         return (
             False,
             f"APP DOMAIN VIOLATION: Strong apps_lic signals ({app_lic_score:.1f} vs {app_rg_score:.1f})",
         )
 
-    if current_root == "apps_lic" and app_rg_score > app_lic_score * 2.0:
+    if current_root == APPS_LIC_DIR and app_rg_score > app_lic_score * 2.0:
         return (
             False,
             f"APP DOMAIN VIOLATION: Strong apps_rg signals ({app_rg_score:.1f} vs {app_lic_score:.1f})",

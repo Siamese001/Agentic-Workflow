@@ -37,7 +37,7 @@ ALLOWED_PATHS = {
     "system_learning/engines/historical_ingestion_orchestrator.py",
 }
 
-SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 
 def _find_violations(path: Path, rel: str) -> list[str]:

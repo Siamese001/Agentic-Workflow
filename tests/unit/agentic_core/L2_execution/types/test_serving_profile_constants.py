@@ -193,7 +193,6 @@ def test_co_change_only_model_len_increase_ok():
         new_max_num_seqs=2,
         profile_name="LOCAL_STRONG_14B",
     )
-    assert True  # no-exception contract
 
 
 def test_co_change_only_num_seqs_increase_ok():
@@ -204,7 +203,6 @@ def test_co_change_only_num_seqs_increase_ok():
         new_max_num_seqs=2,
         profile_name="LOCAL_STRONG_14B",
     )
-    assert True  # no-exception contract
 
 
 def test_co_change_both_decrease_ok():
@@ -215,7 +213,6 @@ def test_co_change_both_decrease_ok():
         new_max_num_seqs=1,
         profile_name="LOCAL_STRONG_14B",
     )
-    assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

@@ -20,7 +20,7 @@ SOURCE_TARGETS = [
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
-    "system_learning",
+    SYSTEM_LEARNING_DIR,
     "L6_observability",
 ]
 
@@ -66,14 +66,14 @@ def get_all_source_modules():
 
 def _extract_layer(rel_path, target):
     parts = rel_path.split("/")
-    if target == "agentic_core" and len(parts) > 1:
+    if target == AGENTIC_CORE_DIR and len(parts) > 1:
         sub = parts[1]
         if sub.startswith("L"):
             return sub
         return sub
-    if target in ("apps_lic", "apps_rg", "apps_shared") and len(parts) > 1:
+    if target in (APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR) and len(parts) > 1:
         return parts[1]
-    if target == "system_learning" and len(parts) > 1:
+    if target == SYSTEM_LEARNING_DIR and len(parts) > 1:
         return parts[1]
     return target
 

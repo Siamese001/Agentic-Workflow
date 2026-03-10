@@ -14,6 +14,15 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     DISCOVERY_EXCLUDED_TERRITORIES,
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
+    REPORTS_DIR,
+)
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
 )
 
 SSOT_DIR_NAMES: frozenset[str] = (
@@ -81,12 +90,12 @@ EXEMPT_LOCATIONS: frozenset[tuple[str, int]] = frozenset(
 )
 SKIP_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
 SCAN_ROOTS = [
-    ROOT / "ops_scripts",
-    ROOT / "agentic_core",
-    ROOT / "tests",
-    ROOT / "apps_rg",
-    ROOT / "apps_lic",
-    ROOT / "apps_shared",
+    ROOT / OPS_SCRIPTS_DIR,
+    ROOT / AGENTIC_CORE_DIR,
+    ROOT / TESTS_DIR,
+    ROOT / APPS_RG_DIR,
+    ROOT / APPS_LIC_DIR,
+    ROOT / APPS_SHARED_DIR,
 ]
 
 
@@ -171,7 +180,7 @@ def scan_file(path: pathlib.Path) -> list[tuple[int, str, list[str], str]]:
 
 
 def main() -> int:
-    report_path = ROOT / "docs" / "reports" / "plans" / "hardcoded_dirs_audit.md"
+    report_path = ROOT / "docs" / REPORTS_DIR / "plans" / "hardcoded_dirs_audit.md"
     lines_out: list[str] = []
     all_results: list[tuple[str, int, str, list[str], str]] = []
 

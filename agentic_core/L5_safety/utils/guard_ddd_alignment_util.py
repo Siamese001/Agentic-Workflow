@@ -17,8 +17,8 @@ try:
         TESTS_DIR,
     )
 except ImportError:
-    SCRIPTS_DIR = "ops_scripts"
-    TESTS_DIR = "tests"
+    SCRIPTS_DIR = OPS_SCRIPTS_DIR
+    TESTS_DIR = TESTS_DIR
 
 
 def get_ddd_violations_detailed(root_path: str) -> list[dict]:

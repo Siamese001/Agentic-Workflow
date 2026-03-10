@@ -78,9 +78,8 @@ class CachedStateLedger(SovereignBaseAgent):
                 self.redis.set(full_key, json.dumps(context), ex=86400)  # 24h
             else:
                 self._memory_cache[full_key] = context
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as e:
+            self.logger.debug(f"Cache write failed for {key}: {e}")
 
         # [L4 TELEMETRY] Record successful cache operation for GeminiSpy
         self._record_successful_trace(
@@ -115,9 +114,8 @@ class CachedStateLedger(SovereignBaseAgent):
                         },
                     )
                 return result
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (AttributeError, KeyError) as e:
+            self.logger.debug(f"Cache read failed for {key}: {e}")
         return None
 
     def _record_successful_trace(self, trace: dict):
@@ -152,9 +150,8 @@ class CachedStateLedger(SovereignBaseAgent):
                 self.redis.expire(trail_key, 31536000)  # 1 year TTL
             else:
                 self._audit_trail.append(event)
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (AttributeError, TypeError) as e:
+            self.logger.debug(f"Audit logging failed: {e}")
 
     def _run_self_tests(self) -> bool:
         """Run self-tests for CachedStateLedgerAgent."""

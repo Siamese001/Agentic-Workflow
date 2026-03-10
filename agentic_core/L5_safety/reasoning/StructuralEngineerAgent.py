@@ -108,8 +108,8 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                             violations.append(
                                 f"{file_path}:{node.lineno}: Class '{node.name}' has {class_lines} lines (max {max_lines})",
                             )
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                self.logger.debug(f"Failed to check class size in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -138,8 +138,8 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                                 violations.append(
                                     f"{file_path}:{node.lineno}: Function '{node.name}' has {func_lines} lines (max {max_lines})",
                                 )
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                self.logger.debug(f"Failed to check function size in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)
 
@@ -164,8 +164,8 @@ class StructuralEngineerAgent(SovereignBaseAgent, HealerMixin):
                             violations.append(
                                 f"{file_path}:{node.lineno}: Function '{node.name}' has complexity {complexity} (max {max_complexity})",
                             )
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (OSError, UnicodeDecodeError, SyntaxError) as e:
+                self.logger.debug(f"Failed to check complexity in {file_path}: {e}")
                 continue
         return (len(violations) == 0, violations)
 

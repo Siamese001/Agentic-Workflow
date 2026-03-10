@@ -18,7 +18,7 @@ import re
 import sys
 
 ROOT = pathlib.Path(__file__).resolve().parents[2]
-TESTS_DIR = ROOT / "tests"
+TESTS_DIR = ROOT / TESTS_DIR
 
 # Ensure repo root is on sys.path so agentic_core is importable regardless
 # of how this script is invoked (python ops_scripts/ci/_audit_scan.py, etc.)

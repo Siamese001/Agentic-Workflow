@@ -15,7 +15,7 @@ from typing import Optional
 
 from agentic_core.runtime.sovereignty_exceptions import SovereigntyViolationError
 
-_FORBIDDEN_IN_AGENTIC_CORE = frozenset({"apps_lic", "apps_rg", "apps_shared"})
+_FORBIDDEN_IN_AGENTIC_CORE = frozenset({APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR})
 
 
 def assert_no_apps_imports(caller_module: str) -> None:

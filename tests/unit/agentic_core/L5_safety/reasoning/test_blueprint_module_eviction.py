@@ -133,7 +133,6 @@ class TestLocationHealerEviction:
             _evict()  # second call: all keys already absent — must not KeyError
         finally:
             cleanup()
-            assert True  # no-exception contract
 
     def test_evict_noop_when_no_blueprint_modules_loaded(self):
         """Works without error when no blueprint modules are in sys.modules."""
@@ -154,7 +153,6 @@ class TestLocationHealerEviction:
             _evict()  # must not raise
         finally:
             sys.modules.update(saved)
-            assert True  # no-exception contract
 
     def test_evict_calls_importlib_invalidate_caches(self):
         """importlib.invalidate_caches() is called during eviction."""
@@ -166,7 +164,6 @@ class TestLocationHealerEviction:
                 mock_ic.assert_called_once()
         finally:
             cleanup()
-            assert True  # no-exception contract
 
     def test_prefixes_cover_expected_modules(self):
         """_BLUEPRINT_MODULE_PREFIXES covers the exact modules that hold SOVEREIGN_TERRITORIES."""
@@ -241,7 +238,6 @@ class TestFilesystemSSOTReconcilerEviction:
             _evict()
         finally:
             cleanup()
-            assert True  # no-exception contract
 
     def test_evict_calls_importlib_invalidate_caches(self):
         """importlib.invalidate_caches() is called."""
@@ -253,7 +249,6 @@ class TestFilesystemSSOTReconcilerEviction:
                 mock_ic.assert_called_once()
         finally:
             cleanup()
-            assert True  # no-exception contract
 
     def test_evict_does_not_touch_unrelated_modules(self):
         """Non-blueprint modules survive eviction."""

@@ -848,7 +848,6 @@ class TestThresholdUnification:
         )
 
         validate_threshold_immutability()  # must not raise
-        assert True  # no-exception contract
 
 
 class TestHardenedGeminiModelLimits:

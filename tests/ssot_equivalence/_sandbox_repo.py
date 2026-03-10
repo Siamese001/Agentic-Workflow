@@ -121,8 +121,7 @@ def destroy_sandbox(repo_root: Path, sandbox_path: Path) -> None:
         )
         # Prune stale worktree refs
         run_cmd(repo_root, ["git", "worktree", "prune"], timeout=PRUNE_TIMEOUT)
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (subprocess.CalledProcessError, OSError):
         pass
 
     # Force-remove directory if still present

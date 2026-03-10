@@ -19,6 +19,7 @@ import json
 import re
 from collections import defaultdict
 from pathlib import Path
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 
@@ -304,7 +305,7 @@ def generate_migration_json(results):
     }
 
     # Save to file
-    output_path = PROJECT_ROOT / "docs" / "reports" / "plans" / "agent_integration_gaps.json"
+    output_path = PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "agent_integration_gaps.json"
     with open(output_path, "w", encoding="utf-8") as f:
         json.dump(output, f, indent=2)
 

@@ -34,6 +34,13 @@ sys.path.insert(0, str(ROOT))
 
 
 from tools.dep_graph_db import build as _build_dep_graph  # noqa: E402
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    SYSTEM_LEARNING_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 # ---------------------------------------------------------------------------
 
@@ -51,7 +58,7 @@ PINECONE_BUDGET = 0  # current: 0   — Pinecone fully removed (Wave 1 complete)
 
 # SSOT dirs scanned (for pure-AST star-import check only)
 
-SSOT_DIRS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 
 
 # ---------------------------------------------------------------------------
@@ -139,13 +146,11 @@ class TestStarImportAllShims:
                 continue
 
             for py in scan_root.rglob("__init__.py"):
+                src = py.read_text(encoding="utf-8", errors="replace")
                 try:
-                    src = py.read_text(encoding="utf-8", errors="replace")
-
                     tree = ast.parse(src)
-
-                except SyntaxError:  # guardian: allow-silent-swallower
-                    continue
+                except SyntaxError as e:
+                    assert False, f"SyntaxError in {py}: {e}"
 
                 has_star = any(
                     isinstance(n, ast.ImportFrom) and any(a.name == "*" for a in n.names)

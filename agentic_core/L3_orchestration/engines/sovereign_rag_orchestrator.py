@@ -409,12 +409,12 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
             # No engine injected: sort by score and truncate
             try:
                 candidates.sort(key=lambda d: getattr(d, "score", 0.0), reverse=True)
-            except Exception:
-                pass
+            except (AttributeError, TypeError) as e:
+                logger.debug(f"Failed to sort candidates by score: {e}")
             return candidates[:top_k]
         try:
             return await self.engine.rerank(query, candidates)
-        except Exception:
+        except (AttributeError, TypeError, ValueError) as e:
             logger.warning("_llm_rerank: rerank_engine raised — returning candidates[:top_k]", exc_info=True)
             return candidates[:top_k]
 
@@ -453,7 +453,8 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                     scores.append(_cosine(q_emb, d_emb))
 
             return sum(scores) / len(scores) if scores else 0.0
-        except Exception:
+        except (AttributeError, TypeError, ZeroDivisionError) as e:
+            logger.debug(f"Embedding similarity calculation failed: {e}")
             return 0.0
 
     async def agentic_retrieve_with_reflection(
@@ -490,7 +491,8 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
 
             try:
                 sub_queries = await self.query_planner.decompose_query(query)
-            except Exception:
+            except (AttributeError, TypeError, ValueError) as e:
+                logger.debug(f"Query decomposition failed: {e}")
                 break
 
             for sq in sub_queries:
@@ -504,7 +506,8 @@ class SovereignRagOrchestrator(SovereignBaseAgent, IRagProvider):
                         if doc_id not in seen_ids:
                             candidates.append(doc)
                             seen_ids.add(doc_id)
-                except Exception:
+                except (AttributeError, KeyError) as e:
+                    logger.debug(f"Failed to process sub-query result: {e}")
                     continue
 
         result["documents"] = candidates

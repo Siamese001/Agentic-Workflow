@@ -26,6 +26,11 @@ import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
     L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L1_COGNITION_DIR,
+    L0_MAINTENANCE_DIR,
+    L5_SAFETY_DIR,
+    L4_STATE_DIR,
 )
 
 pytestmark = pytest.mark.governance
@@ -76,11 +81,11 @@ def test_inv_no_upward_mutation_runtime_interceptor():
 _SDK_FORBIDDEN = frozenset(["google.generativeai", "anthropic", "openai"])
 _L2_GATEWAY_PREFIX = L2_EXECUTION_DIR
 _NON_GATEWAY_ROOTS = [
-    "agentic_core/L0_routing",
-    "agentic_core/L1_cognition",
-    "agentic_core/L3_orchestration",
-    "agentic_core/L4_state",
-    "agentic_core/L5_safety",
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
 ]
 
 

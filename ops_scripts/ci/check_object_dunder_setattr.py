@@ -16,14 +16,14 @@ from pathlib import Path
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 CORE_PREFIXES = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "system_learning",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    SYSTEM_LEARNING_DIR,
 )
 
-SCAN_ROOTS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning", "tests"]
+SCAN_ROOTS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR, TESTS_DIR]
 
 ALLOWED_PATHS = {
     # The guard itself uses object.__setattr__ legitimately for frozen-dataclass workarounds

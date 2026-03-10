@@ -23,6 +23,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     GLOBAL_EXCLUDED_DIRS,
     SOVEREIGN_EXCLUDED_FOLDERS,
 )
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+)
 
 SSOT_DIR_NAMES: frozenset[str] = (
     GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS | DISCOVERY_EXCLUDED_TERRITORIES
@@ -41,7 +49,7 @@ SKIP_DIRS = {
     ".git",
     ".venv",
     "venv",
-    "archives",
+    ARCHIVES_DIR,
     ".healing_backups",
     "node_modules",
     "build",
@@ -51,12 +59,12 @@ SKIP_DIRS = {
 }
 
 SCAN_ROOTS = [
-    ROOT / "ops_scripts",
-    ROOT / "agentic_core",
-    ROOT / "tests",
-    ROOT / "apps_rg",
-    ROOT / "apps_lic",
-    ROOT / "apps_shared",
+    ROOT / OPS_SCRIPTS_DIR,
+    ROOT / AGENTIC_CORE_DIR,
+    ROOT / TESTS_DIR,
+    ROOT / APPS_RG_DIR,
+    ROOT / APPS_LIC_DIR,
+    ROOT / APPS_SHARED_DIR,
 ]
 
 
@@ -300,7 +308,7 @@ def main() -> int:
                 continue
             try:
                 modified, notes = fix_file(py_file)
-            except Exception as exc:
+            except (OSError, UnicodeDecodeError, SyntaxError) as exc:
                 print(f"[ERROR] {rel}: {exc}")
                 continue
             if modified or notes:

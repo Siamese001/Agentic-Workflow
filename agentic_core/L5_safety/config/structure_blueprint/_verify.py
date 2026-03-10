@@ -458,7 +458,7 @@ def main() -> int:
         try:
             with open(fpath, encoding="utf-8", errors="replace") as f:
                 source = f.read()
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             continue
         try:
             tree = ast.parse(source, filename=fpath)
@@ -493,7 +493,7 @@ def main() -> int:
                         rp = _canonical_repo_path(os.path.relpath(fpath, root))
                         phantom_tuples.append((rp, name))
                         phantom_debt.append((rp, name, node.lineno, node.module))
-                except Exception:
+                except (ValueError, AttributeError):
                     rp = _canonical_repo_path(os.path.relpath(fpath, root))
                     phantom_tuples.append((rp, name))
                     phantom_debt.append((rp, name, node.lineno, node.module))
@@ -834,7 +834,7 @@ def main() -> int:
         try:
             with open(fpath, encoding="utf-8", errors="replace") as f:
                 source = f.read()
-        except Exception:
+        except (OSError, UnicodeDecodeError):
             continue
         for name in excluded_names:
             if name in source:

@@ -14,12 +14,12 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Sovereignty-critical directories (L0-L5)
 CRITICAL_DIRS = [
-    "agentic_core/L0_routing",
-    "agentic_core/L1_cognition",
-    "agentic_core/L2_execution",
-    "agentic_core/L3_orchestration",
-    "agentic_core/L4_state",
-    "agentic_core/L5_safety",
+    L0_MAINTENANCE_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
 ]
 
 # Mutable types that should not be at module level in critical modules
@@ -112,7 +112,7 @@ def test_req129_no_mutable_globals_critical_modules():
 def test_req129_mutable_globals_negative_control():
     """REQ-129: Negative control - should detect mutable globals when present."""
     # Create a temporary file with mutable globals
-    temp_file = REPO_ROOT / "agentic_core" / "temp_test_mutable_globals.py"
+    temp_file = REPO_ROOT / AGENTIC_CORE_DIR / "temp_test_mutable_globals.py"
     try:
         temp_file.write_text("""
 # These should be flagged as mutable globals
@@ -122,6 +122,7 @@ global_set = set()  # Mutable set
 
 # This should also be flagged
 from collections import deque
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 global_deque = deque()  # Mutable deque
 
 # Constants should be OK

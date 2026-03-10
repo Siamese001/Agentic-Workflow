@@ -18,9 +18,9 @@ from typing import Final
 
 FORBIDDEN_IMPORT_PREFIXES: Final[frozenset] = frozenset(
     {
-        "apps_lic",
-        "apps_rg",
-        "apps_shared",
+        APPS_LIC_DIR,
+        APPS_RG_DIR,
+        APPS_SHARED_DIR,
         "agentic_core.L0_routing",
         "agentic_core.L1_cognition",
         "agentic_core.L2_execution",

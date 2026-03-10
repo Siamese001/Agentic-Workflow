@@ -23,6 +23,7 @@ from typing import Any
 # PHASE 2.1: L0 Structural Standardization
 from agentic_core.base_agents.L0RoutingBase import L0RoutingBase
 from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
 
 
 @dataclass
@@ -101,7 +102,7 @@ class GospelSyncAgent(L0RoutingBase):
         actual = set()
         all_py = get_python_files(self.root)
         for py_file in all_py:
-            if "agentic_core" in str(py_file) and "__init__" not in py_file.name:
+            if AGENTIC_CORE_DIR in str(py_file) and "__init__" not in py_file.name:
                 rel_path = py_file.relative_to(self.root)
                 actual.add(str(rel_path).replace("\\", "/"))
         return actual

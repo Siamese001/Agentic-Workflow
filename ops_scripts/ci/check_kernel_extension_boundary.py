@@ -138,8 +138,8 @@ STANDARD_LIBRARY_MODULES: frozenset[str] = frozenset(
         "slot_contracts",
         # Additional internal modules
         "agentic_core.L6_observability",
-        "ops_scripts",
-        "apps_shared",
+        OPS_SCRIPTS_DIR,
+        APPS_SHARED_DIR,
         "agentic_core.shared",
         # More internal modules
         "classification_kernel",
@@ -158,6 +158,8 @@ from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
     SYSTEM_LEARNING_DIR,
     get_validated_project_root,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
 )
 
 project_root = get_validated_project_root()

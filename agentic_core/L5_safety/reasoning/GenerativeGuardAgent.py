@@ -31,6 +31,7 @@ from typing import Any
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 # GRAVITY VIOLATION: from apps_shared.base_agents.canon_base_agent_interface import CanonBaseAgentInterface (MOVED to agentic_core.utils.core_extensions)
 # GRAVITY FIXED (Upward Leak): from agentic_core.base_agents.mcp_hardened_mixin import mcp_hardened_mixin
@@ -72,7 +73,7 @@ except ImportError:
     _root = Path(__file__).resolve().parent.parent.parent.parent
     AGENTIC_CORE_DIR = _root / AGENTIC_CORE_DIR
     SCRIPTS_DIR = _root / "scripts"
-    TESTS_DIR = _root / "tests"
+    TESTS_DIR = _root / TESTS_DIR
     DASHBOARD_DIR = _root / AGENTIC_CORE_DIR / "L6_observability" / "dashboards"
     L0_MAINTENANCE_DIR = _root / AGENTIC_CORE_DIR / "L0_routing"
     L1_COGNITION_DIR = _root / AGENTIC_CORE_DIR / "L1_cognition"

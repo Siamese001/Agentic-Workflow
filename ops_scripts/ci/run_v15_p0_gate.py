@@ -20,6 +20,7 @@ import sys
 import tempfile
 from pathlib import Path
 from typing import NoReturn
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 # Add project root to path
 PROJECT_ROOT = Path(__file__).resolve().parents[2]
@@ -54,7 +55,7 @@ def main() -> NoReturn:
     parser.add_argument(
         "--baseline",
         type=Path,
-        default=PROJECT_ROOT / "docs" / "reports" / "plans" / "v15_gap_analysis.json",
+        default=PROJECT_ROOT / "docs" / REPORTS_DIR / "plans" / "v15_gap_analysis.json",
         help="Baseline gap JSON path",
     )
     parser.add_argument(
@@ -154,9 +155,9 @@ def main() -> NoReturn:
                 else:
                     print("[FAIL] P0 gate FAILED", file=sys.stderr)
                     sys.exit(1)
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (json.JSONDecodeError, KeyError) as e:
                 # Fallback to exit code
+                print(f"Failed to parse gate result: {e}", file=sys.stderr)
                 if gate_code == 0:
                     print("[PASS] P0 gate PASSED", file=sys.stderr)
                     sys.exit(0)
@@ -177,8 +178,7 @@ def main() -> NoReturn:
         if use_temp and args.output.exists():
             try:
                 args.output.unlink()
-            # guardian: allow-silent-swallow
-            except Exception:
+            except OSError:
                 pass
 
 

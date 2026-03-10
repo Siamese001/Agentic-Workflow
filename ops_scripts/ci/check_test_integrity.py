@@ -21,7 +21,7 @@ import ast
 import sys
 from pathlib import Path
 
-_DEFAULT_SCAN_DIRS = ["tests"]
+_DEFAULT_SCAN_DIRS = [TESTS_DIR]
 _GUARDIAN_ALLOW_PREFIX = "# guardian: allow-"
 
 _INFRA_SKIP_KEYWORDS = (

@@ -15,7 +15,13 @@ from dataclasses import dataclass, field
 from pathlib import Path
 from typing import Any
 
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    APPS_SHARED_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+)
 
 
 @dataclass
@@ -138,10 +144,10 @@ def get_expected_test_territory(source_path: Path, project_root: Path) -> Path |
         return None
 
     # Determine test type based on source location
-    if parts[0] in ("agentic_core", "apps_lic", "apps_rg", "apps_shared"):
+    if parts[0] in (AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR):
         # Build mirror path: tests/unit/{source_territory}/{subfolders}/test_{snake_case}.py
         test_filename = f"test_{to_smart_snake_case(source_path.stem)}.py"
-        test_path = project_root / "tests" / "unit" / rel_path.parent / test_filename
+        test_path = project_root / TESTS_DIR / "unit" / rel_path.parent / test_filename
         return test_path
 
     return None
@@ -153,10 +159,10 @@ def get_source_for_test(test_path: Path, project_root: Path) -> tuple[Path | Non
     Returns (expected_source_path, expected_territory).
     """
     try:
-        rel_path = test_path.relative_to(project_root / "tests" / "unit")
+        rel_path = test_path.relative_to(project_root / TESTS_DIR / "unit")
     except ValueError:
         try:
-            rel_path = test_path.relative_to(project_root / "tests" / "integration")
+            rel_path = test_path.relative_to(project_root / TESTS_DIR / "integration")
         except ValueError:
             return None, None
 
@@ -182,7 +188,7 @@ def get_source_for_test(test_path: Path, project_root: Path) -> tuple[Path | Non
 def scan_source_files(project_root: Path) -> list[SourceFile]:
     """Scan and classify all source files."""
     source_files = []
-    source_dirs = ["agentic_core", "apps_lic", "apps_rg", "apps_shared"]
+    source_dirs = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR]
 
     for source_dir in source_dirs:
         dir_path = project_root / source_dir

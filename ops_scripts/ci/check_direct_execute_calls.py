@@ -14,7 +14,7 @@ ALLOWED_PATHS = {
     "apps_rg/engines/base_rg_engine.py",
     "apps_lic/engines/base_lic_engine.py",  # if it exists
 }
-SCAN_ROOTS = ["apps_lic", "apps_rg", "apps_shared", "agentic_core"]
+SCAN_ROOTS = [APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, AGENTIC_CORE_DIR]
 
 
 def main() -> int:

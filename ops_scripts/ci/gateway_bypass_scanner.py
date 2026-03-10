@@ -15,7 +15,7 @@ REPO_ROOT = Path(__file__).resolve().parents[2]
 GATEWAY_NAMESPACE = "agentic_core.L2_execution.enforcement"
 ALLOWED_NAMESPACES: set[str] = {
     GATEWAY_NAMESPACE,
-    "tests",  # Tests need to import things to mock them.
+    TESTS_DIR,  # Tests need to import things to mock them.
 }
 
 # Forbidden imports that indicate a direct SDK or HTTP client usage.

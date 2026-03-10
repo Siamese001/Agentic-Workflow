@@ -11,7 +11,7 @@ def generate_test_for_module(module_path: pathlib.Path, expected_test_path: path
     """Generate a test file for a module."""
 
     # Convert path to module import path
-    if module_path.parts[0] == "agentic_core":
+    if module_path.parts[0] == AGENTIC_CORE_DIR:
         module_import = ".".join(module_path.parts)
     elif module_path.parts[0].startswith("apps_"):
         module_import = ".".join(module_path.parts)

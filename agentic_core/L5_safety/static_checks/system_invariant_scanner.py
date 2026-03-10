@@ -13,6 +13,7 @@ import ast
 import os
 from pathlib import Path
 from typing import Any
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 class BypassViolation:
@@ -48,7 +49,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
         "agentic_core.L2_execution.healers.healing_provider_adapters",
         "system_invariant_scanner",
         "system_learning.engines.embedding_service_factory",
-        "tests",  # Test modules are allowed for testing
+        TESTS_DIR,  # Test modules are allowed for testing
         "test_",  # Test files
     }
 

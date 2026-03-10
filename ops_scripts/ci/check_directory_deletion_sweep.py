@@ -39,10 +39,10 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 
 PROTECTED_ROOTS: tuple[str, ...] = (
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
 )
 
 INTERNAL_ROOTS: frozenset[str] = frozenset(PROTECTED_ROOTS)

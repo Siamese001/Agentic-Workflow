@@ -26,6 +26,7 @@ from typing import Any
 from agentic_core.utils.file_cache import FileCache
 
 from agentic_core.base_agents.SovereignBaseAgent import SovereignBaseAgent
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR
 
 logger = logging.getLogger(__name__)
 
@@ -169,7 +170,7 @@ class CredentialScannerAgent(SovereignBaseAgent):
             "node_modules",
             ".venv",
             "venv",
-            "archives",
+            ARCHIVES_DIR,
             ".sovereign_healing_backup",
             "healing_backups",
             "coverage_html",
@@ -318,7 +319,7 @@ class CredentialScannerAgent(SovereignBaseAgent):
                                 confidence=confidence,
                             ),
                         )
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
             logger.debug(f"[CREDENTIAL SCAN] Error scanning {file_path}: {e}")
 
     def _is_false_positive(self, line: str, pattern_name: str) -> bool:

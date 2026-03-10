@@ -107,7 +107,7 @@ class TestOrchestratorInheritance:
         """Inherits WorkflowCoordinator => ORCHESTRATOR."""
         result, _fca = _classify_fca(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "validation_orchestrator",
             VALID_ORCHESTRATOR_CODE,
         )
@@ -130,7 +130,7 @@ class TestOrchestratorThinWrapper:
         """
         result, fca = _classify_fca(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "thin_orchestrator",
             code,
         )
@@ -170,7 +170,7 @@ class TestOrchestratorMutationHard:
         """
         result, fca = _classify_fca(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "mutating_orchestrator",
             code,
         )
@@ -210,7 +210,7 @@ class TestOrchestratorMutationSoft:
         """
         result, fca = _classify_fca(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "subprocess_orchestrator",
             code,
         )
@@ -227,7 +227,7 @@ class TestOrchestratorLayerMisalignment:
         """ORCHESTRATOR under L2 => layer misalignment stat."""
         result, fca = _classify_fca(
             tmp_path,
-            ("agentic_core", "L2_execution", "reasoning"),
+            (AGENTIC_CORE_DIR, "L2_execution", "reasoning"),
             "misplaced_orchestrator",
             VALID_ORCHESTRATOR_CODE,
         )
@@ -252,7 +252,7 @@ class TestOrchestratorIntegration:
         # 1) Valid L3 orchestrator (2 roles, no mutation)
         p1 = _write(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "valid_orchestrator",
             VALID_ORCHESTRATOR_CODE,
         )
@@ -262,7 +262,7 @@ class TestOrchestratorIntegration:
         # 2) Thin wrapper orchestrator
         p2 = _write(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "thin_wrapper_orchestrator",
             textwrap.dedent("""\
                 from agentic_core.L3_orchestration.reasoning import R
@@ -279,11 +279,21 @@ class TestOrchestratorIntegration:
         # 3) Hard mutation orchestrator
         p3 = _write(
             tmp_path,
-            ("agentic_core", "L3_orchestration", "reasoning"),
+            (AGENTIC_CORE_DIR, "L3_orchestration", "reasoning"),
             "mutation_orchestrator",
             textwrap.dedent("""\
                 from agentic_core.L3_orchestration.reasoning import A
                 from agentic_core.L5_safety.enforcement import G
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+)
 
                 class MutationOrchestrator:
                     def run_pipeline(self):

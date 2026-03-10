@@ -30,14 +30,14 @@ from agentic_core.L5_safety.config.structure_blueprint.ssot import (
 )
 
 ROOT = Path(__file__).resolve().parents[2]
-TESTS_DIR = ROOT / "tests"
+TESTS_DIR = ROOT / TESTS_DIR
 PROJECT_PREFIXES = (
     AGENTIC_CORE_DIR,
     APPS_LIC_DIR,
     APPS_RG_DIR,
     APPS_SHARED_DIR,
-    "system_learning",
-    "tools",
+    SYSTEM_LEARNING_DIR,
+    TOOLS_DIR,
     OPS_SCRIPTS_DIR,
 )
 EXCLUDE_DIRS = GLOBAL_EXCLUDED_DIRS | SOVEREIGN_EXCLUDED_FOLDERS

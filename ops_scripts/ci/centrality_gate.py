@@ -31,10 +31,10 @@ from pathlib import Path
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 SCAN_ROOTS = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
 ]
 
 GENERAL_CEILING = 15

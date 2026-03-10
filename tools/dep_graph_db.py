@@ -42,7 +42,7 @@ except ImportError as _e:
 # ---------------------------------------------------------------------------
 
 ROOT = Path(__file__).resolve().parent.parent
-SSOT_DIRS = ["agentic_core", "apps_lic", "apps_rg", "apps_shared", "system_learning"]
+SSOT_DIRS = [AGENTIC_CORE_DIR, APPS_LIC_DIR, APPS_RG_DIR, APPS_SHARED_DIR, SYSTEM_LEARNING_DIR]
 DB_PATH = ROOT / "artifacts" / "dep_graph.sqlite"
 
 LAYER_ORDER: dict[str, int] = {

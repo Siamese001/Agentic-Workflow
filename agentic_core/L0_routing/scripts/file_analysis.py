@@ -184,14 +184,14 @@ def analyze_file(file_path: Path) -> FileAnalysis | None:
         if isinstance(node, ast.Import):
             for alias in node.names:
                 analysis.imports.append(alias.name)
-                if alias.name.startswith(("agentic_core", "apps_")):
+                if alias.name.startswith((AGENTIC_CORE_DIR, "apps_")):
                     analysis.internal_deps.append(alias.name)
                 elif not alias.name.startswith(("typing", "pathlib", "os", "sys", "re", "json")):
                     analysis.external_deps.append(alias.name)
         elif isinstance(node, ast.ImportFrom):
             module = node.module or ""
             analysis.from_imports.append(module)
-            if module.startswith(("agentic_core", "apps_")):
+            if module.startswith((AGENTIC_CORE_DIR, "apps_")):
                 analysis.internal_deps.append(module)
             elif not module.startswith(
                 ("typing", "pathlib", "os", "sys", "re", "json", "dataclasses", "enum"),

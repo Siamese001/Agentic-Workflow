@@ -16,6 +16,7 @@ from agentic_core.L0_routing.config import (
     APPS_RG_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import TOOLS_DIR
 
 # Configure logging
 logging.basicConfig(
@@ -59,7 +60,7 @@ class MigrationExecutor:
                 if not self.dry_run:
                     path.mkdir(parents=True, exist_ok=True)
                     # Create __init__.py for python packages
-                    if name in ["tools", "types", "engines"]:
+                    if name in [TOOLS_DIR, "types", "engines"]:
                         init_file = path / "__init__.py"
                         if not init_file.exists():
                             init_file.touch()

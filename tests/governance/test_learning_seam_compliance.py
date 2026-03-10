@@ -105,8 +105,8 @@ class TestNoDirectPersistenceImport:
         for path in _agent_files():
             try:
                 tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError:  # guardian: allow-silent-swallower
-                continue
+            except SyntaxError as e:
+                assert False, f"SyntaxError in {path}: {e}"
             for lineno, module in _scan_imports(tree):
                 root_mod = module.split(".")[0]
                 if root_mod in PERSISTENCE_MODULES:
@@ -125,8 +125,8 @@ class TestNoForbiddenWriteCalls:
         for path in _agent_files():
             try:
                 tree = ast.parse(path.read_text("utf-8"))
-            except SyntaxError:  # guardian: allow-silent-swallower
-                continue
+            except SyntaxError as e:
+                assert False, f"SyntaxError in {path}: {e}"
             for lineno, fqn in _scan_forbidden_calls(tree):
                 rel = path.relative_to(REPO_ROOT)
                 violations.append(f"{rel}:{lineno} calls {fqn}")

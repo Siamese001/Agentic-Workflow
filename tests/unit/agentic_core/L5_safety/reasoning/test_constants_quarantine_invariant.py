@@ -22,6 +22,7 @@ import pytest
 from agentic_core.L5_safety.config.structure_blueprint import (
     SOVEREIGN_TERRITORIES,
 )
+from agentic_core.L0_routing.config.path_constants import TESTS_DIR
 
 
 def _tests_subfolders() -> dict:
@@ -49,7 +50,7 @@ class TestConstantsQuarantineInvariant:
 
     def test_tests_territory_exists(self):
         """tests territory must be declared in SOVEREIGN_TERRITORIES."""
-        assert "tests" in SOVEREIGN_TERRITORIES
+        assert TESTS_DIR in SOVEREIGN_TERRITORIES
 
     def test_tests_subfolders_is_dict(self):
         """tests.subfolders must be a dict (not list, not None)."""

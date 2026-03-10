@@ -33,11 +33,11 @@ OPERATIONAL_EXCLUDED_DIRS: frozenset[str] = (
 # ============================================================================
 
 OPERATIONAL_SCAN_TARGETS: list[str] = [
-    "agentic_core",
-    "apps_lic",
-    "apps_rg",
-    "apps_shared",
-    "tests",  # Include tests for deduplication
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    TESTS_DIR,  # Include tests for deduplication
 ]
 
 

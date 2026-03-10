@@ -36,7 +36,10 @@ from pathlib import Path
 from typing import Any
 
 # SSOT discovery - replaces rglob
-from agentic_core.L0_routing.config.path_constants import TESTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    ARCHIVES_DIR,
+    TESTS_DIR,
+)
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
 
 try:
@@ -118,6 +121,7 @@ from agentic_core.L0_routing.seams.canonical_truth_seam import (
     categorize_agent,
     get_canonical_layer,
 )
+from agentic_core.L5_safety.config.structure_blueprint.ssot import REPORTS_DIR
 
 # Fix Windows console UnicodeEncodeError when printing warnings/emojis
 if platform.system() == "Windows":
@@ -186,11 +190,11 @@ EXCLUDED_DIRS = {
     "htmlcov",
     ".coverage",
     # Project-specific exclusions
-    "archives",
+    ARCHIVES_DIR,
     ".sovereign_healing_backup",
-    "reports",
+    REPORTS_DIR,
     # Test territory exclusion (CRITICAL: prevents test files from polluting manifest)
-    "tests",
+    TESTS_DIR,
 } | SSOT_EXCLUDED
 
 # Filename patterns that indicate non-agent files (case-insensitive)

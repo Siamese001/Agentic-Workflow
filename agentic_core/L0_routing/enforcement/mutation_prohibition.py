@@ -20,6 +20,10 @@ from dataclasses import asdict, dataclass
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any, Generator
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -71,7 +75,7 @@ def get_default_protected_root_policy() -> ProtectedRootPolicy:
         ProtectedRootPolicy with canonical immutable roots and log path
     """
     return ProtectedRootPolicy(
-        immutable_roots=("agentic_core", "tests", ".github", ".windsurfrules"),
+        immutable_roots=(AGENTIC_CORE_DIR, TESTS_DIR, ".github", ".windsurfrules"),
         log_path="logs/ssot_protected_root_blocks.jsonl",
     )
 
@@ -110,10 +114,9 @@ def _emit_block_event(
         with open(log_file, "a", encoding="utf-8") as f:
             json.dump(asdict(event), f, sort_keys=True)
             f.write("\n")
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (OSError, TypeError) as e:
         # Swallow logging failures to avoid masking the block exception
-        pass
+        print(f"Failed to log mutation event: {e}")
 
 
 def _get_repo_root() -> Path:
@@ -159,8 +162,7 @@ def enforce_protected_root(
     # Resolve path without requiring existence
     try:
         resolved = target_path.resolve(strict=False)
-    # guardian: allow-silent-swallow
-    except Exception:
+    except (OSError, RuntimeError):
         # If resolution fails, use the original path
         resolved = target_path
 

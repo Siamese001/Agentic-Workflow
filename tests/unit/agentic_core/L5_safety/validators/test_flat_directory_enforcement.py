@@ -33,11 +33,11 @@ class TestValidateFlatDirectory:
     """validate_flat_directory() catches nested files in flat directories."""
 
     def test_file_directly_in_mixins_is_ok(self):
-        parts = ("agentic_core", "mixins", "meta_learning_mixin.py")
+        parts = (AGENTIC_CORE_DIR, "mixins", "meta_learning_mixin.py")
         assert validate_flat_directory(parts) is None
 
     def test_file_in_mixins_subfolder_is_violation(self):
-        parts = ("agentic_core", "mixins", "contracts", "meta_learning_contract.py")
+        parts = (AGENTIC_CORE_DIR, "mixins", "contracts", "meta_learning_contract.py")
         result = validate_flat_directory(parts)
         assert result is not None
         assert result["domain"] == "mixins"
@@ -45,36 +45,36 @@ class TestValidateFlatDirectory:
         assert "FLAT VIOLATION" in result["message"]
 
     def test_file_directly_in_base_agents_is_ok(self):
-        parts = ("agentic_core", "base_agents", "SovereignBaseAgent.py")
+        parts = (AGENTIC_CORE_DIR, "base_agents", "SovereignBaseAgent.py")
         assert validate_flat_directory(parts) is None
 
     def test_file_in_base_agents_subfolder_is_violation(self):
-        parts = ("agentic_core", "base_agents", "legacy", "OldBase.py")
+        parts = (AGENTIC_CORE_DIR, "base_agents", "legacy", "OldBase.py")
         result = validate_flat_directory(parts)
         assert result is not None
         assert result["domain"] == "base_agents"
         assert result["illegal_child"] == "legacy"
 
     def test_file_directly_in_interfaces_is_ok(self):
-        parts = ("agentic_core", "interfaces", "IOrchestratorProtocol.py")
+        parts = (AGENTIC_CORE_DIR, "interfaces", "IOrchestratorProtocol.py")
         assert validate_flat_directory(parts) is None
 
     def test_file_in_interfaces_subfolder_is_violation(self):
-        parts = ("agentic_core", "interfaces", "v2", "INewProtocol.py")
+        parts = (AGENTIC_CORE_DIR, "interfaces", "v2", "INewProtocol.py")
         result = validate_flat_directory(parts)
         assert result is not None
         assert result["domain"] == "interfaces"
 
     def test_pycache_in_flat_dir_is_allowed(self):
-        parts = ("agentic_core", "mixins", "__pycache__", "foo.cpython-312.pyc")
+        parts = (AGENTIC_CORE_DIR, "mixins", "__pycache__", "foo.cpython-312.pyc")
         assert validate_flat_directory(parts) is None
 
     def test_non_flat_directory_is_not_checked(self):
-        parts = ("agentic_core", "L5_safety", "reasoning", "sub", "file.py")
+        parts = (AGENTIC_CORE_DIR, "L5_safety", "reasoning", "sub", "file.py")
         assert validate_flat_directory(parts) is None
 
     def test_deeply_nested_flat_violation(self):
-        parts = ("agentic_core", "mixins", "a", "b", "file.py")
+        parts = (AGENTIC_CORE_DIR, "mixins", "a", "b", "file.py")
         result = validate_flat_directory(parts)
         assert result is not None
         assert result["illegal_child"] == "a"

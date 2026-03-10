@@ -378,8 +378,8 @@ class TestBlastRadiusCheck:
                 continue
             try:
                 tree = ast.parse(fpath.read_text(encoding="utf-8", errors="replace"))
-            except SyntaxError:  # guardian: allow-silent-swallower
-                continue
+            except SyntaxError as e:
+                assert False, f"SyntaxError in {fpath}: {e}"
             if any(ROUTER_MODULE in imp for imp in self._get_imports(tree)):
                 violations.append(f"NON_TIERED_IMPORTS_ROUTER: {rel}")
 

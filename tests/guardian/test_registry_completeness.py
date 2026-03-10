@@ -36,7 +36,7 @@ from agentic_core.L0_routing.types.guardian_registry_types import (
 
 pytestmark = pytest.mark.guardian
 
-GUARDIAN_SCRIPTS_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
+GUARDIAN_SCRIPTS_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
 
 
 # ---------------------------------------------------------------------------
@@ -60,7 +60,7 @@ def _extract_guardian_id_from_script(script_path: Path) -> str | None:
                         if isinstance(node.value, ast.Constant):
                             return node.value.value
         return None
-    except Exception:
+    except (OSError, UnicodeDecodeError, SyntaxError):
         return None
 
 

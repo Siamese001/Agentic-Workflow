@@ -6,7 +6,7 @@ import ast
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
-MOD_DIR = ROOT / "agentic_core" / "L5_safety" / "config" / "structure_blueprint"
+MOD_DIR = ROOT / AGENTIC_CORE_DIR / "L5_safety" / "config" / "structure_blueprint"
 
 
 def collect_public_names() -> dict[str, list[str]]:

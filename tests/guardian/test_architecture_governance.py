@@ -62,7 +62,7 @@ class ArchitectureGovernanceValidator:
                     if isinstance(node, ast.ImportFrom) and node.module:
                         module_parts = node.module.split(".")
 
-                        if len(module_parts) >= 2 and module_parts[0] == "agentic_core":
+                        if len(module_parts) >= 2 and module_parts[0] == AGENTIC_CORE_DIR:
                             imported_layer = module_parts[1]
                             if imported_layer in LAYER_HIERARCHY:
                                 imported_level = LAYER_HIERARCHY[imported_layer]
@@ -82,7 +82,7 @@ class ArchitectureGovernanceValidator:
         """Check that agent files follow naming conventions."""
         violations = []
 
-        if "agentic_core" not in str(file_path):
+        if AGENTIC_CORE_DIR not in str(file_path):
             return []
 
         if file_path.suffix != ".py":
@@ -103,7 +103,7 @@ class ArchitectureGovernanceValidator:
                     f"Naming violation: File contains agent classes {agent_classes} "
                     f"but doesn't end with 'Agent.py'",
                 )
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError):
             pass
 
         return violations
@@ -264,6 +264,10 @@ class TestAgent(SovereignBaseAgent):
         """TC-AG-08: Multiple violations detected in single file."""
         agent_code = """
 from agentic_core.L6_observability.dashboard import Dashboard
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+)
 
 class TestAgent:
     def run(self):

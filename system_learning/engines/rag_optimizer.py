@@ -128,8 +128,9 @@ def propose_rag_param_changes(
     try:
         assert_cooldown_ok(last_update, now_utc, cooldown_policy)
         assert_min_sample_size(n_obs, sample_policy)
-    except Exception:
+    except (ValueError, AssertionError) as e:
         # Dampening violated - no proposal
+        logger.debug(f"Dampening check failed: {e}")
         return None
 
     # Heuristic now includes semantic quality signal

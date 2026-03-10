@@ -72,6 +72,31 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_RG_DIR,
     APPS_SHARED_DIR,
     TESTS_DIR,
+    TOOLS_DIR,
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    TESTS_DIR,
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    AGENTIC_CORE_DIR,
+    TESTS_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
+    AGENTIC_CORE_DIR,
 )
 
 # SSOT: Import FileType and ExecutionMode helpers from the zero-dependency classification kernel
@@ -294,7 +319,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             "engines",
             "validators",
             "utils",
-            "tools",
+            TOOLS_DIR,
             "scripts",
             "data",
         }
@@ -336,7 +361,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # === GLOBAL OVERRIDE: Validators always go to L5_safety/validators ===
         if filename.endswith("_validator.py"):
             # Find agentic_core root
-            if "agentic_core" in parts:
+            if AGENTIC_CORE_DIR in parts:
                 agentic_idx = parts.index("agentic_core")
                 agentic_root = Path(*parts[: agentic_idx + 1])
                 target = agentic_root / "L5_safety" / "validators" / filename
@@ -346,7 +371,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             return None
 
         # Only process files in agentic_core layers for kernel routing
-        if "agentic_core" not in parts:
+        if AGENTIC_CORE_DIR not in parts:
             return None
 
         # Find the layer root (L0-L6) if not provided
@@ -369,7 +394,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # === GLOBAL OVERRIDE: Mixins always go to agentic_core/mixins/ ===
         if filename.endswith("_mixin.py") or ("Mixin" in filename and filename.endswith(".py")):
-            if "agentic_core" in parts:
+            if AGENTIC_CORE_DIR in parts:
                 agentic_idx = parts.index("agentic_core")
                 agentic_root = Path(*parts[: agentic_idx + 1])
                 target = agentic_root / "mixins" / filename
@@ -379,7 +404,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # === GLOBAL OVERRIDE: I*Protocol.py interfaces go to agentic_core/interfaces/ ===
         if re.match(r"^I[A-Z].*Protocol\.py$", filename):
-            if "agentic_core" in parts:
+            if AGENTIC_CORE_DIR in parts:
                 agentic_idx = parts.index("agentic_core")
                 agentic_root = Path(*parts[: agentic_idx + 1])
                 target = agentic_root / "interfaces" / filename
@@ -581,9 +606,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                     else:
                         # Default to UTILITY violations for MISNAMED_UTILITY
                         self.stats["violations"]["UTILITY"] += 1
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass  # File read failure — skip purity/config check
+            except (OSError, UnicodeDecodeError) as e:
+                self.logger.debug(f"File read failure for {path.name}, skipping purity/config check: {e}")
 
             # [BASE_AGENTS PURITY] Enforce STRICT IDENTITY ONLY
             ba_violation = self.check_base_agents_purity(path)
@@ -922,7 +946,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         test_indicators = self._detect_test_patterns(tree, path)
         if test_indicators["is_test"]:
             # [HARDENING] Flag test files found outside tests/ directory
-            if "tests" not in path.parts:
+            if TESTS_DIR not in path.parts:
                 self.logger.warning(
                     f"[MISPLACED-TEST] {path.name} is a test file outside tests/ directory. "
                     f"Current location: {path.parent}. Move to tests/ mirror structure.",
@@ -2020,7 +2044,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         # === SIGNAL 2: Path string references (medium signal) ===
         path_refs: dict[str, int] = {}
         content_lower = content.lower()
-        for app in ("apps_rg", "apps_lic"):
+        for app in (APPS_RG_DIR, APPS_LIC_DIR):
             count = content_lower.count(f"{app}/") + content_lower.count(f'"{app}')
             if count > 0:
                 path_refs[app] = count
@@ -2889,7 +2913,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         path_str = str(path)
 
         # Only check files inside agentic_core/
-        if "agentic_core" not in path_str:
+        if AGENTIC_CORE_DIR not in path_str:
             return None
 
         for prefix in APP_DOMAIN_PREFIXES:
@@ -3394,8 +3418,9 @@ class FileClassificationAgent(*BASE_CLASSES):
                             "top3": str([(n, round(s / total, 3)) for n, s in top3]),
                         },
                     )
-                except Exception:  # guardian: allow-silent-swallow
-                    pass
+                except (ValueError, ZeroDivisionError, KeyError) as e:
+                    self.logger.debug(f"Failed to generate top3 stats for classification: {e}")
+                    # Continue without the extra stats
                 warnings.append(
                     f"HITL_FLAGGED: top-2 delta={delta:.3f}<0.15; "
                     f"top3={[(n, round(s / total, 3)) for n, s in top3]}"
@@ -4148,9 +4173,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             new_content = content.replace(old_name, new_name)
             if new_content != content:
                 _wg.write_text(path, new_content, encoding="utf-8")
-        # guardian: allow-silent-swallow
-        except Exception:
-            pass
+        except (OSError, UnicodeDecodeError) as e:
+            self.logger.debug(f"Failed to update docstring in {path.name}: {e}")
 
     def sync_companion_test(self, src_path: Path, new_name: str):
         """Renames the corresponding test file if it exists."""
@@ -4202,8 +4226,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                         print(f"  [CONFIG] Updating reference in {path.name}")
                         if not self.dry_run:
                             _wg.write_text(path, new_content, encoding="utf-8")
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (OSError, UnicodeDecodeError) as e:
+                self.logger.debug(f"Failed to update config file {path.name}: {e}")
                 continue
 
     def deep_refactor_name(self, old_name: str, new_name: str) -> int:
@@ -4298,8 +4322,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                     if not self.dry_run:
                         _wg.write_text(path, new_content, encoding="utf-8")
                     count += 1
-            # guardian: allow-silent-swallow
-            except Exception:
+            except (OSError, UnicodeDecodeError) as e:
+                self.logger.debug(f"Failed to refactor imports in {path.name}: {e}")
                 continue
         return count
 
@@ -4318,9 +4342,8 @@ class FileClassificationAgent(*BASE_CLASSES):
                     print("[WARNING] Windows LongPathsEnabled is NOT set to 1.")
                     if not self.dry_run:
                         return False
-            # guardian: allow-silent-swallow
-            except Exception:
-                pass
+            except (ImportError, OSError, AttributeError) as e:
+                self.logger.debug(f"Failed to check LongPathsEnabled registry: {e}")
         return True
 
     def resolve_collision_and_rename(self, src: Path, dest_name: str, target_dir: Path | None = None) -> bool:
@@ -4450,9 +4473,9 @@ class FileClassificationAgent(*BASE_CLASSES):
                 print("  [WARNING] Temp file still exists after rename - cleaning up")
                 try:
                     _wg.remove_file(temp)
-                # guardian: allow-silent-swallow
-                except Exception:
-                    pass  # Best effort cleanup
+                except OSError as e:
+                    self.logger.debug(f"Failed to cleanup temp file {temp.name}: {e}")
+                    # Best effort cleanup - continue anyway
 
             print(f"  [SUCCESS] {src.name} -> {dest_name}")
             return True
@@ -4646,7 +4669,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         name = path.name
 
         # Only check inside agentic_core (not tests/)
-        if "agentic_core" not in parts or "tests" in parts:
+        if AGENTIC_CORE_DIR not in parts or TESTS_DIR in parts:
             return None
 
         # Rule 1: test_ files in agentic_core are violations
@@ -4797,7 +4820,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         if file_type in ("IGNORE", "STUB", "TEST"):
             return None
 
-        is_core = root_anchor == "agentic_core"
+        is_core = root_anchor == AGENTIC_CORE_DIR
         is_app = root_anchor.startswith("apps_")
 
         # 2. DEFINE RULES (THE CONSTITUTION)
@@ -4866,7 +4889,7 @@ class FileClassificationAgent(*BASE_CLASSES):
         elif is_core:
             # [HARDENED] APP PREFIX DEPORTATION: "App*" files are FORBIDDEN in agentic_core
             # They belong in apps_shared/agents/ - trigger territory violation
-            if path.name.startswith("App") and "agentic_core" in str(path):
+            if path.name.startswith("App") and AGENTIC_CORE_DIR in str(path):
                 # Deport to apps_shared/agents/
                 target_path = self.project_root / APPS_SHARED_DIR / "agents" / path.name
                 self.processed_paths.add(path)
@@ -4879,7 +4902,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if file_type == "SCRIPT":
                     # Flag for movement to L0_routing/scripts/
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4888,7 +4911,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if file_type in ("UTILITY", "SERVICE"):
                     # Flag for movement to agentic_core/utils/
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "utils" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4900,7 +4923,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 # AGENT workers should be moved to engines/ (not L0_routing/scripts/)
                 if file_type == "AGENT":
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "engines" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4909,7 +4932,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 # Flag for movement to appropriate location
                 if file_type in ("CONFIG", "PROTOCOL", "TYPES", "STRATEGY", "ADAPTER"):
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             # Route to appropriate folder based on type
                             target_folder = {
                                 "CONFIG": "config",
@@ -4931,7 +4954,7 @@ class FileClassificationAgent(*BASE_CLASSES):
             if current_parent == "config":
                 if file_type == "SCRIPT":
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "L0_routing" / "scripts" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4939,7 +4962,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     return None
                 if file_type in ("UTILITY", "MIXIN", "SERVICE"):
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "utils" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4947,7 +4970,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     return None
                 if file_type in ("TYPES", "PROTOCOL", "EXCEPTION"):
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "types" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4955,7 +4978,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                     return None
                 if file_type == "VALIDATOR":
                     for i, part in enumerate(path.parts):
-                        if part == "agentic_core":
+                        if part == AGENTIC_CORE_DIR:
                             target_path = Path(*path.parts[: i + 1]) / "validators" / path.name
                             self.processed_paths.add(path)
                             self.processed_paths.add(target_path)
@@ -4989,7 +5012,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if file_type == "VALIDATOR":
                     return None
                 for i, part in enumerate(path.parts):
-                    if part == "agentic_core":
+                    if part == AGENTIC_CORE_DIR:
                         target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
                         self.processed_paths.add(path)
                         self.processed_paths.add(target_path)
@@ -5001,7 +5024,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if file_type in ("TYPES", "PROTOCOL", "EXCEPTION"):
                     return None
                 for i, part in enumerate(path.parts):
-                    if part == "agentic_core":
+                    if part == AGENTIC_CORE_DIR:
                         target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
                         self.processed_paths.add(path)
                         self.processed_paths.add(target_path)
@@ -5013,7 +5036,7 @@ class FileClassificationAgent(*BASE_CLASSES):
                 if file_type == "MIXIN":
                     return None
                 for i, part in enumerate(path.parts):
-                    if part == "agentic_core":
+                    if part == AGENTIC_CORE_DIR:
                         target_path = Path(*path.parts[: i + 1]) / purity_relocation_folder / path.name
                         self.processed_paths.add(path)
                         self.processed_paths.add(target_path)
@@ -5081,7 +5104,7 @@ class FileClassificationAgent(*BASE_CLASSES):
 
         # 4. SPECIAL HANDLING: TESTS
         if file_type == "TEST":
-            if "tests" not in parts and not path.name.startswith("test_"):
+            if TESTS_DIR not in parts and not path.name.startswith("test_"):
                 # It's a test file outside of tests/ -> Violates Mirroring
                 # (Complex logic, handled by mirror check, skip to avoid over-engineering)
                 pass
@@ -5173,8 +5196,8 @@ class FileClassificationAgent(*BASE_CLASSES):
             tree = ast.parse(path.read_text(encoding="utf-8"))
             classes = [n.name for n in ast.walk(tree) if isinstance(n, ast.ClassDef)]
             target_name = classes[0] if classes else path.stem
-        # guardian: allow-silent-swallow
-        except Exception:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
+            self.logger.debug(f"Failed to parse {path.name} for class name, using stem: {e}")
             target_name = path.stem
 
         if is_app:

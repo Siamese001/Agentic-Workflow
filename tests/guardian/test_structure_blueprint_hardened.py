@@ -49,6 +49,7 @@ from agentic_core.L5_safety.config.structure_blueprint.sovereign_kernel import (
     is_modular_extension,
     validate_boundary,
 )
+from agentic_core.L0_routing.config.path_constants import SYSTEM_LEARNING_DIR
 
 # ---------------------------------------------------------------------------
 # 1. is_kernel_component() — exact, prefix, no-match
@@ -238,7 +239,7 @@ class TestCriticalDeclarations:
     @pytest.mark.parametrize(
         "module_path",
         [
-            "system_learning",
+            SYSTEM_LEARNING_DIR,
             "agentic_core.rag",
             "agentic_core.context",
             "agentic_core.monitoring",

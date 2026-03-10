@@ -19,7 +19,7 @@ from pathlib import Path
 # Constants
 PROJECT_ROOT = Path(__file__).resolve().parents[3]
 SOURCE_DIR = PROJECT_ROOT / "scripts"
-TARGET_DIR = PROJECT_ROOT / "agentic_core" / "L0_routing" / "scripts"
+TARGET_DIR = PROJECT_ROOT / AGENTIC_CORE_DIR / "L0_routing" / "scripts"
 
 
 def get_file_hash(file_path: Path) -> str:
