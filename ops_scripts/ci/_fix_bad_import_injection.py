@@ -249,6 +249,7 @@ def main(dry_run: bool = False) -> int:
             if result:
                 fixed += 1
         except Exception as e:
+            raise
             print(f"  [ERROR] {p.relative_to(ROOT)}: {e}")
             errors += 1
 

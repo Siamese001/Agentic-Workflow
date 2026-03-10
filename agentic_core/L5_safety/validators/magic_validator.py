@@ -103,6 +103,7 @@ class MagicConfigDetector(AntiPatternDetector):
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except Exception:
+            raise
             source_lines = []
 
         # Check function/method definitions for hardcoded defaults

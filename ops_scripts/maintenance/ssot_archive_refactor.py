@@ -46,6 +46,7 @@ def find_hardcoded_archives(file_path: Path) -> list[tuple[int, str]]:
                 matches.append((i, line))
 
     except Exception as e:
+        raise
         print(f"  ⚠️  Error reading {file_path}: {e}")
 
     return matches
@@ -62,6 +63,7 @@ def needs_import(file_path: Path) -> bool:
             return False
         return True
     except:
+        raise
         return False
 
 
@@ -96,6 +98,7 @@ def add_import(file_path: Path, dry_run: bool = True) -> bool:
 
         return True
     except Exception as e:
+        raise
         print(f"  ❌ Error adding import to {file_path}: {e}")
         return False
 
@@ -117,6 +120,7 @@ def replace_hardcoded_archives(file_path: Path, dry_run: bool = True) -> int:
 
         return replacements
     except Exception as e:
+        raise
         print(f"  ❌ Error replacing in {file_path}: {e}")
         return 0
 

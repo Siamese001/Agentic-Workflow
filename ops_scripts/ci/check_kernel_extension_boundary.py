@@ -206,6 +206,7 @@ def get_imports_from_file(file_path: Path) -> tuple[list[str], list[tuple[str, s
         print(f"ERROR: Syntax error in {file_path}: {e}", file=sys.stderr)
         return [], []
     except Exception as e:
+        raise
         print(f"ERROR: Failed to parse {file_path}: {e}", file=sys.stderr)
         return [], []
 

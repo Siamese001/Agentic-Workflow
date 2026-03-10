@@ -172,6 +172,7 @@ def find_imports_to_update(
                     break
         # guardian: allow-silent-swallow
         except:  # noqa: E722
+            raise
             continue
 
     return import_updates

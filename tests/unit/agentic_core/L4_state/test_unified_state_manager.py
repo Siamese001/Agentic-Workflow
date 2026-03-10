@@ -444,15 +444,13 @@ class TestValidateFreshness:
     def test_passes_when_data_is_brand_new(self):
         data = _fresh_data(age_seconds=0)
         policy = FreshnessPolicy(max_age_seconds=60)
-        validate_freshness(data, policy)  # must not raise
-        assert True  # no-exception contract
+        validate_freshness(data, policy)  
 
     @pytest.mark.governance
     def test_passes_when_age_within_policy(self):
         data = _fresh_data(age_seconds=30)
         policy = FreshnessPolicy(max_age_seconds=60)
-        validate_freshness(data, policy)  # must not raise
-        assert True  # no-exception contract
+        validate_freshness(data, policy)  
 
     @pytest.mark.governance
     def test_raises_when_data_is_stale(self):
@@ -484,8 +482,7 @@ class TestValidateFreshness:
         # Due to execution time we use a generous boundary (2 sec policy, 1 sec old)
         data = _fresh_data(age_seconds=1)
         policy = FreshnessPolicy(max_age_seconds=2)
-        validate_freshness(data, policy)  # must not raise
-        assert True  # no-exception contract
+        validate_freshness(data, policy)  
 
     @pytest.mark.governance
     def test_zero_max_age_policy_rejects_any_data(self):

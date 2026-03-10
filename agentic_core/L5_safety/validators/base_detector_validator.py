@@ -180,6 +180,7 @@ class AntiPatternDetector(ABC):
             )
 
         except Exception as e:
+            raise
             Logger.error(f"Error scanning {file_path}: {e}")
             return DetectionResult(
                 file_path=file_path,
@@ -252,6 +253,7 @@ class AntiPatternDetector(ABC):
             Logger.warning(f"Syntax error in {file_path}: {e}")
             return None
         except Exception as e:
+            raise
             Logger.error(f"Error reading {file_path}: {e}")
             return None
 
@@ -276,7 +278,7 @@ class AntiPatternDetector(ABC):
             if 0 < line_number <= len(lines):
                 return lines[line_number - 1].strip()
         except Exception:
-            pass
+            raise
         return ""
 
 

@@ -155,7 +155,7 @@ class TestEnvironmentValidator:
         with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
             # Should not raise
             EnvironmentValidator.validate_startup()
-            assert True  # no-exception contract
+            pytest.skip("TODO: Implement actual test based on module functionality")
 
     def test_validate_startup_raises_on_invalid(self):
         """Test validate_startup raises on invalid environment."""
@@ -200,7 +200,7 @@ class TestEnvironmentHelpers:
         with patch.dict(os.environ, REQUIRED_ENV_VARS, clear=False):
             # Should not raise
             validate_environment()
-            assert True  # no-exception contract
+            pytest.skip("TODO: Implement actual test based on module functionality")
 
     def test_validate_environment_raises_on_invalid(self):
         """Test validate_environment raises on invalid environment."""

@@ -63,7 +63,7 @@ class TestLatencyBudget:
 
             assert elapsed < 2.0, f"Instantiation took {elapsed:.3f}s, budget is 2.0s"
             assert agent is not None
-        except Exception as e:
+        except (ImportError, AttributeError, TypeError) as e:
             pytest.fail(f"CodeHealerAgent not available: {e}")
 
     def test_file_hash_computation_latency(self, temp_file):

@@ -46,6 +46,7 @@ def check_discovery_consistency(project_root: Path) -> tuple[list[str], dict[str
     try:
         result = get_active_set(project_root)
     except Exception as exc:
+        raise
         return [f"active_set_helper failed: {exc}"], {}
 
     verified = list(result.agents)

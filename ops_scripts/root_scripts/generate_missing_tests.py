@@ -85,6 +85,7 @@ def main():
                 generated_count += 1
                 print(f"Generated: {result}")
         except Exception as e:
+            raise
             print(f"Failed to generate test for {module_path}: {e}")
 
     print(f"Generated {generated_count} test files")

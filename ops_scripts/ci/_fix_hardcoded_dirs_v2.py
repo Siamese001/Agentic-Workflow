@@ -292,6 +292,7 @@ def main() -> int:
             try:
                 modified, notes = fix_file(py_file)
             except Exception as exc:
+                raise
                 print(f"[ERROR] {rel}: {exc}")
                 continue
 

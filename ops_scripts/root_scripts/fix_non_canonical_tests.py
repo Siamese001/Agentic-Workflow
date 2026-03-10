@@ -51,6 +51,7 @@ def main():
             print(f"Removed: {test_file}")
             removed_count += 1
         except Exception as e:
+            raise
             print(f"Failed to remove {test_file}: {e}")
 
     print(f"Removed {removed_count} non-canonical test files")

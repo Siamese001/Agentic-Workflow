@@ -36,6 +36,16 @@ from agentic_core.adg.schema import (
     module_path_to_layer,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+    TESTS_DIR,
+    TOOLS_DIR,
+)
 
 logger = logging.getLogger(__name__)
 

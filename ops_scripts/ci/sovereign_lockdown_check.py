@@ -88,6 +88,7 @@ def main() -> int:
         print("Ensure agentic_core is properly installed.")
         return 2
     except Exception as e:
+        raise
         print(f"[ERROR] Verification Error: {e}")
         return 2
 

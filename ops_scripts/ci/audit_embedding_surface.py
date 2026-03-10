@@ -195,6 +195,7 @@ def scan_file(file_path: Path) -> list[EmbeddingUsageViolation]:
         return scanner.violations
 
     except Exception as e:
+        raise
         print(f"Error scanning {file_path}: {e}", file=sys.stderr)
         return []
 

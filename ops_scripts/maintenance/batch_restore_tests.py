@@ -160,6 +160,7 @@ def restore_file(file_path: str, commit: str) -> tuple[bool, str]:
 
         return True, "Restored and imports fixed"
     except Exception as e:
+        raise
         return False, str(e)
 
 

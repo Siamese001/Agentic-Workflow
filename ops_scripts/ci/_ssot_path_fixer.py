@@ -306,6 +306,7 @@ def main() -> None:
                         total_replacements += replacements
                         total_new_imports += new_imports
             except Exception as exc:
+                raise
                 rel = py_file.relative_to(ROOT).as_posix()
                 errors.append((rel, str(exc)))
 

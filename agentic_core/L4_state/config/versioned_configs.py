@@ -11,6 +11,8 @@ import hashlib
 import json
 from dataclasses import dataclass, field
 
+from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+
 
 def _sha256(data: bytes) -> str:
     return hashlib.sha256(data).hexdigest()

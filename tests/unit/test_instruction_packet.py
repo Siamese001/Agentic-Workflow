@@ -158,7 +158,6 @@ def test_sign_verify_pass():
     unsigned = _make_unsigned_packet()
     signed = unsigned.sign(_SECRET)
     signed.verify(_SECRET)  # must not raise
-    assert True  # no-exception contract
 
 
 def test_sign_is_deterministic():

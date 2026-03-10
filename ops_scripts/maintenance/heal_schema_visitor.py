@@ -146,6 +146,7 @@ def check_file(filepath: Path) -> list[dict]:
     except SyntaxError:
         return []  # Skip files with syntax errors
     except Exception as e:
+        raise
         print(f"Warning: Could not parse {filepath}: {e}", file=sys.stderr)
         return []
 

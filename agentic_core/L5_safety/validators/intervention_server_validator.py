@@ -241,6 +241,7 @@ class InterventionServer:
                 Logger.info(f"Telepathy instructions received: {instructions[:100]}...")
                 return instructions
         except Exception as e:
+            raise
             Logger.error(f"Failed to read telepathy file: {e}")
         return None
 

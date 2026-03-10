@@ -1,0 +1,266 @@
+#!/usr/bin/env python3
+"""
+Utility Script Classification & Remediation Tool
+
+Classifies utility scripts by operational category and identifies silent swallower
+violations for remediation according to Windsurf Hardening Response requirements.
+
+Categories:
+- RUNTIME_CRITICAL: Core system components
+- GOVERNANCE_CRITICAL: CI, validation, safety enforcement (zero tolerance)
+- DIAGNOSTIC_ONLY: Analysis and reporting tools (must emit signals)
+- LOCAL_DEV_ONLY: Development utilities (annotation required)
+
+Usage:
+    python ops_scripts/ci/classify_utility_scripts.py [--remediate] [--report]
+"""
+
+import ast
+import sys
+from pathlib import Path
+from typing import Dict, List, Tuple
+import json
+
+# Force UTF-8 encoding for Windows compatibility
+import io
+
+if sys.platform == "win32":
+    sys.stdout = io.TextIOWrapper(sys.stdout.buffer, encoding="utf-8", errors="replace")
+    sys.stderr = io.TextIOWrapper(sys.stderr.buffer, encoding="utf-8", errors="replace")
+
+# Ensure project root is in path
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+if str(_REPO_ROOT) not in sys.path:
+    sys.path.insert(0, str(_REPO_ROOT))
+
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
+from agentic_core.L5_safety.validators.utility_silent_swallower_validator import (
+    UtilitySilentSwallowerDetector,
+    UtilityScriptClassifier,
+)
+
+PROJECT_ROOT = get_validated_project_root()
+
+
+class UtilityScriptAnalyzer:
+    """Analyzes and classifies utility scripts for silent swallower remediation."""
+    
+    def __init__(self):
+        self.detector = UtilitySilentSwallowerDetector(PROJECT_ROOT)
+        self.classifier = UtilityScriptClassifier()
+        
+    def analyze_all_utility_scripts(self) -> Dict[str, List[Dict]]:
+        """Analyze all utility scripts and categorize findings."""
+        utility_paths = [
+            "ops_scripts",
+            "tools", 
+            "tests/guardian",
+            "tests/governance",
+            "tests/integration",
+            "tests/performance",
+            "agentic_core/L5_safety/validators",
+            "agentic_core/L5_safety/static_checks",
+        ]
+        
+        results = {
+            "GOVERNANCE_CRITICAL": [],
+            "DIAGNOSTIC_ONLY": [],
+            "LOCAL_DEV_ONLY": [],
+            "RUNTIME_CRITICAL": []
+        }
+        
+        for path in utility_paths:
+            full_path = PROJECT_ROOT / path
+            if full_path.exists():
+                for py_file in full_path.rglob("*.py"):
+                    if self._should_analyze_file(py_file):
+                        category = self.classifier.classify_script(py_file)
+                        detection_result = self.detector.scan_file(py_file)
+                        
+                        script_info = {
+                            "file": str(py_file.relative_to(PROJECT_ROOT)),
+                            "category": category,
+                            "violations": detection_result.violation_count,
+                            "violation_details": [
+                                {
+                                    "line": v.line_number,
+                                    "message": v.message,
+                                    "severity": v.severity
+                                } for v in detection_result.violations
+                            ]
+                        }
+                        
+                        results[category].append(script_info)
+        
+        return results
+    
+    def _should_analyze_file(self, file_path: Path) -> bool:
+        """Check if file should be analyzed for silent swallowers."""
+        # Skip test files (they have different patterns)
+        if "test_" in file_path.name and file_path.parent.name == "tests":
+            return False
+            
+        # Skip __init__.py files
+        if file_path.name == "__init__.py":
+            return False
+            
+        # Skip files in archives or backups
+        if any(skip in str(file_path) for skip in ["archives", ".healing_backups", "__pycache__"]):
+            return False
+            
+        return True
+    
+    def generate_remediation_plan(self, analysis: Dict[str, List[Dict]]) -> Dict:
+        """Generate prioritized remediation plan."""
+        plan = {
+            "priority_order": ["GOVERNANCE_CRITICAL", "DIAGNOSTIC_ONLY", "LOCAL_DEV_ONLY", "RUNTIME_CRITICAL"],
+            "remediation_steps": [],
+            "summary": {}
+        }
+        
+        total_violations = 0
+        total_files = 0
+        
+        for category in plan["priority_order"]:
+            category_files = analysis[category]
+            category_violations = sum(f["violations"] for f in category_files)
+            
+            total_files += len(category_files)
+            total_violations += category_violations
+            
+            plan["summary"][category] = {
+                "files": len(category_files),
+                "violations": category_violations,
+                "priority": self._get_priority_level(category)
+            }
+            
+            if category_files:
+                step = {
+                    "category": category,
+                    "description": self._get_category_description(category),
+                    "files_to_fix": len(category_files),
+                    "violations_to_resolve": category_violations,
+                    "files": sorted(category_files, key=lambda x: -x["violations"])[:10]  # Top 10 worst
+                }
+                plan["remediation_steps"].append(step)
+        
+        plan["summary"]["total"] = {
+            "files": total_files,
+            "violations": total_violations
+        }
+        
+        return plan
+    
+    def _get_priority_level(self, category: str) -> str:
+        """Get priority level for category."""
+        priorities = {
+            "GOVERNANCE_CRITICAL": "CRITICAL",
+            "DIAGNOSTIC_ONLY": "HIGH", 
+            "LOCAL_DEV_ONLY": "MEDIUM",
+            "RUNTIME_CRITICAL": "CRITICAL"
+        }
+        return priorities.get(category, "LOW")
+    
+    def _get_category_description(self, category: str) -> str:
+        """Get description for remediation category."""
+        descriptions = {
+            "GOVERNANCE_CRITICAL": "Zero tolerance - must fail loudly",
+            "DIAGNOSTIC_ONLY": "Must emit failure signals",
+            "LOCAL_DEV_ONLY": "Requires guardian annotation",
+            "RUNTIME_CRITICAL": "Core system integrity"
+        }
+        return descriptions.get(category, "Unknown category")
+    
+    def print_report(self, analysis: Dict[str, List[Dict]], plan: Dict) -> None:
+        """Print comprehensive analysis report."""
+        print("=" * 80)
+        print("UTILITY SCRIPT SILENT SWALLOWER ANALYSIS")
+        print("=" * 80)
+        print()
+        
+        # Summary
+        summary = plan["summary"]["total"]
+        print(f"📊 SUMMARY: {summary['files']} utility scripts analyzed, {summary['violations']} violations found")
+        print()
+        
+        # Category breakdown
+        print("📁 CATEGORY BREAKDOWN:")
+        for category in plan["priority_order"]:
+            cat_summary = plan["summary"][category]
+            if cat_summary["files"] > 0:
+                priority = cat_summary["priority"]
+                icon = "🔴" if priority == "CRITICAL" else "🟡" if priority == "HIGH" else "🟠"
+                print(f"  {icon} {category}: {cat_summary['files']} files, {cat_summary['violations']} violations ({priority})")
+        print()
+        
+        # Remediation steps
+        print("🔧 REMEDIATION PLAN:")
+        for i, step in enumerate(plan["remediation_steps"], 1):
+            category = step["category"]
+            priority = plan["summary"][category]["priority"]
+            icon = "🚨" if priority == "CRITICAL" else "⚠️" if priority == "HIGH" else "📝"
+            
+            print(f"  {i}. {icon} {category}")
+            print(f"     {step['description']}")
+            print(f"     Files to fix: {step['files_to_fix']}")
+            print(f"     Violations to resolve: {step['violations_to_resolve']}")
+            
+            if step["files"]:
+                print(f"     Top issues:")
+                for file_info in step["files"][:5]:
+                    print(f"       - {file_info['file']} ({file_info['violations']} violations)")
+            print()
+        
+        print("=" * 80)
+
+
+def main() -> int:
+    """Main entry point."""
+    import argparse
+    
+    parser = argparse.ArgumentParser(description="Classify and analyze utility scripts")
+    parser.add_argument("--report", action="store_true", help="Generate detailed report")
+    parser.add_argument("--json", action="store_true", help="Output in JSON format")
+    parser.add_argument("--remediate", action="store_true", help="Generate remediation suggestions")
+    
+    args = parser.parse_args()
+    
+    analyzer = UtilityScriptAnalyzer()
+    
+    print("🔍 Analyzing utility scripts for silent swallowers...")
+    analysis = analyzer.analyze_all_utility_scripts()
+    plan = analyzer.generate_remediation_plan(analysis)
+    
+    if args.json:
+        print(json.dumps({"analysis": analysis, "plan": plan}, indent=2))
+    else:
+        analyzer.print_report(analysis, plan)
+    
+    if args.report:
+        # Save detailed report
+        report_path = PROJECT_ROOT / "docs" / "reports" / "utility_script_analysis.json"
+        report_path.parent.mkdir(parents=True, exist_ok=True)
+        
+        report_data = {
+            "analysis": analysis,
+            "plan": plan,
+            "timestamp": str(Path(__file__).stat().st_mtime)
+        }
+        
+        with open(report_path, 'w') as f:
+            json.dump(report_data, f, indent=2)
+        
+        print(f"📄 Detailed report saved to: {report_path}")
+    
+    # Exit with error if critical violations found
+    critical_violations = plan["summary"].get("GOVERNANCE_CRITICAL", {}).get("violations", 0)
+    if critical_violations > 0:
+        print(f"❌ CRITICAL: {critical_violations} governance violations found")
+        return 1
+    else:
+        print("✅ No critical governance violations")
+        return 0
+
+
+if __name__ == "__main__":
+    sys.exit(main())

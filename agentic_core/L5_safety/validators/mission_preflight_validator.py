@@ -150,6 +150,7 @@ class MissionPreflight:
                         print(f"   [X] {v}")
                 return violations
             except Exception as e:
+                raise
                 print(f"   [!] Span check failed: {e}")
         else:
             print("   [!] Hierarchy monitoring unavailable - Span-of-Two status unknown.")
@@ -174,6 +175,7 @@ class MissionPreflight:
                         print(f"   ... and {len(violations) - 3} more violations")
                 return violations
             except Exception as e:
+                raise
                 print(f"   [!] Hierarchy check failed: {e}")
         return []
 

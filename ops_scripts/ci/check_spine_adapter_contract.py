@@ -155,6 +155,7 @@ def check_adapter_file(filepath: Path) -> list[str]:
     except SyntaxError as e:
         return [f"Syntax error in {filepath}: {e}"]
     except Exception as e:
+        raise
         return [f"Error processing {filepath}: {e}"]
 
 

@@ -101,4 +101,3 @@ class TestObservabilityLayerIntegrity:
                 ]
                 any(kw in name for kw in observability_keywords)
                 # This is a soft check - not all files need keywords
-                assert True  # Just verify structure

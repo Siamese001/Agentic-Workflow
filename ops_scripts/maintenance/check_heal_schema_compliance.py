@@ -52,6 +52,7 @@ def check_file(file_path: Path, violations: list[str]):
                     check_function_return_schema(node, file_path, violations)
 
     except Exception as e:
+        raise
         violations.append(f"Could not parse {file_path.relative_to(PROJECT_ROOT)}: {e}")
 
 

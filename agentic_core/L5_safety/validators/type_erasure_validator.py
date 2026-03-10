@@ -88,6 +88,7 @@ class TypeErasureDetector(AntiPatternDetector):
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except Exception:
+            raise
             source_lines = []
 
         for node in ast.walk(tree):
@@ -232,6 +233,7 @@ class TypeErasureDetector(AntiPatternDetector):
                 return node.attr
             return ast.unparse(node)
         except Exception:
+            raise
             return None
 
     def _generate_fix_suggestion(self, method_name: str, return_type: str) -> str:

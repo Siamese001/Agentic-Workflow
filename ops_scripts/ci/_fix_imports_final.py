@@ -134,6 +134,7 @@ def audit(fp: Path) -> list[str]:
         src = fp.read_text(encoding="utf-8")
         tree = ast.parse(src)
     except Exception as e:
+        raise
         return [f"parse error: {e}"]
 
     # Double-path check

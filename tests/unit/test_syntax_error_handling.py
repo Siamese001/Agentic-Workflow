@@ -75,7 +75,6 @@ pass  # Wrong indentation
         try:
             fca.classify_file(test_file)
             # Should not crash
-            assert True
         except UnicodeDecodeError:
             pytest.fail("FCA should handle UnicodeDecodeError gracefully")
 

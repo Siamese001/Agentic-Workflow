@@ -195,6 +195,7 @@ def create_test_for_module(module_info: dict) -> bool:
         print(f"Created: {test_path}")
         return True
     except Exception as e:
+        raise
         print(f"Failed to create {test_path}: {e}")
         return False
 
@@ -290,6 +291,7 @@ def validate_minimum_behavioral_bar():
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             violations.append(f"{test_file}: Error reading file - {e}")
 
     print(f"Checked {checked_count} test files")

@@ -172,6 +172,7 @@ def run_tiered_purge(
         return 0
 
     except Exception as e:
+        raise
         Logger.error(f"[ERROR] {e}")
         import traceback
 

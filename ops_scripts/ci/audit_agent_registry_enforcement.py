@@ -134,6 +134,7 @@ def scan_file(file_path: Path) -> list[AgentUsageViolation]:
             )
         )
     except Exception as e:
+        raise
         violations.append(
             AgentUsageViolation(
                 str(file_path.relative_to(Path.cwd())), 0, "SCAN_ERROR", f"Error scanning file: {e}"

@@ -130,6 +130,7 @@ class P4EvidenceCollector:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             self.violations.append(
                 {
                     "check": "validate_trace_id_callable",
@@ -164,6 +165,7 @@ class P4EvidenceCollector:
                 )
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             self.violations.append(
                 {
                     "check": "generate_trace_id_callable",

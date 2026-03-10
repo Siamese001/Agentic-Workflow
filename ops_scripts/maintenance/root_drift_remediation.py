@@ -108,6 +108,7 @@ def migrate_and_audit_scripts():
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             print(f"    [ERR] Could not process {file_path.name}: {e}")
 
     # Cleanup old directory if empty
@@ -179,7 +180,7 @@ def validate_structure():
                     issues.append(f"Core dependency found in ops_scripts/{py_file.name}")
             # guardian: allow-silent-swallow
             except Exception:
-                pass
+                raise
 
     if issues:
         print("[!] Structure validation issues found:")

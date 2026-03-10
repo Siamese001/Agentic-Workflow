@@ -153,6 +153,7 @@ class DEvidenceCollector:
         # Runtime test failures are expected and should be reported as failed tests
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             return {"passed": False, "details": f"Runtime test failed: {e}"}
 
     # -------------------------------------------------------------------------

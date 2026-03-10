@@ -9,13 +9,21 @@ import ast
 from pathlib import Path
 
 import pytest
-from agentic_core.L0_routing.config.path_constants import AGENTIC_CORE_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
+)
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
 
 # Core directories to check (L0-L5)
 CORE_DIRS = [
-    L0_MAINTENANCE_DIR,
+    L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,

@@ -202,6 +202,7 @@ def check_8_1() -> tuple[bool, str]:
     # We need to catch any subprocess exception and report it as evidence failure
     # guardian: allow-silent-swallow
     except Exception as e:
+        raise
         passed = False
         detail = str(e)
     return passed, detail

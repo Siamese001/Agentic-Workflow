@@ -20,6 +20,7 @@ from agentic_core.L0_routing.config.path_constants import (
     APPS_SHARED_DIR,
     L0_ROUTING_DIR,
     L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,
     OPS_SCRIPTS_DIR,
     TESTS_DIR,

@@ -286,7 +286,6 @@ class TestGatekeeperCompliance:
             mock_unlink.assert_not_called()
 
         ArchivalGatekeeper.reset_instance()
-        assert True  # no-exception contract
 
 
 class TestSafetyValidFiles:

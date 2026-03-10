@@ -77,6 +77,7 @@ def purge_all_pycache(quiet=False, extended=False):
             except FileNotFoundError:
                 pass
             except Exception as e:
+                raise
                 if not quiet:
                     logging.error(f"Failed to delete {p}: {e}")
 
@@ -121,6 +122,7 @@ def purge_all_cache():
             except FileNotFoundError:
                 pass
             except Exception as e:
+                raise
                 logger.error(f"Failed to delete {p}: {e}")
                 error_count += 1
 
@@ -143,6 +145,7 @@ def purge_all_cache():
             except FileNotFoundError:
                 pass
             except Exception as e:
+                raise
                 logger.error(f"Failed to delete {p}: {e}")
                 error_count += 1
 
@@ -156,6 +159,7 @@ def purge_all_cache():
             count += 1
             print(f"Removed file: {p.relative_to(root_dir)}")
         except Exception as e:
+            raise
             logger.error(f"Failed to delete {p}: {e}")
             error_count += 1
 

@@ -147,6 +147,7 @@ def main():
                 if generated_count % 100 == 0:
                     print(f"Generated {generated_count} tests...")
         except Exception as e:
+            raise
             print(f"Failed to generate test for {module_path}: {e}")
             failed_imports += 1
 

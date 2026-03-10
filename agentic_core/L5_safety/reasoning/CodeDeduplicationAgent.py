@@ -66,11 +66,7 @@ from agentic_core.L5_safety.config.structure_blueprint import (
 from agentic_core.utils.timeout_decorator_util import timeout
 from agentic_core.L0_routing.config.path_constants import (
     ARCHIVES_DIR,
-    ARCHIVES_DIR,
 )
-
-# Archives directory constant for exclusion
-ARCHIVES_DIR = ARCHIVES_DIR
 
 
 class CodeDeduplicationAgent(SovereignBaseAgent):

@@ -43,6 +43,7 @@ def run_subprocess(cmd: list[str], capture: bool = True) -> tuple[int, str, str]
         return result.returncode, result.stdout, result.stderr
     # guardian: allow-silent-swallow
     except Exception as e:
+        raise
         return 1, "", str(e)
 
 

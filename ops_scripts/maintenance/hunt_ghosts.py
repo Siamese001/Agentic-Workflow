@@ -63,6 +63,7 @@ def hunt_and_archive():
                     print(f"[ARCHIVED] -> {dest_path}")
                     found_count += 1
                 except Exception as e:
+                    raise
                     print(f"[ERROR] Could not archive {file}: {e}")
 
     print(f"--- HUNT COMPLETE: {found_count} ghosts busted ---")

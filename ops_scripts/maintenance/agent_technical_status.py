@@ -103,6 +103,7 @@ class NuclearAuditor:
                                 return ast.literal_eval(node.value)
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             logger.warning(f"Failed to load structure blueprint: {e}")
 
         return {}
@@ -121,6 +122,7 @@ class NuclearAuditor:
                 self.agent_statuses.extend(agents)
             # guardian: allow-silent-swallow
             except Exception as e:
+                raise
                 logger.error(f"Failed to analyze {file_path}: {e}")
 
         logger.info(f"Analyzed {len(self.agent_statuses)} agent classes")
@@ -143,6 +145,7 @@ class NuclearAuditor:
 
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             logger.error(f"Error parsing {file_path}: {e}")
 
         return agents

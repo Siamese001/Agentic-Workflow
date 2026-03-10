@@ -40,6 +40,7 @@ def detect_corrupted_files(project_root: Path) -> list[tuple[Path, int, str]]:
         except UnicodeDecodeError as e:
             corrupted.append((py_file, 0, f"Encoding error: {e}"))
         except Exception as e:
+            raise
             # Catch other parsing issues
             corrupted.append((py_file, 0, f"Parse error: {e}"))
 

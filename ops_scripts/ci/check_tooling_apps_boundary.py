@@ -48,6 +48,7 @@ class ToolingAppsBoundaryChecker:
             self.violations.append(f"{filepath}: Syntax error at line {e.lineno}")
             return
         except Exception as e:
+            raise
             self.violations.append(f"{filepath}: Could not parse: {e}")
             return
 

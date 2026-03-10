@@ -104,6 +104,7 @@ class EvidenceContractChecker:
         try:
             content = filepath.read_text(encoding="utf-8")
         except Exception as e:
+            raise
             self.violations.append(f"{filepath}: Could not read file: {e}")
             return
 

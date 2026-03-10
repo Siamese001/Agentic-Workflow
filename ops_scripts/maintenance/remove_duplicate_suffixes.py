@@ -109,6 +109,7 @@ def remove_duplicates(
                 print(f"  ✓ Deleted: {rel_dup} (suffix: {suffix})")
                 removed_count += 1
             except Exception as e:
+                raise
                 print(f"  ✗ Failed to delete {rel_dup}: {e}")
 
     return removed_count

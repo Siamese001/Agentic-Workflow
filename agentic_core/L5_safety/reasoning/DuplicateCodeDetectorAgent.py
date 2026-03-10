@@ -35,7 +35,7 @@ Logger: logging.Logger = logging.getLogger(__name__)
 
 # Constants for excluded directories
 UTILS_DIR = "agentic_core/utils"
-ARCHIVES_DIR = ARCHIVES_DIR
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR  # noqa: E402
 
 # Tree-sitter for AST fingerprinting
 try:

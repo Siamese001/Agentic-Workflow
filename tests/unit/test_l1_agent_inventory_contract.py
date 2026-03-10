@@ -150,4 +150,4 @@ class TestL1PinnedBudget:
         print(f"\n[L1 INVENTORY] count={count}  budget={L1_AGENT_BUDGET}  delta={delta}")
         for f in AGENT_FILES:
             print(f"  {f}")
-            assert True  # no-exception contract
+    

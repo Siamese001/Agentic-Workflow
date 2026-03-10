@@ -69,6 +69,7 @@ class ImportDependencyValidator:
                     errors.append(error)
 
         except Exception as e:
+            raise
             errors.append(f"Error processing {file_path}: {e}")
 
         return errors
@@ -107,6 +108,7 @@ class ImportDependencyValidator:
             elif import_info["type"] == "import_from":
                 return self._validate_import_from(import_info, file_path)
         except Exception as e:
+            raise
             return (
                 f"Line {import_info['line']}: Error validating import '{import_info.get('module', '')}': {e}"
             )

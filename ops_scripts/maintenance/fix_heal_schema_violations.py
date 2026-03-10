@@ -51,6 +51,7 @@ def fix_file(filepath: Path, replacements: dict[str, str]) -> tuple[bool, int]:
         return False, 0
 
     except Exception as e:
+        raise
         print(f"  ❌ Error fixing {filepath}: {e}")
         return False, 0
 

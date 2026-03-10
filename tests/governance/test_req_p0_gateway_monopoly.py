@@ -18,6 +18,11 @@ import pytest
 
 from agentic_core.L0_routing.config.path_constants import (
     AGENTIC_CORE_DIR,
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L4_STATE_DIR,
+    L5_SAFETY_DIR,
 )
 from agentic_core.L5_safety.config.structure_blueprint.ssot import (
     SOVEREIGN_EXCLUDED_FOLDERS,
@@ -43,7 +48,7 @@ _FORBIDDEN_IO_SYMBOLS = frozenset(
 )
 
 _SCAN_ROOTS = [
-    L0_MAINTENANCE_DIR,
+    L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L3_ORCHESTRATION_DIR,
     L4_STATE_DIR,

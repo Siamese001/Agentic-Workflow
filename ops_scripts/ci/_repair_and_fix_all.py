@@ -355,6 +355,7 @@ def main() -> int:
                 print(f"ORDER  {rel}")
                 fixed_order += 1
         except Exception as e:
+            raise
             print(f"ORDER-ERR  {rel}: {e}")
             errors += 1
 
@@ -371,6 +372,7 @@ def main() -> int:
             else:
                 print(f"SKIP  {rel}:{lineno} [{varname}] (no change)")
         except Exception as e:
+            raise
             print(f"LITERAL-ERR  {rel}:{lineno} [{varname}]: {e}")
             errors += 1
 

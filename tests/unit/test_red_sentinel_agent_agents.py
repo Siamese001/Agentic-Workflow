@@ -177,7 +177,7 @@ def test_heal_repository_smoke(RedSentinelAgent):
     """Autonomy heal smoke test — ensure no crash."""
     try:
         RedSentinelAgent.heal_repository()  # Post-healing: will pass once compliant
-        assert True  # No crash = success
+        sh = success
     except AttributeError:
         # heal_repository method may not exist yet, that's expected
         pytest.fail("heal_repository method not implemented yet")

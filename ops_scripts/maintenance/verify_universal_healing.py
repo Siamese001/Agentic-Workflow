@@ -51,6 +51,7 @@ def run_verification():
         print("❌ Dry-run test timed out")
         return False
     except Exception as e:
+        raise
         print(f"❌ Dry-run test failed: {e}")
         return False
 
@@ -101,6 +102,7 @@ def run_verification():
         print("❌ Agent listing timed out")
         return False
     except Exception as e:
+        raise
         print(f"❌ Agent listing failed: {e}")
         return False
 
@@ -137,6 +139,7 @@ def run_verification():
         print("❌ Help system timed out")
         return False
     except Exception as e:
+        raise
         print(f"❌ Help system failed: {e}")
         return False
 
@@ -166,6 +169,7 @@ def run_verification():
         print(f"❌ FAIL: Import error: {e}")
         return False
     except Exception as e:
+        raise
         print(f"❌ FAIL: Module test failed: {e}")
         return False
 

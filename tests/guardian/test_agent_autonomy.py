@@ -71,7 +71,7 @@ class AgentAutonomyValidator:
 
         except SyntaxError as e:
             result["error"] = f"Syntax error in {agent_file}: {e}"
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, AttributeError) as e:
             result["error"] = f"Error processing {agent_file}: {e}"
 
         return result

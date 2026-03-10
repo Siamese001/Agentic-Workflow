@@ -63,7 +63,7 @@ def check_file_for_violations(file_path: Path) -> list[str]:
                         violations.append(f"Line {i}: Potential AI-checking-AI pattern: {pattern}")
                         break
 
-    except Exception as e:
+    except (OSError, UnicodeDecodeError, SyntaxError) as e:
         violations.append(f"Error reading file: {e}")
 
     return violations

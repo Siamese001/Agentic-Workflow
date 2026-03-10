@@ -158,6 +158,7 @@ def main():
             if changed:
                 fixed += 1
         except Exception as e:
+            raise
             errors.append((rel_path, str(e)))
             print(f"ERROR: {rel_path}: {e}")
 

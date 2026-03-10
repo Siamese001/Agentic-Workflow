@@ -106,7 +106,6 @@ class TestBlackboardStore:
         )
         # Phase 1: no-op, should not raise
         self.store.log_security_event(event)
-        assert True  # no-exception contract
 
     def test_multiple_keys_independent(self):
         # Different keys have independent leases

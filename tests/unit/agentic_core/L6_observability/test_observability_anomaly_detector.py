@@ -326,7 +326,6 @@ class TestDriftDetector:
     def test_clear_drift_alert_on_nonexistent_key_is_noop(self):
         d = DriftDetector()
         d.clear_drift_alert("nonexistent")  # must not raise
-        assert True  # no-exception contract
 
     @pytest.mark.governance
     def test_get_all_drift_alerts_returns_all_drifted_keys(self):

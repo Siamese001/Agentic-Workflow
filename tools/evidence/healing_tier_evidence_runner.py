@@ -24,6 +24,7 @@ import sys
 from pathlib import Path
 
 REPO_ROOT = Path(__file__).resolve().parents[2]
+REPORTS_DIR = "reports"
 EVIDENCE_PATH = REPO_ROOT / "docs" / REPORTS_DIR / "plans" / "healing_tier_router_evidence.md"
 EVIDENCE_REL = "docs/reports/plans/healing_tier_router_evidence.md"
 

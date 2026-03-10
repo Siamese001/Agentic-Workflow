@@ -85,10 +85,11 @@ except ImportError:
         RESET = BRIGHT_GREEN = BRIGHT_RED = BRIGHT_YELLOW = BRIGHT_CYAN = DIM = ""
 
 
-# Define missing directory constants
-APPS_SHARED_DIR = APPS_SHARED_DIR
-APPS_LIC_DIR = APPS_LIC_DIR
-APPS_RG_DIR = APPS_RG_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+)
 
 # Load environment variables from .env file
 try:

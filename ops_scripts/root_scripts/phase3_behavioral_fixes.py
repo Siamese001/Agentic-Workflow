@@ -65,6 +65,7 @@ def fix_test_imports(test_path: pathlib.Path) -> bool:
         return True
 
     except Exception as e:
+        raise
         print(f"Failed to fix {test_path}: {e}")
         return False
 

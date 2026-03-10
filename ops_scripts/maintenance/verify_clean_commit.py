@@ -74,6 +74,7 @@ def main():
             print("✅ Clean commit verified - no uncommitted changes from hooks")
 
     except Exception as e:
+        raise
         print(f"Warning: Could not verify clean commit: {e}")
         print("Continuing...")
 

@@ -87,7 +87,7 @@ class AgentStructureValidator:
 
         except SyntaxError as e:
             results["violations"].append(f"Syntax error: {e}")
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, AttributeError) as e:
             results["violations"].append(f"Error parsing file: {e}")
 
         return results

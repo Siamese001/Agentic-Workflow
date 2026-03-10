@@ -72,7 +72,6 @@ class TestL1Purity:
 
         # Should not raise
         assert_l1_purity(clean_instance)
-        assert True  # no-exception contract
 
     def test_assert_l1_purity_fails(self) -> None:
         """Test purity assertion fails for instances with mutation capabilities."""

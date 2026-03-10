@@ -42,8 +42,7 @@ class TestSovereigntyExemptions(unittest.TestCase):
         ):
             ftype = self.fixer.classify_file(path)
             self.assertEqual(ftype, "IGNORE")
-            assert True  # no-exception contract
-
+    
     def test_ignores_suffix_test_file(self):
         """Scenario: 'auth_test.py' should be ignored."""
         path = Path("auth_test.py")
@@ -63,8 +62,7 @@ class TestSovereigntyExemptions(unittest.TestCase):
         ):
             ftype = self.fixer.classify_file(path)
             self.assertEqual(ftype, "IGNORE")
-            assert True  # no-exception contract
-
+    
     def test_processes_regular_agent(self):
         """Scenario: 'AuthAgent.py' should still be processed."""
         path = Path("AuthAgent.py")
@@ -79,8 +77,7 @@ class TestSovereigntyExemptions(unittest.TestCase):
         ):
             ftype = self.fixer.classify_file(path)
             self.assertNotEqual(ftype, "IGNORE")
-            assert True  # no-exception contract
-
+    
 
 if __name__ == "__main__":
     unittest.main()

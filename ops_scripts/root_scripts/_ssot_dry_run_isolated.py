@@ -88,6 +88,7 @@ def try_import_agent(name, module_path, class_name):
         return cls, None
     # guardian: allow-silent-swallow
     except Exception as e:
+        raise
         return None, f"{type(e).__name__}: {e}"
 
 
@@ -116,6 +117,7 @@ def try_run_agent(cls, name, method_name, territory):
 
         return {"success": True, "result": result}
     except Exception as e:
+        raise
         return {"error": f"{type(e).__name__}: {str(e)[:300]}"}
 
 
@@ -180,7 +182,7 @@ if "FileClassificationAgent" in agent_classes:
                 layer_violations.append(v)
         # guardian: allow-silent-swallow
         except Exception:
-            pass
+            raise
 
     print(f"  Layer violations found: {len(layer_violations)}", file=sys.stderr)
 

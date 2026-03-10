@@ -53,7 +53,7 @@ for p in all_py:
             v["file"] = str(Path(v["file"]).relative_to(ROOT)).replace("\\", "/")
             layer_violations.append(v)
     except Exception:
-        pass
+        raise
 
 # Tag parse
 findings_by_tag = defaultdict(list)

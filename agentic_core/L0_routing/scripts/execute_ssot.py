@@ -70,8 +70,13 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_p
 from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
 
 # Early constants required by resolve_repo_root (full block also at bottom of file)
-AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
-OPS_SCRIPTS_DIR = OPS_SCRIPTS_DIR
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_LIC_DIR,
+    APPS_RG_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+)
 
 
 def _get_uwg():
@@ -2938,11 +2943,7 @@ def validate_territory_input(territory: str) -> tuple[bool, str]:
 # CONFIGURATION & CONSTANTS
 # ============================================================================
 
-# Directory Constants
-AGENTIC_CORE_DIR = AGENTIC_CORE_DIR
-APPS_SHARED_DIR = APPS_SHARED_DIR
-APPS_LIC_DIR = APPS_LIC_DIR
-APPS_RG_DIR = APPS_RG_DIR
+# Directory Constants (imported from path_constants above)
 SCRIPTS_DIR = "scripts"
 AGENT_DISCOVERY_JSON = "agent_discovery_full.json"
 RUNTIME_STATE_FILE = "runtime_state.json"

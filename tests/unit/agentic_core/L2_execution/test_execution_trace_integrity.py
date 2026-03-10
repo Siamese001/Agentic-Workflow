@@ -22,7 +22,6 @@ class TestValidateCompleteness:
     def test_complete_trace_passes(self):
         trace = _complete_trace()
         trace.validate_completeness()
-        assert True  # no-exception contract
 
     def test_empty_governed_payload_raises(self):
         b = ExecutionTraceBuilder("trace-002", "ip-002")

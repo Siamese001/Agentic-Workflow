@@ -45,6 +45,7 @@ def main():
                 shutil.move(str(actual_test), str(expected_test_path))
                 print("Successfully moved mislocated test")
             except Exception as e:
+                raise
                 print(f"Failed to move {actual_test}: {e}")
 
 

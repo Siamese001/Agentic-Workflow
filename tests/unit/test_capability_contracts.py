@@ -218,7 +218,6 @@ def test_validate_invariant_registry_succeeds():
     from agentic_core.prompt_governance.core.invariant_registry import validate_invariant_registry
 
     validate_invariant_registry()  # must not raise
-    assert True  # no-exception contract
 
 
 def test_invariant_registry_called_on_first_use_via_validate_context_contract():

@@ -136,7 +136,6 @@ class TestDefaultMetaOutcomeBusHookSchema:
             record=None,
             success=True,
         )
-        assert True  # no-exception contract
 
     def test_none_bus_publish_outcome_is_no_op(self):
         """DefaultMetaOutcomeBusHook with bus=None must silently do nothing."""
@@ -149,7 +148,6 @@ class TestDefaultMetaOutcomeBusHookSchema:
             record=None,
             success=True,
         )
-        assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

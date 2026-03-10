@@ -73,6 +73,7 @@ def move_mislocated_tests():
                 moved_count += 1
             # guardian: allow-silent-swallow
             except Exception as e:
+                raise
                 print(f"Failed to move {actual_test}: {e}")
 
     print(f"Moved {moved_count} tests")
@@ -178,6 +179,7 @@ def test_{module_name}_has_content():
         print(f"Created: {test_path}")
         return True
     except Exception as e:
+        raise
         print(f"Failed to create {test_path}: {e}")
         return False
 

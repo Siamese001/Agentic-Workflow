@@ -88,6 +88,7 @@ def run_terminal_convergence() -> int:
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
     except Exception as e:
+        raise
         Logger.error(f"[ERROR] Execution Error: {e}")
         return 2
 

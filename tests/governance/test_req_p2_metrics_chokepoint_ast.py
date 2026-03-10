@@ -11,6 +11,14 @@ from pathlib import Path
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import (
+    L0_ROUTING_DIR,
+    L1_COGNITION_DIR,
+    L2_EXECUTION_DIR,
+    L3_ORCHESTRATION_DIR,
+    L5_SAFETY_DIR,
+)
+
 pytestmark = pytest.mark.governance
 
 REPO_ROOT = Path(__file__).parent.parent.parent
@@ -39,7 +47,7 @@ _FORBIDDEN_EMISSION_CALLS = frozenset(
 
 # Scan these roots for violations
 _SCAN_ROOTS = [
-    L0_MAINTENANCE_DIR,
+    L0_ROUTING_DIR,
     L1_COGNITION_DIR,
     L2_EXECUTION_DIR,
     L3_ORCHESTRATION_DIR,

@@ -64,6 +64,7 @@ def main() -> int:
         )
     # guardian: allow-silent-swallow
     except Exception as exc:
+        raise
         print(f"ERROR: {exc}", file=sys.stderr)
         return 1
 

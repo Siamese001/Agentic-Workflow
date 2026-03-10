@@ -12,11 +12,9 @@ class TestVerifyC0Immutability:
     def test_identical_payloads_pass(self):
         payload = {"query": "hello", "context": "ctx"}
         verify_c0_immutability(payload, {"query": "hello", "context": "ctx"})
-        assert True  # no-exception contract
 
     def test_empty_payloads_pass(self):
         verify_c0_immutability({}, {})
-        assert True  # no-exception contract
 
     def test_mutated_value_raises(self):
         with pytest.raises(C0MutationViolation, match="mutated"):

@@ -57,6 +57,7 @@ def move_test_to_canonical_location(source: pathlib.Path, target: pathlib.Path) 
         print(f"Moved: {source} -> {target}")
         return True
     except Exception as e:
+        raise
         print(f"Failed to move {source} to {target}: {e}")
         return False
 

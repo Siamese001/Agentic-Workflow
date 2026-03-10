@@ -32,7 +32,6 @@ def test_canonical_slot_order_passes():
         "<SLOT_U0>user</SLOT_U0>\n"
     )
     validate_slot_order(prompt)  # should not raise
-    assert True  # no-exception contract
 
 
 def test_canonical_order_with_extra_content_passes():
@@ -51,7 +50,6 @@ def test_canonical_order_with_extra_content_passes():
         "<OUTPUT_FORMAT>json</OUTPUT_FORMAT>\n"
     )
     validate_slot_order(prompt)  # should not raise
-    assert True  # no-exception contract
 
 
 # ---------------------------------------------------------------------------

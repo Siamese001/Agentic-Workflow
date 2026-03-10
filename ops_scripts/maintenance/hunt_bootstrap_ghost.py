@@ -41,6 +41,7 @@ def hunt_bootstrap():
                     print(f" -> Archived to {dest.name}")
                 # guardian: allow-silent-swallow
                 except Exception as e:
+                    raise
                     print(f" -> Failed to archive: {e}")
 
     if not found_any:

@@ -166,6 +166,7 @@ def run_cognitive_purge(
         Logger.error("Ensure agentic_core is properly installed.")
         return 2
     except Exception as e:
+        raise
         Logger.error(f"[ERROR] Execution Error: {e}")
         import traceback
 

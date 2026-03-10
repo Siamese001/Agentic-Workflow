@@ -726,7 +726,6 @@ class TestEnforceDepthRulesDispatch:
         agent._enforce_apps_depth.assert_called_once()
         agent._enforce_tests_depth.assert_not_called()
         agent._enforce_universal_depth.assert_not_called()
-        assert True  # no-exception contract
 
     def test_enforce_rules_apps_shared_prefix_runs_apps(self, tmp_path):
         """target_territory='apps_shared' starts with 'apps_' → apps enforced."""
@@ -734,4 +733,3 @@ class TestEnforceDepthRulesDispatch:
         agent.enforce_depth_rules(target_territory=APPS_SHARED_DIR)
         agent._enforce_apps_depth.assert_called_once()
         agent._enforce_universal_depth.assert_not_called()
-        assert True  # no-exception contract

@@ -107,7 +107,6 @@ class TestNestedLCDEdgeCases:
         # "Reasoning" (capitalized) is not the same as "reasoning"
         path_parts = [AGENTIC_CORE_DIR, "prompt_governance", "Reasoning"]
         validate_no_nested_lcd(path_parts)
-        assert True  # no-exception contract
         # Depends on implementation - may or may not detect
         # The key is it doesn't crash
 

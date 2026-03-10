@@ -110,7 +110,6 @@ class TestAgentExecutorGatewayRouting:
                 )
 
         mock_sdk.assert_not_called(), "Direct SDK must not be called when gateway is available"
-        assert True  # no-exception contract
 
     def test_execute_google_routes_via_gateway(self):
         """RG-GAP-04: Provider.GOOGLE must also route through gateway, not legacy SDK."""
@@ -158,7 +157,6 @@ class TestAgentExecutorGatewayRouting:
                 )
 
         mock_sdk.assert_called_once()
-        assert True  # no-exception contract
 
     def test_try_execute_via_gateway_returns_none_on_import_error(self):
         """RG-GAP-04: _try_execute_via_gateway returns None when gateway cannot be imported."""

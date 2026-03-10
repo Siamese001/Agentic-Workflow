@@ -11,11 +11,9 @@ from agentic_core.L5_safety.types.hardening_errors import C0AuthorityLeakError
 class TestGuardC0Payload:
     def test_safe_payload_passes(self):
         guard_c0_payload({"query": "find me a job", "context": "software engineering"})
-        assert True  # no-exception contract
 
     def test_empty_payload_passes(self):
         guard_c0_payload({})
-        assert True  # no-exception contract
 
     def test_route_mode_raises(self):
         with pytest.raises(C0AuthorityLeakError, match="route_mode"):

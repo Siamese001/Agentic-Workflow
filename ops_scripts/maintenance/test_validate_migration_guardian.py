@@ -91,6 +91,7 @@ def test_basic_functionality():
         return True
 
     except Exception as e:
+        raise
         print(f"❌ Test failed: {e}")
         return False
 
@@ -131,6 +132,7 @@ def test_actual_repository():
         return True
 
     except Exception as e:
+        raise
         print(f"❌ Repository test failed: {e}")
         return False
 

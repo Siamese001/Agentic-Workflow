@@ -17,6 +17,7 @@ try:
         data = json.loads(r.read())
         results["F1_vllm"] = "PASS: " + data["data"][0]["id"]
 except Exception as e:
+    raise
     results["F1_vllm"] = f"FAIL: {e}"
 
 # F2: faiss-gpu + embedding env
@@ -38,6 +39,7 @@ try:
             missing.append(f"EMBEDDING_ENABLED={emb_en!r}")
         results["F2_embedding"] = "FAIL: " + "; ".join(missing)
 except Exception as e:
+    raise
     results["F2_embedding"] = f"FAIL: {e}"
 
 # F3: FAISS index boot sweep
@@ -52,6 +54,7 @@ try:
     else:
         results["F3_faiss_index"] = "FAIL: no indexes found"
 except Exception as e:
+    raise
     results["F3_faiss_index"] = f"FAIL: {e}"
 
 # F4: Redis
@@ -64,6 +67,7 @@ try:
     else:
         results["F4_redis"] = f"FAIL: {h['error']}"
 except Exception as e:
+    raise
     results["F4_redis"] = f"FAIL: {e}"
 
 # F5: GPU mem util SSOT
@@ -78,6 +82,7 @@ try:
     else:
         results["F5_gpu_util_ssot"] = f"FAIL: const={QWEN_GPU_MEM_UTIL} 7B={cfg7} 14B={cfg14}"
 except Exception as e:
+    raise
     results["F5_gpu_util_ssot"] = f"FAIL: {e}"
 
 print("=" * 60)

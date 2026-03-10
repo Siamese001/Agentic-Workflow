@@ -72,7 +72,7 @@ class ArchitectureGovernanceValidator:
                                         f"Gravity violation: {current_layer} (L{current_level}) "
                                         f"importing from {imported_layer} (L{imported_level})",
                                     )
-        except Exception as e:
+        except (OSError, UnicodeDecodeError, SyntaxError) as e:
             violations.append(f"Error parsing file: {e}")
 
         return violations

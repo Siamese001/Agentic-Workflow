@@ -46,6 +46,7 @@ def run_audit() -> bool:
         return True
 
     except Exception as e:
+        raise
         Logger.error(f"⚠️ [ERROR] Sovereignty audit failed to execute: {e}")
         return False
 

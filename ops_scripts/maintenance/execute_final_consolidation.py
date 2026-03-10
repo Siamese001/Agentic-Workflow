@@ -51,6 +51,7 @@ def fix_imports():
                     fixed_count += 1
             # guardian: allow-silent-swallow
             except Exception as e:
+                raise
                 print(f"[ERROR] processing {file}: {e}")
 
     print(f"--- REWIRING COMPLETE: {fixed_count} files updated ---")
@@ -73,6 +74,7 @@ def run_verification():
             print(result.stderr)
     # guardian: allow-silent-swallow
     except Exception as e:
+        raise
         print(f"Verification failed to run: {e}")
 
 

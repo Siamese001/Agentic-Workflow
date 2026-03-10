@@ -98,6 +98,7 @@ class ReportMigrator:
             )
             return result.returncode == 0
         except Exception:
+            raise
             return False
 
     def git_move(self, source: Path, destination: Path) -> bool:
@@ -112,6 +113,7 @@ class ReportMigrator:
             )
             return result.returncode == 0
         except Exception:
+            raise
             return False
 
     def regular_move(self, source: Path, destination: Path) -> bool:
@@ -121,6 +123,7 @@ class ReportMigrator:
             shutil.move(str(source), str(destination))
             return True
         except Exception:
+            raise
             return False
 
     def backup_file(self, file_path: Path) -> Path | None:
@@ -135,6 +138,7 @@ class ReportMigrator:
             shutil.copy2(file_path, backup_path)
             return backup_path
         except Exception:
+            raise
             return None
 
     def get_destination_path(self, source: Path) -> Path:
@@ -357,6 +361,7 @@ class ReportMigrator:
                 else:
                     print(f"❌ Failed to restore: {entry.source}")
             except Exception as e:
+                raise
                 print(f"❌ Error restoring {entry.source}: {e}")
 
         print(f"\n✅ Rollback complete: {rollback_count} files restored")

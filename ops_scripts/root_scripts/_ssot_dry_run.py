@@ -93,6 +93,7 @@ for territory in TERRITORIES:
             pass  # Expected for some exit paths
         # guardian: allow-silent-swallow
         except Exception as e:
+            raise
             print(f"  ERROR in {territory}: {e}", file=sys.stderr)
             traceback.print_exc(file=sys.stderr)
         finally:
@@ -100,6 +101,7 @@ for territory in TERRITORIES:
 
     # guardian: allow-silent-swallow
     except Exception as e:
+        raise
         print(f"  FATAL ERROR for {territory}: {e}", file=sys.stderr)
         traceback.print_exc(file=sys.stderr)
 

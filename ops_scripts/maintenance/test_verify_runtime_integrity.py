@@ -36,6 +36,7 @@ def test_instantiation():
         assert hasattr(agent, "cache_get"), "Missing Redis capability"
         print("   ✅ SovereignBaseAgent OK")
     except Exception as e:
+        raise
         failures.append(f"SovereignBaseAgent: {e}")
         traceback.print_exc()
 
@@ -51,6 +52,7 @@ def test_instantiation():
         assert isinstance(tools[0], dict), "Tools must be pure dicts (Architecture requirement)"
         print("   ✅ tool_registry OK (Pure Dicts confirmed)")
     except Exception as e:
+        raise
         failures.append(f"tool_registry: {e}")
         traceback.print_exc()
 
@@ -89,6 +91,7 @@ def test_instantiation():
         except AttributeError as e:
             failures.append(f"CLASS NOT FOUND {class_name}: {e}")
         except Exception as e:
+            raise
             failures.append(f"RUNTIME ERROR {class_name}: {e}")
 
     print("-" * 30)

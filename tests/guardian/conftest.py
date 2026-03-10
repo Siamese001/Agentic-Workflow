@@ -185,8 +185,9 @@ def pytest_terminal_summary(terminalreporter, exitstatus, config):
                 print(f"  - {code}: {count}")
         print("=" * 60)
 
-    except Exception as e:
+    except (OSError, TypeError, ValueError) as e:
         print(f"CRITICAL: Could not write guardian report: {e}")
+        raise
 
     # Reset builder for next run (idempotency)
     GuardianReportBuilder.reset()

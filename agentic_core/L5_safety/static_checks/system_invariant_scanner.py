@@ -84,6 +84,7 @@ class SystemInvariantScanner(ast.NodeVisitor):
                     if 0 <= node.lineno - 1 < len(lines):
                         self.current_line_content = lines[node.lineno - 1].strip()
             except Exception:
+                raise
                 self.current_line_content = ""
 
         super().visit(node)
@@ -239,6 +240,7 @@ def scan_repository_for_bypasses(repo_root: Path) -> list[BypassViolation]:
                     description=f"Syntax error: {e}"
                 ))
             except Exception as e:
+                raise
                 # Record other errors
                 violations.append(BypassViolation(
                     file_path=str(file_path),

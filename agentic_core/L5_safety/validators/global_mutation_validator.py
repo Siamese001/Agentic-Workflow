@@ -67,6 +67,7 @@ class GlobalMutationDetector(AntiPatternDetector):
         try:
             source_lines = file_path.read_text(encoding="utf-8").splitlines()
         except Exception:
+            raise
             source_lines = []
 
         for node in ast.walk(tree):
