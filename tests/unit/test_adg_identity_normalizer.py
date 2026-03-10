@@ -1,0 +1,299 @@
+"""Unit tests for ADG Identity Normalizer (Phase 1).
+
+Tests cover:
+- All 5 IdentityKind categories (repo_module, package_container,
+  external_module, unresolved_import, inferred_symbol)
+- Determinism: same input -> same output on two calls
+- Confidence labels are correct
+- NormalizationReport aggregates correctly
+- No silent swallowing: unresolved_import always reports reason
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from agentic_core.adg.identity.normalizer import (
+    IdentityConfidence,
+    IdentityKind,
+    IdentityNormalizer,
+    NormalizationReport,
+    build_identity_index,
+    normalize_identity,
+)
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+class TestIdentityKindEnum:
+    """IdentityKind values are string-comparable."""
+
+    @pytest.mark.unit
+    def test_repo_module_value(self) -> None:
+        assert IdentityKind.REPO_MODULE.value == "repo_module"
+
+    @pytest.mark.unit
+    def test_external_module_value(self) -> None:
+        assert IdentityKind.EXTERNAL_MODULE.value == "external_module"
+
+    @pytest.mark.unit
+    def test_unresolved_import_value(self) -> None:
+        assert IdentityKind.UNRESOLVED_IMPORT.value == "unresolved_import"
+
+    @pytest.mark.unit
+    def test_package_container_value(self) -> None:
+        assert IdentityKind.PACKAGE_CONTAINER.value == "package_container"
+
+    @pytest.mark.unit
+    def test_inferred_symbol_value(self) -> None:
+        assert IdentityKind.INFERRED_SYMBOL.value == "inferred_symbol"
+
+
+class TestExternalModuleResolution:
+    """Names whose top-level is not in SSOT roots resolve to EXTERNAL_MODULE."""
+
+    @pytest.mark.unit
+    def test_openai_is_external(self) -> None:
+        rec = normalize_identity("openai", repo_root=_REPO_ROOT)
+        assert rec.kind == IdentityKind.EXTERNAL_MODULE
+
+    @pytest.mark.unit
+    def test_anthropic_is_external(self) -> None:
+        rec = normalize_identity("anthropic", repo_root=_REPO_ROOT)
+        assert rec.kind == IdentityKind.EXTERNAL_MODULE
+
+    @pytest.mark.unit
+    def test_json_stdlib_is_external(self) -> None:
+        rec = normalize_identity("json", repo_root=_REPO_ROOT)
+        assert rec.kind == IdentityKind.EXTERNAL_MODULE
+
+    @pytest.mark.unit
+    def test_external_has_high_confidence(self) -> None:
+        rec = normalize_identity("pathlib", repo_root=_REPO_ROOT)
+        assert rec.confidence == IdentityConfidence.HIGH
+
+    @pytest.mark.unit
+    def test_external_resolved_path_empty(self) -> None:
+        rec = normalize_identity("os.path", repo_root=_REPO_ROOT)
+        assert rec.resolved_path == ""
+
+
+class TestRepoModuleResolution:
+    """Names whose file exists in repo resolve to REPO_MODULE."""
+
+    @pytest.mark.unit
+    def test_adg_schema_is_repo_module(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.kind == IdentityKind.REPO_MODULE
+
+    @pytest.mark.unit
+    def test_repo_module_resolved_path_ends_with_py(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.resolved_path.endswith(".py")
+
+    @pytest.mark.unit
+    def test_repo_module_has_high_confidence(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.confidence == IdentityConfidence.HIGH
+
+    @pytest.mark.unit
+    def test_repo_module_adg_name_starts_with_adg_module(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.adg_name.startswith("ADG::Module::")
+
+
+class TestPackageContainerResolution:
+    """Package dirs resolve to PACKAGE_CONTAINER."""
+
+    @pytest.mark.unit
+    def test_package_with_init_is_container(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.kind == IdentityKind.PACKAGE_CONTAINER
+
+    @pytest.mark.unit
+    def test_package_container_has_init_path(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg",
+            repo_root=_REPO_ROOT,
+        )
+        assert "__init__.py" in rec.resolved_path
+
+    @pytest.mark.unit
+    def test_package_container_high_confidence(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.confidence == IdentityConfidence.HIGH
+
+
+class TestUnresolvedImportResolution:
+    """Completely missing internal names become UNRESOLVED_IMPORT with reason."""
+
+    @pytest.mark.unit
+    def test_missing_internal_module_is_unresolved(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.nonexistent.does_not_exist",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.kind == IdentityKind.UNRESOLVED_IMPORT
+
+    @pytest.mark.unit
+    def test_unresolved_has_reason(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.totally_fake_module_xyz",
+            repo_root=_REPO_ROOT,
+        )
+        assert len(rec.reason) > 0
+
+    @pytest.mark.unit
+    def test_unresolved_has_low_confidence(self) -> None:
+        # Use a path where BOTH parent and direct resolution fail:
+        # "agentic_core.totally_fake_pkg_zzz.sub_module" — parent
+        # "agentic_core.totally_fake_pkg_zzz" also doesn't exist, so no
+        # INFERRED_SYMBOL promotion occurs and confidence stays LOW.
+        rec = normalize_identity(
+            "agentic_core.totally_fake_pkg_zzz.sub_module",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.confidence == IdentityConfidence.LOW
+
+    @pytest.mark.unit
+    def test_unresolved_resolved_path_empty(self) -> None:
+        # Both the direct path and the parent must be unresolvable so we get
+        # UNRESOLVED_IMPORT (empty resolved_path), not INFERRED_SYMBOL.
+        rec = normalize_identity(
+            "agentic_core.totally_fake_pkg_zzz.sub_module",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.resolved_path == ""
+
+
+class TestInferredSymbolResolution:
+    """Names whose parent resolves but the leaf is a class/fn become INFERRED_SYMBOL."""
+
+    @pytest.mark.unit
+    def test_class_from_module_is_inferred_symbol(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema.EntityType",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.kind == IdentityKind.INFERRED_SYMBOL
+
+    @pytest.mark.unit
+    def test_inferred_symbol_has_parent_path(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema.canonical_name",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.resolved_path.endswith(".py")
+
+    @pytest.mark.unit
+    def test_inferred_symbol_has_medium_confidence(self) -> None:
+        rec = normalize_identity(
+            "agentic_core.adg.schema.RelationType",
+            repo_root=_REPO_ROOT,
+        )
+        assert rec.confidence == IdentityConfidence.MEDIUM
+
+
+class TestDeterminism:
+    """Same input must always produce identical IdentityRecord."""
+
+    @pytest.mark.unit
+    def test_external_deterministic(self) -> None:
+        r1 = normalize_identity("openai", repo_root=_REPO_ROOT)
+        r2 = normalize_identity("openai", repo_root=_REPO_ROOT)
+        assert r1.kind == r2.kind
+        assert r1.adg_name == r2.adg_name
+
+    @pytest.mark.unit
+    def test_repo_module_deterministic(self) -> None:
+        r1 = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
+        r2 = normalize_identity("agentic_core.adg.schema", repo_root=_REPO_ROOT)
+        assert r1.resolved_path == r2.resolved_path
+        assert r1.confidence == r2.confidence
+
+    @pytest.mark.unit
+    def test_normalize_many_order_independent(self) -> None:
+        """normalize_many result is keyed by sorted names regardless of input order."""
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        r1 = normalizer.normalize_many(["openai", "agentic_core.adg.schema"])
+        r2 = normalizer.normalize_many(["agentic_core.adg.schema", "openai"])
+        assert set(r1.keys()) == set(r2.keys())
+        for k in r1:
+            assert r1[k].kind == r2[k].kind
+
+
+class TestNormalizationReport:
+    """NormalizationReport aggregates correctly over a batch of records."""
+
+    @pytest.mark.unit
+    def test_report_total_matches_record_count(self) -> None:
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        names = ["openai", "agentic_core.adg.schema", "agentic_core.adg"]
+        records = normalizer.normalize_many(names)
+        report = normalizer.report(records)
+        assert report.total == 3
+
+    @pytest.mark.unit
+    def test_report_by_kind_sums_to_total(self) -> None:
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        names = ["openai", "agentic_core.adg.schema", "agentic_core.adg"]
+        records = normalizer.normalize_many(names)
+        report = normalizer.report(records)
+        assert sum(report.by_kind.values()) == report.total
+
+    @pytest.mark.unit
+    def test_unresolved_explicitly_listed(self) -> None:
+        # Both parent and direct path must be non-existent for UNRESOLVED_IMPORT
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        names = ["agentic_core.fake_pkg_zzz.nonexistent_module"]
+        records = normalizer.normalize_many(names)
+        report = normalizer.report(records)
+        assert "agentic_core.fake_pkg_zzz.nonexistent_module" in report.unresolved
+
+    @pytest.mark.unit
+    def test_report_to_dict_has_required_keys(self) -> None:
+        normalizer = IdentityNormalizer(repo_root=_REPO_ROOT)
+        records = normalizer.normalize_many(["openai"])
+        report = normalizer.report(records)
+        d = report.to_dict()
+        for key in ("total", "by_kind", "by_confidence", "unresolved_count", "unresolved_names"):
+            assert key in d, f"Missing key: {key}"
+
+
+class TestBuildIdentityIndex:
+    """build_identity_index convenience function."""
+
+    @pytest.mark.unit
+    def test_returns_records_and_report(self) -> None:
+        records, report = build_identity_index(
+            ["openai", "agentic_core.adg.schema"],
+            repo_root=_REPO_ROOT,
+        )
+        assert isinstance(records, dict)
+        assert isinstance(report, NormalizationReport)
+
+    @pytest.mark.unit
+    def test_empty_list_returns_empty(self) -> None:
+        records, report = build_identity_index([], repo_root=_REPO_ROOT)
+        assert records == {}
+        assert report.total == 0

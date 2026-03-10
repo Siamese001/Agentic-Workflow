@@ -67,6 +67,56 @@ def _cmd_blast_radius(args: argparse.Namespace) -> int:
     return 0
 
 
+def _cmd_build_artifact(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.artifact.builder import build_artifact
+    from agentic_core.adg.artifact.serializer import write_artifact
+    from agentic_core.adg.extraction.static_scanner import ADGStaticScanner
+
+    repo_root = Path(args.repo_root)
+    scanner = ADGStaticScanner(repo_root=repo_root)
+    result = scanner.scan(commit_sha=args.commit or "")
+    result.print_digest()
+
+    artifact = build_artifact(result, repo_root=repo_root)
+
+    if getattr(args, "output", None):
+        out_path = Path(args.output)
+    else:
+        out_path = repo_root / "artifacts" / "adg" / "adg_canonical_artifact.json"
+
+    write_artifact(artifact, out_path)
+    print(f"ADG-ARTIFACT: {out_path}")
+    print(f"ADG-ARTIFACT-DIGEST: {artifact.artifact_digest}")
+    print(f"ADG-ARTIFACT-ENTITIES: {len(artifact.entities)}")
+    print(f"ADG-ARTIFACT-RELATIONS: {len(artifact.relations)}")
+    print(f"ADG-ARTIFACT-UNRESOLVED: {len(artifact.unresolved_imports)}")
+    return 0
+
+
+def _cmd_impact(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+    from tools.change_impact_engine import ChangeImpactEngine
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    engine = ChangeImpactEngine(result, repo_root=repo_root)
+    impact = engine.analyze(args.changed or [], include_tests=True)
+
+    if getattr(args, "output", None):
+        out_path = Path(args.output)
+        out_path.parent.mkdir(parents=True, exist_ok=True)
+        out_path.write_text(json.dumps(impact.to_dict(), indent=2), encoding="utf-8")
+        print(f"ADG-IMPACT: {out_path}")
+    else:
+        print(json.dumps(impact.to_dict(), indent=2))
+
+    return 0 if impact.route_mode == "NORMAL" else 1
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="adg",
@@ -105,12 +155,36 @@ def main(argv: list[str] | None = None) -> int:
         help="Changed files for blast-radius computation",
     )
 
+    art_p = subparsers.add_parser("build-artifact", help="Build canonical ADG artifact (schema v3)")
+    art_p.add_argument(
+        "--output",
+        default=None,
+        help="Output path for artifact JSON (default: artifacts/adg/adg_canonical_artifact.json)",
+    )
+
+    impact_p = subparsers.add_parser("impact", help="Compute change impact for changed files")
+    impact_p.add_argument(
+        "--changed",
+        nargs="*",
+        metavar="FILE",
+        help="Changed files for impact analysis",
+    )
+    impact_p.add_argument(
+        "--output",
+        default=None,
+        help="Output path for impact JSON",
+    )
+
     parsed = parser.parse_args(argv)
 
     if parsed.command == "scan":
         return _cmd_scan(parsed)
     if parsed.command == "blast-radius":
         return _cmd_blast_radius(parsed)
+    if parsed.command == "build-artifact":
+        return _cmd_build_artifact(parsed)
+    if parsed.command == "impact":
+        return _cmd_impact(parsed)
 
     parser.print_help()
     return 1

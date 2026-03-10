@@ -1,0 +1,306 @@
+"""ADG Developer Insight CLI — structural intelligence queries for developers.
+
+Commands:
+  who-uses      <module>   — what modules/tests import this module
+  depends-on    <module>   — what this module imports (direct + transitive)
+  blast-radius  <file>     — impacted modules + tests if this file changes
+  territory     <module>   — layer, ownership, allowed edges from this module
+  agents-for    <base>     — all agent classes inheriting from a base class
+  config-reads  <module>   — what config/env symbols this module reads
+  unresolved                — print all unresolved import symbols in the graph
+  coverage      <module>   — which tests cover this module
+
+Usage:
+    python -m tools.adg_insight_cli who-uses agentic_core/adg/schema.py
+    python -m tools.adg_insight_cli blast-radius agentic_core/adg/schema.py
+    python -m tools.adg_insight_cli agents-for BaseAgent
+    python -m tools.adg_insight_cli unresolved
+"""
+
+from __future__ import annotations
+
+import json
+import logging
+import sys
+from pathlib import Path
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from agentic_core.adg.extraction.static_scanner import ScanResult
+
+logger = logging.getLogger(__name__)
+
+_MODULE_PREFIX = "ADG::Module::"
+_SYMBOL_PREFIX = "ADG::Symbol::"
+
+
+def _get_result(repo_root: Path) -> ScanResult:
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    return load_or_scan(repo_root=str(repo_root))
+
+
+# ---------------------------------------------------------------------------
+# Command implementations
+# ---------------------------------------------------------------------------
+
+
+def cmd_who_uses(module_path: str, result: ScanResult) -> dict:
+    """Return all modules and tests that directly import the given module."""
+    norm_path = module_path.replace("\\", "/")
+    target_adg = _MODULE_PREFIX + norm_path
+
+    direct_importers: list[str] = []
+    for edge in result.edges:
+        if edge.relation_type == "imports" and edge.to_name == target_adg:
+            if edge.from_name.startswith(_MODULE_PREFIX):
+                from_path = edge.from_name[len(_MODULE_PREFIX):]
+                direct_importers.append(from_path)
+
+    tests = [p for p in sorted(set(direct_importers)) if p.startswith("tests/")]
+    sources = [p for p in sorted(set(direct_importers)) if not p.startswith("tests/")]
+
+    return {
+        "module": norm_path,
+        "direct_importers": sorted(set(direct_importers)),
+        "source_importers": sources,
+        "test_importers": tests,
+        "total_count": len(set(direct_importers)),
+    }
+
+
+def cmd_depends_on(module_path: str, result: ScanResult, transitive: bool = False) -> dict:
+    """Return all modules this module imports (direct, optionally transitive)."""
+    norm_path = module_path.replace("\\", "/")
+    source_adg = _MODULE_PREFIX + norm_path
+
+    direct: set[str] = set()
+    for edge in result.edges:
+        if edge.relation_type == "imports" and edge.from_name == source_adg:
+            to_path = ""
+            if edge.to_name.startswith(_MODULE_PREFIX):
+                to_path = edge.to_name[len(_MODULE_PREFIX):]
+            elif edge.to_name.startswith(_SYMBOL_PREFIX):
+                to_path = edge.to_name[len(_SYMBOL_PREFIX):]
+            if to_path:
+                direct.add(to_path)
+
+    result_dict: dict = {
+        "module": norm_path,
+        "direct_imports": sorted(direct),
+        "direct_count": len(direct),
+    }
+
+    if transitive:
+        # BFS forward
+        forward: dict[str, set[str]] = {}
+        for edge in result.edges:
+            if edge.relation_type == "imports" and edge.from_name.startswith(_MODULE_PREFIX):
+                from_p = edge.from_name[len(_MODULE_PREFIX):]
+                to_p = edge.to_name[len(_MODULE_PREFIX):] if edge.to_name.startswith(_MODULE_PREFIX) else ""
+                if to_p:
+                    if from_p not in forward:
+                        forward[from_p] = set()
+                    forward[from_p].add(to_p)
+
+        visited: set[str] = set()
+        frontier = list(direct)
+        while frontier:
+            mod = frontier.pop()
+            if mod in visited:
+                continue
+            visited.add(mod)
+            frontier.extend(m for m in forward.get(mod, set()) if m not in visited)
+
+        result_dict["transitive_imports"] = sorted(visited - direct)
+        result_dict["transitive_count"] = len(visited)
+
+    return result_dict
+
+
+def cmd_blast_radius(module_path: str, result: ScanResult, repo_root: Path) -> dict:
+    """Return impact analysis if this file changes."""
+    from tools.change_impact_engine import ChangeImpactEngine
+
+    engine = ChangeImpactEngine(result, repo_root=repo_root)
+    impact = engine.analyze([module_path.replace("\\", "/")])
+    return impact.to_dict()
+
+
+def cmd_territory(module_path: str) -> dict:
+    """Return layer, territory, and allowed edges for a module path."""
+    from agentic_core.adg.schema import ALLOWED_LAYER_EDGES, module_path_to_layer
+
+    norm_path = module_path.replace("\\", "/")
+    layer = module_path_to_layer(norm_path)
+    allowed_targets = sorted({tl for (fl, tl) in ALLOWED_LAYER_EDGES if fl == layer})
+    allowed_sources = sorted({fl for (fl, tl) in ALLOWED_LAYER_EDGES if tl == layer})
+
+    return {
+        "module": norm_path,
+        "layer": layer,
+        "allowed_import_targets": allowed_targets,
+        "allowed_import_sources": allowed_sources,
+        "note": "Same-layer imports are always allowed",
+    }
+
+
+def cmd_agents_for(base_class: str, result: ScanResult) -> dict:
+    """Return all agent classes inheriting from the given base class name."""
+    from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+
+    engine = ADGRuntimeQueryEngine(result)
+    agents = engine.find_agents_by_base_class(base_class)
+
+    # Enrich with file paths
+    # ADG symbol format: ADG::Module::<file_path>::<ClassName>
+    # split("::") → ["ADG", "Module", "<file_path>", "<ClassName>"]
+    enriched: list[dict] = []
+    for adg_name in sorted(agents):
+        parts = adg_name.split("::")
+        if len(parts) >= 4:
+            module_path = parts[2]
+            class_name = parts[3]
+        elif len(parts) == 3:
+            module_path = parts[2]
+            class_name = ""
+        else:
+            module_path = ""
+            class_name = adg_name
+        from agentic_core.adg.schema import module_path_to_layer
+
+        enriched.append(
+            {
+                "adg_name": adg_name,
+                "class_name": class_name,
+                "module_path": module_path,
+                "layer": module_path_to_layer(module_path) if module_path else "L_UNKNOWN",
+            }
+        )
+
+    return {
+        "base_class": base_class,
+        "agent_count": len(agents),
+        "agents": enriched,
+    }
+
+
+def cmd_config_reads(module_path: str, result: ScanResult) -> dict:
+    """Return config/env symbols read by a given module."""
+    from agentic_core.adg.runtime.query_engine import ADGRuntimeQueryEngine
+    from agentic_core.adg.schema import canonical_name
+
+    engine = ADGRuntimeQueryEngine(result)
+    norm_path = module_path.replace("\\", "/")
+    adg_name = canonical_name("Module", norm_path)
+    config_syms = engine.get_config_reads(adg_name)
+
+    return {
+        "module": norm_path,
+        "config_symbols_read": sorted(config_syms),
+        "count": len(config_syms),
+    }
+
+
+def cmd_unresolved(result: ScanResult, repo_root: Path) -> dict:
+    """Return all unresolved import symbols in the graph."""
+    from agentic_core.adg.identity.normalizer import IdentityNormalizer
+
+    normalizer = IdentityNormalizer(repo_root=repo_root)
+    records, report = normalizer.normalize_from_scan_result(result)
+    return report.to_dict()
+
+
+def cmd_coverage(module_path: str, result: ScanResult, repo_root: Path) -> dict:
+    """Return tests that cover the given module."""
+    from tools.test_coverage_mapper import TestCoverageMapper
+
+    mapper = TestCoverageMapper(result, repo_root=repo_root).build()
+    norm_path = module_path.replace("\\", "/")
+    tests = mapper.tests_for_module(norm_path)
+
+    return {
+        "module": norm_path,
+        "covering_tests": tests,
+        "test_count": len(tests),
+        "note": "" if tests else "No direct ADG test coverage found for this module",
+    }
+
+
+# ---------------------------------------------------------------------------
+# CLI entry point
+# ---------------------------------------------------------------------------
+
+
+def main(argv: list[str] | None = None) -> int:
+    import argparse
+
+    parser = argparse.ArgumentParser(
+        description="ADG Developer Insight CLI",
+        formatter_class=argparse.RawDescriptionHelpFormatter,
+        epilog="""
+Commands:
+  who-uses     <module_path>   Direct importers of a module
+  depends-on   <module_path>   What a module imports (--transitive for full closure)
+  blast-radius <file_path>     Impact analysis for a changed file
+  territory    <module_path>   Layer + allowed import edges
+  agents-for   <BaseClass>     All classes inheriting from a base class
+  config-reads <module_path>   Config/env symbols read by a module
+  unresolved                   All unresolved imports in the graph
+  coverage     <module_path>   Tests covering a module
+        """,
+    )
+    parser.add_argument("command", help="Command to run")
+    parser.add_argument("target", nargs="?", default=None, help="Target module/file/class")
+    parser.add_argument("--transitive", action="store_true", help="For depends-on: include transitive imports")
+    parser.add_argument("--repo-root", default=None, help="Repo root directory (default: cwd)")
+    parser.add_argument("--compact", action="store_true", help="Compact JSON output")
+    args = parser.parse_args(argv)
+
+    repo_root = Path(args.repo_root) if args.repo_root else Path.cwd()
+    indent = None if args.compact else 2
+
+    cmd = args.command.lower().replace("-", "_")
+
+    # Commands that don't need target
+    if cmd == "unresolved":
+        result = _get_result(repo_root)
+        output = cmd_unresolved(result, repo_root)
+        print(json.dumps(output, indent=indent))
+        return 0
+
+    if not args.target:
+        parser.error(f"Command '{args.command}' requires a target argument")
+
+    target = args.target
+
+    if cmd == "who_uses":
+        result = _get_result(repo_root)
+        output = cmd_who_uses(target, result)
+    elif cmd == "depends_on":
+        result = _get_result(repo_root)
+        output = cmd_depends_on(target, result, transitive=args.transitive)
+    elif cmd == "blast_radius":
+        result = _get_result(repo_root)
+        output = cmd_blast_radius(target, result, repo_root)
+    elif cmd == "territory":
+        output = cmd_territory(target)
+    elif cmd == "agents_for":
+        result = _get_result(repo_root)
+        output = cmd_agents_for(target, result)
+    elif cmd == "config_reads":
+        result = _get_result(repo_root)
+        output = cmd_config_reads(target, result)
+    elif cmd == "coverage":
+        result = _get_result(repo_root)
+        output = cmd_coverage(target, result, repo_root)
+    else:
+        parser.error(f"Unknown command: {args.command}")
+
+    print(json.dumps(output, indent=indent))
+    return 0
+
+
+if __name__ == "__main__":
+    logging.basicConfig(level=logging.WARNING)
+    sys.exit(main())

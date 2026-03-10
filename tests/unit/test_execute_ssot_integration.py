@@ -1,0 +1,190 @@
+"""Unit tests for execute_ssot ADG integration (Phase 5).
+
+Tests cover:
+- build_pre_run_report returns PreRunADGReport
+- unavailable() produces a degraded report with adg_available=False
+- changed_files in result are sorted
+- route_mode is a valid string
+- to_dict has required keys
+- summary is non-empty string
+- graceful degradation when ADG unavailable
+"""
+
+from __future__ import annotations
+
+from pathlib import Path
+
+import pytest
+
+from agentic_core.adg.applications.execute_ssot_integration import (
+    PreRunADGReport,
+    emit_pre_run_log,
+)
+
+_REPO_ROOT = Path(__file__).resolve().parents[2]
+
+
+class TestPreRunADGReportUnavailable:
+    """PreRunADGReport.unavailable() produces correct degraded report."""
+
+    @pytest.mark.unit
+    def test_unavailable_sets_adg_available_false(self) -> None:
+        report = PreRunADGReport.unavailable(["foo.py"], "test error")
+        assert report.adg_available is False
+
+    @pytest.mark.unit
+    def test_unavailable_stores_error(self) -> None:
+        report = PreRunADGReport.unavailable(["foo.py"], "some error")
+        assert "some error" in report.adg_error
+
+    @pytest.mark.unit
+    def test_unavailable_route_mode_normal(self) -> None:
+        report = PreRunADGReport.unavailable(["foo.py"], "error")
+        assert report.route_mode == "NORMAL"
+
+    @pytest.mark.unit
+    def test_unavailable_changed_files_sorted(self) -> None:
+        report = PreRunADGReport.unavailable(["z.py", "a.py"], "error")
+        assert report.changed_files == sorted(["z.py", "a.py"])
+
+    @pytest.mark.unit
+    def test_unavailable_zero_counts(self) -> None:
+        report = PreRunADGReport.unavailable([], "error")
+        assert report.risk_score == 0
+        assert report.impacted_module_count == 0
+        assert report.impacted_test_count == 0
+
+
+class TestPreRunADGReportToDict:
+    """to_dict produces all required keys."""
+
+    @pytest.mark.unit
+    def test_to_dict_has_required_keys(self) -> None:
+        report = PreRunADGReport.unavailable(["foo.py"], "error")
+        d = report.to_dict()
+        required = {
+            "changed_files", "impacted_module_count", "impacted_modules",
+            "impacted_test_count", "impacted_tests", "risk_score", "route_mode",
+            "scope_widening_events", "uncovered_changed_files", "layer_violation_count",
+            "impact_digest", "adg_available", "adg_error", "summary",
+        }
+        assert required <= set(d.keys())
+
+    @pytest.mark.unit
+    def test_to_dict_summary_nonempty(self) -> None:
+        report = PreRunADGReport.unavailable(["foo.py"], "test")
+        d = report.to_dict()
+        assert len(d["summary"]) > 0
+
+
+class TestPreRunADGReportSummary:
+    """Summary property produces readable string."""
+
+    @pytest.mark.unit
+    def test_summary_contains_route_mode(self) -> None:
+        report = PreRunADGReport(
+            changed_files=["a.py"],
+            impacted_module_count=5,
+            impacted_modules=["a.py", "b.py", "c.py", "d.py", "e.py"],
+            impacted_test_count=2,
+            impacted_tests=["tests/test_a.py", "tests/test_b.py"],
+            risk_score=100,
+            route_mode="NORMAL",
+            scope_widening_events=[],
+            uncovered_changed_files=[],
+            layer_violation_count=0,
+            impact_digest="abc123" * 10 + "a",
+        )
+        assert "NORMAL" in report.summary
+
+    @pytest.mark.unit
+    def test_summary_contains_risk_score(self) -> None:
+        report = PreRunADGReport(
+            changed_files=["a.py"],
+            impacted_module_count=3,
+            impacted_modules=["a.py", "b.py", "c.py"],
+            impacted_test_count=1,
+            impacted_tests=["tests/test_a.py"],
+            risk_score=250,
+            route_mode="NORMAL",
+            scope_widening_events=[],
+            uncovered_changed_files=[],
+            layer_violation_count=0,
+            impact_digest="abc" * 21 + "a",
+        )
+        assert "250" in report.summary
+
+
+class TestEmitPreRunLog:
+    """emit_pre_run_log does not raise on any valid report."""
+
+    @pytest.mark.unit
+    def test_emit_unavailable_report_no_crash(self) -> None:
+        report = PreRunADGReport.unavailable(["a.py"], "error")
+        emit_pre_run_log(report)
+
+    @pytest.mark.unit
+    def test_emit_available_normal_report_no_crash(self) -> None:
+        report = PreRunADGReport(
+            changed_files=["a.py"],
+            impacted_module_count=1,
+            impacted_modules=["a.py"],
+            impacted_test_count=0,
+            impacted_tests=[],
+            risk_score=0,
+            route_mode="NORMAL",
+            scope_widening_events=[],
+            uncovered_changed_files=[],
+            layer_violation_count=0,
+            impact_digest="a" * 64,
+        )
+        emit_pre_run_log(report)
+
+    @pytest.mark.unit
+    def test_emit_restricted_report_no_crash(self) -> None:
+        report = PreRunADGReport(
+            changed_files=["a.py"],
+            impacted_module_count=10,
+            impacted_modules=["a.py"] * 10,
+            impacted_test_count=5,
+            impacted_tests=["tests/t.py"] * 5,
+            risk_score=500,
+            route_mode="RESTRICTED",
+            scope_widening_events=["b.py(layer=L2)"],
+            uncovered_changed_files=["c.py"],
+            layer_violation_count=3,
+            impact_digest="b" * 64,
+        )
+        emit_pre_run_log(report)
+
+
+class TestBuildPreRunReportIntegration:
+    """Integration: build_pre_run_report on real repo returns valid report."""
+
+    @pytest.mark.unit
+    def test_build_pre_run_report_returns_report(self) -> None:
+        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
+        report = build_pre_run_report(
+            changed_files=["agentic_core/adg/schema.py"],
+            repo_root=_REPO_ROOT,
+        )
+        assert isinstance(report, PreRunADGReport)
+
+    @pytest.mark.unit
+    def test_build_pre_run_report_route_mode_valid(self) -> None:
+        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
+        report = build_pre_run_report(
+            changed_files=["agentic_core/adg/schema.py"],
+            repo_root=_REPO_ROOT,
+        )
+        assert report.route_mode in ("NORMAL", "RESTRICTED", "HUMAN_REVIEW")
+
+    @pytest.mark.unit
+    def test_build_pre_run_empty_files_normal(self) -> None:
+        from agentic_core.adg.applications.execute_ssot_integration import build_pre_run_report
+
+        report = build_pre_run_report(changed_files=[], repo_root=_REPO_ROOT)
+        assert report.risk_score == 0
+        assert report.route_mode == "NORMAL"
