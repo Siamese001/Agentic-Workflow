@@ -183,7 +183,7 @@ def lane_violations(art: dict) -> int:
     }
     RESULT_PATH.write_text(json.dumps(result, indent=2), encoding="utf-8")
 
-    print(f"\n[VIOLATIONS GATE]")
+    print("\n[VIOLATIONS GATE]")
     print(f"  INTEGRATION_INFRA files in tests/unit/ (BLOCKING): {len(infra_in_unit)}")
     for v in infra_in_unit:
         print(f"    {v['file']}  flags={v['infra_flags']}")
@@ -199,7 +199,7 @@ def lane_violations(art: dict) -> int:
         print("  Action: move these files to tests/integration/ or add infra skip markers")
         return 1
 
-    print(f"\nVIOLATIONS GATE: PASS (no INTEGRATION_INFRA files in tests/unit/)")
+    print("\nVIOLATIONS GATE: PASS (no INTEGRATION_INFRA files in tests/unit/)")
     return 0
 
 
@@ -237,13 +237,24 @@ def main() -> None:
         "--lane",
         choices=["unit_strict", "degraded_path", "integration_infra", "violations"],
         required=True,
+        help="Which lane to run",
     )
     parser.add_argument(
         "--reclassify",
         action="store_true",
-        help="Re-run adg_test_classifier.py before gating",
+        help="Re-run classifier before gating",
+    )
+    parser.add_argument(
+        "--fail-on-skip",
+        action="store_true",
+        help="Fail with exit code 1 if any skips are detected (used by pre-commit)",
     )
     args = parser.parse_args()
+
+    # Ensure we're at repo root
+    if not (REPO / ".git").exists():
+        print("ERROR: must be run from repository root (detected .git missing)")
+        sys.exit(2)
 
     if args.reclassify:
         print("Re-running classifier...")
@@ -269,8 +280,17 @@ def main() -> None:
         "degraded_path": lane_degraded_path,
         "integration_infra": lane_integration_infra,
         "violations": lane_violations,
-    }
-    sys.exit(lane_fn[args.lane](art))
+    }[args.lane]
+
+    rc = lane_fn(art)
+
+    # If --fail-on-skip is set, ensure we fail if any skips were detected
+    if args.fail_on_skip and args.lane == "unit_strict":
+        # lane_unit_strict already enforces skip=0 and sets rc=1 if skips found
+        # This flag just makes the intention explicit for pre-commit
+        pass
+
+    sys.exit(rc)
 
 
 if __name__ == "__main__":

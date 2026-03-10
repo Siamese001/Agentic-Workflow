@@ -101,6 +101,15 @@ repos:
         # Also exclude third-party/vendored paths and venv/site-packages
         exclude: (ops_scripts/ci/check_anti_patterns\.py|ops_scripts/.*|tests/support/l6_observability/.*|tests/.*|__pycache__/.*|.nox/.*|archives/.*|.backup/.*|(^|/)(\.venv|venv|site-packages|third_party|vendor|node_modules)/)
 
+      # -- T3a-skip: Zero-Skip Enforcement for UNIT_STRICT -------------------------
+      - id: enforce-unit-strict-zero-skip
+        name: "T3a-skip: Zero-Skip Enforcement for UNIT_STRICT"
+        entry: python tools/adg_ci_lane_gate.py --lane unit_strict --fail-on-skip
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
       # -- T3a-c0: C0 Sovereignty Guardian (embedding must not drive routing) -----
       - id: check-c0-sovereignty
         name: "T3a-c0: C0 Sovereignty — Embedding Boundary Enforcement"
