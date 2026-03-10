@@ -1,7 +1,7 @@
 {
   "status": "terminated",
-  "start_time": "2026-03-10T10:56:00.986955",
-  "end_time": "2026-03-10T10:56:01.483286",
+  "start_time": "2026-03-10T11:24:55.397854",
+  "end_time": "2026-03-10T11:24:55.883169",
   "current_agent": null,
   "current_layer": "L0 - Maintenance",
   "agents_order": [
@@ -26,12 +26,12 @@
   "skipped_agents": [],
   "events": [
     {
-      "time": "2026-03-10T10:56:00.986955",
+      "time": "2026-03-10T11:24:55.397854",
       "type": "info",
       "message": "Mission started: Unified Protocol: Multi-Domain Sweep (Default)"
     },
     {
-      "time": "2026-03-10T10:56:01.480677",
+      "time": "2026-03-10T11:24:55.879573",
       "type": "agent_start",
       "message": "→ Executing RootHygieneAgent (L0 - Maintenance)"
     }

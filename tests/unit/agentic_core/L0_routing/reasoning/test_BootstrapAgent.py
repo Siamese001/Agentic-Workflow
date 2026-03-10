@@ -32,30 +32,33 @@ def test_BootstrapAgent_exists():
 
 
 def test_run_bootstrap_exists():
-    """Test that run_bootstrap function exists."""
+    """Test that run_bootstrap method exists on BootstrapAgent class."""
     try:
-        func = agentic_core.L5_safety.reasoning.BootstrapAgent.run_bootstrap
-        assert callable(func)
+        cls = agentic_core.L5_safety.reasoning.BootstrapAgent.BootstrapAgent
+        func = getattr(cls, "run_bootstrap", None)
+        assert func is not None and callable(func), "Method run_bootstrap not found on BootstrapAgent class"
     except AttributeError:
-        pytest.fail("Function run_bootstrap not found in module")
+        pytest.fail("Class BootstrapAgent not found in module")
 
 
 def test_heal_repository_exists():
-    """Test that heal_repository function exists."""
+    """Test that heal_repository method exists on BootstrapAgent class."""
     try:
-        func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal_repository
-        assert callable(func)
+        cls = agentic_core.L5_safety.reasoning.BootstrapAgent.BootstrapAgent
+        func = getattr(cls, "heal_repository", None)
+        assert func is not None and callable(func), "Method heal_repository not found on BootstrapAgent class"
     except AttributeError:
-        pytest.fail("Function heal_repository not found in module")
+        pytest.fail("Class BootstrapAgent not found in module")
 
 
 def test_heal_exists():
-    """Test that heal function exists."""
+    """Test that heal method exists on BootstrapAgent class."""
     try:
-        func = agentic_core.L5_safety.reasoning.BootstrapAgent.heal
-        assert callable(func)
+        cls = agentic_core.L5_safety.reasoning.BootstrapAgent.BootstrapAgent
+        func = getattr(cls, "heal", None)
+        assert func is not None and callable(func), "Method heal not found on BootstrapAgent class"
     except AttributeError:
-        pytest.fail("Function heal not found in module")
+        pytest.fail("Class BootstrapAgent not found in module")
 
 
 def test_module_has_minimum_coverage():
@@ -64,7 +67,7 @@ def test_module_has_minimum_coverage():
     import agentic_core.L5_safety.reasoning.BootstrapAgent
 
     # Check that module has some content
-    module_dict = agentic_core.base_agents.L0RoutingBase.__dict__
+    module_dict = agentic_core.L5_safety.reasoning.BootstrapAgent.__dict__
 
     # Count meaningful items (excluding dunder methods)
     meaningful_items = [

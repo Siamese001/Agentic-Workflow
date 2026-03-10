@@ -12,6 +12,8 @@ import json
 
 import pytest
 
+from agentic_core.L0_routing.config.path_constants import APPS_SHARED_DIR
+
 
 def test_write_run_manifest_json_structure(tmp_path):
     """

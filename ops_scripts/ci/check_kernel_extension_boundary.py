@@ -15,6 +15,13 @@ import sys
 from pathlib import Path
 from typing import Any
 
+from agentic_core.L0_routing.config.path_constants import (
+    AGENTIC_CORE_DIR,
+    APPS_SHARED_DIR,
+    OPS_SCRIPTS_DIR,
+    SYSTEM_LEARNING_DIR,
+)
+
 # Standard library modules that should be ignored
 STANDARD_LIBRARY_MODULES: frozenset[str] = frozenset(
     {
@@ -154,13 +161,7 @@ STANDARD_LIBRARY_MODULES: frozenset[str] = frozenset(
 )
 
 # Add project root to Python path for imports
-from agentic_core.L0_routing.config.path_constants import (
-    AGENTIC_CORE_DIR,
-    SYSTEM_LEARNING_DIR,
-    get_validated_project_root,
-    APPS_SHARED_DIR,
-    OPS_SCRIPTS_DIR,
-)
+from agentic_core.L0_routing.config.path_constants import get_validated_project_root
 
 project_root = get_validated_project_root()
 
