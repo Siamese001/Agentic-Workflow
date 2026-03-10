@@ -26,6 +26,22 @@ exclude: ^(archives/.*|\.sovereign_healing_backup/.*|^artifacts/migration/)
 
 repos:
   # ============================================================================
+  # TIER 0-ADG: ADG Phase Gate (§ADG-1 — must run FIRST, before all else)
+  # Blocks full-suite pytest during PHASE 5-6 repair loops.
+  # Only passes in PHASE 7+ or when artifacts/adg_current_phase.json says so.
+  # ============================================================================
+  - repo: local
+    hooks:
+      - id: adg-phase-gate
+        name: "T0-ADG: ADG Repair Phase Gate (§ADG-1.2)"
+        entry: python tools/adg_ci_gate.py check-phase
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+        stages: [manual]
+
+  # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
   # ============================================================================
   - repo: https://github.com/pre-commit/pre-commit-hooks
