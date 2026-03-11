@@ -1,15 +1,4 @@
 from __future__ import annotations
-
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 """
 Sovereign domain constants - Re-exported from canonical location.
 This module provides waterfall-compliant access to shared constants.
@@ -21,7 +10,7 @@ from agentic_core.L0_routing.config import (
     ROOT_PROTECTED_FILES,
     ROOT_WHITELIST,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
+from agentic_core.L0_routing.config.path_constants import ARCHIVES_DIR, DEPTH_RULES
 
 depth_map: Any = dict(DEPTH_RULES)
 max_lines: Any = 200

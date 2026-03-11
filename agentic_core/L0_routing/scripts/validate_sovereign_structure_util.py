@@ -25,7 +25,7 @@ from agentic_core.L0_routing.config import (
     APPS_SHARED_DIR,
 )
 from agentic_core.L0_routing.config.path_constants import TESTS_DIR
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config.path_constants import (
     CORE_SUBFOLDER_MAP,
     APPS_LIC_SUBFOLDER_MAP,
     APPS_RG_SUBFOLDER_MAP,

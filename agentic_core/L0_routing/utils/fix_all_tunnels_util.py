@@ -20,9 +20,8 @@ from pathlib import Path
 from typing import Any
 
 from agentic_core.L0_routing.enforcement.mutation_prohibition import assert_no_persistent_write
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
-from agentic_core.utils.ssot_discovery_validator import get_python_files
+from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
+from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 
 from agentic_core.L0_routing.config import (
     AGENTIC_CORE_DIR,

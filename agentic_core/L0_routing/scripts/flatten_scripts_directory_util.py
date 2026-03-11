@@ -1,15 +1,5 @@
 from __future__ import annotations
 
-MAX_RETRIES = 3
-DEFAULT_SLEEP = 1.0
-THRESHOLD = 0.95
-BUFFER_SIZE = 8192
-BATCH_SIZE = 32
-MAX_DEPTH = 6
-MAX_FILES = 1000
-DEFAULT_TIMEOUT = 300  # 5 minutes
-# Configuration constants
-
 """
 Flatten scripts directory to SSOT-compliant depth.
 [SSOT] All depth requirements derived from SOVEREIGN_REGISTRY in structure_blueprint.py
@@ -27,13 +17,12 @@ from agentic_core.L0_routing.utils.path_util import (
     safe_prefixed_filename,
     validate_no_duplicate_prefix,
 )
-from agentic_core.L5_safety.config.structure_blueprint.ssot import SOVEREIGN_EXCLUDED_FOLDERS
-from agentic_core.L5_safety.config.structure_blueprint_config import DEPTH_RULES
+from agentic_core.L0_routing.config.path_constants import DEPTH_RULES, SOVEREIGN_EXCLUDED_FOLDERS
 
-root: Any = Path("C:/Git/Agentic-Workflow")
-core: Any = ROOT / AGENTIC_CORE_DIR
-scripts_dir: Any = CORE / "L0_routing/scripts"
-required_depth: Any = DEPTH_RULES.get("agentic_core", 4)
+ROOT: Any = Path(__file__).resolve().parents[4]
+CORE: Any = ROOT / AGENTIC_CORE_DIR
+SCRIPTS_DIR: Any = CORE / "L0_routing/scripts"
+REQUIRED_DEPTH: Any = DEPTH_RULES.get("agentic_core", 4)
 
 
 def flatten_scripts() -> Any:
@@ -44,7 +33,7 @@ def flatten_scripts() -> Any:
         print("[!] Scripts directory not found")
         return
     # Phase 6.9: Use ssot_discovery instead of rglob
-    from agentic_core.utils.ssot_discovery_validator import get_python_files
+    from agentic_core.L0_routing.utils.ssot_discovery_util import get_python_files
 
     for py_file in get_python_files(SCRIPTS_DIR):
         rel_path: Any = py_file.relative_to(CORE)

@@ -20,7 +20,7 @@ import logging
 from datetime import datetime
 
 from agentic_core.seams.contracts.mcp import MCPConnectionManager
-from agentic_core.L5_safety.config.structure_blueprint_config import PROJECT_ROOT_WHITELIST
+from agentic_core.L0_routing.config.path_constants import PROJECT_ROOT_WHITELIST
 
 Logger = logging.getLogger(__name__)
 

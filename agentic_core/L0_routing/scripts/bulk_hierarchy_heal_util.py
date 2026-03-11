@@ -39,7 +39,7 @@ from agentic_core.L0_routing.enforcement.mutation_prohibition import (
     assert_no_persistent_write,
     safe_shutil_rmtree,
 )
-from agentic_core.L5_safety.config.structure_blueprint_config import (
+from agentic_core.L0_routing.config.path_constants import (
     CORE_SUBFOLDER_MAP,
     DEPTH_RULES,
 )

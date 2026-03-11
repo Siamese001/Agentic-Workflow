@@ -213,6 +213,128 @@ GLOBAL_EXCLUDED_DIRS: Final[frozenset[str]] = frozenset(
 )
 
 # ============================================================================
+# STRUCTURAL DEPTH RULES (literal copy from L5 derived.py)
+# Source: agentic_core.L5_safety.config.structure_blueprint.derived.DEPTH_RULES
+# ============================================================================
+
+DEPTH_RULES: Final[Mapping[str, int]] = {
+    ".backup": 2,
+    ".github": 2,
+    ".gravity_state": 2,
+    "agentic_core": 3,
+    "apps_lic": 2,
+    "apps_rg": 2,
+    "apps_shared": 2,
+    "archives": 3,
+    "artifacts": 2,
+    "data": 3,
+    "docs": 3,
+    "logs": 2,
+    "ops_scripts": 2,
+    "system_learning": 2,
+    "tests": 2,
+    "tools": 2,
+}
+
+# ============================================================================
+# PROJECT ROOT WHITELIST (literal copy from L5 ssot.py)
+# Source: agentic_core.L5_safety.config.structure_blueprint.ssot.PROJECT_ROOT_WHITELIST
+# ============================================================================
+
+PROJECT_ROOT_WHITELIST: Final[frozenset[str]] = frozenset(
+    {
+        ".backup",
+        ".git",
+        ".github",
+        ".gravity_state",
+        ".vscode",
+        "agentic_core",
+        "apps_lic",
+        "apps_rg",
+        "apps_shared",
+        "archives",
+        "data",
+        "docs",
+        "ops_scripts",
+        "tests",
+    }
+)
+
+# ============================================================================
+# SUBFOLDER MAPS (literal copy from L5 derived.py)
+# Source: agentic_core.L5_safety.config.structure_blueprint.derived.*_SUBFOLDER_MAP
+# ============================================================================
+
+CORE_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "L0_routing": [],
+    "L1_cognition": [],
+    "L2_execution": [],
+    "L3_orchestration": [],
+    "L4_state": [],
+    "L5_safety": [],
+    "L6_observability": [],
+    "_compat": [],
+    "adg": [],
+    "agents": [],
+    "base_agents": [],
+    "cache": [],
+    "config": [],
+    "enforcement": [],
+    "evaluation": [],
+    "interfaces": [],
+    "knowledge": [],
+    "mixins": [],
+    "prompt_governance": [],
+    "runtime": [],
+    "seams": [],
+    "utils": [],
+}
+
+APPS_RG_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "domain": ["entities", "models", "value_objects"],
+    "enforcement": [],
+    "engines": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+APPS_LIC_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "config": [],
+    "domain": ["config", "utils", "models"],
+    "enforcement": [],
+    "engines": [],
+    "reasoning": [],
+    "scripts": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+APPS_SHARED_SUBFOLDER_MAP: Final[Mapping[str, Sequence[str]]] = {
+    "agents": [],
+    "config": [],
+    "core_components": [],
+    "data": [],
+    "enforcement": [],
+    "integration": [],
+    "llm": [],
+    "mixins": [],
+    "reasoning": [],
+    "scripts": [],
+    "spine": [],
+    "tools": [],
+    "types": [],
+    "utils": [],
+    "validators": [],
+}
+
+# ============================================================================
 # EXPORTS
 # ============================================================================
 
@@ -221,10 +343,15 @@ __all__ = [
     "AGENT_DISCOVERY_MANIFEST_JSON",
     "AGENTIC_CORE_DIR",
     "APPS_LIC_DIR",
+    "APPS_LIC_SUBFOLDER_MAP",
     "APPS_RG_DIR",
+    "APPS_RG_SUBFOLDER_MAP",
     "APPS_SHARED_DIR",
+    "APPS_SHARED_SUBFOLDER_MAP",
     "ARCHIVES_DIR",
+    "CORE_SUBFOLDER_MAP",
     "DASHBOARD_DIR",
+    "DEPTH_RULES",
     "SYSTEM_LEARNING_DIR",
     "TOOLS_DIR",
     "GLOBAL_EXCLUDED_DIRS",
@@ -240,6 +367,7 @@ __all__ = [
     "LAYER_ROOTS",
     "OPS_SCRIPTS_DIR",
     "PROJECT_ROOT_MARKERS",
+    "PROJECT_ROOT_WHITELIST",
     "ROOT_ALLOWED_PATTERNS",
     "ROOT_PROTECTED_FILES",
     "ROOT_WHITELIST",
