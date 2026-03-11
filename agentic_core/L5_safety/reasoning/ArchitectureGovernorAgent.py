@@ -321,15 +321,9 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
             roots_scanned = []
             all_violations = []
 
-            # [STRICT SCOPE] Filter SOVEREIGN_TERRITORIES to prevent audit bleed
-            from agentic_core.L5_safety.config.structure_blueprint import (
-                get_sovereign_territories as _get_sovereign_territories,
-            )
-
-            sovereign_territories = _get_sovereign_territories()
-
+            # [STRICT SCOPE] Filter territories to prevent audit bleed
             if target_territory:
-                if target_territory in sovereign_territories and target_territory != AGENTIC_CORE_DIR:
+                if target_territory in PROJECT_ROOT_WHITELIST and target_territory != AGENTIC_CORE_DIR:
                     target_roots = [target_territory]
                 elif (self.project_root / AGENTIC_CORE_DIR / target_territory).exists():
                     # Sub-layer of agentic_core (e.g. "L2_execution", "L5_safety")
@@ -338,7 +332,7 @@ class ArchitectureGovernorAgent(SovereignBaseAgent):
                     target_roots = [AGENTIC_CORE_DIR]
                 Logger.info(f"[{agent_name}] TARGETED AUDIT: {target_territory} (Roots: {target_roots})")
             else:
-                target_roots = list(sovereign_territories.keys())
+                target_roots = list(sorted(PROJECT_ROOT_WHITELIST))
 
             for root_name in target_roots:
                 root_path = self.project_root / root_name

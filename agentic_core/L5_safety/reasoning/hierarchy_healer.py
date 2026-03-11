@@ -299,7 +299,7 @@ class HierarchyAgent(SovereignBaseAgent):
     ) -> None:
         """Create L2/L3 layer structure for agentic_core."""
         # agentic_core is L1; subfolders are L2 layers (L1_cognition, etc.)
-        approved_layers_l2 = SOVEREIGN_TERRITORIES.get("agentic_core", {}).get("subfolders", [])
+        approved_layers_l2 = list(CORE_SUBFOLDER_MAP.keys())
 
         for layer_l2_name in approved_layers_l2:
             # [SCOPED] Skip unrelated layers
