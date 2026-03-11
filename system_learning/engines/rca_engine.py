@@ -207,3 +207,32 @@ def analyze_failures(
         window_end_utc=window_end_utc,
         findings=tuple(findings),
     )
+
+
+def analyze_failures_and_persist(
+    snapshot_id: str,
+    audit_slice: bytes,
+    window_start_utc: int,
+    window_end_utc: int,
+) -> object:
+    """Analyze failures and persist findings to Memory MCP.
+
+    Drop-in replacement for ``analyze_failures`` that additionally persists
+    the RCA report into the Memory MCP knowledge graph, building an
+    accumulated failure pattern library across sessions.
+
+    Returns the same RCAReport as ``analyze_failures``.
+    """
+    report = analyze_failures(snapshot_id, audit_slice, window_start_utc, window_end_utc)
+    try:
+        from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+        get_sl_memory_bridge().persist_rca_findings(
+            snapshot_id,
+            report,
+            window_start=window_start_utc,
+            window_end=window_end_utc,
+        )
+    except Exception:  # guardian: allow-silent-swallower
+        pass
+    return report

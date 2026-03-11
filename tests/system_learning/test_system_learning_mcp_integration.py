@@ -1,0 +1,469 @@
+"""Integration tests for system_learning Memory MCP upgrades.
+
+Tests end-to-end persistence flows with real GraphMemoryBridge (when available)
+or graceful fallback when MCP is unavailable.
+
+Coverage:
+  - HealingSuccessRateStore: record → persist → restart → restore
+  - RCAEngine: analyze_failures_and_persist → query pattern library
+  - ShadowDriftAnalyzer: analyze_batch → persist → query history
+  - PolicyRecommendationEngine: generate → persist → mark applied → query
+  - Multi-engine coordination: verify relations created
+  - Resilience: MCP unavailable scenarios
+"""
+
+from __future__ import annotations
+
+import time
+from dataclasses import dataclass
+
+import pytest
+
+from system_learning.adapters.system_learning_memory_bridge import (
+    SystemLearningMemoryBridge,
+    get_sl_memory_bridge,
+)
+from system_learning.engines.healing_success_rate_store import (
+    HealingSuccessRateStore,
+    reset_default_store,
+)
+from system_learning.engines.rca_engine import analyze_failures_and_persist
+from system_learning.engines.retrieval_profile import RetrievalProfile
+from system_learning.engines.shadow_drift_analyzer import ShadowDriftAnalyzer
+
+# ---------------------------------------------------------------------------
+# Fixtures
+# ---------------------------------------------------------------------------
+
+
+@pytest.fixture(autouse=True)
+def reset_bridge_singleton():
+    """Reset SystemLearningMemoryBridge singleton before/after each test."""
+    SystemLearningMemoryBridge._instance = None
+    yield
+    SystemLearningMemoryBridge._instance = None
+
+
+@pytest.fixture(autouse=True)
+def reset_store_singleton():
+    """Reset HealingSuccessRateStore singleton before/after each test."""
+    reset_default_store()
+    yield
+    reset_default_store()
+
+
+# ---------------------------------------------------------------------------
+# HealingSuccessRateStore integration
+# ---------------------------------------------------------------------------
+
+
+class TestHealingSuccessRateStoreIntegration:
+    """End-to-end tests for HealingSuccessRateStore MCP persistence."""
+
+    def test_record_persist_restore_cycle(self):
+        """Verify full cycle: record outcomes → persist to MCP → restore on new instance."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # Phase 1: Record outcomes and trigger persistence
+        store1 = HealingSuccessRateStore()
+        for i in range(6):  # Exceeds _MIN_SAMPLE_SIZE=5
+            store1.record_outcome("IMPORT_ERROR", success=(i % 2 == 0))
+
+        # Verify local state
+        rate1 = store1.get_prior("IMPORT_ERROR")
+        assert rate1 != 0.50  # Should have moved from neutral
+
+        # Phase 2: Simulate process restart with new store instance
+        store2 = HealingSuccessRateStore()
+        assert store2.get_prior("IMPORT_ERROR") == 0.50  # Cold start
+
+        # Phase 3: Restore from MCP
+        restored_count = store2.restore_from_memory()
+        assert restored_count >= 1  # At least IMPORT_ERROR restored
+
+        # Phase 4: Verify restored rate matches original
+        rate2 = store2.get_prior("IMPORT_ERROR")
+        assert abs(rate2 - rate1) < 1e-5  # Should match within floating precision
+
+    def test_restore_does_not_overwrite_local_observations(self):
+        """Verify MCP-restored rates don't overwrite local observations (non-authoritative)."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # Seed MCP with a rate
+        bridge.persist_healing_success_rate("SYNTAX_ERROR", rate=0.90, count=100)
+
+        # Create store with local observations for same signature
+        store = HealingSuccessRateStore()
+        for _ in range(3):
+            store.record_outcome("SYNTAX_ERROR", success=False)
+        local_rate = store.get_prior("SYNTAX_ERROR")
+
+        # Restore from MCP
+        store.restore_from_memory()
+
+        # Verify local rate unchanged (local wins)
+        assert store.get_prior("SYNTAX_ERROR") == local_rate
+
+    def test_persist_only_fires_after_min_sample_size(self):
+        """Verify MCP persistence is gated by _MIN_SAMPLE_SIZE threshold."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        store = HealingSuccessRateStore()
+
+        # Record below threshold
+        for _ in range(4):
+            store.record_outcome("RUNTIME_ERROR", success=True)
+
+        # Query MCP - should not find it (below threshold)
+        restored = bridge.restore_healing_success_rates()
+        assert "RUNTIME_ERROR" not in restored
+
+        # Cross threshold
+        store.record_outcome("RUNTIME_ERROR", success=True)
+        time.sleep(0.1)  # Allow async MCP write
+
+        # Now should be in MCP
+        restored = bridge.restore_healing_success_rates()
+        assert "RUNTIME_ERROR" in restored
+
+
+# ---------------------------------------------------------------------------
+# RCAEngine integration
+# ---------------------------------------------------------------------------
+
+
+class TestRCAEngineIntegration:
+    """End-to-end tests for RCAEngine pattern library accumulation."""
+
+    def test_analyze_and_persist_creates_mcp_entities(self):
+        """Verify analyze_failures_and_persist creates RCA entities in MCP."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        audit_slice = b"""
+ModuleNotFoundError: No module named 'foo'
+ImportError: cannot import name 'bar' from 'baz'
+SyntaxError: invalid syntax
+        """
+
+        report = analyze_failures_and_persist(
+            snapshot_id="test_snap_001",
+            audit_slice=audit_slice,
+            window_start_utc=1_700_000_000,
+            window_end_utc=1_700_001_000,
+        )
+
+        # Verify report returned
+        assert report is not None
+        assert len(report.findings) > 0
+
+        # Query MCP for pattern library
+        time.sleep(0.1)  # Allow async MCP write
+        patterns = bridge.query_rca_pattern_frequency()
+        assert len(patterns) > 0
+
+    def test_query_rca_pattern_frequency_by_category(self):
+        """Verify category-filtered queries work on accumulated pattern library."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # Persist IMPORT-class findings
+        audit_import = b"ModuleNotFoundError: No module named 'test_module'"
+        analyze_failures_and_persist("snap_import", audit_import, 0, 100)
+
+        # Persist SYNTAX-class findings
+        audit_syntax = b"SyntaxError: invalid syntax at line 42"
+        analyze_failures_and_persist("snap_syntax", audit_syntax, 100, 200)
+
+        time.sleep(0.1)
+
+        # Query by category
+        import_patterns = bridge.query_rca_pattern_frequency(category="IMPORT")
+        syntax_patterns = bridge.query_rca_pattern_frequency(category="SYNTAX")
+
+        # Should have at least one of each
+        assert len(import_patterns) >= 1
+        assert len(syntax_patterns) >= 1
+
+
+# ---------------------------------------------------------------------------
+# ShadowDriftAnalyzer integration
+# ---------------------------------------------------------------------------
+
+
+class TestShadowDriftAnalyzerIntegration:
+    """End-to-end tests for ShadowDriftAnalyzer drift history tracking."""
+
+    def test_analyze_batch_persists_drift_summary(self):
+        """Verify analyze_batch persists DriftSummary to MCP."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        analyzer = ShadowDriftAnalyzer(drift_threshold=0.92)
+        records = [{"primary_shadow_cosine": 0.95}] * 20
+
+        summary = analyzer.analyze_batch(
+            shadow_records=records,
+            profile_id="test_profile_001",
+            now_utc=1_700_000_000,
+        )
+
+        assert summary is not None
+        assert summary.profile_id == "test_profile_001"
+
+        # Query drift history
+        time.sleep(0.1)
+        history = bridge.query_drift_history(profile_id="test_profile_001")
+        assert len(history) >= 1
+
+    def test_drift_history_accumulates_across_batches(self):
+        """Verify drift summaries accumulate in MCP across multiple batches."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        analyzer = ShadowDriftAnalyzer()
+        profile_id = "test_profile_multi"
+
+        # Analyze multiple batches
+        for i in range(3):
+            records = [{"primary_shadow_cosine": 0.90 + i * 0.01}] * 10
+            analyzer.analyze_batch(
+                shadow_records=records,
+                profile_id=profile_id,
+                now_utc=1_700_000_000 + i * 1000,
+            )
+
+        time.sleep(0.2)
+
+        # Query history - should have all 3 batches
+        history = bridge.query_drift_history(profile_id=profile_id)
+        assert len(history) >= 3
+
+
+# ---------------------------------------------------------------------------
+# PolicyRecommendationEngine integration
+# ---------------------------------------------------------------------------
+
+
+class TestPolicyRecommendationEngineIntegration:
+    """End-to-end tests for PolicyRecommendationEngine feedback loop."""
+
+    def test_memory_aware_engine_persists_recommendations(self):
+        """Verify MemoryAwarePolicyRecommendationEngine persists to MCP."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        from system_learning.engines.policy_recommendation_engine import (
+            MemoryAwarePolicyRecommendationEngine,
+        )
+
+        @dataclass(frozen=True)
+        class MockDriftSummary:
+            profile_id: str = "test_prof"
+            batch_size: int = 32
+            mean_cosine: float = 0.95
+            p95_cosine: float = 0.93
+            drift_flag: bool = False
+            drift_score: float = 0.05
+            deterministic_digest: str = "abc123" * 8
+            drift_threshold: float = 0.92
+
+        engine = MemoryAwarePolicyRecommendationEngine()
+        profile = RetrievalProfile.create_default()
+        drift = MockDriftSummary()
+
+        rec = engine.generate_recommendation(
+            drift_summary=drift,
+            active_profile=profile,
+            now_utc=1_700_000_000,
+        )
+
+        assert rec is not None
+        time.sleep(0.1)
+
+        # Query recommendations
+        recs = bridge.query_policy_recommendations()
+        assert len(recs) >= 1
+
+    def test_mark_recommendation_applied_workflow(self):
+        """Verify mark_recommendation_applied updates MCP entity."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # Persist a recommendation
+        bridge.persist_policy_recommendation(
+            recommendation=type(
+                "Rec",
+                (),
+                {
+                    "profile_id": "prof_test",
+                    "recommended_changes": {"cutoff": 0.80},
+                    "rationale": "test",
+                    "confidence_score": 0.95,
+                    "deterministic_digest": "test123" * 8,
+                },
+            )(),
+            ts="1700000000",
+            applied=False,
+        )
+
+        time.sleep(0.1)
+
+        # Query unapplied
+        unapplied = bridge.query_policy_recommendations(applied_only=False)
+        assert len(unapplied) >= 1
+
+        # Mark as applied (using first entity name from query)
+        if unapplied:
+            entity_name = unapplied[0].get("name", "")
+            if entity_name:
+                bridge.mark_recommendation_applied(entity_name)
+                time.sleep(0.1)
+
+                # Query applied only
+                applied = bridge.query_policy_recommendations(applied_only=True)
+                assert len(applied) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Multi-engine coordination
+# ---------------------------------------------------------------------------
+
+
+class TestMultiEngineCoordination:
+    """Verify multiple engines can persist to MCP simultaneously."""
+
+    def test_concurrent_persistence_from_multiple_engines(self):
+        """Verify RCA + Drift + Policy engines can persist concurrently."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # RCA persistence
+        audit = b"ImportError: test"
+        analyze_failures_and_persist("snap_concurrent", audit, 0, 100)
+
+        # Drift persistence
+        analyzer = ShadowDriftAnalyzer()
+        analyzer.analyze_batch(
+            shadow_records=[{"primary_shadow_cosine": 0.94}] * 10,
+            profile_id="concurrent_profile",
+            now_utc=1_700_000_000,
+        )
+
+        # Healing rate persistence
+        store = HealingSuccessRateStore()
+        for _ in range(6):
+            store.record_outcome("CONCURRENT_ERROR", success=True)
+
+        time.sleep(0.2)
+
+        # Verify all entities created
+        rca_patterns = bridge.query_rca_pattern_frequency()
+        drift_history = bridge.query_drift_history()
+        healing_rates = bridge.restore_healing_success_rates()
+
+        assert len(rca_patterns) >= 1
+        assert len(drift_history) >= 1
+        assert len(healing_rates) >= 1
+
+
+# ---------------------------------------------------------------------------
+# Resilience tests
+# ---------------------------------------------------------------------------
+
+
+class TestResilience:
+    """Verify graceful degradation when MCP is unavailable."""
+
+    def test_engines_function_normally_when_mcp_unavailable(self):
+        """Verify all engines work normally even if MCP is down."""
+        # Force bridge unavailable
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        SystemLearningMemoryBridge._instance = bridge
+
+        # HealingSuccessRateStore should still work
+        store = HealingSuccessRateStore()
+        for _ in range(6):
+            store.record_outcome("TEST_ERROR", success=True)
+        assert store.get_prior("TEST_ERROR") > 0.50
+
+        # RCA should still work
+        audit = b"SyntaxError: test"
+        report = analyze_failures_and_persist("snap_resilient", audit, 0, 100)
+        assert report is not None
+
+        # Drift analyzer should still work
+        analyzer = ShadowDriftAnalyzer()
+        summary = analyzer.analyze_batch(
+            shadow_records=[{"primary_shadow_cosine": 0.95}] * 10,
+            profile_id="resilient_profile",
+            now_utc=1_700_000_000,
+        )
+        assert summary is not None
+
+    def test_restore_from_memory_returns_empty_when_mcp_down(self):
+        """Verify restore_from_memory handles MCP unavailability gracefully."""
+        bridge = SystemLearningMemoryBridge.__new__(SystemLearningMemoryBridge)
+        bridge._bridge = None
+        SystemLearningMemoryBridge._instance = bridge
+
+        store = HealingSuccessRateStore()
+        restored_count = store.restore_from_memory()
+        assert restored_count == 0  # Should return 0, not raise
+
+
+# ---------------------------------------------------------------------------
+# Performance baseline
+# ---------------------------------------------------------------------------
+
+
+class TestPerformanceBaseline:
+    """Establish performance baselines for MCP operations."""
+
+    def test_persist_healing_rate_latency(self):
+        """Measure latency of persist_healing_success_rate."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        start = time.perf_counter()
+        for i in range(10):
+            bridge.persist_healing_success_rate(f"ERROR_{i}", rate=0.75, count=10)
+        elapsed = time.perf_counter() - start
+
+        # Should complete 10 persists in < 1 second (non-blocking)
+        assert elapsed < 1.0, f"10 persists took {elapsed:.3f}s (expected < 1.0s)"
+
+    def test_restore_healing_rates_latency(self):
+        """Measure latency of restore_healing_success_rates."""
+        bridge = get_sl_memory_bridge()
+        if not bridge.is_available:
+            pytest.skip("Memory MCP unavailable")
+
+        # Seed some data
+        for i in range(5):
+            bridge.persist_healing_success_rate(f"PERF_ERROR_{i}", rate=0.80, count=20)
+        time.sleep(0.1)
+
+        # Measure restore
+        start = time.perf_counter()
+        restored = bridge.restore_healing_success_rates()
+        elapsed = time.perf_counter() - start
+
+        # Should restore in < 500ms
+        assert elapsed < 0.5, f"Restore took {elapsed:.3f}s (expected < 0.5s)"
+        assert len(restored) >= 5

@@ -1,0 +1,273 @@
+"""Tests for ADGMemoryAdapter and namespace_builder.
+
+Covers:
+  - ADGMemoryAdapter._infer_layer routing
+  - ADGMemoryAdapter entity construction (no live MCP required)
+  - namespace_builder.build_key validation
+  - namespace_builder.parse_key round-trip
+  - namespace_builder.NS pre-defined specs
+  - namespace_builder.key_prefix scoping
+"""
+
+from __future__ import annotations
+
+import pytest
+
+from agentic_core.adg.adapters.memory_mcp_adapter import ADGMemoryAdapter, _infer_layer
+from agentic_core.cache.namespace_builder import (
+    NS,
+    build_global_key,
+    build_key,
+    build_mission_key,
+    key_prefix,
+    parse_key,
+)
+
+# ---------------------------------------------------------------------------
+# _infer_layer
+# ---------------------------------------------------------------------------
+
+
+class TestInferLayer:
+    def test_l4_path(self):
+        assert _infer_layer("agentic_core/L4_state/memory/semantic_cache_manager.py") == "L4"
+
+    def test_l0_path(self):
+        assert _infer_layer("agentic_core/L0_routing/scripts/execute_ssot.py") == "L0"
+
+    def test_l5_path(self):
+        assert _infer_layer("agentic_core/L5_safety/reasoning/FileClassificationAgent.py") == "L5"
+
+    def test_apps_shared(self):
+        assert _infer_layer("apps_shared/types/sovereign_severity_types.py") == "L_APP"
+
+    def test_apps_rg(self):
+        assert _infer_layer("apps_rg/reasoning/ATSCompatibilityAgent.py") == "L_APP"
+
+    def test_system_learning(self):
+        assert _infer_layer("system_learning/engines/rag_retrieval_cache.py") == "L_SL"
+
+    def test_ops_scripts(self):
+        assert _infer_layer("ops_scripts/ci/_audit_scan.py") == "L_OPS"
+
+    def test_tools(self):
+        assert _infer_layer("tools/generate_full_adg.py") == "L_TOOLS"
+
+    def test_tests(self):
+        assert _infer_layer("tests/adg/test_memory_mcp_adapter.py") == "L_TEST"
+
+    def test_unknown(self):
+        assert _infer_layer("some_random_file.py") == "L_UNKNOWN"
+
+    def test_l6_path(self):
+        assert _infer_layer("agentic_core/L6_observability/something.py") == "L6"
+
+
+# ---------------------------------------------------------------------------
+# namespace_builder — build_key
+# ---------------------------------------------------------------------------
+
+
+class TestBuildKey:
+    def test_basic_global_key(self):
+        key = build_global_key("L4", "semantic_cache", "file", "e3b0c44298fc1c14")
+        assert key == "L4:semantic_cache:global:file:e3b0c44298fc1c14"
+
+    def test_mission_scoped_key(self):
+        key = build_mission_key("L4", "semantic_cache", "file", "e3b0c44298fc1c14", "m_abc123")
+        assert key == "L4:semantic_cache:m_abc123:file:e3b0c44298fc1c14"
+
+    def test_l_sl_key(self):
+        key = build_global_key("L_SL", "rag_topk", "retrieval", "0f3ec30c8c67")
+        assert key == "L_SL:rag_topk:global:retrieval:0f3ec30c8c67"
+
+    def test_unknown_layer_raises(self):
+        with pytest.raises(ValueError, match="Unknown layer"):
+            build_key("L99", "cache", "file", "abcdef12")
+
+    def test_colon_in_component_raises(self):
+        with pytest.raises(ValueError, match="illegal ':'"):
+            build_key("L4", "bad:component", "file", "abcdef12")
+
+    def test_colon_in_entity_type_raises(self):
+        with pytest.raises(ValueError, match="illegal ':'"):
+            build_key("L4", "cache", "file:type", "abcdef12")
+
+    def test_empty_component_raises(self):
+        with pytest.raises(ValueError, match="must not be empty"):
+            build_key("L4", "", "file", "abcdef12")
+
+    def test_short_hash_valid(self):
+        key = build_global_key("L0", "routing", "config", "abcdef12")
+        assert key == "L0:routing:global:config:abcdef12"
+
+    def test_invalid_hash_raises(self):
+        with pytest.raises(ValueError, match="hex string"):
+            build_key("L4", "cache", "file", "not-hex!!")
+
+    def test_hash_too_short_raises(self):
+        with pytest.raises(ValueError, match="hex string"):
+            build_key("L4", "cache", "file", "abc")
+
+    def test_all_valid_layers(self):
+        valid_layers = [
+            "L0",
+            "L1",
+            "L2",
+            "L3",
+            "L4",
+            "L5",
+            "L6",
+            "L_APP",
+            "L_SL",
+            "L_OPS",
+            "L_TOOLS",
+            "L_TEST",
+            "L_RUNTIME",
+            "L_SHARED",
+            "L_UNKNOWN",
+        ]
+        for layer in valid_layers:
+            key = build_global_key(layer, "comp", "entity", "abcdef1234567890")
+            assert key.startswith(f"{layer}:")
+
+
+# ---------------------------------------------------------------------------
+# namespace_builder — parse_key
+# ---------------------------------------------------------------------------
+
+
+class TestParseKey:
+    def test_round_trip(self):
+        original = build_global_key("L4", "semantic_cache", "file", "e3b0c44298fc1c14")
+        parsed = parse_key(original)
+        assert parsed["layer"] == "L4"
+        assert parsed["component"] == "semantic_cache"
+        assert parsed["mission_id"] == "global"
+        assert parsed["entity_type"] == "file"
+        assert parsed["content_hash"] == "e3b0c44298fc1c14"
+
+    def test_mission_round_trip(self):
+        original = build_mission_key("L_SL", "rag_topk", "retrieval", "0f3ec30c8c67abcd", "m_xyz")
+        parsed = parse_key(original)
+        assert parsed["layer"] == "L_SL"
+        assert parsed["mission_id"] == "m_xyz"
+        assert parsed["content_hash"] == "0f3ec30c8c67abcd"
+
+    def test_wrong_segment_count_raises(self):
+        with pytest.raises(ValueError, match="5 colon-separated segments"):
+            parse_key("L4:cache:global:file")
+
+    def test_extra_segments_raises(self):
+        with pytest.raises(ValueError, match="5 colon-separated segments"):
+            parse_key("L4:cache:global:file:abc123:extra")
+
+
+# ---------------------------------------------------------------------------
+# namespace_builder — key_prefix
+# ---------------------------------------------------------------------------
+
+
+class TestKeyPrefix:
+    def test_global_prefix(self):
+        prefix = key_prefix("L4", "semantic_cache")
+        assert prefix == "L4:semantic_cache:global:"
+
+    def test_mission_prefix(self):
+        prefix = key_prefix("L4", "semantic_cache", mission_id="m_abc")
+        assert prefix == "L4:semantic_cache:m_abc:"
+
+    def test_unknown_layer_raises(self):
+        with pytest.raises(ValueError, match="Unknown layer"):
+            key_prefix("L99", "cache")
+
+    def test_prefix_usable_for_glob(self):
+        prefix = key_prefix("L_SL", "rag_topk")
+        pattern = prefix + "*"
+        assert pattern == "L_SL:rag_topk:global:*"
+
+
+# ---------------------------------------------------------------------------
+# namespace_builder — NS pre-defined specs
+# ---------------------------------------------------------------------------
+
+
+class TestNSSpecs:
+    def test_ns_l4_semantic_build(self):
+        key = NS.build(NS.L4_SEMANTIC, "file", "e3b0c44298fc1c14")
+        assert key == "L4:semantic_cache:global:file:e3b0c44298fc1c14"
+
+    def test_ns_l_sl_rag_topk_build(self):
+        key = NS.build(NS.L_SL_RAG_TOPK, "retrieval", "0f3ec30c8c67abcd", mission_id="m_test")
+        assert key == "L_SL:rag_topk:m_test:retrieval:0f3ec30c8c67abcd"
+
+    def test_ns_l2_lease_build(self):
+        key = NS.build(NS.L2_LEASE, "resource", "deadbeef12345678")
+        assert key == "L2:coordination:global:resource:deadbeef12345678"
+
+    def test_ns_l1_assembly_build(self):
+        key = NS.build(NS.L1_ASSEMBLY, "thought", "cafebabe12345678")
+        assert key == "L1:assembly:global:thought:cafebabe12345678"
+
+
+# ---------------------------------------------------------------------------
+# ADGMemoryAdapter — instantiation with fallback bridge
+# ---------------------------------------------------------------------------
+
+
+class TestADGMemoryAdapter:
+    def test_adapter_instantiation(self):
+        """Adapter must instantiate without live MCP (uses fallback bridge)."""
+        adapter = ADGMemoryAdapter()
+        assert adapter is not None
+
+    def test_is_available_property(self):
+        """is_available should be bool, True or False depending on MCP status."""
+        adapter = ADGMemoryAdapter()
+        assert isinstance(adapter.is_available, bool)
+
+    def test_query_violations_returns_list(self):
+        """query_violations must return a list (empty or not) without raising."""
+        adapter = ADGMemoryAdapter()
+        result = adapter.query_violations("L0->L5")
+        assert isinstance(result, list)
+
+    def test_query_hotspots_returns_list(self):
+        """query_hotspots must return a list without raising."""
+        adapter = ADGMemoryAdapter()
+        result = adapter.query_hotspots()
+        assert isinstance(result, list)
+
+    def test_query_snapshot_returns_list(self):
+        adapter = ADGMemoryAdapter()
+        result = adapter.query_snapshot("20260311T193725Z")
+        assert isinstance(result, list)
+
+    def test_ingest_snapshot_with_mock(self):
+        """ingest_snapshot must complete without error using a mock ScanResult."""
+        from dataclasses import dataclass, field
+
+        @dataclass
+        class MockEdge:
+            from_name: str = "mod_a"
+            relation_type: str = "imports"
+            to_name: str = "mod_b"
+            edge_kind: str = "import"
+            source_file: str = "agentic_core/L4_state/foo.py"
+            line_no: int = 1
+            symbol: str = ""
+
+        @dataclass
+        class MockScanResult:
+            digest: str = "deadbeef" * 8
+            modules: list = field(
+                default_factory=lambda: [
+                    "agentic_core/L4_state/foo.py",
+                    "agentic_core/L0_routing/bar.py",
+                ]
+            )
+            edges: list = field(default_factory=lambda: [MockEdge()])
+
+        adapter = ADGMemoryAdapter()
+        result = MockScanResult()
+        adapter.ingest_snapshot(result, ts="20991231T000000Z")

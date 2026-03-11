@@ -139,7 +139,13 @@ class ShadowDriftAnalyzer:
         return summary
 
     def _emit_to_registry(self, summary: DriftSummary) -> None:
-        """Emit shadow drift measurement to unified DriftRegistry (P5-5B/5C)."""
+        """Emit shadow drift measurement to unified DriftRegistry (P5-5B/5C) and Memory MCP."""
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+            get_sl_memory_bridge().persist_drift_summary(summary)
+        except Exception:  # guardian: allow-silent-swallow
+            pass
         try:
             import hashlib
             import json as _json
@@ -165,7 +171,9 @@ class ShadowDriftAnalyzer:
 
             entry = DriftRegistryEntry(
                 source="shadow",  # type: ignore[arg-type]
-                timestamp_iso=_json.dumps(summary.profile_id),  # no timestamp on DriftSummary; use profile_id as tag
+                timestamp_iso=_json.dumps(
+                    summary.profile_id
+                ),  # no timestamp on DriftSummary; use profile_id as tag
                 metric_name="p95_cosine",
                 current_value=summary.p95_cosine,
                 threshold_value=summary.drift_threshold,

@@ -12,7 +12,6 @@ from dataclasses import dataclass
 from system_learning.engines.retrieval_profile import RetrievalProfile
 from system_learning.engines.shadow_drift_analyzer import DriftSummary
 
-
 MAX_RETRIES = 3
 DEFAULT_SLEEP = 1.0
 THRESHOLD = 0.95
@@ -22,6 +21,7 @@ MAX_DEPTH = 6
 MAX_FILES = 1000
 DEFAULT_TIMEOUT = 300  # 5 minutes
 # Configuration constants
+
 
 @dataclass(frozen=True, slots=True)
 class PolicyRecommendation:
@@ -165,8 +165,41 @@ class PolicyRecommendationEngine:
         return hashlib.sha256(canonical.encode("utf-8")).hexdigest()
 
 
+class MemoryAwarePolicyRecommendationEngine(PolicyRecommendationEngine):
+    """PolicyRecommendationEngine that persists recommendations to Memory MCP.
+
+    Drop-in replacement. Every call to ``generate_recommendation`` is
+    automatically persisted to the Memory MCP knowledge graph, building a
+    cross-session recommendation history for drift trend analysis.
+    """
+
+    def generate_recommendation(
+        self,
+        *,
+        drift_summary: DriftSummary,
+        active_profile: RetrievalProfile,
+        now_utc: int,
+    ) -> PolicyRecommendation:
+        recommendation = super().generate_recommendation(
+            drift_summary=drift_summary,
+            active_profile=active_profile,
+            now_utc=now_utc,
+        )
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+            get_sl_memory_bridge().persist_policy_recommendation(
+                recommendation,
+                ts=str(now_utc),
+            )
+        except Exception:  # guardian: allow-silent-swallower
+            pass
+        return recommendation
+
+
 # Export public interface
 __all__ = [
     "PolicyRecommendationEngine",
+    "MemoryAwarePolicyRecommendationEngine",
     "PolicyRecommendation",
 ]

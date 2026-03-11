@@ -1,15 +1,33 @@
 # Memory MCP & Redis Optimization Plan
 
-Comprehensive plan to optimize memory MCP storage and Redis usage based on ADG dependency analysis showing 151,933 edges, 220 layer violations, and 2,756 dead imports across the agentic architecture.
+Comprehensive plan to optimize memory MCP storage and Redis usage based on ADG dependency analysis — **Phase 1 & 2 implemented** (20260311T194341Z ADG: 3,329 modules, 152,269 edges, 220 violations, 711 repair routes).
 
 ## Executive Summary
 
+**ADG Refresh: 20260311T193725Z** (artifact digest: `47c5fac0fe420863a316dbd4b77458374061d9707484213ef65c00953364e92a`)
+
 **ADG Analysis Findings:**
-- **Total dependency edges**: 151,933 (artifact digest: cf5e8969cd8bfbc77ff7efd8583eb98c8081bc0a2326b329ab7f3d92f6d64b92)
-- **Layer violations**: 220 (top: L0→L5: 32, L_SHARED→L5: 20, L_SHARED→L4: 14)
+- **Total dependency edges**: 152,131 (+198 vs prev 151,933; +266 added, -124 removed)
+- **Modules**: 3,325 | **Entities**: 43,762 | **Symbols**: 40,437
+- **Layer violations**: 220 (all critical) — L0→L5: 32, L_SHARED→L5: 20, L_SHARED→L4: 14
+- **Repair routes**: 711 (220 critical, 491 medium)
+- **High-criticality modules**: 960 | **Avg confidence**: 0.8856
 - **Dead imports**: 2,756 (worst: `L5_safety/config/structure_blueprint/__init__.py`: 103)
 - **SSOT violations**: 1,543 hardcoded path hits across 574 files
-- **Current memory infrastructure**: 15 components in L4_state/memory, 2,548 Redis references across 704 files
+- **Orphan modules**: 129 | **Unresolved imports**: 443
+- **Top hotspot**: `apps_shared/types/sovereign_severity_types.py` (fan-out 1,149)
+- **Redis references**: 2,548 across 704 files
+- **Bug fixed**: `tools/generate_full_adg.py:253` — `edge.target_module` → `edge.to_name`
+
+**Graph Plane Coverage:**
+| Plane | Count |
+|-------|-------|
+| G1 imports | 22,869 |
+| G3 implements | 1,857 |
+| G4 calls | 13,990 |
+| GT covers (tests) | 3,668 |
+| GV violates | 220 |
+| GG governance | 110 |
 
 **Critical Gaps Identified:**
 1. **No centralized ADG metadata storage** in Memory MCP
@@ -17,6 +35,7 @@ Comprehensive plan to optimize memory MCP storage and Redis usage based on ADG d
 3. **Missing dependency graph queries** for impact analysis
 4. **No Redis key namespace governance** for multi-tenant isolation
 5. **Duplicate memory stores** (5+ vector store implementations)
+6. **`generate_full_adg.py`** had bug in memory persistence (now fixed)
 
 ---
 
@@ -481,14 +500,80 @@ ORDER BY dead_count DESC
 
 ---
 
+## Phase 3: System Learning Persistent Memory Upgrades - IMPLEMENTED 20260311
+
+### Problem Statement
+
+All `system_learning` engines were **stateless across process restarts**:
+- `HealingSuccessRateStore` — EMA rates reset to neutral 0.50 on every restart (cold-start)
+- `RCAEngine` — findings discarded after each run; no failure pattern library
+- `ShadowDriftAnalyzer` — drift summaries ephemeral (DriftRegistry only)
+- `PolicyRecommendationEngine` — recommendations never stored; no feedback loop
+- `HealingOutcomeAggregator` — aggregate snapshots lost on restart
+- `PatternAnalysisEngine` — clusters recomputed from scratch each run
+
+### Solution: SystemLearningMemoryBridge
+
+**File**: `system_learning/adapters/system_learning_memory_bridge.py`
+- Singleton `SystemLearningMemoryBridge` accessed via `get_sl_memory_bridge()`
+- MCP unavailability caught and logged, never raises
+- Non-authoritative: local in-memory state always wins over MCP-restored data
+- Persists only when count >= `_MIN_SAMPLE_SIZE` (statistically meaningful)
+
+### Entity Types Added to Memory MCP
+
+| Entity Type | Source | Captures |
+|---|---|---|
+| `SLHealingSuccessRate` | `HealingSuccessRateStore` | EMA rate + count per error signature |
+| `SLRCAReport` | `rca_engine` | Finding summary per snapshot/window |
+| `SLRCAFinding` | `rca_engine` | Pattern (category, signature, count) |
+| `SLDriftSummary` | `ShadowDriftAnalyzer` | p95_cosine, drift_flag per profile |
+| `SLPolicyRecommendation` | `PolicyRecommendationEngine` | Changes, confidence, applied status |
+| `SLHealingAggregate` | `HealingOutcomeAggregator` | Per-snapshot aggregate stats |
+| `SLFailurePattern` | `PatternAnalysisEngine` | Cluster centroid + member count |
+
+### Files Modified / Created
+
+| File | Change |
+|---|---|
+| `system_learning/adapters/system_learning_memory_bridge.py` | NEW - canonical bridge |
+| `system_learning/engines/healing_success_rate_store.py` | `_maybe_persist_to_mcp()` + `restore_from_memory()` |
+| `system_learning/engines/rca_engine.py` | `analyze_failures_and_persist()` wrapper |
+| `system_learning/engines/shadow_drift_analyzer.py` | MCP persist in `_emit_to_registry()` |
+| `system_learning/engines/policy_recommendation_engine.py` | `MemoryAwarePolicyRecommendationEngine` subclass |
+| `tests/system_learning/test_system_learning_memory_bridge.py` | NEW - 36 tests, all passing |
+
+### Key Capabilities Unlocked
+
+1. **No cold-start for healing priors** — `restore_from_memory()` warm-starts EMA rates from MCP on process startup
+2. **Accumulated failure pattern library** — `query_rca_pattern_frequency(category='IMPORT')` returns cross-session pattern history
+3. **Cross-session drift trend tracking** — `query_drift_history(profile_id=...)` enables inflection detection
+4. **Policy recommendation feedback loop** — `mark_recommendation_applied()` + `query_policy_recommendations(applied_only=True)`
+5. **Aggregate snapshot history** — queryable across restarts for meta-learning pipeline replay
+
+---
+
+## Implementation Status Summary
+
+| Phase | Status | Deliverable |
+|---|---|---|
+| Phase 1: ADGMemoryAdapter | DONE | `agentic_core/adg/adapters/memory_mcp_adapter.py` |
+| Phase 2: Redis namespace governance | DONE | `agentic_core/cache/namespace_builder.py` |
+| Phase 3: System Learning MCP upgrades | DONE | `system_learning/adapters/system_learning_memory_bridge.py` |
+| ADG bug fix | DONE | `generate_full_adg.py:253` edge.to_name fix |
+| ADG wiring | DONE | `_persist_adg_to_memory` delegates to `ADGMemoryAdapter` |
+| Memory MCP populated | DONE | ADG snapshot + layers + violations + SL upgrades stored |
+| Tests | DONE | 40 ADG tests + 36 SL bridge tests = 76 total passing |
+
+---
+
 ## Next Steps
 
-1. **Review this plan** with stakeholders
-2. **Validate ADG schema** with Memory MCP team
-3. **Benchmark current Redis performance** (baseline)
-4. **Allocate resources** for 4-week implementation
-5. **Set up monitoring** before Phase 1 begins
+1. **Wire `MemoryAwarePolicyRecommendationEngine`** as default in pipeline startup
+2. **Wire `restore_from_memory()`** into `get_default_store()` startup path for zero-config warm-start
+3. **Wire `analyze_failures_and_persist`** as default in meta-learning pipeline orchestrator
+4. **Phase 4** (future): Consolidate 5+ vector store implementations to canonical `InMemoryVectorStore`
+5. **Phase 5** (future): Redis connection pooling + pipeline batching in `DeterministicRedisCache`
 
-**Estimated Effort**: 4 weeks (1 engineer full-time)
+**Estimated Effort**: Phases 1-3 complete
 **Dependencies**: Memory MCP server availability, Redis 6.0+
-**Rollout Strategy**: Incremental with feature flags, 1-week validation per phase

@@ -99,6 +99,22 @@ class HealingSuccessRateStore:
         self._counts[error_signature] = count + 1
 
         self._log_update(error_signature, success, new_rate, count + 1)
+        self._maybe_persist_to_mcp(error_signature, new_rate, count + 1)
+
+    def _maybe_persist_to_mcp(self, error_signature: str, rate: float, count: int) -> None:
+        """Persist updated rate to Memory MCP when count crosses MIN_SAMPLE_SIZE boundary.
+
+        Only fires when we have statistically meaningful data (count >= _MIN_SAMPLE_SIZE)
+        to avoid polluting MCP with warm-up noise.
+        """
+        if count < _MIN_SAMPLE_SIZE:
+            return
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+            get_sl_memory_bridge().persist_healing_success_rate(error_signature, rate, count)
+        except Exception:  # guardian: allow-silent-swallower
+            pass
 
     def _log_update(
         self,
@@ -139,6 +155,36 @@ class HealingSuccessRateStore:
         """Restore from exported snapshot (for replay/testing)."""
         self._rates = dict(state.get("rates", {}))
         self._counts = dict(state.get("counts", {}))
+
+    def restore_from_memory(self) -> int:
+        """Warm-start EMA rates from Memory MCP on process startup.
+
+        Merges Memory MCP rates into the current store without overwriting any
+        locally observed rates (local observations take precedence).
+
+        Returns:
+            Number of signatures restored from Memory MCP.
+        """
+        try:
+            from system_learning.adapters.system_learning_memory_bridge import get_sl_memory_bridge
+
+            restored = get_sl_memory_bridge().restore_healing_success_rates()
+        except Exception:  # guardian: allow-silent-swallower
+            return 0
+
+        merged = 0
+        for sig, (rate, count) in restored.items():
+            if sig not in self._rates:
+                self._rates[sig] = rate
+                self._counts[sig] = count
+                merged += 1
+
+        if merged:
+            logger.info(
+                "[HealingSuccessRateStore] Warm-started %d signature(s) from Memory MCP",
+                merged,
+            )
+        return merged
 
     def get_all(self) -> dict[str, float]:
         """Snapshot of all current priors (for audit)."""
