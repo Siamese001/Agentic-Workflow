@@ -392,6 +392,75 @@ def _cmd_policy_hash(args: argparse.Namespace) -> int:
     return 1 if report.violation_count > 0 else 0
 
 
+def _cmd_build_artifacts(args: argparse.Namespace) -> int:
+    import json
+    from datetime import datetime, timezone
+
+    from agentic_core.adg.artifact.builder import build_artifact
+    from agentic_core.adg.artifact.multi_writer import write_all_artifacts
+    from agentic_core.adg.runtime.cache_loader import load_or_scan
+
+    repo_root = Path(args.repo_root)
+    result = load_or_scan(repo_root=str(repo_root))
+    result.print_digest()
+
+    ts = datetime.now(timezone.utc).strftime("%Y%m%dT%H%M%SZ")
+    out_dir = Path(getattr(args, "output_dir", None) or repo_root / "artifacts" / "adg")
+    artifact = build_artifact(result, repo_root=repo_root)
+    paths = write_all_artifacts(artifact, out_dir=out_dir, ts=ts)
+    sizes = paths.size_report()
+    report = {
+        "snapshot": str(paths.snapshot),
+        "full": str(paths.full),
+        "sqlite": str(paths.sqlite),
+        "file_graph": str(paths.file_graph),
+        "symbol_graph": str(paths.symbol_graph),
+        "test_graph": str(paths.test_graph),
+        "governance_graph": str(paths.governance_graph),
+        "sizes": sizes,
+        "artifact_digest": artifact.artifact_digest,
+        "entities": len(artifact.entities),
+        "relations": len(artifact.relations),
+    }
+    print(json.dumps(report, indent=2))
+    return 0
+
+
+def _cmd_incremental_scan(args: argparse.Namespace) -> int:
+    import json
+
+    from agentic_core.adg.extraction.incremental import incremental_scan
+
+    repo_root = Path(args.repo_root)
+    changed_files = getattr(args, "changed", None) or None
+    base_ref = getattr(args, "base_ref", "HEAD~1")
+    snapshot_path = getattr(args, "snapshot", None)
+    snapshot_path = Path(snapshot_path) if snapshot_path else None
+
+    result, stats = incremental_scan(
+        repo_root=repo_root,
+        changed_files=changed_files,
+        full_snapshot_path=snapshot_path,
+        base_ref=base_ref,
+    )
+    result.print_digest()
+    print(stats.summary())
+    print(
+        json.dumps(
+            {
+                "total_modules": stats.total_modules,
+                "changed_files": stats.changed_files,
+                "affected_modules": stats.affected_modules,
+                "rescanned": stats.rescanned,
+                "skipped": stats.skipped,
+                "edges_total": stats.edges_total,
+            },
+            indent=2,
+        )
+    )
+    return 0
+
+
 def main(argv: list[str] | None = None) -> int:
     parser = argparse.ArgumentParser(
         prog="adg",
@@ -499,6 +568,41 @@ def main(argv: list[str] | None = None) -> int:
     va_p.add_argument("--json", action="store_true", default=False, help="Emit full JSON report")
     subparsers.add_parser("policy-hash", help="Policy hash runtime coupling validation (E31)")
 
+    # Artifact management
+    ba_p = subparsers.add_parser(
+        "build-artifacts",
+        help="Write all three artifact tiers: snapshot (CI), full (normalized), sqlite (queryable) + split planes",
+    )
+    ba_p.add_argument(
+        "--output-dir",
+        default=None,
+        metavar="DIR",
+        help="Output directory (default: artifacts/adg)",
+    )
+
+    is_p = subparsers.add_parser(
+        "incremental-scan",
+        help="Incremental ADG scan — re-scan only changed + affected modules",
+    )
+    is_p.add_argument(
+        "--changed",
+        nargs="*",
+        metavar="FILE",
+        help="Explicitly changed files (repo-relative). If omitted, uses git diff.",
+    )
+    is_p.add_argument(
+        "--base-ref",
+        default="HEAD~1",
+        metavar="REF",
+        help="Git base ref for diff (default: HEAD~1)",
+    )
+    is_p.add_argument(
+        "--snapshot",
+        default=None,
+        metavar="PATH",
+        help="Path to latest adg_full.json for reverse-import propagation",
+    )
+
     parsed = parser.parse_args(argv)
 
     if parsed.command == "scan":
@@ -543,6 +647,11 @@ def main(argv: list[str] | None = None) -> int:
         return _cmd_verify_architecture(parsed)
     if parsed.command == "policy-hash":
         return _cmd_policy_hash(parsed)
+
+    if parsed.command == "build-artifacts":
+        return _cmd_build_artifacts(parsed)
+    if parsed.command == "incremental-scan":
+        return _cmd_incremental_scan(parsed)
 
     parser.print_help()
     return 1
