@@ -51,6 +51,14 @@ repos:
         require_serial: true
         stages: [commit-msg]
 
+      - id: guard-agent-deletion
+        name: "T0-guard: Agent Deletion Authorization"
+        entry: python ops_scripts/ci/guard_agent_deletion.py
+        language: system
+        pass_filenames: false
+        always_run: true
+        require_serial: true
+
   # ============================================================================
   # TIER 0: Whitespace & Line-Ending Normalization (deterministic, no churn)
   # ============================================================================

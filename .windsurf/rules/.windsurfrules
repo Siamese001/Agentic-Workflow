@@ -8,7 +8,8 @@ trigger: always_on
 > 2. **No PowerShell.** All commands via `subprocess.run(argv, shell=False)`. §3.2.
 > 3. **No test skipping.** No `pytest.mark.skip`, no `xfail` without `strict=True`, no weakening assertions. §1.4.
 > 4. **No editing while exploring.** All five repair gates (§8.1) must pass before any edit.
-> 5. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
+> 5. **No agent deletion without authorization.** Deleting *Agent.py files requires AGENT-DELETION-AUTHORIZED marker, justification, replacement, deprecation period (90 days), and zero references. §1.6.
+> 6. **CI enforces all of this.** `python ops_scripts/ci/run_contract_gates.py`
 
 ---
 
@@ -103,7 +104,47 @@ For ANY code investigation, analysis, or modification task, Windsurf MUST:
 
 Baseline: `tests/_config/test_count_baseline.json`. Count drops = FAIL. xfail increases = FAIL. Skip count increases = FAIL. Intentional reduction requires commit justification and manual baseline update.
 
-### 1.6 Enforcement Registry
+### 1.6 Agent Deletion Policy
+
+**Zero-tolerance for unauthorized agent deletion:**
+
+Deleting any `*Agent.py` file is a **destructive operation** requiring the same rigor as database schema changes.
+
+**Required authorization (all mandatory):**
+1. **AGENT-DELETION-AUTHORIZED:** marker in commit message with justification (min 50 chars)
+2. **REPLACEMENT:** Specify replacement agent or 'none'/'unused'
+3. **DEPRECATION-DATE:** Date agent was deprecated (YYYY-MM-DD) or 'N/A'
+4. **REFERENCES-MIGRATED:** 'yes' if all references migrated, 'no' if none existed
+5. **Minimum deprecation period:** 90 days from DEPRECATION-DATE to deletion
+6. **Zero references:** Reference scan must show zero active references (excluding tests and deletion registry)
+
+**Enforcement:** Pre-commit hook `guard-agent-deletion` blocks commits deleting `*Agent.py` files without proper authorization.
+
+**When deletion IS acceptable:**
+- Duplicate/redundant agent with zero references
+- Test fixture agent in test support directory
+- Experimental agent never used in production
+- After full migration with zero references confirmed
+
+**When deletion is NEVER acceptable:**
+- ❌ Active agent with references
+- ❌ Deprecated agent still in deprecation period (<90 days)
+- ❌ Agent with incomplete migration
+- ❌ "Just to make tests pass"
+- ❌ Without replacement specified
+
+**Example authorization:**
+```
+refactor: Remove deprecated LocationAgent shim
+
+AGENT-DELETION-AUTHORIZED: Shim fully migrated after 90-day deprecation period.
+All 80 references redirected to LocationHealerAgent and LocationValidatorAgent.
+REPLACEMENT: LocationHealerAgent + LocationValidatorAgent
+DEPRECATION-DATE: 2026-02-07
+REFERENCES-MIGRATED: yes
+```
+
+### 1.7 Enforcement Registry
 
 | Requirement | Enforcement Script(s) |
 |-------------|---------------------|
