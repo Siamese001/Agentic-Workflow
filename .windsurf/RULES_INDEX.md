@@ -3,6 +3,8 @@
 **Last Updated**: 2026-03-11
 **Purpose**: Comprehensive mapping of all constitutional rules, skills, and CI enforcement gates
 
+> **2026-03-11 CONSOLIDATION:** `.windsurfrules` reduced from 3906 → ~400 lines. All Python implementation code removed — it already lives in `ops_scripts/ci/`. Rules file now contains hard rules, forbidden/required patterns, and CI script cross-references only. 4 previously unwired CI gates added to `run_contract_gates.py`.
+
 ---
 
 ## Constitutional Rules
@@ -150,11 +152,11 @@
 20. `check_layer_write_sovereignty.py`
 21. `check_llm_sdk_imports.py`
 22. `check_model_string_literals.py`
-23. `check_no_unconditional_xfail.py`
+23. `check_no_unconditional_xfail.py` ✅ NOW WIRED (§11.4)
 24. `check_object_dunder_setattr.py`
 25. `check_plan_location_compliance.py` ✅
 26. `check_policy_drift_classification.py`
-27. `check_powershell_ban.py`
+27. `check_powershell_ban.py` ✅ NOW WIRED (§2)
 28. `check_rollback_checkpoints.py` ✅ NEW
 29. `check_script_sprawl.py` ✅ NEW
 30. `check_shim_discipline.py` ✅ NEW
@@ -164,9 +166,9 @@
 34. `check_spine_bypass.py`
 35. `check_structured_output_emission.py`
 36. `check_system_learning_boundary.py`
-37. `check_test_integrity.py`
+37. `check_test_integrity.py` ✅ NOW WIRED (§11/§13)
 38. `check_tooling_apps_boundary.py`
-39. `check_utility_silent_swallowers.py`
+39. `check_utility_silent_swallowers.py` ✅ NOW WIRED (§10/§11)
 40. `check_wall_clock_in_determinism.py`
 41. `validate_import_dependencies.py` ✅
 
@@ -223,6 +225,7 @@ Include justification keywords in commit message:
 **Next Audit**: 2026-04-11
 
 **Changelog**:
+- 2026-03-11: **RULES CONSOLIDATION** — `.windsurfrules` reduced 3906→~400 lines. Removed all Python code blocks (redundant with `ops_scripts/ci/`). Added Constitutional Floor banner to top. Wired 4 previously dormant CI gates into `run_contract_gates.py`: `check_powershell_ban`, `check_test_integrity`, `check_no_unconditional_xfail`, `check_utility_silent_swallowers`.
 - 2026-03-11: Initial index creation, added 5 new CI gates
 - 2026-03-11: **ARCHITECTURE REDESIGN** — Removed misfits from pre-commit, strengthened Windsurf skills
   - Deleted `check_ast_first_gate.py` (misplaced — process rule, not structural)

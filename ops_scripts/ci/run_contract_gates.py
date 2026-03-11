@@ -57,6 +57,22 @@ def main():
             "Tooling/Apps Boundary Guard (§4.5)",
         ),
         (
+            [sys.executable, "ops_scripts/ci/check_powershell_ban.py"],
+            "PowerShell Ban (§2)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_test_integrity.py"],
+            "Test Integrity: zero-assert, silent swallowers, xfail (§11/§13)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_no_unconditional_xfail.py"],
+            "No Unconditional xfail in Governance Tests (§11.4)",
+        ),
+        (
+            [sys.executable, "ops_scripts/ci/check_utility_silent_swallowers.py"],
+            "Utility Silent Swallowers — critical infrastructure (§10/§11)",
+        ),
+        (
             [sys.executable, "ops_scripts/ci/validate_timeout_progress.py"],
             "Timeout & Progress Compliance (§9)",
         ),
